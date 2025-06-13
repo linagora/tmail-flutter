@@ -171,6 +171,9 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       headerMdn: hasRequestReadReceipt
         ? { IndividualHeaderIdentifier.headerMdn: createMdnEmailAddress() }
         : null,
+      headerReturnPath: hasRequestReadReceipt
+        ? { IndividualHeaderIdentifier.headerReturnPath: createMdnEmailAddress() }
+        : null,
       identityHeader: withIdentityHeader
         ? {IndividualHeaderIdentifier.identityHeader: identity?.id?.id.value}
         : null,
