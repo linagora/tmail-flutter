@@ -1,10 +1,8 @@
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/material.dart';
-import 'package:model/model.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/model/popup_menu_item_action.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -156,49 +154,5 @@ mixin MailboxWidgetMixin {
       .toList();
 
     return popupMenuActions;
-  }
-
-  List<PopupMenuEntry> popupMenuMailboxActionTiles(
-    BuildContext context,
-    ImagePaths imagePaths,
-    PresentationMailbox mailbox,
-    List<ContextMenuItemMailboxAction> contextMenuActions,
-    {
-      required Function(BuildContext, MailboxActions, PresentationMailbox) handleMailboxAction
-    }
-  ) {
-    return contextMenuActions
-      .map((action) => _buildPopupMenuItem(
-        context,
-        imagePaths,
-        action,
-        mailbox,
-        handleMailboxAction: handleMailboxAction
-      ))
-      .toList();
-  }
-
-  PopupMenuItem _buildPopupMenuItem(
-    BuildContext context,
-    ImagePaths imagePaths,
-    ContextMenuItemMailboxAction contextMenuItem,
-    PresentationMailbox mailbox,
-    {
-      required Function(BuildContext, MailboxActions, PresentationMailbox) handleMailboxAction
-    }
-  ) {
-    return PopupMenuItem(
-      padding: EdgeInsets.zero,
-      child: PopupItemWidget(
-        iconAction: contextMenuItem.action.getContextMenuIcon(imagePaths),
-        nameAction: contextMenuItem.action.getContextMenuTitle(AppLocalizations.of(context)),
-        colorIcon: contextMenuItem.action.getPopupMenuIconColor(),
-        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
-        styleName: ThemeUtils.textStyleBodyBody3(
-            color: contextMenuItem.action.getPopupMenuTitleColor()
-        ),
-        onCallbackAction: () => handleMailboxAction(context, contextMenuItem.action, mailbox)
-      )
-    );
   }
 }
