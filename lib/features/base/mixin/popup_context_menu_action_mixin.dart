@@ -4,6 +4,7 @@ import 'package:core/presentation/views/bottom_popup/cupertino_action_sheet_buil
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -28,6 +29,9 @@ mixin PopupContextMenuActionMixin {
     RelativeRect? position,
     List<PopupMenuEntry> popupMenuItems,
   ) async {
+    if (PlatformInfo.isWeb) {
+      getBinding<MailboxDashBoardController>()?.isPopupMenuOpened.value = true;
+    }
     await showMenu(
       context: context,
       position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
@@ -40,7 +44,11 @@ mixin PopupContextMenuActionMixin {
       ),
       constraints: const BoxConstraints(maxWidth: 300, minWidth: 178),
       items: popupMenuItems,
-    );
+    ).whenComplete(() {
+      if (PlatformInfo.isWeb) {
+        getBinding<MailboxDashBoardController>()?.isPopupMenuOpened.value = false;
+      }
+    });
   }
 
   Widget buildCancelButton(BuildContext context) {

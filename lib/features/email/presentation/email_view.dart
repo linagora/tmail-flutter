@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loa
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -414,10 +415,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               contentPadding: 0,
                               useDefaultFont: true,
                             ),
-                            if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive ||
-                                controller.mailboxDashBoardController.isLocalFileDraggableAppActive ||
-                                controller.mailboxDashBoardController.isAppGridDialogDisplayed.isTrue ||
-                                controller.mailboxDashBoardController.isDrawerOpened.isTrue)
+                            if (controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame)
                               PointerInterceptor(
                                 child: SizedBox(
                                   width: constraints.maxWidth,

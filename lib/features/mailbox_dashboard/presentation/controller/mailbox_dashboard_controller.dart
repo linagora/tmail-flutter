@@ -264,6 +264,7 @@ class MailboxDashBoardController extends ReloadableController
   final isSenderImportantFlagEnabled = RxBool(true);
   final isAppGridDialogDisplayed = RxBool(false);
   final isDrawerOpened = RxBool(false);
+  final isPopupMenuOpened = RxBool(false);
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
