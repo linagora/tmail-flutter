@@ -577,7 +577,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           fit: BoxFit.fill,
           colorFilter: AppColor.colorTextButton.asFilter()
         ),
-        action.getTitle(context),
+        action.getTitle(AppLocalizations.of(context)),
         presentationEmail,
         iconLeftPadding: controller.responsiveUtils.isScreenWithShortestSide(context)
           ? const EdgeInsetsDirectional.only(start: 12, end: 16)
@@ -604,7 +604,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           iconAction: action.getIcon(controller.imagePaths),
-          nameAction: action.getTitle(context),
+          nameAction: action.getTitle(AppLocalizations.of(context)),
           colorIcon: AppColor.colorTextButton,
           padding: const EdgeInsetsDirectional.only(start: 12),
           styleName: const TextStyle(

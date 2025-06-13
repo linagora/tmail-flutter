@@ -1208,6 +1208,14 @@ class ThreadController extends BaseController with EmailActionController {
       case EmailActionType.openInNewTab:
         openEmailInNewTabAction(selectedEmail);
         break;
+      case EmailActionType.archiveMessage:
+        if (currentContext != null) {
+          archiveMessage(currentContext!, selectedEmail);
+        }
+        break;
+      case EmailActionType.editAsNewEmail:
+        editAsNewEmail(selectedEmail);
+        break;
       default:
         break;
     }

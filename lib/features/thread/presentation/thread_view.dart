@@ -10,7 +10,9 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -666,10 +668,45 @@ class ThreadView extends GetWidget<ThreadController>
         _contextMenuActionTile(context, presentationEmail)
       );
     } else {
+      final mailboxContain = presentationEmail.mailboxContain;
+      final isDrafts = mailboxContain?.isDrafts ?? false;
+      final isChildOfTeamMailboxes =
+          mailboxContain?.isChildOfTeamMailboxes ?? false;
+      final isSpam = mailboxContain?.isSpam ?? false;
+      final isArchive = mailboxContain?.isArchive ?? false;
+      final isTemplates = mailboxContain?.isTemplates ?? false;
+
+      final popupMenuActions = [
+        EmailActionType.openInNewTab,
+        if (!isDrafts && !isChildOfTeamMailboxes)
+          isSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,
+        if (!isArchive) EmailActionType.archiveMessage,
+        if (!isDrafts && !isTemplates) EmailActionType.editAsNewEmail,
+      ].map((actionType) {
+        return PopupMenuItem(
+          padding: EdgeInsets.zero,
+          child: PopupMenuItemActionWidget(
+            menuAction: PopupMenuItemEmailAction(
+              actionType,
+              AppLocalizations.of(context),
+              controller.imagePaths,
+            ),
+            menuActionClick: (menuAction) {
+              popBack();
+              controller.handleEmailActionType(
+                menuAction.action,
+                presentationEmail,
+                mailboxContain: mailboxContain,
+              );
+            },
+          ),
+        );
+      }).toList();
+
       controller.openPopupMenuAction(
         context,
         position,
-        _popupMenuActionTile(context, presentationEmail)
+        popupMenuActions,
       );
     }
   }
@@ -864,117 +901,6 @@ class ThreadView extends GetWidget<ThreadController>
         controller.editAsNewEmail(email);
       })
     ).build();
-  }
-
-  List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
-    final mailboxContain = email.mailboxContain;
-
-    return [
-      _buildOpenInNewTabPopupMenuItem(context, email, mailboxContain),
-      if (mailboxContain?.isDrafts == false && mailboxContain?.isChildOfTeamMailboxes == false)
-        _buildMarkAsSpamPopupMenuItem(context, email, mailboxContain),
-      if (mailboxContain?.isArchive == false)
-        _buildArchiveMessagePopupMenuItem(context, email),
-      if (mailboxContain?.isDrafts == false && mailboxContain?.isTemplates == false)
-        _buildEditAsNewEmailPopupMenuItem(AppLocalizations.of(context), email),
-    ];
-  }
-
-  PopupMenuEntry _buildMarkAsSpamPopupMenuItem(
-    BuildContext context,
-    PresentationEmail email,
-    PresentationMailbox? mailboxContain
-  ) {
-    return PopupMenuItem(
-      padding: EdgeInsets.zero,
-      child: popupItem(
-        mailboxContain?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
-        mailboxContain?.isSpam == true
-          ? AppLocalizations.of(context).remove_from_spam
-          : AppLocalizations.of(context).mark_as_spam,
-        colorIcon: AppColor.colorTextButton,
-        styleName: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 16,
-          color: Colors.black
-        ),
-        onCallbackAction: () => controller.handleEmailActionType(
-          mailboxContain?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam,
-          email,
-          mailboxContain: mailboxContain,
-        )
-      )
-    );
-  }
-
-  PopupMenuEntry _buildOpenInNewTabPopupMenuItem(
-    BuildContext context,
-    PresentationEmail email,
-    PresentationMailbox? mailboxContain
-  ) {
-    return PopupMenuItem(
-      padding: EdgeInsets.zero,
-      child: popupItem(
-        controller.imagePaths.icOpenInNewTab,
-        AppLocalizations.of(context).openInNewTab,
-        colorIcon: AppColor.colorTextButton,
-        styleName: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 16,
-          color: Colors.black
-        ),
-        onCallbackAction: () {
-          popBack();
-          controller.openEmailInNewTabAction(email);
-        }
-      )
-    );
-  }
-
-  PopupMenuEntry _buildArchiveMessagePopupMenuItem(
-    BuildContext context,
-    PresentationEmail email
-  ) {
-    return PopupMenuItem(
-      padding: EdgeInsets.zero,
-      child: popupItem(
-        controller.imagePaths.icMailboxArchived,
-        AppLocalizations.of(context).archiveMessage,
-        colorIcon: AppColor.colorTextButton,
-        styleName: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 16,
-          color: Colors.black
-        ),
-        onCallbackAction: () {
-          popBack();
-          controller.archiveMessage(context, email);
-        }
-      )
-    );
-  }
-
-  PopupMenuEntry _buildEditAsNewEmailPopupMenuItem(
-    AppLocalizations appLocalizations,
-    PresentationEmail email,
-  ) {
-    return PopupMenuItem(
-      padding: EdgeInsets.zero,
-      child: popupItem(
-        controller.imagePaths.icEdit,
-        appLocalizations.editAsNewEmail,
-        colorIcon: AppColor.colorTextButton,
-        styleName: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 16,
-          color: Colors.black
-        ),
-        onCallbackAction: () {
-          popBack();
-          controller.editAsNewEmail(email);
-        }
-      )
-    );
   }
 
   Widget _buildMailboxActionProgressBanner(BuildContext context) {

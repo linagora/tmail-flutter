@@ -61,7 +61,6 @@ class ComposerView extends GetWidget<ComposerController> {
                         context,
                         position,
                         _createMoreOptionPopupItems(context),
-                        radius: ComposerStyle.popupMenuRadius
                       );
                     },
                     isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
@@ -87,7 +86,6 @@ class ComposerView extends GetWidget<ComposerController> {
                         context,
                         position,
                         _createMoreOptionPopupItems(context),
-                        radius: ComposerStyle.popupMenuRadius
                       );
                     },
                     isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,

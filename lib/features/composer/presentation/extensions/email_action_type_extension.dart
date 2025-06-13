@@ -150,29 +150,33 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icDownloadAttachment;
       case EmailActionType.editAsNewEmail:
         return imagePaths.icEdit;
+      case EmailActionType.openInNewTab:
+        return imagePaths.icOpenInNewTab;
       default:
         return '';
     }
   }
 
-  String getTitle(BuildContext context) {
+  String getTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case EmailActionType.markAsUnread:
-        return AppLocalizations.of(context).mark_as_unread;
+        return appLocalizations.mark_as_unread;
       case EmailActionType.unSpam:
-        return AppLocalizations.of(context).remove_from_spam;
+        return appLocalizations.remove_from_spam;
       case EmailActionType.moveToSpam:
-        return AppLocalizations.of(context).mark_as_spam;
+        return appLocalizations.mark_as_spam;
       case EmailActionType.createRule:
-        return AppLocalizations.of(context).quickCreatingRule;
+        return appLocalizations.quickCreatingRule;
       case EmailActionType.unsubscribe:
-        return AppLocalizations.of(context).unsubscribe;
+        return appLocalizations.unsubscribe;
       case EmailActionType.archiveMessage:
-        return AppLocalizations.of(context).archiveMessage;
+        return appLocalizations.archiveMessage;
       case EmailActionType.downloadMessageAsEML:
-        return AppLocalizations.of(context).downloadMessageAsEML;
+        return appLocalizations.downloadMessageAsEML;
       case EmailActionType.editAsNewEmail:
-        return AppLocalizations.of(context).editAsNewEmail;
+        return appLocalizations.editAsNewEmail;
+      case EmailActionType.openInNewTab:
+        return appLocalizations.openInNewTab;
       default:
         return '';
     }
