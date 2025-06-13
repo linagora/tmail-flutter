@@ -640,9 +640,7 @@ class ThreadView extends GetWidget<ThreadController>
       if (!isDrafts && !isTemplates) EmailActionType.editAsNewEmail,
     ];
 
-    if (listEmailActions.isEmpty) return;
-
-    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
+    if (position == null) {
       final contextMenuActions = listEmailActions
           .map((action) => ContextItemEmailAction(
                 action,
