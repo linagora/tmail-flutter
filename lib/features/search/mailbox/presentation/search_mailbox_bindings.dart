@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_inte
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -32,6 +33,16 @@ import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 class SearchMailboxBindings extends BaseBindings {
 
   @override
+  void dependencies() {
+    _bindingsUtils();
+    super.dependencies();
+  }
+
+  void _bindingsUtils() {
+    Get.lazyPut(() => TreeBuilder());
+  }
+
+  @override
   void bindingsController() {
     Get.lazyPut(() => SearchMailboxController(
       Get.find<SearchMailboxInteractor>(),
@@ -41,6 +52,7 @@ class SearchMailboxBindings extends BaseBindings {
       Get.find<SubscribeMailboxInteractor>(),
       Get.find<SubscribeMultipleMailboxInteractor>(),
       Get.find<CreateNewMailboxInteractor>(),
+      Get.find<SubaddressingInteractor>(),
       Get.find<TreeBuilder>(),
       Get.find<VerifyNameInteractor>(),
       Get.find<GetAllMailboxInteractor>(),
@@ -83,6 +95,8 @@ class SearchMailboxBindings extends BaseBindings {
     Get.lazyPut(() => SearchMailboxInteractor());
     Get.lazyPut(() => SubscribeMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => SubscribeMultipleMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => SubaddressingInteractor(Get.find<MailboxRepository>()));
   }
 
   @override

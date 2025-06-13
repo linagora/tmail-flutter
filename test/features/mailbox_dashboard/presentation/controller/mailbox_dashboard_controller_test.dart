@@ -18,6 +18,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_type_extension.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
@@ -646,7 +647,7 @@ void main() {
     test('should return subaddress with valid email and folder name', () {
       const String userEmail = 'user@example.com';
       const String folderName = 'folder';
-      final result = mailboxController.getSubaddress(userEmail, folderName);
+      final result = mailboxController.getSubAddress(userEmail, folderName);
 
       expect(result, equals('user+folder@example.com'));
     });
@@ -655,28 +656,28 @@ void main() {
       const userEmail = '@example.com';
       const folderName = 'folder';
 
-      expect(() => mailboxController.getSubaddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
+      expect(() => mailboxController.getSubAddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
     });
 
     test('should throw an error if empty folder name', () {
       const userEmail = 'user@example.com';
       const folderName = '';
 
-      expect(() => mailboxController.getSubaddress(userEmail, folderName), throwsA(isA<EmptyFolderNameException>()));
+      expect(() => mailboxController.getSubAddress(userEmail, folderName), throwsA(isA<EmptyFolderNameException>()));
     });
 
     test('should throw an error if empty domain', () {
       const userEmail = 'user@';
       const folderName = 'folder';
 
-      expect(() => mailboxController.getSubaddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
+      expect(() => mailboxController.getSubAddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
     });
 
     test('should throw an error if absent `@`', () {
       const userEmail = 'invalid-email-format';
       const folderName = 'folder';
 
-      expect(() => mailboxController.getSubaddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
+      expect(() => mailboxController.getSubAddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
     });
   });
 }

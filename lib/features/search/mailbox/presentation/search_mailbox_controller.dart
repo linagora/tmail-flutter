@@ -18,11 +18,15 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
+import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_type_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/null_session_or_accountid_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subaddressing_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
@@ -38,6 +42,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.d
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/search_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/subaddressing_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
@@ -47,6 +52,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_inte
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -76,6 +82,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   final SubscribeMailboxInteractor _subscribeMailboxInteractor;
   final SubscribeMultipleMailboxInteractor _subscribeMultipleMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
+  final SubaddressingInteractor _subAddressingInteractor;
 
   final dashboardController = Get.find<MailboxDashBoardController>();
 
@@ -100,6 +107,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     this._subscribeMailboxInteractor,
     this._subscribeMultipleMailboxInteractor,
     this._createNewMailboxInteractor,
+    this._subAddressingInteractor,
     TreeBuilder treeBuilder,
     VerifyNameInteractor verifyNameInteractor,
     GetAllMailboxInteractor getAllMailboxInteractor,
@@ -121,19 +129,21 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
     if (failure is SearchMailboxFailure) {
       _handleSearchMailboxFailure(failure);
     } else if (failure is CreateNewMailboxFailure) {
       _createNewMailboxFailure(failure);
     } else if (failure is RenameMailboxFailure) {
       _renameMailboxFailure(failure);
+    } else if (failure is SubaddressingFailure) {
+      handleSubAddressingFailure(failure);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
   @override
   void handleSuccessViewState(Success success) async {
-    super.handleSuccessViewState(success);
     if (success is GetAllMailboxSuccess) {
       currentMailboxState = success.currentMailboxState;
       await buildTree(success.mailboxList);
@@ -165,6 +175,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       _handleSubscribeMultipleMailboxHasSomeSuccess(success);
     } else if (success is CreateNewMailboxSuccess) {
       _createNewMailboxSuccess(success);
+    } else if (success is SubaddressingSuccess) {
+      handleSubAddressingSuccess(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
@@ -340,9 +354,79 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       case MailboxActions.recoverDeletedMessages:
         dashboardController.gotoEmailRecovery();
         break;
+      case MailboxActions.copySubaddress:
+        try {
+          final subAddress = getSubAddress(
+            dashboardController.getOwnEmailAddress(),
+            findNodePathWithSeparator(mailbox.id, '.')!,
+          );
+          copySubAddressAction(context, subAddress);
+        } catch (error) {
+          appToast.showToastErrorMessage(
+            context,
+            AppLocalizations.of(context).errorWhileFetchingSubaddress,
+          );
+        }
+        break;
+      case MailboxActions.allowSubaddressing:
+        try{
+          final subAddress = getSubAddress(
+            dashboardController.getOwnEmailAddress(),
+            findNodePathWithSeparator(mailbox.id, '.')!,
+          );
+          openConfirmationDialogSubAddressingAction(
+            context,
+            mailbox.id,
+            mailbox.getDisplayName(context),
+            subAddress,
+            mailbox.rights,
+            onAllowSubAddressingAction: _handleSubAddressingAction
+          );
+        } catch (error) {
+          appToast.showToastErrorMessage(
+            context,
+            AppLocalizations.of(context).errorWhileFetchingSubaddress,
+          );
+        }
+        break;
+      case MailboxActions.disallowSubaddressing:
+        _handleSubAddressingAction(mailbox.id, mailbox.rights, actions);
+        break;
       default:
         break;
     }
+  }
+
+
+  void _handleSubAddressingAction(
+    MailboxId mailboxId,
+    Map<String, List<String>?>? currentRights,
+    MailboxActions subAddressingAction,
+  ) {
+    final accountId = dashboardController.accountId.value;
+    final session = dashboardController.sessionCurrent;
+
+    if (session != null && accountId != null) {
+      final allowSubAddressingRequest = MailboxRightRequest(
+          mailboxId,
+          currentRights,
+          subAddressingAction == MailboxActions.allowSubaddressing
+              ? MailboxSubaddressingAction.allow
+              : MailboxSubaddressingAction.disallow
+      );
+
+      consumeState(_subAddressingInteractor.execute(
+        session,
+        accountId,
+        allowSubAddressingRequest,
+      ));
+    } else {
+      handleSubAddressingFailure(
+        SubaddressingFailure.withException(NullSessionOrAccountIdException()),
+      );
+    }
+
+    popBack();
   }
 
   void _renameMailboxAction(PresentationMailbox presentationMailbox, MailboxName newMailboxName) {
