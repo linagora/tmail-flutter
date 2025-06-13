@@ -16,7 +16,7 @@ mixin PopupContextMenuActionMixin {
     BuildContext context,
     List<Widget> actionTiles,
   ) async {
-    await (CupertinoActionSheetBuilder(context)
+    return await (CupertinoActionSheetBuilder(context)
           ..addTiles(actionTiles)
           ..addCancelButton(buildCancelButton(context)))
         .show();
@@ -31,7 +31,7 @@ mixin PopupContextMenuActionMixin {
     if (PlatformInfo.isWeb) {
       getBinding<MailboxDashBoardController>()?.isContextMenuOpened.value = true;
     }
-    await showModalBottomSheet(
+    return await showModalBottomSheet(
       context: context,
       showDragHandle: true,
       useSafeArea: true,
@@ -69,7 +69,10 @@ mixin PopupContextMenuActionMixin {
     RelativeRect? position,
     List<PopupMenuEntry> popupMenuItems,
   ) async {
-    await showMenu(
+    if (PlatformInfo.isWeb) {
+      getBinding<MailboxDashBoardController>()?.isPopupMenuOpened.value = true;
+    }
+    return await showMenu(
       context: context,
       position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
       color: Colors.white,
@@ -81,7 +84,11 @@ mixin PopupContextMenuActionMixin {
       ),
       constraints: const BoxConstraints(maxWidth: 300, minWidth: 178),
       items: popupMenuItems,
-    );
+    ).whenComplete(() {
+      if (PlatformInfo.isWeb) {
+        getBinding<MailboxDashBoardController>()?.isPopupMenuOpened.value = false;
+      }
+    });
   }
 
   Widget buildCancelButton(BuildContext context) {
