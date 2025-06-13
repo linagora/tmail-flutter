@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -34,15 +33,11 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
     final threadIdsEmailCreated = action
       .emailChangeResponse
       .created
-      ?.map((e) => e.threadId)
-      .whereNotNull()
-      .toList() ?? [];
+      ?.listThreadIds ?? [];
     final threadIdsEmailUpdated = action
       .emailChangeResponse
       .updated
-      ?.map((e) => e.threadId)
-      .whereNotNull()
-      .toList() ?? [];
+      ?.listThreadIds ?? [];
     final updatedThreadIds = threadIdsEmailCreated + threadIdsEmailUpdated;
     final destroyedEmailIds = action.emailChangeResponse.destroyed ?? [];
 
