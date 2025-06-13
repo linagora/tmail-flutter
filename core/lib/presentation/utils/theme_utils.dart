@@ -261,6 +261,15 @@ class ThemeUtils {
     color: AppColor.textPrimary,
   );
 
+  static const TextStyle textStyleM3BodyMedium3 = TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w400,
+    letterSpacing: 0.25,
+    fontSize: 14,
+    height: 20 / 14,
+    color: AppColor.m3SurfaceBackground,
+  );
+
   static TextStyle textStyleAppShortcut() => const TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: FontWeight.normal,

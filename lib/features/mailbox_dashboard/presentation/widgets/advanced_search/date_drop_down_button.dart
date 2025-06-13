@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -6,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 
 class DateDropDownButton extends StatelessWidget {
 
@@ -37,22 +37,20 @@ class DateDropDownButton extends StatelessWidget {
           customButton: Container(
             height: 44,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
-                width: 0.5,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
               ),
-              color: AppColor.colorInputBackgroundCreateMailbox
+              border: Border.all(
+                color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
+                width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              ),
+              color: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
             ),
-            padding: const EdgeInsets.only(left: 12, right: 10),
+            padding: const EdgeInsetsDirectional.only(start: 12, end: 8),
             child: Row(children: [
               Expanded(child: Text(
                 receiveTimeSelected?.getTitle(context, startDate: startDate, endDate: endDate) ?? '',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black
-                ),
+                style: AdvancedSearchInputFormStyle.inputTextStyle,
                 maxLines: 1,
                 softWrap: CommonTextStyle.defaultSoftWrap,
                 overflow: CommonTextStyle.defaultTextOverFlow,
@@ -67,13 +65,17 @@ class DateDropDownButton extends StatelessWidget {
           },
           buttonStyleData: ButtonStyleData(
             height: 44,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsetsDirectional.only(start: 12, end: 8),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
+              ),
               border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
-                width: 1),
-              color: AppColor.colorInputBackgroundCreateMailbox)
+                color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
+                width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              ),
+              color: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
+            )
           ),
           dropdownStyleData: DropdownStyleData(
             maxHeight: 200,

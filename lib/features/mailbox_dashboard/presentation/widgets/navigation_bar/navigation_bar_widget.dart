@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -61,7 +63,10 @@ class NavigationBarWidget extends StatelessWidget {
             return Row(
               children: [
                 SizedBox(
-                  width: constraint.maxWidth / 2,
+                  width: min(
+                    max(constraint.maxWidth / 2, 576),
+                    constraint.maxWidth,
+                  ),
                   height: 52,
                   child: searchForm
                 ),

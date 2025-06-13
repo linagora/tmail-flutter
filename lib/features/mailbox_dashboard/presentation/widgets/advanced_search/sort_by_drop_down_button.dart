@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -6,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/sort_by_drop_down_style.dart';
 
 typedef OnSortOrderSelected = void Function(EmailSortOrderType?);
@@ -63,12 +63,14 @@ class SortByDropDownButton extends StatelessWidget {
           customButton: Container(
             height: SortByDropdownStyle.height,
             decoration: BoxDecoration(
-              borderRadius: SortByDropdownStyle.buttonBorderRadius,
-              border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
-                width: SortByDropdownStyle.buttonBorderWidth,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
               ),
-              color: AppColor.colorInputBackgroundCreateMailbox
+              border: Border.all(
+                color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
+                width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              ),
+              color: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
             ),
             padding: SortByDropdownStyle.buttonPadding,
             child: Row(
@@ -76,7 +78,7 @@ class SortByDropDownButton extends StatelessWidget {
                 Expanded(
                   child: Text(
                     sortOrderSelected?.getTitle(context) ?? '',
-                    style: sortOrderSelected?.getTextStyle(isInDropdown: false),
+                    style: AdvancedSearchInputFormStyle.inputTextStyle,
                     maxLines: 1,
                     softWrap: CommonTextStyle.defaultSoftWrap,
                     overflow: CommonTextStyle.defaultTextOverFlow,
@@ -91,12 +93,14 @@ class SortByDropDownButton extends StatelessWidget {
             height: SortByDropdownStyle.height,
             padding: SortByDropdownStyle.buttonPadding,
             decoration: BoxDecoration(
-              borderRadius: SortByDropdownStyle.buttonBorderRadius,
-              border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
-                width: SortByDropdownStyle.buttonBorderWidth,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
               ),
-              color: AppColor.colorInputBackgroundCreateMailbox
+              border: Border.all(
+                color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
+                width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              ),
+              color: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
             )
           ),
           dropdownStyleData: DropdownStyleData(
