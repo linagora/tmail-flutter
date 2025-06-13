@@ -8,6 +8,7 @@ extension VerifyDisplayOverlayViewOnIframeExtension
         isLocalFileDraggableAppActive ||
         isAppGridDialogDisplayed.isTrue ||
         isDrawerOpened.isTrue ||
-        isContextMenuOpened.isTrue;
+        isContextMenuOpened.isTrue ||
+        isPopupMenuOpened.isTrue;
   }
 }
