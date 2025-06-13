@@ -15,7 +15,6 @@ import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
@@ -43,7 +42,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
-class ManageAccountDashBoardController extends ReloadableController with UserSettingPopupMenuMixin {
+class ManageAccountDashBoardController extends ReloadableController {
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -378,21 +377,6 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
     }
 
     return false;
-  }
-
-  void handleClickAvatarAction(BuildContext context, RelativeRect position) {
-    openPopupMenuAction(
-      context,
-      position,
-      popupMenuUserSettingActionTile(
-        context,
-        getOwnEmailAddress(),
-        onLogoutAction: () {
-          popBack();
-          logout(context, sessionCurrent, accountId.value);
-        }
-      )
-    );
   }
 
   int get minInputLengthAutocomplete {

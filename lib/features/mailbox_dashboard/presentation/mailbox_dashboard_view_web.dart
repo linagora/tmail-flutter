@@ -17,8 +17,10 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_drawer_changed_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -66,17 +68,21 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       return NavigationBarWidget(
                         imagePaths: controller.imagePaths,
                         accountId: accountId,
-                        avatarUserName: controller.getOwnEmailAddress().firstCharacterToUpperCase,
+                        ownEmailAddress: controller.getOwnEmailAddress(),
                         contactSupportCapability: accountId != null
                           ? controller.sessionCurrent?.getContactSupportCapability(accountId)
                           : null,
                         searchForm: SearchInputFormWidget(),
                         appGridController: controller.appGridDashboardController,
+                        settingActionTypes: ProfileSettingActionType.values,
                         onTapApplicationLogoAction: controller.redirectToInboxAction,
-                        onTapAvatarAction: (position) =>
-                            controller.handleClickAvatarAction(context, position),
                         onTapContactSupportAction: (contactSupport) =>
                             controller.onGetHelpOrReportBug(contactSupport),
+                        onProfileSettingActionTypeClick: (actionType) =>
+                          controller.handleProfileSettingActionTypeClick(
+                            context: context,
+                            actionType: actionType,
+                          ),
                       );
                     }),
                     Expanded(child: Row(children: [
