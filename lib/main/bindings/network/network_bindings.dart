@@ -5,7 +5,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
@@ -16,7 +15,7 @@ import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/manager/token_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/dns_service.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -78,7 +77,7 @@ class NetworkBindings extends Bindings {
     Get.put(IOSSharingManager(
       Get.find<KeychainSharingManager>(),
       Get.find<StateCacheManager>(),
-      Get.find<TokenOidcCacheManager>(),
+      Get.find<TokenCacheManager>(),
       Get.find<AuthenticationInfoCacheManager>(),
       Get.find<OidcConfigurationCacheManager>(),
       Get.find<OIDCHttpClient>(),
@@ -92,15 +91,12 @@ class NetworkBindings extends Bindings {
     Get.put(AuthorizationInterceptors(
         Get.find<Dio>(),
         Get.find<AuthenticationClientBase>(),
-        Get.find<TokenOidcCacheManager>(),
+        Get.find<TokenCacheManager>(),
         Get.find<AccountCacheManager>(),
         Get.find<IOSSharingManager>(),
     ));
     Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
     Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
-    if (kDebugMode) {
-      Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
-    }
   }
 
   void _bindingApi() {

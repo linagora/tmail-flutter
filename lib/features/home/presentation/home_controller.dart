@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -56,6 +57,7 @@ class HomeController extends ReloadableController {
 
   @override
   void onInit() {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::onInit: OPEN APP');
     if (PlatformInfo.isMobile) {
       _initFlutterDownloader();
       _registerReceivingFileSharing();
@@ -103,7 +105,7 @@ class HomeController extends ReloadableController {
   }
 
   Future<void> _cleanupCache() async {
-    await HiveCacheConfig.instance.onUpgradeDatabase(cachingManager);
+    await HiveCacheConfig.instance.onUpgradeDatabase();
 
     await Future.wait([
       _cleanupEmailCacheInteractor.execute(EmailCleanupRule(Duration.defaultCacheInternal)),
@@ -194,7 +196,7 @@ class HomeController extends ReloadableController {
         ),
       );
     } catch (e) {
-      logError('HomeController::_getSessionActionToLogOut:Exception = $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getSessionActionToLogOut:Exception = $e');
       _handleGetSessionFailureToLogOut(authenticationViewStateSuccess);
     }
   }

@@ -695,7 +695,7 @@ class MailboxDashBoardController extends ReloadableController
     });
 
     _refreshActionEventController.stream
-      .debounceTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
+      .debounceTime(const Duration(milliseconds: FcmUtils.durationForegroundMessageComing))
       .listen(_handleRefreshActionWhenBackToApp);
 
     _registerLocalNotificationStreamListener();

@@ -74,7 +74,7 @@ class OpenedEmailCacheManager {
     EmailId emailId
   ) async {
     final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
-    final detailedEmailCache = await _cacheClient.getItem(keyCache, needToReopen: true);
+    final detailedEmailCache = await _cacheClient.getItem(keyCache);
     if (detailedEmailCache != null) {
       return detailedEmailCache;
     } else {

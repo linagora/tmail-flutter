@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -51,7 +52,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       bool getLatestChanges = true,
     }
   ) async* {
-    log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail(): filter = ${emailFilter?.mailboxId}');
     final localEmailResponse = await Future.wait([
       mapDataSource[DataSourceType.local]!.getAllEmailCache(
         accountId,
@@ -65,6 +66,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail(): local: ${localEmailResponse.emailList?.length} - local state ${localEmailResponse.state}');
     EmailsResponse? networkEmailResponse;
 
     if (!localEmailResponse.hasEmails()
@@ -102,7 +104,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
 
     if (localEmailResponse.hasState()) {
-      log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} local has state: ${localEmailResponse.state}');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail(): filter = ${emailFilter?.mailboxId} local has state: ${localEmailResponse.state}');
       if (getLatestChanges) {
         await _synchronizeCacheWithChanges(
           session,
@@ -114,7 +116,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       }
     } else {
       if (networkEmailResponse != null) {
-        log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} no local state -> update from network: ${networkEmailResponse.state}');
+        log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail(): filter = ${emailFilter?.mailboxId} no local state -> update from network: ${networkEmailResponse.state}');
         if (networkEmailResponse.state != null) {
           await _updateState(accountId, session.username, networkEmailResponse.state!);
         }
@@ -176,32 +178,42 @@ class ThreadRepositoryImpl extends ThreadRepository {
     Properties? updatedProperties,
     List<Email>? emailCacheList
   }) async {
-    if (emailUpdated != null && emailUpdated.isNotEmpty) {
-      if (updatedProperties == null) {
-        return null;
-      }
-      final newEmailUpdated = emailUpdated
-        .map((updatedEmail) => _combineUpdatedWithEmailInCache(updatedEmail, emailCacheList))
-        .where((tuple) => tuple.value2 != null)
-        .map((tuple) => tuple.value2!.combineEmail(tuple.value1, updatedProperties))
+    if (emailUpdated == null || emailUpdated.isEmpty) return emailUpdated;
+
+    if (updatedProperties == null) return null;
+
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_combineEmailCache(): updatedProperties = $updatedProperties');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_combineEmailCache(): propertiesDefault = ${ThreadConstants.propertiesDefault}');
+    if (updatedProperties.value.containsAll(ThreadConstants.propertiesDefault.value)) {
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_combineEmailCache(): Update use properties default');
+      return emailUpdated;
+    }
+
+    final combinedEmails = emailUpdated
+        .map((email) => _combineUpdatedWithEmailInCache(email, emailCacheList))
+        .where((record) => record.oldEmail != null)
+        .map((record) => record.oldEmail!.combineEmail(
+          record.updatedEmail,
+          updatedProperties,
+        ))
         .toList();
 
-      return newEmailUpdated;
-    }
-    return emailUpdated;
+    return combinedEmails;
   }
 
-  dartz.Tuple2<Email, Email?> _combineUpdatedWithEmailInCache(Email updatedEmail, List<Email>? emailCacheList) {
-    final emailOld = updatedEmail.id != null
+  ({Email updatedEmail, Email? oldEmail}) _combineUpdatedWithEmailInCache(
+    Email updatedEmail,
+    List<Email>? emailCacheList,
+  ) {
+    final oldEmail = updatedEmail.id != null
       ? emailCacheList?.findEmailById(updatedEmail.id!)
       : null;
-    if (emailOld != null) {
-      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit');
-      return dartz.Tuple2(updatedEmail, emailOld);
+    if (oldEmail != null) {
+      log('ThredRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit for this email -> ${oldEmail.id} - ${oldEmail.subject} - ${oldEmail.keywords} - ${oldEmail.mailboxIds} - new update in $updatedEmail');
     } else {
-      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache miss');
-      return dartz.Tuple2(updatedEmail, null);
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_combineUpdatedWithEmailInCache(): cache miss for emailId ${updatedEmail.id}');
     }
+    return (oldEmail: oldEmail, updatedEmail: updatedEmail);
   }
 
   Future<void> _updateEmailCache(
@@ -220,7 +232,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   Future<void> _updateState(AccountId accountId, UserName userName, State newState) async {
-    log('ThreadRepositoryImpl::_updateState(): [MAIL] $newState');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_updateState(): [MAIL] $newState');
     await stateDataSource.saveState(accountId, userName, newState.toStateCache(StateType.email));
   }
 
@@ -236,7 +248,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       Properties? propertiesUpdated,
     }
   ) async* {
-    log('ThreadRepositoryImpl::refreshChanges(): $currentState');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::refreshChanges(): $currentState');
     await _synchronizeCacheWithChanges(
       session,
       accountId,
@@ -376,7 +388,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     State? sinceState = currentState;
 
     while(hasMoreChanges && sinceState != null) {
-      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): sinceState = $sinceState');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_synchronizeCacheWithChanges(): sinceState = $sinceState');
       final changesResponse = await mapDataSource[DataSourceType.network]!.getChanges(
         session,
         accountId,
@@ -385,6 +397,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         propertiesUpdated: propertiesUpdated);
 
       hasMoreChanges = changesResponse.hasMoreChanges;
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_synchronizeCacheWithChanges(): hasMoreChanges = $hasMoreChanges - new state = ${changesResponse.newStateChanges}');
       sinceState = changesResponse.newStateChanges;
 
       if (emailChangeResponse != null) {
@@ -400,7 +413,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           updatedProperties: emailChangeResponse.updatedProperties,
           emailCacheList: localEmailList);
 
-      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): [Changes]: '
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_synchronizeCacheWithChanges(): from state $currentState [Changes]: '
           'created = ${emailChangeResponse.created?.length} - '
           'updated = ${newEmailUpdated?.length} - '
           'destroyed = ${emailChangeResponse.destroyed?.length}');

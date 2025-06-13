@@ -21,6 +21,8 @@ class CachingConstants {
   static const int SESSION_HIVE_CACHE_ID = 19;
   static const int OIDC_CONFIGURATION_CACHE_ID = 20;
 
+  static const String databaseName = 'TwakeMail';
+
   static const String fcmCacheBoxName = 'fcm_cache_box';
   static const String newEmailCacheBoxName = 'new_email_cache_box';
   static const String openedEmailCacheBoxName = 'opened_email_cache_box';

@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_account_d
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/manager/token_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/repository/account_repository_impl.dart';
@@ -75,7 +75,7 @@ class CredentialBindings extends InteractorsBindings {
     Get.put(AuthenticationOIDCDataSourceImpl(
       Get.find<OIDCHttpClient>(),
       Get.find<AuthenticationClientBase>(),
-      Get.find<TokenOidcCacheManager>(),
+      Get.find<TokenCacheManager>(),
       Get.find<OidcConfigurationCacheManager>(),
       Get.find<RemoteExceptionThrower>(),
       Get.find<CacheExceptionThrower>(),

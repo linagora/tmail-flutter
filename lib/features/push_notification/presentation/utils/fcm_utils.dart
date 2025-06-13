@@ -31,7 +31,8 @@ class FcmUtils {
     TypeName.mailboxType,
     TypeName.emailDelivery
   ];
-  static const int durationMessageComing = 2000;
+  static const int durationBackgroundMessageComing = 30000;
+  static const int durationForegroundMessageComing = 2000;
   static const int durationRefreshToken = 2000;
 
   StateChange? convertFirebaseDataMessageToStateChange(Map<String, dynamic> dataMessage) {

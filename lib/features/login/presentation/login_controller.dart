@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:core/presentation/extensions/url_extension.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -124,6 +125,7 @@ class LoginController extends ReloadableController {
   @override
   void onReady() {
     super.onReady();
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::onReady: OPEN LOGIN FORM');
     final arguments = Get.arguments;
     if (arguments is LoginArguments) {
       if (arguments.loginFormType == LoginFormType.passwordForm) {
@@ -143,7 +145,7 @@ class LoginController extends ReloadableController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    log('LoginController::handleFailureViewState(): $failure');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleFailureViewState(): $failure');
     if (failure is GetAuthenticationInfoFailure) {
       getAuthenticatedAccountAction();
     } else if (failure is CheckOIDCIsAvailableFailure) {
@@ -201,7 +203,7 @@ class LoginController extends ReloadableController {
 
   @override
   void handleUrgentException({Failure? failure, Exception? exception}) {
-    logError('LoginController::handleUrgentException:Exception: $exception | Failure: $failure');
+    logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleUrgentException:Exception: $exception | Failure: $failure');
     if (failure is CheckOIDCIsAvailableFailure) {
       _handleCheckOIDCIsAvailableFailure(failure);
     } else if (failure is GetOIDCConfigurationFromBaseUrlFailure) {
@@ -241,7 +243,7 @@ class LoginController extends ReloadableController {
   }
 
   void _handlePendingDeepLinkDataStream(DeepLinkData? deepLinkData) {
-    log('LoginController::_handlePendingDeepLinkDataStream:DeepLinkData = $deepLinkData');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handlePendingDeepLinkDataStream:DeepLinkData = $deepLinkData');
     _deepLinksManager?.handleDeepLinksWhenAppRunning(
       deepLinkData: deepLinkData,
       onSuccessCallback: (deepLinkData) {
@@ -360,7 +362,7 @@ class LoginController extends ReloadableController {
 
   void handleLoginPressed(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
-    log('LoginController::handleLoginPressed:_currentBaseUrl: $_currentBaseUrl | _username: $_username | _password: $_password');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleLoginPressed:_currentBaseUrl: $_currentBaseUrl | _username: $_username | _password: $_password');
     if (_currentBaseUrl == null) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundBaseUrl()))));
     } else if (_username == null) {
@@ -470,13 +472,13 @@ class LoginController extends ReloadableController {
 
   void selectBaseUrlFromSuggestion(String url) {
     final validUrl = url.isValid() ? url.removePrefix() : url;
-    log('LoginController::selectBaseUrlFromSuggestion:validUrl: $validUrl');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::selectBaseUrlFromSuggestion:validUrl: $validUrl');
     urlInputController.text = validUrl;
     onBaseUrlChange(validUrl);
   }
 
   void _storeBaseUrlToCache(Uri uri) {
-    log('LoginController::_storeBaseUrlToCache:uri: $uri');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_storeBaseUrlToCache:uri: $uri');
     _saveLoginUrlOnMobileInteractor.execute(RecentLoginUrl.now(uri.toString()));
   }
 
@@ -492,7 +494,7 @@ class LoginController extends ReloadableController {
   }
 
   void selectUsernameFromSuggestion(RecentLoginUsername recentLoginUsername) {
-    log('LoginController::selectUsernameFromSuggestion():recentLoginUsername: $recentLoginUsername');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::selectUsernameFromSuggestion():recentLoginUsername: $recentLoginUsername');
     usernameInputController.text = recentLoginUsername.username;
     _username = UserName(recentLoginUsername.username);
 
@@ -502,7 +504,7 @@ class LoginController extends ReloadableController {
   }
 
   void _storeUsernameToCache(String userName) {
-    log('LoginController::_storeUsername():userName: $userName');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_storeUsername():userName: $userName');
     _saveLoginUsernameOnMobileInteractor.execute(RecentLoginUsername.now(userName));
   }
 
@@ -522,7 +524,7 @@ class LoginController extends ReloadableController {
     : _baseUri;
 
   void invokeDNSLookupToGetJmapUrl() {
-    log('LoginController::invokeDNSLookupToGetJmapUrl:_username $_username');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::invokeDNSLookupToGetJmapUrl:_username $_username');
     FocusManager.instance.primaryFocus?.unfocus();
 
     if (_username == null) {
@@ -596,7 +598,7 @@ class LoginController extends ReloadableController {
       _baseUri = null;
     } else {
       if (value.isValid()) {
-        log('LoginController::onBaseUrlChange:value: $value');
+        log('$runtimeType-in isolate: ${Isolate.current.hashCode}::onBaseUrlChange:value: $value');
         urlInputController.text = value.removePrefix();
       }
       _baseUri = Uri.tryParse(value.formatURLValid());

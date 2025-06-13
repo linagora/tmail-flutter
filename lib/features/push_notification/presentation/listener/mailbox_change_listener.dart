@@ -1,4 +1,6 @@
 
+import 'dart:isolate';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -23,7 +25,7 @@ class MailboxChangeListener extends ChangeListener {
       _dashBoardController = getBinding<MailboxDashBoardController>();
       _storeMailboxStateToRefreshInteractor = getBinding<StoreMailboxStateToRefreshInteractor>();
     } catch (e) {
-      logError('MailboxChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
   }
 
@@ -33,7 +35,9 @@ class MailboxChangeListener extends ChangeListener {
 
   @override
   void dispatchActions(List<Action> actions) {
-    log('MailboxChangeListener::dispatchActions():actions: $actions');
+    for (var action in actions) {
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::dispatchActions():action: ${action.runtimeType}');
+    }
     for (var action in actions) {
       if (action is SynchronizeMailboxOnForegroundAction) {
         _synchronizeMailboxOnForegroundAction(action.newState);
@@ -45,23 +49,23 @@ class MailboxChangeListener extends ChangeListener {
 
   @override
   void handleFailureViewState(Failure failure) {
-    log('MailboxChangeListener::_handleFailureViewState(): $failure');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleFailureViewState(): $failure');
   }
 
   @override
   void handleSuccessViewState(Success success) {
-    log('MailboxChangeListener::_handleSuccessViewState(): $success');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleSuccessViewState(): ${success.runtimeType}');
   }
 
   void _synchronizeMailboxOnForegroundAction(jmap.State newState) {
-    log('MailboxChangeListener::_synchronizeMailboxOnForegroundAction():newState: $newState');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_synchronizeMailboxOnForegroundAction():newState: $newState');
     if (_dashBoardController != null) {
       _dashBoardController!.dispatchMailboxUIAction(RefreshChangeMailboxAction(newState));
     }
   }
 
   void _handleStoreMailboxStateToRefreshAction(AccountId accountId, UserName userName, jmap.State newState) {
-    log('MailboxChangeListener::_handleStoreMailboxStateToRefreshAction():newState: $newState');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleStoreMailboxStateToRefreshAction():newState: $newState');
     if (_storeMailboxStateToRefreshInteractor != null) {
       consumeState(_storeMailboxStateToRefreshInteractor!.execute(accountId, userName, newState));
     }

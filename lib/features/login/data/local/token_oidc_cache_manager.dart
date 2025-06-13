@@ -1,19 +1,23 @@
+import 'dart:isolate';
+
 import 'package:core/utils/app_logger.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_cache_extension.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
+import 'package:tmail_ui_user/features/login/data/manager/token_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 
-class TokenOidcCacheManager {
+class TokenOidcCacheManager extends TokenCacheManager {
   final TokenOidcCacheClient _tokenOidcCacheClient;
 
   TokenOidcCacheManager(this._tokenOidcCacheClient);
 
+  @override
   Future<TokenOIDC> getTokenOidc(String tokenIdHash) async {
-    log('TokenOidcCacheManager::getTokenOidc(): tokenIdHash: $tokenIdHash');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getTokenOidc(): tokenIdHash: $tokenIdHash');
     final tokenCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
-    log('TokenOidcCacheManager::getTokenOidc(): tokenCache: $tokenCache');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getTokenOidc(): tokenCache: $tokenCache');
     if (tokenCache == null) {
       throw NotFoundStoredTokenException();
     } else {
@@ -21,19 +25,21 @@ class TokenOidcCacheManager {
     }
   }
 
+  @override
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
-    log('TokenOidcCacheManager::persistOneTokenOidc(): $tokenOIDC');
-    await _tokenOidcCacheClient.clearAllData();
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): token: ${tokenOIDC.token}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::persistOneTokenOidc(): $tokenOIDC');
+    await deleteTokenOidc();
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::persistOneTokenOidc(): token: ${tokenOIDC.token}');
     await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
-    log('TokenOidcCacheManager::persistOneTokenOidc(): done');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::persistOneTokenOidc(): done');
   }
 
+  @override
   Future<void> deleteTokenOidc() async {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::deleteTokenOidc:');
     await _tokenOidcCacheClient.clearAllData();
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::deleteTokenOidc: DONE');
   }
-
-  Future<void> closeTokenOIDCHiveCacheBox() => _tokenOidcCacheClient.closeBox();
 }

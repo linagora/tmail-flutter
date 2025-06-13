@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:core/presentation/extensions/map_extensions.dart';
@@ -15,11 +16,14 @@ abstract class HiveCacheClient<T> {
   Future<Uint8List?> _getEncryptionKey() => HiveCacheConfig.instance.getEncryptionKey();
 
   Future<Box<T>> openBox() async {
+    Box<T> box;
     if (Hive.isBoxOpen(tableName)) {
-      return Hive.box<T>(tableName);
+      box = Hive.box<T>(tableName);
     } else {
-      return Hive.openBox<T>(tableName);
+      box = await Hive.openBox<T>(tableName);
     }
+    log('$runtimeType::openBox: Box ${box.name} is open in isolate: ${Isolate.current.hashCode}');
+    return box;
   }
 
   Future<Box<T>> openBoxEncryption() async {
@@ -52,12 +56,8 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<T?> getItem(String key, {bool needToReopen = false}) {
-    log('$runtimeType::getItem() key: $encryption - needToReopen: $needToReopen');
+  Future<T?> getItem(String key) {
     return Future.sync(() async {
-      if (needToReopen) {
-        await closeBox();
-      }
       final boxItem = encryption
           ? await openBoxEncryption()
           : await openBox();
@@ -118,6 +118,7 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> updateMultipleItem(Map<String, T> mapObject) {
+    log('$runtimeType::updateMultipleItem:encryption: $encryption');
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.putAll(mapObject);
@@ -127,6 +128,7 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> deleteItem(String key) {
+    log('$runtimeType::deleteItem:encryption: $encryption - key = $key');
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.delete(key);

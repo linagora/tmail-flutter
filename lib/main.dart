@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/config/isar/isar_database_config.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -33,6 +34,8 @@ Future<void> runTmail() async {
   await Future.wait([
      MainBindings().dependencies(),
      HiveCacheConfig.instance.setUp(),
+     if (PlatformInfo.isAndroid)
+      IsarDatabaseConfig().onInitializeDatabase(),
      Executor().warmUp(log: BuildUtils.isDebugMode),
      AppUtils.loadEnvFile(),
      if (PlatformInfo.isWeb)

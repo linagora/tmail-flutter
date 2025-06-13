@@ -1,3 +1,6 @@
+import 'dart:isolate';
+
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -33,10 +36,15 @@ class EmailCacheManager {
   }) async {
     final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
     final emailCacheList = await _emailCacheClient.getListByNestedKey(nestedKey);
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail():: email cache length ${emailCacheList.length} ================');
+    for (final emailCache in emailCacheList) {
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail():ID = ${emailCache.id}, Subject =${emailCache.subject}, Keywords = ${emailCache.keywords}, MailboxIds = ${emailCache.mailboxIds}');
+    }
     final emailList = emailCacheList
       .toEmailList()
       .where((email) => _filterEmailByMailbox(email, filterOption, inMailboxId))
       .toList();
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail(): email in mailbox length ${emailList.length} ================');
 
     if (sort != null) {
       for (var comparator in sort) {
@@ -51,11 +59,10 @@ class EmailCacheManager {
   }
 
   bool _filterEmailByMailbox(Email email, FilterMessageOption option, MailboxId? inMailboxId) {
-    if (inMailboxId != null) {
-      return email.belongTo(inMailboxId) && option.filterEmail(email);
-    } else {
-      return option.filterEmail(email);
-    }
+    bool isBelongToMailbox = inMailboxId != null
+        ? email.belongTo(inMailboxId) && option.filterEmail(email)
+        : option.filterEmail(email);
+    return isBelongToMailbox;
   }
 
   Future<void> update(
@@ -65,6 +72,7 @@ class EmailCacheManager {
     List<Email>? created,
     List<EmailId>? destroyed
   }) async {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::update() updated: ${updated?.length} created: ${created?.length} destroyed: ${destroyed?.length}');
     if (created?.isNotEmpty == true) {
       final createdCacheEmails = created!.toMapCache(accountId, userName);
       await _emailCacheClient.insertMultipleItem(createdCacheEmails);
@@ -90,10 +98,6 @@ class EmailCacheManager {
       await _emailCacheClient.deleteMultipleItem(listEmailIdCacheExpire);
   }
 
-  Future<void> clearAll() async {
-    return await _emailCacheClient.clearAllData();
-  }
-
   Future<void> storeEmail(AccountId accountId, UserName userName, EmailCache emailCache) {
     final keyCache = TupleKey(emailCache.id, accountId.asString, userName.value).encodeKey;
     return _emailCacheClient.insertItem(keyCache, emailCache);
@@ -111,7 +115,7 @@ class EmailCacheManager {
 
   Future<EmailCache> getStoredEmail(AccountId accountId, UserName userName, EmailId emailId) async {
     final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
-    final emailCache = await _emailCacheClient.getItem(keyCache, needToReopen: true);
+    final emailCache = await _emailCacheClient.getItem(keyCache);
     if (emailCache != null) {
       return emailCache;
     } else {

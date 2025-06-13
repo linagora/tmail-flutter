@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
@@ -12,7 +13,7 @@ import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/manager/token_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
@@ -22,7 +23,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
-  final TokenOidcCacheManager _tokenOidcCacheManager;
+  final TokenCacheManager _tokenCacheManager;
   final AccountCacheManager _accountCacheManager;
   final IOSSharingManager _iosSharingManager;
 
@@ -34,7 +35,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   AuthorizationInterceptors(
     this._dio,
     this._authenticationClient,
-    this._tokenOidcCacheManager,
+    this._tokenCacheManager,
     this._accountCacheManager,
     this._iosSharingManager,
   );
@@ -48,11 +49,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     _token = newToken;
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
-    log('AuthorizationInterceptors::setTokenAndAuthorityOidc: INITIAL_TOKEN = ${newToken?.token} | EXPIRED_TIME = ${newToken?.expiredTime}');
+    log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::setTokenAndAuthorityOidc: INITIAL_TOKEN = ${newToken?.token} | EXPIRED_TIME = ${newToken?.expiredTime}');
   }
 
   void _updateNewToken(TokenOIDC newToken) {
-    log('AuthorizationInterceptors::_updateNewToken: NEW_TOKEN = ${newToken.token} | EXPIRED_TIME = ${newToken.expiredTime}');
+    log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::_updateNewToken: NEW_TOKEN = ${newToken.token} | EXPIRED_TIME = ${newToken.expiredTime}');
     _token = newToken;
   }
 
@@ -76,13 +77,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       case AuthenticationType.none:
         break;
     }
-    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | DATA = ${options.data}');
+    log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::onRequest(): URL = ${options.uri} | DATA = ${options.data}');
     super.onRequest(options, handler);
   }
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
+    logError('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::onError(): DIO_ERROR = $err');
     try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
@@ -92,13 +93,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         responseStatusCode: err.response?.statusCode,
         tokenOIDC: _token
       )) {
-        log('AuthorizationInterceptors::onError: Perform get New Token');
+        log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::onError: Perform get New Token');
         final newTokenOidc = PlatformInfo.isIOS
           ? await _getNewTokenForIOSPlatform()
           : await _getNewTokenForOtherPlatform();
 
         if (newTokenOidc.token == _token?.token) {
-          log('AuthorizationInterceptors::onError: Token duplicated');
+          log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::onError: Token duplicated');
           return super.onError(err, handler);
         }
         _updateNewToken(newTokenOidc);
@@ -114,7 +115,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
         tokenOIDC: _token
       )) {
-        log('AuthorizationInterceptors::onError: Request using old token');
+        log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::onError: Request using old token');
         isRetryRequest = true;
       } else {
         return super.onError(err, handler);
@@ -122,7 +123,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
       if (isRetryRequest) {
         if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
-          log('AuthorizationInterceptors::onError: Retry upload request with TokenId = ${_token?.tokenIdHash}');
+          log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::onError: Retry upload request with TokenId = ${_token?.tokenIdHash}');
           final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
@@ -141,7 +142,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
           return handler.resolve(response);
         } else {
-          log('AuthorizationInterceptors::onError: Retry request with TokenId = ${_token?.tokenIdHash}');
+          log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::onError: Retry request with TokenId = ${_token?.tokenIdHash}');
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
 
           final response = await _dio.fetch(requestOptions);
@@ -151,7 +152,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         return super.onError(err, handler);
       }
     } catch (e) {
-      logError('AuthorizationInterceptors::onError:Exception: $e');
+      logError('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::onError:Exception: $e');
       return super.onError(err.copyWith(error: e), handler);
     }
   }
@@ -165,7 +166,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         return mapUploadExtra[FileUploader.streamDataExtraKey];
       }
     } catch(e) {
-      log('AuthorizationInterceptors::_getDataUploadRequest: Exception = $e');
+      log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::_getDataUploadRequest: Exception = $e');
       return null;
     }
   }
@@ -204,11 +205,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   String _getTokenAsBearerHeader(String token) => 'Bearer $token';
 
   Future<PersonalAccount> _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
+    log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::_updateCurrentAccount: START ========================================');
     final currentAccount = await _accountCacheManager.getCurrentAccount();
 
     await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
 
-    await _tokenOidcCacheManager.persistOneTokenOidc(tokenOIDC);
+    await _tokenCacheManager.persistOneTokenOidc(tokenOIDC);
 
     final personalAccount = PersonalAccount(
       tokenOIDC.tokenIdHash,
@@ -219,11 +221,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       userName: currentAccount.userName
     );
     await _accountCacheManager.setCurrentAccount(personalAccount);
-
+    log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::_updateCurrentAccount: END =========================================');
     return personalAccount;
   }
 
   Future<TokenOIDC?> _getTokenInKeychain(TokenOIDC currentTokenOidc) async {
+    log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::_getTokenInKeychain:');
     final currentAccount = await _accountCacheManager.getCurrentAccount();
     if (currentAccount.accountId == null) {
       return null;
@@ -243,7 +246,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Future<TokenOIDC> _invokeRefreshTokenFromServer() {
-    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:');
+    log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::_invokeRefreshTokenFromServer:');
     return _authenticationClient.refreshingTokensOIDC(
       _configOIDC!.clientId,
       _configOIDC!.redirectUrl,
@@ -255,7 +258,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   Future<TokenOIDC> _getNewTokenForIOSPlatform() async {
     final tokenInKeychain = await _getTokenInKeychain(_token!);
-    log('AuthorizationInterceptors::_handleRefreshTokenOnIOSPlatform: KeychainTokenId = ${tokenInKeychain?.tokenIdHash} | isTokenExpired = ${_isTokenExpired(tokenInKeychain)}');
+    log('AuthorizationInterceptors-in isolate: ${Isolate.current.hashCode}::_handleRefreshTokenOnIOSPlatform: KeychainTokenId = ${tokenInKeychain?.tokenIdHash} | isTokenExpired = ${_isTokenExpired(tokenInKeychain)}');
     if (tokenInKeychain == null || _isTokenExpired(tokenInKeychain)) {
       return _invokeRefreshTokenFromServer();
     } else {

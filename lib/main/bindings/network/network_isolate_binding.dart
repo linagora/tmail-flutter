@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/manager/token_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
@@ -54,7 +54,7 @@ class NetworkIsolateBindings extends Bindings {
     Get.put(AuthorizationInterceptors(
       Get.find<Dio>(tag: BindingTag.isolateTag),
       Get.find<AuthenticationClientBase>(tag: BindingTag.isolateTag),
-      Get.find<TokenOidcCacheManager>(tag: BindingTag.isolateTag),
+      Get.find<TokenCacheManager>(tag: BindingTag.isolateTag),
       Get.find<AccountCacheManager>(tag: BindingTag.isolateTag),
       Get.find<IOSSharingManager>(tag: BindingTag.isolateTag),
     ), tag: BindingTag.isolateTag);
@@ -62,10 +62,6 @@ class NetworkIsolateBindings extends Bindings {
       .add(Get.find<DynamicUrlInterceptors>());
     Get.find<Dio>(tag: BindingTag.isolateTag).interceptors
       .add(Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag));
-    if (BuildUtils.isDebugMode) {
-      Get.find<Dio>(tag: BindingTag.isolateTag).interceptors
-        .add(LogInterceptor(requestBody: true));
-    }
   }
 
   void _bindingApi() {
@@ -115,7 +111,7 @@ class NetworkIsolateBindings extends Bindings {
     Get.put(IOSSharingManager(
       Get.find<KeychainSharingManager>(),
       Get.find<StateCacheManager>(),
-      Get.find<TokenOidcCacheManager>(),
+      Get.find<TokenCacheManager>(),
       Get.find<AuthenticationInfoCacheManager>(),
       Get.find<OidcConfigurationCacheManager>(),
       Get.find<OIDCHttpClient>(tag: BindingTag.isolateTag),

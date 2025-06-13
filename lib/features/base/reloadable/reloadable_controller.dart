@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -30,13 +32,13 @@ abstract class ReloadableController extends BaseController {
   @override
   void handleFailureViewState(Failure failure) {
     if (isNotSignedIn(failure)) {
-      logError('$runtimeType::handleFailureViewState():Failure = $failure');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleFailureViewState():Failure = $failure');
       goToLogin();
     } else if (failure is GetSessionFailure) {
-      logError('$runtimeType::handleFailureViewState():Failure = $failure');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleFailureViewState():Failure = $failure');
       handleGetSessionFailure(failure);
     } else if (failure is UpdateAccountCacheFailure) {
-      logError('$runtimeType::handleFailureViewState():Failure = $failure');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleFailureViewState():Failure = $failure');
       _handleUpdateAccountCacheCompleted(
         session: failure.session,
         apiUrl: failure.apiUrl);
@@ -48,18 +50,18 @@ abstract class ReloadableController extends BaseController {
   @override
   void handleSuccessViewState(Success success) {
     if (success is GetCredentialViewState) {
-      log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleSuccessViewState:Success = ${success.runtimeType}');
       _handleGetCredentialSuccess(success);
     } else if (success is GetStoredTokenOidcSuccess) {
-      log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleSuccessViewState:Success = ${success.runtimeType}');
       _handleGetStoredTokenOidcSuccess(success);
     } else if (success is GetSessionSuccess) {
-      log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleSuccessViewState:Success = ${success.runtimeType}');
       updateAccountCache(
         session: success.session,
         baseUrl: dynamicUrlInterceptors.baseUrl);
     } else if (success is UpdateAccountCacheSuccess) {
-      log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleSuccessViewState:Success = ${success.runtimeType}');
       _handleUpdateAccountCacheCompleted(
         session: success.session,
         apiUrl: success.apiUrl);

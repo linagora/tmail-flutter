@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -16,16 +17,10 @@ import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
-import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
-import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
@@ -43,11 +38,6 @@ class FcmMessageController extends PushBaseController {
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
 
-  AccountCacheManager? _accountCacheManager;
-  TokenOidcCacheManager? _tokenOidcCacheManager;
-  StateCacheManager? _stateCacheManager;
-  AuthenticationInfoCacheManager? _authenticationInfoCacheManager;
-
   FcmMessageController._internal();
 
   static final FcmMessageController _instance = FcmMessageController._internal();
@@ -56,6 +46,7 @@ class FcmMessageController extends PushBaseController {
 
   @override
   void initialize({AccountId? accountId, Session? session}) {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::initialize:');
     super.initialize(accountId: accountId, session: session);
 
     _listenTokenStream();
@@ -65,59 +56,40 @@ class FcmMessageController extends PushBaseController {
   void _listenBackgroundMessageStream() {
     FcmService.instance.backgroundMessageStreamController
       ?.stream
-      .debounceTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
+      .debounceTime(const Duration(milliseconds: FcmUtils.durationBackgroundMessageComing))
       .listen(_handleBackgroundMessageAction);
   }
 
   void _listenTokenStream() {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_listenTokenStream:');
     FcmService.instance.fcmTokenStreamController
       ?.stream
       .debounceTime(const Duration(milliseconds: FcmUtils.durationRefreshToken))
       .listen(FcmTokenController.instance.onFcmTokenChanged);
   }
 
-  void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
-    log('FcmMessageController::_handleBackgroundMessageAction():payloadData: $payloadData');
+  Future<void> _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleBackgroundMessageAction():payloadData: $payloadData');
     final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
     await _initialAppConfig();
     _getAuthenticatedAccount(stateChange: stateChange);
   }
 
   Future<void> _initialAppConfig() async {
-    await Future.wait([
-      MainBindings().dependencies(),
-      HiveCacheConfig.instance.setUp()
-    ]);
-
-    await Future.sync(() {
-      HomeBindings().dependencies();
-      MailboxDashBoardBindings().dependencies();
-      FcmInteractorBindings().dependencies();
-    });
-
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_initialAppConfig:');
+    await HiveCacheConfig.instance.setUp();
+    await Future.sync(MainBindings().dependencies);
+    await HiveCacheConfig.instance.initializeEncryptionKey();
+    await Future.sync(FcmInteractorBindings().dependencies);
     _getInteractorBindings();
-    
-    await Future.wait([
-      if (_accountCacheManager != null)
-        _accountCacheManager!.closeAccountHiveCacheBox(),
-      if (_tokenOidcCacheManager != null)
-        _tokenOidcCacheManager!.closeTokenOIDCHiveCacheBox(),
-      if (_stateCacheManager != null)
-        _stateCacheManager!.closeStateHiveCacheBox(),
-      if (_authenticationInfoCacheManager != null)
-        _authenticationInfoCacheManager!.closeAuthenticationInfoHiveCacheBox(),
-    ]);
   }
 
   void _getInteractorBindings() {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getInteractorBindings:');
     _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
     _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
     _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
     _getSessionInteractor = getBinding<GetSessionInteractor>();
-    _accountCacheManager = getBinding<AccountCacheManager>();
-    _tokenOidcCacheManager = getBinding<TokenOidcCacheManager>();
-    _stateCacheManager = getBinding<StateCacheManager>();
-    _authenticationInfoCacheManager = getBinding<AuthenticationInfoCacheManager>();
 
     FcmTokenController.instance.initialBindingInteractor();
   }
@@ -135,23 +107,15 @@ class FcmMessageController extends PushBaseController {
       newConfig: storedTokenOidcSuccess.oidcConfiguration
     );
 
-    if (PlatformInfo.isAndroid) {
-      _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
-      _getSessionAction(stateChange: storedTokenOidcSuccess.stateChange);
-    } else {
-      _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.personalAccount.apiUrl);
+    final baseUrl = PlatformInfo.isAndroid
+        ? storedTokenOidcSuccess.baseUrl.toString()
+        : storedTokenOidcSuccess.personalAccount.apiUrl;
+    _updateBaseUrlToInterceptor(baseUrl);
 
-      final accountId = storedTokenOidcSuccess.personalAccount.accountId;
-      final username = storedTokenOidcSuccess.personalAccount.userName;
-      final stateChange = storedTokenOidcSuccess.stateChange;
-
-      if (accountId != null && username != null && stateChange != null) {
-        _pushActionFromRemoteMessageBackground(
-          accountId: accountId,
-          userName: username,
-          stateChange: stateChange);
-      }
-    }
+    _handleFcmPushAction(
+      personalAccount: storedTokenOidcSuccess.personalAccount,
+      stateChange: storedTokenOidcSuccess.stateChange,
+    );
   }
 
   void _handleGetAccountByBasicAuthSuccess(GetCredentialViewState credentialViewState) {
@@ -160,26 +124,44 @@ class FcmMessageController extends PushBaseController {
       credentialViewState.userName,
       credentialViewState.password,
     );
+
+    final baseUrl = PlatformInfo.isAndroid
+        ? credentialViewState.baseUrl.toString()
+        : credentialViewState.personalAccount.apiUrl;
+    _updateBaseUrlToInterceptor(baseUrl);
+
+    _handleFcmPushAction(
+      personalAccount: credentialViewState.personalAccount,
+      stateChange: credentialViewState.stateChange,
+    );
+  }
+
+  void _updateBaseUrlToInterceptor(String? baseUrl) {
+    _dynamicUrlInterceptors?.changeBaseUrl(baseUrl);
+  }
+
+  void _handleFcmPushAction({
+    required PersonalAccount personalAccount,
+    StateChange? stateChange,
+  }) {
     if (PlatformInfo.isAndroid) {
-      _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.baseUrl.toString());
-      _getSessionAction(stateChange: credentialViewState.stateChange);
+      _getSessionAction(stateChange: stateChange);
     } else {
-      _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.personalAccount.apiUrl);
+      final accountId = personalAccount.accountId;
+      final username = personalAccount.userName;
 
-      final accountId = credentialViewState.personalAccount.accountId;
-      final username = credentialViewState.personalAccount.userName;
-      final stateChange = credentialViewState.stateChange;
+      if (accountId == null || username == null || stateChange == null) return;
 
-      if (accountId != null && username != null && stateChange != null) {
-        _pushActionFromRemoteMessageBackground(
-          accountId: accountId,
-          userName: username,
-          stateChange: stateChange);
-      }
+      _pushActionFromRemoteMessageBackground(
+        accountId: accountId,
+        userName: username,
+        stateChange: stateChange,
+      );
     }
   }
 
   void _getSessionAction({StateChange? stateChange}) {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getSessionAction:');
     if (_getSessionInteractor != null) {
       consumeState(_getSessionInteractor!.execute(stateChange: stateChange));
     }
@@ -211,6 +193,7 @@ class FcmMessageController extends PushBaseController {
     Session? session
   }) {
     final mapTypeState = stateChange.getMapTypeState(accountId);
+    log('FcmMessageController::_pushActionFromRemoteMessageBackground:mapTypeState = $mapTypeState');
 
     mappingTypeStateToAction(
       mapTypeState,
@@ -229,7 +212,7 @@ class FcmMessageController extends PushBaseController {
 
   @override
   void handleSuccessViewState(Success success) {
-    log('FcmMessageController::_handleSuccessViewState(): $success');
+    log('FcmMessageController::_handleSuccessViewState(): ${success.runtimeType}');
     if (success is GetSessionSuccess) {
       _handleGetSessionSuccess(success);
     } else if (success is GetStoredTokenOidcSuccess) {
