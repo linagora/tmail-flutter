@@ -18,20 +18,23 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       return;
     }
 
+    final existingEmailIds = emailIdsPresentation.keys.toList();
+    final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
+
     List<EmailId> emailIdsToLoadMetaData = [];
     if (success.updateCurrentThreadDetail) {
-      emailIdsToLoadMetaData = emailIdsPresentation
-        .entries
+      final nonNullEmailIds = emailIdsPresentation.entries
         .where((entry) => entry.value != null)
         .map((entry) => entry.key)
-        .toList()
-        ..addAll(success.emailIds.where(
-          (emailId) => !emailIdsPresentation.keys.contains(emailId),
-        ));
+        .toList();
+      final newEmailIds = success.emailIds.where(
+        (emailId) => !existingEmailIds.contains(emailId),
+      );
+      emailIdsToLoadMetaData = [...nonNullEmailIds, ...newEmailIds];
     } else {
       emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getFirstLoadEmailIds(
-        emailIdsPresentation.keys.toList(),
-          selectedEmailId: mailboxDashBoardController.selectedEmail.value?.id,
+        existingEmailIds,
+        selectedEmailId: selectedEmailId,
       );
     }
 
