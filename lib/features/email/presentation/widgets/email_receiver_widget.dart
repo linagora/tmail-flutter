@@ -189,6 +189,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
       } else {
         return Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               height: 40,
@@ -224,6 +225,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
               TMailButtonWidget.fromIcon(
                 icon: _imagePaths.icChevronDown,
                 backgroundColor: Colors.transparent,
+                padding: const EdgeInsets.all(3),
                 onTapActionCallback: () => setState(() => _isDisplayAll = true),
               )
           ]
@@ -290,7 +292,9 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         prefixEmailAddress: prefixEmailAddress,
         responsiveUtils: _responsiveUtils,
       ),
-      ..._buildRecipientsTag(listEmailAddress: listEmailAddress)
+      ..._buildRecipientsTag(listEmailAddress: listEmailAddress).map(
+        (child) => Align(alignment: Alignment.topLeft, child: child),
+      ),
     ];
   }
 
