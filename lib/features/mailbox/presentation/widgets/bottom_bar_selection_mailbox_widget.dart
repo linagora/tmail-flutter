@@ -45,12 +45,12 @@ class BottomBarSelectionMailboxWidget extends StatelessWidget {
               key: Key('${action.name}_button'),
               text: responsiveUtils.isLandscapeMobile(context)
                 ? ''
-                : action.getTitleContextMenu(AppLocalizations.of(context)),
+                : action.getContextMenuTitle(AppLocalizations.of(context)),
               icon: action.getContextMenuIcon(imagePaths),
               borderRadius: 0,
               backgroundColor: Colors.transparent,
               flexibleText: true,
-              tooltipMessage: action.getTitleContextMenu(AppLocalizations.of(context)),
+              tooltipMessage: action.getContextMenuTitle(AppLocalizations.of(context)),
               textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
               onTapActionCallback: () => onMailboxActionsClick.call(action, _listSelectionMailbox),
             ));

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
@@ -73,20 +74,18 @@ extension HandleMailboxActionExtension on MailboxController {
     final isSubAddressingSupported =
       session?.isSubAddressingSupported(accountId) ?? false;
 
-    final contextMenuActions = listContextMenuItemAction(
-      mailbox,
-      mailboxDashBoardController.enableSpamReport,
-      deletedMessageVaultSupported,
-      isSubAddressingSupported,
-      imagePaths,
-      AppLocalizations.of(context),
-    );
-
-    if (contextMenuActions.isEmpty) {
-      return;
-    }
-
     if (responsiveUtils.isScreenWithShortestSide(context)) {
+      final contextMenuActions = listContextMenuItemAction(
+        mailbox,
+        mailboxDashBoardController.enableSpamReport,
+        deletedMessageVaultSupported,
+        isSubAddressingSupported,
+        imagePaths,
+        AppLocalizations.of(context),
+      );
+
+      if (contextMenuActions.isEmpty) return;
+
       openBottomSheetContextMenuAction(
         context: context,
         itemActions: contextMenuActions,
@@ -97,17 +96,30 @@ extension HandleMailboxActionExtension on MailboxController {
         ),
       );
     } else {
-      openPopupMenuAction(
-        context,
-        position,
-        popupMenuMailboxActionTiles(
-          context,
-          imagePaths,
-          mailbox,
-          contextMenuActions,
-          handleMailboxAction: handleMailboxAction,
-        ),
+      final popupMenuActions = getListPopupMenuItemAction(
+        AppLocalizations.of(context),
+        imagePaths,
+        mailbox,
+        mailboxDashBoardController.enableSpamReport,
+        deletedMessageVaultSupported,
+        isSubAddressingSupported,
       );
+
+      if (popupMenuActions.isEmpty) return;
+
+      final popupMenuItems = popupMenuActions.map((menuAction) {
+        return PopupMenuItem(
+          padding: EdgeInsets.zero,
+          child: PopupMenuItemActionWidget(
+            menuAction: menuAction,
+            menuActionClick: (menuAction) {
+              handleMailboxAction(context, menuAction.action, mailbox);
+            },
+          ),
+        );
+      }).toList();
+
+      openPopupMenuAction(context, position, popupMenuItems);
     }
   }
 }

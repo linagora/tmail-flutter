@@ -46,7 +46,9 @@ class PopupMenuItemActionWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   menuAction.getActionNameWithLimitation(),
-                  style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
+                  style: ThemeUtils.textStyleBodyBody3(
+                    color: menuAction.actionNameColor,
+                  ),
                   maxLines: 1,
                 ),
               ),
