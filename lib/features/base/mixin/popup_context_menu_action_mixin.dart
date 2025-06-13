@@ -64,24 +64,23 @@ mixin PopupContextMenuActionMixin {
     });
   }
 
-  void openPopupMenuAction(
+  Future<void> openPopupMenuAction(
     BuildContext context,
     RelativeRect? position,
     List<PopupMenuEntry> popupMenuItems,
-    {
-      double? radius,
-    }
   ) async {
     await showMenu(
       context: context,
       position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
       color: Colors.white,
       surfaceTintColor: Colors.white,
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(radius ?? 16))
+      menuPadding: const EdgeInsets.only(top: 8, bottom: 8),
+      elevation: 8,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
-      items: popupMenuItems
+      constraints: const BoxConstraints(maxWidth: 220),
+      items: popupMenuItems,
     );
   }
 
