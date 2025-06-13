@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_content_height_exceeded_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
@@ -29,7 +29,6 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_com
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
@@ -57,11 +56,7 @@ class ComposerView extends GetWidget<ComposerController> {
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
                     sendMessageAction: () => controller.handleClickSendButton(context),
                     openContextMenuAction: (position) {
-                      controller.openPopupMenuAction(
-                        context,
-                        position,
-                        _createMoreOptionPopupItems(context),
-                      );
+                      controller.handleOpenContextMenu(context, position);
                     },
                     isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
                     attachFileAction: () => controller.openPickAttachmentMenu(
@@ -82,11 +77,7 @@ class ComposerView extends GetWidget<ComposerController> {
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
                     sendMessageAction: () => controller.handleClickSendButton(context),
                     openContextMenuAction: (position) {
-                      controller.openPopupMenuAction(
-                        context,
-                        position,
-                        _createMoreOptionPopupItems(context),
-                      );
+                      controller.handleOpenContextMenu(context, position);
                     },
                     isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
                     attachFileAction: () => controller.openPickAttachmentMenu(
@@ -508,86 +499,5 @@ class ComposerView extends GetWidget<ComposerController> {
             AppLocalizations.of(context).browse)
         ..onActionClick((_) => controller.openFilePickerByType(context, FileType.any)))
       .build();
-  }
-
-  List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
-    return [
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          key: const Key('mark_as_important_popup_item'),
-          iconAction: controller.imagePaths.icMarkAsImportant,
-          nameAction: AppLocalizations.of(context).markAsImportant,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.isMarkAsImportant.value,
-          onCallbackAction: () {
-            popBack();
-            controller.toggleMarkAsImportant(context);
-          },
-        ),
-      ),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          key: const Key('read_receipt_popup_item'),
-          iconAction: controller.imagePaths.icReadReceipt,
-          nameAction: AppLocalizations.of(context).requestReadReceipt,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.hasRequestReadReceipt.value,
-          onCallbackAction: () {
-            popBack();
-            controller.toggleRequestReadReceipt(context);
-          }
-        )
-      ),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          key: const Key('save_as_draft_popup_item'),
-          iconAction: controller.imagePaths.icSaveToDraft,
-          nameAction: AppLocalizations.of(context).saveAsDraft,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          onCallbackAction: () {
-            popBack();
-            controller.handleClickSaveAsDraftsButton(context);
-          }
-        )
-      ),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          iconAction: controller.imagePaths.icSaveToDraft,
-          nameAction: AppLocalizations.of(context).saveAsTemplate,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          onCallbackAction: () {
-            popBack();
-            controller.handleClickSaveAsTemplateButton(context);
-          }
-        )
-      ),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          iconAction: controller.imagePaths.icDeleteMailbox,
-          nameAction: AppLocalizations.of(context).delete,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          onCallbackAction: () {
-            popBack();
-            controller.handleClickDeleteComposer(context);
-          },
-        )
-      ),
-    ];
   }
 }

@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class PopupItemWidgetStyle {
@@ -5,14 +6,12 @@ class PopupItemWidgetStyle {
   static const double selectedIconSize = 16;
   static const double space = 16;
   static const double height = 48;
-  static const double minWidth = 256;
+  static const double maxWidth = 300;
 
-  static const EdgeInsetsGeometry padding = EdgeInsets.symmetric(horizontal: 20, vertical: 16);
-  static const EdgeInsetsGeometry iconSelectedPadding = EdgeInsetsDirectional.only(start: 12);
+  static const EdgeInsetsGeometry iconSelectedPadding =
+    EdgeInsetsDirectional.only(start: 16);
 
-  static const TextStyle labelTextStyle = TextStyle(
-    fontSize: 17,
-    fontWeight: FontWeight.normal,
-    color: Colors.black
+  static final TextStyle labelTextStyle = ThemeUtils.textStyleBodyBody3(
+    color: Colors.black,
   );
 }
