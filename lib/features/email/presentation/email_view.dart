@@ -555,7 +555,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         _emailActionMoreActionTile(context, presentationEmail, moreActions)
       );
     } else {
-      final popupMenuActions = moreActions.map((actionType) {
+      final popupMenuItems = moreActions.map((actionType) {
         return PopupMenuItem(
           padding: EdgeInsets.zero,
           child: PopupMenuItemActionWidget(
@@ -576,11 +576,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         );
       }).toList();
 
-      controller.openPopupMenuAction(
-        context,
-        position,
-        popupMenuActions,
-      );
+      controller.openPopupMenuAction(context, position, popupMenuItems);
     }
   }
 

@@ -1,7 +1,9 @@
 
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
@@ -179,6 +181,24 @@ extension EmailActionTypeExtension on EmailActionType {
         return appLocalizations.openInNewTab;
       default:
         return '';
+    }
+  }
+
+  Color getContextMenuIconColor() {
+    switch(this) {
+      case EmailActionType.deletePermanently:
+        return AppColor.redFF3347;
+      default:
+        return AppColor.steelGrayA540;
+    }
+  }
+
+  Color getContextMenuTitleColor() {
+    switch(this) {
+      case EmailActionType.deletePermanently:
+        return AppColor.redFF3347;
+      default:
+        return Colors.black;
     }
   }
 }

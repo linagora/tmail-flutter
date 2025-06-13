@@ -676,7 +676,7 @@ class ThreadView extends GetWidget<ThreadController>
       final isArchive = mailboxContain?.isArchive ?? false;
       final isTemplates = mailboxContain?.isTemplates ?? false;
 
-      final popupMenuActions = [
+      final popupMenuItems = [
         EmailActionType.openInNewTab,
         if (!isDrafts && !isChildOfTeamMailboxes)
           isSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,
@@ -703,11 +703,7 @@ class ThreadView extends GetWidget<ThreadController>
         );
       }).toList();
 
-      controller.openPopupMenuAction(
-        context,
-        position,
-        popupMenuActions,
-      );
+      controller.openPopupMenuAction(context, position, popupMenuItems);
     }
   }
 

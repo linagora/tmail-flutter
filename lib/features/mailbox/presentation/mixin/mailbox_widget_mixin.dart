@@ -3,10 +3,13 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/model/popup_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/popup_menu_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin MailboxWidgetMixin {
 
@@ -133,17 +136,17 @@ mixin MailboxWidgetMixin {
           Key('${contextMenuItem.action.name}_action'),
           SvgPicture.asset(
             contextMenuItem.action.getContextMenuIcon(imagePaths),
-            colorFilter: contextMenuItem.action.getColorContextMenuIcon().asFilter(),
+            colorFilter: contextMenuItem.action.getContextMenuIconColor().asFilter(),
             width: 24,
             height: 24
           ),
-          contextMenuItem.action.getTitleContextMenu(context),
+          contextMenuItem.action.getContextMenuTitle(AppLocalizations.of(context)),
           mailbox,
           absorbing: !contextMenuItem.isActivated,
           opacity: !contextMenuItem.isActivated)
       ..actionTextStyle(textStyle: TextStyle(
           fontSize: 16,
-          color: contextMenuItem.action.getColorContextMenuTitle(),
+          color: contextMenuItem.action.getContextMenuTitleColor(),
           fontWeight: FontWeight.w500
       ))
       ..onActionClick((mailbox) => handleMailboxAction(context, contextMenuItem.action, mailbox))
@@ -163,6 +166,32 @@ mixin MailboxWidgetMixin {
       .toList();
 
     return listContextMenuItemAction;
+  }
+
+  List<PopupMenuItemAction> getListPopupMenuItemAction(
+    AppLocalizations appLocalizations,
+    ImagePaths imagePaths,
+    PresentationMailbox presentationMailbox,
+    bool spamReportEnabled,
+    bool deletedMessageVaultSupported,
+    bool isSubAddressingSupported,
+  ) {
+    final mailboxActionsSupported = _listActionForAllMailboxType(
+      presentationMailbox,
+      spamReportEnabled,
+      deletedMessageVaultSupported,
+      isSubAddressingSupported,
+    );
+
+    final popupMenuActions = mailboxActionsSupported
+      .map((action) => PopupMenuItemMailboxAction(
+        action,
+        appLocalizations,
+        imagePaths,
+      ))
+      .toList();
+
+    return popupMenuActions;
   }
 
   List<PopupMenuEntry> popupMenuMailboxActionTiles(
@@ -202,11 +231,11 @@ mixin MailboxWidgetMixin {
           opacity: contextMenuItem.isActivated ? 1.0 : 0.3,
           child: PopupItemWidget(
             iconAction: contextMenuItem.action.getContextMenuIcon(imagePaths),
-            nameAction: contextMenuItem.action.getTitleContextMenu(context),
-            colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
+            nameAction: contextMenuItem.action.getContextMenuTitle(AppLocalizations.of(context)),
+            colorIcon: contextMenuItem.action.getContextMenuIconColor(),
             padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
             styleName: ThemeUtils.textStyleBodyBody3(
-              color: contextMenuItem.action.getColorContextMenuTitle()
+              color: contextMenuItem.action.getContextMenuTitleColor()
             ),
             onCallbackAction: () => handleMailboxAction(context, contextMenuItem.action, mailbox)
           ),

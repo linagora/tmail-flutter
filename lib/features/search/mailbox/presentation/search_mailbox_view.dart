@@ -241,15 +241,15 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
                 width: 24,
                 height: 24,
                 fit: BoxFit.fill,
-                colorFilter: contextMenuItem.action.getColorContextMenuIcon().asFilter()
+                colorFilter: contextMenuItem.action.getContextMenuIconColor().asFilter()
               ),
               const SizedBox(width: 12),
               Expanded(child: Text(
-                contextMenuItem.action.getTitleContextMenu(context),
+                contextMenuItem.action.getContextMenuTitle(AppLocalizations.of(context)),
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
-                  color: contextMenuItem.action.getColorContextMenuTitle()
+                  color: contextMenuItem.action.getContextMenuTitleColor()
                 )
               )),
             ]),

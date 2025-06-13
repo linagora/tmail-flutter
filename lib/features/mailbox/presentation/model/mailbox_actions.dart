@@ -48,44 +48,44 @@ extension MailboxActionsExtension on MailboxActions {
     }
   }
 
-  String getTitleContextMenu(BuildContext context) {
+  String getContextMenuTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case MailboxActions.openInNewTab:
-        return AppLocalizations.of(context).openInNewTab;
+        return appLocalizations.openInNewTab;
       case MailboxActions.copySubaddress:
-        return AppLocalizations.of(context).copySubaddress;
+        return appLocalizations.copySubaddress;
       case MailboxActions.newSubfolder:
-        return AppLocalizations.of(context).newSubfolder;
+        return appLocalizations.newSubfolder;
       case MailboxActions.createFilter:
-        return AppLocalizations.of(context).createFilter;
+        return appLocalizations.createFilter;
       case MailboxActions.disableSpamReport:
-        return AppLocalizations.of(context).disableSpamReport;
+        return appLocalizations.disableSpamReport;
       case MailboxActions.enableSpamReport:
-        return AppLocalizations.of(context).enableSpamReport;
+        return appLocalizations.enableSpamReport;
       case MailboxActions.markAsRead:
-        return AppLocalizations.of(context).mark_as_read;
+        return appLocalizations.mark_as_read;
       case MailboxActions.move:
-        return AppLocalizations.of(context).moveFolder;
+        return appLocalizations.moveFolder;
       case MailboxActions.rename:
-        return AppLocalizations.of(context).renameFolder;
+        return appLocalizations.renameFolder;
       case MailboxActions.delete:
-        return AppLocalizations.of(context).deleteFolder;
+        return appLocalizations.deleteFolder;
       case MailboxActions.disableMailbox:
-        return AppLocalizations.of(context).hideFolder;
+        return appLocalizations.hideFolder;
       case MailboxActions.enableMailbox:
-        return AppLocalizations.of(context).showFolder;
+        return appLocalizations.showFolder;
       case MailboxActions.emptyTrash:
-        return AppLocalizations.of(context).emptyTrash;
+        return appLocalizations.emptyTrash;
       case MailboxActions.emptySpam:
-        return AppLocalizations.of(context).deleteAllSpamEmails;
+        return appLocalizations.deleteAllSpamEmails;
       case MailboxActions.confirmMailSpam:
-        return AppLocalizations.of(context).confirmAllEmailHereAreSpam;
+        return appLocalizations.confirmAllEmailHereAreSpam;
       case MailboxActions.recoverDeletedMessages:
-        return AppLocalizations.of(context).recoverDeletedMessages;
+        return appLocalizations.recoverDeletedMessages;
       case MailboxActions.allowSubaddressing:
-        return AppLocalizations.of(context).allowSubaddressing;
+        return appLocalizations.allowSubaddressing;
       case MailboxActions.disallowSubaddressing:
-        return AppLocalizations.of(context).disallowSubaddressing;
+        return appLocalizations.disallowSubaddressing;
       default:
         return '';
     }
@@ -134,7 +134,7 @@ extension MailboxActionsExtension on MailboxActions {
     }
   }
 
-  Color getColorContextMenuTitle() {
+  Color getContextMenuTitleColor() {
     switch(this) {
       case MailboxActions.delete:
         return AppColor.redFF3347;
@@ -143,7 +143,7 @@ extension MailboxActionsExtension on MailboxActions {
     }
   }
 
-  Color getColorContextMenuIcon() {
+  Color getContextMenuIconColor() {
     switch(this) {
       case MailboxActions.delete:
         return AppColor.redFF3347;
