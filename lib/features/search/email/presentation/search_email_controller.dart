@@ -378,8 +378,16 @@ class SearchEmailController extends BaseController
   }
 
   Future<List<RecentSearch>> getAllRecentSearchAction({String pattern = ''}) async {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final userName = mailboxDashBoardController.sessionCurrent?.username;
+
+    if (accountId == null || userName == null) {
+      logError('SearchEmailController::getAllRecentSearchAction: accountId or userName is null');
+      return <RecentSearch>[];
+    }
+
     return _getAllRecentSearchLatestInteractor
-        .execute(pattern: pattern)
+        .execute(accountId, userName, pattern: pattern)
         .then((result) => result.fold(
           (failure) => <RecentSearch>[],
           (success) => success is GetAllRecentSearchLatestSuccess
@@ -406,8 +414,20 @@ class SearchEmailController extends BaseController
                 : <PresentationEmail>[]));
   }
 
-  void saveRecentSearch(RecentSearch recentSearch) {
-    consumeState(_saveRecentSearchInteractor.execute(recentSearch));
+  void saveRecentSearch(String queryString) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final userName = mailboxDashBoardController.sessionCurrent?.username;
+
+    if (accountId == null || userName == null) {
+      logError('SearchEmailController::_saveRecentSearch: accountId or userName is null');
+      return;
+    }
+
+    consumeState(_saveRecentSearchInteractor.execute(
+      accountId,
+      userName,
+      RecentSearch.now(queryString),
+    ));
   }
 
   void _searchEmailAction(BuildContext context) {
@@ -770,7 +790,7 @@ class SearchEmailController extends BaseController
   void onTextSearchSubmitted(BuildContext context, String text) {
     final queryString = text.trim();
     if (queryString.isNotEmpty) {
-      saveRecentSearch(RecentSearch.now(queryString));
+      saveRecentSearch(queryString);
     }
     _searchEmailByQueryString(context: context, queryString: queryString);
   }

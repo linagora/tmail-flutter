@@ -6,7 +6,10 @@ extension ListRecentSearchExtension on List<RecentSearch> {
 
   void sortByCreationDate() {
     sort((recentSearch1, recentSearch2) {
-      return recentSearch1.creationDate.compareToSort(recentSearch1.creationDate, false);
+      return recentSearch1.creationDate.compareToSort(
+        recentSearch2.creationDate,
+        false,
+      );
     });
   }
 }

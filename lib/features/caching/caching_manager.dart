@@ -73,7 +73,6 @@ class CachingManager {
       _emailCacheClient.clearAllData(),
       _fcmCacheClient.clearAllData(),
       _firebaseRegistrationCacheClient.clearAllData(),
-      _recentSearchCacheClient.clearAllData(),
       _accountCacheClient.clearAllData(),
       _localSpamReportManager.clear(),
       if (PlatformInfo.isMobile)
@@ -95,7 +94,6 @@ class CachingManager {
       _emailCacheClient.clearAllData(),
       _fcmCacheClient.clearAllData(),
       _firebaseRegistrationCacheClient.clearAllData(),
-      _recentSearchCacheClient.clearAllData(),
       _localSpamReportManager.clear(),
       if (PlatformInfo.isMobile)
        ...[
@@ -199,5 +197,9 @@ class CachingManager {
       _recentLoginUrlCacheClient.clearAllData(),
       _recentLoginUsernameCacheClient.clearAllData(),
     ]);
+  }
+
+  Future<void> clearRecentSearchData() async {
+    await _recentSearchCacheClient.clearAllData();
   }
 }

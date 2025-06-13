@@ -42,7 +42,10 @@ extension ListRecentSearchCacheExtension on List<RecentSearchCache> {
 
   void sortByCreationDate() {
     sort((recentSearch1, recentSearch2) {
-      return recentSearch1.creationDate.compareToSort(recentSearch1.creationDate, false);
+      return recentSearch1.creationDate.compareToSort(
+        recentSearch2.creationDate,
+        false,
+      );
     });
   }
 }

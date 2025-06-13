@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
@@ -245,13 +246,25 @@ class SearchController extends BaseController with DateRangePickerMixin {
     searchInputController.text = value;
   }
 
-  void saveRecentSearch(RecentSearch recentSearch) {
-    consumeState(_saveRecentSearchInteractor.execute(recentSearch));
+  void saveRecentSearch(
+    AccountId accountId,
+    UserName userName,
+    RecentSearch recentSearch,
+  ) {
+    consumeState(_saveRecentSearchInteractor.execute(
+      accountId,
+      userName,
+      recentSearch,
+    ));
   }
 
-  Future<List<RecentSearch>> getAllRecentSearchAction(String pattern) async {
+  Future<List<RecentSearch>> getAllRecentSearchAction(
+    AccountId accountId,
+    UserName userName,
+    String pattern,
+  ) async {
     return await _getAllRecentSearchLatestInteractor
-        .execute(pattern: pattern)
+        .execute(accountId, userName, pattern: pattern)
         .then((result) => result.fold(
             (failure) => <RecentSearch>[],
             (success) => success is GetAllRecentSearchLatestSuccess
