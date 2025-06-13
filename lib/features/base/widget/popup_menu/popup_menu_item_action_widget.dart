@@ -76,6 +76,7 @@ class PopupMenuItemActionWidget extends StatelessWidget {
         type: MaterialType.transparency,
         child: InkWell(
           onTap: () => menuAction.onClick(menuActionClick),
+          hoverColor: AppColor.popupMenuItemHovered,
           child: Container(
             height: 48,
             width: double.infinity,
