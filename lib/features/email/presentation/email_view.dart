@@ -15,11 +15,11 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
@@ -526,34 +526,41 @@ class EmailView extends GetWidget<SingleEmailController> {
     RelativeRect? position
   }) {
     final mailboxContain = controller.getMailboxContain(presentationEmail);
-    final moreActions = [
+    final isChildOfTeamMailboxes = mailboxContain?.isChildOfTeamMailboxes ?? false;
+    final isSpam = mailboxContain?.isSpam ?? false;
+    final isArchive = mailboxContain?.isArchive ?? false;
+    final isTemplates = mailboxContain?.isTemplates ?? false;
+    final isUnsubscribeEnabled = !presentationEmail.isSubscribed &&
+        controller.emailUnsubscribe.value != null;
+    final isCreateRuleEnabled = presentationEmail.from?.isNotEmpty == true;
+    final isDownloadMessageAsEMLEnabled =
+        PlatformInfo.isWeb && PlatformInfo.isCanvasKit;
+
+    final emailActions = [
       EmailActionType.markAsUnread,
-      if (mailboxContain?.isChildOfTeamMailboxes == false)
-        if (mailboxContain?.isSpam == true)
-          EmailActionType.unSpam
-        else
-          EmailActionType.moveToSpam,
-      if (presentationEmail.from?.isNotEmpty == true)
+      if (!isChildOfTeamMailboxes)
+        isSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,
+      if (isCreateRuleEnabled)
         EmailActionType.createRule,
-      if (!presentationEmail.isSubscribed && controller.emailUnsubscribe.value != null)
+      if (isUnsubscribeEnabled)
         EmailActionType.unsubscribe,
-      if (mailboxContain?.isArchive == false)
+      if (!isArchive)
         EmailActionType.archiveMessage,
-      if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
+      if (isDownloadMessageAsEMLEnabled)
         EmailActionType.downloadMessageAsEML,
-      if (mailboxContain?.isTemplates == false)
+      if (!isTemplates)
         EmailActionType.editAsNewEmail,
     ];
 
-    final contextMenuActions = moreActions
-        .map((action) => ContextItemEmailAction(
-          action,
-          AppLocalizations.of(context),
-          controller.imagePaths,
-        ))
-        .toList();
-
     if (position == null) {
+      final contextMenuActions = emailActions
+          .map((action) => ContextItemEmailAction(
+            action,
+            AppLocalizations.of(context),
+            controller.imagePaths,
+          ))
+          .toList();
+
       controller.openBottomSheetContextMenuAction(
         context: context,
         itemActions: contextMenuActions,
@@ -567,39 +574,32 @@ class EmailView extends GetWidget<SingleEmailController> {
         },
       );
     } else {
+      final popupMenuActions = emailActions.map((actionType) {
+        return PopupMenuItem(
+          padding: EdgeInsets.zero,
+          child: PopupMenuItemActionWidget(
+            menuAction: PopupMenuItemEmailAction(
+              actionType,
+              AppLocalizations.of(context),
+              controller.imagePaths,
+            ),
+            menuActionClick: (menuAction) {
+              popBack();
+              controller.handleEmailAction(
+                context,
+                presentationEmail,
+                menuAction.action,
+              );
+            },
+          ),
+        );
+      }).toList();
+
       controller.openPopupMenuAction(
         context,
         position,
-        _popupMenuEmailActionTile(context, presentationEmail, moreActions)
+        popupMenuActions,
       );
     }
-  }
-
-  List<PopupMenuEntry> _popupMenuEmailActionTile(
-    BuildContext context,
-    PresentationEmail presentationEmail,
-    List<EmailActionType> actionTypes
-  ) {
-    return actionTypes.map((action) {
-      return PopupMenuItem(
-        key: Key('${action.name}_action'),
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          iconAction: action.getIcon(controller.imagePaths),
-          nameAction: action.getTitle(AppLocalizations.of(context)),
-          colorIcon: AppColor.colorTextButton,
-          padding: const EdgeInsetsDirectional.only(start: 12),
-          styleName: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            color: Colors.black
-          ),
-          onCallbackAction: () {
-            popBack();
-            controller.handleEmailAction(context, presentationEmail, action);
-          }
-        )
-      );
-    }).toList();
   }
 }
