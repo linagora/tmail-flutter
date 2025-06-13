@@ -1,7 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
-import 'package:core/presentation/views/checkbox/labeled_checkbox.dart';
+import 'package:core/presentation/views/checkbox/custom_icon_labeled_checkbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -24,12 +24,9 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Transform(
-          transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
-          child: _buildCheckboxHasAttachment(
-            context,
-            currentFocusNode: focusManager.attachmentCheckboxFocusNode,
-            nextFocusNode: focusManager.searchButtonFocusNode),
+        _buildCheckboxHasAttachment(
+          context,
+          focusManager.attachmentCheckboxFocusNode,
         ),
         _buildListButton(context, controller.responsiveUtils),
       ],
@@ -105,28 +102,16 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
 
   Widget _buildCheckboxHasAttachment(
       BuildContext context,
-      {
-        FocusNode? currentFocusNode,
-        FocusNode? nextFocusNode,
-      }
+      FocusNode currentFocusNode,
   ) {
     return Obx(
-      () => KeyboardListener(
-        focusNode: FocusNode(),
-        onKeyEvent: (event) {
-          if (event is KeyDownEvent &&
-              event.logicalKey == LogicalKeyboardKey.tab) {
-            nextFocusNode?.requestFocus();
-          }
-        },
-        child: LabeledCheckbox(
-          label: AppLocalizations.of(context).hasAttachment,
-          focusNode: currentFocusNode,
-          contentPadding: EdgeInsets.zero,
-          value: controller.hasAttachment.value,
-          activeColor: AppColor.primaryColor,
-          onChanged: controller.onHasAttachmentCheckboxChanged,
-        ),
+      () => CustomIconLabeledCheckbox(
+        label: AppLocalizations.of(context).hasAttachment,
+        svgIconPath: controller.imagePaths.icCheckboxUnselected,
+        selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,
+        focusNode: currentFocusNode,
+        value: controller.hasAttachment.value,
+        onChanged: controller.onHasAttachmentCheckboxChanged,
       ),
     );
   }

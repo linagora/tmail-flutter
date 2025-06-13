@@ -1,60 +1,49 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
+typedef OnChangedAction = void Function(bool? value);
+
 class LabeledCheckbox extends StatelessWidget {
-  const LabeledCheckbox({Key? key,
+  const LabeledCheckbox({
+    Key? key,
     required this.label,
-    this.contentPadding,
-    this.value,
-    this.onChanged,
-    this.activeColor,
-    this.fontSize = 16,
+    required this.onChanged,
+    this.value = false,
     this.gap = 4.0,
-    this.bold = false,
-    this.focusNode,
+    this.textStyle,
   }) : super(key: key);
 
   final String label;
-  final EdgeInsets? contentPadding;
-  final bool? value;
-  final Function(bool?)? onChanged;
-  final Color? activeColor;
-  final double fontSize;
+  final bool value;
+  final OnChangedAction onChanged;
   final double gap;
-  final bool bold;
-  final FocusNode? focusNode;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => onChanged?.call(!(value ?? false)),
-      child: Padding(
-        padding: contentPadding ?? const EdgeInsets.all(0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Checkbox(
-              value: value,
-              activeColor: activeColor,
-              visualDensity: VisualDensity.compact,
-              focusNode: focusNode,
-              onChanged: onChanged,
-            ),
-            SizedBox(
-              width: gap,
-            ),
-            Flexible(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-                  color: Colors.black
-                ),
-              ),
-            ),
-          ],
-        ),
+      onTap: () => onChanged(!(value)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          buildCheckboxWidget,
+          buildGapWidget,
+          buildLabelWidget,
+        ],
       ),
     );
   }
+
+  Widget get buildCheckboxWidget => Checkbox(
+        value: value,
+        visualDensity: VisualDensity.compact,
+        onChanged: onChanged,
+      );
+
+  Widget get buildGapWidget => SizedBox(width: gap);
+
+  Widget get buildLabelWidget => Text(
+        label,
+        style: textStyle ?? ThemeUtils.textStyleM3BodyMedium3,
+      );
 }
