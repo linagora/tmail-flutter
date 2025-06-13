@@ -8,6 +8,7 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -42,9 +43,11 @@ import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/popup_menu_item_filter_message_action.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -437,18 +440,30 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     FilterMessageOption filterMessageCurrent,
     RelativeRect buttonPosition
   ) {
-    controller.openPopupMenuAction(
-      context,
-      buttonPosition,
-      popupMenuFilterEmailActionTile(
-        context,
-        filterMessageCurrent,
-        (filterMessageSelected) {
-          controller.dispatchAction(FilterMessageAction(filterMessageSelected));
-        },
-        isSearchEmailRunning: controller.searchController.isSearchEmailRunning
-      )
-    );
+    final popupMenuItems = [
+      if (!controller.searchController.isSearchEmailRunning)
+        FilterMessageOption.attachments,
+      FilterMessageOption.unread,
+      FilterMessageOption.starred,
+    ].map((filterOption) {
+      return PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupMenuItemActionWidget(
+          menuAction: PopupMenuItemFilterMessageAction(
+            filterOption,
+            filterMessageCurrent,
+            AppLocalizations.of(context),
+            controller.imagePaths,
+          ),
+          menuActionClick: (menuAction) {
+            popBack();
+            controller.dispatchAction(FilterMessageAction(menuAction.action));
+          },
+        ),
+      );
+    }).toList();
+
+    controller.openPopupMenuAction(context, buttonPosition, popupMenuItems);
   }
 
   void _onDeleteFilterMessageOptionAction() {

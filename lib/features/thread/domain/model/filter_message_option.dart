@@ -101,7 +101,7 @@ extension FilterMessageOptionExtension on FilterMessageOption {
       case FilterMessageOption.attachments:
         return imagePaths.icAttachment;
       case FilterMessageOption.starred:
-        return imagePaths.icStar;
+        return imagePaths.icUnStar;
     }
   }
 
