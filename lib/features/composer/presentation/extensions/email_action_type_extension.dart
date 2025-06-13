@@ -150,6 +150,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icDownloadAttachment;
       case EmailActionType.editAsNewEmail:
         return imagePaths.icEdit;
+      case EmailActionType.openInNewTab:
+        return imagePaths.icOpenInNewTab;
       default:
         return '';
     }
@@ -173,6 +175,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return appLocalizations.downloadMessageAsEML;
       case EmailActionType.editAsNewEmail:
         return appLocalizations.editAsNewEmail;
+      case EmailActionType.openInNewTab:
+        return appLocalizations.openInNewTab;
       default:
         return '';
     }
