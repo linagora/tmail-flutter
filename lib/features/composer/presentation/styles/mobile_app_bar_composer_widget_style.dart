@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class MobileAppBarComposerWidgetStyle {
@@ -20,9 +21,7 @@ class MobileAppBarComposerWidgetStyle {
   static const EdgeInsetsGeometry richTextIconPadding = EdgeInsetsDirectional.all(5);
   static const EdgeInsetsGeometry popupItemPadding = EdgeInsetsDirectional.symmetric(horizontal: 12);
 
-  static const TextStyle popupItemTextStyle = TextStyle(
+  static final TextStyle popupItemTextStyle = ThemeUtils.textStyleBodyBody3(
     color: Colors.black,
-    fontSize: 16,
-    fontWeight: FontWeight.w500,
   );
 }

@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
@@ -202,8 +203,10 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
               PopupItemWidget(
                 iconAction: imagePaths.icDeleteMailbox,
                 nameAction: AppLocalizations.of(context).delete,
-                colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
-                styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
+                colorIcon: AppColor.redFF3347,
+                styleName: MobileAppBarComposerWidgetStyle
+                  .popupItemTextStyle
+                  .copyWith(color: AppColor.redFF3347),
                 padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
                 onCallbackAction: () {
                   menuMoreOptionController.hideMenu();

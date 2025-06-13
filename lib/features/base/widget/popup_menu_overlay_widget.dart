@@ -34,15 +34,18 @@ class PopupMenuOverlayWidget extends StatelessWidget {
       controller: controller,
       menuBuilder: () {
         return Material(
-          elevation: elevation ?? 10,
-          borderRadius: BorderRadius.circular(borderRadius ?? 12),
+          elevation: elevation ?? 8,
+          borderRadius: BorderRadius.all(Radius.circular(borderRadius ?? 6)),
           color: backgroundColor ?? Colors.white,
           child: PointerInterceptor(
             child: Container(
               decoration: BoxDecoration(
-                  color: backgroundColor ?? Colors.white,
-                  borderRadius: BorderRadius.circular(borderRadius ?? 12)),
-              padding: padding,
+                color: backgroundColor ?? Colors.white,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(borderRadius ?? 6),
+                ),
+              ),
+              padding: padding ?? const EdgeInsets.symmetric(vertical: 8),
               clipBehavior: Clip.antiAlias,
               child: arrangeAsList
                 ? IntrinsicWidth(child: Column(children: listButtonAction))
@@ -55,7 +58,7 @@ class PopupMenuOverlayWidget extends StatelessWidget {
       position: position,
       barrierColor: Colors.transparent,
       arrowSize: 0.0,
-      verticalMargin: 8,
+      verticalMargin: 2.0,
       child: iconButton,
     );
   }

@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class BottomBarComposerWidgetStyle {
@@ -33,9 +34,7 @@ class BottomBarComposerWidgetStyle {
     color: Colors.white,
     letterSpacing: -0.41,
   );
-  static const TextStyle popupItemTextStyle = TextStyle(
+  static final TextStyle popupItemTextStyle = ThemeUtils.textStyleBodyBody3(
     color: Colors.black,
-    fontSize: 16,
-    fontWeight: FontWeight.w500,
   );
 }
