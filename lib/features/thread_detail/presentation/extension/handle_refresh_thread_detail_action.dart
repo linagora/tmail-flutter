@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
+import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -17,9 +18,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
       final updatedEmailIds = action
         .emailChangeResponse
         .updated
-        ?.map((e) => e.id)
-        .whereNotNull()
-        .toList() ?? [];
+        ?.listEmailIds ?? [];
 
       if (updatedEmailIds.contains(currentEmailId)) {
         consumeState(Stream.value(Right(GetThreadByIdSuccess(
