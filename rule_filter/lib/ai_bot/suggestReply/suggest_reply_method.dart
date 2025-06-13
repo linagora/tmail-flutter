@@ -4,14 +4,10 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/method/method.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:jmap_dart_client/http/converter/id_converter.dart';
 import 'package:jmap_dart_client/http/converter/properties_converter.dart';
-import 'package:rule_filter/rule_filter/converter/rule_id_converter.dart';
 
 part 'suggest_reply_method.g.dart';
 
-@IdConverter()
-@RuleIdConverter()
 @AccountIdConverter()
 @PropertiesConverter()
 @JsonSerializable(explicitToJson: true)

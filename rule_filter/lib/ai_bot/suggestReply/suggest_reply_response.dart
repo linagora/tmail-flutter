@@ -1,12 +1,11 @@
 import 'package:jmap_dart_client/http/converter/account_id_converter.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/method/method.dart';
 import 'package:jmap_dart_client/jmap/core/method/method_response.dart';
-import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'suggest_reply_response.g.dart';
 
+@AccountIdConverter()
 @JsonSerializable()
 class SuggestReplyResponse extends ResponseRequiringAccountId {
   final String suggestion;
