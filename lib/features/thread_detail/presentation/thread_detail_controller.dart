@@ -193,6 +193,7 @@ class ThreadDetailController extends BaseController {
     });
     ever(mailboxDashBoardController.emailUIAction, (action) {
       if (action is RefreshThreadDetailAction) {
+        mailboxDashBoardController.dispatchEmailUIAction(EmailUIAction());
         handleRefreshThreadDetailAction(
           action,
           _getEmailIdsByThreadIdInteractor,
