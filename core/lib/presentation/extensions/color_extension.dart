@@ -261,6 +261,7 @@ extension AppColor on Color {
   static const gray686E76 = Color(0xFF686E76);
   static const textSecondary = Color(0xFF1C1B1F);
   static const profileMenuDivider = Color(0xFF1D192B);
+  static const popupMenuItemHovered = Color(0xFFF8F8F8);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
