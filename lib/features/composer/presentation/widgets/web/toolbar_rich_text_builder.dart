@@ -1,5 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -22,6 +24,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
 
   final RichTextWebController richTextWebController;
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
+  final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
   final EdgeInsetsGeometry? padding;
   final List<Widget>? extendedOption;
   final AlignmentGeometry? alignment;
@@ -224,6 +227,9 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                       tooltip: RichTextStyleType.paragraph.getTooltipButton(context)
                     )
                   ),
+                  position: _responsiveUtils.isMobile(context)
+                    ? PreferredPosition.top
+                    : PreferredPosition.bottom,
                 ),
               ),
               AbsorbPointer(
@@ -248,6 +254,9 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                       tooltip: RichTextStyleType.orderList.getTooltipButton(context)
                     )
                   ),
+                  position: _responsiveUtils.isMobile(context)
+                    ? PreferredPosition.top
+                    : PreferredPosition.bottom,
                 ),
               )
             ]
