@@ -7,7 +7,6 @@ extension RefreshThreadDetailExtension on ThreadController {
     if (emailChangeResponse == null) return;
 
     mailboxDashBoardController
-      ..dispatchEmailUIAction(RefreshThreadDetailAction(emailChangeResponse))
-      ..dispatchEmailUIAction(EmailUIAction());
+      .dispatchEmailUIAction(RefreshThreadDetailAction(emailChangeResponse));
   }
 }
