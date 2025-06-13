@@ -11,13 +11,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/search_filter_button_style.dart';
 
 typedef OnSelectSearchFilterAction = Function(
-  BuildContext context,
-  QuickSearchFilter searchFilter,
-  {RelativeRect? buttonPosition});
+    BuildContext context, QuickSearchFilter searchFilter,
+    {RelativeRect? buttonPosition});
 typedef OnDeleteSearchFilterAction = Function(QuickSearchFilter searchFilter);
 
-class SearchFilterButton extends StatelessWidget {
-
+class SearchFilterButton extends StatefulWidget {
   static const int _titleCharactersMaximum = 20;
 
   final QuickSearchFilter searchFilter;
@@ -56,127 +54,196 @@ class SearchFilterButton extends StatelessWidget {
   });
 
   @override
+  State<SearchFilterButton> createState() => _SearchFilterButtonState();
+}
+
+class _SearchFilterButtonState extends State<SearchFilterButton> {
+  final GlobalKey _buttonKey = GlobalKey();
+  final layerLink = LayerLink();
+
+  @override
   Widget build(BuildContext context) {
-    final filterTitle = searchFilter.getTitle(
+    final filterTitle = widget.searchFilter.getTitle(
       context,
-      receiveTimeType: receiveTimeType,
-      startDate: startDate,
-      endDate: startDate,
-      sortOrderType: sortOrderType,
-      listAddressOfFrom: listAddressOfFrom,
-      mailbox: mailbox,
-      listAddressOfTo: listAddressOfTo,
+      receiveTimeType: widget.receiveTimeType,
+      startDate: widget.startDate,
+      endDate: widget.startDate,
+      sortOrderType: widget.sortOrderType,
+      listAddressOfFrom: widget.listAddressOfFrom,
+      mailbox: widget.mailbox,
+      listAddressOfTo: widget.listAddressOfTo,
     );
 
     final deleteButtonWidget = TMailButtonWidget.fromIcon(
-      icon: imagePaths.icDeleteSelection,
+      icon: widget.imagePaths.icDeleteSelection,
       iconSize: SearchFilterButtonStyle.deleteIconSize,
       iconColor: AppColor.colorTextBody,
       padding: const EdgeInsets.all(8),
       backgroundColor: Colors.transparent,
-      onTapActionCallback: () => onDeleteSearchFilterAction?.call(searchFilter),
+      onTapActionCallback: () => widget.onDeleteSearchFilterAction?.call(
+        widget.searchFilter,
+      ),
     );
 
     final listComponentsWidget = <Widget>[
       SvgPicture.asset(
-        searchFilter.getIcon(imagePaths, isSelected: isSelected),
-        width: SearchFilterButtonStyle.iconSize,
-        height: SearchFilterButtonStyle.iconSize,
-        colorFilter: searchFilter.getIconColor(isSelected: isSelected).asFilter(),
-        fit: BoxFit.fill
-      ),
+          widget.searchFilter.getIcon(
+            widget.imagePaths,
+            isSelected: widget.isSelected,
+          ),
+          width: SearchFilterButtonStyle.iconSize,
+          height: SearchFilterButtonStyle.iconSize,
+          colorFilter: widget.searchFilter
+              .getIconColor(
+                isSelected: widget.isSelected,
+              )
+              .asFilter(),
+          fit: BoxFit.fill),
       const SizedBox(width: SearchFilterButtonStyle.spaceSize),
       Text(
-        filterTitle.length > _titleCharactersMaximum
-          ? '${filterTitle.substring(0, _titleCharactersMaximum)}...'
-          : filterTitle,
+        filterTitle.length > SearchFilterButton._titleCharactersMaximum
+            ? '${filterTitle.substring(
+                0,
+                SearchFilterButton._titleCharactersMaximum,
+              )}...'
+            : filterTitle,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: SearchFilterButtonStyle.titleStyle,
       ),
-      if (searchFilter.isArrowDownIconSupported())
+      if (widget.searchFilter.isArrowDownIconSupported())
         Padding(
           padding: SearchFilterButtonStyle.elementPadding,
           child: SvgPicture.asset(
-            imagePaths.icDropDown,
+            widget.imagePaths.icDropDown,
             width: SearchFilterButtonStyle.iconSize,
             height: SearchFilterButtonStyle.iconSize,
             colorFilter: AppColor.colorTextBody.asFilter(),
-            fit: BoxFit.fill
+            fit: BoxFit.fill,
           ),
         ),
     ];
 
-    final childItem = _buildContainerForComponents(
-      children: [
-        ...listComponentsWidget,
-        if (isSelected) deleteButtonWidget,
-      ]
-    );
-
-    if (onSelectSearchFilterAction == null) {
-      return childItem;
-    }
-
-    if (!searchFilter.isOnTapWithPositionActionSupported(context, responsiveUtils)) {
-      return Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: !searchFilter.isOnTapWithPositionActionSupported(context, responsiveUtils)
-            ? () => _onTapAction(context)
-            : null,
-          onTapDown: searchFilter.isOnTapWithPositionActionSupported(context, responsiveUtils) && !isSelected
-            ? (details) => _onTapDownAction(context, details)
-            : null,
-          borderRadius: SearchFilterButtonStyle.borderRadius,
-          child: childItem
-        ),
+    if (widget.onSelectSearchFilterAction == null) {
+      return _buildContainerForComponents(
+        children: [
+          ...listComponentsWidget,
+          if (widget.isSelected) deleteButtonWidget,
+        ],
       );
-    }
-
-    return _buildContainerForComponents(
-      children: [
-        InkWell(
-          onTapDown: (details) => _onTapDownAction(context, details),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: listComponentsWidget
+    } else if (!_isOnTapWithPositionActionSupported()) {
+      return CompositedTransformTarget(
+        link: layerLink,
+        child: Material(
+          key: _buttonKey,
+          type: MaterialType.transparency,
+          child: InkWell(
+            onTap: !_isOnTapWithPositionActionSupported()
+                ? () => _onTapAction(context)
+                : null,
+            onTapDown: _isOnTapWithPositionActionSupported() && !widget.isSelected
+                ? (details) => _onTapDownAction(context, details)
+                : null,
+            borderRadius: SearchFilterButtonStyle.borderRadius,
+            child: _buildContainerForComponents(
+              children: [
+                ...listComponentsWidget,
+                if (widget.isSelected) deleteButtonWidget,
+              ],
+            ),
           ),
         ),
-        if (isSelected) deleteButtonWidget,
-      ]
+      );
+    } else {
+      return _buildContainerForComponents(
+        key: _buttonKey,
+        children: [
+          InkWell(
+            onTapDown: (details) => _onTapDownAction(context, details),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: listComponentsWidget,
+            ),
+          ),
+          if (widget.isSelected) deleteButtonWidget,
+        ],
+      );
+    }
+  }
+
+  bool _isOnTapWithPositionActionSupported() {
+    return widget.searchFilter.isOnTapWithPositionActionSupported(
+      context,
+      widget.responsiveUtils,
     );
   }
 
-  Widget _buildContainerForComponents({required List<Widget> children}) {
+  Widget _buildContainerForComponents({
+    required List<Widget> children,
+    Key? key,
+  }) {
     return Container(
+      key: key,
       decoration: BoxDecoration(
         borderRadius: SearchFilterButtonStyle.borderRadius,
-        color: backgroundColor ?? searchFilter.getBackgroundColor(
-          isSelected: isSelected
-        )
+        color: widget.backgroundColor ??
+            widget.searchFilter
+                .getBackgroundColor(isSelected: widget.isSelected),
       ),
-      padding: buttonPadding ?? SearchFilterButtonStyle.getButtonPadding(isSelected),
+      padding: widget.buttonPadding ??
+          SearchFilterButtonStyle.getButtonPadding(
+            widget.isSelected,
+          ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: children
-      )
+        children: children,
+      ),
     );
   }
 
   void _onTapAction(BuildContext context) {
-    onSelectSearchFilterAction?.call(context, searchFilter);
+    widget.onSelectSearchFilterAction?.call(context, widget.searchFilter);
   }
 
   void _onTapDownAction(BuildContext context, TapDownDetails details) {
-    final screenSize = MediaQuery.sizeOf(context);
-    final offset = details.globalPosition;
-    final position = RelativeRect.fromLTRB(
-      offset.dx,
-      offset.dy,
-      screenSize.width - offset.dx,
-      screenSize.height - offset.dy);
+    RelativeRect? position;
 
-    onSelectSearchFilterAction?.call(context, searchFilter, buttonPosition: position);
+    final buttonBox =
+        _buttonKey.currentContext?.findRenderObject() as RenderBox?;
+    final overlayBox =
+        Overlay.maybeOf(context)?.context.findRenderObject() as RenderBox?;
+
+    if (buttonBox == null || overlayBox == null) {
+      final screenSize = MediaQuery.sizeOf(context);
+      final offset = details.globalPosition;
+      position = RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy,
+        screenSize.width - offset.dx,
+        screenSize.height - offset.dy,
+      );
+    } else {
+      final buttonPosition = buttonBox.localToGlobal(
+        Offset.zero,
+        ancestor: overlayBox,
+      );
+      final buttonSize = buttonBox.size;
+
+      position = RelativeRect.fromRect(
+        Rect.fromLTWH(
+          buttonPosition.dx + buttonSize.width,
+          buttonPosition.dy + buttonSize.height + 8,
+          0,
+          0,
+        ),
+        Offset.zero & overlayBox.size,
+      );
+    }
+
+    widget.onSelectSearchFilterAction?.call(
+      context,
+      widget.searchFilter,
+      buttonPosition: position,
+    );
   }
 }

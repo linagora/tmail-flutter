@@ -82,6 +82,7 @@ class ProfileSettingMenuOverlay extends StatelessWidget {
                           },
                         ))
                     .toList(),
+                const SizedBox(height: 8),
               ],
             ),
             PositionedDirectional(
