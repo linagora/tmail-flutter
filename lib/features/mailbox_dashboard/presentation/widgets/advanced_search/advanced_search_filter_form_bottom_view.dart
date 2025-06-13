@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/checkbox/custom_icon_labeled_checkbox.dart';
+import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -28,76 +27,49 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
           context,
           focusManager.attachmentCheckboxFocusNode,
         ),
-        _buildListButton(context, controller.responsiveUtils),
+        _buildListButton(context),
       ],
     );
   }
 
-  Widget _buildListButton(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (!responsiveUtils.isWebDesktop(context)) {
-      return Row(children: [
-        Expanded(
-          child: _buildButton(
-            onAction: () {
-              controller.clearSearchFilter();
-              popBack();
-            },
-            colorButton: Colors.white,
-            colorText: AppColor.colorContentEmail,
-            text: AppLocalizations.of(context).clearFilter,
-            context: context,
-            responsiveUtils: responsiveUtils,
+  Widget _buildListButton(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Flexible(
+          child: Container(
+            constraints: const BoxConstraints(minWidth: 92),
+            height: 48,
+            child: ConfirmDialogButton(
+              label: AppLocalizations.of(context).clearFilter,
+              onTapAction: _onClickCancelButton,
+            ),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildButton(
-            onAction: () {
-              controller.applyAdvancedSearchFilter();
-              popBack();
+        const SizedBox(width: 8),
+        Flexible(
+          child: KeyboardListener(
+            focusNode: FocusNode(),
+            onKeyEvent: (event) {
+              if (event is KeyDownEvent &&
+                  event.logicalKey == LogicalKeyboardKey.tab) {
+                focusManager.fromFieldFocusNode.requestFocus();
+              }
             },
-            colorButton: AppColor.primaryColor,
-            colorText: AppColor.primaryLightColor,
-            text: AppLocalizations.of(context).search,
-            context: context,
-            responsiveUtils: responsiveUtils,
-            currentFocusNode: focusManager.searchButtonFocusNode,
-            nextFocusNode: focusManager.fromFieldFocusNode
+            child: Container(
+              constraints: const BoxConstraints(minWidth: 112),
+              height: 48,
+              child: ConfirmDialogButton(
+                label: AppLocalizations.of(context).search,
+                backgroundColor: AppColor.primaryMain,
+                textColor: Colors.white,
+                onTapAction: _onClickSearchButton,
+              ),
+            ),
           ),
         ),
-      ]);
-    } else {
-      return Row(children: [
-        const Spacer(),
-        _buildButton(
-          onAction: () {
-            controller.clearSearchFilter();
-            popBack();
-          },
-          colorButton: Colors.transparent,
-          colorText: AppColor.colorContentEmail,
-          text: AppLocalizations.of(context).clearFilter,
-          context: context,
-          responsiveUtils: responsiveUtils,
-          minWidth: 92
-        ),
-        const SizedBox(width: 12),
-        _buildButton(
-          onAction: () {
-            controller.applyAdvancedSearchFilter();
-            popBack();
-          },
-          colorButton: AppColor.primaryColor,
-          colorText: AppColor.primaryLightColor,
-          text: AppLocalizations.of(context).search,
-          context: context,
-          responsiveUtils: responsiveUtils,
-          minWidth: 144,
-          currentFocusNode: focusManager.searchButtonFocusNode,
-          nextFocusNode: focusManager.fromFieldFocusNode
-        ),
-      ]);
-    }
+      ],
+    );
   }
 
   Widget _buildCheckboxHasAttachment(
@@ -116,37 +88,13 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
     );
   }
 
-  Widget _buildButton({
-    required Color colorButton,
-    required Color colorText,
-    required String text,
-    required VoidCallback onAction,
-    required BuildContext context,
-    required ResponsiveUtils responsiveUtils,
-    FocusNode? currentFocusNode,
-    FocusNode? nextFocusNode,
-    double? minWidth,
-  }) {
-    return KeyboardListener(
-      focusNode: FocusNode(),
-      onKeyEvent: (event) {
-        if (event is KeyDownEvent &&
-            event.logicalKey == LogicalKeyboardKey.tab) {
-          nextFocusNode?.requestFocus();
-        }
-      },
-      child: buildButtonWrapText(
-        text,
-        focusNode: currentFocusNode,
-        radius: 10,
-        height: 44,
-        minWidth: minWidth,
-        textStyle: TextStyle(
-          fontSize: 17,
-          color: colorText,
-          fontWeight: FontWeight.w500),
-        bgColor: colorButton,
-        onTap: onAction),
-    );
+  void _onClickCancelButton() {
+    controller.clearSearchFilter();
+    popBack();
+  }
+
+  void _onClickSearchButton() {
+    controller.applyAdvancedSearchFilter();
+    popBack();
   }
 }

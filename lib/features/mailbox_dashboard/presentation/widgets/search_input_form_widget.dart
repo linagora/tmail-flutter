@@ -232,7 +232,6 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           iconSize: 22,
           backgroundColor: Colors.transparent,
           padding: const EdgeInsets.all(4),
-          tooltipMessage: AppLocalizations.of(context).search,
           onTapActionCallback: () => _invokeSearchEmailAction(_searchController.searchInputController.text.trim())
         )
       ),
