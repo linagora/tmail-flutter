@@ -106,9 +106,9 @@ class _FilterMessageButtonState extends State<FilterMessageButton> {
       );
     } else {
       return Material(
+        key: _buttonKey,
         type: MaterialType.transparency,
         child: InkWell(
-          key: _buttonKey,
           onTapDown: (details) => _onTapDownAction(context, details),
           borderRadius: FilterMessageButtonStyle.borderRadius,
           child: childItem,

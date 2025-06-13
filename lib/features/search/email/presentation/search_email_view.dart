@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -24,13 +25,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/se
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_email_more_action_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_receive_time_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_sort_order_type_action.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_date_filter_action.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_sort_order_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/styles/search_email_view_style.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/utils/search_email_utils.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/app_bar_selection_mode.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_action_tile_widget.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_action_tile_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/empty_search_email_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/search_email_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -39,6 +40,7 @@ import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_til
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SearchEmailView extends GetWidget<SearchEmailController>
     with AppLoaderMixin {
@@ -337,18 +339,28 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   void _openPopupMenuDateFilter(BuildContext context, RelativeRect position) {
-    controller.openPopupMenuAction(
-      context,
-      position,
-      _popupMenuEmailReceiveTimeType(
-        context,
-        controller.emailReceiveTimeType.value,
-        (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(
-          context,
-          receiveTime
-        )
-      )
-    );
+    final popupMenuItems = EmailReceiveTimeType.values.map((timeType) {
+      return PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupMenuItemActionWidget(
+          menuAction: PopupMenuItemDateFilterAction(
+            timeType,
+            controller.emailReceiveTimeType.value,
+            AppLocalizations.of(context),
+            controller.imagePaths,
+          ),
+          menuActionClick: (menuAction) {
+            popBack();
+            controller.selectReceiveTimeQuickSearchFilter(
+              context,
+              menuAction.action,
+            );
+          },
+        ),
+      );
+    }).toList();
+
+    controller.openPopupMenuAction(context, position, popupMenuItems);
   }
 
   void _openContextMenuDateFilter(BuildContext context) {
@@ -366,6 +378,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       context: context,
       itemActions: contextMenuActions,
       onContextMenuActionClick: (menuAction) {
+        popBack();
         controller.selectReceiveTimeQuickSearchFilter(
           context,
           menuAction.action,
@@ -375,15 +388,28 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   void _openPopupMenuSortFilter(BuildContext context, RelativeRect position) {
-    controller.openPopupMenuAction(
-      context,
-      position,
-      _popupMenuEmailSortOrderType(
-        context,
-        controller.emailSortOrderType.value,
-        controller.selectSortOrderQuickSearchFilter
-      )
-    );
+    final popupMenuItems = EmailSortOrderType.values.map((sortType) {
+      return PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupMenuItemActionWidget(
+          menuAction: PopupMenuItemSortOrderTypeAction(
+            sortType,
+            controller.emailSortOrderType.value,
+            AppLocalizations.of(context),
+            controller.imagePaths,
+          ),
+          menuActionClick: (menuAction) {
+            popBack();
+            controller.selectSortOrderQuickSearchFilter(
+              context,
+              menuAction.action,
+            );
+          },
+        ),
+      );
+    }).toList();
+
+    controller.openPopupMenuAction(context, position, popupMenuItems);
   }
 
   void _openContextMenuSortFilter(BuildContext context) {
@@ -407,39 +433,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         );
       },
     );
-  }
-
-  List<PopupMenuEntry> _popupMenuEmailReceiveTimeType(
-      BuildContext context,
-      EmailReceiveTimeType? receiveTimeSelected,
-      Function(EmailReceiveTimeType)? onCallBack
-  ) {
-    return EmailReceiveTimeType.values
-      .map((timeType) => PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: EmailReceiveTimeActionTileWidget(
-          receiveTimeSelected: receiveTimeSelected,
-          receiveTimeType: timeType,
-          onCallBack: onCallBack
-        )))
-      .toList();
-  }
-
-  List<PopupMenuEntry> _popupMenuEmailSortOrderType(
-    BuildContext context,
-    EmailSortOrderType? sortTypeSelected,
-    Function(BuildContext, EmailSortOrderType)? onCallBack
-  ) {
-    return EmailSortOrderType.values
-      .map((sortType) => PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: EmailSortByActionTitleWidget(
-          sortType: sortType,
-          imagePaths: controller.imagePaths,
-          onSortOrderSelected: onCallBack,
-          sortTypeSelected: sortTypeSelected,
-        ),
-      )).toList();
   }
 
   Widget _buildShowAllResultSearchButton(BuildContext context, String textSearch) {

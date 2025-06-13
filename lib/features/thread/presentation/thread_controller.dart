@@ -904,13 +904,7 @@ class ThreadController extends BaseController with EmailActionController {
     mailboxDashBoardController.listEmailSelected.clear();
   }
 
-  void closeFilterMessageActionSheet() {
-    popBack();
-  }
-
   void filterMessagesAction(FilterMessageOption filterOption) {
-    popBack();
-
     final newFilterOption = mailboxDashBoardController.filterMessageOption.value == filterOption
         ? FilterMessageOption.all
         : filterOption;
