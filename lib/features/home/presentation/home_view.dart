@@ -14,7 +14,7 @@ class HomeView extends GetWidget<HomeController> {
   Widget build(BuildContext context) {
     ThemeUtils.setSystemDarkUIStyle();
 
-    if (PlatformInfo.isIOS) {
+    if (PlatformInfo.isMobile) {
       return ColoredBox(
         color: Colors.white,
         child: Stack(
