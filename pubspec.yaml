@@ -374,12 +374,11 @@ flutter_icons:
 
 flutter_native_splash:
   color: "#ffffff"
-  image_ios: "assets/icons/icon_logo_ios.png"
-  branding_ios: "assets/icons/icon_twp.png"
-  image_android: "assets/icons/icon_logo_android.png"
-  android_12: 
-    color: "#ffffff"
-    image: "assets/icons/icon_logo_android.png"
+  image: "assets/icons/icon_logo_ios.png"
+  branding: "assets/icons/icon_twp.png"
+  android_12:
+    image: "assets/icons/icon_android12.png"
+    branding: "assets/icons/icon_twp_android12.png"
 
 cider:
   link_template:
