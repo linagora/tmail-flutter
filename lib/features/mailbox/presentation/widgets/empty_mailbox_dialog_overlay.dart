@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/empty_mailbox_dialog_overlay_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class EmptyMailboxDialogOverlay extends StatelessWidget {
 
@@ -33,7 +34,7 @@ class EmptyMailboxDialogOverlay extends StatelessWidget {
     return PointerInterceptor(
       child: PhysicalShape(
         clipBehavior: Clip.antiAlias,
-        clipper: SideArrowClipper(),
+        clipper: SideArrowClipper(isRight: AppUtils.isDirectionRTL(context)),
         color: EmptyMailboxDialogOverlayStyles.backgroundColor,
         shadowColor: EmptyMailboxDialogOverlayStyles.shadowColor,
         elevation: EmptyMailboxDialogOverlayStyles.elevation,
