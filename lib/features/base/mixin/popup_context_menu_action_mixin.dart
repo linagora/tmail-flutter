@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin PopupContextMenuActionMixin {
 
-  void openContextMenuAction(
+  Future<void> openContextMenuAction(
     BuildContext context,
     List<Widget> actionTiles,
     {
@@ -18,7 +18,7 @@ mixin PopupContextMenuActionMixin {
       Key? key,
     }
   ) async {
-    await (CupertinoActionSheetBuilder(context, key: key)
+    return await (CupertinoActionSheetBuilder(context, key: key)
         ..addTiles(actionTiles)
         ..addCancelButton(cancelButton ?? buildCancelButton(context)))
       .show();
@@ -32,12 +32,12 @@ mixin PopupContextMenuActionMixin {
     if (PlatformInfo.isWeb) {
       getBinding<MailboxDashBoardController>()?.isPopupMenuOpened.value = true;
     }
-    await showMenu(
+    return await showMenu(
       context: context,
       position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
       color: Colors.white,
       surfaceTintColor: Colors.white,
-      menuPadding: const EdgeInsets.only(top: 8, bottom: 8),
+      menuPadding: const EdgeInsets.symmetric(vertical: 8),
       elevation: 8,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(6)),

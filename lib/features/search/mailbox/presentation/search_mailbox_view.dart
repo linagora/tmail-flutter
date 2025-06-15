@@ -182,9 +182,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
           return LayoutBuilder(builder: (context, constraints) {
             final mailboxCurrent = controller.listMailboxSearched[index];
             return MailboxSearchedItemBuilder(
-              controller.imagePaths,
-              controller.responsiveUtils,
-              mailboxCurrent,
+              presentationMailbox: mailboxCurrent,
               maxWidth: constraints.maxWidth,
               onDragEmailToMailboxAccepted: controller.dashboardController.dragSelectedMultipleEmailToMailboxAction,
               onClickOpenMailboxAction: (mailbox) => controller.openMailboxAction(context, mailbox),
@@ -260,7 +258,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     );
   }
 
-  void _openMailboxMenuAction(
+  Future<void> _openMailboxMenuAction(
     BuildContext context,
     PresentationMailbox mailbox,
     {RelativeRect? position}
@@ -282,9 +280,9 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         isSubAddressingSupported,
       );
 
-      if (contextMenuActions.isEmpty) return;
+      if (contextMenuActions.isEmpty) return Future.value();
 
-      controller.openContextMenuAction(
+      return controller.openContextMenuAction(
         context,
         contextMenuMailboxActionTiles(
           context,
@@ -304,7 +302,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         isSubAddressingSupported,
       );
 
-      if (popupMenuActions.isEmpty) return;
+      if (popupMenuActions.isEmpty) Future.value();
 
       final popupMenuItems = popupMenuActions.map((menuAction) {
         return PopupMenuItem(
@@ -323,7 +321,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         );
       }).toList();
 
-      controller.openPopupMenuAction(context, position, popupMenuItems);
+      return controller.openPopupMenuAction(context, position, popupMenuItems);
     }
   }
 }

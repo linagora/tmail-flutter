@@ -63,7 +63,7 @@ extension HandleMailboxActionExtension on MailboxController {
     );
   }
 
-  void openMailboxContextMenuAction(
+  Future<void> openMailboxContextMenuAction(
     BuildContext context,
     RelativeRect position,
     PresentationMailbox mailbox,
@@ -82,9 +82,9 @@ extension HandleMailboxActionExtension on MailboxController {
         isSubAddressingSupported,
       );
 
-      if (contextMenuActions.isEmpty) return;
+      if (contextMenuActions.isEmpty) return Future.value();
 
-      openContextMenuAction(
+      return openContextMenuAction(
         context,
         contextMenuMailboxActionTiles(
           context,
@@ -104,7 +104,7 @@ extension HandleMailboxActionExtension on MailboxController {
         isSubAddressingSupported,
       );
 
-      if (popupMenuActions.isEmpty) return;
+      if (popupMenuActions.isEmpty) return Future.value();
 
       final popupMenuItems = popupMenuActions.map((menuAction) {
         return PopupMenuItem(
@@ -119,7 +119,7 @@ extension HandleMailboxActionExtension on MailboxController {
         );
       }).toList();
 
-      openPopupMenuAction(context, position, popupMenuItems);
+      return openPopupMenuAction(context, position, popupMenuItems);
     }
   }
 }

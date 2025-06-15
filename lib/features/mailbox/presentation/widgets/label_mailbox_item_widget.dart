@@ -2,13 +2,16 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/label_mailbox_item_widget_styles.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/styles/trailing_mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/empty_mailbox_popup_dialog_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_expand_button.dart';
@@ -47,6 +50,7 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
   final _imagePaths = Get.find<ImagePaths>();
   
   bool _popupVisible = false;
+  bool _morePopupMenuVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +108,7 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
       responsiveUtils: _responsiveUtils,
       imagePaths: _imagePaths,
       isItemHovered: widget.isItemHovered,
-      onMenuActionClick: widget.onMenuActionClick,
+      isShowMoreButton: _shouldShowMorePopupMenu,
     );
 
     final childWidget = Row(
@@ -120,6 +124,45 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
                 widget.onEmptyMailboxActionCallback?.call(mailboxNode);
               },
               onPopupVisibleChange: _onPopupVisibleChange,
+            ),
+          ),
+        if (_showCleanButton(context) && !_shouldShowMorePopupMenu)
+          const Padding(
+            padding: TrailingMailboxItemWidgetStyles.menuIconPadding,
+            child: SizedBox(width: TrailingMailboxItemWidgetStyles.menuIconSize),
+          ),
+        if (_showMoreButton(context))
+          Offstage(
+            offstage: !_shouldShowMorePopupMenu,
+            child: TMailButtonWidget.fromIcon(
+              margin: _responsiveUtils.isDesktop(context) &&
+                      widget.mailboxNode.item.allowedHasEmptyAction
+                  ? EdgeInsets.zero
+                  : TrailingMailboxItemWidgetStyles.menuIconMargin,
+              icon: _imagePaths.icMoreVertical,
+              iconSize: widget.mailboxNode.item.isTeamMailboxes
+                  ? 17
+                  : TrailingMailboxItemWidgetStyles.menuIconSize,
+              padding: widget.mailboxNode.item.isTeamMailboxes
+                  ? const EdgeInsets.all(3)
+                  : TrailingMailboxItemWidgetStyles.menuIconPadding,
+              backgroundColor: _morePopupMenuVisible
+                  ? Theme.of(context).colorScheme.outline.withOpacity(0.08)
+                  : TrailingMailboxItemWidgetStyles.menuIconBackgroundColor,
+              onTapActionAtPositionCallback: (position) {
+                  if (!_responsiveUtils.isScreenWithShortestSide(context)) {
+                    _onMorePopupMenuVisibleChange(true);
+                  }
+
+                  widget.onMenuActionClick
+                      ?.call(position, widget.mailboxNode)
+                      .whenComplete(() {
+                        if (context.mounted &&
+                            !_responsiveUtils.isScreenWithShortestSide(context)) {
+                          _onMorePopupMenuVisibleChange(false);
+                        }
+                      });
+              },
             ),
           ),
         trailingWidget,
@@ -153,12 +196,23 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
     }
   }
 
+  void _onMorePopupMenuVisibleChange(bool visible) {
+    if (_morePopupMenuVisible != visible) {
+      setState(() => _morePopupMenuVisible = visible);
+    }
+  }
+
   bool get _shouldShowPopup => widget.isItemHovered || _popupVisible;
+
+  bool get _shouldShowMorePopupMenu =>
+      widget.isItemHovered || _morePopupMenuVisible;
 
   bool _showCleanButton(BuildContext context) {
     return _responsiveUtils.isWebDesktop(context) &&
         widget.mailboxNode.item.allowedHasEmptyAction;
   }
+
+  bool _showMoreButton(BuildContext context) => PlatformInfo.isWeb;
 
   TextStyle get _displayNameTextStyle {
     if (widget.isSelected) {

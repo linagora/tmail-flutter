@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/platform_info.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focused_menu_custom/focused_menu.dart';
 import 'package:focused_menu_custom/modals.dart';
+import 'package:get/get.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -17,9 +19,7 @@ import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_
 
 class MailboxSearchedItemBuilder extends StatefulWidget {
 
-  final PresentationMailbox _presentationMailbox;
-  final ImagePaths _imagePaths;
-  final ResponsiveUtils _responsiveUtils;
+  final PresentationMailbox presentationMailbox;
   final double? maxWidth;
   final OnClickOpenMailboxAction? onClickOpenMailboxAction;
   final OnClickOpenMenuMailboxAction? onClickOpenMenuMailboxAction;
@@ -27,27 +27,28 @@ class MailboxSearchedItemBuilder extends StatefulWidget {
   final OnLongPressMailboxAction? onLongPressMailboxAction;
   final List<FocusedMenuItem>? listPopupMenuItemAction;
 
-  const MailboxSearchedItemBuilder(
-    this._imagePaths,
-    this._responsiveUtils,
-    this._presentationMailbox,
-    {
-      Key? key,
-      this.maxWidth,
-      this.onClickOpenMailboxAction,
-      this.onClickOpenMenuMailboxAction,
-      this.onDragEmailToMailboxAccepted,
-      this.onLongPressMailboxAction,
-      this.listPopupMenuItemAction
-    }
-  ) : super(key: key);
+  const MailboxSearchedItemBuilder({
+    Key? key,
+    required this.presentationMailbox,
+    this.maxWidth,
+    this.onClickOpenMailboxAction,
+    this.onClickOpenMenuMailboxAction,
+    this.onDragEmailToMailboxAccepted,
+    this.onLongPressMailboxAction,
+    this.listPopupMenuItemAction,
+  }) : super(key: key);
 
   @override
   State<MailboxSearchedItemBuilder> createState() => _MailboxSearchedItemBuilderState();
 }
 
 class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder> {
+
+  final ImagePaths _imagePaths = Get.find<ImagePaths>();
+  final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
+
   bool isHoverItem = false;
+  bool _popupMenuVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +56,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
       return DragTarget<List<PresentationEmail>>(
         builder: (_, __, ___) => _buildMailboxItem(context),
         onAcceptWithDetails: (emails) {
-          widget.onDragEmailToMailboxAccepted?.call(emails.data, widget._presentationMailbox);
+          widget.onDragEmailToMailboxAccepted?.call(emails.data, widget.presentationMailbox);
         }
       );
     } else {
@@ -73,10 +74,10 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
             borderRadius: BorderRadius.circular(8),
             color: getBackgroundColorItem(context)
           ),
-          padding: SearchMailboxUtils.getPaddingItemListView(context, widget._responsiveUtils),
+          padding: SearchMailboxUtils.getPaddingItemListView(context, _responsiveUtils),
           child: Row(
-            crossAxisAlignment: widget._presentationMailbox.mailboxPath?.isNotEmpty == true
-              || widget._presentationMailbox.isTeamMailboxes
+            crossAxisAlignment: widget.presentationMailbox.mailboxPath?.isNotEmpty == true
+              || widget.presentationMailbox.isTeamMailboxes
                 ? CrossAxisAlignment.start
                 : CrossAxisAlignment.center,
             children: [
@@ -98,7 +99,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
       );
     } else {
       return ResponsiveWidget(
-        responsiveUtils: widget._responsiveUtils,
+        responsiveUtils: _responsiveUtils,
         mobile: _buildMailboxItemMobile(),
         tablet: _buildMailboxItemTablet()
       );
@@ -121,10 +122,10 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
           onTap: _onTapMailboxAction,
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           child: Padding(
-            padding: SearchMailboxUtils.getPaddingItemListView(context, widget._responsiveUtils),
+            padding: SearchMailboxUtils.getPaddingItemListView(context, _responsiveUtils),
             child: Row(
-              crossAxisAlignment: widget._presentationMailbox.mailboxPath?.isNotEmpty == true
-                || widget._presentationMailbox.isTeamMailboxes
+              crossAxisAlignment: widget.presentationMailbox.mailboxPath?.isNotEmpty == true
+                || widget.presentationMailbox.isTeamMailboxes
                   ? CrossAxisAlignment.start
                   : CrossAxisAlignment.center,
               children: [
@@ -155,10 +156,10 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
         onLongPress: _onLongPressMailboxAction,
         borderRadius: const BorderRadius.all(Radius.circular(8)),
         child: Padding(
-          padding: SearchMailboxUtils.getPaddingItemListView(context, widget._responsiveUtils),
+          padding: SearchMailboxUtils.getPaddingItemListView(context, _responsiveUtils),
           child: Row(
-            crossAxisAlignment: widget._presentationMailbox.mailboxPath?.isNotEmpty == true
-              || widget._presentationMailbox.isTeamMailboxes
+            crossAxisAlignment: widget.presentationMailbox.mailboxPath?.isNotEmpty == true
+              || widget.presentationMailbox.isTeamMailboxes
                 ? CrossAxisAlignment.start
                 : CrossAxisAlignment.center,
             children: [
@@ -181,22 +182,22 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   void _onTapMailboxAction() {
-    if (widget._presentationMailbox.allowedToDisplay) {
-      widget.onClickOpenMailboxAction?.call(widget._presentationMailbox);
+    if (widget.presentationMailbox.allowedToDisplay) {
+      widget.onClickOpenMailboxAction?.call(widget.presentationMailbox);
     }
   }
 
   void _onLongPressMailboxAction() {
     if (widget.listPopupMenuItemAction?.isNotEmpty == true) {
-      widget.onLongPressMailboxAction?.call(widget._presentationMailbox);
+      widget.onLongPressMailboxAction?.call(widget.presentationMailbox);
     }
   }
 
   Widget _buildMailboxIcon() {
     return SvgPicture.asset(
-      widget._presentationMailbox.allowedToDisplay
-        ? widget._presentationMailbox.getMailboxIcon(widget._imagePaths)
-        : widget._imagePaths.icHideFolder,
+      widget.presentationMailbox.allowedToDisplay
+        ? widget.presentationMailbox.getMailboxIcon(_imagePaths)
+        : _imagePaths.icHideFolder,
       width: 20,
       height: 20,
       fit: BoxFit.fill
@@ -205,7 +206,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
 
   Widget _buildTitleItem(BuildContext context) {
     return TextOverflowBuilder(
-      widget._presentationMailbox.getDisplayName(context),
+      widget.presentationMailbox.getDisplayName(context),
       style: const TextStyle(
         fontSize: 15,
         color: Colors.black
@@ -214,18 +215,18 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   Widget _buildSubtitleItem() {
-    if (widget._presentationMailbox.mailboxPath?.isNotEmpty == true) {
+    if (widget.presentationMailbox.mailboxPath?.isNotEmpty == true) {
       return TextOverflowBuilder(
-        (widget._presentationMailbox.mailboxPath ?? ''),
+        (widget.presentationMailbox.mailboxPath ?? ''),
         style: const TextStyle(
           fontSize: 11,
           color: AppColor.colorMailboxPath,
           fontWeight: FontWeight.normal
         ),
       );
-    } else if (widget._presentationMailbox.isTeamMailboxes) {
+    } else if (widget.presentationMailbox.isTeamMailboxes) {
       return TextOverflowBuilder(
-        widget._presentationMailbox.emailTeamMailBoxes,
+        widget.presentationMailbox.emailTeamMailBoxes,
         style: const TextStyle(
           fontSize: 11,
           color: AppColor.colorEmailAddressFull,
@@ -238,25 +239,29 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   }
 
   Widget _buildMenuIcon(BuildContext context) {
-    if (isHoverItem && widget.listPopupMenuItemAction?.isNotEmpty == true) {
-      return InkWell(
-        onTapDown: (detail) {
-          final screenSize = MediaQuery.of(context).size;
-          final offset = detail.globalPosition;
-          final position = RelativeRect.fromLTRB(
-            offset.dx,
-            offset.dy,
-            screenSize.width - offset.dx,
-            screenSize.height - offset.dy,
-          );
-          widget.onClickOpenMenuMailboxAction?.call(position, widget._presentationMailbox);
-        },
-        child: SvgPicture.asset(
-          widget._imagePaths.icComposerMenu,
-          width: 20,
-          height: 20,
-          fit: BoxFit.fill
-        )
+    if (widget.listPopupMenuItemAction?.isNotEmpty == true) {
+      return Offstage(
+        offstage: !_shouldShowPopupMenu,
+        child: TMailButtonWidget.fromIcon(
+          icon: _imagePaths.icMoreVertical,
+          backgroundColor: _popupMenuVisible
+              ? Theme.of(context).colorScheme.outline.withOpacity(0.08)
+              : Colors.transparent,
+          iconSize: 16,
+          padding: const EdgeInsetsDirectional.all(2),
+          onTapActionAtPositionCallback: (position) {
+            if (!_responsiveUtils.isScreenWithShortestSide(context)) {
+              _onPopupMenuVisibleChange(true);
+            }
+            widget.onClickOpenMenuMailboxAction
+              ?.call(position, widget.presentationMailbox)
+              .whenComplete(() {
+                if (context.mounted && !_responsiveUtils.isScreenWithShortestSide(context)) {
+                  _onPopupMenuVisibleChange(false);
+                }
+              });
+          },
+        ),
       );
     } else {
       return const SizedBox.shrink();
@@ -267,9 +272,19 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
     if (isHoverItem) {
       return AppColor.colorBgMailboxSelected;
     } else {
-      return widget._responsiveUtils.isDesktop(context)
+      return _responsiveUtils.isDesktop(context)
         ? AppColor.colorBgDesktop
         : Colors.transparent;
+    }
+  }
+
+  bool get _shouldShowPopupMenu =>
+      (isHoverItem && widget.listPopupMenuItemAction?.isNotEmpty == true) ||
+      _popupMenuVisible;
+
+  void _onPopupMenuVisibleChange(bool visible) {
+    if (_popupMenuVisible != visible) {
+      setState(() => _popupMenuVisible = visible);
     }
   }
 }
