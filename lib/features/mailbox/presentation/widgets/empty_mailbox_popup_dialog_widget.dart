@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/styles/empty_mailbox
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/empty_mailbox_dialog_overlay.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnPopupVisibleChange = void Function(bool visible);
 
@@ -47,9 +48,13 @@ class _EmptyMailboxPopupDialogWidgetState extends State<EmptyMailboxPopupDialogW
         onTap: () => _setVisible(false),
       ),
       child: PortalTarget(
-        anchor: const Aligned(
-          follower: Alignment.bottomLeft,
-          target: Alignment.topRight,
+        anchor: Aligned(
+          follower: AppUtils.isDirectionRTL(context)
+              ? Alignment.bottomRight
+              : Alignment.bottomLeft,
+          target: AppUtils.isDirectionRTL(context)
+              ? Alignment.topLeft
+              : Alignment.topRight,
           offset: EmptyMailboxPopupDialogWidgetStyles.dialogOverlayOffset
         ),
         portalFollower: EmptyMailboxDialogOverlay(
@@ -66,7 +71,9 @@ class _EmptyMailboxPopupDialogWidgetState extends State<EmptyMailboxPopupDialogW
           textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: AppColor.steelGrayA540,
           ),
-          backgroundColor: Colors.transparent,
+          backgroundColor: _visible
+            ? Theme.of(context).colorScheme.outline.withOpacity(0.08)
+            : Colors.transparent,
           padding: EmptyMailboxPopupDialogWidgetStyles.emptyButtonPadding,
           onTapActionCallback: () => _setVisible(true),
         )
