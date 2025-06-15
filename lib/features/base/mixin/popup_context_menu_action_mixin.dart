@@ -77,7 +77,7 @@ mixin PopupContextMenuActionMixin {
       position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
       color: Colors.white,
       surfaceTintColor: Colors.white,
-      menuPadding: const EdgeInsets.only(top: 8, bottom: 8),
+      menuPadding: const EdgeInsets.symmetric(vertical: 8),
       elevation: 8,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(6)),

@@ -210,7 +210,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         onMenuActionClick: PlatformInfo.isMobile
           ? null
           : (position, mailboxNode) {
-              controller.openMailboxContextMenuAction(
+              return controller.openMailboxContextMenuAction(
                 context,
                 position,
                 mailboxNode.item,
