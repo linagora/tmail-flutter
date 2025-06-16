@@ -5,15 +5,16 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/get_mailbox_contain_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_loading_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_details_email_views.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
@@ -43,7 +44,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               mailboxContain: _getMailboxContain(),
               onEmailActionClick: controller.threadDetailOnEmailActionClick,
               onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
-                mailboxContain: controller.mailboxDashBoardController.getMailboxContain(presentationEmail),
+                mailboxContain: controller.getThreadDetailEmailMailboxContains(presentationEmail),
                 presentationEmail: presentationEmail,
                 position: position,
                 responsiveUtils: controller.responsiveUtils,
@@ -167,11 +168,12 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
         return controller.getThreadDetailLoadingView(
           isResponsiveDesktop: false,
           isLoading: true,
+          isExpanded: false,
         );
       }
 
       if (controller.emailIdsPresentation.length == 1 &&
-          controller.emailIdsPresentation.values.firstOrNull != null) {
+          controller.emailIdsPresentation.values.firstOrNull?.emailInThreadStatus == EmailInThreadStatus.expanded) {
         final emailId = controller.emailIdsPresentation.values.firstOrNull!.id;
 
         return EmailView(

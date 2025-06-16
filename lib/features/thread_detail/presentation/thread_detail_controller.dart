@@ -18,6 +18,7 @@ import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
@@ -41,6 +42,7 @@ import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_detail_status_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_email_moved_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_thread_by_id_failure.dart';
@@ -48,6 +50,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/refresh_thread_detail_on_setting_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_setting_status.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_collapsed_email_download_states.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_star_success.dart';
@@ -186,10 +189,13 @@ class ThreadDetailController extends BaseController {
         }
       } else if (action is UpdatedThreadDetailSettingAction) {
         consumeState(_getThreadDetailStatusInteractor.execute());
-        mailboxDashBoardController.dispatchThreadDetailUIAction(
-          ThreadDetailUIAction(),
-        );
+      } else if (action is EmailMovedAction) {
+        handleEmailMovedAction(action);
       }
+      // Reset [threadDetailUIAction] to original value
+      mailboxDashBoardController.dispatchThreadDetailUIAction(
+        ThreadDetailUIAction(),
+      );
     });
     ever(mailboxDashBoardController.emailUIAction, (action) {
       if (action is RefreshThreadDetailAction) {
@@ -254,6 +260,15 @@ class ThreadDetailController extends BaseController {
     if (failure is GetThreadDetailStatusFailure) {
       threadDetailSettingStatus = ThreadDetailSettingStatus.enabled;
       refreshThreadDetailOnSettingChanged();
+    }
+    if (failure is PrintEmailFailure) {
+      if (currentOverlayContext != null && currentContext != null) {
+        appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).unknownError,
+        );
+      }
+      return;
     }
     super.handleFailureViewState(failure);
   }

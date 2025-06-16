@@ -3,7 +3,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:model/email/email_in_thread_status.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/get_mailbox_contain_extension.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load_more_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_open_email_address_detail_action.dart';
@@ -65,7 +65,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           emailLoaded: null,
           onEmailActionClick: threadDetailOnEmailActionClick,
           onMoreActionClick: (presentationEmail, position) => emailActionReactor.handleMoreEmailAction(
-            mailboxContain: mailboxDashBoardController.getMailboxContain(presentationEmail),
+            mailboxContain: getThreadDetailEmailMailboxContains(presentationEmail),
             presentationEmail: presentationEmail,
             position: position,
             responsiveUtils: responsiveUtils,
