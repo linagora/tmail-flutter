@@ -6,6 +6,7 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
@@ -128,7 +129,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       accountId!,
       presentationEmail,
       mapMailbox: mailboxDashBoardController.mapMailboxById,
-      selectedMailbox: mailboxDashBoardController.selectedMailbox.value,
+      selectedMailbox: presentationEmail.findMailboxContain(
+        mailboxDashBoardController.mapMailboxById,
+      ),
       isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
     );
 
