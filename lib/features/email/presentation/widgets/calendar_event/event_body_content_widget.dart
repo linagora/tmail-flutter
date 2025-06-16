@@ -46,7 +46,8 @@ class EventBodyContentWidget extends StatelessWidget {
       child: Stack(
         children: [
           if (PlatformInfo.isWeb)
-            Padding(
+            Container(
+              constraints: const BoxConstraints(maxHeight: EventDescriptionDetailWidgetStyles.maxHeight),
               padding: const EdgeInsetsDirectional.only(end: EventDescriptionDetailWidgetStyles.webContentPadding),
               child: LayoutBuilder(builder: (context, constraints) {
                 return Stack(
