@@ -141,6 +141,10 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                         debounceDuration: TextFieldAutoCompleteEmailAddressWebStyles.debounceDuration,
                         inputDecoration: InputDecoration(
                           filled: true,
+                          constraints: const BoxConstraints(
+                            maxHeight:
+                              AdvancedSearchInputFormStyle.inputFieldHeight,
+                          ),
                           fillColor: TextFieldAutoCompleteEmailAddressWebStyles.textInputFillColor,
                           border: TextFieldAutoCompleteEmailAddressWebStyles.textInputBorder,
                           hintText: widget.field.getHintText(context),

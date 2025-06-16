@@ -35,7 +35,7 @@ class DateDropDownButton extends StatelessWidget {
             .toList(),
           value: receiveTimeSelected,
           customButton: Container(
-            height: 44,
+            height: AdvancedSearchInputFormStyle.inputFieldHeight,
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(
                 Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
@@ -64,7 +64,7 @@ class DateDropDownButton extends StatelessWidget {
             }
           },
           buttonStyleData: ButtonStyleData(
-            height: 44,
+            height: AdvancedSearchInputFormStyle.inputFieldHeight,
             padding: const EdgeInsetsDirectional.only(start: 12, end: 8),
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(

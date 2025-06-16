@@ -136,8 +136,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
                   ),
                 ),
               ),
-              height: 44,
-              width: 44,
+              height: AdvancedSearchInputFormStyle.inputFieldHeight,
+              width: AdvancedSearchInputFormStyle.inputFieldHeight,
               child: TMailButtonWidget.fromIcon(
                 icon: controller.imagePaths.icCalendarSB,
                 iconSize: 22,
@@ -257,7 +257,10 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             mainAxisSize: MainAxisSize.min,
             children: child,
           )
-        : SizedBox(height: 44, child: Row(children: child));
+        : SizedBox(
+            height: AdvancedSearchInputFormStyle.inputFieldHeight,
+            child: Row(children: child),
+          );
   }
 
   bool _isVerticalArrange(BuildContext context) =>
@@ -342,6 +345,9 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         },
         onTextChange: onTextChange,
         decoration: InputDecoration(
+          constraints: const BoxConstraints(
+            maxHeight: AdvancedSearchInputFormStyle.inputFieldHeight,
+          ),
           filled: true,
           fillColor: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
           contentPadding: const EdgeInsetsDirectional.only(start: 12, end: 8),
