@@ -307,7 +307,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B = holdersList[2];
   E = holdersList[10];
   C = hunkHelpers.updateHolder(holdersList[9], C);
-  D = holdersList[19];
+  D = holdersList[18];
   C._ElevatedButtonWithIcon.prototype = {
     defaultStyleOf$1(context) {
       var buttonStyle, t1, defaultFontSize, scaledPadding;
@@ -922,6 +922,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_12_5_12_5 = new A.EdgeInsets(12, 5, 12, 5);
+    D.EdgeInsets_8_12_8_12 = new A.EdgeInsets(8, 12, 8, 12);
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.SizedBox_32_null_null_null = new A.SizedBox(32, null, null, null);
@@ -936,5 +937,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "kPh5ojfWlES/V8yM0devkcrqLP8=");
+})($__dart_deferred_initializers__, "CQN7TBuiVUSFI3uWmLhSngSdffc=");
 ;
