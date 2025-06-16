@@ -25,7 +25,7 @@ class EmailAttachmentsStyles {
   static const FontWeight buttonFontWeight = FontWeight.w400;
   static const FontWeight buttonMoreAttachmentsFontWeight = FontWeight.w500;
 
-  static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 12);
+  static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 12, top: 16);
   static const EdgeInsetsGeometry buttonPadding = EdgeInsets.symmetric(vertical: 8, horizontal: 12);
   static const EdgeInsetsGeometry mobileButtonPadding = EdgeInsets.symmetric(vertical: 8, horizontal: 3);
   static const EdgeInsetsGeometry moreButtonMargin = EdgeInsetsDirectional.only(bottom: 2, start: 8);
