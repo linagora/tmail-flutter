@@ -6,12 +6,12 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension ThreadDetailOnEmailActionClick on ThreadDetailController {
@@ -129,7 +129,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       accountId!,
       presentationEmail,
       mapMailbox: mailboxDashBoardController.mapMailboxById,
-      selectedMailbox: mailboxDashBoardController.selectedMailbox.value,
+      selectedMailbox: presentationEmail.findMailboxContain(
+        mailboxDashBoardController.mapMailboxById,
+      ),
       isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
     );
 
@@ -263,7 +265,6 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       accountId: accountId,
       baseDownloadUrl: session?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
       transformConfiguration: TransformConfiguration.forPreviewEmailOnWeb(),
-      onGetEmailContentFailure: _showUnknownErrorToast,
     ));
   }
   
@@ -366,14 +367,5 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       },
       emailLoaded: null,
     );
-  }
-
-  _showUnknownErrorToast() {
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).unknownError,
-      );
-    }
   }
 }

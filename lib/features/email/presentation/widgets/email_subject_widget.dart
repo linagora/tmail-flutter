@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_subject_styles.dart';
@@ -19,10 +20,10 @@ class EmailSubjectWidget extends StatelessWidget {
       padding: EmailSubjectStyles.padding,
       child: Text(
         presentationEmail.getEmailTitle(),
-        maxLines: EmailSubjectStyles.maxLines,
         style: ThemeUtils.textStyleHeadingH5(color: Colors.black).copyWith(
-          overflow: TextOverflow.ellipsis,
+          overflow: PlatformInfo.isWeb ? TextOverflow.ellipsis : null,
         ),
+        maxLines: EmailSubjectStyles.maxLines,
       )
     );
   }
