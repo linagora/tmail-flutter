@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
@@ -357,22 +358,26 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     PresentationEmail presentationEmail, {
     required String ownEmailAddress,
     required EmailLoaded? emailLoaded,
-    VoidCallback? onGetEmailContentFailure,
     Session? session,
     AccountId? accountId,
     String? baseDownloadUrl,
     TransformConfiguration? transformConfiguration,
   }) async* {
-    emailLoaded ??= await _getEmailLoaded(
-      session,
-      accountId,
-      presentationEmail.id,
-      baseDownloadUrl,
-      transformConfiguration,
-    );
-    
-    if (emailLoaded == null) {
-      onGetEmailContentFailure?.call();
+    try {
+      emailLoaded ??= await _getEmailLoaded(
+        session,
+        accountId,
+        presentationEmail.id,
+        baseDownloadUrl,
+        transformConfiguration,
+      );
+      
+      if (emailLoaded == null) {
+        yield Left(PrintEmailFailure());
+        return;
+      }
+    } catch (e) {
+      yield Left(PrintEmailFailure(exception: e));
       return;
     }
 
@@ -830,7 +835,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     EmailId? emailId,
     String? baseDownloadUrl,
     TransformConfiguration? transformConfiguration,
-  ) {
+  ) async {
     if (session == null ||
         accountId == null ||
         emailId == null ||
@@ -840,33 +845,34 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
       return Future.value(null);
     }
 
-    return _getEmailContentInteractor
-      .execute(
-        session,
-        accountId,
-        emailId,
-        baseDownloadUrl,
-        transformConfiguration,
-      )
-      .last
-      .then(
-        (value) {
-          return value.fold(
-            (failure) => null,
-            (success) => success is GetEmailContentSuccess
-              ? EmailLoaded(
-                  htmlContent: success.htmlEmailContent,
-                  attachments: List.of(success.attachments ?? []),
-                  inlineImages: List.of(success.inlineImages ?? []),
-                  emailCurrent: success.emailCurrent,
-                )
-              : null,
-          );
-        },
-        onError: (error) {
-          logError('EmailActionReactor::_getEmailLoaded(): error: $error');
+    final result = await _getEmailContentInteractor.execute(
+      session,
+      accountId,
+      emailId,
+      baseDownloadUrl,
+      transformConfiguration,
+    ).last;
+
+    return result.fold(
+      (failure) {
+        if (failure is FeatureFailure) {
+          throw failure.exception;
+        }
+
+        return null;
+      },
+      (success) {
+        if (success is! GetEmailContentSuccess) {
           return null;
-        },
-      );
+        }
+
+        return EmailLoaded(
+          htmlContent: success.htmlEmailContent,
+          attachments: List.of(success.attachments ?? []),
+          inlineImages: List.of(success.inlineImages ?? []),
+          emailCurrent: success.emailCurrent,
+        );
+      },
+    );
   }
 }
