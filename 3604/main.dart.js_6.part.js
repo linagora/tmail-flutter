@@ -307,7 +307,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B = holdersList[2];
   E = holdersList[10];
   C = hunkHelpers.updateHolder(holdersList[9], C);
-  D = holdersList[19];
+  D = holdersList[18];
   C._ElevatedButtonWithIcon.prototype = {
     defaultStyleOf$1(context) {
       var buttonStyle, t1, defaultFontSize, scaledPadding;
@@ -732,7 +732,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1899
+    $signature: 1900
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -748,7 +748,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 1900
+    $signature: 1901
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -796,7 +796,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 373
+    $signature: 395
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -922,6 +922,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_12_5_12_5 = new A.EdgeInsets(12, 5, 12, 5);
+    D.EdgeInsets_8_12_8_12 = new A.EdgeInsets(8, 12, 8, 12);
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
@@ -937,5 +938,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "V84MMr4uhMZThEBP+C42Jxh3184=");
+})($__dart_deferred_initializers__, "QAVRHQSh9zGnGMidTBmu6Mp3988=");
 ;
