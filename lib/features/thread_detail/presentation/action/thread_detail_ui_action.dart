@@ -1,5 +1,6 @@
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 
 class ThreadDetailUIAction extends UIAction {
@@ -23,3 +24,18 @@ class UpdatedEmailKeywordsAction extends ThreadDetailUIAction {
 }
 
 class UpdatedThreadDetailSettingAction extends ThreadDetailUIAction {}
+
+class EmailMovedAction extends ThreadDetailUIAction {
+  EmailMovedAction({
+    required this.emailId,
+    required this.originalMailboxId,
+    required this.targetMailboxId,
+  });
+
+  final EmailId emailId;
+  final MailboxId originalMailboxId;
+  final MailboxId targetMailboxId;
+
+  @override
+  List<Object?> get props => [emailId, originalMailboxId, targetMailboxId];
+}
