@@ -1,5 +1,4 @@
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -39,7 +38,6 @@ class DesktopListEmailActionHoverWidget extends StatefulWidget {
 class _DesktopListEmailActionHoverWidgetState
     extends State<DesktopListEmailActionHoverWidget> with BaseEmailItemTile {
   final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   bool _popupMenuVisible = false;
 
@@ -121,15 +119,11 @@ class _DesktopListEmailActionHoverWidgetState
               : Colors.transparent,
           tooltipMessage: AppLocalizations.of(context).more,
           onTapActionAtPositionCallback: (position) {
-            if (_responsiveUtils.isScreenWithShortestSide(context)) {
-              widget.onMoreActionClick?.call(widget.presentationEmail, null);
-            } else {
-              _onPopupMenuVisibleChange(true);
+            _onPopupMenuVisibleChange(true);
 
-              widget.onMoreActionClick
-                  ?.call(widget.presentationEmail, position)
-                  .whenComplete(() => _onPopupMenuVisibleChange(false));
-            }
+            widget.onMoreActionClick
+                ?.call(widget.presentationEmail, position)
+                .whenComplete(() => _onPopupMenuVisibleChange(false));
           },
         ),
         const SizedBox(width: 16),

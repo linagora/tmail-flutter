@@ -204,24 +204,18 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           context,
           mailboxNode.item,
         ),
-        onDragItemAccepted: PlatformInfo.isMobile
-          ? null
-          : controller.handleDragItemAccepted,
-        onMenuActionClick: PlatformInfo.isMobile
-          ? null
-          : (position, mailboxNode) {
-              return controller.openMailboxContextMenuAction(
-                context,
-                position,
-                mailboxNode.item,
-              );
-            },
-        onEmptyMailboxActionCallback: PlatformInfo.isMobile
-          ? null
-          : (mailboxNode) => controller.emptyMailboxAction(
-              context,
-              mailboxNode.item,
-            ),
+        onDragItemAccepted: controller.handleDragItemAccepted,
+        onMenuActionClick: (position, mailboxNode) {
+          return controller.openMailboxContextMenuAction(
+            context,
+            position,
+            mailboxNode.item,
+          );
+        },
+        onEmptyMailboxActionCallback: (mailboxNode) => controller.emptyMailboxAction(
+            context,
+            mailboxNode.item,
+          ),
       ));
 
       if (mailboxNode.hasChildren()) {

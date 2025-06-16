@@ -75,53 +75,30 @@ extension HandleMailboxActionExtension on MailboxController {
     final isSubAddressingSupported =
       session?.isSubAddressingSupported(accountId) ?? false;
 
-    if (responsiveUtils.isScreenWithShortestSide(context)) {
-      final contextMenuActions = listContextMenuItemAction(
-        mailbox,
-        mailboxDashBoardController.enableSpamReport,
-        deletedMessageVaultSupported,
-        isSubAddressingSupported,
-        imagePaths,
-        AppLocalizations.of(context),
-      );
+    final popupMenuActions = getListPopupMenuItemAction(
+      AppLocalizations.of(context),
+      imagePaths,
+      mailbox,
+      mailboxDashBoardController.enableSpamReport,
+      deletedMessageVaultSupported,
+      isSubAddressingSupported,
+    );
 
-      if (contextMenuActions.isEmpty) return Future.value();
+    if (popupMenuActions.isEmpty) return Future.value();
 
-      return openBottomSheetContextMenuAction(
-        context: context,
-        itemActions: contextMenuActions,
-        onContextMenuActionClick: (menuAction) => handleMailboxAction(
-          context,
-          menuAction.action,
-          mailbox,
+    final popupMenuItems = popupMenuActions.map((menuAction) {
+      return PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupMenuItemActionWidget(
+          menuAction: menuAction,
+          menuActionClick: (menuAction) {
+            popBack();
+            handleMailboxAction(context, menuAction.action, mailbox);
+          },
         ),
       );
-    } else {
-      final popupMenuActions = getListPopupMenuItemAction(
-        AppLocalizations.of(context),
-        imagePaths,
-        mailbox,
-        mailboxDashBoardController.enableSpamReport,
-        deletedMessageVaultSupported,
-        isSubAddressingSupported,
-      );
+    }).toList();
 
-      if (popupMenuActions.isEmpty) return Future.value();
-
-      final popupMenuItems = popupMenuActions.map((menuAction) {
-        return PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: PopupMenuItemActionWidget(
-            menuAction: menuAction,
-            menuActionClick: (menuAction) {
-              popBack();
-              handleMailboxAction(context, menuAction.action, mailbox);
-            },
-          ),
-        );
-      }).toList();
-
-      return openPopupMenuAction(context, position, popupMenuItems);
-    }
+    return openPopupMenuAction(context, position, popupMenuItems);
   }
 }
