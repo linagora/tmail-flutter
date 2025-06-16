@@ -67,6 +67,9 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
     if (PlatformInfo.isWeb) {
       return InkWell(
         onTap: _onTapMailboxAction,
+        onLongPress: !PlatformInfo.isCanvasKit
+            ? _onLongPressMailboxAction
+            : null,
         onHover: (value) => setState(() => isHoverItem = value),
         child: Container(
           decoration: BoxDecoration(

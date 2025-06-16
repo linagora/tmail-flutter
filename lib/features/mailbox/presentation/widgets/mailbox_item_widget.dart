@@ -124,6 +124,9 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
             child: InkWell(
               key: _key,
               onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
+              onLongPress: !PlatformInfo.isCanvasKit
+                ? () => widget.onLongPressMailboxNodeAction?.call(widget.mailboxNode)
+                : null,
               onHover: (value) => setState(() => _isItemHovered = value),
               borderRadius: const BorderRadius.all(
                 Radius.circular(MailboxItemWidgetStyles.borderRadius),
