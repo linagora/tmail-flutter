@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleEmailActionExtension on SearchEmailController {
-  void handleEmailMoreActionClick(
+  Future<void> handleEmailMoreActionClick(
     BuildContext context,
     RelativeRect position,
     PresentationEmail presentationEmail,
@@ -43,6 +43,6 @@ extension HandleEmailActionExtension on SearchEmailController {
       );
     }).toList();
 
-    openPopupMenuAction(context, position, popupMenuItems);
+    return openPopupMenuAction(context, position, popupMenuItems);
   }
 }

@@ -665,12 +665,12 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   onMoreActionClick: (email, position) {
                     if (controller.responsiveUtils.isScreenWithShortestSide(context) ||
                         position == null) {
-                      controller.openContextMenuAction(
+                      return controller.openContextMenuAction(
                         context,
                         _contextMenuActionTile(context, email)
                       );
                     } else {
-                      controller.handleEmailMoreActionClick(
+                      return controller.handleEmailMoreActionClick(
                         context,
                         position,
                         email,
@@ -718,12 +718,12 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   },
                   onMoreActionClick: (email, position) {
                     if (controller.responsiveUtils.isScreenWithShortestSide(context) || position == null) {
-                      controller.openContextMenuAction(
+                      return controller.openContextMenuAction(
                         context,
                         _contextMenuActionTile(context, email)
                       );
                     } else {
-                      controller.handleEmailMoreActionClick(
+                      return controller.handleEmailMoreActionClick(
                         context,
                         position,
                         email,

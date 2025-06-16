@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_til
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnPressEmailActionClick = void Function(EmailActionType, PresentationEmail);
-typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
+typedef OnMoreActionClick = Future<void> Function(PresentationEmail, RelativeRect?);
 
 mixin BaseEmailItemTile {
 

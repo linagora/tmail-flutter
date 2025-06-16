@@ -650,13 +650,13 @@ class ThreadView extends GetWidget<ThreadController>
     );
   }
 
-  void _handleEmailContextMenuAction(
+  Future<void> _handleEmailContextMenuAction(
     BuildContext context,
     PresentationEmail presentationEmail,
     RelativeRect? position
   ) {
     if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
-      controller.openContextMenuAction(
+      return controller.openContextMenuAction(
         context,
         _contextMenuActionTile(context, presentationEmail)
       );
@@ -696,7 +696,7 @@ class ThreadView extends GetWidget<ThreadController>
         );
       }).toList();
 
-      controller.openPopupMenuAction(context, position, popupMenuItems);
+      return controller.openPopupMenuAction(context, position, popupMenuItems);
     }
   }
 
