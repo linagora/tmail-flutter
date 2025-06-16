@@ -15,7 +15,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/dialog/dialog_route.dart';
 import 'package:http_parser/http_parser.dart';
@@ -43,15 +42,12 @@ import 'package:share_plus/share_plus.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
-import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/send_receipt_to_sender_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/view_entire_message_request.dart';
@@ -70,7 +66,6 @@ import 'package:tmail_ui_user/features/email/domain/state/get_entire_message_as_
 import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_email_by_blob_id_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/preview_email_from_eml_file_state.dart';
@@ -91,7 +86,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
@@ -121,7 +115,6 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/get_mailbox_contain_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -163,7 +156,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final DownloadAttachmentsInteractor _downloadAttachmentsInteractor;
   final DeviceManager _deviceManager;
   final ExportAttachmentInteractor _exportAttachmentInteractor;
-  final MoveToMailboxInteractor _moveToMailboxInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
@@ -232,7 +224,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._downloadAttachmentsInteractor,
     this._deviceManager,
     this._exportAttachmentInteractor,
-    this._moveToMailboxInteractor,
     this._markAsStarEmailInteractor,
     this._downloadAttachmentForWebInteractor,
     this._getAllIdentitiesInteractor,
@@ -284,8 +275,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _exportAttachmentSuccessAction(success);
     } else if (success is ExportAllAttachmentsSuccess) {
       _exportAllAttachmentsSuccessAction(success);
-    } else if (success is MoveToMailboxSuccess) {
-      _moveToMailboxSuccess(success);
     } else if (success is MarkAsStarEmailSuccess) {
       _markAsEmailStarSuccess(success);
     } else if (success is DownloadAttachmentForWebSuccess) {
@@ -781,7 +770,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
-    return mailboxDashBoardController.getMailboxContain(email);
+    return email.findMailboxContain(mailboxDashBoardController.mapMailboxById);
   }
 
   void markAsEmailRead(
@@ -1207,7 +1196,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         accountId!,
         email,
         mapMailbox: mailboxDashBoardController.mapMailboxById,
-        selectedMailbox: mailboxDashBoardController.selectedMailbox.value,
+        selectedMailbox: currentEmail?.findMailboxContain(
+          mailboxDashBoardController.mapMailboxById,
+        ),
         isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
       );
       if (!context.mounted || moveActionRequest == null) return;
@@ -1220,61 +1211,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (_threadDetailController?.emailIdsPresentation.length == 1) {
         _threadDetailController?.closeThreadDetailAction(context);
       }
-    }
-  }
-
-  void _moveToMailbox(
-    BuildContext context,
-    Session session,
-    AccountId accountId,
-    MoveToMailboxRequest moveRequest,
-    Map<EmailId, bool> emailIdsWithReadStatus,
-  ) {
-    consumeState(_moveToMailboxInteractor.execute(
-      session,
-      accountId,
-      moveRequest,
-      emailIdsWithReadStatus,
-    ));
-  }
-
-  void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
-    mailboxDashBoardController.dispatchState(Right(success));
-    if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
-      appToast.showToastMessage(
-        currentOverlayContext!,
-        success.emailActionType.getToastMessageMoveToMailboxSuccess(currentContext!, destinationPath: success.destinationPath),
-        actionName: AppLocalizations.of(currentContext!).undo,
-        onActionClick: () {
-          _revertedToOriginalMailbox(MoveToMailboxRequest(
-            {success.destinationMailboxId: [success.emailId]},
-            success.currentMailboxId,
-            MoveAction.undo,
-            success.emailActionType),
-            success.emailIdsWithReadStatus,
-          );
-        },
-        leadingSVGIcon: imagePaths.icFolderMailbox,
-        leadingSVGIconColor: Colors.white,
-        backgroundColor: AppColor.toastSuccessBackgroundColor,
-        textColor: Colors.white,
-        actionIcon: SvgPicture.asset(imagePaths.icUndo)
-      );
-    }
-  }
-
-  void _revertedToOriginalMailbox(
-    MoveToMailboxRequest newMoveRequest,
-    Map<EmailId, bool> emailIdsWithReadStatus,
-  ) {
-    if (accountId != null && session != null) {
-      _moveToMailbox(
-        currentContext!,
-        session!,
-        accountId!,
-        newMoveRequest,
-        emailIdsWithReadStatus,
-      );
     }
   }
 
