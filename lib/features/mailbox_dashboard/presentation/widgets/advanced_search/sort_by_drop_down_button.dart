@@ -61,7 +61,7 @@ class SortByDropDownButton extends StatelessWidget {
             )).toList(),
           value: sortOrderSelected,
           customButton: Container(
-            height: SortByDropdownStyle.height,
+            height: AdvancedSearchInputFormStyle.inputFieldHeight,
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(
                 Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
@@ -90,7 +90,7 @@ class SortByDropDownButton extends StatelessWidget {
           ),
           onChanged: onSortOrderSelected,
           buttonStyleData: ButtonStyleData(
-            height: SortByDropdownStyle.height,
+            height: AdvancedSearchInputFormStyle.inputFieldHeight,
             padding: SortByDropdownStyle.buttonPadding,
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(

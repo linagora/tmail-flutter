@@ -12,12 +12,14 @@ import 'package:tmail_ui_user/features/composer/presentation/styles/draggable_re
 class DraggableRecipientTagWidget extends StatelessWidget {
 
   final EmailAddress emailAddress;
+  final EdgeInsetsGeometry? padding;
 
   final _imagePaths = Get.find<ImagePaths>();
 
   DraggableRecipientTagWidget({
     super.key,
-    required this.emailAddress
+    required this.emailAddress,
+    this.padding,
   });
 
   @override
@@ -31,7 +33,7 @@ class DraggableRecipientTagWidget extends StatelessWidget {
           ),
           color: DraggableRecipientTagWidgetStyle.backgroundColor
         ),
-        padding: DraggableRecipientTagWidgetStyle.padding,
+        padding: padding ?? DraggableRecipientTagWidgetStyle.padding,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

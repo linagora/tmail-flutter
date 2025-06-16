@@ -55,8 +55,14 @@ class AutoCompleteTagItemWidgetWeb extends StatelessWidget {
               emailAddress: currentEmailAddress,
               prefix: field.getPrefixEmailAddress()
             ),
-            feedback: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
-            childWhenDragging: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
+            feedback: DraggableRecipientTagWidget(
+              emailAddress: currentEmailAddress,
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            ),
+            childWhenDragging: DraggableRecipientTagWidget(
+              emailAddress: currentEmailAddress,
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            ),
             child: TextFieldTapRegion(
               child: InkWell(
                 onTap: () => isCollapsed

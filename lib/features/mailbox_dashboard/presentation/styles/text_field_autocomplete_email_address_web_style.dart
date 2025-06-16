@@ -5,8 +5,15 @@ import 'package:tmail_ui_user/features/composer/presentation/styles/composer_sty
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 
 class TextFieldAutoCompleteEmailAddressWebStyles {
-  static const EdgeInsetsGeometry textInputContentPadding = EdgeInsetsDirectional.only(top: 16, bottom: 16, start: 12, end: 8);
-  static const EdgeInsetsGeometry textInputContentPaddingWithSomeTag = EdgeInsetsDirectional.symmetric(vertical: 16);
+  static const EdgeInsetsGeometry textInputContentPadding =
+      EdgeInsetsDirectional.only(
+    top: 14,
+    bottom: 14,
+    start: 12,
+    end: 8,
+  );
+  static const EdgeInsetsGeometry textInputContentPaddingWithSomeTag =
+    EdgeInsetsDirectional.symmetric(vertical: 14);
   static const EdgeInsets tagEditorPadding = EdgeInsets.symmetric(horizontal: 12);
 
   static const double suggestionBoxRadius = 20.0;
