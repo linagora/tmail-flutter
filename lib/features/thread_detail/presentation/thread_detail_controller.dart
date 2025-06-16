@@ -42,6 +42,7 @@ import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_detail_status_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_email_moved_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_thread_by_id_failure.dart';
@@ -188,10 +189,13 @@ class ThreadDetailController extends BaseController {
         }
       } else if (action is UpdatedThreadDetailSettingAction) {
         consumeState(_getThreadDetailStatusInteractor.execute());
-        mailboxDashBoardController.dispatchThreadDetailUIAction(
-          ThreadDetailUIAction(),
-        );
+      } else if (action is EmailMovedAction) {
+        handleEmailMovedAction(action);
       }
+      // Reset [threadDetailUIAction] to original value
+      mailboxDashBoardController.dispatchThreadDetailUIAction(
+        ThreadDetailUIAction(),
+      );
     });
     ever(mailboxDashBoardController.emailUIAction, (action) {
       if (action is RefreshThreadDetailAction) {

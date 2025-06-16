@@ -1007,6 +1007,11 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
+    dispatchThreadDetailUIAction(EmailMovedAction(
+      emailId: success.emailId,
+      originalMailboxId: success.currentMailboxId,
+      targetMailboxId: success.destinationMailboxId,
+    ));
     if (success.moveAction == MoveAction.moving && currentContext != null && currentOverlayContext != null) {
       appToast.showToastMessage(
         currentOverlayContext!,
