@@ -200,12 +200,10 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
             )
           : null,
         onSelectMailboxFolderClick: controller.selectMailboxNode,
-        onLongPressMailboxNodeAction: PlatformInfo.isMobile
-          ? (mailboxNode) => controller.handleLongPressMailboxNodeAction(
-              context,
-              mailboxNode.item,
-            )
-          : null,
+        onLongPressMailboxNodeAction: (mailboxNode) => controller.handleLongPressMailboxNodeAction(
+          context,
+          mailboxNode.item,
+        ),
         onDragItemAccepted: PlatformInfo.isMobile
           ? null
           : controller.handleDragItemAccepted,
