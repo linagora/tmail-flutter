@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:model/email/email_action_type.dart';
+ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleEmailMoreActionExtension on SearchEmailController {
-  void handleEmailMoreAction(
+  Future<void> handleEmailMoreAction(
     BuildContext context,
     PresentationEmail presentationEmail,
     RelativeRect? position,
@@ -24,7 +24,7 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
       if (!isDrafts) EmailActionType.editAsNewEmail,
     ];
 
-    if (listEmailActions.isEmpty) return;
+    if (listEmailActions.isEmpty) return Future.value();
 
     if (position == null) {
       final contextMenuActions = listEmailActions
@@ -35,7 +35,7 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
               ))
           .toList();
 
-      openBottomSheetContextMenuAction(
+      return openBottomSheetContextMenuAction(
         context: context,
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) {
@@ -70,7 +70,7 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
         );
       }).toList();
 
-      openPopupMenuAction(context, position, popupMenuItems);
+      return openPopupMenuAction(context, position, popupMenuItems);
     }
   }
 }
