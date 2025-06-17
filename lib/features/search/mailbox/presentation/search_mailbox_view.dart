@@ -280,6 +280,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
 
       if (contextMenuActions.isEmpty) return Future.value();
 
+      controller.clearSearchInputFocus();
+
       return controller.openBottomSheetContextMenuAction(
         context: context,
         itemActions: contextMenuActions,
@@ -303,6 +305,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
       );
 
       if (popupMenuActions.isEmpty) Future.value();
+
+      controller.clearSearchInputFocus();
 
       final popupMenuItems = popupMenuActions.map((menuAction) {
         return PopupMenuItem(
