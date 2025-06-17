@@ -643,6 +643,7 @@ class ThreadView extends GetWidget<ThreadController>
         context: context,
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) {
+          popBack();
           controller.handleEmailActionType(
             menuAction.action,
             presentationEmail,

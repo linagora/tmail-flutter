@@ -3,6 +3,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 import 'package:tmail_ui_user/features/thread/presentation/model/context_item_filter_message_option_action.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleSelectMessageFilterExtension on ThreadController {
   void handleSelectMessageFilter(
@@ -25,7 +26,10 @@ extension HandleSelectMessageFilterExtension on ThreadController {
     openBottomSheetContextMenuAction(
       context: context,
       itemActions: contextMenuActions,
-      onContextMenuActionClick: (action) => filterMessagesAction(action.action),
+      onContextMenuActionClick: (action) {
+        popBack();
+        filterMessagesAction(action.action);
+      },
     );
   }
 }
