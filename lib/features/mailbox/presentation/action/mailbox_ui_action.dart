@@ -15,9 +15,9 @@ class MailboxUIAction extends UIAction {
 class SelectMailboxDefaultAction extends MailboxUIAction {}
 
 class RefreshChangeMailboxAction extends MailboxUIAction {
-  final jmap.State? newState;
+  final jmap.State newState;
 
-  RefreshChangeMailboxAction(this.newState);
+  RefreshChangeMailboxAction({required this.newState});
 
   @override
   List<Object?> get props => [newState];
