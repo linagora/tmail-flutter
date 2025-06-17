@@ -10785,6 +10785,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         if (contextMenuActions.length === 0)
           return A.Future_Future$value(null, type$.void);
         A.Expando__checkType(_this);
+        t2._as(t1.get(_this)).clearSearchInputFocus$0();
+        A.Expando__checkType(_this);
         return t2._as(t1.get(_this)).openBottomSheetContextMenuAction$3$context$itemActions$onContextMenuActionClick(context, contextMenuActions, new B.SearchMailboxView__openMailboxMenuAction_closure(_this, context, mailbox));
       } else {
         t3 = A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3);
@@ -10795,6 +10797,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         popupMenuActions = _this.getListPopupMenuItemAction$6(t3, t4, mailbox, t2._as(t1.get(_this)).dashboardController.spamReportController.spamReportState.get$value(0) === C.SpamReportState_0, deletedMessageVaultSupported, isSubAddressingSupported);
         if (popupMenuActions.length === 0)
           A.Future_Future$value(null, type$.dynamic);
+        A.Expando__checkType(_this);
+        t2._as(t1.get(_this)).clearSearchInputFocus$0();
         t3 = A._arrayInstanceType(popupMenuActions)._eval$1("MappedListIterable<1,PopupMenuItem<@>>");
         popupMenuItems = A.List_List$of(new A.MappedListIterable(popupMenuActions, new B.SearchMailboxView__openMailboxMenuAction_closure0(_this, context, mailbox), t3), true, t3._eval$1("ListIterable.E"));
         A.Expando__checkType(_this);
@@ -14649,7 +14653,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.HandleMailboxActionExtension_handleLongPressMailboxNodeAction_closure.prototype = {
     call$1(menuAction) {
-      return this._this.handleMailboxAction$3(this.context, menuAction.action, this.mailbox);
+      A.GetNavigation_back($.$get$Get(), false, null);
+      this._this.handleMailboxAction$3(this.context, menuAction.action, this.mailbox);
     },
     $signature: 80
   };
@@ -17037,8 +17042,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__openContextMenuSortFilter_closure0.prototype = {
     call$1(menuAction) {
-      var t1 = this.$this,
-        t2 = $.$get$GetWidget__cache();
+      var t1, t2;
+      A.GetNavigation_back($.$get$Get(), false, null);
+      t1 = this.$this;
+      t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectSortOrderQuickSearchFilter$2(this.context, menuAction.action);
     },
@@ -17572,10 +17579,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchMailboxView__openMailboxMenuAction_closure.prototype = {
     call$1(menuAction) {
-      var t1 = this.$this,
-        t2 = $.$get$GetWidget__cache();
+      var t1, t2;
+      A.GetNavigation_back($.$get$Get(), false, null);
+      t1 = this.$this;
+      t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleMailboxAction$3(this.context, menuAction.action, this.mailbox);
+      A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleMailboxAction$3(this.context, menuAction.action, this.mailbox);
     },
     $signature: 80
   };
@@ -17624,20 +17633,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B._MailboxSearchedItemBuilderState__buildMenuIcon_closure.prototype = {
     call$1(position) {
-      var t2, t3,
-        t1 = this.context;
-      if (!(A.InheritedModel_inheritFrom(t1, C._MediaQueryAspect_0, type$.MediaQuery).data.size.get$shortestSide() < 600))
+      var t1, t2;
+      if ($.$get$_context().$index(0, "flutterCanvasKit") != null)
         this.$this._onPopupMenuVisibleChange$1(true);
-      t2 = this.$this;
-      t3 = t2._widget;
-      t3.onClickOpenMenuMailboxAction.call$2(position, t3.presentationMailbox).whenComplete$1(new B._MailboxSearchedItemBuilderState__buildMenuIcon__closure(t2, t1));
+      t1 = this.$this;
+      t2 = t1._widget;
+      t2.onClickOpenMenuMailboxAction.call$2(position, t2.presentationMailbox).whenComplete$1(new B._MailboxSearchedItemBuilderState__buildMenuIcon__closure(t1, this.context));
     },
     $signature: 148
   };
   B._MailboxSearchedItemBuilderState__buildMenuIcon__closure.prototype = {
     call$0() {
-      var t1 = this.context;
-      if (t1._widget != null && !(A.InheritedModel_inheritFrom(t1, C._MediaQueryAspect_0, type$.MediaQuery).data.size.get$shortestSide() < 600))
+      if (this.context._widget != null && $.$get$_context().$index(0, "flutterCanvasKit") != null)
         this.$this._onPopupMenuVisibleChange$1(false);
     },
     $signature: 9
@@ -17687,7 +17694,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.HandleSelectMessageFilterExtension_handleSelectMessageFilter_closure0.prototype = {
     call$1(action) {
-      return this._this.filterMessagesAction$1(action.action);
+      A.GetNavigation_back($.$get$Get(), false, null);
+      this._this.filterMessagesAction$1(action.action);
     },
     $signature: 80
   };
@@ -19361,5 +19369,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Yqnl7mKGOiR0zU/YNteYopz0Yo8=");
+})($__dart_deferred_initializers__, "p+xWRBrIaFpIR/3GftBTafk9w4g=");
 ;
