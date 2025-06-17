@@ -57,9 +57,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_sto
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_firebase_registration_token_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_firebase_registration_interator.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/update_firebase_registration_token_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -149,12 +147,10 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => GetEmailChangesToRemoveNotificationInteractor(
       Get.find<FCMRepositoryImpl>(),
       Get.find<EmailRepository>()));
-    Get.lazyPut(() => StoreEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => DeleteEmailStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetFirebaseRegistrationByDeviceIdInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => RegisterNewFirebaseRegistrationTokenInteractor(Get.find<FCMRepositoryImpl>()));
-    Get.lazyPut(() => StoreMailboxStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetMailboxStateToRefreshInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => StoreFirebaseRegistrationInteractor(Get.find<FCMRepositoryImpl>()));
     Get.lazyPut(() => GetStoredFirebaseRegistrationInteractor(Get.find<FCMRepositoryImpl>()));

@@ -39,7 +39,6 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mai
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_new_receive_email_from_notification_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_email_delivery_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_delivery_state_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/push_notification_state_change_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
@@ -52,7 +51,6 @@ class EmailChangeListener extends ChangeListener {
   StoreEmailDeliveryStateInteractor? _storeEmailDeliveryStateInteractor;
   GetEmailChangesToPushNotificationInteractor? _getEmailChangesToPushNotificationInteractor;
   GetStoredEmailStateInteractor? _getStoredEmailStateInteractor;
-  StoreEmailStateToRefreshInteractor? _storeEmailStateToRefreshInteractor;
   GetMailboxesNotPutNotificationsInteractor? _getMailboxesNotPutNotificationsInteractor;
   GetEmailChangesToRemoveNotificationInteractor? _getEmailChangesToRemoveNotificationInteractor;
   GetNewReceiveEmailFromNotificationInteractor? _getNewReceiveEmailFromNotificationInteractor;
@@ -73,7 +71,6 @@ class EmailChangeListener extends ChangeListener {
       _getStoredEmailDeliveryStateInteractor = getBinding<GetStoredEmailDeliveryStateInteractor>();
       _storeEmailDeliveryStateInteractor = getBinding<StoreEmailDeliveryStateInteractor>();
       _getEmailChangesToPushNotificationInteractor = getBinding<GetEmailChangesToPushNotificationInteractor>();
-      _storeEmailStateToRefreshInteractor = getBinding<StoreEmailStateToRefreshInteractor>();
       _getMailboxesNotPutNotificationsInteractor = getBinding<GetMailboxesNotPutNotificationsInteractor>();
       _getEmailChangesToRemoveNotificationInteractor = getBinding<GetEmailChangesToRemoveNotificationInteractor>();
       _getNewReceiveEmailFromNotificationInteractor = getBinding<GetNewReceiveEmailFromNotificationInteractor>();
@@ -111,7 +108,6 @@ class EmailChangeListener extends ChangeListener {
         if (PlatformInfo.isAndroid) {
           _handleRemoveNotificationWhenEmailMarkAsRead(action.newState, action.accountId, action.session);
         }
-        _handleStoreEmailStateToRefreshAction(action.accountId, action.userName, action.newState);
       }
     }
   }
@@ -288,15 +284,6 @@ class EmailChangeListener extends ChangeListener {
     }
 
     _emailsAvailablePushNotification.clear();
-  }
-
-  void _handleStoreEmailStateToRefreshAction(AccountId accountId, UserName userName, jmap.State newState) {
-    log('EmailChangeListener::_handleStoreEmailStateToRefreshAction():newState: $newState');
-    if (_storeEmailStateToRefreshInteractor != null) {
-      consumeState(_storeEmailStateToRefreshInteractor!.execute(accountId, userName, newState));
-    } else {
-      logError('EmailChangeListener::_handleStoreEmailStateToRefreshAction():_storeEmailStateToRefreshInteractor is null');
-    }
   }
 
   void _handleRemoveNotificationWhenEmailMarkAsRead(jmap.State newState, AccountId accountId, Session? session) {
