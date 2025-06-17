@@ -834,6 +834,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     }
   }
 
+  void clearSearchInputFocus() {
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   @override
   void onClose() {
     textInputSearchController.dispose();
