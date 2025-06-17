@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
@@ -9,6 +10,13 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleOpenContextMenuExtension on ComposerController {
   void handleOpenContextMenu(BuildContext context, RelativeRect position) {
+    final listSelectedComposerActionType = [
+      if (isMarkAsImportant.isTrue)
+        ComposerActionType.markAsImportant,
+      if (hasRequestReadReceipt.isTrue)
+        ComposerActionType.requestReadReceipt,
+    ];
+
     final popupMenuItems = ComposerActionType.values.map((actionType) {
       return PopupMenuItem(
         padding: EdgeInsets.zero,
@@ -16,6 +24,7 @@ extension HandleOpenContextMenuExtension on ComposerController {
           key: actionType.getContextMenuItemKey(),
           menuAction: PopupMenuItemComposerTypeAction(
             actionType,
+            listSelectedComposerActionType,
             AppLocalizations.of(context),
             imagePaths,
           ),
