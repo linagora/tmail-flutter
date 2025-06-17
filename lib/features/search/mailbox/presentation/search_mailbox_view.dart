@@ -283,11 +283,14 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
       return controller.openBottomSheetContextMenuAction(
         context: context,
         itemActions: contextMenuActions,
-        onContextMenuActionClick: (menuAction) => controller.handleMailboxAction(
-          context,
-          menuAction.action,
-          mailbox,
-        ),
+        onContextMenuActionClick: (menuAction) {
+          popBack();
+          controller.handleMailboxAction(
+            context,
+            menuAction.action,
+            mailbox,
+          );
+        },
       );
     } else {
       final popupMenuActions = getListPopupMenuItemAction(

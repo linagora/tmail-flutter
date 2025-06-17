@@ -39,11 +39,14 @@ extension HandleMailboxActionExtension on MailboxController {
     openBottomSheetContextMenuAction(
       context: context,
       itemActions: contextMenuActions,
-      onContextMenuActionClick: (menuAction) => handleMailboxAction(
-        context,
-        menuAction.action,
-        mailbox,
-      ),
+      onContextMenuActionClick: (menuAction) {
+        popBack();
+        handleMailboxAction(
+          context,
+          menuAction.action,
+          mailbox,
+        );
+      },
     );
   }
 

@@ -253,13 +253,13 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
           iconSize: 16,
           padding: const EdgeInsetsDirectional.all(2),
           onTapActionAtPositionCallback: (position) {
-            if (!_responsiveUtils.isScreenWithShortestSide(context)) {
+            if (PlatformInfo.isCanvasKit) {
               _onPopupMenuVisibleChange(true);
             }
             widget.onClickOpenMenuMailboxAction
               ?.call(position, widget.presentationMailbox)
               .whenComplete(() {
-                if (context.mounted && !_responsiveUtils.isScreenWithShortestSide(context)) {
+                if (context.mounted && PlatformInfo.isCanvasKit) {
                   _onPopupMenuVisibleChange(false);
                 }
               });
