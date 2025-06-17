@@ -36,7 +36,7 @@ abstract class WorkerQueue<A> {
   }
 
   void _handleTaskExecuteCompleted(dynamic value) {
-    log('WorkerQueue<$workerName>::_handleTaskExecuteCompleted(): $value');
+    log('WorkerQueue<$workerName>::_handleTaskExecuteCompleted():');
     completer?.complete();
     _releaseCompleter();
     if (queue.isNotEmpty) {

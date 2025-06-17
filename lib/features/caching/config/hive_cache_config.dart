@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v10.dart';
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v11.dart';
@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_st
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v7.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
+import 'package:tmail_ui_user/features/caching/config/fcm_isolate_nam_server.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
@@ -55,14 +56,17 @@ class HiveCacheConfig {
   }
 
   Future<void> initializeDatabase({String? databasePath}) async {
-    if (databasePath != null) {
-      Hive.init(databasePath);
-    } else {
-      if (PlatformInfo.isMobile) {
-        Directory directory = await path_provider.getApplicationDocumentsDirectory();
-        Hive.init(directory.path);
-      }
+    if (databasePath == null && PlatformInfo.isMobile) {
+      Directory directory = await path_provider.getApplicationDocumentsDirectory();
+      databasePath = directory.path;
     }
+
+    if (databasePath == null) return;
+
+    await IsolatedHive.init(
+      databasePath,
+      isolateNameServer: const FcmIsolateNameServer(),
+    );
   }
 
   Future<void> onUpgradeDatabase(CachingManager cachingManager) async {
@@ -77,6 +81,7 @@ class HiveCacheConfig {
     await UpgradeHiveDatabaseStepsV13(cachingManager).onUpgrade(oldVersion, newVersion);
     await UpgradeHiveDatabaseStepsV14(cachingManager).onUpgrade(oldVersion, newVersion);
     await UpgradeHiveDatabaseStepsV15(cachingManager).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV16(cachingManager).onUpgrade(oldVersion, newVersion);
     await UpgradeHiveDatabaseStepsV16(cachingManager).onUpgrade(oldVersion, newVersion);
 
     if (oldVersion != newVersion) {
@@ -201,12 +206,12 @@ class HiveCacheConfig {
   }
 
   void registerCacheAdapter<T>(TypeAdapter<T> typeAdapter, int typeId) {
-    if (!Hive.isAdapterRegistered(typeId)) {
-      Hive.registerAdapter<T>(typeAdapter);
+    if (!IsolatedHive.isAdapterRegistered(typeId)) {
+      IsolatedHive.registerAdapter<T>(typeAdapter);
     }
   }
 
   Future<void> closeHive() async {
-    return await Hive.close();
+    return await IsolatedHive.close();
   }
 }

@@ -154,7 +154,7 @@ dependencies:
 
   share_plus: 7.2.1
 
-  hive: 2.2.3
+  hive_ce: 2.11.3
 
   pointer_interceptor: 0.10.1+2
 
@@ -308,6 +308,14 @@ dependency_overrides:
     git:
       url: https://github.com/linagora/flutter_file_picker.git
       ref: v0.8.5-twake-mail
+
+  # TODO: Due conflict version of hive_ce_generator with other dependencies
+  # So we will remove it when found the appropriate version
+  hive:
+    git:
+      url: https://github.com/IO-Design-Team/hive_ce
+      ref: 18f92b53295e9eb77ebd4830d905a72cd404a126
+      path: overrides/hive
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

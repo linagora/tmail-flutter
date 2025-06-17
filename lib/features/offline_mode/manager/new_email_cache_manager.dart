@@ -25,7 +25,7 @@ class NewEmailCacheManager {
     DetailedEmailHiveCache detailedEmailCache
   ) async {
     final listDetailedEmails = await getAllDetailedEmails(accountId, userName);
-    log('NewEmailCacheManager::storeDetailedNewEmail():listDetailedEmails: $listDetailedEmails');
+    log('NewEmailCacheManager::storeDetailedNewEmail(): length of listDetailedEmails is ${listDetailedEmails.length}');
     if (listDetailedEmails.length >= CachingConstants.maxNumberNewEmailsForOffline) {
       final lastElementsListEmail = listDetailedEmails.sublist(CachingConstants.maxNumberNewEmailsForOffline - 1);
       for (var email in lastElementsListEmail) {
@@ -34,10 +34,8 @@ class NewEmailCacheManager {
         }
         await removeDetailedEmail(accountId, userName, email.emailId);
       }
-      log('NewEmailCacheManager::storeDetailedNewEmail(): DELETE COMPLETED');
     }
     await insertDetailedEmail(accountId, userName, detailedEmailCache);
-    log('NewEmailCacheManager::storeDetailedNewEmail(): INSERT COMPLETED');
     return detailedEmailCache;
   }
 

@@ -56,16 +56,12 @@ extension EmailCacheExtension on EmailCache {
 
   bool expireTimeCaching(EmailCleanupRule cleanupRule) {
     final currentTime = DateTime.now();
-    log('EmailCacheExtension::expireTimeCaching():currentTime: $currentTime | receivedAt: $receivedAt');
     if (receivedAt != null) {
       final countDay = currentTime.daysBetween(receivedAt!.toLocal());
-      log('EmailCacheExtension::expireTimeCaching():countDay: $countDay | cleanupRule.cachingEmailPeriod.countDay: ${cleanupRule.cachingEmailPeriod.countDay}');
       if (countDay >= cleanupRule.cachingEmailPeriod.countDay) {
-        log('EmailCacheExtension::expireTimeCaching():true');
         return true;
       }
     }
-    log('EmailCacheExtension::expireTimeCaching():false');
     return false;
   }
 }
