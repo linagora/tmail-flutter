@@ -114,9 +114,9 @@ class EmailChangeListener extends ChangeListener {
 
   void _synchronizeEmailOnForegroundAction(jmap.State newState) {
     log('EmailChangeListener::_synchronizeEmailAction():newState: $newState');
-    if (_dashBoardController != null) {
-      _dashBoardController!.dispatchEmailUIAction(RefreshChangeEmailAction(newState));
-    }
+    _dashBoardController?.dispatchEmailUIAction(RefreshChangeEmailAction(
+      newState: newState,
+    ));
   }
 
   void _pushNotificationAction(jmap.State newState, AccountId accountId, UserName userName, Session? session) {

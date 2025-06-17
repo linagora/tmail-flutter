@@ -332,7 +332,7 @@ void main() {
         threadController.onInit();
 
         mockMailboxDashBoardController.emailUIAction.value =
-            RefreshChangeEmailAction(State('new-state'));
+            RefreshChangeEmailAction(newState: State('new-state'));
 
         await untilCalled(mockSearchEmailInteractor.execute(
           any,

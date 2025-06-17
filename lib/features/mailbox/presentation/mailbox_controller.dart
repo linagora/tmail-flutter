@@ -524,12 +524,12 @@ class MailboxController extends BaseMailboxController
     }
   }
   
-  void _refreshMailboxChanges({jmap.State? newState}) {
+  void _refreshMailboxChanges({required jmap.State newState}) {
     log('MailboxController::_refreshMailboxChanges():newState: $newState');
     if (accountId == null ||
         session == null ||
         currentMailboxState == null ||
-        newState == null) {
+        currentMailboxState == newState) {
       _newFolderId = null;
       return;
     }
@@ -539,11 +539,6 @@ class MailboxController extends BaseMailboxController
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
     try {
-      if (currentMailboxState == message.newState) {
-        log('MailboxController::_handleWebSocketMessage:Skipping redundant state: ${message.newState}');
-        return Future.value();
-      }
-
       final refreshViewState = await refreshAllMailboxInteractor!.execute(
         session!,
         accountId!,

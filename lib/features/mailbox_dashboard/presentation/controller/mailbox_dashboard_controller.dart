@@ -135,12 +135,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_state_to_refresh_state.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailbox_state_to_refresh_state.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_email_state_to_refresh_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_mailbox_state_to_refresh_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
@@ -231,10 +225,6 @@ class MailboxDashBoardController extends ReloadableController
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
-  GetEmailStateToRefreshInteractor? _getEmailStateToRefreshInteractor;
-  DeleteEmailStateToRefreshInteractor? _deleteEmailStateToRefreshInteractor;
-  GetMailboxStateToRefreshInteractor? _getMailboxStateToRefreshInteractor;
-  DeleteMailboxStateToRefreshInteractor? _deleteMailboxStateToRefreshInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   IOSNotificationManager? _iosNotificationManager;
   GetServerSettingInteractor? getServerSettingInteractor;
@@ -382,12 +372,6 @@ class MailboxDashBoardController extends ReloadableController
           AppLocalizations.of(currentContext!).your_email_being_sent,
           leadingSVGIcon: imagePaths.icSendToast);
       }
-    } else if (success is GetEmailStateToRefreshSuccess) {
-      dispatchEmailUIAction(RefreshChangeEmailAction(success.storedState));
-      _deleteEmailStateToRefreshAction();
-    } else if (success is GetMailboxStateToRefreshSuccess) {
-      dispatchMailboxUIAction(RefreshChangeMailboxAction(success.storedState));
-      _deleteMailboxStateToRefreshAction();
     } else if (success is SendEmailSuccess) {
       _handleSendEmailSuccess(success);
     } else if (success is SaveEmailAsDraftsSuccess) {
@@ -1872,7 +1856,9 @@ class MailboxDashBoardController extends ReloadableController
     if (result is Tuple2) {
       if (result.value1 is VacationResponse) {
         vacationResponse.value = result.value1;
-        dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
+        dispatchMailboxUIAction(RefreshChangeMailboxAction(
+          newState: jmap.State('vacation-updated-state'),
+        ));
       }
       await Future.delayed(
         const Duration(milliseconds: 500),
@@ -1938,7 +1924,9 @@ class MailboxDashBoardController extends ReloadableController
     if (result is Tuple2) {
       if (result.value1 is VacationResponse) {
         vacationResponse.value = result.value1;
-        dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
+        dispatchMailboxUIAction(RefreshChangeMailboxAction(
+          newState: jmap.State('vacation-updated-state'),
+        ));
       }
       await Future.delayed(
         const Duration(milliseconds: 500),
@@ -2174,42 +2162,12 @@ class MailboxDashBoardController extends ReloadableController
 
   void _handleRefreshActionWhenBackToApp(RefreshActionViewEvent viewEvent) {
     log('MailboxDashBoardController::_handleRefreshActionWhenBackToApp():');
-    try {
-      _getEmailStateToRefreshInteractor = getBinding<GetEmailStateToRefreshInteractor>();
-      _getMailboxStateToRefreshInteractor = getBinding<GetMailboxStateToRefreshInteractor>();
-    } catch (e) {
-      logError('MailboxDashBoardController::_handleRefreshActionWhenBackToApp(): $e');
-    }
-    if (_getEmailStateToRefreshInteractor != null && accountId.value != null && sessionCurrent != null) {
-      consumeState(_getEmailStateToRefreshInteractor!.execute(accountId.value!, sessionCurrent!.username));
-    }
-    if (_getMailboxStateToRefreshInteractor != null && accountId.value != null && sessionCurrent != null) {
-      consumeState(_getMailboxStateToRefreshInteractor!.execute(accountId.value!, sessionCurrent!.username));
-    }
-  }
-
-  void _deleteEmailStateToRefreshAction() {
-    log('MailboxDashBoardController::_deleteEmailStateToRefreshAction():');
-    try {
-      _deleteEmailStateToRefreshInteractor = getBinding<DeleteEmailStateToRefreshInteractor>();
-    } catch (e) {
-      logError('MailboxDashBoardController::_deleteEmailStateToRefreshAction(): $e');
-    }
-    if (_deleteEmailStateToRefreshInteractor != null && accountId.value != null && sessionCurrent != null) {
-      consumeState(_deleteEmailStateToRefreshInteractor!.execute(accountId.value!, sessionCurrent!.username));
-    }
-  }
-
-  void _deleteMailboxStateToRefreshAction() {
-    log('MailboxDashBoardController::_deleteMailboxStateToRefreshAction():');
-    try {
-      _deleteMailboxStateToRefreshInteractor = getBinding<DeleteMailboxStateToRefreshInteractor>();
-    } catch (e) {
-      logError('MailboxDashBoardController::_deleteMailboxStateToRefreshAction(): $e');
-    }
-    if (_deleteMailboxStateToRefreshInteractor != null && accountId.value != null && sessionCurrent != null) {
-      consumeState(_deleteMailboxStateToRefreshInteractor!.execute(accountId.value!, sessionCurrent!.username));
-    }
+    dispatchEmailUIAction(RefreshChangeEmailAction(
+      newState: jmap.State('refresh-action-when-back-to-app-state'),
+    ));
+    dispatchMailboxUIAction(RefreshChangeMailboxAction(
+      newState: jmap.State('refresh-action-when-back-to-app-state'),
+    ));
   }
 
   void _handleClickLocalNotificationOnForeground(NotificationResponse? response) {
@@ -3027,7 +2985,9 @@ class MailboxDashBoardController extends ReloadableController
 
   void _handleGetRestoredDeletedMessageSuccess(GetRestoredDeletedMessageSuccess success) async {
     if (selectedMailbox.value != null && selectedMailbox.value!.isRecovered) {
-      dispatchEmailUIAction(RefreshChangeEmailAction(null));
+      dispatchEmailUIAction(RefreshChangeEmailAction(
+        newState: jmap.State('restored-deleted-message-success-state'),
+      ));
     }
 
     if (success is GetRestoredDeletedMessageCompleted) {
