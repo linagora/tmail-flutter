@@ -1,4 +1,3 @@
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -11,18 +10,19 @@ import 'package:tmail_ui_user/features/push_notification/presentation/listener/c
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxChangeListener extends ChangeListener {
-
   MailboxDashBoardController? _dashBoardController;
 
   MailboxChangeListener._internal() {
     try {
       _dashBoardController = getBinding<MailboxDashBoardController>();
     } catch (e) {
-      logError('MailboxChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
+      logError(
+          'MailboxChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
   }
 
-  static final MailboxChangeListener _instance = MailboxChangeListener._internal();
+  static final MailboxChangeListener _instance =
+      MailboxChangeListener._internal();
 
   static MailboxChangeListener get instance => _instance;
 
@@ -48,8 +48,8 @@ class MailboxChangeListener extends ChangeListener {
 
   void _synchronizeMailboxOnForegroundAction(jmap.State newState) {
     log('MailboxChangeListener::_synchronizeMailboxOnForegroundAction():newState: $newState');
-    if (_dashBoardController != null) {
-      _dashBoardController!.dispatchMailboxUIAction(RefreshChangeMailboxAction(newState));
-    }
+    _dashBoardController?.dispatchMailboxUIAction(RefreshChangeMailboxAction(
+      newState: newState,
+    ));
   }
 }

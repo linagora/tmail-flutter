@@ -619,12 +619,12 @@ class ThreadController extends BaseController with EmailActionController {
     return limit;
   }
 
-  void _refreshEmailChanges({jmap.State? newState}) {
+  void _refreshEmailChanges({required jmap.State newState}) {
     log('ThreadController::_refreshEmailChanges(): newState: $newState');
     if (_accountId == null ||
         _session == null ||
         mailboxDashBoardController.currentEmailState == null ||
-        newState == null) {
+        mailboxDashBoardController.currentEmailState == newState) {
       return;
     }
 
@@ -633,12 +633,6 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
     try {
-      if (mailboxDashBoardController.currentEmailState == null ||
-          mailboxDashBoardController.currentEmailState == message.newState) {
-        log('ThreadController::_handleWebSocketMessage:Skipping redundant state: ${message.newState}');
-        return Future.value();
-      }
-
       if (searchController.isSearchEmailRunning) {
         await _refreshChangeSearchEmail();
       } else {
