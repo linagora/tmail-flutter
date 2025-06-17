@@ -35,9 +35,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A = holdersList[0];
   C = holdersList[2];
   B = hunkHelpers.updateHolder(holdersList[8], B);
-  D = holdersList[13];
-  E = holdersList[14];
-  F = holdersList[12];
+  D = holdersList[12];
+  E = holdersList[13];
+  F = holdersList[11];
   B.DownloadAttachmentLoadingBar.prototype = {
     build$1(context) {
       var t1 = this.viewState;
@@ -52,7 +52,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.EmailPreviewerView.prototype = {
     build$1(context) {
       var _null = null;
-      return A.Scaffold$(_null, C.Color_4294967295, new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.Obx(new B.EmailPreviewerView_build_closure(this, context), _null), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.EmailPreviewerView_build_closure0(this), _null), _null)], type$.JSArray_Widget), _null), _null, _null, true, _null, _null, _null);
+      return A.Scaffold$(_null, C.Color_4294967295, new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.Obx(new B.EmailPreviewerView_build_closure(this, context), _null), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.EmailPreviewerView_build_closure0(this), _null), _null)], type$.JSArray_Widget), _null), _null, _null, true, _null, _null, _null, _null);
     },
     _buildEMLPreviewerWidget$2(context, emlPreviewer) {
       var t3, t4, _null = null,
@@ -77,7 +77,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.context;
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).emlContentViewState.get$value(0).fold$2(0, new B.EmailPreviewerView_build__closure(t3), new B.EmailPreviewerView_build__closure0(t1, t3));
     },
-    $signature: 3
+    $signature: 4
   };
   B.EmailPreviewerView_build__closure.prototype = {
     call$1(failure) {
@@ -85,7 +85,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.Center$(A.Text$(A.Intl__message("Cannot preview this eml file", _null, "previewEmailFromEMLFileFailed", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null);
     },
-    $signature: 1886
+    $signature: 1899
   };
   B.EmailPreviewerView_build__closure0.prototype = {
     call$1(success) {
@@ -133,5 +133,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_12", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "TBO2o2lNtMu4Za5yrkc7emMYkGI=");
+})($__dart_deferred_initializers__, "2ZM7/k3S634iMn+7XlGqrP9L+tI=");
 ;
