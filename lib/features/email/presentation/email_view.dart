@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loa
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -561,7 +562,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           ))
           .toList();
 
-      controller.openBottomSheetContextMenuAction(
+      controller.mailboxDashBoardController.openBottomSheetContextMenu(
         context: context,
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) {
@@ -595,7 +596,11 @@ class EmailView extends GetWidget<SingleEmailController> {
         );
       }).toList();
 
-      controller.openPopupMenuAction(context, position, popupMenuItems);
+      controller.mailboxDashBoardController.openPopupMenu(
+        context,
+        position,
+        popupMenuItems,
+      );
     }
   }
 }

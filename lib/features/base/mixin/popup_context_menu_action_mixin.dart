@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_dialog_view.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -28,9 +27,6 @@ mixin PopupContextMenuActionMixin {
     required OnContextMenuActionClick onContextMenuActionClick,
     Key? key,
   }) async {
-    if (PlatformInfo.isWeb) {
-      getBinding<MailboxDashBoardController>()?.isContextMenuOpened.value = true;
-    }
     return await showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -57,24 +53,17 @@ mixin PopupContextMenuActionMixin {
           ),
         );
       },
-    ).whenComplete(() {
-      if (PlatformInfo.isWeb) {
-        getBinding<MailboxDashBoardController>()?.isContextMenuOpened.value = false;
-      }
-    });
+    );
   }
 
   Future<void> openPopupMenuAction(
     BuildContext context,
-    RelativeRect? position,
+    RelativeRect position,
     List<PopupMenuEntry> popupMenuItems,
   ) async {
-    if (PlatformInfo.isWeb) {
-      getBinding<MailboxDashBoardController>()?.isPopupMenuOpened.value = true;
-    }
     return await showMenu(
       context: context,
-      position: position ?? const RelativeRect.fromLTRB(16, 40, 16, 16),
+      position: position,
       color: Colors.white,
       surfaceTintColor: Colors.white,
       menuPadding: const EdgeInsets.symmetric(vertical: 8),
@@ -84,11 +73,7 @@ mixin PopupContextMenuActionMixin {
       ),
       constraints: const BoxConstraints(maxWidth: 300, minWidth: 178),
       items: popupMenuItems,
-    ).whenComplete(() {
-      if (PlatformInfo.isWeb) {
-        getBinding<MailboxDashBoardController>()?.isPopupMenuOpened.value = false;
-      }
-    });
+    );
   }
 
   Widget buildCancelButton(BuildContext context) {

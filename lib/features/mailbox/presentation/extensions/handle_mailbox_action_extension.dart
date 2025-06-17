@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_ac
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -102,6 +103,10 @@ extension HandleMailboxActionExtension on MailboxController {
       );
     }).toList();
 
-    return openPopupMenuAction(context, position, popupMenuItems);
+    return mailboxDashBoardController.openPopupMenu(
+      context,
+      position,
+      popupMenuItems,
+    );
   }
 }

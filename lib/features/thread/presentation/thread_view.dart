@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/context_item_ema
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -639,7 +640,7 @@ class ThreadView extends GetWidget<ThreadController>
               ))
           .toList();
 
-      return controller.openBottomSheetContextMenuAction(
+      return controller.mailboxDashBoardController.openBottomSheetContextMenu(
         context: context,
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) {
@@ -673,7 +674,11 @@ class ThreadView extends GetWidget<ThreadController>
         );
       }).toList();
 
-      return controller.openPopupMenuAction(context, position, popupMenuItems);
+      return controller.mailboxDashBoardController.openPopupMenuAction(
+        context,
+        position,
+        popupMenuItems,
+      );
     }
   }
 
