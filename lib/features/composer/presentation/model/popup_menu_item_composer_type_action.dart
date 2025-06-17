@@ -5,12 +5,14 @@ import 'package:tmail_ui_user/features/composer/presentation/model/composer_acti
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class PopupMenuItemComposerTypeAction
-    extends PopupMenuItemActionRequiredIcon<ComposerActionType> {
+    extends PopupMenuItemActionRequiredIconWithMultipleSelected<
+        ComposerActionType> {
   final AppLocalizations appLocalizations;
   final ImagePaths imagePaths;
 
   PopupMenuItemComposerTypeAction(
     super.action,
+    super.selectedActions,
     this.appLocalizations,
     this.imagePaths,
   );
@@ -26,4 +28,7 @@ class PopupMenuItemComposerTypeAction
 
   @override
   Color get actionNameColor => action.getContextMenuTitleColor();
+
+  @override
+  String get selectedIcon => imagePaths.icFilterSelected;
 }

@@ -56,3 +56,14 @@ abstract class PopupMenuItemActionRequiredFull<T> extends PopupMenuItemAction<T>
 
   PopupMenuItemActionRequiredFull(super.action, this.selectedAction);
 }
+
+abstract class PopupMenuItemActionRequiredIconWithMultipleSelected<T>
+    extends PopupMenuItemAction<T>
+    with OptionalPopupIcon, OptionalPopupSelectedIcon<T> {
+  final List<T> selectedActions;
+
+  PopupMenuItemActionRequiredIconWithMultipleSelected(
+    super.action,
+    this.selectedActions,
+  );
+}

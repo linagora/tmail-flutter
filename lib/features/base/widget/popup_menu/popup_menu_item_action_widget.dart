@@ -34,7 +34,8 @@ class PopupMenuItemActionWidget extends StatelessWidget {
         ),
       );
     } else if (menuAction is PopupMenuItemActionRequiredSelectedIcon) {
-      final specificMenuAction = menuAction as PopupMenuItemActionRequiredSelectedIcon;
+      final specificMenuAction =
+          menuAction as PopupMenuItemActionRequiredSelectedIcon;
       selectedIconWidget = Padding(
         padding: const EdgeInsetsDirectional.only(start: 16),
         child: SvgPicture.asset(
@@ -69,6 +70,32 @@ class PopupMenuItemActionWidget extends StatelessWidget {
         ),
       );
       isSelected = specificMenuAction.selectedAction == menuAction.action;
+    } else if (menuAction
+        is PopupMenuItemActionRequiredIconWithMultipleSelected) {
+      final specificMenuAction =
+          menuAction as PopupMenuItemActionRequiredIconWithMultipleSelected;
+      iconWidget = Padding(
+        padding: const EdgeInsetsDirectional.only(end: 16),
+        child: SvgPicture.asset(
+          specificMenuAction.actionIcon,
+          width: specificMenuAction.actionIconSize,
+          height: specificMenuAction.actionIconSize,
+          colorFilter: specificMenuAction.actionIconColor.asFilter(),
+          fit: BoxFit.fill,
+        ),
+      );
+      selectedIconWidget = Padding(
+        padding: const EdgeInsetsDirectional.only(start: 16),
+        child: SvgPicture.asset(
+          specificMenuAction.selectedIcon,
+          width: specificMenuAction.selectedIconSize,
+          height: specificMenuAction.selectedIconSize,
+          colorFilter: specificMenuAction.selectedIconColor.asFilter(),
+          fit: BoxFit.fill,
+        ),
+      );
+      isSelected =
+          specificMenuAction.selectedActions.contains(menuAction.action);
     }
 
     return PointerInterceptor(
