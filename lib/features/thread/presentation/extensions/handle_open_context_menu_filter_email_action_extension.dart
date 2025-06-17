@@ -34,6 +34,10 @@ extension HandleOpenContextMenuFilterEmailActionExtension on ThreadController {
       );
     }).toList();
 
-    openPopupMenuAction(context, position, popupMenuItems);
+    mailboxDashBoardController.openPopupMenuAction(
+      context,
+      position,
+      popupMenuItems,
+    );
   }
 }

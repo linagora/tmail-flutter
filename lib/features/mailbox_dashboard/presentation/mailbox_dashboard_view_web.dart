@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_drawer_changed_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -464,7 +465,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       );
     }).toList();
 
-    controller.openPopupMenuAction(context, buttonPosition, popupMenuItems);
+    controller.openPopupMenu(context, buttonPosition, popupMenuItems);
   }
 
   void _onDeleteFilterMessageOptionAction() {
@@ -725,7 +726,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       );
     }).toList();
 
-    controller.openPopupMenuAction(context, position, popupMenuItems);
+    controller.openPopupMenu(context, position, popupMenuItems);
   }
 
   void _openPopupMenuSortFilter(BuildContext context, RelativeRect position) {
@@ -747,6 +748,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       );
     }).toList();
 
-    controller.openPopupMenuAction(context, position, popupMenuItems);
+    controller.openPopupMenu(context, position, popupMenuItems);
   }
 }
