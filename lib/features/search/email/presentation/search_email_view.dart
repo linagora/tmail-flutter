@@ -427,6 +427,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       context: context,
       itemActions: contextMenuActions,
       onContextMenuActionClick: (menuAction) {
+        popBack();
         controller.selectSortOrderQuickSearchFilter(
           context,
           menuAction.action,
