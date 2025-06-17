@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_list_detailed_email_by_id_interator.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_list_new_email_interator.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -158,6 +159,7 @@ class FcmInteractorBindings extends InteractorsBindings {
       Get.find<EmailRepository>()));
     Get.lazyPut(() => GetListDetailedEmailByIdInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => StoreListNewEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => GetStoredEmailStateInteractor(Get.find<EmailRepository>()));
   }
 
   @override
