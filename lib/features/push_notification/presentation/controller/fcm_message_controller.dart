@@ -54,10 +54,11 @@ class FcmMessageController extends PushBaseController {
   }
 
   void _listenBackgroundMessageStream() {
-    FcmService.instance.backgroundMessageStreamController
-      ?.stream
-      .debounceTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
-      .listen(_handleBackgroundMessageAction);
+    FcmService.instance.backgroundMessageStreamController?.stream
+        .debounceTime(const Duration(
+          milliseconds: FcmUtils.durationBackgroundMessageComing,
+        ))
+        .listen(_handleBackgroundMessageAction);
   }
 
   void _listenTokenStream() {
