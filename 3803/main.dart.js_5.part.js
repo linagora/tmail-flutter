@@ -9058,7 +9058,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1.getEmailTitle$0().length === 0)
         return C.SizedBox_0_0_null_null;
       t1 = t1.getEmailTitle$0();
-      return new A.Padding(C.EdgeInsets_16_12_16_12, A.RichText$(_null, _null, 2, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, "Inter", _null, _null, 24, _null, _null, C.FontWeight_4_500, _null, 1.1666666666666667, true, _null, 0, _null, _null, _null, _null, _null, _null).copyWith$1$overflow(C.TextOverflow_2), t1), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), _null);
+      return new A.Padding(C.EdgeInsets_16_12_16_12, A.Text$(t1, _null, _null, 2, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, "Inter", _null, _null, 24, _null, _null, C.FontWeight_4_500, _null, 1.1666666666666667, true, _null, 0, _null, _null, _null, _null, _null, _null).copyWith$1$overflow(C.TextOverflow_2), _null, _null, _null, _null, _null), _null);
     }
   };
   B.EmailViewAppBarWidget.prototype = {
@@ -20584,5 +20584,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "DWy2NH0GQH0+GdnpKdi/qIRmifU=");
+})($__dart_deferred_initializers__, "1qdKHM32/GWvn06qGtgGc11qgp4=");
 ;
