@@ -39,6 +39,7 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
         context: context,
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) {
+          popBack();
           pressEmailAction(
             context,
             menuAction.action,
