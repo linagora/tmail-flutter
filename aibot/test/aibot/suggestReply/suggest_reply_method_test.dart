@@ -5,8 +5,8 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
-import 'package:rule_filter/ai_bot/suggestReply/suggest_reply_method.dart';
-import 'package:rule_filter/ai_bot/suggestReply/suggest_reply_response.dart';
+import 'package:aibot/suggestReply/suggest_reply_method.dart';
+import 'package:aibot/suggestReply/suggest_reply_response.dart';
 
 void main() {
   group('test suggest reply method', () {

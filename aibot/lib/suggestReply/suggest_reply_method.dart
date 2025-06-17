@@ -4,16 +4,16 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/method/method.dart';
 import 'package:jmap_dart_client/jmap/core/request/request_invocation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:jmap_dart_client/http/converter/properties_converter.dart';
 
 part 'suggest_reply_method.g.dart';
 
 @AccountIdConverter()
-@PropertiesConverter()
 @JsonSerializable(explicitToJson: true)
 class SuggestReplyMethod extends MethodRequiringAccountId {
+  static String aibotCapability = 'com.linagora.tmail:params:jmap:aibot';
+
   static final capabilityIdentifier =
-      CapabilityIdentifier(Uri.parse('com.linagora.tmail:params:jmap:aibot'));
+      CapabilityIdentifier(Uri.parse(aibotCapability));
 
   final String emailId;
   final String userInput;
