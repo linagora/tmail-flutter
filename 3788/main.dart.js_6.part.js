@@ -772,31 +772,32 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.NavigationBarWidget_build_closure.prototype = {
     call$2(context, constraint) {
-      var _null = null,
-        t1 = this.$this,
-        t2 = A._setArrayType([new A.SizedBox(constraint.maxWidth / 2, 52, t1.searchForm, _null), B.Spacer_null], type$.JSArray_Widget),
-        t3 = t1.contactSupportCapability;
+      var t3, _null = null,
+        t1 = constraint.maxWidth,
+        t2 = this.$this;
+      t1 = A._setArrayType([new A.SizedBox(Math.min(Math.max(t1 / 2, 576), t1), 52, t2.searchForm, _null), B.Spacer_null], type$.JSArray_Widget);
+      t3 = t2.contactSupportCapability;
       if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t2.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t1), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null), _null));
+        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t2), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null), _null));
       }
-      if (t1.appGridController != null)
-        t2.push(new A.Obx(new C.NavigationBarWidget_build__closure0(t1), _null));
-      t2.push(B.SizedBox_16_null_null_null);
-      if (t1.accountId != null) {
+      if (t2.appGridController != null)
+        t1.push(new A.Obx(new C.NavigationBarWidget_build__closure0(t2), _null));
+      t1.push(B.SizedBox_16_null_null_null);
+      if (t2.accountId != null) {
         t3 = new A.AvatarBuilder();
-        t3._avatar_builder$_text = t1.avatarUserName;
+        t3._avatar_builder$_text = t2.avatarUserName;
         t3._bgColor = B.Color_4294967295;
         t3._textColor = B.Color_4278190080;
         t3._avatar_builder$_context = context;
         t3._avatar_builder$_size = 48;
-        t3._onTapAvatarActionWithPositionClick = t1.onTapAvatarAction;
+        t3._onTapAvatarActionWithPositionClick = t2.onTapAvatarAction;
         t3._boxShadows = A._setArrayType([D.BoxShadow_NMc], type$.JSArray_BoxShadow);
-        t2.push(t3.build$0());
+        t1.push(t3.build$0());
       }
-      return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+      return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 380
+    $signature: 394
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -937,5 +938,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "0xgtVv1aNj622AIxYCMWDyERwxs=");
+})($__dart_deferred_initializers__, "fr9NlZd8asgJ3Ec2dfeNKnWT8eA=");
 ;
