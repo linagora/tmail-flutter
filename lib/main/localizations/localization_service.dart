@@ -43,7 +43,6 @@ class LocalizationService extends Translations {
   static Locale getLocaleFromLanguage({String? langCode}) {
     try {
       final languageCacheManager = getBinding<LanguageCacheManager>();
-      log('LocalizationService::_getLocaleFromLanguage:languageCacheManager: $languageCacheManager');
       final localeStored = languageCacheManager?.getStoredLanguage();
       log('LocalizationService::_getLocaleFromLanguage():localeStored: $localeStored');
       final localeSelected = supportedLocales.firstWhereOrNull(

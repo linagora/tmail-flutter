@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:core/presentation/extensions/map_extensions.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 
@@ -14,20 +14,20 @@ abstract class HiveCacheClient<T> {
 
   Future<Uint8List?> _getEncryptionKey() => HiveCacheConfig.instance.getEncryptionKey();
 
-  Future<Box<T>> openBox() async {
-    if (Hive.isBoxOpen(tableName)) {
-      return Hive.box<T>(tableName);
+  Future<IsolatedBox<T>> openBox() async {
+    if (IsolatedHive.isBoxOpen(tableName)) {
+      return IsolatedHive.box<T>(tableName);
     } else {
-      return Hive.openBox<T>(tableName);
+      return IsolatedHive.openBox<T>(tableName);
     }
   }
 
-  Future<Box<T>> openBoxEncryption() async {
+  Future<IsolatedBox<T>> openBoxEncryption() async {
     final encryptionKey = await _getEncryptionKey();
-    if (Hive.isBoxOpen(tableName)) {
-      return Hive.box<T>(tableName);
+    if (IsolatedHive.isBoxOpen(tableName)) {
+      return IsolatedHive.box<T>(tableName);
     } else {
-      return Hive.openBox<T>(tableName,
+      return IsolatedHive.openBox<T>(tableName,
           encryptionCipher:
               encryptionKey != null ? HiveAesCipher(encryptionKey) : null);
     }
@@ -66,7 +66,8 @@ abstract class HiveCacheClient<T> {
   Future<List<T>> getAll() {
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
-      return boxItem.values.toList();
+      final items = await boxItem.values;
+      return items.toList();
     }).catchError((error) {
       throw error;
     });
@@ -75,7 +76,8 @@ abstract class HiveCacheClient<T> {
   Future<List<T>> getListByNestedKey(String nestedKey) {
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
-      final listItem = boxItem.toMap()
+      final mapItems = await boxItem.toMap();
+      final listItem = mapItems
         .where((key, value) => _matchedNestedKey(key, nestedKey))
         .values
         .toList();
@@ -89,7 +91,8 @@ abstract class HiveCacheClient<T> {
   Future<List<T>> getValuesByListKey(List<String> listKeys) {
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
-      return boxItem.toMap()
+      final mapItems = await boxItem.toMap();
+      return mapItems
         .where((key, value) => listKeys.contains(key))
         .values
         .toList();
@@ -154,7 +157,7 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> deleteBox() {
-    return Hive.deleteBoxFromDisk(tableName);
+    return IsolatedHive.deleteBoxFromDisk(tableName);
   }
 
   Future<void> clearAllData() {
@@ -171,7 +174,8 @@ abstract class HiveCacheClient<T> {
   Future<void> clearAllDataContainKey(String nestedKey) {
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
-      final listKeys = boxItem.toMap()
+      final mapItems = await boxItem.toMap();
+      final listKeys = mapItems
         .where((key, value) => _matchedNestedKey(key, nestedKey))
         .keys;
       log('$runtimeType::clearAllDataContainKey:listKeys: ${listKeys.length}');
@@ -182,8 +186,8 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> closeBox() async {
-    if (Hive.isBoxOpen(tableName)) {
-      await Hive.box<T>(tableName).close();
+    if (IsolatedHive.isBoxOpen(tableName)) {
+      await IsolatedHive.box<T>(tableName).close();
     }
     return Future.value();
   }
