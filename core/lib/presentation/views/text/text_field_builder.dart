@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/semantics/text_field_semantics.dart';
+import 'package:core/presentation/views/text/text_drop_zone_web.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +28,7 @@ class TextFieldBuilder extends StatefulWidget {
   final bool readOnly;
   final MouseCursor? mouseCursor;
   final String? semanticLabel;
+  final bool dropTextEnabled;
 
   const TextFieldBuilder({
     super.key,
@@ -52,6 +54,7 @@ class TextFieldBuilder extends StatefulWidget {
     this.onTapOutside,
     this.onTextChange,
     this.onTextSubmitted,
+    this.dropTextEnabled = false,
   });
 
   @override
@@ -79,7 +82,7 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    final textField = TextField(
+    Widget textField = TextField(
       key: widget.key,
       controller: _controller,
       cursorColor: widget.cursorColor,
@@ -102,6 +105,17 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
       onTap: widget.onTap,
       onTapOutside: widget.onTapOutside,
     );
+
+    if (widget.dropTextEnabled) {
+      textField = TextDropZoneWeb(
+        child: textField,
+        onDrop: (value) {
+          _controller?.text += value;
+          widget.focusNode?.requestFocus();
+          _onTextChanged(value);
+        },
+      );
+    }
 
     if (widget.semanticLabel != null) {
       return TextFieldSemantics(

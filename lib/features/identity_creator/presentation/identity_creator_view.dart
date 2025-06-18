@@ -137,10 +137,10 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                           width: constraintsEditor.maxWidth,
                           height: constraintsEditor.maxHeight,
                           margin: EdgeInsets.zero,
-                          onLocalFileDropZoneListener: (details) =>
-                            controller.onLocalFileDropZoneListener(
+                          onSuperDrop: (listFileInfo) => 
+                            controller.onSuperDropListener(
                               context: context,
-                              details: details,
+                              listFileInfo: listFileInfo,
                               maxWidth: constraintsEditor.maxWidth,
                             ),
                         )
