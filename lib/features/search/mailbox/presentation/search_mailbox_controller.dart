@@ -206,7 +206,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     }
   }
 
-  void _refreshMailboxChanges({jmap.State? newState}) {
+  void _refreshMailboxChanges({required jmap.State newState}) {
     if (accountId == null ||
         session == null ||
         currentMailboxState == null ||

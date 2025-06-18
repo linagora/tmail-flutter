@@ -627,7 +627,7 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxDashBoardController.currentEmailState == newState) {
       return;
     }
-
+    log('ThreadController::_refreshEmailChanges: websocket enqueue message:');
     _webSocketQueueHandler?.enqueue(WebSocketMessage(newState: newState));
   }
 

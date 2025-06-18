@@ -288,16 +288,16 @@ class SearchEmailController extends BaseController
     });
   }
 
-  void _refreshEmailChanges({jmap.State? newState}) {
+  void _refreshEmailChanges({required jmap.State newState}) {
     log('SearchEmailController::_refreshEmailChanges(): newState: $newState');
     if (accountId == null ||
         session == null ||
         mailboxDashBoardController.currentEmailState == null ||
-        newState == null ||
+        mailboxDashBoardController.currentEmailState == newState ||
         searchIsRunning.isFalse) {
       return;
     }
-
+    log('SearchEmailController::_refreshEmailChanges: websocket enqueue message');
     _webSocketQueueHandler?.enqueue(WebSocketMessage(newState: newState));
   }
 

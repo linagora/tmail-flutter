@@ -1857,7 +1857,7 @@ class MailboxDashBoardController extends ReloadableController
       if (result.value1 is VacationResponse) {
         vacationResponse.value = result.value1;
         dispatchMailboxUIAction(RefreshChangeMailboxAction(
-          newState: jmap.State('vacation-updated-state'),
+          newState: jmap.State('vacation-updated-state-${DateTime.now().millisecondsSinceEpoch}'),
         ));
       }
       await Future.delayed(
@@ -1925,7 +1925,7 @@ class MailboxDashBoardController extends ReloadableController
       if (result.value1 is VacationResponse) {
         vacationResponse.value = result.value1;
         dispatchMailboxUIAction(RefreshChangeMailboxAction(
-          newState: jmap.State('vacation-updated-state'),
+          newState: jmap.State('vacation-updated-state-${DateTime.now().millisecondsSinceEpoch}'),
         ));
       }
       await Future.delayed(
@@ -2163,10 +2163,10 @@ class MailboxDashBoardController extends ReloadableController
   void _handleRefreshActionWhenBackToApp(RefreshActionViewEvent viewEvent) {
     log('MailboxDashBoardController::_handleRefreshActionWhenBackToApp():');
     dispatchEmailUIAction(RefreshChangeEmailAction(
-      newState: jmap.State('refresh-action-when-back-to-app-state'),
+      newState: jmap.State('refresh-action-when-back-to-app-state-${DateTime.now().millisecondsSinceEpoch}'),
     ));
     dispatchMailboxUIAction(RefreshChangeMailboxAction(
-      newState: jmap.State('refresh-action-when-back-to-app-state'),
+      newState: jmap.State('refresh-action-when-back-to-app-state-${DateTime.now().millisecondsSinceEpoch}'),
     ));
   }
 
@@ -2986,7 +2986,7 @@ class MailboxDashBoardController extends ReloadableController
   void _handleGetRestoredDeletedMessageSuccess(GetRestoredDeletedMessageSuccess success) async {
     if (selectedMailbox.value != null && selectedMailbox.value!.isRecovered) {
       dispatchEmailUIAction(RefreshChangeEmailAction(
-        newState: jmap.State('restored-deleted-message-success-state'),
+        newState: jmap.State('restored-deleted-message-success-state-${DateTime.now().millisecondsSinceEpoch}'),
       ));
     }
 
