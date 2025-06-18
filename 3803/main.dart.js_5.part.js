@@ -5042,11 +5042,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return D.EdgeInsetsDirectional_24_0_24_8;
     },
-    GetThreadDetailLoadingView_getThreadDetailLoadingView(_this, isLoading, isResponsiveDesktop) {
-      var _null = null;
+    GetThreadDetailLoadingView_getThreadDetailLoadingView(_this, isExpanded, isLoading, isResponsiveDesktop) {
+      var child, _null = null;
       if (!isLoading)
         return C.SizedBox_0_0_null_null;
-      return A.Expanded$(A.Container$(C.Alignment_0_0, D.SizedBox_qVI, C.Clip_0, _null, _null, C.BoxDecoration_yXb5, _null, _null, _null, isResponsiveDesktop ? C.EdgeInsetsDirectional_0_0_16_0 : _null, C.EdgeInsets_0_16_0_0, _null, _null, _null), 1);
+      child = A.Container$(C.Alignment_0_0, D.SizedBox_qVI, C.Clip_0, _null, _null, C.BoxDecoration_yXb5, _null, _null, _null, isResponsiveDesktop ? C.EdgeInsetsDirectional_0_0_16_0 : _null, C.EdgeInsets_0_16_0_0, _null, _null, _null);
+      if (isExpanded)
+        return A.Expanded$(child, 1);
+      else
+        return child;
     },
     LoadMoreThreadDetailEmails_loadMoreThreadDetailEmails(_this, loadMoreCount, loadMoreIndex) {
       var t3, currentExpandedEmailIndex, t4, emailIdsToLoadMetaData,
@@ -9256,7 +9260,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = t2 ? _null : t1.get$firstEmailAddressInFrom();
         if (t1 == null)
           t1 = "";
-        return new A.Padding(D.EdgeInsetsDirectional_20_0_20_16, A.Text$(A.Intl__message("You unsubscribe from " + t1, _null, "mailUnsubscribedMessage", A._setArrayType([t1], type$.JSArray_Object), _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mS80, _null, _null, _null, _null, _null), _null);
+        return new A.Padding(D.EdgeInsetsDirectional_20_16_20_16, A.Text$(A.Intl__message("You unsubscribe from " + t1, _null, "mailUnsubscribedMessage", A._setArrayType([t1], type$.JSArray_Object), _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mS80, _null, _null, _null, _null, _null), _null);
       } else
         return C.SizedBox_0_0_null_null;
     }
@@ -19684,7 +19688,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._as(t2.get(t1)).toString;
       t5 = A.InheritedModel_inheritFrom(this.context, C._MediaQueryAspect_0, type$.MediaQuery).data;
       A.Expando__checkType(t1);
-      return B.GetThreadDetailLoadingView_getThreadDetailLoadingView(t4, t1.showLoadingView$1(t3._as(t2.get(t1)).viewState.get$value(0)), t5.size._dx >= 1200);
+      return B.GetThreadDetailLoadingView_getThreadDetailLoadingView(t4, true, t1.showLoadingView$1(t3._as(t2.get(t1)).viewState.get$value(0)), t5.size._dx >= 1200);
     },
     $signature: 3
   };
@@ -19786,13 +19790,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = false;
       if (t4) {
         A.Expando__checkType(t1);
-        return B.GetThreadDetailLoadingView_getThreadDetailLoadingView(t3._as(t2.get(t1)), true, false);
+        return B.GetThreadDetailLoadingView_getThreadDetailLoadingView(t3._as(t2.get(t1)), false, true, false);
       }
       A.Expando__checkType(t1);
       if (J.get$length$asx(t3._as(t2.get(t1)).emailIdsPresentation.get$keys(0)) === 1) {
         A.Expando__checkType(t1);
         t4 = t3._as(t2.get(t1)).emailIdsPresentation;
-        t4 = A.IterableExtension_get_firstOrNull(new A._MapBaseValueIterable(t4, t4.$ti._eval$1("_MapBaseValueIterable<MapBase.K,MapBase.V>"))) != null;
+        t4 = A.IterableExtension_get_firstOrNull(new A._MapBaseValueIterable(t4, t4.$ti._eval$1("_MapBaseValueIterable<MapBase.K,MapBase.V>")));
+        t4 = (t4 == null ? _null : t4.emailInThreadStatus) === C.EmailInThreadStatus_1;
       } else
         t4 = false;
       if (t4) {
@@ -20349,8 +20354,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_16_16_8_16 = new A.EdgeInsetsDirectional(16, 16, 8, 16);
     D.EdgeInsetsDirectional_16_2_0_0 = new A.EdgeInsetsDirectional(16, 2, 0, 0);
     D.EdgeInsetsDirectional_16_8_16_16 = new A.EdgeInsetsDirectional(16, 8, 16, 16);
-    D.EdgeInsetsDirectional_20_0_20_16 = new A.EdgeInsetsDirectional(20, 0, 20, 16);
     D.EdgeInsetsDirectional_20_12_20_12 = new A.EdgeInsetsDirectional(20, 12, 20, 12);
+    D.EdgeInsetsDirectional_20_16_20_16 = new A.EdgeInsetsDirectional(20, 16, 20, 16);
     D.EdgeInsetsDirectional_24_0_24_8 = new A.EdgeInsetsDirectional(24, 0, 24, 8);
     D.EdgeInsetsDirectional_26_4_4_4 = new A.EdgeInsetsDirectional(26, 4, 4, 4);
     D.EdgeInsetsDirectional_32_0_32_10 = new A.EdgeInsetsDirectional(32, 0, 32, 10);
@@ -20584,5 +20589,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "1qdKHM32/GWvn06qGtgGc11qgp4=");
+})($__dart_deferred_initializers__, "wUgDZCRh/3+rpSD/vop68m01kII=");
 ;
