@@ -5,7 +5,7 @@
   s[d][e].push({p: "main.dart.js_6", e: "beginPart"});
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
-  var J, A, B, E, F,
+  var J, A, B, E,
   C = {
     ElevatedButton_ElevatedButton$icon(icon, label, onPressed, style) {
       var _null = null;
@@ -87,8 +87,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._needsSemanticsUpdate = true;
       _._semantics = null;
     },
-    LauncherApplicationMixin: function LauncherApplicationMixin() {
-    },
     PopupMenuWidgetMixin: function PopupMenuWidgetMixin() {
     },
     CircleLoadingWidget0: function CircleLoadingWidget0(t0, t1, t2) {
@@ -119,17 +117,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.softWrap = t7;
       _.key = t8;
     },
-    UserInformationWidget$(border, onSubtitleClick, padding, subtitle, titlePadding, userName) {
-      return new C.UserInformationWidget(userName, subtitle, onSubtitleClick, padding, border, null);
+    PopupMenuItemActionWidget: function PopupMenuItemActionWidget(t0, t1, t2) {
+      this.menuAction = t0;
+      this.menuActionClick = t1;
+      this.key = t2;
     },
-    UserInformationWidget: function UserInformationWidget(t0, t1, t2, t3, t4, t5) {
-      var _ = this;
-      _.userName = t0;
-      _.subtitle = t1;
-      _.onSubtitleClick = t2;
-      _.padding = t3;
-      _.border = t4;
-      _.key = t5;
+    PopupMenuItemActionWidget_build_closure: function PopupMenuItemActionWidget_build_closure(t0) {
+      this.$this = t0;
+    },
+    PopupMenuItemProfileSettingTypeAction: function PopupMenuItemProfileSettingTypeAction(t0, t1, t2) {
+      this.appLocalizations = t0;
+      this.imagePaths = t1;
+      this.action = t2;
+    },
+    ProfileSettingActionType: function ProfileSettingActionType(t0, t1) {
+      this.index = t0;
+      this._name = t1;
     },
     AppGridDashboardIcon: function AppGridDashboardIcon(t0, t1, t2) {
       this.imagePaths = t0;
@@ -137,7 +140,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.key = t2;
     },
     _AppGridDashboardIconState: function _AppGridDashboardIconState(t0) {
-      this._isExpandedNotifier = t0;
+      this._app_grid_dashboard_icon$_isExpandedNotifier = t0;
       this._framework$_element = this._widget = null;
     },
     _AppGridDashboardIconState_build_closure: function _AppGridDashboardIconState_build_closure(t0) {
@@ -165,20 +168,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     AppDashboardOverlay_build_closure: function AppDashboardOverlay_build_closure(t0) {
       this.$this = t0;
     },
-    NavigationBarWidget$(accountId, appGridController, avatarUserName, contactSupportCapability, imagePaths, onTapApplicationLogoAction, onTapAvatarAction, onTapContactSupportAction, searchForm) {
-      return new C.NavigationBarWidget(imagePaths, accountId, avatarUserName, contactSupportCapability, searchForm, appGridController, onTapApplicationLogoAction, onTapAvatarAction, onTapContactSupportAction, null);
+    NavigationBarWidget$(accountId, appGridController, contactSupportCapability, imagePaths, onProfileSettingActionTypeClick, onTapApplicationLogoAction, onTapContactSupportAction, ownEmailAddress, searchForm, settingActionTypes) {
+      return new C.NavigationBarWidget(imagePaths, ownEmailAddress, contactSupportCapability, searchForm, appGridController, settingActionTypes, onTapApplicationLogoAction, onTapContactSupportAction, onProfileSettingActionTypeClick, null);
     },
     NavigationBarWidget: function NavigationBarWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {
       var _ = this;
       _.imagePaths = t0;
-      _.accountId = t1;
-      _.avatarUserName = t2;
-      _.contactSupportCapability = t3;
-      _.searchForm = t4;
-      _.appGridController = t5;
+      _.ownEmailAddress = t1;
+      _.contactSupportCapability = t2;
+      _.searchForm = t3;
+      _.appGridController = t4;
+      _.settingActionTypes = t5;
       _.onTapApplicationLogoAction = t6;
-      _.onTapAvatarAction = t7;
-      _.onTapContactSupportAction = t8;
+      _.onTapContactSupportAction = t7;
+      _.onProfileSettingActionTypeClick = t8;
       _.key = t9;
     },
     NavigationBarWidget_build_closure: function NavigationBarWidget_build_closure(t0) {
@@ -194,6 +197,58 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
     },
     NavigationBarWidget_build_closure1: function NavigationBarWidget_build_closure1(t0) {
+      this.$this = t0;
+    },
+    ProfileLabelWidget: function ProfileLabelWidget(t0, t1, t2, t3) {
+      var _ = this;
+      _.label = t0;
+      _.copyLabelIcon = t1;
+      _.onCopyButtonAction = t2;
+      _.key = t3;
+    },
+    ProfileSettingIcon: function ProfileSettingIcon(t0, t1, t2, t3, t4) {
+      var _ = this;
+      _.ownEmailAddress = t0;
+      _.settingActionTypes = t1;
+      _.onProfileSettingActionTypeClick = t2;
+      _.isInsideCozy = t3;
+      _.key = t4;
+    },
+    _ProfileSettingIconState: function _ProfileSettingIconState(t0, t1, t2) {
+      var _ = this;
+      _._isExpandedNotifier = t0;
+      _._profile_setting_icon$_imagePaths = t1;
+      _._appToast = t2;
+      _._framework$_element = _._widget = null;
+    },
+    _ProfileSettingIconState_build_closure: function _ProfileSettingIconState_build_closure(t0) {
+      this.$this = t0;
+    },
+    _ProfileSettingIconState_build__closure0: function _ProfileSettingIconState_build__closure0(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    _ProfileSettingIconState_build__closure1: function _ProfileSettingIconState_build__closure1(t0) {
+      this.$this = t0;
+    },
+    _ProfileSettingIconState_build__closure: function _ProfileSettingIconState_build__closure(t0) {
+      this.$this = t0;
+    },
+    ProfileSettingMenuOverlay: function ProfileSettingMenuOverlay(t0, t1, t2, t3, t4, t5, t6) {
+      var _ = this;
+      _.ownEmailAddress = t0;
+      _.settingActionTypes = t1;
+      _.imagePaths = t2;
+      _.onCopyButtonAction = t3;
+      _.onProfileSettingActionTypeClick = t4;
+      _.onCloseProfileSettingMenuAction = t5;
+      _.key = t6;
+    },
+    ProfileSettingMenuOverlay_build_closure: function ProfileSettingMenuOverlay_build_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    ProfileSettingMenuOverlay_build__closure: function ProfileSettingMenuOverlay_build__closure(t0) {
       this.$this = t0;
     },
     VacationNotificationMessageWidget$(actionEndNow, actionGotoVacationSetting, fromAccountDashBoard, leadingIcon, margin, padding, vacationResponse) {
@@ -226,18 +281,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    buildSVGIconButton(icon, iconColor, iconSize, onTap, onTapDown, padding, tooltip) {
-      var _null = null,
-        t1 = padding == null ? B.EdgeInsets_8_8_8_8 : padding,
-        t2 = A.ColorNullableExtension_asFilter(iconColor),
-        iconWidget = new A.Padding(t1, A.SvgPicture$asset(icon, B.Alignment_0_0, t2, B.BoxFit_0, iconSize, _null, _null, iconSize), _null);
-      return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, tooltip != null ? A.Tooltip$(iconWidget, _null, tooltip) : iconWidget, B.CircleBorder_0, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onTap, _null, onTapDown, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
-    },
-    Aligned$(follower, offset, target) {
-      return new A.Aligned(null, null, follower, target, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, offset, null);
-    },
-    ApplicationVersionWidget$(padding, title) {
-      return new E.ApplicationVersionWidget(padding, title, null);
+    ApplicationVersionWidget$(textStyle, title) {
+      return new E.ApplicationVersionWidget(null, title, textStyle, null);
     },
     SessionExtensions_getContactSupportCapability(_this, accountId) {
       var contactSupportCapability, e, exception;
@@ -319,10 +364,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   J = holdersList[1];
   A = holdersList[0];
   B = holdersList[2];
-  E = holdersList[11];
-  F = holdersList[17];
-  C = hunkHelpers.updateHolder(holdersList[10], C);
-  D = holdersList[19];
+  E = holdersList[10];
+  C = hunkHelpers.updateHolder(holdersList[9], C);
+  D = holdersList[18];
   C._ElevatedButtonWithIcon.prototype = {
     defaultStyleOf$1(context) {
       var buttonStyle, t1, defaultFontSize, scaledPadding;
@@ -441,91 +485,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return this.super$RenderProxyBoxMixin$hitTestChildren(result, position);
     }
   };
-  C.LauncherApplicationMixin.prototype = {
-    launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri(androidPackageId, iosScheme, iosStoreLink, uri) {
-      return this.launchApplication$body$LauncherApplicationMixin(androidPackageId, iosScheme, iosStoreLink, uri);
-    },
-    launchApplication$1$uri(uri) {
-      return this.launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri(null, null, null, uri);
-    },
-    launchApplication$body$LauncherApplicationMixin(androidPackageId, iosScheme, iosStoreLink, uri) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$handler = 1, $async$currentError, $async$self = this, e, exception, $async$exception;
-      var $async$launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1) {
-          $async$currentError = $async$result;
-          $async$goto = $async$handler;
-        }
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              $async$handler = 3;
-              $async$goto = 6;
-              return A._asyncAwait($async$self.openWebApplication$1(uri), $async$launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri);
-            case 6:
-              // returning from await.
-              $async$handler = 1;
-              // goto after finally
-              $async$goto = 5;
-              break;
-            case 3:
-              // catch
-              $async$handler = 2;
-              $async$exception = $async$currentError;
-              e = A.unwrapException($async$exception);
-              A.log1("LauncherApplicationMixin::launchApplication:Exception = " + A.S(e), B.Level_10);
-              // goto after finally
-              $async$goto = 5;
-              break;
-            case 2:
-              // uncaught
-              // goto rethrow
-              $async$goto = 1;
-              break;
-            case 5:
-              // after finally
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
-            case 1:
-              // rethrow
-              return A._asyncRethrow($async$currentError, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri, $async$completer);
-    },
-    openWebApplication$1(uri) {
-      return this.openWebApplication$body$LauncherApplicationMixin(uri);
-    },
-    openWebApplication$body$LauncherApplicationMixin(uri) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.void);
-      var $async$openWebApplication$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              $async$goto = 2;
-              return A._asyncAwait(A.launchUrl(uri, B.LaunchMode_0, null), $async$openWebApplication$1);
-            case 2:
-              // returning from await.
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$openWebApplication$1, $async$completer);
-    }
-  };
-  C.PopupMenuWidgetMixin.prototype = {
-    popupItem$5$colorIcon$onCallbackAction$styleName(iconAction, nameAction, colorIcon, onCallbackAction, styleName) {
-      var _null = null,
-        t1 = A.SvgPicture$asset(iconAction, B.Alignment_0_0, A.ColorNullableExtension_asFilter(colorIcon), B.BoxFit_0, 20, _null, _null, 20);
-      return A.InkWell$(false, _null, true, new A.Padding(B.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(A._setArrayType([t1, B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(nameAction, _null, _null, _null, _null, _null, _null, _null, _null, styleName, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onCallbackAction, _null, _null, _null, _null, _null, _null, _null);
-    }
-  };
+  C.PopupMenuWidgetMixin.prototype = {};
   C.CircleLoadingWidget0.prototype = {
     build$1(context) {
       var _null = null,
@@ -545,28 +505,75 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(_this.padding, A.Text$(_this.label, _null, _null, _null, _this.overflow, _null, _null, _this.softWrap, _null, _this.customStyle, _null, _null, _null, _null, _null), _null), new A.RoundedRectangleBorder(t1, B.BorderSide_Q1M), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onLongPress, _this.onTap, _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
     }
   };
-  C.UserInformationWidget.prototype = {
+  C.PopupMenuItemActionWidget.prototype = {
     build$1(context) {
-      var t2, t3, t4, t5, _this = this, _null = null,
-        t1 = _this.padding;
-      if (t1 == null)
-        t1 = D.EdgeInsetsDirectional_16_16_4_16;
-      t2 = new A.AvatarBuilder();
-      t3 = _this.userName;
-      t2._avatar_builder$_text = t3.length !== 0 ? t3[0].toUpperCase() : "";
-      t2._bgColor = B.Color_4294967295;
-      t2._textColor = B.Color_4278190080;
-      t2._boxShadows = A._setArrayType([D.BoxShadow_NMc], type$.JSArray_BoxShadow);
-      t2._avatar_builder$_size = 48;
-      t2 = t2.build$0();
-      t4 = type$.JSArray_Widget;
-      t3 = A._setArrayType([A.SelectableText$(t3, 1, D.TextStyle_69t18, _null)], t4);
-      if (_this.subtitle != null) {
-        t5 = A.Matrix4_Matrix4$translationValues(-8, 0, 0);
-        A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t3.push(new A.Padding(D.EdgeInsetsDirectional_0_10_0_0, A.Transform$(_null, C.MaterialTextButton$(20, F.TextStyle_OkG0, A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, _this.onSubtitleClick, _null, B.EdgeInsetsDirectional_8_8_8_8, _null), _null, t5, true), _null));
+      var iconWidget, t2, t3, t4, _null = null,
+        t1 = this.menuAction,
+        selectedIconWidget = _null,
+        isSelected = false;
+      if (t1 instanceof A.PopupMenuItemActionRequiredIcon)
+        iconWidget = new A.Padding(B.EdgeInsetsDirectional_0_0_16_0, A.SvgPicture$asset(t1.get$actionIcon(), B.Alignment_0_0, A.ColorNullableExtension_asFilter(t1.get$actionIconColor()), B.BoxFit_0, 20, _null, _null, 20), _null);
+      else {
+        iconWidget = _null;
+        if (type$.PopupMenuItemActionRequiredSelectedIcon_dynamic._is(t1)) {
+          t2 = t1.get$selectedIcon();
+          t3 = t1.get$selectedIconSize();
+          t4 = t1.get$selectedIconSize();
+          selectedIconWidget = new A.Padding(B.EdgeInsetsDirectional_16_0_0_0, A.SvgPicture$asset(t2, B.Alignment_0_0, A.ColorNullableExtension_asFilter(t1.get$selectedIconColor()), B.BoxFit_0, t4, _null, _null, t3), _null);
+          isSelected = t1.selectedAction === t1.action;
+        } else if (type$.PopupMenuItemActionRequiredFull_dynamic._is(t1)) {
+          iconWidget = new A.Padding(B.EdgeInsetsDirectional_0_0_16_0, A.SvgPicture$asset(t1.get$actionIcon(), B.Alignment_0_0, A.ColorNullableExtension_asFilter(B.Color_4283787389), B.BoxFit_0, 20, _null, _null, 20), _null);
+          t2 = t1.get$selectedIcon();
+          t3 = t1.get$selectedIconSize();
+          t4 = t1.get$selectedIconSize();
+          selectedIconWidget = new A.Padding(B.EdgeInsetsDirectional_16_0_0_0, A.SvgPicture$asset(t2, B.Alignment_0_0, A.ColorNullableExtension_asFilter(t1.get$selectedIconColor()), B.BoxFit_0, t4, _null, _null, t3), _null);
+          isSelected = t1.selectedAction === t1.action;
+        }
       }
-      return A.Container$(_null, A.Row$(A._setArrayType([t2, B.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), 1), B.SizedBox_16_null_null_null], t4), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, B.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
+      t2 = t1.get$itemPadding();
+      t3 = A._setArrayType([], type$.JSArray_Widget);
+      if (iconWidget != null)
+        t3.push(iconWidget);
+      t3.push(A.Expanded$(A.Text$(t1.get$actionName(), _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody3(t1.get$actionNameColor()), _null, _null, _null, _null, _null), 1));
+      if (isSelected && selectedIconWidget != null)
+        t3.push(selectedIconWidget);
+      return A.PointerInterceptor$(A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, A.Container$(_null, A.Row$(t3, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, _null, _null, _null, _null, 48, _null, _null, t2, _null, _null, 1 / 0), _null, true, _null, _null, _null, B.Color_4294506744, _null, _null, _null, _null, _null, _null, _null, new C.PopupMenuItemActionWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null), B.Clip_0, _null, 0, _null, _null, _null, _null, _null, B.MaterialType_4));
+    }
+  };
+  C.PopupMenuItemProfileSettingTypeAction.prototype = {
+    get$actionIcon() {
+      return this.action.getIcon$1(this.imagePaths);
+    },
+    get$actionName() {
+      return this.action.getTitle$1(this.appLocalizations);
+    },
+    get$actionIconColor() {
+      return B.Color_4285034102;
+    },
+    get$itemPadding() {
+      return B.EdgeInsets_16_0_16_0;
+    }
+  };
+  C.ProfileSettingActionType.prototype = {
+    _enumToString$0() {
+      return "ProfileSettingActionType." + this._name;
+    },
+    getTitle$1(appLocalizations) {
+      var _null = null;
+      switch (this.index) {
+        case 0:
+          return A.Intl__message("Manage account", _null, "manage_account", _null, _null);
+        case 1:
+          return A.Intl__message("Sign out", _null, "sign_out", _null, _null);
+      }
+    },
+    getIcon$1(imagePaths) {
+      switch (this.index) {
+        case 0:
+          return "assets/images/ic_setting.svg";
+        case 1:
+          return "assets/images/ic_logout.svg";
+      }
     }
   };
   C.AppGridDashboardIcon.prototype = {
@@ -576,16 +583,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C._AppGridDashboardIconState.prototype = {
     dispose$0() {
-      var t1 = this._isExpandedNotifier;
+      var t1 = this._app_grid_dashboard_icon$_isExpandedNotifier;
       t1.ChangeNotifier__listeners = $.$get$ChangeNotifier__emptyListeners();
       t1.ChangeNotifier__count = 0;
       this.super$State$dispose();
     },
     build$1(context) {
-      return new A.ValueListenableBuilder(this._isExpandedNotifier, new C._AppGridDashboardIconState_build_closure(this), null, null, type$.ValueListenableBuilder_bool);
+      return new A.ValueListenableBuilder(this._app_grid_dashboard_icon$_isExpandedNotifier, new C._AppGridDashboardIconState_build_closure(this), null, null, type$.ValueListenableBuilder_bool);
     },
     _toggleAppGridDashboard$0() {
-      var t1 = this._isExpandedNotifier;
+      var t1 = this._app_grid_dashboard_icon$_isExpandedNotifier;
       t1.set$value(0, !t1._change_notifier$_value);
     }
   };
@@ -642,25 +649,63 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = _this.contactSupportCapability;
         if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
           A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-          t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build_closure0(_this), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
+          t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build_closure0(_this), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null), _null));
         }
         if (_this.appGridController != null)
           t1.push(new A.Obx(new C.NavigationBarWidget_build_closure1(_this), _null));
         t1.push(B.SizedBox_16_null_null_null);
-        if (_this.accountId != null) {
-          t3 = new A.AvatarBuilder();
-          t3._avatar_builder$_text = _this.avatarUserName;
-          t3._bgColor = B.Color_4294967295;
-          t3._textColor = B.Color_4278190080;
-          t3._avatar_builder$_context = context;
-          t3._avatar_builder$_size = 48;
-          t3._onTapAvatarActionWithPositionClick = _this.onTapAvatarAction;
-          t3._boxShadows = A._setArrayType([D.BoxShadow_NMc], type$.JSArray_BoxShadow);
-          t1.push(t3.build$0());
-        }
+        t1.push(new C.ProfileSettingIcon(_this.ownEmailAddress, _this.settingActionTypes, _this.onProfileSettingActionTypeClick, false, _null));
         B.JSArray_methods.addAll$1(t2, t1);
       }
       return A.Container$(_null, A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, B.Color_4294967295, _null, _null, _null, 80, _null, _null, D.EdgeInsetsDirectional_30_0_30_0, _null, _null, _null);
+    }
+  };
+  C.ProfileLabelWidget.prototype = {
+    build$1(context) {
+      var _null = null,
+        t1 = this.label,
+        t2 = A._setArrayType([new A.Flexible(1, B.FlexFit_1, A.SelectableText$(t1, 1, $.$get$ThemeUtils_textStyleM3BodyMedium(), _null), _null)], type$.JSArray_Widget);
+      if (t1.length !== 0)
+        t2.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, this.copyLabelIcon, A.Color$fromARGB(122, 28, 27, 31), 20, _null, _null, 1 / 0, _null, this.onCopyButtonAction, B.EdgeInsets_5_5_5_5, _null, _null));
+      return A.Container$(_null, A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_0, _null), B.Clip_0, _null, _null, _null, _null, 40, _null, _null, B.EdgeInsets_16_0_16_0, _null, _null, _null);
+    }
+  };
+  C.ProfileSettingIcon.prototype = {
+    createState$0() {
+      return new C._ProfileSettingIconState(new A.ValueNotifier(false, $.$get$ChangeNotifier__emptyListeners(), type$.ValueNotifier_bool), new A.ImagePaths(), new A.AppToast());
+    },
+    onProfileSettingActionTypeClick$1(arg0) {
+      return this.onProfileSettingActionTypeClick.call$1(arg0);
+    }
+  };
+  C._ProfileSettingIconState.prototype = {
+    dispose$0() {
+      var t1 = this._isExpandedNotifier;
+      t1.ChangeNotifier__listeners = $.$get$ChangeNotifier__emptyListeners();
+      t1.ChangeNotifier__count = 0;
+      this.super$State$dispose();
+    },
+    build$1(context) {
+      return new A.ValueListenableBuilder(this._isExpandedNotifier, new C._ProfileSettingIconState_build_closure(this), null, null, type$.ValueListenableBuilder_bool);
+    },
+    _toggleOpenMenu$0() {
+      var t1 = this._isExpandedNotifier;
+      t1.set$value(0, !t1._change_notifier$_value);
+    }
+  };
+  C.ProfileSettingMenuOverlay.prototype = {
+    build$1(context) {
+      var t2, t3, t4, t5, t6, _this = this, _null = null,
+        t1 = $.WidgetsBinding__instance.WidgetsBinding__buildOwner.focusManager._primaryFocus;
+      t1 = t1 == null ? _null : t1.get$unfocus();
+      t2 = A._setArrayType([new A.BoxShadow(0, B.BlurStyle_0, A.Color$fromARGB(B.JSNumber_methods.round$0(76.5), 0, 0, 0), B.Offset_0_0, 2), new A.BoxShadow(2, B.BlurStyle_0, A.Color$fromARGB(38, 0, 0, 0), B.Offset_0_2, 6)], type$.JSArray_BoxShadow);
+      t3 = type$.JSArray_Widget;
+      t4 = A._setArrayType([B.SizedBox_null_32_null_null, new C.ProfileLabelWidget(_this.ownEmailAddress, "assets/images/ic_copy.svg", _this.onCopyButtonAction, _null), B.SizedBox_null_4_null_null, A.Divider$(A.Color$fromARGB(31, 29, 25, 43), _null, 1, _null)], t3);
+      t5 = _this.settingActionTypes;
+      t6 = A._arrayInstanceType(t5)._eval$1("MappedListIterable<1,PopupMenuItemActionWidget>");
+      B.JSArray_methods.addAll$1(t4, A.List_List$of(new A.MappedListIterable(t5, new C.ProfileSettingMenuOverlay_build_closure(_this, context), t6), true, t6._eval$1("ListIterable.E")));
+      t4.push(B.SizedBox_null_8_null_null);
+      return A.GestureDetector$(_null, A.Container$(_null, new A.Stack(B.AlignmentDirectional_m1_m1, _null, B.StackFit_0, B.Clip_1, A._setArrayType([A.Column$(t4, B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1), A.PositionedDirectional$(_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 24, _null, _null, "assets/images/ic_composer_close.svg", B.Color_4287405231, 22, _null, _null, 1 / 0, _null, _this.onCloseProfileSettingMenuAction, B.EdgeInsets_4_4_4_4, _null, _null), 6, _null, 6, _null)], t3), _null), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_4294967295, _null, _null, B.BorderRadius_ww811, t2, _null, _null, B.BoxShape_0), _null, _null, _null, _null, _null, _null, _null, 260), B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT);
     }
   };
   C.VacationNotificationMessageWidget.prototype = {
@@ -844,12 +889,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return this.link.builder.call$2(context, new C.DefaultLinkDelegate_build_closure(this, context));
     }
   };
-  var typesOffset = hunkHelpers.updateTypes(["bool(PortalLinkScope)", "~()", "AppGridDashboardItem(AppLinagoraEcosystem)", "DefaultLinkDelegate(LinkInfo)"]);
+  var typesOffset = hunkHelpers.updateTypes(["~()", "bool(PortalLinkScope)", "AppGridDashboardItem(AppLinagoraEcosystem)", "~(ProfileSettingActionType)", "PopupMenuItemActionWidget(ProfileSettingActionType)", "DefaultLinkDelegate(LinkInfo)"]);
   C.LinkBrowserWidget_build_closure.prototype = {
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1890
+    $signature: 1889
+  };
+  C.PopupMenuItemActionWidget_build_closure.prototype = {
+    call$0() {
+      var t1 = this.$this;
+      return t1.menuActionClick.call$1(t1.menuAction);
+    },
+    $signature: 0
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -859,13 +911,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = A.GestureDetector$(B.HitTestBehavior_1, _null, B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t2, _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT),
         t4 = type$._LocalizationsScope,
         t5 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_m1 : B.Alignment_1_m1;
-      t5 = C.Aligned$(t5, B.Offset_0_0, A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1);
+      t5 = A.Aligned$(t5, B.Offset_0_0, A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1);
       t1 = t1._widget;
       t6 = t1.linagoraApps;
       t1 = t1.imagePaths;
-      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
+      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 1891
+    $signature: 535
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -889,31 +941,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.NavigationBarWidget_build_closure.prototype = {
     call$2(context, constraint) {
-      var _null = null,
-        t1 = this.$this,
-        t2 = A._setArrayType([new A.SizedBox(constraint.maxWidth / 2, 52, t1.searchForm, _null), B.Spacer_null], type$.JSArray_Widget),
-        t3 = t1.contactSupportCapability;
+      var t3, _null = null,
+        t1 = constraint.maxWidth,
+        t2 = this.$this;
+      t1 = A._setArrayType([new A.SizedBox(Math.min(Math.max(t1 / 2, 576), t1), 52, t2.searchForm, _null), B.Spacer_null], type$.JSArray_Widget);
+      t3 = t2.contactSupportCapability;
       if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t2.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t1), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
+        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t2), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null), _null));
       }
-      if (t1.appGridController != null)
-        t2.push(new A.Obx(new C.NavigationBarWidget_build__closure0(t1), _null));
-      t2.push(B.SizedBox_16_null_null_null);
-      if (t1.accountId != null) {
-        t3 = new A.AvatarBuilder();
-        t3._avatar_builder$_text = t1.avatarUserName;
-        t3._bgColor = B.Color_4294967295;
-        t3._textColor = B.Color_4278190080;
-        t3._avatar_builder$_context = context;
-        t3._avatar_builder$_size = 48;
-        t3._onTapAvatarActionWithPositionClick = t1.onTapAvatarAction;
-        t3._boxShadows = A._setArrayType([D.BoxShadow_NMc], type$.JSArray_BoxShadow);
-        t2.push(t3.build$0());
-      }
-      return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+      if (t2.appGridController != null)
+        t1.push(new A.Obx(new C.NavigationBarWidget_build__closure0(t2), _null));
+      t1.push(B.SizedBox_16_null_null_null);
+      t1.push(new C.ProfileSettingIcon(t2.ownEmailAddress, t2.settingActionTypes, t2.onProfileSettingActionTypeClick, false, _null));
+      return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 375
+    $signature: 374
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -965,6 +1008,81 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 4
   };
+  C._ProfileSettingIconState_build_closure.prototype = {
+    call$3(context, isExpanded, child) {
+      var t6, t7, _null = null,
+        t1 = this.$this,
+        t2 = t1.get$_toggleOpenMenu(),
+        t3 = A.GestureDetector$(B.HitTestBehavior_1, _null, B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t2, _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT),
+        t4 = type$._LocalizationsScope,
+        t5 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_m1 : B.Alignment_1_m1;
+      t4 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1;
+      t6 = t1._widget;
+      t7 = t6.isInsideCozy;
+      t4 = A.Aligned$(t5, new A.Offset(t7 ? -16 : 0, 8), t4);
+      t5 = t6.ownEmailAddress;
+      t6 = t6.settingActionTypes;
+      if (t7)
+        t7 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_setting.svg", B.Color_4283787389, _null, _null, B.EdgeInsetsDirectional_0_0_16_0, 1 / 0, new C._ProfileSettingIconState_build__closure(t1), _null, _null, _null, _null);
+      else {
+        t7 = new A.AvatarBuilder();
+        t7._avatar_builder$_text = t5.length !== 0 ? t5[0].toUpperCase() : "";
+        t7._bgColor = B.Color_4294967295;
+        t7._textColor = B.Color_4278190080;
+        t7._avatar_builder$_context = context;
+        t7._avatar_builder$_size = 48;
+        t7._onTapAvatarActionClick = t2;
+        t7._boxShadows = A._setArrayType([D.BoxShadow_NMc], type$.JSArray_BoxShadow);
+        t7 = t7.build$0();
+      }
+      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t4, t7, new C.ProfileSettingMenuOverlay(t5, t6, t1._profile_setting_icon$_imagePaths, new C._ProfileSettingIconState_build__closure0(t1, context), new C._ProfileSettingIconState_build__closure1(t1), t2, _null), isExpanded), t3, isExpanded);
+    },
+    $signature: 535
+  };
+  C._ProfileSettingIconState_build__closure0.prototype = {
+    call$0() {
+      var _null = null,
+        t1 = this.$this,
+        t2 = this.context;
+      A.Clipboard_setData(new A.ClipboardData(t1._widget.ownEmailAddress));
+      A.Localizations_of(t2, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      t1._appToast.showToastSuccessMessage$2(t2, A.Intl__message("Email address copied to clipboard", _null, "email_address_copied_to_clipboard", _null, _null));
+      return _null;
+    },
+    $signature: 0
+  };
+  C._ProfileSettingIconState_build__closure1.prototype = {
+    call$1(actionType) {
+      var t1 = this.$this,
+        t2 = t1._isExpandedNotifier;
+      t2.set$value(0, !t2._change_notifier$_value);
+      t1._widget.onProfileSettingActionTypeClick$1(actionType);
+    },
+    $signature: typesOffset + 3
+  };
+  C._ProfileSettingIconState_build__closure.prototype = {
+    call$1(position) {
+      var t1 = this.$this._isExpandedNotifier;
+      t1.set$value(0, !t1._change_notifier$_value);
+    },
+    $signature: 131
+  };
+  C.ProfileSettingMenuOverlay_build_closure.prototype = {
+    call$1(actionType) {
+      var t2,
+        t1 = A.Localizations_of(this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations);
+      t1.toString;
+      t2 = this.$this;
+      return new C.PopupMenuItemActionWidget(new C.PopupMenuItemProfileSettingTypeAction(t1, t2.imagePaths, actionType), new C.ProfileSettingMenuOverlay_build__closure(t2), null);
+    },
+    $signature: typesOffset + 4
+  };
+  C.ProfileSettingMenuOverlay_build__closure.prototype = {
+    call$1(menuAction) {
+      this.$this.onProfileSettingActionTypeClick.call$1(menuAction.action);
+    },
+    $signature: 66
+  };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
       return this.$this._followLink$1(this.context);
@@ -975,31 +1093,34 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     var _instance_1_u = hunkHelpers._instance_1u,
       _instance_0_u = hunkHelpers._instance_0u,
       _static_1 = hunkHelpers._static_1;
-    _instance_1_u(C.PortalLinkScope.prototype, "get$linkEquals", "linkEquals$1", 0);
-    _instance_0_u(C._AppGridDashboardIconState.prototype, "get$_toggleAppGridDashboard", "_toggleAppGridDashboard$0", 1);
-    _static_1(C, "link_DefaultLinkDelegate_create$closure", "DefaultLinkDelegate_create", 3);
+    _instance_1_u(C.PortalLinkScope.prototype, "get$linkEquals", "linkEquals$1", 1);
+    _instance_0_u(C._AppGridDashboardIconState.prototype, "get$_toggleAppGridDashboard", "_toggleAppGridDashboard$0", 0);
+    _instance_0_u(C._ProfileSettingIconState.prototype, "get$_toggleOpenMenu", "_toggleOpenMenu$0", 0);
+    _static_1(C, "link_DefaultLinkDelegate_create$closure", "DefaultLinkDelegate_create", 5);
   })();
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
       _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
     _inherit(C._ElevatedButtonWithIcon, A.ElevatedButton);
-    _inheritMany(A.StatelessWidget, [C._ElevatedButtonWithIconChild, C.CircleLoadingWidget0, C.LinkBrowserWidget, C.MaterialTextButton, C.UserInformationWidget, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, C.AppDashboardOverlay, C.NavigationBarWidget, C.VacationNotificationMessageWidget, C.Link, C.DefaultLinkDelegate]);
-    _inheritMany(A.StatefulWidget, [C.Portal, C.AppGridDashboardIcon]);
-    _inheritMany(A.State0, [C._PortalState, C._AppGridDashboardIconState]);
-    _inheritMany(A.Object, [C.PortalLink, C.LauncherApplicationMixin, C.PopupMenuWidgetMixin]);
+    _inheritMany(A.StatelessWidget, [C._ElevatedButtonWithIconChild, C.CircleLoadingWidget0, C.LinkBrowserWidget, C.MaterialTextButton, C.PopupMenuItemActionWidget, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, C.AppDashboardOverlay, C.NavigationBarWidget, C.ProfileLabelWidget, C.ProfileSettingMenuOverlay, C.VacationNotificationMessageWidget, C.Link, C.DefaultLinkDelegate]);
+    _inheritMany(A.StatefulWidget, [C.Portal, C.AppGridDashboardIcon, C.ProfileSettingIcon]);
+    _inheritMany(A.State0, [C._PortalState, C._AppGridDashboardIconState, C._ProfileSettingIconState]);
+    _inheritMany(A.Object, [C.PortalLink, C.PopupMenuWidgetMixin]);
     _inherit(C.PortalLinkScope, A.InheritedWidget);
     _inherit(C.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(C.RenderPortalTheater, A.RenderProxyBox);
     _inheritMany(A.Closure2Args, [C.LinkBrowserWidget_build_closure, C.NavigationBarWidget_build_closure]);
-    _inheritMany(A.Closure, [C._AppGridDashboardIconState_build_closure, C.AppDashboardOverlay_build_closure]);
+    _inheritMany(A.Closure0Args, [C.PopupMenuItemActionWidget_build_closure, C.AppGridDashboardItem_build_closure, C.AppDashboardOverlay_build_closure0, C.NavigationBarWidget_build__closure, C.NavigationBarWidget_build__closure0, C.NavigationBarWidget_build_closure0, C.NavigationBarWidget_build_closure1, C._ProfileSettingIconState_build__closure0, C.DefaultLinkDelegate_build_closure]);
+    _inherit(C.PopupMenuItemProfileSettingTypeAction, A.PopupMenuItemActionRequiredIcon);
+    _inherit(C.ProfileSettingActionType, A._Enum);
+    _inheritMany(A.Closure, [C._AppGridDashboardIconState_build_closure, C.AppDashboardOverlay_build_closure, C._ProfileSettingIconState_build_closure, C._ProfileSettingIconState_build__closure1, C._ProfileSettingIconState_build__closure, C.ProfileSettingMenuOverlay_build_closure, C.ProfileSettingMenuOverlay_build__closure]);
     _inherit(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin);
     _inherit(C.AppGridDashboardItem, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin);
-    _inheritMany(A.Closure0Args, [C.AppGridDashboardItem_build_closure, C.AppDashboardOverlay_build_closure0, C.NavigationBarWidget_build__closure, C.NavigationBarWidget_build__closure0, C.NavigationBarWidget_build_closure0, C.NavigationBarWidget_build_closure1, C.DefaultLinkDelegate_build_closure]);
-    _mixin(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, C.LauncherApplicationMixin);
+    _mixin(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, A.LauncherApplicationMixin);
     _mixin(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin, E.ImageLoaderMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"CircleLoadingWidget0":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AppGridDashboardIconState":{"State0":["AppGridDashboardIcon"]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NavigationBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"CircleLoadingWidget0":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuItemActionWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuItemProfileSettingTypeAction":{"PopupMenuItemAction":["ProfileSettingActionType"],"EquatableMixin":[]},"AppGridDashboardIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AppGridDashboardIconState":{"State0":["AppGridDashboardIcon"]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NavigationBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfileLabelWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfileSettingIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ProfileSettingIconState":{"State0":["ProfileSettingIcon"]},"ProfileSettingMenuOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
@@ -1010,6 +1131,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       JSArray_BoxShadow: findType("JSArray<BoxShadow>"),
       JSArray_Object: findType("JSArray<Object>"),
       JSArray_Widget: findType("JSArray<Widget>"),
+      PopupMenuItemActionRequiredFull_dynamic: findType("PopupMenuItemActionRequiredFull<@>"),
+      PopupMenuItemActionRequiredSelectedIcon_dynamic: findType("PopupMenuItemActionRequiredSelectedIcon<@>"),
       PortalLinkOverlay: findType("PortalLinkOverlay"),
       ResponsiveUtils: findType("ResponsiveUtils"),
       ValueListenableBuilder_bool: findType("ValueListenableBuilder<bool>"),
@@ -1020,39 +1143,41 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     };
   })();
   (function constants() {
+    var makeConstList = hunkHelpers.makeConstList;
     D.Aligned_43h = new A.Aligned(1, null, B.Alignment_1_m1, B.Alignment_1_1, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, null);
     D.Aligned_wEo = new A.Aligned(1, null, B.Alignment_1_m1, B.Alignment_1_1, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, D.Aligned_43h);
     D.Color_4294964674 = new A.Color(4294964674);
     D.Offset_UrS1 = new A.Offset(0, 0.5);
     D.BoxShadow_NMc = new A.BoxShadow(1, B.BlurStyle_0, B.Color_335544320, D.Offset_UrS1, 1);
     D.Color_4291217096 = new A.Color(4291217096);
-    D.Divider_0 = new A.Divider(1, null, null, null, D.Color_4291217096, null);
-    D.EdgeInsetsDirectional_0_10_0_0 = new A.EdgeInsetsDirectional(0, 10, 0, 0);
+    D.Divider_ouN = new A.Divider(1, null, null, D.Color_4291217096, null);
     D.EdgeInsetsDirectional_10_0_0_0 = new A.EdgeInsetsDirectional(10, 0, 0, 0);
     D.EdgeInsetsDirectional_10_14_10_14 = new A.EdgeInsetsDirectional(10, 14, 10, 14);
-    D.EdgeInsetsDirectional_12_0_16_0 = new A.EdgeInsetsDirectional(12, 0, 16, 0);
     D.EdgeInsetsDirectional_12_8_12_0 = new A.EdgeInsetsDirectional(12, 8, 12, 0);
-    D.EdgeInsetsDirectional_16_16_0_16 = new A.EdgeInsetsDirectional(16, 16, 0, 16);
-    D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
     D.EdgeInsetsDirectional_30_0_30_0 = new A.EdgeInsetsDirectional(30, 0, 30, 0);
     D.EdgeInsetsDirectional_4_0_6_0 = new A.EdgeInsetsDirectional(4, 0, 6, 0);
     D.EdgeInsetsDirectional_8_0_12_0 = new A.EdgeInsetsDirectional(8, 0, 12, 0);
     D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
+    D.EdgeInsets_0_0_0_4 = new A.EdgeInsets(0, 0, 0, 4);
     D.EdgeInsets_0_4_0_4 = new A.EdgeInsets(0, 4, 0, 4);
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_12_5_12_5 = new A.EdgeInsets(12, 5, 12, 5);
-    D.EdgeInsets_32_16_32_16 = new A.EdgeInsets(32, 16, 32, 16);
+    D.EdgeInsets_8_12_8_12 = new A.EdgeInsets(8, 12, 8, 12);
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
+    D.ProfileSettingActionType_0 = new C.ProfileSettingActionType(0, "manageAccount");
+    D.ProfileSettingActionType_1 = new C.ProfileSettingActionType(1, "signOut");
+    D.List_empty35 = A._setArrayType(makeConstList([]), A.findType("JSArray<ProfileSettingActionType>"));
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
-    D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
     D.SizedBox_32_null_null_null = new A.SizedBox(32, null, null, null);
-    D.TextStyle_69t19 = new A.TextStyle(true, B.Color_4278190080, null, null, null, null, 17, B.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_69t18 = new A.TextStyle(true, B.Color_4278190080, null, null, null, null, 17, B.FontWeight_5_600, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_e3y0 = new A.TextStyle(true, B.Color_4286680217, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   })();
   (function lazyInitializers() {
     var _lazyFinal = hunkHelpers.lazyFinal;
+    _lazyFinal($, "ThemeUtils_textStyleM3BodyMedium", "$get$ThemeUtils_textStyleM3BodyMedium", () => {
+      var _null = null;
+      return A.TextStyle$(_null, _null, B.Color_4280032031.withOpacity$1(0.48), _null, _null, _null, _null, _null, "Inter", _null, _null, 14, _null, _null, B.FontWeight_4_500, _null, 1.4285714285714286, true, _null, 0.25, _null, _null, _null, _null, _null, _null);
+    });
     _lazyFinal($, "AppGridDashboardStyle_cardShadow", "$get$AppGridDashboardStyle_cardShadow", () => A._setArrayType([A.BoxShadow$(20, B.BlurStyle_0, B.Color_4278190080.withOpacity$1(0.15), B.Offset_0_0, 0)], type$.JSArray_BoxShadow));
   })();
 };
@@ -1060,5 +1185,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "3A8D2tR1p1g/WqsrVLFIUThENgU=");
+})($__dart_deferred_initializers__, "E9RBZgTmnTlBE32g7hp1uU/IEIg=");
 ;
