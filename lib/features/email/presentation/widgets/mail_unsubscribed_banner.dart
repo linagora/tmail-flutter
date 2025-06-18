@@ -19,7 +19,7 @@ class MailUnsubscribedBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     if (presentationEmail?.isSubscribed == true && emailUnsubscribe == null) {
       return Padding(
-        padding: const EdgeInsetsDirectional.only(bottom: 16, start: 20, end: 20),
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 16, horizontal: 20),
         child: Text(
           AppLocalizations.of(context).mailUnsubscribedMessage(presentationEmail?.firstEmailAddressInFrom ?? ''),
           style: const TextStyle(
