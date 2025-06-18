@@ -5,6 +5,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -167,11 +168,12 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
         return controller.getThreadDetailLoadingView(
           isResponsiveDesktop: false,
           isLoading: true,
+          isExpanded: false,
         );
       }
 
       if (controller.emailIdsPresentation.length == 1 &&
-          controller.emailIdsPresentation.values.firstOrNull != null) {
+          controller.emailIdsPresentation.values.firstOrNull?.emailInThreadStatus == EmailInThreadStatus.expanded) {
         final emailId = controller.emailIdsPresentation.values.firstOrNull!.id;
 
         return EmailView(
