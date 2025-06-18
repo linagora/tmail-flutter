@@ -1,3 +1,26 @@
+## [0.16.0] - 2025-06-18
+### Fixed
+- #3772 Change Splash screen
+- #3795 Fix cannot send emails with stalwart
+- #3712 Common settings for language
+- #3603 Cozy app bar
+- #3766 Change context menu for mobile
+- #3759 Change context menu for web app
+- #3763 Update style for Advanced search form
+- #3767 Recent items for search history
+- #3765 Change dialog style
+- #3786 Add Return-Path header when request read receipt (- #3790)
+- #3764 Empty view for folder
+- #3758 Update Mailbox View
+- #3773 Change banner of Trash/Spam folder
+- #3761 Fix correct size for search icon in mailbox search
+- #3752 Better error handling when updating recipients in Forwarding
+- #3760 Change style of input dialog on web
+- #3717 Allow access settings when own email address is null (Stalwart interopability)
+- #3484 Try get oidc configuration if possible when web finger is not available (Stalwart interopability)
+- #3762 Update style for `Clean` button of Trash/Spam folder
+- #3675 Remove mark all read button
+
 ## [0.15.5] - 2025-05-19
 ### Fixed
 - Changing position of Get help button in Left menu
