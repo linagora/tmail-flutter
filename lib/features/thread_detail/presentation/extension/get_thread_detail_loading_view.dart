@@ -6,26 +6,31 @@ extension GetThreadDetailLoadingView on ThreadDetailController {
   Widget getThreadDetailLoadingView({
     required bool isResponsiveDesktop,
     required bool isLoading,
+    bool isExpanded = true,
   }) {
     if (!isLoading) return const SizedBox.shrink();
 
-    return Expanded(
-      child: Container(
-        alignment: Alignment.center,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-        ),
-        margin: isResponsiveDesktop
-          ? const EdgeInsetsDirectional.only(end: 16)
-          : null,
-        padding: const EdgeInsets.only(top: 16),
-        child: const SizedBox(
-          width: 24,
-          height: 24,
-          child: CupertinoLoadingWidget(),
-        ),
+    final child = Container(
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+      ),
+      margin: isResponsiveDesktop
+        ? const EdgeInsetsDirectional.only(end: 16)
+        : null,
+      padding: const EdgeInsets.only(top: 16),
+      child: const SizedBox(
+        width: 24,
+        height: 24,
+        child: CupertinoLoadingWidget(),
       ),
     );
+
+    if (isExpanded) {
+      return Expanded(child: child);
+    } else {
+      return child;
+    }
   }
 }
