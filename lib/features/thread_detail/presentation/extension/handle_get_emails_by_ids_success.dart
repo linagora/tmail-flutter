@@ -51,6 +51,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
       return;
     }
 
+    if (scrollController?.hasClients == false) return;
     final currentScrollPosition = scrollController?.position.pixels;
     final maxScrollExtent = scrollController?.position.maxScrollExtent;
     final currentBottomScrollPosition = currentScrollPosition != null
