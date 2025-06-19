@@ -265,7 +265,7 @@ dependencies:
       url: https://github.com/linagora/twake-previewer-flutter.git
       ref: main
 
-  lottie_native: 0.1.1
+  lottie_native: 0.1.2
 
 dev_dependencies:
   flutter_test:
