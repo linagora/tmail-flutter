@@ -244,6 +244,7 @@ extension AppColor on Color {
   static const blue100 = Color(0xFFDFEEFF);
   static const blue400 = Color(0xFF80BDFF);
   static const m3Tertiary = Color(0xFF8C9CAF);
+  static const lightIconTertiary = Color(0xFFB8C1CC);
   static const m3Neutral70 = Color(0xFFAEAAAE);
   static const m3Neutral90 = Color(0xFFE6E1E5);
   static const grayBackgroundColor = Color(0xFFF3F6F9);
@@ -262,6 +263,7 @@ extension AppColor on Color {
   static const textSecondary = Color(0xFF1C1B1F);
   static const profileMenuDivider = Color(0xFF1D192B);
   static const popupMenuItemHovered = Color(0xFFF8F8F8);
+  static const gray6D7885 = Color(0xFF6D7885);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

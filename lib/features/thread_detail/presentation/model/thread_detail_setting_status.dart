@@ -1,0 +1,1 @@
+enum ThreadDetailSettingStatus { loading, enabled, disabled }

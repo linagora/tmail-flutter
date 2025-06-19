@@ -233,6 +233,7 @@ class ImagePaths {
   String get icCreateFilter => _getImagePath('ic_create_filter.svg');
   String get icTwakeWorkplace => _getIconPath('icon_twp.png');
   String get animLottieTmail => _getAnimationPath('lottie-tmail.json');
+  String get icExpandArrows => _getImagePath('ic_expand_arrows.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

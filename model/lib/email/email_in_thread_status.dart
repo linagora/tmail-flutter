@@ -1,0 +1,1 @@
+enum EmailInThreadStatus { collapsed, expanded }

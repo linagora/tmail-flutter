@@ -32,6 +32,8 @@ class HtmlContentViewer extends StatefulWidget {
   final double? maxHtmlContentHeight;
   final double minHtmlContentHeight;
   final double offsetHtmlContentHeight;
+  final bool keepAlive;
+  final bool enableQuoteToggle;
 
   final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
@@ -47,6 +49,8 @@ class HtmlContentViewer extends StatefulWidget {
     this.direction,
     this.minHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
     this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
+    this.keepAlive = false,
+    this.enableQuoteToggle = false,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
     this.useDefaultFont = false,
@@ -63,7 +67,7 @@ class HtmlContentViewer extends StatefulWidget {
   State<StatefulWidget> createState() => HtmlContentViewState();
 }
 
-class HtmlContentViewState extends State<HtmlContentViewer> {
+class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAliveClientMixin {
 
   late InAppWebViewController _webViewController;
   late double _actualHeight;
@@ -98,6 +102,9 @@ class HtmlContentViewState extends State<HtmlContentViewer> {
     }
     _customScriptsBuilder = StringBuffer();
     _customScriptsBuilder.write(HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage);
+    if (widget.enableQuoteToggle) {
+      _customScriptsBuilder.write(HtmlUtils.quoteToggleScript);
+    }
     if (widget.initialWidth != null) {
       _customScriptsBuilder.write(HtmlInteraction.generateNormalizeImageScript(widget.initialWidth!));
     }
@@ -120,16 +127,20 @@ class HtmlContentViewState extends State<HtmlContentViewer> {
   void _initialData() {
     _actualHeight = widget.minHtmlContentHeight;
     _htmlData = HtmlUtils.generateHtmlDocument(
-      content: widget.contentHtml,
+      content: widget.enableQuoteToggle
+        ? HtmlUtils.addQuoteToggle(widget.contentHtml)
+        : widget.contentHtml,
       direction: widget.direction,
       javaScripts: _customScriptsBuilder.toString(),
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
+      styleCSS: widget.enableQuoteToggle ? HtmlUtils.quoteToggleStyle : null
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final child = Stack(children: [
       if (_htmlData == null)
         const SizedBox.shrink()
@@ -215,7 +226,6 @@ class HtmlContentViewState extends State<HtmlContentViewer> {
     if (result is! num) return;
 
     final double maxContentHeight = result.toDouble();
-    if (maxContentHeight <= _actualHeight) return;
 
     double currentHeight = maxContentHeight + widget.offsetHtmlContentHeight;
 
@@ -352,4 +362,7 @@ class HtmlContentViewState extends State<HtmlContentViewer> {
     _htmlData = null;
     super.dispose();
   }
+  
+  @override
+  bool get wantKeepAlive => widget.keepAlive;
 }

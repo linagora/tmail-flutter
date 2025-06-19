@@ -59,6 +59,8 @@ class RefreshChangesEmailsInMailboxInteractor {
     return Right<Failure, Success>(RefreshChangesAllEmailSuccess(
       emailList: presentationEmailList,
       currentEmailState: emailResponse.state,
-      currentMailboxId: currentMailboxId));
+      currentMailboxId: currentMailboxId,
+      emailChangeResponse: emailResponse.emailChangeResponse,
+    ));
   }
 }
