@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:model/email/attachment.dart';
+import 'package:model/extensions/set_email_body_part_extension.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
@@ -63,6 +64,10 @@ class ComposerRepositoryImpl extends ComposerRepository {
 
     emailContent = tupleContentInlineAttachments.value1;
     emailAttachments.addAll(tupleContentInlineAttachments.value2);
+
+    if (emailAttachments.isNotEmpty) {
+      emailAttachments = emailAttachments.onlyUseBlobIdOrPartId();
+    }
 
     emailContent = await removeCollapsedExpandedSignatureEffect(emailContent: emailContent);
 

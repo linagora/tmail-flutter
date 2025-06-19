@@ -11,4 +11,19 @@ extension EmailBodyPartExtension on EmailBodyPart {
     cid: cid,
     charset: charset,
     disposition: disposition.toContentDisposition());
+
+  EmailBodyPart onlyUseBlobIdOrPartId() => EmailBodyPart(
+    partId: blobId == null ? partId : null,
+    blobId: blobId,
+    size: size,
+    name: name,
+    type: type,
+    cid: cid,
+    charset: charset,
+    disposition: disposition,
+    headers: headers,
+    language: language,
+    location: location,
+    subParts: subParts,
+  );
 }
