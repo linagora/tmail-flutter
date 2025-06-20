@@ -14,6 +14,9 @@ extension SetupEmailImportantFlagExtension on ComposerController {
       case EmailActionType.reopenComposerBrowser:
         isMarkAsImportant.value = arguments.isMarkAsImportant ?? false;
         break;
+      case EmailActionType.editSendingEmail:
+        isMarkAsImportant.value = arguments.sendingEmail?.presentationEmail.isMarkAsImportant ?? false;
+        break;
       default:
         break;
     }
