@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-06-02T18:48:11.159281",
+  "@@last_modified": "2025-06-19T11:06:29.579174",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4548,6 +4548,12 @@
   },
   "createFilterRuleFailed": "Create filter rule failed",
   "@createFilterRuleFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreNotInvitedToThisEventPleaseContactTheOrganiser": "You are not invited to this event. Please contact the organiser.",
+  "@youAreNotInvitedToThisEventPleaseContactTheOrganiser": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
