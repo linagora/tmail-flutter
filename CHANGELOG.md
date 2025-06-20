@@ -1,3 +1,12 @@
+## [0.16.3] - 2025-06-20
+### Added
+- Translation
+
+### Fixed
+- lottie not work in EML preview
+- style for Trash/Spam banner mobile
+- #3791 sending queue email lost body
+
 ## [0.16.2] - 2025-06-20
 ### Fixed
 - [iOS] update privacy manifest for lottie library
