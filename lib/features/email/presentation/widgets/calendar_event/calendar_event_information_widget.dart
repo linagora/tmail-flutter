@@ -149,9 +149,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                 openEmailAddressDetailAction: openEmailAddressDetailAction,
               ),
             ),
-          if (calendarEvent.validateUserIsNotListedInParticipants(
-            ownEmailAddress,
-          ))
+          if (calendarEvent.isDisplayedWarningMessage(ownEmailAddress))
             Padding(
               padding: EdgeInsetsDirectional.only(
                 top: CalendarEventInformationWidgetStyles.fieldTopPadding,
