@@ -331,7 +331,7 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
 
       final htmlDocument = _previewEmlFileUtils.generatePreviewEml(
         appName: appLocalizations.app_name,
-        userName: entireMessageRequest.userName.value,
+        ownEmailAddress: entireMessageRequest.ownEmailAddress,
         subjectPrefix: appLocalizations.subject,
         subject: email.subject?.escapeLtGtHtmlString() ?? '',
         emailContent: emailContentEscaped,

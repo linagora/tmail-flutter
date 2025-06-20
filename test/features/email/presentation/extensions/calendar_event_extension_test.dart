@@ -4,11 +4,22 @@ import 'package:date_format/date_format.dart' as date_format;
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee_mail_to.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/mail_address.dart';
+import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 
 void main() {
+  const ownerEmail = 'user@example.com';
+  final matchingParticipant = CalendarAttendee(
+    mailto: CalendarAttendeeMailTo(MailAddress(ownerEmail)),
+  );
+  final nonMatchingParticipant = CalendarAttendee(
+    mailto: CalendarAttendeeMailTo(MailAddress('someone@else.com')),
+  );
+
   group('calendar_event_extension::formatDateTime::test', () {
     final dateTime = DateTime(2021, 10, 10, 10, 30, 00, 00, 00);
 
@@ -77,121 +88,145 @@ void main() {
     });
   });
 
-  group('calendar_event_extension::isDisplayedEventReplyAction::test:', () {
-    CalendarEvent calendarEventFromEventMethod(EventMethod eventMethod) {
-      return CalendarEvent(
-        method: eventMethod,
-        organizer: CalendarOrganizer(),
-        participants: [CalendarAttendee()]
+  group('isDisplayedEventReplyAction', () {
+    test('returns true when all conditions are met and user is in participants', () {
+      final event = CalendarEvent(
+        method: EventMethod.request,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: [matchingParticipant],
       );
-    }
 
-    group('should return true', () {
-      test(
-        'when event method is request',
-      () {
-        // arrange
-        final calendarEvent = calendarEventFromEventMethod(EventMethod.request);
-        
-        // act
-        final result = calendarEvent.isDisplayedEventReplyAction;
-        
-        // assert
-        expect(result, true);
-      });
-
-      test(
-        'when event method is add',
-      () {
-        // arrange
-        final calendarEvent = calendarEventFromEventMethod(EventMethod.add);
-        
-        // act
-        final result = calendarEvent.isDisplayedEventReplyAction;
-        
-        // assert
-        expect(result, true);
-      });
-
-      test(
-        'when event method is counter',
-      () {
-        // arrange
-        final calendarEvent = calendarEventFromEventMethod(EventMethod.counter);
-        
-        // act
-        final result = calendarEvent.isDisplayedEventReplyAction;
-        
-        // assert
-        expect(result, true);
-      });
+      expect(event.isDisplayedEventReplyAction(ownerEmail), isTrue);
     });
 
-    group('should return false', () {
-      test(
-        'when event method is publish',
-      () {
-        // arrange
-        final calendarEvent = calendarEventFromEventMethod(EventMethod.publish);
-        
-        // act
-        final result = calendarEvent.isDisplayedEventReplyAction;
-        
-        // assert
-        expect(result, false);
-      });
+    test('returns false when method is null', () {
+      final event = CalendarEvent(
+        method: null,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: [matchingParticipant],
+      );
 
-      test(
-        'when event method is reply',
-      () {
-        // arrange
-        final calendarEvent = calendarEventFromEventMethod(EventMethod.reply);
-        
-        // act
-        final result = calendarEvent.isDisplayedEventReplyAction;
-        
-        // assert
-        expect(result, false);
-      });
+      expect(event.isDisplayedEventReplyAction(ownerEmail), isFalse);
+    });
 
-      test(
-        'when event method is cancel',
-      () {
-        // arrange
-        final calendarEvent = calendarEventFromEventMethod(EventMethod.cancel);
-        
-        // act
-        final result = calendarEvent.isDisplayedEventReplyAction;
-        
-        // assert
-        expect(result, false);
-      });
+    test('returns false when method is not repliable', () {
+      final event = CalendarEvent(
+        method: EventMethod.cancel,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: [matchingParticipant],
+      );
 
-      test(
-        'when event method is refresh',
-      () {
-        // arrange
-        final calendarEvent = calendarEventFromEventMethod(EventMethod.refresh);
-        
-        // act
-        final result = calendarEvent.isDisplayedEventReplyAction;
-        
-        // assert
-        expect(result, false);
-      });
+      expect(event.isDisplayedEventReplyAction(ownerEmail), isFalse);
+    });
 
-      test(
-        'when event method is declineCounter',
-      () {
-        // arrange
-        final calendarEvent = calendarEventFromEventMethod(EventMethod.declineCounter);
-        
-        // act
-        final result = calendarEvent.isDisplayedEventReplyAction;
-        
-        // assert
-        expect(result, false);
-      });
+    test('returns false when organizer is null', () {
+      final event = CalendarEvent(
+        method: EventMethod.request,
+        organizer: null,
+        participants: [matchingParticipant],
+      );
+
+      expect(event.isDisplayedEventReplyAction(ownerEmail), isFalse);
+    });
+
+    test('returns false when participants is empty', () {
+      final event = CalendarEvent(
+        method: EventMethod.request,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: [],
+      );
+
+      expect(event.isDisplayedEventReplyAction(ownerEmail), isFalse);
+    });
+
+    test('returns false when participants is null', () {
+      final event = CalendarEvent(
+        method: EventMethod.request,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: null,
+      );
+
+      expect(event.isDisplayedEventReplyAction(ownerEmail), isFalse);
+    });
+
+    test('returns false when user is NOT listed in participants', () {
+      final event = CalendarEvent(
+        method: EventMethod.request,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: [nonMatchingParticipant],
+      );
+
+      expect(event.isDisplayedEventReplyAction(ownerEmail), isFalse);
+    });
+  });
+
+  group('calendar_event_extension::getEventActionTypesIsDisplayed:', () {
+    test('Should returns yes/maybe/no + mailToAttendees when method is request and user is in participants', () {
+      final event = CalendarEvent(
+        method: EventMethod.request,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: [matchingParticipant],
+      );
+
+      final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
+
+      expect(actions, [
+        EventActionType.yes,
+        EventActionType.maybe,
+        EventActionType.no,
+        EventActionType.mailToAttendees,
+      ]);
+    });
+
+    test('Should returns acceptCounter + mailToAttendees when method is counter and user is in participants', () {
+      final event = CalendarEvent(
+        method: EventMethod.counter,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: [matchingParticipant],
+      );
+
+      final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
+
+      expect(actions, [
+        EventActionType.acceptCounter,
+        EventActionType.mailToAttendees,
+      ]);
+    });
+
+    test('Should returns only mailToAttendees when method is not repliable but organizer is present', () {
+      final event = CalendarEvent(
+        method: EventMethod.cancel,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: [matchingParticipant],
+      );
+
+      final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
+
+      expect(actions, [EventActionType.mailToAttendees]);
+    });
+
+    test('Should returns only mailToAttendees when user is NOT in participants but organizer is present', () {
+      final event = CalendarEvent(
+        method: EventMethod.request,
+        organizer: CalendarOrganizer(mailto: MailAddress(ownerEmail)),
+        participants: [nonMatchingParticipant],
+      );
+
+      final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
+
+      expect(actions, [EventActionType.mailToAttendees]);
+    });
+
+    test('Should returns empty list when no organizer and no participants', () {
+      final event = CalendarEvent(
+        method: EventMethod.request,
+        organizer: null,
+        participants: null,
+      );
+
+      final actions = event.getEventActionTypesIsDisplayed(ownerEmail);
+
+      expect(actions, []);
     });
   });
 }

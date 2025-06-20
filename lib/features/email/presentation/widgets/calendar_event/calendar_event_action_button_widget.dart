@@ -1,10 +1,6 @@
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_attendance.dart';
-import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
-import 'package:tmail_ui_user/features/email/domain/extensions/list_event_actions_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_action_button_widget_styles.dart';
 
@@ -12,22 +8,20 @@ typedef OnCalendarEventReplyActionClick = void Function(EventActionType eventAct
 
 class CalendarEventActionButtonWidget extends StatelessWidget {
 
-  final EdgeInsetsGeometry? margin;
+  final List<EventActionType> eventActions;
   final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
   final bool calendarEventReplying;
-  final EventMethod? eventMethod;
   final AttendanceStatus? attendanceStatus;
+  final bool isPortraitMobile;
   final VoidCallback? onMailToAttendeesAction;
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
-  CalendarEventActionButtonWidget({
+  const CalendarEventActionButtonWidget({
     super.key,
+    required this.eventActions,
     required this.onCalendarEventReplyActionClick,
     required this.calendarEventReplying,
-    required this.eventMethod,
-    this.margin,
     this.attendanceStatus,
+    this.isPortraitMobile = false,
     this.onMailToAttendeesAction,
   });
 
@@ -35,15 +29,13 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: margin ?? CalendarEventActionButtonWidgetStyles.margin,
-      padding: _responsiveUtils.isPortraitMobile(context)
+      padding: isPortraitMobile
         ? CalendarEventActionButtonWidgetStyles.paddingMobile
         : CalendarEventActionButtonWidgetStyles.paddingWeb,
       child: Wrap(
         spacing: CalendarEventActionButtonWidgetStyles.space,
         runSpacing: CalendarEventActionButtonWidgetStyles.space,
-        children: EventActionType.values
-          .validActionsOfEventMethod(eventMethod)
+        children: eventActions
           .map((action) => AbsorbPointer(
             absorbing: _getCallbackFunction(action) == null,
             child: TMailButtonWidget(
@@ -58,7 +50,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
               minWidth: CalendarEventActionButtonWidgetStyles.minWidth,
-              width: _responsiveUtils.isPortraitMobile(context) ? double.infinity : null,
+              width: isPortraitMobile ? double.infinity : null,
               border: Border.all(
                 width: CalendarEventActionButtonWidgetStyles.borderWidth,
                 color: _getButtonBorderColor(action)

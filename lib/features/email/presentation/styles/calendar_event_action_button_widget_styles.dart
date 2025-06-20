@@ -20,5 +20,4 @@ class CalendarEventActionButtonWidgetStyles {
   static const EdgeInsetsGeometry buttonPadding = EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 12);
   static const EdgeInsetsGeometry paddingMobile = EdgeInsetsDirectional.only(top: 16);
   static const EdgeInsetsGeometry paddingWeb = EdgeInsetsDirectional.only(start: 100, end: 16, top: 16);
-  static const EdgeInsetsGeometry margin = EdgeInsetsDirectional.only(top: 16);
 }
