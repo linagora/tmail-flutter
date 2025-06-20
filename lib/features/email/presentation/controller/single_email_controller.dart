@@ -23,7 +23,6 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_attendance.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
@@ -45,7 +44,6 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
-import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
@@ -222,7 +220,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
-  UserName? get userName => session?.username;
+  String get ownEmailAddress => mailboxDashBoardController.getOwnEmailAddress();
 
   SingleEmailController(
     this._getEmailContentInteractor,
@@ -776,6 +774,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     emailUnsubscribe.value = null;
     _identitySelected = null;
     isEmailContentClipped.value = false;
+    attendanceStatus.value = null;
     if (isEmailClosing) {
       emailLoadedViewState.value = Right(UIState.idle);
       viewState.value = Right(UIState.idle);
@@ -2195,26 +2194,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void _calendarEventFailure(Failure failure) {
-    if (currentOverlayContext == null || currentContext == null) {
-      return;
-    }
-
-    if (failure is CalendarEventReplyFailure && failure.exception is CannotReplyCalendarEventException) {
-      final replyEventException = failure.exception as CannotReplyCalendarEventException;
-
-      if (replyEventException.mapErrors?.isNotEmpty == true) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          replyEventException.mapErrors!.values.first.description
-            ?? AppLocalizations.of(currentContext!).eventReplyWasSentUnsuccessfully);
-        return;
-      }
-    }
-
-    appToast.showToastErrorMessage(
-      currentOverlayContext!,
-      AppLocalizations.of(currentContext!).eventReplyWasSentUnsuccessfully);
+  void _calendarEventFailure(CalendarEventReplyFailure failure) {
+    toastManager.showMessageFailure(failure);
   }
 
   void _downloadMessageAsEML(PresentationEmail presentationEmail) {
@@ -2408,7 +2389,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       consumeState(_previewEmailFromEmlFileInteractor.execute(
         PreviewEmailEMLRequest(
           accountId: accountId!,
-          userName: userName!,
+          ownEmailAddress: ownEmailAddress,
           blobId: success.blobId,
           email: success.email,
           locale: Localizations.localeOf(currentContext!),
@@ -2589,7 +2570,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
 
     final viewEntireMessageRequest = ViewEntireMessageRequest(
-      userName: userName ?? UserName(''),
+      ownEmailAddress: ownEmailAddress,
       presentationEmail: presentationEmail,
       attachments: List.from(attachments),
       emailContent: emailContent,

@@ -4794,4 +4794,11 @@ class AppLocalizations {
       name: 'createFilterRuleFailed',
     );
   }
+
+  String get youAreNotInvitedToThisEventPleaseContactTheOrganiser {
+    return Intl.message(
+      'You are not invited to this event. Please contact the organiser.',
+      name: 'youAreNotInvitedToThisEventPleaseContactTheOrganiser',
+    );
+  }
 }

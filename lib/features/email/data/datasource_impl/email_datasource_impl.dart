@@ -491,7 +491,7 @@ class EmailDataSourceImpl extends EmailDataSource {
 
       final previewEmlHtmlDocument = _previewEmailUtils.generatePreviewEml(
         appName: appLocalizations.app_name,
-        userName: previewEmailEMLRequest.userName.value,
+        ownEmailAddress: previewEmailEMLRequest.ownEmailAddress,
         subjectPrefix: appLocalizations.subject,
         subject: previewEmailEMLRequest.email.subject?.escapeLtGtHtmlString() ?? '',
         emailContent: emailContentEscaped,

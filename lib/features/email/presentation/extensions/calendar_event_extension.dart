@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_sequence
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/recurrence_rule/recurrence_rule.dart';
+import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -382,15 +383,49 @@ extension CalendarEventExtension on CalendarEvent {
     return [];
   }
 
-  bool get isDisplayedEventReplyAction => method != null
+  bool isDisplayedEventReplyAction(String ownerEmailAddress) => method != null
     && _methodIsRepliable
     && organizer != null
-    && participants?.isNotEmpty == true;
+    && participants?.isNotEmpty == true
+    && !validateUserIsNotListedInParticipants(ownerEmailAddress);
 
   bool get _methodIsRepliable => 
     method == EventMethod.request ||
     method == EventMethod.add ||
     method == EventMethod.counter;
+
+  bool validateUserIsNotListedInParticipants(String ownEmailAddress) {
+    final participant = participants?.firstWhereOrNull((participant) =>
+    participant.mailto?.mailAddress.value == ownEmailAddress);
+    return participant == null;
+  }
+
+  bool get isDisplayedMailToAttendees =>
+      organizer != null || participants?.isNotEmpty == true;
+
+  List<EventActionType> getEventActionTypesIsDisplayed(
+    String ownerEmailAddress,
+  ) {
+    if (isDisplayedEventReplyAction(ownerEmailAddress)) {
+      return [
+        if (method == EventMethod.counter)
+          EventActionType.acceptCounter
+        else
+          ...[
+            EventActionType.yes,
+            EventActionType.maybe,
+            EventActionType.no,
+          ],
+        EventActionType.mailToAttendees,
+      ];
+    } else if (isDisplayedMailToAttendees) {
+      return [
+        EventActionType.mailToAttendees,
+      ];
+    } else {
+      return [];
+    }
+  }
 
   CalendarEvent copyWith({
     EventId? eventId,

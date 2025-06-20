@@ -367,13 +367,22 @@ class EmailView extends GetWidget<SingleEmailController> {
                 onOpenComposerAction: controller.openNewComposerAction,
                 onOpenNewTabAction: controller.openNewTabAction,
                 onCalendarEventReplyActionClick: (eventActionType) =>
-                  controller.onCalendarEventReplyAction(eventActionType, presentationEmail.id!),
+                  controller.onCalendarEventReplyAction(
+                      eventActionType,
+                      presentationEmail.id!,
+                  ),
                 calendarEventReplying: controller.calendarEventProcessing,
                 attendanceStatus: controller.attendanceStatus.value,
+                ownEmailAddress: controller
+                    .mailboxDashBoardController
+                    .getOwnEmailAddress(),
                 onMailtoAttendeesAction: controller.handleMailToAttendees,
                 openEmailAddressDetailAction: controller.openEmailAddressDialog,
                 isFree: controller.isCalendarEventFree,
                 listEmailAddressSender: emailAddressSender ?? [],
+                isPortraitMobile: controller
+                    .responsiveUtils
+                    .isPortraitMobile(context),
               )),
               if (_validateDisplayEventActionBanner(
                   context: context,

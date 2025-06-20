@@ -271,7 +271,7 @@ class EmailPreviewerController extends ReloadableController {
       consumeState(_previewEmailFromEmlFileInteractor.execute(
         PreviewEmailEMLRequest(
           accountId: _accountId!,
-          userName: _session!.username,
+          ownEmailAddress: _session!.getOwnEmailAddressOrEmpty(),
           blobId: success.blobId,
           email: success.email,
           locale: Localizations.localeOf(currentContext!),
