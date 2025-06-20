@@ -4516,7 +4516,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editLocalCopyInForwardFailed": "Edit local copy in forward failed.",
+  "editLocalCopyInForwardFailed": "Failed to toggle local copy when transferring emails.",
   "@editLocalCopyInForwardFailed": {
     "type": "text",
     "placeholders_order": [],
