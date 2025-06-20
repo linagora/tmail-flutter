@@ -9,17 +9,14 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_d
 
 extension InitializeThreadDetailEmails on ThreadDetailController {
   void initializeThreadDetailEmails(GetThreadByIdSuccess success) {
-    final threadDetailEnabled = isThreadDetailEnabled;
-    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-    if (!threadDetailEnabled &&
-        selectedEmail != null &&
+    final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
+    if (!isThreadDetailEnabled &&
+        selectedEmailId != null &&
         !success.updateCurrentThreadDetail) {
-      consumeState(Stream.value(Right(GetEmailsByIdsSuccess([selectedEmail]))));
       return;
     }
 
     final existingEmailIds = emailIdsPresentation.keys.toList();
-    final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
 
     List<EmailId> emailIdsToLoadMetaData = [];
     if (success.updateCurrentThreadDetail) {
@@ -36,6 +33,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
         existingEmailIds,
         selectedEmailId: selectedEmailId,
       );
+      emailIdsToLoadMetaData.remove(selectedEmailId);
     }
 
     if (accountId == null || session == null) {
@@ -45,6 +43,9 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       ))));
       return;
     }
+    if (emailIdsPresentation.length == 1 &&
+        emailIdsPresentation.keys.contains(selectedEmailId)) return;
+
     consumeState(getEmailsByIdsInteractor.execute(
       session!,
       accountId!,
