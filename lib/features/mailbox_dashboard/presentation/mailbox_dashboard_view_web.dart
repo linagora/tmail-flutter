@@ -194,6 +194,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
                           if (showTrashBanner) {
                             return CleanMessagesBanner(
+                              responsiveUtils: controller.responsiveUtils,
                               message: AppLocalizations
                                 .of(context)
                                 .message_delete_all_email_in_trash_button,
@@ -208,6 +209,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             );
                           } else if (showSpamBanner) {
                             return CleanMessagesBanner(
+                              responsiveUtils: controller.responsiveUtils,
                               message: AppLocalizations
                                 .of(context)
                                 .bannerDeleteAllSpamEmailsMessage,
