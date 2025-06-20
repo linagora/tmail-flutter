@@ -383,21 +383,31 @@ extension CalendarEventExtension on CalendarEvent {
     return [];
   }
 
-  bool isDisplayedEventReplyAction(String ownerEmailAddress) => method != null
-    && _methodIsRepliable
-    && organizer != null
-    && participants?.isNotEmpty == true
-    && !validateUserIsNotListedInParticipants(ownerEmailAddress);
+  bool isDisplayedEventReplyAction(String ownerEmailAddress) =>
+      method != null &&
+      _methodIsRepliable &&
+      organizer != null &&
+      participants?.isNotEmpty == true &&
+      userIsListedInParticipants(ownerEmailAddress);
 
   bool get _methodIsRepliable => 
     method == EventMethod.request ||
     method == EventMethod.add ||
     method == EventMethod.counter;
 
-  bool validateUserIsNotListedInParticipants(String ownEmailAddress) {
+  bool userIsListedInParticipants(String ownEmailAddress) {
     final participant = participants?.firstWhereOrNull((participant) =>
     participant.mailto?.mailAddress.value == ownEmailAddress);
-    return participant == null;
+    return participant != null;
+  }
+
+  bool userIsOrganizer(String ownEmailAddress) {
+    return organizer?.mailto?.value == ownEmailAddress;
+  }
+
+  bool isDisplayedWarningMessage(String ownerEmailAddress) {
+    return !userIsListedInParticipants(ownerEmailAddress) &&
+      !userIsOrganizer(ownerEmailAddress);
   }
 
   bool get isDisplayedMailToAttendees =>
