@@ -4779,5 +4779,53 @@
     "placeholders": {
       "path": {}
     }
+  },
+  "support": "Поддержка",
+  "@support": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipientsFailed": "Не удалось добавить получателя.",
+  "@addRecipientsFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilter": "Создать фильтр",
+  "@createFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRecipientsFailed": "Не удалось удалить получателей.",
+  "@deleteRecipientsFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLocalCopyInForwardFailed": "Не удалось включить локальное копирование при отправке писем.",
+  "@editLocalCopyInForwardFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToComposeEmails": "Начните составлять электронные письма.",
+  "@startToComposeEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyEmailInYourCurrentFolder": "У вас нет писем \n в этой папке.",
+  "@youDoNotHaveAnyEmailInYourCurrentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilterRuleFailed": "Создать правило фильтра не удалось",
+  "@createFilterRuleFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
