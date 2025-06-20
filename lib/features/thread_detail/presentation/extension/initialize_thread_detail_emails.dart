@@ -9,34 +9,18 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_d
 
 extension InitializeThreadDetailEmails on ThreadDetailController {
   void initializeThreadDetailEmails(GetThreadByIdSuccess success) {
-    final threadDetailEnabled = isThreadDetailEnabled;
-    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-    if (!threadDetailEnabled &&
-        selectedEmail != null &&
-        !success.updateCurrentThreadDetail) {
-      consumeState(Stream.value(Right(GetEmailsByIdsSuccess([selectedEmail]))));
-      return;
-    }
-
-    final existingEmailIds = emailIdsPresentation.keys.toList();
     final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
+    if (skipLoadThreadMetaData(
+      selectedEmailId: selectedEmailId,
+      updateCurrentThreadDetail: success.updateCurrentThreadDetail,
+    )) return;
 
     List<EmailId> emailIdsToLoadMetaData = [];
-    if (success.updateCurrentThreadDetail) {
-      final nonNullEmailIds = emailIdsPresentation.entries
-        .where((entry) => entry.value != null)
-        .map((entry) => entry.key)
-        .toList();
-      final newEmailIds = success.emailIds.where(
-        (emailId) => !existingEmailIds.contains(emailId),
-      );
-      emailIdsToLoadMetaData = [...nonNullEmailIds, ...newEmailIds];
-    } else {
-      emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getFirstLoadEmailIds(
-        existingEmailIds,
-        selectedEmailId: selectedEmailId,
-      );
-    }
+    emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getFirstLoadEmailIds(
+      emailIdsPresentation.keys.toList(),
+      selectedEmailId: selectedEmailId,
+    );
+    emailIdsToLoadMetaData.remove(selectedEmailId);
 
     if (accountId == null || session == null) {
       consumeState(Stream.value(Left(GetEmailsByIdsFailure(
@@ -45,6 +29,8 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       ))));
       return;
     }
+    if (_currentThreadOnlyContainsSelectedEmail(selectedEmailId)) return;
+
     consumeState(getEmailsByIdsInteractor.execute(
       session!,
       accountId!,
@@ -55,5 +41,20 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       ).union(additionalProperties),
       updateCurrentThreadDetail: success.updateCurrentThreadDetail,
     ));
+  }
+
+  bool _currentThreadOnlyContainsSelectedEmail(EmailId? selectedEmailId) {
+    return selectedEmailId != null &&
+        emailIdsPresentation.length == 1 &&
+        emailIdsPresentation.keys.contains(selectedEmailId);
+  }
+
+  bool skipLoadThreadMetaData({
+    EmailId? selectedEmailId,
+    bool updateCurrentThreadDetail = false,
+  }) {
+    return selectedEmailId == null ||
+        !isThreadDetailEnabled ||
+        updateCurrentThreadDetail;
   }
 }
