@@ -1,5 +1,6 @@
 
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
@@ -58,4 +59,23 @@ class RefreshThreadDetailAction extends EmailUIAction {
 
   @override
   List<Object?> get props => [emailChangeResponse];
+}
+
+class DisposePreviousExpandedEmailAction extends EmailUIAction {
+  DisposePreviousExpandedEmailAction(this.emailId);
+
+  final EmailId emailId;
+
+  @override
+  List<Object?> get props => [emailId];
+}
+
+class UnsubscribeFromThreadAction extends EmailUIAction {
+  UnsubscribeFromThreadAction(this.emailId, this.listUnsubscribe);
+
+  final EmailId emailId;
+  final String listUnsubscribe;
+
+  @override
+  List<Object?> get props => [emailId, listUnsubscribe];
 }

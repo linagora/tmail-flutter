@@ -24,6 +24,10 @@ class GetEmailsByIdsSuccess extends UIState {
   List<Object?> get props => [presentationEmails, updateCurrentThreadDetail];
 }
 
+class PreloadEmailsByIdsSuccess extends GetEmailsByIdsSuccess {
+  PreloadEmailsByIdsSuccess(super.presentationEmails);
+}
+
 class GetEmailsByIdsFailure extends FeatureFailure {
   GetEmailsByIdsFailure({
     super.exception,

@@ -125,6 +125,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
@@ -399,6 +400,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           action.emailActionType,
           action.presentationEmail,
         );
+      } else if (action is DisposePreviousExpandedEmailAction) {
+        if (_currentEmailId == null || _currentEmailId != action.emailId) return;
+        for (var worker in obxListeners) {
+          worker.dispose();
+        }
+        Get.delete<SingleEmailController>(tag: action.emailId.id.value);
       } else if (action is CloseEmailInThreadDetailAction) {
         if (_currentEmailId == null) return;
         closeEmailView(context: currentContext);
@@ -406,6 +413,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           worker.dispose();
         }
         Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
+      } else if (action is UnsubscribeFromThreadAction) {
+        if (_currentEmailId == null || action.emailId != _currentEmailId) return;
+        _handleUnsubscribe(action.listUnsubscribe);
       }
     }));
 
@@ -664,6 +674,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailUnsubscribe.value = null;
       }
     }
+    if (currentEmail?.threadId != null &&
+        currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id) {
+      mailboxDashBoardController.dispatchThreadDetailUIAction(
+        LoadThreadDetailAfterSelectedEmailAction(
+          currentEmail!.threadId!,
+        )
+      );
+    }
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
@@ -728,6 +746,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
     if ((_threadDetailController?.emailIdsPresentation.keys.length ?? 0) > 1 == true) {
       _jumpScrollViewToTopOfEmail();
+    }
+    if (currentEmail?.threadId != null &&
+        currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id) {
+      mailboxDashBoardController.dispatchThreadDetailUIAction(
+        LoadThreadDetailAfterSelectedEmailAction(
+          currentEmail!.threadId!,
+        )
+      );
     }
   }
 
