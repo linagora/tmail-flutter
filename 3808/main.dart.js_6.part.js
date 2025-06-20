@@ -956,7 +956,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.push(new C.ProfileSettingIcon(t2.ownEmailAddress, t2.settingActionTypes, t2.onProfileSettingActionTypeClick, false, _null));
       return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 374
+    $signature: 375
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -1185,5 +1185,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "E9RBZgTmnTlBE32g7hp1uU/IEIg=");
+})($__dart_deferred_initializers__, "Muj1oxlESIGMnYA2KV96s6XoeRI=");
 ;
