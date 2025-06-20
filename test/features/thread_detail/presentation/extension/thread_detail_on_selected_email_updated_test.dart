@@ -1,0 +1,162 @@
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_selected_email_updated.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
+
+import '../../../../fixtures/account_fixtures.dart';
+import '../../../../fixtures/session_fixtures.dart';
+import 'thread_detail_on_selected_email_updated_test.mocks.dart';
+
+@GenerateNiceMocks([
+  MockSpec<ThreadDetailController>(),
+  MockSpec<GetThreadByIdInteractor>(),
+  MockSpec<MailboxDashBoardController>(),
+])
+void main() {
+  late MockThreadDetailController threadDetailController;
+  late MockGetThreadByIdInteractor getThreadByIdInteractor;
+  late MockMailboxDashBoardController mailboxDashboardController;
+
+  setUp(() {
+    threadDetailController = MockThreadDetailController();
+    getThreadByIdInteractor = MockGetThreadByIdInteractor();
+    mailboxDashboardController = MockMailboxDashBoardController();
+    when(threadDetailController.session)
+      .thenReturn(SessionFixtures.aliceSession);
+    when(threadDetailController.accountId)
+      .thenReturn(AccountFixtures.aliceAccountId);
+    when(threadDetailController.additionalProperties)
+      .thenReturn(Properties.empty());
+    when(threadDetailController.mailboxDashBoardController)
+      .thenReturn(mailboxDashboardController);
+  });
+  
+  group('thread detail on selected email updated test:', () {
+    test(
+      'should reset thread detail controller '
+      'when selected email is null',
+    () {
+      // act
+      threadDetailController.onSelectedEmailUpdated(
+        null,
+        getThreadByIdInteractor,
+        null,
+      );
+      
+      // assert
+      verify(threadDetailController.reset()).called(1);
+    });
+
+    test(
+      'should not reset thread detail controller '
+      'and consume GetThreadByIdSuccess and GetEmailsByIdsSuccess '
+      'when selected email and its id is not null',
+    () async {
+      // arrange
+      final selectedEmail = PresentationEmail(
+        id: EmailId(Id('1')),
+        threadId: ThreadId(Id('1')),
+      );
+
+      // act
+      threadDetailController.onSelectedEmailUpdated(
+        selectedEmail,
+        getThreadByIdInteractor,
+        null,
+      );
+      
+      // assert
+      verifyNever(threadDetailController.reset());
+      final streamsConsumed = verify(
+        threadDetailController.consumeState(captureAny),
+      ).captured as List<Object?>;
+      final states = await Future.wait(
+        streamsConsumed.map(
+          (streamConsumed) => (streamConsumed as Stream).last,
+        ),
+      );
+      expect(
+        states,
+        equals([
+          Right(GetThreadByIdSuccess([selectedEmail.id!])),
+          Right(GetEmailsByIdsSuccess([selectedEmail])),
+        ]),
+      );
+    });
+
+    test(
+      'should not reset thread detail controller '
+      'and consume GetThreadByIdSuccess and GetEmailsByIdsSuccess '
+      'and call getThreadByIdInteractor.execute '
+      'when selected email and its id is not null '
+      'and isThreadDetailEnabled is true',
+    () async {
+      // arrange
+      final selectedEmail = PresentationEmail(
+        id: EmailId(Id('1')),
+        threadId: ThreadId(Id('1')),
+      );
+      final sentMailboxId = MailboxId(Id('sent'));
+      final ownEmailAddress = SessionFixtures.aliceSession.getOwnEmailAddress();
+      when(threadDetailController.isThreadDetailEnabled).thenReturn(true);
+      when(threadDetailController.sentMailboxId).thenReturn(sentMailboxId);
+      when(threadDetailController.ownEmailAddress).thenReturn(ownEmailAddress);
+      when(getThreadByIdInteractor.execute(
+        any,
+        any,
+        any,
+        any,
+        any,
+        selectedEmailId: anyNamed('selectedEmailId'),
+        updateCurrentThreadDetail: anyNamed('updateCurrentThreadDetail'),
+      )).thenAnswer((_) => Stream.value(Right(UIState.idle)));
+
+      // act
+      threadDetailController.onSelectedEmailUpdated(
+        selectedEmail,
+        getThreadByIdInteractor,
+        null,
+      );
+      
+      // assert
+      verifyNever(threadDetailController.reset());
+      final streamsConsumed = verify(
+        threadDetailController.consumeState(captureAny),
+      ).captured as List<Object?>;
+      final states = await Future.wait(
+        streamsConsumed.map(
+          (streamConsumed) => (streamConsumed as Stream).last,
+        ),
+      );
+      expect(
+        states,
+        equals([
+          Right(GetThreadByIdSuccess([selectedEmail.id!])),
+          Right(GetEmailsByIdsSuccess([selectedEmail])),
+          Right(UIState.idle),
+        ]),
+      );
+      verify(getThreadByIdInteractor.execute(
+        selectedEmail.threadId!,
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+        sentMailboxId,
+        ownEmailAddress,
+        selectedEmailId: selectedEmail.id,
+      )).called(1);
+    });
+  });
+}

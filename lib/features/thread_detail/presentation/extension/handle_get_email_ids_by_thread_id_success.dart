@@ -7,30 +7,35 @@ extension HandleGetEmailIdsByThreadIdSuccess on ThreadDetailController {
     GetThreadByIdSuccess success,
   ) {
     final newEmailsInThreadDetail = <EmailId>[];
-    if (success.emailIds.isNotEmpty) {
-      if (success.updateCurrentThreadDetail) {
-        newEmailsInThreadDetail.addAll(success
-          .emailIds
-          .where(
-            (emailId) => !emailIdsPresentation.keys.contains(emailId),
-          )
-        );
-        emailIdsPresentation
-          ..removeWhere(
-            (key, value) => !success.emailIds.contains(key),
-          )
-          ..addAll(Map.fromEntries(
-            newEmailsInThreadDetail.map((emailId) => MapEntry(emailId, null)),
-          ));
-      } else {
-        emailIdsPresentation.value = Map.fromEntries(success.emailIds.map(
-          (emailId) => MapEntry(emailId, null),
+    if (success.emailIds.isEmpty) {
+      return;
+    } 
+
+    if (success.updateCurrentThreadDetail) {
+      newEmailsInThreadDetail.addAll(success
+        .emailIds
+        .where(
+          (emailId) => !emailIdsPresentation.keys.contains(emailId),
+        )
+      );
+      emailIdsPresentation
+        ..removeWhere(
+          (key, value) => !success.emailIds.contains(key),
+        )
+        ..addAll(Map.fromEntries(
+          newEmailsInThreadDetail.map((emailId) => MapEntry(emailId, null)),
         ));
-      }
-    } else if (mailboxDashBoardController.selectedEmail.value?.id != null) {
-      emailIdsPresentation.value = {
-        mailboxDashBoardController.selectedEmail.value!.id!: null,
-      };
-    }
+      return;
+    } 
+
+    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+    emailIdsPresentation.value = Map.fromEntries(success.emailIds.map(
+      (emailId) => MapEntry(
+        emailId,
+        emailId == selectedEmail?.id
+          ? emailIdsPresentation[emailId] ?? selectedEmail
+          : null,
+      ),
+    ));
   }
 }

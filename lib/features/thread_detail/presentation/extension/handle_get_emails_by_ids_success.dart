@@ -38,7 +38,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
       );
     }
 
-    if (!isLoadMore) return;
+    if (!isLoadMore || emailIdsPresentation.length == 1) return;
     
     final currentExpandedEmailIndex = currentExpandedEmailId.value == null
       ? -1
