@@ -8520,7 +8520,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t3) {
         t3 = t1 ? 0 : 100;
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t5.push(new A.Padding(new A.EdgeInsetsDirectional(t3, 16, 0, 0), A.Text$(A.Intl__message("You are not invited to this event. Please contact the organiser.", _null, "youAreNotInvitedToThisEventPleaseContactTheOrganiser", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_46y, _null, _null, _null, _null, _null), _null));
+        t5.push(new A.Padding(new A.EdgeInsetsDirectional(t3, 16, 0, 0), A.Text$(A.Intl__message("You are not invited to this event. Please contact the organizer.", _null, "youAreNotInvitedToThisEventPleaseContactTheOrganizer", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_46y, _null, _null, _null, _null, _null), _null));
       }
       if (eventActionTypes.length !== 0)
         t5.push(new B.CalendarEventActionButtonWidget(eventActionTypes, _this.onCalendarEventReplyActionClick, _this.calendarEventReplying, _this.attendanceStatus, t1, new B.CalendarEventInformationWidget_build_closure(_this), _null));
@@ -19395,5 +19395,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "YSM1IO3+HidMOc2rymxX9JSk7rY=");
+})($__dart_deferred_initializers__, "erPeIXJzivOCJOcTeuyvsAL7jlE=");
 ;
