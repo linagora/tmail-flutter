@@ -54,8 +54,11 @@ class LoginMessageWidget extends StatelessWidget {
               } else if (failure is GetTokenOIDCFailure && failure.exception is NoSuitableBrowserForOIDCException) {
                 return AppLocalizations.of(context).noSuitableBrowserForOIDC;
               } else if (failure is FeatureFailure) {
-                return _toastManager?.getMessageByException(context, failure.exception)
-                  ?? AppLocalizations.of(context).unknownError;
+                return _toastManager?.getMessageByException(
+                  context,
+                  failure.exception,
+                  useDefaultMessage: true,
+                ) ?? AppLocalizations.of(context).unknownError;
               } else {
                 return AppLocalizations.of(context).unknownError;
               }
