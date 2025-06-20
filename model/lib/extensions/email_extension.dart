@@ -35,7 +35,8 @@ extension EmailExtension on Email {
 
   String get listUnsubscribe => headers.listUnsubscribe;
 
-  bool get hasRequestReadReceipt => headers.readReceiptHasBeenRequested;
+  bool get hasRequestReadReceipt => headers.readReceiptHasBeenRequested ||
+      headerMdn?.containsKey(IndividualHeaderIdentifier.headerMdn) == true;
 
   bool get hasListUnsubscribe => listUnsubscribe.isNotEmpty;
 
