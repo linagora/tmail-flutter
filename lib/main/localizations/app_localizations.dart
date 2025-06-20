@@ -4795,10 +4795,10 @@ class AppLocalizations {
     );
   }
 
-  String get youAreNotInvitedToThisEventPleaseContactTheOrganiser {
+  String get youAreNotInvitedToThisEventPleaseContactTheOrganizer {
     return Intl.message(
-      'You are not invited to this event. Please contact the organiser.',
-      name: 'youAreNotInvitedToThisEventPleaseContactTheOrganiser',
+      'You are not invited to this event. Please contact the organizer.',
+      name: 'youAreNotInvitedToThisEventPleaseContactTheOrganizer',
     );
   }
 }
