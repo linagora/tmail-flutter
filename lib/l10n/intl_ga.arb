@@ -4538,5 +4538,53 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "editLocalCopyInForwardFailed": "Theip ar chóip áitiúil a athrú agus ríomhphoist á n-aistriú.",
+  "@editLocalCopyInForwardFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "support": "Tacaíocht",
+  "@support": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipientsFailed": "Theip ar an bhfaighteoir a chur leis.",
+  "@addRecipientsFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRecipientsFailed": "Theip ar scriosadh faighteoirí.",
+  "@deleteRecipientsFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyEmailInYourCurrentFolder": "Níl aon ríomhphoist\n agat sa bhfillteán seo.",
+  "@youDoNotHaveAnyEmailInYourCurrentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilter": "Cruthaigh scagaire",
+  "@createFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilterRuleFailed": "Theip ar riail scagaire a chruthú",
+  "@createFilterRuleFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToComposeEmails": "Tosaigh ag scríobh ríomhphoist.",
+  "@startToComposeEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
