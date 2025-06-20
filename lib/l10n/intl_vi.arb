@@ -4780,7 +4780,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editLocalCopyInForwardFailed": "Thay đổi bản sao không thành công.",
+  "editLocalCopyInForwardFailed": "Thay đổi lưu bản sao tin nhắn không thành công.",
   "@editLocalCopyInForwardFailed": {
     "type": "text",
     "placeholders_order": [],
