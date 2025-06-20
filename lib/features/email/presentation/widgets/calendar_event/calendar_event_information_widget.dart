@@ -158,7 +158,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
               child: Text(
                 AppLocalizations
                     .of(context)
-                    .youAreNotInvitedToThisEventPleaseContactTheOrganiser,
+                    .youAreNotInvitedToThisEventPleaseContactTheOrganizer,
                 style: const TextStyle(
                   fontSize: CalendarEventInformationWidgetStyles
                       .invitationMessageTextSize,

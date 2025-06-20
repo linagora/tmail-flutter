@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-06-19T11:06:29.579174",
+  "@@last_modified": "2025-06-20T15:26:10.574669",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4552,8 +4552,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreNotInvitedToThisEventPleaseContactTheOrganiser": "You are not invited to this event. Please contact the organiser.",
-  "@youAreNotInvitedToThisEventPleaseContactTheOrganiser": {
+  "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "You are not invited to this event. Please contact the organizer.",
+  "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
