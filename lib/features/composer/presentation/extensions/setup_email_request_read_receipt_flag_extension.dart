@@ -1,5 +1,6 @@
 
 import 'package:model/email/email_action_type.dart';
+import 'package:model/extensions/email_extension.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -11,6 +12,8 @@ extension SetupEmailRequestReadReceiptFlagExtension on ComposerController {
   void setupEmailRequestReadReceiptFlag(ComposerArguments arguments) {
     if (currentEmailActionType == EmailActionType.reopenComposerBrowser) {
       hasRequestReadReceipt.value = arguments.hasRequestReadReceipt ?? false;
+    } else if (currentEmailActionType == EmailActionType.editSendingEmail) {
+      hasRequestReadReceipt.value = arguments.sendingEmail?.email.hasRequestReadReceipt ?? false;
     } else if (currentEmailActionType != EmailActionType.editDraft &&
         currentEmailActionType != EmailActionType.editAsNewEmail) {
 
