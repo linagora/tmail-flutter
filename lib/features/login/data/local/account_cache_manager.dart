@@ -47,6 +47,4 @@ class AccountCacheManager {
     log('AccountCacheManager::deleteCurrentAccount(): $hashId');
     return _accountCacheClient.deleteItem(hashId);
   }
-
-  Future<void> closeAccountHiveCacheBox() => _accountCacheClient.closeBox();
 }

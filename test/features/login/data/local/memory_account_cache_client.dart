@@ -1,4 +1,4 @@
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:tmail_ui_user/features/caching/clients/account_cache_client.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
 
@@ -48,7 +48,7 @@ class MemoryAccountCacheClient implements AccountCacheClient {
   }
 
   @override
-  Future<AccountCache?> getItem(String key, {bool needToReopen = false}) {
+  Future<AccountCache?> getItem(String key) {
     return Future.value(_cache[key]);
   }
 
@@ -83,12 +83,12 @@ class MemoryAccountCacheClient implements AccountCacheClient {
   }
 
   @override
-  Future<Box<AccountCache>> openBox() {
+  Future<IsolatedBox<AccountCache>> openBox() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Box<AccountCache>> openBoxEncryption() {
+  Future<IsolatedBox<AccountCache>> openBoxEncryption() {
     throw UnimplementedError();
   }
 

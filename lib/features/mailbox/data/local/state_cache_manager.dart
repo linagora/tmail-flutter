@@ -29,6 +29,4 @@ class StateCacheManager {
     final stateKey = TupleKey(stateType.name, accountId.asString, userName.value).encodeKey;
     return await _stateCacheClient.deleteItem(stateKey);
   }
-
-  Future<void> closeStateHiveCacheBox() => _stateCacheClient.closeBox();
 }

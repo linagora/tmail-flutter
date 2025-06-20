@@ -87,23 +87,6 @@ class CachingManager {
     ], eagerError: true);
   }
 
-  Future<void> clearData() async {
-    await Future.wait([
-      _stateCacheClient.clearAllData(),
-      _mailboxCacheClient.clearAllData(),
-      _emailCacheClient.clearAllData(),
-      _fcmCacheClient.clearAllData(),
-      _firebaseRegistrationCacheClient.clearAllData(),
-      _localSpamReportManager.clear(),
-      if (PlatformInfo.isMobile)
-       ...[
-         _newEmailHiveCacheClient.clearAllData(),
-         _openedEmailHiveCacheClient.clearAllData(),
-         _sendingEmailCacheManager.clearAllSendingEmails(),
-       ]
-    ], eagerError: true);
-  }
-
   Future<void> clearEmailAndStateCache({AccountId? accountId, UserName? userName}) {
     log('CachingManager::clearEmailAndStateCache:userName = $userName');
     if (accountId != null && userName != null) {

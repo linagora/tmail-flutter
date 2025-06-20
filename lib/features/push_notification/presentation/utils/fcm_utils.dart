@@ -33,6 +33,7 @@ class FcmUtils {
   ];
   static const int durationMessageComing = 2000;
   static const int durationRefreshToken = 2000;
+  static const int durationBackgroundMessageComing = 30000;
 
   StateChange? convertFirebaseDataMessageToStateChange(Map<String, dynamic> dataMessage) {
     log('FcmUtils::convertFirebaseDataMessageToStateChange():dataMessage: $dataMessage');
