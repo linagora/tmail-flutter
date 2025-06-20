@@ -117,6 +117,8 @@ extension EmailExtension on Email {
       mailboxIds: mailboxIds,
       selectMode: selectMode,
       emailHeader: headers?.toList(),
+      bodyValues: bodyValues,
+      htmlBody: htmlBody,
       headerCalendarEvent: headerCalendarEvent,
       xPriorityHeader: xPriorityHeader,
       importanceHeader: importanceHeader,
@@ -193,7 +195,10 @@ extension EmailExtension on Email {
       EmailId? emailId,
     }
   ) {
-    return toPresentationEmail(selectMode: selectMode, emailId: emailId);
+    return toPresentationEmail(
+      selectMode: selectMode,
+      emailId: emailId,
+    );
   }
 
   Email updateEmailHeaderMdn(
