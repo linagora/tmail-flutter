@@ -21,6 +21,10 @@ class GetThreadByIdSuccess extends UIState {
   List<Object> get props => [emailIds, updateCurrentThreadDetail];
 }
 
+class PreloadEmailIdsInThreadSuccess extends GetThreadByIdSuccess {
+  PreloadEmailIdsInThreadSuccess(super.emailIds);
+}
+
 class GetThreadByIdFailure extends FeatureFailure {
   GetThreadByIdFailure({
     super.exception,

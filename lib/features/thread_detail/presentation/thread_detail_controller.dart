@@ -41,7 +41,6 @@ import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_detail_status_interactor.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_email_moved_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
@@ -49,6 +48,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_refresh_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/refresh_thread_detail_on_setting_changed.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_selected_email_updated.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_setting_status.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -146,32 +146,11 @@ class ThreadDetailController extends BaseController {
     });
     downloadProgressState.stream.listen(handleDownloadProgressState);
     ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {
-      if (presentationEmail?.threadId == null) {
-        closeThreadDetailAction(currentContext);
-        return;
-      }
-
-      if (!isThreadDetailEnabled && presentationEmail?.id != null) {
-        consumeState(Stream.value(Right(GetThreadByIdSuccess([
-          presentationEmail!.id!,
-        ]))));
-        return;
-      }
-
-      if (session != null &&
-          accountId != null &&
-          sentMailboxId != null &&
-          ownEmailAddress != null) {
-        scrollController = ScrollController();
-        consumeState(_getEmailIdsByThreadIdInteractor.execute(
-          presentationEmail!.threadId!,
-          session!,
-          accountId!,
-          sentMailboxId!,
-          ownEmailAddress!,
-          selectedEmailId: presentationEmail.id,
-        ));
-      }
+      onSelectedEmailUpdated(
+        presentationEmail,
+        _getEmailIdsByThreadIdInteractor,
+        currentContext,
+      );
     });
     ever(mailboxDashBoardController.threadDetailUIAction, (action) {
       if (action is UpdatedEmailKeywordsAction) {
@@ -191,6 +170,18 @@ class ThreadDetailController extends BaseController {
         consumeState(_getThreadDetailStatusInteractor.execute());
       } else if (action is EmailMovedAction) {
         handleEmailMovedAction(action);
+      } else if (action is LoadThreadDetailAfterSelectedEmailAction) {
+        if (_validateLoadThread(action)) {
+          scrollController = ScrollController();
+          consumeState(_getEmailIdsByThreadIdInteractor.execute(
+            action.threadId,
+            session!,
+            accountId!,
+            sentMailboxId!,
+            ownEmailAddress!,
+            selectedEmailId: mailboxDashBoardController.selectedEmail.value?.id,
+          ));
+        }
       }
       // Reset [threadDetailUIAction] to original value
       mailboxDashBoardController.dispatchThreadDetailUIAction(
@@ -206,6 +197,16 @@ class ThreadDetailController extends BaseController {
         );
       }
     });
+  }
+
+  bool _validateLoadThread(LoadThreadDetailAfterSelectedEmailAction action) {
+    return mailboxDashBoardController.selectedEmail.value?.threadId != null &&
+        action.threadId == mailboxDashBoardController.selectedEmail.value?.threadId &&
+        session != null &&
+        accountId != null &&
+        sentMailboxId != null &&
+        ownEmailAddress != null &&
+        isThreadDetailEnabled;
   }
 
   void reset() {
