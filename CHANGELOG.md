@@ -1,3 +1,9 @@
+## [0.16.2] - 2025-06-20
+### Fixed
+- [iOS] update privacy manifest for lottie library
+- Translation
+- #3792 Reply email with only blobId or partId
+
 ## [0.16.1] - 2025-06-19
 ### Fixed
 - [iOS] Update new profiles for iOS release
