@@ -1,9 +1,13 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class CleanMessagesBanner extends StatelessWidget {
+  final ResponsiveUtils responsiveUtils;
   final String message;
   final String positiveAction;
   final VoidCallback onPositiveAction;
@@ -11,6 +15,7 @@ class CleanMessagesBanner extends StatelessWidget {
 
   const CleanMessagesBanner({
     super.key,
+    required this.responsiveUtils,
     required this.message,
     required this.positiveAction,
     required this.onPositiveAction,
@@ -19,7 +24,13 @@ class CleanMessagesBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (_, constraints) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final displayPositiveActionIsNewLine = (PlatformInfo.isMobile &&
+              responsiveUtils.isPortraitMobile(context)) ||
+          (PlatformInfo.isWeb &&
+              (responsiveUtils.isTabletLarge(context) ||
+                  responsiveUtils.isMobile(context)));
+
       final textStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
             color: AppColor.steelGray400,
           );
@@ -27,22 +38,24 @@ class CleanMessagesBanner extends StatelessWidget {
         color: AppColor.blue700,
         fontSize: 14,
       );
-
-      final actionText = ' $positiveAction';
-
       const horizontalPadding = 16;
       final maxWidth = constraints.maxWidth - horizontalPadding;
       const maxLines = 3;
-
-      final actionTp = TextPainter(
-        text: TextSpan(text: actionText, style: actionStyle),
-        textDirection: TextDirection.ltr,
-        maxLines: 1,
-      )..layout(maxWidth: maxWidth);
-
-      final maxMessageWidth = maxWidth - actionTp.width;
-
       String finalMessage = message;
+      late double maxMessageWidth;
+      String actionText = positiveAction;
+
+      if (displayPositiveActionIsNewLine) {
+        actionText = ' $positiveAction';
+        final actionTp = TextPainter(
+          text: TextSpan(text: actionText, style: actionStyle),
+          textDirection: TextDirection.ltr,
+          maxLines: 1,
+        )..layout(maxWidth: maxWidth);
+        maxMessageWidth = maxWidth - actionTp.width;
+      } else {
+        maxMessageWidth = maxWidth;
+      }
 
       TextPainter messageTp = _buildMessageTp(
         finalMessage,
@@ -60,29 +73,65 @@ class CleanMessagesBanner extends StatelessWidget {
         );
       }
 
+      Widget contentWidget = displayPositiveActionIsNewLine
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 16),
+                  child: Text(
+                    finalMessage,
+                    maxLines: maxLines,
+                    style: textStyle,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                TMailButtonWidget.fromText(
+                  text: actionText,
+                  textStyle: actionStyle,
+                  backgroundColor: Colors.transparent,
+                  margin: EdgeInsetsDirectional.only(
+                    start: PlatformInfo.isMobile ? 6 : 4,
+                  ),
+                  onTapActionCallback: onPositiveAction,
+                ),
+              ],
+            )
+          : Text.rich(
+              TextSpan(
+                style: textStyle,
+                children: [
+                  TextSpan(text: '$finalMessage '),
+                  TextSpan(
+                    text: actionText,
+                    style: actionStyle,
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = onPositiveAction,
+                  ),
+                ],
+              ),
+              maxLines: maxLines,
+              overflow: TextOverflow.clip,
+            );
+
       return Container(
         decoration: BoxDecoration(
           color: AppColor.m3LayerDarkOutline.withOpacity(0.08),
           borderRadius: const BorderRadius.all(Radius.circular(8)),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        padding: displayPositiveActionIsNewLine
+          ? const EdgeInsetsDirectional.only(
+              top: 16,
+              bottom: 8,
+              end: 16,
+            )
+          : const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         margin: margin,
-        alignment: Alignment.center,
-        child: Text.rich(
-          TextSpan(
-            style: textStyle,
-            children: [
-              TextSpan(text: '$finalMessage '),
-              TextSpan(
-                text: actionText,
-                style: actionStyle,
-                recognizer: TapGestureRecognizer()..onTap = onPositiveAction,
-              ),
-            ],
-          ),
-          maxLines: maxLines,
-          overflow: TextOverflow.clip,
-        ),
+        alignment: displayPositiveActionIsNewLine
+          ? AlignmentDirectional.centerStart
+          : Alignment.center,
+        child: contentWidget,
       );
     });
   }

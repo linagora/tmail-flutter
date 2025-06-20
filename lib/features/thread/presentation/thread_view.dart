@@ -157,6 +157,7 @@ class ThreadView extends GetWidget<ThreadController>
 
                         if (showTrashBanner) {
                           return CleanMessagesBanner(
+                            responsiveUtils: controller.responsiveUtils,
                             key: const Key('empty_trash_banner'),
                             message: AppLocalizations
                               .of(context)
@@ -176,6 +177,7 @@ class ThreadView extends GetWidget<ThreadController>
                           );
                         } else if (showSpamBanner) {
                           return CleanMessagesBanner(
+                            responsiveUtils: controller.responsiveUtils,
                             message: AppLocalizations
                               .of(context)
                               .bannerDeleteAllSpamEmailsMessage,
