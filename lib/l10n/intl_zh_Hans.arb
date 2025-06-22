@@ -4532,5 +4532,53 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "editLocalCopyInForwardFailed": "传输邮件时无法切换本地副本。",
+  "@editLocalCopyInForwardFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRecipientsFailed": "删除收件人失败。",
+  "@deleteRecipientsFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyEmailInYourCurrentFolder": "此文件夹中\n 没有任何邮件。",
+  "@youDoNotHaveAnyEmailInYourCurrentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "support": "支持",
+  "@support": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipientsFailed": "添加收件人失败。",
+  "@addRecipientsFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToComposeEmails": "开始撰写邮件。",
+  "@startToComposeEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilter": "创建筛选器",
+  "@createFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilterRuleFailed": "创建筛选规则失败",
+  "@createFilterRuleFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
