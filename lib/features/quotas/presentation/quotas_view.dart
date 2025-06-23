@@ -20,17 +20,20 @@ class QuotasView extends GetWidget<QuotasController> {
       bool isDesktop = controller.responsiveUtils.isDesktop(context);
 
       if (octetQuota != null && octetQuota.storageAvailable) {
-        final quotasWidget = Container(
+        return Container(
           padding: isDesktop
-            ? const EdgeInsets.all(16)
-            : const EdgeInsets.symmetric(vertical: 16),
+            ? const EdgeInsetsDirectional.only(
+                  start: 10,
+                  end: 16,
+                  top: 16,
+                  bottom: 16,
+                )
+              : const EdgeInsets.symmetric(vertical: 16),
           margin: isDesktop
-            ? const EdgeInsetsDirectional.only(start: 8)
+            ? const EdgeInsetsDirectional.only(start: 16)
             : const EdgeInsetsDirectional.only(start: 24),
           width: isDesktop ? 224 : 196,
-          alignment: isDesktop
-            ? AlignmentDirectional.center
-            : AlignmentDirectional.centerStart,
+          alignment: AlignmentDirectional.centerStart,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,12 +95,6 @@ class QuotasView extends GetWidget<QuotasController> {
             ],
           ),
         );
-
-        if (isDesktop) {
-          return Center(child: quotasWidget);
-        } else {
-          return quotasWidget;
-        }
       } else {
         return const SizedBox(height: 16);
       }
