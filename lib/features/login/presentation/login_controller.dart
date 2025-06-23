@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_authentication_inf
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/try_guessing_web_finger_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
@@ -50,6 +51,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_finger_interactor.dart';
+import 'package:tmail_ui_user/features/login/presentation/extensions/generate_oidc_guessing_urls.dart';
 import 'package:tmail_ui_user/features/login/presentation/extensions/handle_openid_configuration.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
@@ -58,6 +61,7 @@ import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twak
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -80,6 +84,7 @@ class LoginController extends ReloadableController {
   final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
   final DNSLookupToGetJmapUrlInteractor _dnsLookupToGetJmapUrlInteractor;
   final SignInTwakeWorkplaceInteractor _signInTwakeWorkplaceInteractor;
+  final TryGuessingWebFingerInteractor _tryGuessingWebFingerInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
@@ -111,6 +116,7 @@ class LoginController extends ReloadableController {
     this._getAllRecentLoginUsernameOnMobileInteractor,
     this._dnsLookupToGetJmapUrlInteractor,
     this._signInTwakeWorkplaceInteractor,
+    this._tryGuessingWebFingerInteractor,
   );
 
   @override
@@ -164,6 +170,8 @@ class LoginController extends ReloadableController {
       SmartDialog.dismiss();
       clearAllData();
     } else if (failure is DNSLookupToGetJmapUrlFailure) {
+      _handleDNSLookupToGetJmapUrlFailure(failure);
+    } else if (failure is TryGuessingWebFingerFailure) {
       _username = null;
       _clearTextInputField();
       _showBaseUrlForm();
@@ -188,6 +196,9 @@ class LoginController extends ReloadableController {
       _loginSuccessAction(success);
     } else if (success is DNSLookupToGetJmapUrlSuccess) {
       _handleDNSLookupToGetJmapUrlSuccess(success);
+    } else if (success is TryGuessingWebFingerSuccess) {
+      onBaseUrlChange(success.oidcResponse.subject);
+      getOIDCConfiguration(success.oidcResponse);
     } else if (success is SignInTwakeWorkplaceSuccess) {
       _synchronizeTokenAndGetSession(
         baseUri: success.baseUri,
@@ -217,6 +228,10 @@ class LoginController extends ReloadableController {
     } else if (failure is GetSessionFailure) {
       SmartDialog.dismiss();
       clearAllData();
+    } else if (connectionErrorWhenLookupDns(failure)) {
+      _handleDNSLookupToGetJmapUrlFailure(
+        failure as DNSLookupToGetJmapUrlFailure,
+      );
     } else {
       super.handleUrgentException(failure: failure, exception: exception);
     }
@@ -230,6 +245,19 @@ class LoginController extends ReloadableController {
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
       arguments: session,
     );
+  }
+
+  bool connectionErrorWhenLookupDns(Failure? failure) {
+    return failure is DNSLookupToGetJmapUrlFailure &&
+        failure.exception is ConnectionError;
+  }
+
+  void _handleDNSLookupToGetJmapUrlFailure(
+    DNSLookupToGetJmapUrlFailure failure,
+  ) {
+    consumeState(_tryGuessingWebFingerInteractor.execute(
+      generateOidcGuessingUrls(failure.email),
+    ));
   }
 
   void _registerDeepLinks() {
