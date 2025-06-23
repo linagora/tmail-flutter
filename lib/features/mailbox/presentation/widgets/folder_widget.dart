@@ -12,6 +12,7 @@ class FolderWidget extends StatelessWidget {
   final String? tooltip;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? itemPadding;
+  final EdgeInsetsGeometry? iconPadding;
   final double? borderRadius;
   final double? height;
   final TextStyle? labelTextStyle;
@@ -24,6 +25,7 @@ class FolderWidget extends StatelessWidget {
     this.tooltip,
     this.padding,
     this.itemPadding,
+    this.iconPadding,
     this.borderRadius,
     this.height,
     this.labelTextStyle,
@@ -44,9 +46,7 @@ class FolderWidget extends StatelessWidget {
       child: Row(children: [
         MailboxIconWidget(
           icon: icon,
-          padding: const EdgeInsetsDirectional.only(
-            end: MailboxItemWidgetStyles.mobileLabelIconSpace,
-          ),
+          padding: iconPadding,
           color: AppColor.iconFolder,
         ),
         Expanded(

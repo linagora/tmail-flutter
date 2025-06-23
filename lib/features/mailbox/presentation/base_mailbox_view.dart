@@ -122,9 +122,15 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
               isArrangeLTR: false,
               showIcon: true,
               padding: isDesktop
-                  ? const EdgeInsetsDirectional.only(start: 10)
-                  : const EdgeInsets.symmetric(horizontal: 24),
-              height: isDesktop ? 36 : 40,
+                  ? const EdgeInsets.symmetric(
+                      horizontal: MailboxItemWidgetStyles.itemPadding,
+                    )
+                  : const EdgeInsets.symmetric(
+                      horizontal: MailboxItemWidgetStyles.mobileItemPadding * 2,
+                    ),
+              height: isDesktop
+                  ? MailboxItemWidgetStyles.height
+                  : MailboxItemWidgetStyles.mobileHeight,
               iconSpace: isDesktop
                   ? null
                   : MailboxItemWidgetStyles.mobileLabelIconSpace,
@@ -355,9 +361,16 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
                 padding: isDesktop
                     ? null
                     : const EdgeInsets.symmetric(horizontal: 12),
-                itemPadding: const EdgeInsets.symmetric(
-                  horizontal: MailboxItemWidgetStyles.mobileItemPadding,
-                ),
+                itemPadding: isDesktop
+                    ? null
+                    : const EdgeInsets.symmetric(
+                        horizontal: MailboxItemWidgetStyles.mobileItemPadding,
+                      ),
+                iconPadding: isDesktop
+                    ? null
+                    : const EdgeInsetsDirectional.only(
+                        end: MailboxItemWidgetStyles.mobileLabelIconSpace,
+                      ),
                 borderRadius: isDesktop
                   ? null
                   : MailboxItemWidgetStyles.mobileBorderRadius,
