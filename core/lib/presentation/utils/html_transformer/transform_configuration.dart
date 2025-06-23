@@ -54,7 +54,8 @@ class TransformConfiguration {
   factory TransformConfiguration.forEditDraftsEmail() => TransformConfiguration.create(
     customDomTransformers: [
       ...TransformConfiguration.forDraftsEmail().domTransformers,
-      const HideDraftSignatureTransformer()
+      if (PlatformInfo.isWeb)
+        const HideDraftSignatureTransformer()
     ]
   );
 
