@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_finger_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/extensions/handle_openid_configuration.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
@@ -71,6 +72,7 @@ import 'login_controller_test.mocks.dart';
   MockSpec<GetAllRecentLoginUsernameOnMobileInteractor>(),
   MockSpec<DNSLookupToGetJmapUrlInteractor>(),
   MockSpec<SignInTwakeWorkplaceInteractor>(),
+  MockSpec<TryGuessingWebFingerInteractor>(),
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
   MockSpec<UpdateAccountCacheInteractor>(),
@@ -94,6 +96,7 @@ void main() {
   late MockGetAllRecentLoginUsernameOnMobileInteractor mockGetAllRecentLoginUsernameOnMobileInteractor;
   late MockDNSLookupToGetJmapUrlInteractor mockDNSLookupToGetJmapUrlInteractor;
   late MockSignInTwakeWorkplaceInteractor mockSignInTwakeWorkplaceInteractor;
+  late MockTryGuessingWebFingerInteractor mockTryGuessingWebFingerInteractor;
   late MockGetSessionInteractor mockGetSessionInteractor;
   late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
   late MockUpdateAccountCacheInteractor mockUpdateAccountCacheInteractor;
@@ -128,6 +131,7 @@ void main() {
     mockGetAllRecentLoginUsernameOnMobileInteractor = MockGetAllRecentLoginUsernameOnMobileInteractor();
     mockDNSLookupToGetJmapUrlInteractor = MockDNSLookupToGetJmapUrlInteractor();
     mockSignInTwakeWorkplaceInteractor = MockSignInTwakeWorkplaceInteractor();
+    mockTryGuessingWebFingerInteractor = MockTryGuessingWebFingerInteractor();
 
     // mock reloadable controller
     mockGetSessionInteractor = MockGetSessionInteractor();
@@ -191,6 +195,7 @@ void main() {
       mockGetAllRecentLoginUsernameOnMobileInteractor,
       mockDNSLookupToGetJmapUrlInteractor,
       mockSignInTwakeWorkplaceInteractor,
+      mockTryGuessingWebFingerInteractor,
     );
   });
 
