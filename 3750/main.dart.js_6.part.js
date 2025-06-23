@@ -206,12 +206,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onCopyButtonAction = t2;
       _.key = t3;
     },
-    ProfileSettingIcon: function ProfileSettingIcon(t0, t1, t2, t3) {
+    ProfileSettingIcon: function ProfileSettingIcon(t0, t1, t2, t3, t4) {
       var _ = this;
       _.ownEmailAddress = t0;
       _.settingActionTypes = t1;
       _.onProfileSettingActionTypeClick = t2;
-      _.key = t3;
+      _.isInsideCozy = t3;
+      _.key = t4;
     },
     _ProfileSettingIconState: function _ProfileSettingIconState(t0, t1, t2) {
       var _ = this;
@@ -223,11 +224,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _ProfileSettingIconState_build_closure: function _ProfileSettingIconState_build_closure(t0) {
       this.$this = t0;
     },
-    _ProfileSettingIconState_build__closure: function _ProfileSettingIconState_build__closure(t0, t1) {
+    _ProfileSettingIconState_build__closure0: function _ProfileSettingIconState_build__closure0(t0, t1) {
       this.$this = t0;
       this.context = t1;
     },
-    _ProfileSettingIconState_build__closure0: function _ProfileSettingIconState_build__closure0(t0) {
+    _ProfileSettingIconState_build__closure1: function _ProfileSettingIconState_build__closure1(t0) {
+      this.$this = t0;
+    },
+    _ProfileSettingIconState_build__closure: function _ProfileSettingIconState_build__closure(t0) {
       this.$this = t0;
     },
     ProfileSettingMenuOverlay: function ProfileSettingMenuOverlay(t0, t1, t2, t3, t4, t5, t6) {
@@ -650,7 +654,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         if (_this.appGridController != null)
           t1.push(new A.Obx(new C.NavigationBarWidget_build_closure1(_this), _null));
         t1.push(B.SizedBox_16_null_null_null);
-        t1.push(new C.ProfileSettingIcon(_this.ownEmailAddress, _this.settingActionTypes, _this.onProfileSettingActionTypeClick, _null));
+        t1.push(new C.ProfileSettingIcon(_this.ownEmailAddress, _this.settingActionTypes, _this.onProfileSettingActionTypeClick, false, _null));
         B.JSArray_methods.addAll$1(t2, t1);
       }
       return A.Container$(_null, A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, B.Color_4294967295, _null, _null, _null, 80, _null, _null, D.EdgeInsetsDirectional_30_0_30_0, _null, _null, _null);
@@ -890,7 +894,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1884
+    $signature: 1887
   };
   C.PopupMenuItemActionWidget_build_closure.prototype = {
     call$0() {
@@ -913,7 +917,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 710
+    $signature: 721
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -949,10 +953,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t2.appGridController != null)
         t1.push(new A.Obx(new C.NavigationBarWidget_build__closure0(t2), _null));
       t1.push(B.SizedBox_16_null_null_null);
-      t1.push(new C.ProfileSettingIcon(t2.ownEmailAddress, t2.settingActionTypes, t2.onProfileSettingActionTypeClick, _null));
+      t1.push(new C.ProfileSettingIcon(t2.ownEmailAddress, t2.settingActionTypes, t2.onProfileSettingActionTypeClick, false, _null));
       return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 394
+    $signature: 398
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -1006,29 +1010,36 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C._ProfileSettingIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
-      var t6, t7, t8, _null = null,
+      var t6, t7, _null = null,
         t1 = this.$this,
         t2 = t1.get$_toggleOpenMenu(),
         t3 = A.GestureDetector$(B.HitTestBehavior_1, _null, B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t2, _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT),
         t4 = type$._LocalizationsScope,
         t5 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_m1 : B.Alignment_1_m1;
-      t5 = A.Aligned$(t5, B.Offset_0_8, A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1);
+      t4 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1;
       t6 = t1._widget;
-      t7 = t6.ownEmailAddress;
+      t7 = t6.isInsideCozy;
+      t4 = A.Aligned$(t5, new A.Offset(t7 ? -16 : 0, 8), t4);
+      t5 = t6.ownEmailAddress;
       t6 = t6.settingActionTypes;
-      t8 = new A.AvatarBuilder();
-      t8._avatar_builder$_text = t7.length !== 0 ? t7[0].toUpperCase() : "";
-      t8._bgColor = B.Color_4294967295;
-      t8._textColor = B.Color_4278190080;
-      t8._avatar_builder$_context = context;
-      t8._avatar_builder$_size = 48;
-      t8._onTapAvatarActionClick = t2;
-      t8._boxShadows = A._setArrayType([D.BoxShadow_NMc], type$.JSArray_BoxShadow);
-      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, t8.build$0(), new C.ProfileSettingMenuOverlay(t7, t6, t1._profile_setting_icon$_imagePaths, new C._ProfileSettingIconState_build__closure(t1, context), new C._ProfileSettingIconState_build__closure0(t1), t2, _null), isExpanded), t3, isExpanded);
+      if (t7)
+        t7 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_setting.svg", B.Color_4283787389, _null, _null, B.EdgeInsetsDirectional_0_0_16_0, 1 / 0, new C._ProfileSettingIconState_build__closure(t1), _null, _null, _null, _null);
+      else {
+        t7 = new A.AvatarBuilder();
+        t7._avatar_builder$_text = t5.length !== 0 ? t5[0].toUpperCase() : "";
+        t7._bgColor = B.Color_4294967295;
+        t7._textColor = B.Color_4278190080;
+        t7._avatar_builder$_context = context;
+        t7._avatar_builder$_size = 48;
+        t7._onTapAvatarActionClick = t2;
+        t7._boxShadows = A._setArrayType([D.BoxShadow_NMc], type$.JSArray_BoxShadow);
+        t7 = t7.build$0();
+      }
+      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t4, t7, new C.ProfileSettingMenuOverlay(t5, t6, t1._profile_setting_icon$_imagePaths, new C._ProfileSettingIconState_build__closure0(t1, context), new C._ProfileSettingIconState_build__closure1(t1), t2, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 710
+    $signature: 721
   };
-  C._ProfileSettingIconState_build__closure.prototype = {
+  C._ProfileSettingIconState_build__closure0.prototype = {
     call$0() {
       var _null = null,
         t1 = this.$this,
@@ -1040,7 +1051,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
-  C._ProfileSettingIconState_build__closure0.prototype = {
+  C._ProfileSettingIconState_build__closure1.prototype = {
     call$1(actionType) {
       var t1 = this.$this,
         t2 = t1._isExpandedNotifier;
@@ -1048,6 +1059,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._widget.onProfileSettingActionTypeClick$1(actionType);
     },
     $signature: typesOffset + 3
+  };
+  C._ProfileSettingIconState_build__closure.prototype = {
+    call$1(position) {
+      var t1 = this.$this._isExpandedNotifier;
+      t1.set$value(0, !t1._change_notifier$_value);
+    },
+    $signature: 136
   };
   C.ProfileSettingMenuOverlay_build_closure.prototype = {
     call$1(actionType) {
@@ -1093,10 +1111,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(C.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(C.RenderPortalTheater, A.RenderProxyBox);
     _inheritMany(A.Closure2Args, [C.LinkBrowserWidget_build_closure, C.NavigationBarWidget_build_closure]);
-    _inheritMany(A.Closure0Args, [C.PopupMenuItemActionWidget_build_closure, C.AppGridDashboardItem_build_closure, C.AppDashboardOverlay_build_closure0, C.NavigationBarWidget_build__closure, C.NavigationBarWidget_build__closure0, C.NavigationBarWidget_build_closure0, C.NavigationBarWidget_build_closure1, C._ProfileSettingIconState_build__closure, C.DefaultLinkDelegate_build_closure]);
+    _inheritMany(A.Closure0Args, [C.PopupMenuItemActionWidget_build_closure, C.AppGridDashboardItem_build_closure, C.AppDashboardOverlay_build_closure0, C.NavigationBarWidget_build__closure, C.NavigationBarWidget_build__closure0, C.NavigationBarWidget_build_closure0, C.NavigationBarWidget_build_closure1, C._ProfileSettingIconState_build__closure0, C.DefaultLinkDelegate_build_closure]);
     _inherit(C.PopupMenuItemProfileSettingTypeAction, A.PopupMenuItemActionRequiredIcon);
     _inherit(C.ProfileSettingActionType, A._Enum);
-    _inheritMany(A.Closure, [C._AppGridDashboardIconState_build_closure, C.AppDashboardOverlay_build_closure, C._ProfileSettingIconState_build_closure, C._ProfileSettingIconState_build__closure0, C.ProfileSettingMenuOverlay_build_closure, C.ProfileSettingMenuOverlay_build__closure]);
+    _inheritMany(A.Closure, [C._AppGridDashboardIconState_build_closure, C.AppDashboardOverlay_build_closure, C._ProfileSettingIconState_build_closure, C._ProfileSettingIconState_build__closure1, C._ProfileSettingIconState_build__closure, C.ProfileSettingMenuOverlay_build_closure, C.ProfileSettingMenuOverlay_build__closure]);
     _inherit(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin);
     _inherit(C.AppGridDashboardItem, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin);
     _mixin(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, A.LauncherApplicationMixin);
@@ -1140,6 +1158,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_4_0_6_0 = new A.EdgeInsetsDirectional(4, 0, 6, 0);
     D.EdgeInsetsDirectional_8_0_12_0 = new A.EdgeInsetsDirectional(8, 0, 12, 0);
     D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
+    D.EdgeInsets_0_0_0_4 = new A.EdgeInsets(0, 0, 0, 4);
     D.EdgeInsets_0_4_0_4 = new A.EdgeInsets(0, 4, 0, 4);
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
@@ -1166,5 +1185,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "d37FmqGTD9pIMnsNOB7GS3bE2kc=");
+})($__dart_deferred_initializers__, "IKe+uyc1/iJhqE7bbhMA3yldifY=");
 ;
