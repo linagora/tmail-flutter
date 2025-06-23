@@ -15,7 +15,10 @@ class DNSLookupToGetJmapUrlInteractor {
       final jmapUrl = await _loginRepository.dnsLookupToGetJmapUrl(emailAddress);
       yield Right<Failure, Success>(DNSLookupToGetJmapUrlSuccess(jmapUrl));
     } catch (e) {
-      yield Left<Failure, Success>(DNSLookupToGetJmapUrlFailure(e));
+      yield Left<Failure, Success>(DNSLookupToGetJmapUrlFailure(
+        e,
+        email: emailAddress,
+      ));
     }
   }
 }
