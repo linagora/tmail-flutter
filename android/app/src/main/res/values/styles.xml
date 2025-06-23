@@ -5,10 +5,10 @@
         <!-- Show a splash screen on the activity. Automatically removed when
              Flutter draws its first frame -->
         <item name="android:windowBackground">@drawable/launch_background</item>
-        <item name="android:colorControlActivated" tools:targetApi="lollipop">@color/colorPrimary</item>
-        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:colorControlActivated">@color/colorPrimary</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:windowFullscreen">false</item>
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
     </style>
     <!-- Theme applied to the Android Window as soon as the process has started.
          This theme determines the color of the Android Window while your
@@ -18,7 +18,7 @@
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
-        <item name="android:colorControlActivated" tools:targetApi="lollipop">@color/colorPrimary</item>
+        <item name="android:colorControlActivated" >@color/colorPrimary</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:windowSplashScreenBackground" tools:targetApi="s">@drawable/launch_background</item>
         <item name="android:windowSplashScreenBrandingImage" tools:targetApi="s">@drawable/branding</item>
