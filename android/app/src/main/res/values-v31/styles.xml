@@ -8,6 +8,7 @@
         <item name="android:windowSplashScreenBackground">#ffffff</item>
         <item name="android:windowSplashScreenBrandingImage">@drawable/android12branding</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/android12splash</item>
+        <item name="android:colorControlActivated">@color/colorPrimary</item>
     </style>
     <!-- Theme applied to the Android Window as soon as the process has started.
          This theme determines the color of the Android Window while your
@@ -19,5 +20,6 @@
         <item name="android:windowBackground">?android:colorBackground</item>
         <item name="android:windowSplashScreenBackground">#ffffff</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/android12splash</item>
+        <item name="android:colorControlActivated">@color/colorPrimary</item>
     </style>
 </resources>
