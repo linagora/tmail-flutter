@@ -14,11 +14,20 @@ class GettingThreadById extends LoadingState {
 class GetThreadByIdSuccess extends UIState {
   final List<EmailId> emailIds;
   final bool updateCurrentThreadDetail;
+  final bool skipLoadingMetadata;
 
-  GetThreadByIdSuccess(this.emailIds, {this.updateCurrentThreadDetail = false});
+  GetThreadByIdSuccess(
+    this.emailIds, {
+    this.updateCurrentThreadDetail = false,
+    this.skipLoadingMetadata = false,
+  });
 
   @override
-  List<Object> get props => [emailIds, updateCurrentThreadDetail];
+  List<Object> get props => [
+    emailIds,
+    updateCurrentThreadDetail,
+    skipLoadingMetadata,
+  ];
 }
 
 class PreloadEmailIdsInThreadSuccess extends GetThreadByIdSuccess {

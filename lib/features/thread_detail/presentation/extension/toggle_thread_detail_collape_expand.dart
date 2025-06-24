@@ -18,6 +18,7 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
         CollapseEmailInThreadDetailAction(emailId),
       );
       currentExpandedEmailId.value = null;
+      threadDetailManager.currentMobilePageViewIndex.refresh();
       return;
     }
 
@@ -42,5 +43,6 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
         );
       }
     }
+    threadDetailManager.currentMobilePageViewIndex.refresh();
   }
 }
