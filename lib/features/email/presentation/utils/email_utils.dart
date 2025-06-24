@@ -15,7 +15,6 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
@@ -39,10 +38,7 @@ class EmailUtils {
 
   static Properties getPropertiesForEmailChangeMethod(Session session, AccountId accountId) {
     if (CapabilityIdentifier.jamesCalendarEvent.isSupported(session, accountId)) {
-      return Properties({
-        ...ThreadConstants.propertiesUpdatedDefault.value,
-        IndividualHeaderIdentifier.headerCalendarEvent.value,
-      });
+      return ThreadConstants.propertiesCalendarEvent;
     } else {
       return ThreadConstants.propertiesUpdatedDefault;
     }
