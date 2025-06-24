@@ -5,12 +5,13 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
+import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -171,6 +172,18 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return networkEmailResponse;
   }
 
+  @visibleForTesting
+  Future<List<Email>?> combineEmailCache({
+    List<Email>? emailUpdated,
+    Properties? updatedProperties,
+    List<Email>? emailCacheList,
+  }) =>
+      _combineEmailCache(
+        emailUpdated: emailUpdated,
+        updatedProperties: updatedProperties,
+        emailCacheList: emailCacheList,
+      );
+
   Future<List<Email>?> _combineEmailCache({
     List<Email>? emailUpdated,
     Properties? updatedProperties,
@@ -196,6 +209,13 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
     return combinedEmails;
   }
+
+  @visibleForTesting
+  ({Email updatedEmail, Email? oldEmail}) combineUpdatedWithEmailInCache(
+    Email updatedEmail,
+    List<Email>? emailCacheList,
+  ) =>
+      _combineUpdatedWithEmailInCache(updatedEmail, emailCacheList);
 
   ({Email updatedEmail, Email? oldEmail}) _combineUpdatedWithEmailInCache(
     Email updatedEmail,
@@ -227,16 +247,24 @@ class ThreadRepositoryImpl extends ThreadRepository {
       destroyed: newDestroyed);
   }
 
-  Future<void> _updateState(AccountId accountId, UserName userName, State newState) async {
+  Future<void> _updateState(
+    AccountId accountId,
+    UserName userName,
+    jmap.State newState,
+  ) async {
     log('ThreadRepositoryImpl::_updateState(): [MAIL] $newState');
-    await stateDataSource.saveState(accountId, userName, newState.toStateCache(StateType.email));
+    await stateDataSource.saveState(
+      accountId,
+      userName,
+      newState.toStateCache(StateType.email),
+    );
   }
 
   @override
   Stream<EmailsResponse> refreshChanges(
     Session session,
     AccountId accountId,
-    State currentState,
+    jmap.State currentState,
     {
       Set<Comparator>? sort,
       EmailFilter? emailFilter,
@@ -371,7 +399,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
   Future<void> _synchronizeCacheWithChanges(
     Session session,
     AccountId accountId,
-    State currentState,
+    jmap.State currentState,
     {
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
@@ -381,7 +409,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
     EmailChangeResponse? emailChangeResponse;
     bool hasMoreChanges = true;
-    State? sinceState = currentState;
+    jmap.State? sinceState = currentState;
 
     while(hasMoreChanges && sinceState != null) {
       log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): sinceState = $sinceState');
