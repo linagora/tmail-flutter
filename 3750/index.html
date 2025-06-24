@@ -41,25 +41,12 @@
   <script src="splash/splash.js"></script>
   <script src="worker_service/worker_service.js"></script>
   <script src="i18n/translater.js"></script>
+  <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
 </head>
 <body>
 
-    <picture id="splash-branding">
-        <source srcset="splash/img/branding-1x.png 1x, splash/img/branding-2x.png 2x, splash/img/branding-3x.png 3x, splash/img/branding-4x.png 4x" media="(prefers-color-scheme: light)">
-        <source srcset="splash/img/branding-dark-1x.png 1x, splash/img/branding-dark-2x.png 2x, splash/img/branding-dark-3x.png 3x, splash/img/branding-dark-4x.png 4x" media="(prefers-color-scheme: dark)">
-        <img class="bottom" aria-hidden="true" src="splash/img/branding-1x.png" alt="">
-    </picture>
-
-    <div class="center">
-        <div align="center">
-            <picture id="splash">
-                <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
-                <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
-                <img aria-hidden="true" src="splash/img/light-1x.png" alt="">
-            </picture>
-            <div class="loader"></div>
-        </div>
-    </div>
+    <dotlottie-player class="center" src="/splash/lottie-tmail.json" background="transparent" speed="1" style="width: 176px; height: 176px" direction="1" playmode="forward" autoplay=""></dotlottie-player>
+    <img src="splash/img/icon_twp.png" alt="Twake Workplace logo" class="bottom-image">
 
     <div class="smart-banner">
         <button class="button close" onClick={handleContinueTwakeMailOnWeb()}>
@@ -116,7 +103,9 @@ _flutter.buildConfig = {"engineRevision":"a18df97ca57a249df5d8d68cd0820600223ce2
           _flutter.loader.load({
             onEntrypointLoaded: async function(engineInitializer) {
               const appRunner = await engineInitializer.initializeEngine();
-              await appRunner.runApp();
+              await setTimeout( async function () {
+                await appRunner.runApp();
+              }, 2000);
             }
           });
         });
@@ -124,7 +113,9 @@ _flutter.buildConfig = {"engineRevision":"a18df97ca57a249df5d8d68cd0820600223ce2
       _flutter.loader.load({
         onEntrypointLoaded: async function(engineInitializer) {
           const appRunner = await engineInitializer.initializeEngine();
-          await appRunner.runApp();
+          await setTimeout( async function () {
+            await appRunner.runApp();
+          }, 2000);
         }
       });
     }
