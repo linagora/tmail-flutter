@@ -55,6 +55,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
   }) {
     return selectedEmailId == null ||
         !isThreadDetailEnabled ||
+        !networkConnected ||
         updateCurrentThreadDetail;
   }
 }
