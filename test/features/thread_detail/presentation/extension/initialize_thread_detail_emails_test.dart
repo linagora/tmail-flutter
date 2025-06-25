@@ -60,6 +60,8 @@ void main() {
       when(threadDetailController.session).thenReturn(session);
       when(threadDetailController.isThreadDetailEnabled)
         .thenReturn(true);
+      when(threadDetailController.networkConnected)
+        .thenReturn(true);
       when(threadDetailController.mailboxDashBoardController)
         .thenReturn(mailboxDashboardController);
       when(mailboxDashboardController.selectedEmail)
