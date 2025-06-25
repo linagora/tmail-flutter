@@ -11,7 +11,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
   void initializeThreadDetailEmails(GetThreadByIdSuccess success) {
     final threadDetailEnabled = isThreadDetailEnabled;
     final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-    if (!threadDetailEnabled &&
+    if ((!threadDetailEnabled || !networkConnected) &&
         selectedEmail != null &&
         !success.updateCurrentThreadDetail) {
       consumeState(Stream.value(Right(GetEmailsByIdsSuccess([selectedEmail]))));
