@@ -33,6 +33,8 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_action_rea
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
+import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
+  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
@@ -90,6 +92,7 @@ class ThreadDetailController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final searchEmailController = Get.find<SearchEmailController>();
+  final networkConnectionController = Get.find<NetworkConnectionController>();
   final downloadManager = Get.find<DownloadManager>();
   final downloadProgressState = StreamController<Either<Failure, Success>>();
 
@@ -114,6 +117,8 @@ class ThreadDetailController extends BaseController {
       .value == true;
     return isWebSearchRunning || isMobileSearchRunning;
   }
+  bool get networkConnected =>
+      networkConnectionController.isNetworkConnectionAvailable();
   bool get isThreadDetailEnabled =>
       threadDetailSettingStatus == ThreadDetailSettingStatus.enabled;
 
@@ -206,6 +211,7 @@ class ThreadDetailController extends BaseController {
         accountId != null &&
         sentMailboxId != null &&
         ownEmailAddress != null &&
+        networkConnected &&
         isThreadDetailEnabled;
   }
 
