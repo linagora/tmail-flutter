@@ -2260,7 +2260,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _AppShortcut_StatelessWidget_ImageLoaderMixin: function _AppShortcut_StatelessWidget_ImageLoaderMixin() {
     },
-    FolderWidget: function FolderWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {
+    FolderWidget: function FolderWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
       var _ = this;
       _.icon = t0;
       _.label = t1;
@@ -2268,10 +2268,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.tooltip = t3;
       _.padding = t4;
       _.itemPadding = t5;
-      _.borderRadius = t6;
-      _.height = t7;
-      _.labelTextStyle = t8;
-      _.key = t9;
+      _.iconPadding = t6;
+      _.borderRadius = t7;
+      _.height = t8;
+      _.labelTextStyle = t9;
+      _.key = t10;
     },
     FoldersBarWidget: function FoldersBarWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {
       var _ = this;
@@ -9107,18 +9108,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._AppShortcut_StatelessWidget_ImageLoaderMixin.prototype = {};
   B.FolderWidget.prototype = {
     build$1(context) {
-      var t4, t5, item, _this = this, _null = null,
+      var t4, t5, t6, item, _this = this, _null = null,
         t1 = _this.borderRadius,
         t2 = t1 == null,
         t3 = t2 ? 8 : t1;
       t3 = A.BorderRadius$all(new A.Radius(t3, t3));
-      t4 = _this.height;
+      t4 = _this.itemPadding;
       if (t4 == null)
-        t4 = 36;
-      t5 = _this.labelTextStyle;
+        t4 = C.EdgeInsets_10_0_10_0;
+      t5 = _this.height;
       if (t5 == null)
-        t5 = A.ThemeUtils_textStyleBodyBody3(C.Color_4278190080);
-      item = A.Tooltip$(A.Container$(_null, A.Row$(A._setArrayType([new A.MailboxIconWidget(_this.icon, C.EdgeInsetsDirectional_0_0_8_0, C.Color_4280909554, _null), A.Expanded$(A.TextOverflowBuilder$(_this.label, t5), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _null, t3, _null, _null, _null, C.BoxShape_0), _null, t4, _null, _null, _this.itemPadding, _null, _null, _null), _null, _this.tooltip);
+        t5 = 36;
+      t6 = _this.labelTextStyle;
+      if (t6 == null)
+        t6 = A.ThemeUtils_textStyleBodyBody3(C.Color_4278190080);
+      item = A.Tooltip$(A.Container$(_null, A.Row$(A._setArrayType([new A.MailboxIconWidget(_this.icon, _this.iconPadding, C.Color_4280909554, _null), A.Expanded$(A.TextOverflowBuilder$(_this.label, t6), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _null, t3, _null, _null, _null, C.BoxShape_0), _null, t5, _null, _null, t4, _null, _null, _null), _null, _this.tooltip);
       if (t2)
         t1 = 8;
       item = A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, A.BorderRadius$all(new A.Radius(t1, t1)), true, item, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onOpenFolderAction, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
@@ -14401,7 +14405,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t2);
       t3 = A.MailboxCategoriessExtension_getExpandMode(t1, A._instanceType(t2)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(t2)).mailboxCategoriesExpandMode.get$value(0));
       t4 = this.isDesktop;
-      t5 = t4 ? F.EdgeInsetsDirectional_10_0_0_0 : C.EdgeInsets_24_0_24_0;
+      t5 = t4 ? C.EdgeInsets_10_0_10_0 : C.EdgeInsets_24_0_24_0;
       t6 = t4 ? 36 : 40;
       t7 = t4 ? null : 8;
       t4 = t4 ? null : C.TextStyle_C3G;
@@ -14655,7 +14659,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.BaseMailboxView_buildListMailbox_closure5.prototype = {
     call$0() {
-      var t3, accountId, t4, contactSupportCapability, t5, t6, t7, t8, _null = null,
+      var t3, accountId, t4, contactSupportCapability, t5, t6, t7, t8, t9, t10, _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -14681,10 +14685,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null);
       t2 = this.isDesktop;
       t6 = t2 ? _null : C.EdgeInsets_12_0_12_0;
-      t7 = t2 ? _null : 10;
-      t8 = t2 ? _null : 40;
+      t7 = t2 ? _null : C.EdgeInsets_12_0_12_0;
+      t8 = t2 ? _null : C.EdgeInsetsDirectional_0_0_8_0;
+      t9 = t2 ? _null : 10;
+      t10 = t2 ? _null : 40;
       t2 = t2 ? _null : C.TextStyle_C3G;
-      return A.Column$(A._setArrayType([new A.Padding(new A.EdgeInsets(0, t4, 0, 8), D.Divider_YKG, _null), new B.FolderWidget("assets/images/ic_help.svg", t5, new B.BaseMailboxView_buildListMailbox__closure(t1, contactSupportCapability), t3, t6, C.EdgeInsets_12_0_12_0, t7, t8, t2, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1);
+      return A.Column$(A._setArrayType([new A.Padding(new A.EdgeInsets(0, t4, 0, 8), D.Divider_YKG, _null), new B.FolderWidget("assets/images/ic_help.svg", t5, new B.BaseMailboxView_buildListMailbox__closure(t1, contactSupportCapability), t3, t6, t7, t8, t9, t10, t2, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1);
     },
     $signature: 82
   };
@@ -16577,7 +16583,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.QuotasView_build_closure.prototype = {
     call$0() {
-      var t3, octetQuota, t4, isDesktop, t5, t6, t7, t8, t9, t10, quotasWidget, _null = null,
+      var t3, octetQuota, t4, isDesktop, t5, t6, t7, t8, t9, _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -16595,26 +16601,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t5 = (t5 == null ? octetQuota.limit : t5) != null;
         }
       if (t5) {
-        t5 = isDesktop ? C.EdgeInsets_16_16_16_16 : C.EdgeInsets_0_16_0_16;
-        t6 = isDesktop ? C.EdgeInsetsDirectional_8_0_0_0 : C.EdgeInsetsDirectional_24_0_0_0;
+        t5 = isDesktop ? D.EdgeInsetsDirectional_10_16_16_16 : C.EdgeInsets_0_16_0_16;
+        t6 = isDesktop ? C.EdgeInsetsDirectional_16_0_0_0 : C.EdgeInsetsDirectional_24_0_0_0;
         t7 = isDesktop ? 224 : 196;
-        t8 = isDesktop ? C.AlignmentDirectional_0_0 : C.AlignmentDirectional_m1_0;
         A.Expando__checkType(t1);
         t3._as(t2.get(t1)).toString;
         t2 = A.SvgPicture$asset("assets/images/ic_quotas.svg", C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4286680217), C.BoxFit_0, 24, _null, _null, 24);
         A.Localizations_of(t4, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         t3 = A.Intl__message("Storage", _null, "storageQuotas", _null, _null);
-        t9 = A.Theme_of(t4).textTheme.bodySmall;
-        t10 = type$.JSArray_Widget;
-        t1 = A.Row$(A._setArrayType([t2, C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(t3, _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, t9 == null ? _null : t9.copyWith$1$color(C.Color_4286680217), _null, _null, _null, _null, _null), 1), C.SizedBox_12_null_null_null, new A.Obx(new B.QuotasView_build__closure(t1), _null)], t10), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
-        t9 = A.LinearProgressIndicator$(C.Color_4293388524, C.BorderRadius_ww8, B.QuotasExtensions_getQuotasStateProgressBarColor(octetQuota), 3, B.QuotasExtensions_get_usedStoragePercent(octetQuota));
+        t8 = A.Theme_of(t4).textTheme.bodySmall;
+        t9 = type$.JSArray_Widget;
+        t1 = A.Row$(A._setArrayType([t2, C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(t3, _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, t8 == null ? _null : t8.copyWith$1$color(C.Color_4286680217), _null, _null, _null, _null, _null), 1), C.SizedBox_12_null_null_null, new A.Obx(new B.QuotasView_build__closure(t1), _null)], t9), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+        t8 = A.LinearProgressIndicator$(C.Color_4293388524, C.BorderRadius_ww8, B.QuotasExtensions_getQuotasStateProgressBarColor(octetQuota), 3, B.QuotasExtensions_get_usedStoragePercent(octetQuota));
         t3 = B.QuotasExtensions_getQuotasStateTitle(octetQuota, t4);
         t4 = A.Theme_of(t4).textTheme.bodySmall;
-        quotasWidget = A.Container$(t8, A.Column$(A._setArrayType([t1, C.SizedBox_null_8_null_null, new A.SizedBox(193, _null, t9, _null), C.SizedBox_null_8_null_null, A.Text$(t3, _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, t4 == null ? _null : t4.copyWith$1$color(B.QuotasExtensions_getQuotasStateTitleColor(octetQuota)), _null, _null, _null, _null, _null)], t10), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), C.Clip_0, _null, _null, _null, _null, _null, _null, t6, t5, _null, _null, t7);
-        if (isDesktop)
-          return A.Center$(quotasWidget, _null, _null);
-        else
-          return quotasWidget;
+        return A.Container$(C.AlignmentDirectional_m1_0, A.Column$(A._setArrayType([t1, C.SizedBox_null_8_null_null, new A.SizedBox(193, _null, t8, _null), C.SizedBox_null_8_null_null, A.Text$(t3, _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, t4 == null ? _null : t4.copyWith$1$color(B.QuotasExtensions_getQuotasStateTitleColor(octetQuota)), _null, _null, _null, _null, _null)], t9), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), C.Clip_0, _null, _null, _null, _null, _null, _null, t6, t5, _null, _null, t7);
       } else
         return C.SizedBox_null_16_null_null;
     },
@@ -19199,6 +19200,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_0_2_0_16 = new A.EdgeInsetsDirectional(0, 2, 0, 16);
     D.EdgeInsetsDirectional_0_8_12_0 = new A.EdgeInsetsDirectional(0, 8, 12, 0);
     D.EdgeInsetsDirectional_100_16_16_0 = new A.EdgeInsetsDirectional(100, 16, 16, 0);
+    D.EdgeInsetsDirectional_10_16_16_16 = new A.EdgeInsetsDirectional(10, 16, 16, 16);
     D.EdgeInsetsDirectional_120_2_0_0 = new A.EdgeInsetsDirectional(120, 2, 0, 0);
     D.EdgeInsetsDirectional_12_0_12_8 = new A.EdgeInsetsDirectional(12, 0, 12, 8);
     D.EdgeInsetsDirectional_12_0_4_0 = new A.EdgeInsetsDirectional(12, 0, 4, 0);
@@ -19436,5 +19438,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "+1NwlEve4NuqvTVUrUmzF6qGpSQ=");
+})($__dart_deferred_initializers__, "esG/j8yBlpZVInz7kguCXivXh48=");
 ;
