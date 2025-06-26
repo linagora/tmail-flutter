@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 
 extension UpdateCachedEmailLoaded on ThreadDetailController {
   void cacheEmailLoaded(EmailId emailId, EmailLoaded emailLoaded) {
-    const cacheLimit = 10;
+    const cacheLimit = 20;
     
     if (cachedEmailLoaded[emailId] == null &&
         cachedEmailLoaded.length >= cacheLimit) {
