@@ -128,6 +128,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/search_email_co
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/update_cached_list_email_loaded.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -406,6 +407,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           worker.dispose();
         }
         Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
+      } else if (action is CollapseEmailInThreadDetailAction) {
+        if (_currentEmailId == null || action.emailId != _currentEmailId) return;
+        for (var worker in obxListeners) {
+          worker.dispose();
+        }
+        Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
       }
     }));
 
@@ -417,16 +424,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         }
       });
     }));
-    if (_threadDetailController != null) {  
-      obxListeners.add(ever(
-        _threadDetailController!.currentExpandedEmailId,
-        (emailId) {
-          if (emailId == null || emailId != _currentEmailId) return;
-
-          _threadDetailController!.currentEmailLoaded.value = currentEmailLoaded.value;
-        },
-      ));
-    }
   }
 
   void _handleOpenEmailDetailedView() {
@@ -592,6 +589,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentAction(EmailId emailId) {
+    if (_currentEmailId != null && _threadDetailController?.cachedEmailLoaded[_currentEmailId!] != null) {
+      final emailLoaded = _threadDetailController!.cachedEmailLoaded[_currentEmailId!]!;
+      consumeState(Stream.value(Right(GetEmailContentSuccess(
+        htmlEmailContent: emailLoaded.htmlContent,
+        emailCurrent: emailLoaded.emailCurrent,
+        attachments: emailLoaded.attachments,
+        inlineImages: emailLoaded.inlineImages,
+      ))));
+      return;
+    }
+
     if (session != null && accountId != null) {
       try {
         final baseDownloadUrl = session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
@@ -711,6 +719,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           session,
           accountId,
           detailedEmail
+        );
+      } else if (currentEmail?.id != null && currentEmailLoaded.value != null) {
+        _threadDetailController?.cacheEmailLoaded(
+          currentEmail!.id!,
+          currentEmailLoaded.value!,
         );
       }
 
