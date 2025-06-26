@@ -89,6 +89,7 @@ class ThreadDetailController extends BaseController {
     IndividualHeaderIdentifier.listPostHeader.value,
     IndividualHeaderIdentifier.listUnsubscribeHeader.value,
   });
+  final cachedEmailLoaded = <EmailId, EmailLoaded>{};
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final searchEmailController = Get.find<SearchEmailController>();
@@ -221,6 +222,7 @@ class ThreadDetailController extends BaseController {
     scrollController = null;
     currentExpandedEmailId.value = null;
     currentEmailLoaded.value = null;
+    cachedEmailLoaded.clear();
   }
 
   @override
