@@ -10,11 +10,10 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_d
 extension InitializeThreadDetailEmails on ThreadDetailController {
   void initializeThreadDetailEmails(GetThreadByIdSuccess success) {
     final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
-    if (!isThreadDetailEnabled &&
-        selectedEmailId != null &&
-        !success.updateCurrentThreadDetail) {
-      return;
-    }
+    if (skipLoadThreadMetaData(
+      selectedEmailId: selectedEmailId,
+      updateCurrentThreadDetail: success.updateCurrentThreadDetail,
+    )) return;
 
     final existingEmailIds = emailIdsPresentation.keys.toList();
 
@@ -56,5 +55,13 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       ).union(additionalProperties),
       updateCurrentThreadDetail: success.updateCurrentThreadDetail,
     ));
+  }
+
+  bool skipLoadThreadMetaData({
+    EmailId? selectedEmailId,
+    bool updateCurrentThreadDetail = false,
+  }) {
+    return selectedEmailId == null ||
+        (!isThreadDetailEnabled && !updateCurrentThreadDetail);
   }
 }

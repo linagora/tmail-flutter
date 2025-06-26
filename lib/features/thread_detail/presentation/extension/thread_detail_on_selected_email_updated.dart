@@ -18,12 +18,10 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       return;
     }
 
-    consumeState(Stream.value(Right(GetThreadByIdSuccess([
-      selectedEmail!.id!,
-    ]))));
-    consumeState(Stream.value(Right(GetEmailsByIdsSuccess([
-      selectedEmail,
-    ]))));
+    consumeState(Stream.fromIterable([
+      Right(PreloadEmailIdsInThreadSuccess([selectedEmail!.id!])),
+      Right(PreloadEmailsByIdsSuccess([selectedEmail])),
+    ]));
     if (!isThreadDetailEnabled) return;
 
     if (session != null &&
