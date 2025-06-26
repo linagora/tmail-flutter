@@ -27,6 +27,15 @@ class GetEmailContentSuccess extends UIState {
   ];
 }
 
+class GetEmailContentFromThreadCacheSuccess extends GetEmailContentSuccess {
+  GetEmailContentFromThreadCacheSuccess({
+    required super.htmlEmailContent,
+    super.attachments,
+    super.inlineImages,
+    super.emailCurrent,
+  });
+}
+
 class GetEmailContentFromCacheSuccess extends UIState {
   final String htmlEmailContent;
   final List<Attachment>? attachments;
