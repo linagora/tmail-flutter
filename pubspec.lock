@@ -500,10 +500,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "0a2684235bccbb701b55559b75502984dd9091d3"
+      resolved-ref: "235dc4ec3e07940510173d34ddeaafcdde36fbe2"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
-    version: "0.1.5"
+    version: "0.1.6"
   enough_platform_widgets:
     dependency: transitive
     description:
@@ -1863,10 +1863,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "4a4ee913fbdec0f98cc1755f31df54fb402d0957"
+      resolved-ref: fad6dc0102d07589c1cc6af97f1d8092749d1185
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
-    version: "0.1.0"
+    version: "0.1.1"
   rule_filter:
     dependency: "direct main"
     description:
