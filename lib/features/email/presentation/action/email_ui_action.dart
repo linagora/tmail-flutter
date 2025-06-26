@@ -79,3 +79,12 @@ class UnsubscribeFromThreadAction extends EmailUIAction {
   @override
   List<Object?> get props => [emailId, listUnsubscribe];
 }
+
+class CollapseEmailInThreadDetailAction extends EmailUIAction {
+  CollapseEmailInThreadDetailAction(this.emailId);
+
+  final EmailId emailId;
+
+  @override
+  List<Object?> get props => [emailId];
+}
