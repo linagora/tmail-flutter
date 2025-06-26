@@ -13,7 +13,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     GetThreadByIdInteractor getThreadByIdInteractor,
     BuildContext? context,
   ) {
-    if (selectedEmail?.threadId == null || selectedEmail?.id == null) {
+    if (selectedEmail?.id == null) {
       closeThreadDetailAction(context);
       return;
     }
@@ -27,7 +27,8 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     if (session != null &&
         accountId != null &&
         sentMailboxId != null &&
-        ownEmailAddress != null) {
+        ownEmailAddress != null &&
+        selectedEmail.threadId != null) {
       scrollController = ScrollController();
       consumeState(getThreadByIdInteractor.execute(
         selectedEmail.threadId!,
