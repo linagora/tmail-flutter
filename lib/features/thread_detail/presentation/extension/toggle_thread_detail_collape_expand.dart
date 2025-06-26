@@ -38,8 +38,8 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
           emailInThreadStatus: EmailInThreadStatus.collapsed,
         );
         mailboxDashBoardController.dispatchEmailUIAction(
-        CollapseEmailInThreadDetailAction(key),
-      );
+          CollapseEmailInThreadDetailAction(key),
+        );
       }
     }
   }
