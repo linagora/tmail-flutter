@@ -194,7 +194,9 @@ class RichTextWebController extends BaseRichTextController {
       listTextStyleApply.contains(richTextStyleType);
 
   void insertImage(InlineImage inlineImage) {
-    editorController.insertHtml("<div>${inlineImage.base64Uri ?? ''}</div><br>");
+    editorController.insertImage(
+      "<div>${inlineImage.base64Uri ?? ''}</div><br>",
+    );
   }
 
   void applyNewFontStyle(FontNameType? newFont) {
