@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -6,6 +7,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/caching/clients/email_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/interaction/cache_manager_interaction.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/email_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_cache_exceptions.dart';
@@ -17,7 +19,7 @@ import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_exte
 import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
-class EmailCacheManager {
+class EmailCacheManager extends CacheManagerInteraction {
 
   final EmailCacheClient _emailCacheClient;
 
@@ -90,9 +92,10 @@ class EmailCacheManager {
       await _emailCacheClient.deleteMultipleItem(listEmailIdCacheExpire);
   }
 
-  Future<void> clearAll() async {
-    return await _emailCacheClient.clearAllData();
-  }
+  Future<void> clear() => _emailCacheClient.clearAllData();
+
+  Future<void> deleteByKey(String key) =>
+      _emailCacheClient.clearAllDataContainKey(key);
 
   Future<void> storeEmail(AccountId accountId, UserName userName, EmailCache emailCache) {
     final keyCache = TupleKey(emailCache.id, accountId.asString, userName.value).encodeKey;
@@ -129,5 +132,19 @@ class EmailCacheManager {
       .toList();
     final emails = await _emailCacheClient.getValuesByListKey(keys);
     return emails;
+  }
+
+  @override
+  Future<void> migrateHiveToIsolatedHive() async {
+    try {
+      final legacyMapItems = await _emailCacheClient.getMapItems(
+        isolated: false,
+      );
+      log('$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}');
+      await _emailCacheClient.insertMultipleItem(legacyMapItems);
+      log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_emailCacheClient.tableName}" → IsolatedHive DONE');
+    } catch (e) {
+      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_emailCacheClient.tableName}" → IsolatedHive FAILED, error: $e');
+    }
   }
 }
