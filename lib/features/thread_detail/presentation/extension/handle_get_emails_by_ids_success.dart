@@ -38,7 +38,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
       );
     }
 
-    if (!isLoadMore) return;
+    if (_skipScrollJump(isLoadMore)) return;
     
     final currentExpandedEmailIndex = currentExpandedEmailId.value == null
       ? -1
@@ -72,4 +72,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
       });
     }
   }
+
+  bool _skipScrollJump(bool isLoadMore) =>
+      !isLoadMore || emailIdsPresentation.length == 1;
 }

@@ -33,7 +33,7 @@ void main() {
       mailboxDashboardController = MockMailboxDashBoardController();
     });
 
-    test('initializeThreadDetailEmails should call getEmailsByIdsInteractor with 3 elements', () async {
+    test('initializeThreadDetailEmails should call getEmailsByIdsInteractor with 2 elements', () async {
       // Arrange
       final emailIds = [
         EmailId(Id('email1')),
@@ -63,7 +63,7 @@ void main() {
       when(threadDetailController.mailboxDashBoardController)
         .thenReturn(mailboxDashboardController);
       when(mailboxDashboardController.selectedEmail)
-        .thenReturn(Rxn(PresentationEmail()));
+        .thenReturn(Rxn(PresentationEmail(id: emailIds[0])));
 
       // Act
       threadDetailController.initializeThreadDetailEmails(
@@ -78,7 +78,7 @@ void main() {
         properties: captureAnyNamed('properties'),
       )).captured;
 
-      expect((captured[2] as List<EmailId>).length, 3);
+      expect((captured[2] as List<EmailId>).length, 2);
     });
   });
 }
