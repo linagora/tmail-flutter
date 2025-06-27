@@ -894,7 +894,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1888
+    $signature: 1887
   };
   C.PopupMenuItemActionWidget_build_closure.prototype = {
     call$0() {
@@ -917,7 +917,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 721
+    $signature: 712
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -956,7 +956,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.push(new C.ProfileSettingIcon(t2.ownEmailAddress, t2.settingActionTypes, t2.onProfileSettingActionTypeClick, false, _null));
       return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 398
+    $signature: 325
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -1037,7 +1037,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t4, t7, new C.ProfileSettingMenuOverlay(t5, t6, t1._profile_setting_icon$_imagePaths, new C._ProfileSettingIconState_build__closure0(t1, context), new C._ProfileSettingIconState_build__closure1(t1), t2, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 721
+    $signature: 712
   };
   C._ProfileSettingIconState_build__closure0.prototype = {
     call$0() {
@@ -1081,7 +1081,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(menuAction) {
       this.$this.onProfileSettingActionTypeClick.call$1(menuAction.action);
     },
-    $signature: 75
+    $signature: 66
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -1185,5 +1185,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "JfAgfDTt+ZGDiNLoeRJKCUyn000=");
+})($__dart_deferred_initializers__, "+HCOOTG47TQYTJj/VZpowji5/jQ=");
 ;
