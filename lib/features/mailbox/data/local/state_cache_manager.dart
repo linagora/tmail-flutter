@@ -1,14 +1,16 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/interaction/cache_manager_interaction.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 
-class StateCacheManager {
+class StateCacheManager extends CacheManagerInteraction {
 
   final StateCacheClient _stateCacheClient;
 
@@ -28,5 +30,23 @@ class StateCacheManager {
   Future<void> deleteState(AccountId accountId, UserName userName, StateType stateType) async {
     final stateKey = TupleKey(stateType.name, accountId.asString, userName.value).encodeKey;
     return await _stateCacheClient.deleteItem(stateKey);
+  }
+
+  Future<void> deleteByKey(String key) => _stateCacheClient.deleteItem(key);
+
+  Future<void> clear() => _stateCacheClient.clearAllData();
+
+  @override
+  Future<void> migrateHiveToIsolatedHive() async {
+    try {
+      final legacyMapItems = await _stateCacheClient.getMapItems(
+        isolated: false,
+      );
+      log('$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}');
+      await _stateCacheClient.insertMultipleItem(legacyMapItems);
+      log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_stateCacheClient.tableName}" → IsolatedHive DONE');
+    } catch (e) {
+      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_stateCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+    }
   }
 }

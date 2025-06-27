@@ -1,7 +1,7 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
-import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/manager/session_cache_manger.dart';
 import 'package:tmail_ui_user/features/home/data/datasource/session_datasource.dart';
 import 'package:tmail_ui_user/features/home/data/datasource_impl/hive_session_datasource_impl.dart';
 import 'package:tmail_ui_user/features/home/data/datasource_impl/session_datasource_impl.dart';
@@ -25,7 +25,7 @@ class SessionBindings extends InteractorsBindings {
       Get.find<SessionAPI>(),
       Get.find<RemoteExceptionThrower>()));
     Get.put(HiveSessionDataSourceImpl(
-      Get.find<SessionHiveCacheClient>(),
+      Get.find<SessionCacheManager>(),
       Get.find<CacheExceptionThrower>()));
   }
 

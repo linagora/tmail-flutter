@@ -51,12 +51,15 @@ class HiveCacheConfig {
 
   static HiveCacheConfig get instance => _instance;
 
-  Future<void> setUp({String? cachePath}) async {
-    await initializeDatabase(databasePath: cachePath);
-    _registerAdapter();
+  Future<void> setUp({String? cachePath, bool isolated = true}) async {
+    await initializeDatabase(databasePath: cachePath, isolated: isolated);
+    _registerAdapter(isolated: isolated);
   }
 
-  Future<void> initializeDatabase({String? databasePath}) async {
+  Future<void> initializeDatabase({
+    String? databasePath,
+    bool isolated = true,
+  }) async {
     if (databasePath == null && PlatformInfo.isMobile) {
       Directory directory = await path_provider.getApplicationDocumentsDirectory();
       databasePath = directory.path;
@@ -64,10 +67,14 @@ class HiveCacheConfig {
 
     if (databasePath == null) return;
 
-    await IsolatedHive.init(
-      databasePath,
-      isolateNameServer: const FcmIsolateNameServer(),
-    );
+    if (isolated) {
+      await IsolatedHive.init(
+        databasePath,
+        isolateNameServer: const FcmIsolateNameServer(),
+      );
+    } else {
+      Hive.init(databasePath);
+    }
   }
 
   Future<void> onUpgradeDatabase(CachingManager cachingManager) async {
@@ -123,96 +130,130 @@ class HiveCacheConfig {
     }
   }
 
-  void _registerAdapter() {
+  void _registerAdapter({bool isolated = true}) {
     registerCacheAdapter<MailboxCache>(
       MailboxCacheAdapter(),
-      CachingConstants.MAILBOX_CACHE_IDENTIFY
+      CachingConstants.MAILBOX_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<MailboxRightsCache>(
       MailboxRightsCacheAdapter(),
-      CachingConstants.MAILBOX_RIGHTS_CACHE_IDENTIFY
+      CachingConstants.MAILBOX_RIGHTS_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<StateCache>(
       StateCacheAdapter(),
-      CachingConstants.STATE_CACHE_IDENTIFY
+      CachingConstants.STATE_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<StateType>(
       StateTypeAdapter(),
-      CachingConstants.STATE_TYPE_IDENTIFY
+      CachingConstants.STATE_TYPE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<EmailAddressHiveCache>(
       EmailAddressHiveCacheAdapter(),
-      CachingConstants.EMAIL_ADDRESS_HIVE_CACHE_IDENTIFY
+      CachingConstants.EMAIL_ADDRESS_HIVE_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<EmailCache>(
       EmailCacheAdapter(),
-      CachingConstants.EMAIL_CACHE_IDENTIFY
+      CachingConstants.EMAIL_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<RecentSearchCache>(
       RecentSearchCacheAdapter(),
-      CachingConstants.RECENT_SEARCH_HIVE_CACHE_IDENTIFY
+      CachingConstants.RECENT_SEARCH_HIVE_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<TokenOidcCache>(
       TokenOidcCacheAdapter(),
-      CachingConstants.TOKEN_OIDC_HIVE_CACHE_IDENTIFY
+      CachingConstants.TOKEN_OIDC_HIVE_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<AccountCache>(
       AccountCacheAdapter(),
-      CachingConstants.ACCOUNT_HIVE_CACHE_IDENTIFY
+      CachingConstants.ACCOUNT_HIVE_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<EncryptionKeyCache>(
       EncryptionKeyCacheAdapter(),
-      CachingConstants.ENCRYPTION_KEY_HIVE_CACHE_IDENTIFY
+      CachingConstants.ENCRYPTION_KEY_HIVE_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<AuthenticationInfoCache>(
       AuthenticationInfoCacheAdapter(),
-      CachingConstants.AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY
+      CachingConstants.AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY,
+      isolated: isolated,
     );
     registerCacheAdapter<RecentLoginUrlCache>(
       RecentLoginUrlCacheAdapter(),
-      CachingConstants.RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY
+      CachingConstants.RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY,
+      isolated: isolated,
     );
     registerCacheAdapter<RecentLoginUsernameCache>(
       RecentLoginUsernameCacheAdapter(),
-      CachingConstants.RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY
+      CachingConstants.RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY,
+      isolated: isolated,
     );
     registerCacheAdapter<FirebaseRegistrationCache>(
       FirebaseRegistrationCacheAdapter(),
-      CachingConstants.FIREBASE_REGISTRATION_HIVE_CACHE_IDENTITY
+      CachingConstants.FIREBASE_REGISTRATION_HIVE_CACHE_IDENTITY,
+      isolated: isolated,
     );
     registerCacheAdapter<AttachmentHiveCache>(
       AttachmentHiveCacheAdapter(),
-      CachingConstants.ATTACHMENT_HIVE_CACHE_ID
+      CachingConstants.ATTACHMENT_HIVE_CACHE_ID,
+      isolated: isolated,
     );
     registerCacheAdapter<EmailHeaderHiveCache>(
       EmailHeaderHiveCacheAdapter(),
-      CachingConstants.EMAIL_HEADER_HIVE_CACHE_ID
+      CachingConstants.EMAIL_HEADER_HIVE_CACHE_ID,
+      isolated: isolated,
     );
     registerCacheAdapter<DetailedEmailHiveCache>(
       DetailedEmailHiveCacheAdapter(),
-      CachingConstants.DETAILED_EMAIL_HIVE_CACHE_ID
+      CachingConstants.DETAILED_EMAIL_HIVE_CACHE_ID,
+      isolated: isolated,
     );
     registerCacheAdapter<SendingEmailHiveCache>(
       SendingEmailHiveCacheAdapter(),
-      CachingConstants.SENDING_EMAIL_HIVE_CACHE_ID
+      CachingConstants.SENDING_EMAIL_HIVE_CACHE_ID,
+      isolated: isolated,
     );
     registerCacheAdapter<SessionHiveObj>(
       SessionHiveObjAdapter(),
-      CachingConstants.SESSION_HIVE_CACHE_ID
+      CachingConstants.SESSION_HIVE_CACHE_ID,
+      isolated: isolated,
     );
     registerCacheAdapter<OidcConfigurationCache>(
       OidcConfigurationCacheAdapter(),
       CachingConstants.OIDC_CONFIGURATION_CACHE_ID,
+      isolated: isolated,
     );
   }
 
-  void registerCacheAdapter<T>(TypeAdapter<T> typeAdapter, int typeId) {
-    if (!IsolatedHive.isAdapterRegistered(typeId)) {
-      IsolatedHive.registerAdapter<T>(typeAdapter);
+  void registerCacheAdapter<T>(
+    TypeAdapter<T> typeAdapter,
+    int typeId, {
+    bool isolated = true,
+  }) {
+    if (isolated) {
+      if (!IsolatedHive.isAdapterRegistered(typeId)) {
+        IsolatedHive.registerAdapter<T>(typeAdapter);
+      }
+    } else {
+      if (!Hive.isAdapterRegistered(typeId)) {
+        Hive.registerAdapter<T>(typeAdapter);
+      }
     }
   }
 
-  Future<void> closeHive() async {
-    return await IsolatedHive.close();
+  Future<void> closeHive({bool isolated = true}) async {
+    if (isolated) {
+      await IsolatedHive.close();
+    } else {
+      await Hive.close();
+    }
   }
 }
