@@ -164,6 +164,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
 
     return Obx(() {
       if (showLoadingView(controller.viewState.value) &&
+          controller.emailIdsPresentation.isEmpty &&
           controller.responsiveUtils.isTabletLarge(context)) {
         return controller.getThreadDetailLoadingView(
           isResponsiveDesktop: false,

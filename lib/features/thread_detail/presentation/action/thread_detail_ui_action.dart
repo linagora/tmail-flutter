@@ -39,3 +39,12 @@ class EmailMovedAction extends ThreadDetailUIAction {
   @override
   List<Object?> get props => [emailId, originalMailboxId, targetMailboxId];
 }
+
+class LoadThreadDetailAfterSelectedEmailAction extends ThreadDetailUIAction {
+  LoadThreadDetailAfterSelectedEmailAction(this.threadId);
+
+  final ThreadId threadId;
+
+  @override
+  List<Object?> get props => [threadId];
+}

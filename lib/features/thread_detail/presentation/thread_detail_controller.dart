@@ -170,6 +170,24 @@ class ThreadDetailController extends BaseController {
         consumeState(_getThreadDetailStatusInteractor.execute());
       } else if (action is EmailMovedAction) {
         handleEmailMovedAction(action);
+      } else if (action is LoadThreadDetailAfterSelectedEmailAction) {
+        if (mailboxDashBoardController.selectedEmail.value?.threadId != null &&
+            action.threadId == mailboxDashBoardController.selectedEmail.value?.threadId &&
+            session != null &&
+            accountId != null &&
+            sentMailboxId != null &&
+            ownEmailAddress != null &&
+            isThreadDetailEnabled) {
+          scrollController = ScrollController();
+          consumeState(_getEmailIdsByThreadIdInteractor.execute(
+            action.threadId,
+            session!,
+            accountId!,
+            sentMailboxId!,
+            ownEmailAddress!,
+            selectedEmailId: mailboxDashBoardController.selectedEmail.value?.id,
+          ));
+        }
       }
       // Reset [threadDetailUIAction] to original value
       mailboxDashBoardController.dispatchThreadDetailUIAction(

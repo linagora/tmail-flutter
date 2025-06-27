@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -18,24 +19,15 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       return;
     }
 
-    _preloadSelectedEmail(selectedEmail!);
-    if (!isThreadDetailEnabled) return;
-
-    if (session != null &&
-        accountId != null &&
-        sentMailboxId != null &&
-        ownEmailAddress != null &&
-        selectedEmail.threadId != null) {
-      scrollController = ScrollController();
-      consumeState(getThreadByIdInteractor.execute(
-        selectedEmail.threadId!,
-        session!,
-        accountId!,
-        sentMailboxId!,
-        ownEmailAddress!,
-        selectedEmailId: selectedEmail.id,
-      ));
+    if (currentExpandedEmailId.value != null) {
+      mailboxDashBoardController.dispatchEmailUIAction(
+        DisposePreviousExpandedEmailAction(
+          currentExpandedEmailId.value!,
+        ),
+      );
     }
+
+    _preloadSelectedEmail(selectedEmail!);
   }
 
   void _preloadSelectedEmail(PresentationEmail selectedEmail) {
