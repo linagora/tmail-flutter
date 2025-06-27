@@ -554,7 +554,10 @@ class ThreadController extends BaseController with EmailActionController {
           mailboxId: selectedMailboxId
         ),
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
+          _session!,
+          _accountId!,
+        ),
         getLatestChanges: getLatestChanges,
       ));
     } else {
@@ -616,26 +619,20 @@ class ThreadController extends BaseController with EmailActionController {
     return limit;
   }
 
-  void _refreshEmailChanges({jmap.State? newState}) {
+  void _refreshEmailChanges({required jmap.State newState}) {
     log('ThreadController::_refreshEmailChanges(): newState: $newState');
     if (_accountId == null ||
         _session == null ||
         mailboxDashBoardController.currentEmailState == null ||
-        newState == null) {
+        mailboxDashBoardController.currentEmailState == newState) {
       return;
     }
-
+    log('ThreadController::_refreshEmailChanges: websocket enqueue message:');
     _webSocketQueueHandler?.enqueue(WebSocketMessage(newState: newState));
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
     try {
-      if (mailboxDashBoardController.currentEmailState == null ||
-          mailboxDashBoardController.currentEmailState == message.newState) {
-        log('ThreadController::_handleWebSocketMessage:Skipping redundant state: ${message.newState}');
-        return Future.value();
-      }
-
       if (searchController.isSearchEmailRunning) {
         await _refreshChangeSearchEmail();
       } else {
@@ -709,7 +706,10 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
       ),
-      propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+      propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
+        _session!,
+        _accountId!,
+      ),
       emailFilter: EmailFilter(
         filter: getFilterCondition(mailboxIdSelected: selectedMailboxId),
         filterOption: mailboxDashBoardController.filterMessageOption.value,

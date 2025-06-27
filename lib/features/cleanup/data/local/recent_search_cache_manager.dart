@@ -4,13 +4,14 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/interaction/cache_manager_interaction.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/recent_search_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/extensions/list_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 
-class RecentSearchCacheManager {
+class RecentSearchCacheManager extends CacheManagerInteraction {
 
   static const int _defaultRecentSearchLimit = 10;
 
@@ -96,6 +97,22 @@ class RecentSearchCacheManager {
       return true;
     } else {
       return recentSearchCache.match(pattern);
+    }
+  }
+
+  Future<void> clear() => _recentSearchCacheClient.clearAllData();
+
+  @override
+  Future<void> migrateHiveToIsolatedHive() async {
+    try {
+      final legacyMapItems = await _recentSearchCacheClient.getMapItems(
+        isolated: false,
+      );
+      log('$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}');
+      await _recentSearchCacheClient.insertMultipleItem(legacyMapItems);
+      log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_recentSearchCacheClient.tableName}" → IsolatedHive DONE');
+    } catch (e) {
+      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_recentSearchCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 }

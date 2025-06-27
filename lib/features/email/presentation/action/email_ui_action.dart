@@ -12,9 +12,9 @@ class EmailUIAction extends UIAction {
 }
 
 class RefreshChangeEmailAction extends EmailUIAction {
-  final jmap.State? newState;
+  final jmap.State newState;
 
-  RefreshChangeEmailAction(this.newState);
+  RefreshChangeEmailAction({required this.newState});
 
   @override
   List<Object?> get props => [newState];

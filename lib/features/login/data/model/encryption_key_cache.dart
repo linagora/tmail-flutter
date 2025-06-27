@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 
 part 'encryption_key_cache.g.dart';

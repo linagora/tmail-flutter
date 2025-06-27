@@ -6,13 +6,14 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/interaction/cache_manager_interaction.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_cache_exceptions.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/list_detailed_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
 
-class NewEmailCacheManager {
+class NewEmailCacheManager extends CacheManagerInteraction {
 
   final NewEmailHiveCacheClient _cacheClient;
   final FileUtils _fileUtils;
@@ -25,7 +26,7 @@ class NewEmailCacheManager {
     DetailedEmailHiveCache detailedEmailCache
   ) async {
     final listDetailedEmails = await getAllDetailedEmails(accountId, userName);
-    log('NewEmailCacheManager::storeDetailedNewEmail():listDetailedEmails: $listDetailedEmails');
+    log('NewEmailCacheManager::storeDetailedNewEmail(): length of listDetailedEmails is ${listDetailedEmails.length}');
     if (listDetailedEmails.length >= CachingConstants.maxNumberNewEmailsForOffline) {
       final lastElementsListEmail = listDetailedEmails.sublist(CachingConstants.maxNumberNewEmailsForOffline - 1);
       for (var email in lastElementsListEmail) {
@@ -34,10 +35,8 @@ class NewEmailCacheManager {
         }
         await removeDetailedEmail(accountId, userName, email.emailId);
       }
-      log('NewEmailCacheManager::storeDetailedNewEmail(): DELETE COMPLETED');
     }
     await insertDetailedEmail(accountId, userName, detailedEmailCache);
-    log('NewEmailCacheManager::storeDetailedNewEmail(): INSERT COMPLETED');
     return detailedEmailCache;
   }
 
@@ -76,7 +75,7 @@ class NewEmailCacheManager {
     EmailId emailId
   ) async {
     final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
-    final detailedEmailCache = await _cacheClient.getItem(keyCache, needToReopen: true);
+    final detailedEmailCache = await _cacheClient.getItem(keyCache);
     if (detailedEmailCache != null) {
       return detailedEmailCache;
     } else {
@@ -84,5 +83,22 @@ class NewEmailCacheManager {
     }
   }
 
-  Future<void> closeNewEmailHiveCacheBox() => _cacheClient.closeBox();
+  Future<void> clear() => _cacheClient.clearAllData();
+
+  Future<void> deleteByKey(String key) =>
+      _cacheClient.clearAllDataContainKey(key);
+
+  @override
+  Future<void> migrateHiveToIsolatedHive() async {
+    try {
+      final legacyMapItems = await _cacheClient.getMapItems(
+        isolated: false,
+      );
+      log('$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}');
+      await _cacheClient.insertMultipleItem(legacyMapItems);
+      log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_cacheClient.tableName}" → IsolatedHive DONE');
+    } catch (e) {
+      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_cacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+    }
+  }
 }

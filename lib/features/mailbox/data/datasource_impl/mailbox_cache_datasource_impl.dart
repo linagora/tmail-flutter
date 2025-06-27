@@ -158,7 +158,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   @override
   Future<void> clearAllMailboxCache(AccountId accountId, UserName userName) {
     return Future.sync(() async {
-      return await _mailboxCacheManager.clearAll(accountId, userName);
+      return await _mailboxCacheManager.deleteByKey(accountId, userName);
     }).catchError(_exceptionThrower.throwException);
   }
 

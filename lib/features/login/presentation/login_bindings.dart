@@ -1,8 +1,8 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
-import 'package:tmail_ui_user/features/caching/clients/recent_login_url_cache_client.dart';
-import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
+import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
+import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_username_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/login_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_login_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/login_datasource_impl.dart';
@@ -65,8 +65,8 @@ class LoginBindings extends BaseBindings {
   @override
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => HiveLoginDataSourceImpl(
-      Get.find<RecentLoginUrlCacheClient>(),
-      Get.find<RecentLoginUsernameCacheClient>(),
+      Get.find<RecentLoginUrlCacheManager>(),
+      Get.find<RecentLoginUsernameCacheManager>(),
       Get.find<CacheExceptionThrower>()
     ));
     Get.lazyPut(() => LoginDataSourceImpl(

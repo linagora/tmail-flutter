@@ -5,12 +5,13 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
+import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -171,37 +172,64 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return networkEmailResponse;
   }
 
+  @visibleForTesting
+  Future<List<Email>?> combineEmailCache({
+    List<Email>? emailUpdated,
+    Properties? updatedProperties,
+    List<Email>? emailCacheList,
+  }) =>
+      _combineEmailCache(
+        emailUpdated: emailUpdated,
+        updatedProperties: updatedProperties,
+        emailCacheList: emailCacheList,
+      );
+
   Future<List<Email>?> _combineEmailCache({
     List<Email>? emailUpdated,
     Properties? updatedProperties,
     List<Email>? emailCacheList
   }) async {
-    if (emailUpdated != null && emailUpdated.isNotEmpty) {
-      if (updatedProperties == null) {
-        return null;
-      }
-      final newEmailUpdated = emailUpdated
-        .map((updatedEmail) => _combineUpdatedWithEmailInCache(updatedEmail, emailCacheList))
-        .where((tuple) => tuple.value2 != null)
-        .map((tuple) => tuple.value2!.combineEmail(tuple.value1, updatedProperties))
+    if (emailUpdated == null || emailUpdated.isEmpty) return emailUpdated;
+
+    if (updatedProperties == null) return null;
+
+    if (updatedProperties.value.containsAll(ThreadConstants.propertiesDefault.value)) {
+      log('ThreadRepositoryImpl::_combineEmailCache(): Update use properties default');
+      return emailUpdated;
+    }
+
+    final combinedEmails = emailUpdated
+        .map((email) => _combineUpdatedWithEmailInCache(email, emailCacheList))
+        .where((record) => record.oldEmail != null)
+        .map((record) => record.oldEmail!.combineEmail(
+          record.updatedEmail,
+          updatedProperties,
+        ))
         .toList();
 
-      return newEmailUpdated;
-    }
-    return emailUpdated;
+    return combinedEmails;
   }
 
-  dartz.Tuple2<Email, Email?> _combineUpdatedWithEmailInCache(Email updatedEmail, List<Email>? emailCacheList) {
-    final emailOld = updatedEmail.id != null
-      ? emailCacheList?.findEmailById(updatedEmail.id!)
-      : null;
-    if (emailOld != null) {
-      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit');
-      return dartz.Tuple2(updatedEmail, emailOld);
+  @visibleForTesting
+  ({Email updatedEmail, Email? oldEmail}) combineUpdatedWithEmailInCache(
+    Email updatedEmail,
+    List<Email>? emailCacheList,
+  ) =>
+      _combineUpdatedWithEmailInCache(updatedEmail, emailCacheList);
+
+  ({Email updatedEmail, Email? oldEmail}) _combineUpdatedWithEmailInCache(
+    Email updatedEmail,
+    List<Email>? emailCacheList,
+  ) {
+    final oldEmail = updatedEmail.id != null
+        ? emailCacheList?.findEmailById(updatedEmail.id!)
+        : null;
+    if (oldEmail != null) {
+      log('ThredRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit for this email -> ${oldEmail.id} - ${oldEmail.subject} - ${oldEmail.keywords} - ${oldEmail.mailboxIds} - new update in $updatedEmail');
     } else {
-      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache miss');
-      return dartz.Tuple2(updatedEmail, null);
+      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache miss for emailId ${updatedEmail.id}');
     }
+    return (oldEmail: oldEmail, updatedEmail: updatedEmail);
   }
 
   Future<void> _updateEmailCache(
@@ -219,16 +247,24 @@ class ThreadRepositoryImpl extends ThreadRepository {
       destroyed: newDestroyed);
   }
 
-  Future<void> _updateState(AccountId accountId, UserName userName, State newState) async {
+  Future<void> _updateState(
+    AccountId accountId,
+    UserName userName,
+    jmap.State newState,
+  ) async {
     log('ThreadRepositoryImpl::_updateState(): [MAIL] $newState');
-    await stateDataSource.saveState(accountId, userName, newState.toStateCache(StateType.email));
+    await stateDataSource.saveState(
+      accountId,
+      userName,
+      newState.toStateCache(StateType.email),
+    );
   }
 
   @override
   Stream<EmailsResponse> refreshChanges(
     Session session,
     AccountId accountId,
-    State currentState,
+    jmap.State currentState,
     {
       Set<Comparator>? sort,
       EmailFilter? emailFilter,
@@ -363,7 +399,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
   Future<void> _synchronizeCacheWithChanges(
     Session session,
     AccountId accountId,
-    State currentState,
+    jmap.State currentState,
     {
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
@@ -373,7 +409,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
     EmailChangeResponse? emailChangeResponse;
     bool hasMoreChanges = true;
-    State? sinceState = currentState;
+    jmap.State? sinceState = currentState;
 
     while(hasMoreChanges && sinceState != null) {
       log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): sinceState = $sinceState');

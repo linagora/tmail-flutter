@@ -183,6 +183,7 @@ class WebSocketController extends PushBaseController {
   }
 
   void _enableWebSocketPush() {
+    log('WebSocketController::_enableWebSocketPush:');
     _webSocketChannel?.sink.add(jsonEncode(WebSocketPushEnableRequest.toJson(
       dataTypes: [TypeName.emailType, TypeName.mailboxType]
     )));
@@ -197,6 +198,7 @@ class WebSocketController extends PushBaseController {
   }
 
   void _listenToWebSocket() {
+    log('WebSocketController::_listenToWebSocket:');
     _webSocketSubscription = _webSocketChannel?.stream.listen(
       (data) {
         log('WebSocketController::_listenToWebSocket(): $data');
@@ -225,6 +227,7 @@ class WebSocketController extends PushBaseController {
   }
 
   void _initStateChangeDeouncerTimer() {
+    log('WebSocketController::_initStateChangeDeouncerTimer:');
     _stateChangeDebouncer = Debouncer<StateChange?>(
       const Duration(milliseconds: FcmUtils.durationMessageComing),
       initialValue: null,

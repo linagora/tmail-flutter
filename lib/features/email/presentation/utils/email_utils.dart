@@ -36,6 +36,14 @@ class EmailUtils {
     }
   }
 
+  static Properties getPropertiesForEmailChangeMethod(Session session, AccountId accountId) {
+    if (CapabilityIdentifier.jamesCalendarEvent.isSupported(session, accountId)) {
+      return ThreadConstants.propertiesCalendarEvent;
+    } else {
+      return ThreadConstants.propertiesUpdatedDefault;
+    }
+  }
+
   static EmailUnsubscribe? parsingUnsubscribe(String listUnsubscribe) {
     if (listUnsubscribe.isEmpty) {
       return null;

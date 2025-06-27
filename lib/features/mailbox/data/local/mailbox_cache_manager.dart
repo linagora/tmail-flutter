@@ -1,18 +1,20 @@
 
 import 'package:collection/collection.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/mailbox_extension.dart';
 import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/interaction/cache_manager_interaction.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/list_mailbox_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/list_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 
-class MailboxCacheManager {
+class MailboxCacheManager extends CacheManagerInteraction {
 
   final MailboxCacheClient _mailboxCacheClient;
 
@@ -57,8 +59,24 @@ class MailboxCacheManager {
     }
   }
 
-  Future<void> clearAll(AccountId accountId, UserName userName) async {
+  Future<void> deleteByKey(AccountId accountId, UserName userName) async {
     final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
     await _mailboxCacheClient.clearAllDataContainKey(nestedKey);
+  }
+
+  Future<void> clear() => _mailboxCacheClient.clearAllData();
+
+  @override
+  Future<void> migrateHiveToIsolatedHive() async {
+    try {
+      final legacyMapItems = await _mailboxCacheClient.getMapItems(
+        isolated: false,
+      );
+      log('$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}');
+      await _mailboxCacheClient.insertMultipleItem(legacyMapItems);
+      log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_mailboxCacheClient.tableName}" → IsolatedHive DONE');
+    } catch (e) {
+      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_mailboxCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+    }
   }
 }
