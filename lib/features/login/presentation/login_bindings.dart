@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_finger_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/starting_page/data/datasource/saas_authentication_datasource.dart';
 import 'package:tmail_ui_user/features/starting_page/data/datasource_impl/saas_authentication_datasource_impl.dart';
@@ -52,6 +53,7 @@ class LoginBindings extends BaseBindings {
       Get.find<GetAllRecentLoginUsernameOnMobileInteractor>(),
       Get.find<DNSLookupToGetJmapUrlInteractor>(),
       Get.find<SignInTwakeWorkplaceInteractor>(),
+      Get.find<TryGuessingWebFingerInteractor>(),
     ));
   }
 
@@ -111,6 +113,9 @@ class LoginBindings extends BaseBindings {
       Get.find<AuthenticationOIDCRepository>(),
       Get.find<AccountRepository>(),
       Get.find<CredentialRepository>(),
+    ));
+    Get.lazyPut(() => TryGuessingWebFingerInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
     ));
   }
 

@@ -13,6 +13,10 @@ class DNSLookupToGetJmapUrlSuccess extends UIState {
 }
 
 class DNSLookupToGetJmapUrlFailure extends FeatureFailure {
+  DNSLookupToGetJmapUrlFailure(
+    dynamic exception, {
+    required this.email,
+  }) : super(exception: exception);
 
-  DNSLookupToGetJmapUrlFailure(dynamic exception) : super(exception: exception);
+  final String email;
 }
