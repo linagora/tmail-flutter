@@ -8,7 +8,7 @@ curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/tru
 
 # Install patrol CLI
 echo "Installing patrol CLI..."
-dart pub global activate patrol_cli
+dart pub global activate patrol_cli 3.6.0
 flutter build apk --config-only
 
 # Forward traffic to tmail-backend
