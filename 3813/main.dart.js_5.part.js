@@ -19950,11 +19950,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      t4 = false;
       if (t1.showLoadingView$1(t3._as(t2.get(t1)).viewState.get$value(0))) {
         A.Expando__checkType(t1);
-        t4 = t3._as(t2.get(t1)).responsiveUtils.isTabletLarge$1(this.context);
-      } else
-        t4 = false;
+        if (J.get$isEmpty$asx(t3._as(t2.get(t1)).emailIdsPresentation.get$keys(0))) {
+          A.Expando__checkType(t1);
+          t4 = t3._as(t2.get(t1)).responsiveUtils.isTabletLarge$1(this.context);
+        }
+      }
       if (t4) {
         A.Expando__checkType(t1);
         return B.GetThreadDetailLoadingView_getThreadDetailLoadingView(t3._as(t2.get(t1)), false, true, false);
@@ -20784,5 +20787,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "0d98S8TUNoKe2U30BB1EU1zUfl0=");
+})($__dart_deferred_initializers__, "Hg2LXctLE+i5IHQ/8QbW1+sy43E=");
 ;
