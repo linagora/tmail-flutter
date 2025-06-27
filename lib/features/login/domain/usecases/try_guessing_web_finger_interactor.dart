@@ -1,4 +1,4 @@
-import 'package:collection/collection.dart';
+import 'dart:async';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -18,15 +18,29 @@ class TryGuessingWebFingerInteractor {
   ) async* {
     try {
       yield Right(TryingGuessingWebFinger());
-      final results = await Future.wait(oidcRequests.map(
-        _checkOIDCAvailableFromOidcRequest,
-      ));
-
-      final availableOidcResponses = results.whereNotNull();
-      if (availableOidcResponses.isEmpty) {
+      final futures = oidcRequests.map(_checkOIDCAvailableFromOidcRequest).toList();
+      final completer = Completer<OIDCResponse?>();
+      
+      for (final future in futures) {
+        future.then((response) {
+          if (response != null && !completer.isCompleted) {
+            completer.complete(response);
+          }
+        });
+      }
+      
+      Future.wait(futures).then((_) {
+        if (!completer.isCompleted) {
+          completer.complete(null);
+        }
+      });
+      
+      final firstNonNullResponse = await completer.future;
+      
+      if (firstNonNullResponse == null) {
         yield Left(TryGuessingWebFingerFailure());
       } else {
-        yield Right(TryGuessingWebFingerSuccess(availableOidcResponses.first));
+        yield Right(TryGuessingWebFingerSuccess(firstNonNullResponse));
       }
     } catch (e) {
       logError('$runtimeType::execute(): Exception = $e');
