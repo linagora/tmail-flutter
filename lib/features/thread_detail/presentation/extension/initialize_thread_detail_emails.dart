@@ -57,8 +57,9 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
   }
 
   bool _currentThreadOnlyContainsSelectedEmail(EmailId? selectedEmailId) {
-    return emailIdsPresentation.length == 1 &&
-      emailIdsPresentation.keys.contains(selectedEmailId);
+    return selectedEmailId != null &&
+        emailIdsPresentation.length == 1 &&
+        emailIdsPresentation.keys.contains(selectedEmailId);
   }
 
   bool skipLoadThreadMetaData({
