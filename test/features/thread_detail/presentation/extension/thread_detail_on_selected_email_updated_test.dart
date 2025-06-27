@@ -62,7 +62,7 @@ void main() {
 
     test(
       'should not reset thread detail controller '
-      'and consume GetThreadByIdSuccess and GetEmailsByIdsSuccess '
+      'and consume PreloadEmailIdsInThreadSuccess and PreloadEmailsByIdsSuccess '
       'when selected email and its id is not null',
     () async {
       // arrange
@@ -80,26 +80,21 @@ void main() {
       
       // assert
       verifyNever(threadDetailController.reset());
-      final streamsConsumed = verify(
+      final streamsConsumed = (verify(
         threadDetailController.consumeState(captureAny),
-      ).captured as List<Object?>;
-      final states = await Future.wait(
-        streamsConsumed.map(
-          (streamConsumed) => (streamConsumed as Stream).last,
-        ),
-      );
+      ).captured as List<Object?>).first as Stream?;
       expect(
-        states,
-        equals([
-          Right(GetThreadByIdSuccess([selectedEmail.id!])),
-          Right(GetEmailsByIdsSuccess([selectedEmail])),
+        streamsConsumed,
+        emitsInOrder([
+          Right(PreloadEmailIdsInThreadSuccess([selectedEmail.id!])),
+          Right(PreloadEmailsByIdsSuccess([selectedEmail])),
         ]),
       );
     });
 
     test(
       'should not reset thread detail controller '
-      'and consume GetThreadByIdSuccess and GetEmailsByIdsSuccess '
+      'and consume PreloadEmailIdsInThreadSuccess and PreloadEmailsByIdsSuccess '
       'and call getThreadByIdInteractor.execute '
       'when selected email and its id is not null '
       'and isThreadDetailEnabled is true',
@@ -133,20 +128,14 @@ void main() {
       
       // assert
       verifyNever(threadDetailController.reset());
-      final streamsConsumed = verify(
+      final streamsConsumed = (verify(
         threadDetailController.consumeState(captureAny),
-      ).captured as List<Object?>;
-      final states = await Future.wait(
-        streamsConsumed.map(
-          (streamConsumed) => (streamConsumed as Stream).last,
-        ),
-      );
+      ).captured as List<Object?>).first as Stream?;
       expect(
-        states,
-        equals([
-          Right(GetThreadByIdSuccess([selectedEmail.id!])),
-          Right(GetEmailsByIdsSuccess([selectedEmail])),
-          Right(UIState.idle),
+        streamsConsumed,
+        emitsInOrder([
+          Right(PreloadEmailIdsInThreadSuccess([selectedEmail.id!])),
+          Right(PreloadEmailsByIdsSuccess([selectedEmail])),
         ]),
       );
       verify(getThreadByIdInteractor.execute(

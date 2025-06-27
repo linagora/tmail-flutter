@@ -18,10 +18,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       return;
     }
 
-    consumeState(Stream.fromIterable([
-      Right(PreloadEmailIdsInThreadSuccess([selectedEmail!.id!])),
-      Right(PreloadEmailsByIdsSuccess([selectedEmail])),
-    ]));
+    _preloadSelectedEmail(selectedEmail!);
     if (!isThreadDetailEnabled) return;
 
     if (session != null &&
@@ -39,5 +36,12 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
         selectedEmailId: selectedEmail.id,
       ));
     }
+  }
+
+  void _preloadSelectedEmail(PresentationEmail selectedEmail) {
+    consumeState(Stream.fromIterable([
+      Right(PreloadEmailIdsInThreadSuccess([selectedEmail.id!])),
+      Right(PreloadEmailsByIdsSuccess([selectedEmail])),
+    ]));
   }
 }

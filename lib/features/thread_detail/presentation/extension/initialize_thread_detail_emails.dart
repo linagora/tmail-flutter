@@ -42,8 +42,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       ))));
       return;
     }
-    if (emailIdsPresentation.length == 1 &&
-        emailIdsPresentation.keys.contains(selectedEmailId)) return;
+    if (_currentThreadOnlyContainsSelectedEmail(selectedEmailId)) return;
 
     consumeState(getEmailsByIdsInteractor.execute(
       session!,
@@ -55,6 +54,11 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       ).union(additionalProperties),
       updateCurrentThreadDetail: success.updateCurrentThreadDetail,
     ));
+  }
+
+  bool _currentThreadOnlyContainsSelectedEmail(EmailId? selectedEmailId) {
+    return emailIdsPresentation.length == 1 &&
+      emailIdsPresentation.keys.contains(selectedEmailId);
   }
 
   bool skipLoadThreadMetaData({
