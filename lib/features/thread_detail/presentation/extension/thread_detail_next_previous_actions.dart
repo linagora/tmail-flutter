@@ -12,26 +12,11 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
   void onNext() {
     if (!nextAvailable) return;
 
-    if (isThreadDetailEnabled) {
-      final currentThreadIndex = availableThreadIds.indexOf(currentThreadId!);
-      final nextThreadIndex = currentThreadIndex + 1;
-      final nextThreadId = availableThreadIds[nextThreadIndex];
-      _preparePageWithIndex(nextThreadIndex);
-      _goToPageWithEmail(
-        currentDisplayedEmails.firstWhereOrNull(
-          (presentationEmail) => presentationEmail.threadId == nextThreadId,
-        ),
-      );
-      return;
-    }
-
-    final currentEmailIndex = currentDisplayedEmails.indexOf(
-      mailboxDashBoardController.selectedEmail.value!,
-    );
-    final nextEmailIndex = currentEmailIndex + 1;
-    final nextEmail = currentDisplayedEmails[nextEmailIndex];
-    _preparePageWithIndex(nextEmailIndex);
-    _goToPageWithEmail(nextEmail);
+    final currentIndex = isThreadDetailEnabled
+        ? availableThreadIds.indexOf(currentThreadId!)
+        : currentDisplayedEmails
+            .indexOf(mailboxDashBoardController.selectedEmail.value!);
+    _navigate(currentIndex + 1, isThreadDetailEnabled);
   }
 
   bool get previousAvailable => isThreadDetailEnabled
@@ -40,26 +25,11 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
   void onPrevious() {
     if (!previousAvailable) return;
 
-    if (isThreadDetailEnabled) {
-      final currentThreadIndex = availableThreadIds.indexOf(currentThreadId!);
-      final previousThreadIndex = currentThreadIndex - 1;
-      final previousThreadId = availableThreadIds[previousThreadIndex];
-      _preparePageWithIndex(previousThreadIndex);
-      _goToPageWithEmail(
-        currentDisplayedEmails.firstWhereOrNull(
-          (presentationEmail) => presentationEmail.threadId == previousThreadId,
-        ),
-      );
-      return;
-    }
-
-    final currentEmailIndex = currentDisplayedEmails.indexOf(
-      mailboxDashBoardController.selectedEmail.value!,
-    );
-    final previousEmailIndex = currentEmailIndex - 1; 
-    final previousEmail = currentDisplayedEmails[previousEmailIndex];
-    _preparePageWithIndex(previousEmailIndex);
-    _goToPageWithEmail(previousEmail);
+    final currentIndex = isThreadDetailEnabled
+        ? availableThreadIds.indexOf(currentThreadId!)
+        : currentDisplayedEmails
+            .indexOf(mailboxDashBoardController.selectedEmail.value!);
+    _navigate(currentIndex - 1, isThreadDetailEnabled);
   }
 
   void _preparePageWithIndex(int index) {
@@ -72,9 +42,27 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
     mailboxDashBoardController.setSelectedEmail(presentationEmail);
     if (PlatformInfo.isWeb && presentationEmail?.routeWeb != null) {
       RouteUtils.replaceBrowserHistory(
-        title: 'Email-${presentationEmail?.id?.id.value ?? ''}',
-        url: presentationEmail!.routeWeb!
-      );
+          title: 'Email-${presentationEmail?.id?.id.value ?? ''}',
+          url: presentationEmail!.routeWeb!);
     }
+  }
+
+  void _navigateToEmail(int emailIndex) {
+    final email = currentDisplayedEmails[emailIndex];
+    _preparePageWithIndex(emailIndex);
+    _goToPageWithEmail(email);
+  }
+
+  void _navigateToThread(int threadIndex) {
+    final threadId = availableThreadIds[threadIndex];
+    final email = currentDisplayedEmails.firstWhereOrNull(
+      (presentationEmail) => presentationEmail.threadId == threadId,
+    );
+    _preparePageWithIndex(threadIndex);
+    _goToPageWithEmail(email);
+  }
+
+  void _navigate(int index, bool isThreadDetailEnabled) {
+    isThreadDetailEnabled ? _navigateToThread(index) : _navigateToEmail(index);
   }
 }

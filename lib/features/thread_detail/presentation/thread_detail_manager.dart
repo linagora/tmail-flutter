@@ -31,7 +31,6 @@ class ThreadDetailManager extends BaseController {
   AppLifecycleListener? appLifecycleListener;
   bool threadDetailWasEnabled = true;
 
-
   bool get isSearchingOnMobile =>
       mailboxDashBoardController.searchController.isSearchEmailRunning &&
       PlatformInfo.isMobile;
