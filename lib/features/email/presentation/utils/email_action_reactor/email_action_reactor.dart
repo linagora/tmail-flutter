@@ -38,7 +38,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
@@ -56,6 +56,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
@@ -651,17 +652,13 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
       return PopupMenuItem(
         key: Key('${action.name}_action'),
         padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          iconAction: action.getIcon(imagePaths),
-          nameAction: action.getTitle(AppLocalizations.of(context)),
-          colorIcon: AppColor.colorTextButton,
-          padding: const EdgeInsetsDirectional.only(start: 12),
-          styleName: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            color: Colors.black
+        child: PopupMenuItemActionWidget(
+          menuAction: PopupMenuItemEmailAction(
+            action,
+            AppLocalizations.of(context),
+            imagePaths,
           ),
-          onCallbackAction: () {
+          menuActionClick: (_) {
             popBack();
             handleEmailAction(presentationEmail, action);
           }
