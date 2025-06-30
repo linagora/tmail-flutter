@@ -1,4 +1,3 @@
-import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -37,16 +36,5 @@ class StateCacheManager extends CacheManagerInteraction {
   Future<void> clear() => _stateCacheClient.clearAllData();
 
   @override
-  Future<void> migrateHiveToIsolatedHive() async {
-    try {
-      final legacyMapItems = await _stateCacheClient.getMapItems(
-        isolated: false,
-      );
-      log('$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}');
-      await _stateCacheClient.insertMultipleItem(legacyMapItems);
-      log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_stateCacheClient.tableName}" → IsolatedHive DONE');
-    } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_stateCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
-    }
-  }
+  Future<void> migrateHiveToIsolatedHive() async {}
 }

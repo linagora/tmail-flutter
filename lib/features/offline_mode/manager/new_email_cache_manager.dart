@@ -89,16 +89,5 @@ class NewEmailCacheManager extends CacheManagerInteraction {
       _cacheClient.clearAllDataContainKey(key);
 
   @override
-  Future<void> migrateHiveToIsolatedHive() async {
-    try {
-      final legacyMapItems = await _cacheClient.getMapItems(
-        isolated: false,
-      );
-      log('$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}');
-      await _cacheClient.insertMultipleItem(legacyMapItems);
-      log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_cacheClient.tableName}" → IsolatedHive DONE');
-    } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_cacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
-    }
-  }
+  Future<void> migrateHiveToIsolatedHive() async {}
 }
