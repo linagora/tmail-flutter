@@ -199,9 +199,6 @@ class CachingManager {
     await Future.wait([
       _tokenOidcCacheManager.migrateHiveToIsolatedHive(),
       _accountCacheManager.migrateHiveToIsolatedHive(),
-      _stateCacheManager.migrateHiveToIsolatedHive(),
-      _mailboxCacheManager.migrateHiveToIsolatedHive(),
-      _emailCacheManager.migrateHiveToIsolatedHive(),
       _fcmCacheManager.migrateHiveToIsolatedHive(),
       _oidcConfigurationCacheManager.migrateHiveToIsolatedHive(),
       _encryptionKeyCacheManager.migrateHiveToIsolatedHive(),
@@ -213,8 +210,6 @@ class CachingManager {
         ...[
           _sessionCacheManager.migrateHiveToIsolatedHive(),
           _sendingEmailCacheManager.migrateHiveToIsolatedHive(),
-          _newEmailCacheManager.migrateHiveToIsolatedHive(),
-          _openedEmailCacheManager.migrateHiveToIsolatedHive(),
         ]
     ]);
   }

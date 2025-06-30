@@ -1,4 +1,3 @@
-import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -135,16 +134,5 @@ class EmailCacheManager extends CacheManagerInteraction {
   }
 
   @override
-  Future<void> migrateHiveToIsolatedHive() async {
-    try {
-      final legacyMapItems = await _emailCacheClient.getMapItems(
-        isolated: false,
-      );
-      log('$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}');
-      await _emailCacheClient.insertMultipleItem(legacyMapItems);
-      log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_emailCacheClient.tableName}" → IsolatedHive DONE');
-    } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_emailCacheClient.tableName}" → IsolatedHive FAILED, error: $e');
-    }
-  }
+  Future<void> migrateHiveToIsolatedHive() async {}
 }
