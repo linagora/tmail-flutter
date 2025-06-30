@@ -378,6 +378,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                 isDraggableAppActive: controller.mailboxDashBoardController.isAttachmentDraggableAppActive,
                 onMailtoDelegateAction: controller.openMailToLink,
                 presentationEmail: controller.currentEmail,
+                scrollController: scrollController,
+                isInsideThreadDetailView: isInsideThreadDetailView,
               )),
             ],
           )
