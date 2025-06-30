@@ -177,6 +177,10 @@ class HtmlUtils {
           white-space: pre-wrap;
         }
         
+        table {
+          white-space: normal !important;
+        }
+        
         ${styleCSS ?? ''}
       </style>
       </head>
