@@ -19,12 +19,16 @@ class EventBodyContentWidget extends StatelessWidget {
   final String content;
   final bool? isDraggableAppActive;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
+  final ScrollController? scrollController;
+  final bool isInsideThreadDetailView;
 
   const EventBodyContentWidget({
     super.key,
     required this.content,
     this.isDraggableAppActive,
     this.onMailtoDelegateAction,
+    this.scrollController,
+    this.isInsideThreadDetailView = false,
   });
 
   @override
@@ -47,7 +51,11 @@ class EventBodyContentWidget extends StatelessWidget {
         children: [
           if (PlatformInfo.isWeb)
             Container(
-              constraints: const BoxConstraints(maxHeight: EventDescriptionDetailWidgetStyles.maxHeight),
+              constraints: isInsideThreadDetailView
+                  ? null
+                  : const BoxConstraints(
+                      maxHeight: EventDescriptionDetailWidgetStyles.maxHeight,
+                    ),
               padding: const EdgeInsetsDirectional.only(end: EventDescriptionDetailWidgetStyles.webContentPadding),
               child: LayoutBuilder(builder: (context, constraints) {
                 return Stack(
@@ -61,6 +69,7 @@ class EventBodyContentWidget extends StatelessWidget {
                       contentHtml: content,
                       mailtoDelegate: onMailtoDelegateAction,
                       direction: AppUtils.getCurrentDirection(context),
+                      scrollController: scrollController,
                     ),
                     if (isDraggableAppActive == true)
                       PointerInterceptor(
