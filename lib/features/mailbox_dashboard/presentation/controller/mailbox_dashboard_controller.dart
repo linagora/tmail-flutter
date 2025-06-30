@@ -1596,14 +1596,14 @@ class MailboxDashBoardController extends ReloadableController
             count: listEmails?.length,
             mailboxName: mailboxCurrent?.getDisplayName(context),
           ),
-          cancelText: actionType.getConfirmActionName(context),
-          confirmText: AppLocalizations.of(context).cancel,
-          onCancelButtonAction: () => _deleteSelectionEmailsPermanentlyAction(
+          confirmText: actionType.getConfirmActionName(context),
+          cancelText: AppLocalizations.of(context).cancel,
+          onConfirmButtonAction: () => _deleteSelectionEmailsPermanentlyAction(
             actionType,
             listEmails: listEmails,
             onCancelSelectionEmail: onCancelSelectionEmail,
           ),
-          onConfirmButtonAction: popBack,
+          onCancelButtonAction: popBack,
           onCloseButtonAction: popBack,
         )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -2668,9 +2668,9 @@ class MailboxDashBoardController extends ReloadableController
           imagePath: imagePaths,
           title: AppLocalizations.of(context).emptySpamFolder,
           textContent: AppLocalizations.of(context).emptySpamMessageDialog,
-          cancelText: AppLocalizations.of(context).delete_all,
-          confirmText: AppLocalizations.of(context).cancel,
-          onCancelButtonAction: () {
+          confirmText: AppLocalizations.of(context).delete_all,
+          cancelText: AppLocalizations.of(context).cancel,
+          onConfirmButtonAction: () {
             popBack();
             if (spamMailbox.countTotalEmails > 0) {
               emptySpamFolderAction(
@@ -2684,7 +2684,7 @@ class MailboxDashBoardController extends ReloadableController
               );
             }
           },
-          onConfirmButtonAction: popBack,
+          onCancelButtonAction: popBack,
           onCloseButtonAction: popBack,
         )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,

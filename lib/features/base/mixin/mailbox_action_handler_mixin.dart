@@ -83,10 +83,10 @@ mixin MailboxActionHandlerMixin {
             imagePath: imagePaths,
             title: AppLocalizations.of(context).emptyTrash,
             textContent: AppLocalizations.of(context).empty_trash_dialog_message,
-            confirmText: AppLocalizations.of(context).cancel,
-            cancelText: AppLocalizations.of(context).delete,
+            cancelText: AppLocalizations.of(context).cancel,
+            confirmText: AppLocalizations.of(context).delete,
             onCloseButtonAction: popBack,
-            onCancelButtonAction: () {
+            onConfirmButtonAction: () {
               popBack();
               if (mailbox.countTotalEmails > 0) {
                 dashboardController.emptyTrashFolderAction(
@@ -100,7 +100,7 @@ mixin MailboxActionHandlerMixin {
                 );
               }
             },
-            onConfirmButtonAction: popBack,
+            onCancelButtonAction: popBack,
           ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -145,10 +145,10 @@ mixin MailboxActionHandlerMixin {
             imagePath: imagePaths,
             title: AppLocalizations.of(context).emptySpamFolder,
             textContent: AppLocalizations.of(context).emptySpamMessageDialog,
-            confirmText: AppLocalizations.of(context).cancel,
-            cancelText: AppLocalizations.of(context).delete_all,
+            cancelText: AppLocalizations.of(context).cancel,
+            confirmText: AppLocalizations.of(context).delete_all,
             onCloseButtonAction: popBack,
-            onCancelButtonAction: () {
+            onConfirmButtonAction: () {
               popBack();
               if (mailbox.countTotalEmails > 0) {
                 dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id, totalEmails: mailbox.countTotalEmails);
@@ -159,7 +159,7 @@ mixin MailboxActionHandlerMixin {
                 );
               }
             },
-            onConfirmButtonAction: popBack,
+            onCancelButtonAction: popBack,
           ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,

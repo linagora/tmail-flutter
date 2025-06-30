@@ -55,12 +55,12 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
       imagePath: imagePaths,
       title: appLocalizations.delete_identity,
       textContent: appLocalizations.message_confirmation_dialog_delete_identity,
-      cancelText: appLocalizations.delete,
-      confirmText: appLocalizations.cancel,
+      confirmText: appLocalizations.delete,
+      cancelText: appLocalizations.cancel,
       alignment: alignment,
       outsideDialogPadding: outsideDialogPadding,
-      onCancelButtonAction: onDeleteIdentityAction,
-      onConfirmButtonAction: popBack,
+      onConfirmButtonAction: onDeleteIdentityAction,
+      onCancelButtonAction: popBack,
       onCloseButtonAction: popBack,
     );
   }
