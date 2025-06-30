@@ -17,6 +17,8 @@ class CalendarEventDetailWidget extends StatelessWidget {
   final bool? isDraggableAppActive;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
   final PresentationEmail? presentationEmail;
+  final ScrollController? scrollController;
+  final bool isInsideThreadDetailView;
 
   const CalendarEventDetailWidget({
     super.key,
@@ -25,6 +27,8 @@ class CalendarEventDetailWidget extends StatelessWidget {
     this.isDraggableAppActive,
     this.onMailtoDelegateAction,
     this.presentationEmail,
+    this.scrollController,
+    this.isInsideThreadDetailView = false,
   });
 
   @override
@@ -61,7 +65,11 @@ class CalendarEventDetailWidget extends StatelessWidget {
               child: EventBodyContentWidget(
                 content: eventDesc,
                 isDraggableAppActive: isDraggableAppActive,
-                onMailtoDelegateAction: onMailtoDelegateAction)),
+                onMailtoDelegateAction: onMailtoDelegateAction,
+                scrollController: scrollController,
+                isInsideThreadDetailView: isInsideThreadDetailView,
+              )
+            ),
         ],
       ),
     );

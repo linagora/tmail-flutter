@@ -102,7 +102,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         padding: const EdgeInsetsDirectional.only(bottom: 16),
         child: EmailView(
           key: GlobalObjectKey(presentationEmail.id?.id.value ?? ''),
-          isInsideThreadDetailView: true,
+          isInsideThreadDetailView: emailIdsPresentation.length > 1,
           emailId: presentationEmail.id,
           isFirstEmailInThreadDetail: isFirstEmailInThreadDetail,
           threadSubject: isFirstEmailInThreadDetail
