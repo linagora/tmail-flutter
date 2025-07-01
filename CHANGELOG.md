@@ -1,3 +1,13 @@
+## [0.16.4] - 2025-07-01
+### Fixed
+- Changing from Hive to HiveCE for fixing synchronizing issues when multiple isolate access to db
+- Cursor pointer is wrong color
+- #3819 Fix modified signature not saved in Draft
+- Incorrect Support button alignment
+- #3822 Quota view misaligned
+- #3792 Hide button in blue bar if user is not a participant
+- #3177 Fix drag n drop image make double signature
+
 ## [0.16.3] - 2025-06-20
 ### Added
 - Translation
