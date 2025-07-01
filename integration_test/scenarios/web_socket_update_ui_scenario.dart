@@ -40,7 +40,10 @@ class WebSocketUpdateUiScenario extends BaseTestScenario {
     await _expectEmailStarredWithSubject(subject);
   }
 
-  Future<void> _expectEmailVisible(String email) => expectViewVisible($(email));
+  Future<void> _expectEmailVisible(String email) async {
+    await $.scrollUntilVisible(finder: $(email));
+    await expectViewVisible($(email));
+  }
 
   Future<void> _expectEmailUnreadWithSubject(String subject) => expectViewVisible(
     $(EmailTileBuilder)
