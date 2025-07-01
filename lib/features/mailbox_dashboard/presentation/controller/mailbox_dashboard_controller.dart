@@ -183,7 +183,6 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
-import 'package:universal_html/html.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
@@ -277,7 +276,7 @@ class MailboxDashBoardController extends ReloadableController
   bool _isFirstSessionLoad = false;
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
-  StreamSubscription<PopStateEvent>? browserBackStreamSubscription;
+  StreamSubscription<html.PopStateEvent>? browserBackStreamSubscription;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
