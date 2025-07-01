@@ -11,7 +11,7 @@ class LoginRobot extends CoreRobot {
   LoginRobot(super.$);
 
   Future<void> grantNotificationPermission(NativeAutomator nativeAutomator) async {
-    if (await nativeAutomator.isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
+    if (await nativeAutomator.isPermissionDialogVisible(timeout: const Duration(seconds: 1))) {
       await nativeAutomator.grantPermissionWhenInUse();
     }
   }

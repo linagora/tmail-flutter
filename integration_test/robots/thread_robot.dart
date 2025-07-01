@@ -35,7 +35,7 @@ class ThreadRobot extends CoreRobot {
     await $(#mobile_mailbox_menu_button).tap();
   }
 
-  Future<void> tapEmptyTrashBanner() => $(#empty_trash_banner).tap();
+  Future<void> tapEmptyTrashBanner() => $(' ${AppLocalizations().empty_trash_now}').tap();
 
   Future<void> tapDeleteAllButtonOnEmptyTrashConfirmDialog(
     AppLocalizations appLocalizations,
