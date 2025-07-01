@@ -41,6 +41,7 @@ extension OpenAppGridExtension on MailboxController {
               color: Colors.white,
             ),
             child: GridView(
+              key: const ValueKey('list_view_app_grid'),
               gridDelegate: const SliverGridDelegateFixedHeight(
                 height: 80.58,
                 crossAxisCount: 3,

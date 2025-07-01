@@ -45,6 +45,7 @@ class MailboxAppBar extends StatelessWidget {
             ),
           if (openAppGridAction != null)
             AppGridIcon(
+              key: const ValueKey('toggle_app_grid_button'),
               icon: imagePaths.icAppDashboard,
               onTapAction: openAppGridAction!,
             ),
