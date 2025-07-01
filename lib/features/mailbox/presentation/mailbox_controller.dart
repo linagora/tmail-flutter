@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
+import 'package:cozy/cozy_config_manager/cozy_config_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -763,7 +764,12 @@ class MailboxController extends BaseMailboxController
     _clearNavigationRouter();
   }
 
-  void _openMailboxFromLocationBar(PresentationMailbox presentationMailbox) {
+  Future<void> _openMailboxFromLocationBar(PresentationMailbox presentationMailbox) async {
+    final isInsideCozy = await CozyConfigManager().isInsideCozy;
+    if (currentContext?.mounted == true && isInsideCozy) {
+      _handleOpenMailbox(currentContext!, presentationMailbox);
+      return;
+    }
     mailboxDashBoardController.setSelectedMailbox(presentationMailbox);
     if (PlatformInfo.isWeb) {
       RouteUtils.replaceBrowserHistory(
@@ -1180,6 +1186,9 @@ class MailboxController extends BaseMailboxController
       final navigationRouter = RouteUtils.parsingRouteParametersToNavigationRouter(parameters);
       log('MailboxController::_handleNavigationRouteParameters():navigationRouter: $navigationRouter');
       _navigationRouter = navigationRouter;
+      if (parameters[Constant.browserBackTriggerKeyword] == 'true') {
+        _handleDataFromNavigationRouter();
+      }
     }
   }
 

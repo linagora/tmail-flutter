@@ -16,4 +16,5 @@ class Constant {
   static const htmlExtension = '.html';
   static const slashCharacter = '/';
   static const andCharacter = '&';
+  static const browserBackTriggerKeyword = 'browser_back';
 }
