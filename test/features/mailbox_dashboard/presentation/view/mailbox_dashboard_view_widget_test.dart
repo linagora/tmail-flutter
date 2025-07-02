@@ -36,6 +36,9 @@ import 'package:tmail_ui_user/features/login/data/network/interceptors/authoriza
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_default_mailbox_interactor.dart';
@@ -188,6 +191,9 @@ const fallbackGenerators = {
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
   MockSpec<ClearMailboxInteractor>(),
+  MockSpec<GetAuthenticationInfoInteractor>(),
+  MockSpec<GetStoredOidcConfigurationInteractor>(),
+  MockSpec<GetTokenOIDCInteractor>(),
 ])
 void main() {
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
@@ -262,6 +268,9 @@ void main() {
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
   final clearMailboxInteractor = MockClearMailboxInteractor();
   final composerManager = MockComposerManager();
+  final getAuthenticationInfoInteractor = MockGetAuthenticationInfoInteractor();
+  final getStoredOidcConfigurationInteractor = MockGetStoredOidcConfigurationInteractor();
+  final getTokenOIDCInteractor = MockGetTokenOIDCInteractor();
 
   final getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
   final refreshChangesEmailsInMailboxInteractor = MockRefreshChangesEmailsInMailboxInteractor();
@@ -327,6 +336,9 @@ void main() {
       Get.put<RemoveAllComposerCacheOnWebInteractor>(removeAllComposerCacheOnWebInteractor);
       Get.put<RemoveComposerCacheByIdOnWebInteractor>(removeComposerCacheByIdOnWebInteractor);
       Get.put<ComposerManager>(composerManager);
+      Get.put<GetAuthenticationInfoInteractor>(getAuthenticationInfoInteractor);
+      Get.put<GetStoredOidcConfigurationInteractor>(getStoredOidcConfigurationInteractor);
+      Get.put<GetTokenOIDCInteractor>(getTokenOIDCInteractor);
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
 

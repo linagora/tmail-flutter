@@ -37,6 +37,9 @@ import 'package:tmail_ui_user/features/login/data/network/interceptors/authoriza
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
@@ -161,6 +164,9 @@ const fallbackGenerators = {
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
   MockSpec<ClearMailboxInteractor>(),
+  MockSpec<GetAuthenticationInfoInteractor>(),
+  MockSpec<GetStoredOidcConfigurationInteractor>(),
+  MockSpec<GetTokenOIDCInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -220,6 +226,9 @@ void main() {
   late MockRemoveComposerCacheByIdOnWebInteractor removeComposerCacheByIdOnWebInteractor;
   late MockGetAllIdentitiesInteractor getAllIdentitiesInteractor;
   late MockClearMailboxInteractor clearMailboxInteractor;
+  late MockGetAuthenticationInfoInteractor getAuthenticationInfoInteractor;
+  late MockGetStoredOidcConfigurationInteractor getStoredOidcConfigurationInteractor;
+  late MockGetTokenOIDCInteractor getTokenOIDCInteractor;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -315,6 +324,9 @@ void main() {
     removeComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdOnWebInteractor();
     getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
     clearMailboxInteractor = MockClearMailboxInteractor();
+    getAuthenticationInfoInteractor = MockGetAuthenticationInfoInteractor();
+    getStoredOidcConfigurationInteractor = MockGetStoredOidcConfigurationInteractor();
+    getTokenOIDCInteractor = MockGetTokenOIDCInteractor();
 
     searchController = SearchController(
       mockQuickSearchEmailInteractor,
@@ -333,6 +345,9 @@ void main() {
     Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
     Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
     Get.put<ComposerManager>(composerManager);
+    Get.put<GetAuthenticationInfoInteractor>(getAuthenticationInfoInteractor);
+    Get.put<GetStoredOidcConfigurationInteractor>(getStoredOidcConfigurationInteractor);
+    Get.put<GetTokenOIDCInteractor>(getTokenOIDCInteractor);
 
     mailboxDashboardController = MailboxDashBoardController(
       moveToMailboxInteractor,
