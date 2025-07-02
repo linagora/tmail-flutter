@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
@@ -1516,23 +1515,43 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void openEmailAddressDialog(BuildContext context, EmailAddress emailAddress) {
     if (responsiveUtils.isScreenWithShortestSide(context)) {
-      (EmailAddressBottomSheetBuilder(context, imagePaths, emailAddress)
-        ..addOnCloseContextMenuAction(() => popBack())
-        ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))
-        ..addOnComposeEmailAction((emailAddress) => composeEmailFromEmailAddress(emailAddress))
-        ..addOnQuickCreatingRuleEmailBottomSheetAction((emailAddress) => quickCreatingRule(context, emailAddress))
-      ).show();
+      Get.bottomSheet(
+        PointerInterceptor(
+          child: EmailAddressBottomSheetBuilder(
+            imagePaths: imagePaths,
+            emailAddress: emailAddress,
+            onCloseDialogAction: popBack,
+            onCopyEmailAddressAction: (emailAddress) =>
+                copyEmailAddress(context, emailAddress),
+            onComposeEmailAction: composeEmailFromEmailAddress,
+            onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
+                quickCreatingRule(context, emailAddress),
+          ),
+        ),
+        useRootNavigator: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadiusDirectional.only(
+            topStart: Radius.circular(16.0),
+            topEnd: Radius.circular(16.0),
+          ),
+        ),
+        isScrollControlled: true,
+        enableDrag: false,
+        backgroundColor: Colors.transparent,
+      );
     } else {
       Get.dialog(
         PointerInterceptor(
           child: EmailAddressDialogBuilder(
             imagePaths: imagePaths,
             emailAddress: emailAddress,
-            onCloseDialogAction: () => popBack(),
-            onCopyEmailAddressAction: (emailAddress) => copyEmailAddress(context, emailAddress),
-            onComposeEmailAction: (emailAddress) => composeEmailFromEmailAddress(emailAddress),
-            onQuickCreatingRuleEmailDialogAction: (emailAddress) => quickCreatingRule(context, emailAddress)
-          )
+            onCloseDialogAction: popBack,
+            onCopyEmailAddressAction: (emailAddress) =>
+                copyEmailAddress(context, emailAddress),
+            onComposeEmailAction: composeEmailFromEmailAddress,
+            onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
+                quickCreatingRule(context, emailAddress),
+          ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
