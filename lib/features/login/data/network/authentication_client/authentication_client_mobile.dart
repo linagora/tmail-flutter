@@ -96,11 +96,6 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
   }
 
   @override
-  Future<String> getAuthenticationInfo() {
-    return Future.value('');
-  }
-
-  @override
   Future<TokenOIDC> signInTwakeWorkplace(OIDCConfiguration oidcConfiguration) async {
     final uri = await FlutterWebAuth2.authenticate(
       url: oidcConfiguration.signInTWPUrl,

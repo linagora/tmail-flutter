@@ -9,11 +9,16 @@ class GetTokenOIDCSuccess extends UIState {
 
   final TokenOIDC tokenOIDC;
   final OIDCConfiguration configuration;
+  final Uri baseUri;
 
-  GetTokenOIDCSuccess(this.tokenOIDC, this.configuration);
+  GetTokenOIDCSuccess(
+    this.tokenOIDC,
+    this.configuration,
+    this.baseUri,
+  );
 
   @override
-  List<Object> get props => [tokenOIDC, configuration];
+  List<Object> get props => [tokenOIDC, configuration, baseUri];
 }
 
 class GetTokenOIDCFailure extends FeatureFailure {

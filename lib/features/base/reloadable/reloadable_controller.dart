@@ -158,4 +158,24 @@ abstract class ReloadableController extends BaseController {
       failure is GetStoredTokenOidcFailure ||
       failure is GetAuthenticatedAccountFailure;
   }
+
+  void synchronizeTokenAndGetSession({
+    required Uri baseUri,
+    required TokenOIDC tokenOIDC,
+    required OIDCConfiguration oidcConfiguration,
+  }) {
+    final baseUrl = baseUri.toString();
+    dynamicUrlInterceptors.setJmapUrl(baseUrl);
+    dynamicUrlInterceptors.changeBaseUrl(baseUrl);
+    authorizationInterceptors.setTokenAndAuthorityOidc(
+      newToken: tokenOIDC,
+      newConfig: oidcConfiguration,
+    );
+    authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
+      newToken: tokenOIDC,
+      newConfig: oidcConfiguration,
+    );
+
+    getSessionAction();
+  }
 }

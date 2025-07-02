@@ -53,7 +53,7 @@ abstract class HiveCacheClient<T> {
     T newObject, {
     bool isolated = true,
   }) {
-    log('$runtimeType::insertItem:encryption: $encryption - key = $key - isolated');
+    log('$runtimeType::insertItem:encryption: $encryption - key = $key - isolated = $isolated');
     return Future.sync(() async {
       if (isolated) {
         final boxItem = await openIsolatedBox();
