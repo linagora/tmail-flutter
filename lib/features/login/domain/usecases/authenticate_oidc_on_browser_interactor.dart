@@ -14,7 +14,7 @@ class AuthenticateOidcOnBrowserInteractor {
 
   AuthenticateOidcOnBrowserInteractor(this.authenticationOIDCRepository);
 
-  Stream<Either<Failure, Success>> execute(Uri baseUrl, OIDCConfiguration config) async* {
+  Stream<Either<Failure, Success>> execute(OIDCConfiguration config) async* {
     try {
       yield Right<Failure, Success>(AuthenticateOidcOnBrowserLoading());
       await authenticationOIDCRepository.authenticateOidcOnBrowser(

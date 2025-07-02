@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_finger_interactor.dart';
@@ -73,6 +74,7 @@ import 'login_controller_test.mocks.dart';
   MockSpec<DNSLookupToGetJmapUrlInteractor>(),
   MockSpec<SignInTwakeWorkplaceInteractor>(),
   MockSpec<TryGuessingWebFingerInteractor>(),
+  MockSpec<RemoveAuthDestinationUrlInteractor>(),
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
   MockSpec<UpdateAccountCacheInteractor>(),
@@ -97,6 +99,7 @@ void main() {
   late MockDNSLookupToGetJmapUrlInteractor mockDNSLookupToGetJmapUrlInteractor;
   late MockSignInTwakeWorkplaceInteractor mockSignInTwakeWorkplaceInteractor;
   late MockTryGuessingWebFingerInteractor mockTryGuessingWebFingerInteractor;
+  late MockRemoveAuthDestinationUrlInteractor mockRemoveAuthDestinationUrlInteractor;
   late MockGetSessionInteractor mockGetSessionInteractor;
   late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
   late MockUpdateAccountCacheInteractor mockUpdateAccountCacheInteractor;
@@ -132,6 +135,7 @@ void main() {
     mockDNSLookupToGetJmapUrlInteractor = MockDNSLookupToGetJmapUrlInteractor();
     mockSignInTwakeWorkplaceInteractor = MockSignInTwakeWorkplaceInteractor();
     mockTryGuessingWebFingerInteractor = MockTryGuessingWebFingerInteractor();
+    mockRemoveAuthDestinationUrlInteractor = MockRemoveAuthDestinationUrlInteractor();
 
     // mock reloadable controller
     mockGetSessionInteractor = MockGetSessionInteractor();
@@ -196,6 +200,7 @@ void main() {
       mockDNSLookupToGetJmapUrlInteractor,
       mockSignInTwakeWorkplaceInteractor,
       mockTryGuessingWebFingerInteractor,
+      mockRemoveAuthDestinationUrlInteractor,
     );
   });
 

@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_finger_interactor.dart';
@@ -54,6 +55,7 @@ class LoginBindings extends BaseBindings {
       Get.find<DNSLookupToGetJmapUrlInteractor>(),
       Get.find<SignInTwakeWorkplaceInteractor>(),
       Get.find<TryGuessingWebFingerInteractor>(),
+      Get.find<RemoveAuthDestinationUrlInteractor>(),
     ));
   }
 
@@ -83,26 +85,6 @@ class LoginBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => CheckOIDCIsAvailableInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-    ));
-    Get.lazyPut(() => GetOIDCConfigurationInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-    ));
-    Get.lazyPut(() => GetTokenOIDCInteractor(
-        Get.find<CredentialRepository>(),
-        Get.find<AuthenticationOIDCRepository>(),
-        Get.find<AccountRepository>()
-    ));
-    Get.lazyPut(() => AuthenticateOidcOnBrowserInteractor(
-      Get.find<AuthenticationOIDCRepository>(),
-    ));
-    Get.lazyPut(() => GetAuthenticationInfoInteractor(
-      Get.find<AuthenticationOIDCRepository>(),
-    ));
-    Get.lazyPut(() => GetStoredOidcConfigurationInteractor(
-      Get.find<AuthenticationOIDCRepository>(),
-    ));
     Get.lazyPut(() => SaveLoginUrlOnMobileInteractor(Get.find<LoginRepository>(),));
     Get.lazyPut(() => GetAllRecentLoginUrlOnMobileInteractor(Get.find<LoginRepository>()));
     Get.lazyPut(() => SaveLoginUsernameOnMobileInteractor(Get.find<LoginRepository>(),));
