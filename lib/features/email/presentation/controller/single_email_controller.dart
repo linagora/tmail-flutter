@@ -13,6 +13,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -1525,7 +1526,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       Get.dialog(
         PointerInterceptor(
           child: EmailAddressDialogBuilder(
-            emailAddress,
+            imagePaths: imagePaths,
+            emailAddress: emailAddress,
             onCloseDialogAction: () => popBack(),
             onCopyEmailAddressAction: (emailAddress) => copyEmailAddress(context, emailAddress),
             onComposeEmailAction: (emailAddress) => composeEmailFromEmailAddress(emailAddress),
@@ -1538,8 +1540,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void copyEmailAddress(BuildContext context, EmailAddress emailAddress) {
-    popBack();
-    AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+    Clipboard.setData(ClipboardData(text: emailAddress.emailAddress));
+    appToast.showToastSuccessMessage(
+      context,
+      AppLocalizations.of(context).email_address_copied_to_clipboard,
+    );
   }
 
   void composeEmailFromEmailAddress(EmailAddress emailAddress) {

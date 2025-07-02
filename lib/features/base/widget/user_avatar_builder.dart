@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class UserAvatarBuilder extends StatelessWidget {
   final String username;
   final double? size;
+  final TextStyle? textStyle;
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onTapAction;
 
@@ -12,6 +13,7 @@ class UserAvatarBuilder extends StatelessWidget {
     Key? key,
     required this.username,
     this.size,
+    this.textStyle,
     this.padding,
     this.onTapAction,
   }) : super(key: key);
@@ -19,9 +21,9 @@ class UserAvatarBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final avatarBuilder = AvatarBuilder()
-      ..text(username.firstLetterToUpperCase)
+      ..text(username)
       ..size(size ?? 32)
-      ..addTextStyle(Theme.of(context).textTheme.titleMedium?.copyWith(
+      ..addTextStyle(textStyle ?? Theme.of(context).textTheme.titleMedium?.copyWith(
             color: Colors.white,
           ))
       ..avatarColor(username.gradientColors);

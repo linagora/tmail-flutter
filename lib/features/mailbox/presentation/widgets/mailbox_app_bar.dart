@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
@@ -48,7 +49,7 @@ class MailboxAppBar extends StatelessWidget {
               onTapAction: openAppGridAction!,
             ),
           UserAvatarBuilder(
-            username: username,
+            username: username.firstLetterToUpperCase,
             padding: const EdgeInsetsDirectional.only(start: 4),
             onTapAction: openSettingsAction,
           ),
