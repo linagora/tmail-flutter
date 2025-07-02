@@ -94,7 +94,9 @@
           }
           _flutter.loader.load({
             onEntrypointLoaded: async function(engineInitializer) {
-              const appRunner = await engineInitializer.initializeEngine();
+              const appRunner = await engineInitializer.initializeEngine({
+                fontFallbackBaseUrl: ''
+              });
               await setTimeout( async function () {
                 await appRunner.runApp();
               }, 2000);
@@ -104,7 +106,9 @@
     } else {
       _flutter.loader.load({
         onEntrypointLoaded: async function(engineInitializer) {
-          const appRunner = await engineInitializer.initializeEngine();
+          const appRunner = await engineInitializer.initializeEngine({
+            fontFallbackBaseUrl: ''
+          });
           await setTimeout( async function () {
             await appRunner.runApp();
           }, 2000);
