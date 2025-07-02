@@ -40,6 +40,7 @@ mixin MessageDialogActionMixin {
         PopInvokedWithResultCallback? onPopInvoked,
         bool isArrangeActionButtonsVertical = false,
         bool useIconAsBasicLogo = false,
+        bool isScrollContentEnabled = false,
         EdgeInsetsGeometry? dialogMargin,
       }
   ) async {
@@ -54,6 +55,7 @@ mixin MessageDialogActionMixin {
           listTextSpan: listTextSpan,
           isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
           useIconAsBasicLogo: useIconAsBasicLogo,
+          isScrollContentEnabled: isScrollContentEnabled,
           title: title ?? '',
           textContent: message,
           confirmText: actionName,
@@ -106,6 +108,7 @@ mixin MessageDialogActionMixin {
             confirmText: actionName,
             cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
             useIconAsBasicLogo: useIconAsBasicLogo,
+            isScrollContentEnabled: isScrollContentEnabled,
             onConfirmButtonAction: () {
               if (autoPerformPopBack) {
                 popBack();
@@ -161,6 +164,7 @@ mixin MessageDialogActionMixin {
             listTextSpan: listTextSpan,
             isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
             useIconAsBasicLogo: useIconAsBasicLogo,
+            isScrollContentEnabled: isScrollContentEnabled,
             title: title ?? '',
             textContent: message,
             iconWidget: icon,
