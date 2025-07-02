@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <script>
-        const AUTH_RESPONSE_KEY = "auth_info";
-        const CODE_VERIFIER_KEY = "auth_code_verifier";
-        window.onload = function () {
+  <script>
+    const AUTH_RESPONSE_KEY = "auth_info";
+    const CODE_VERIFIER_KEY = "auth_code_verifier";
+    window.onload = function () {
+        try {
             localStorage.removeItem(AUTH_RESPONSE_KEY);
             localStorage.removeItem(CODE_VERIFIER_KEY);
             const params = new URLSearchParams(window.location.search)
@@ -15,8 +16,13 @@
             } else {
                 window.location.assign("/");
             }
+        } catch (error) {
+          console.error("[Logout Auth Redirect] Redirection failed:", error);
+          window.location.assign("/");
         }
-    </script>
+    }
+  </script>
+  <title>Twake Mail</title>
 </head>
 
 <body>

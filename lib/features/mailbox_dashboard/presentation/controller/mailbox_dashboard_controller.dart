@@ -78,6 +78,12 @@ import 'package:tmail_ui_user/features/home/domain/usecases/store_session_intera
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -113,6 +119,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -195,6 +202,11 @@ class MailboxDashBoardController extends ReloadableController
   final SpamReportController spamReportController = Get.find<SpamReportController>();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
   final ComposerManager composerManager = Get.find<ComposerManager>();
+  final getAuthenticationInfoInteractor =
+      Get.find<GetAuthenticationInfoInteractor>();
+  final getStoredOidcConfigurationInteractor =
+      Get.find<GetStoredOidcConfigurationInteractor>();
+  final getTokenOIDCInteractor = Get.find<GetTokenOIDCInteractor>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -368,7 +380,6 @@ class MailboxDashBoardController extends ReloadableController
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is SendEmailLoading) {
       if (currentOverlayContext != null && currentContext != null) {
         appToast.showToastMessage(
@@ -457,12 +468,23 @@ class MailboxDashBoardController extends ReloadableController
       clearMailboxSuccess(success);
     } else if (success is CreateNewRuleFilterSuccess) {
       handleCreateNewRuleFilterSuccess(success);
+    } else if (success is GetAuthenticationInfoSuccess) {
+      getStoredOidcConfiguration();
+    } else if (success is GetStoredOidcConfigurationSuccess) {
+      getTokenOIDCAction(success.oidcConfiguration);
+    } else if (success is GetTokenOIDCSuccess) {
+      synchronizeTokenAndGetSession(
+        baseUri: success.baseUri,
+        tokenOIDC: success.tokenOIDC,
+        oidcConfiguration: success.configuration,
+      );
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
     if (failure is SendEmailFailure) {
       _handleSendEmailFailure(failure);
     } else if (failure is SaveEmailAsDraftsFailure) {
@@ -497,6 +519,12 @@ class MailboxDashBoardController extends ReloadableController
       clearMailboxFailure(failure);
     } else if (failure is CreateNewRuleFilterFailure) {
       handleCreateNewRuleFilterFailure(failure);
+    } else if (failure is GetAuthenticationInfoFailure) {
+      tryGetAuthenticatedAccountToUseApp();
+    } else if (isGetTokenOIDCFailure(failure)) {
+      backToHomeScreen();
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
@@ -709,6 +737,9 @@ class MailboxDashBoardController extends ReloadableController
       _handleSessionFromArguments(arguments);
     } else if (arguments is MailtoArguments) {
       _handleMailtoURL(arguments);
+    } else if (PlatformInfo.isWeb) {
+      dispatchRoute(DashboardRoutes.thread);
+      getAuthenticationInfoRedirect();
     } else {
       dispatchRoute(DashboardRoutes.thread);
       reload();
