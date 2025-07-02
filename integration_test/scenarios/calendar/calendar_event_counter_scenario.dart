@@ -88,7 +88,7 @@ class CalendarEventCounterScenario extends BaseTestScenario {
     final proposedEventChangesText = $(CalendarEventActionBannerWidget)
       .$(appLocalizations.anAttendee
         + appLocalizations.messageEventActionBannerAttendeeCounter);
-    await proposedEventChangesText.scrollTo();
+    await proposedEventChangesText.scrollTo(scrollDirection: AxisDirection.down);
     await expectViewVisible(proposedEventChangesText);
   }
 }
