@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
+import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/account_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
@@ -21,12 +22,19 @@ import 'package:tmail_ui_user/features/login/domain/repository/account_repositor
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
@@ -62,6 +70,29 @@ class CredentialBindings extends InteractorsBindings {
       Get.find<AccountRepository>()
     ));
     Get.put(UpdateAccountCacheInteractor(Get.find<AccountRepository>()));
+    Get.put(CheckOIDCIsAvailableInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
+    Get.put(GetOIDCConfigurationInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
+    Get.put(GetTokenOIDCInteractor(
+      Get.find<CredentialRepository>(),
+      Get.find<AuthenticationOIDCRepository>(),
+      Get.find<AccountRepository>(),
+    ));
+    Get.put(AuthenticateOidcOnBrowserInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
+    Get.put(GetAuthenticationInfoInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
+    Get.put(GetStoredOidcConfigurationInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
+    Get.put(RemoveAuthDestinationUrlInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
   }
 
   @override
@@ -77,6 +108,7 @@ class CredentialBindings extends InteractorsBindings {
       Get.find<AuthenticationClientBase>(),
       Get.find<TokenOidcCacheManager>(),
       Get.find<OidcConfigurationCacheManager>(),
+      Get.find<SessionStorageManager>(),
       Get.find<RemoteExceptionThrower>(),
       Get.find<CacheExceptionThrower>(),
     ));

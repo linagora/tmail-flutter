@@ -38,4 +38,6 @@ abstract class AuthenticationOIDCDataSource {
       List<String> scopes);
 
   Future<String> getAuthenticationInfo();
+
+  Future<void> removeAuthDestinationUrl();
 }

@@ -19,9 +19,13 @@ import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interact
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -46,6 +50,10 @@ import 'home_controller_test.mocks.dart';
   MockSpec<CleanupEmailCacheInteractor>(),
   MockSpec<CleanupRecentLoginUrlCacheInteractor>(),
   MockSpec<CleanupRecentLoginUsernameCacheInteractor>(),
+  MockSpec<CheckOIDCIsAvailableInteractor>(),
+  MockSpec<GetOIDCConfigurationInteractor>(),
+  MockSpec<AuthenticateOidcOnBrowserInteractor>(),
+  MockSpec<RemoveAuthDestinationUrlInteractor>(),
   MockSpec<EmailReceiveManager>(),
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
@@ -64,6 +72,10 @@ void main() {
   late MockEmailReceiveManager emailReceiveManager;
   late MockCleanupRecentLoginUrlCacheInteractor cleanupRecentLoginUrlCacheInteractor;
   late MockCleanupRecentLoginUsernameCacheInteractor cleanupRecentLoginUsernameCacheInteractor;
+  late MockCheckOIDCIsAvailableInteractor checkOIDCIsAvailableInteractor;
+  late MockGetOIDCConfigurationInteractor getOIDCConfigurationInteractor;
+  late MockAuthenticateOidcOnBrowserInteractor authenticateOidcOnBrowserInteractor;
+  late MockRemoveAuthDestinationUrlInteractor removeAuthDestinationUrlInteractor;
 
   late MockGetSessionInteractor mockGetSessionInteractor;
   late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
@@ -89,7 +101,10 @@ void main() {
     emailReceiveManager = MockEmailReceiveManager();
     cleanupRecentLoginUrlCacheInteractor = MockCleanupRecentLoginUrlCacheInteractor();
     cleanupRecentLoginUsernameCacheInteractor = MockCleanupRecentLoginUsernameCacheInteractor();
-
+    checkOIDCIsAvailableInteractor = MockCheckOIDCIsAvailableInteractor();
+    getOIDCConfigurationInteractor = MockGetOIDCConfigurationInteractor();
+    authenticateOidcOnBrowserInteractor = MockAuthenticateOidcOnBrowserInteractor();
+    removeAuthDestinationUrlInteractor = MockRemoveAuthDestinationUrlInteractor();
     // mock reloadable controller
     mockGetSessionInteractor = MockGetSessionInteractor();
     mockGetAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
@@ -139,7 +154,11 @@ void main() {
       cleanupEmailCacheInteractor,
       emailReceiveManager,
       cleanupRecentLoginUrlCacheInteractor,
-      cleanupRecentLoginUsernameCacheInteractor
+      cleanupRecentLoginUsernameCacheInteractor,
+      checkOIDCIsAvailableInteractor,
+      getOIDCConfigurationInteractor,
+      authenticateOidcOnBrowserInteractor,
+      removeAuthDestinationUrlInteractor,
     );
   });
 

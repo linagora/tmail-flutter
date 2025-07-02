@@ -1,9 +1,17 @@
-import 'package:model/model.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/request/oidc_request.dart';
+import 'package:model/oidc/response/oidc_discovery_response.dart';
+import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/token_id.dart';
+import 'package:model/oidc/token_oidc.dart';
+import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_oidc_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
+import 'package:tmail_ui_user/features/login/domain/model/login_constants.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
@@ -12,6 +20,7 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   final AuthenticationClientBase _authenticationClient;
   final TokenOidcCacheManager _tokenOidcCacheManager;
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
+  final SessionStorageManager _sessionStorageManager;
   final ExceptionThrower _exceptionThrower;
   final ExceptionThrower _cacheExceptionThrower;
 
@@ -20,6 +29,7 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
     this._authenticationClient,
     this._tokenOidcCacheManager,
     this._oidcConfigurationCacheManager,
+    this._sessionStorageManager,
     this._exceptionThrower,
     this._cacheExceptionThrower
   );
@@ -109,7 +119,7 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   Future<void> deleteOidcConfiguration() {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.deleteOidcConfiguration();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError(_cacheExceptionThrower.throwException);
   }
 
   @override
@@ -131,14 +141,25 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   @override
   Future<String> getAuthenticationInfo() {
     return Future.sync(() async {
-      return await _authenticationClient.getAuthenticationInfo();
-    }).catchError(_exceptionThrower.throwException);
+      return await _sessionStorageManager.get(
+        OIDCConstant.authResponseKey,
+      );
+    }).catchError(_cacheExceptionThrower.throwException);
   }
 
   @override
   Future<void> deleteTokenOIDC() {
     return Future.sync(() async {
       return await _tokenOidcCacheManager.deleteTokenOidc();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError(_cacheExceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> removeAuthDestinationUrl() {
+    return Future.sync(() async {
+      return await _sessionStorageManager.remove(
+        LoginConstants.AUTH_DESTINATION_KEY,
+      );
+    }).catchError(_cacheExceptionThrower.throwException);
   }
 }

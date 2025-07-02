@@ -93,4 +93,9 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   Future<void> deleteTokenOIDC() {
     return _oidcDataSource.deleteTokenOIDC();
   }
+
+  @override
+  Future<void> removeAuthDestinationUrl() {
+    return _oidcDataSource.removeAuthDestinationUrl();
+  }
 }

@@ -17,17 +17,14 @@ import 'package:model/account/password.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
-import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
-import 'package:tmail_ui_user/features/login/domain/model/login_constants.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
-import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/authentication_user_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/dns_lookup_to_get_jmap_url_state.dart';
@@ -49,6 +46,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_finger_interactor.dart';
@@ -67,7 +65,6 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
-import 'package:universal_html/html.dart' as html;
 
 class LoginController extends ReloadableController {
 
@@ -85,6 +82,7 @@ class LoginController extends ReloadableController {
   final DNSLookupToGetJmapUrlInteractor _dnsLookupToGetJmapUrlInteractor;
   final SignInTwakeWorkplaceInteractor _signInTwakeWorkplaceInteractor;
   final TryGuessingWebFingerInteractor _tryGuessingWebFingerInteractor;
+  final RemoveAuthDestinationUrlInteractor _removeAuthDestinationUrlInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
@@ -117,6 +115,7 @@ class LoginController extends ReloadableController {
     this._dnsLookupToGetJmapUrlInteractor,
     this._signInTwakeWorkplaceInteractor,
     this._tryGuessingWebFingerInteractor,
+    this._removeAuthDestinationUrlInteractor,
   );
 
   @override
@@ -131,25 +130,24 @@ class LoginController extends ReloadableController {
   void onReady() {
     super.onReady();
     final arguments = Get.arguments;
+    log('LoginController::onReady: arguments = $arguments');
     if (arguments is LoginArguments) {
-      if (arguments.loginFormType == LoginFormType.passwordForm) {
-        loginFormType.value = LoginFormType.dnsLookupForm;
-      } else {
-        loginFormType.value = arguments.loginFormType;
-      }
+      loginFormType.value =
+          arguments.loginFormType == LoginFormType.passwordForm
+              ? LoginFormType.dnsLookupForm
+              : arguments.loginFormType;
+
       if (PlatformInfo.isWeb) {
         _checkOIDCIsAvailable();
       }
-    } else {
-      if (PlatformInfo.isWeb) {
-        _getAuthenticationInfo();
-      }
+    } else if (PlatformInfo.isWeb) {
+      _getAuthenticationInfo();
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
-    log('LoginController::handleFailureViewState(): $failure');
+    log('$runtimeType::handleFailureViewState():Failure = $failure');
     if (failure is GetAuthenticationInfoFailure) {
       getAuthenticatedAccountAction();
     } else if (failure is CheckOIDCIsAvailableFailure) {
@@ -182,6 +180,7 @@ class LoginController extends ReloadableController {
 
   @override
   void handleSuccessViewState(Success success) {
+    log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
     if (success is GetAuthenticationInfoSuccess) {
       _getStoredOidcConfiguration();
     } else if (success is GetStoredOidcConfigurationSuccess) {
@@ -200,7 +199,7 @@ class LoginController extends ReloadableController {
       onBaseUrlChange(success.oidcResponse.subject);
       getOIDCConfiguration(success.oidcResponse);
     } else if (success is SignInTwakeWorkplaceSuccess) {
-      _synchronizeTokenAndGetSession(
+      synchronizeTokenAndGetSession(
         baseUri: success.baseUri,
         tokenOIDC: success.tokenOIDC,
         oidcConfiguration: success.oidcConfiguration,
@@ -289,7 +288,7 @@ class LoginController extends ReloadableController {
   }
 
   void _handleAutoSignInViaDeepLinkSuccess(AutoSignInViaDeepLinkSuccess success) {
-    _synchronizeTokenAndGetSession(
+    synchronizeTokenAndGetSession(
       baseUri: success.baseUri,
       tokenOIDC: success.tokenOIDC,
       oidcConfiguration: success.oidcConfiguration,
@@ -438,23 +437,6 @@ class LoginController extends ReloadableController {
     }
   }
 
-  void _synchronizeTokenAndGetSession({
-    required Uri baseUri,
-    required TokenOIDC tokenOIDC,
-    required OIDCConfiguration oidcConfiguration,
-  }) {
-    dynamicUrlInterceptors.setJmapUrl(baseUri.toString());
-    dynamicUrlInterceptors.changeBaseUrl(baseUri.toString());
-    authorizationInterceptors.setTokenAndAuthorityOidc(
-      newToken: tokenOIDC,
-      newConfig: oidcConfiguration);
-    authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
-      newToken: tokenOIDC,
-      newConfig: oidcConfiguration);
-
-    getSessionAction();
-  }
-
   void _getTokenOIDCAction(OIDCConfiguration config) {
     if (_currentBaseUrl != null) {
       consumeState(_getTokenOIDCInteractor.execute(_currentBaseUrl!, config));
@@ -463,25 +445,18 @@ class LoginController extends ReloadableController {
     }
   }
 
-  void _authenticateOidcOnBrowserAction(OIDCConfiguration config) async {
-    _removeAuthDestinationUrlInSessionStorage();
+  void _authenticateOidcOnBrowserAction(OIDCConfiguration config) {
+    _removeAuthDestinationUrl();
 
-    if (_currentBaseUrl != null) {
-      consumeState(_authenticateOidcOnBrowserInteractor.execute(_currentBaseUrl!, config));
-    } else {
-      dispatchState(Left(AuthenticateOidcOnBrowserFailure(CanNotFoundBaseUrl())));
-    }
+    consumeState(_authenticateOidcOnBrowserInteractor.execute(config));
   }
 
-  void _removeAuthDestinationUrlInSessionStorage() {
-    final authDestinationUrlExist = html.window.sessionStorage.containsKey(LoginConstants.AUTH_DESTINATION_KEY);
-    if (authDestinationUrlExist) {
-      html.window.sessionStorage.remove(LoginConstants.AUTH_DESTINATION_KEY);
-    }
+  void _removeAuthDestinationUrl() {
+    consumeState(_removeAuthDestinationUrlInteractor.execute());
   }
 
   void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
-    _synchronizeTokenAndGetSession(
+    synchronizeTokenAndGetSession(
       baseUri: _currentBaseUrl!,
       tokenOIDC: success.tokenOIDC,
       oidcConfiguration: success.configuration,

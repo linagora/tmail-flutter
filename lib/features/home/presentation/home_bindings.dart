@@ -5,8 +5,10 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_lo
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/presentation/cleanup_bindings.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 
 class HomeBindings extends BaseBindings {
@@ -18,6 +20,10 @@ class HomeBindings extends BaseBindings {
       Get.find<EmailReceiveManager>(),
       Get.find<CleanupRecentLoginUrlCacheInteractor>(),
       Get.find<CleanupRecentLoginUsernameCacheInteractor>(),
+      Get.find<CheckOIDCIsAvailableInteractor>(),
+      Get.find<GetOIDCConfigurationInteractor>(),
+      Get.find<AuthenticateOidcOnBrowserInteractor>(),
+      Get.find<RemoveAuthDestinationUrlInteractor>(),
     ));
   }
 
@@ -30,7 +36,6 @@ class HomeBindings extends BaseBindings {
   @override
   void bindingsInteractor() {
     CleanupBindings().dependencies();
-    Get.lazyPut(() => CheckOIDCIsAvailableInteractor(Get.find<AuthenticationOIDCRepository>()));
   }
 
   @override

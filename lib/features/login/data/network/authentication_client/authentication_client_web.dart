@@ -9,11 +9,9 @@ import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_response_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
-import 'package:universal_html/html.dart' as html;
 
 class AuthenticationClientWeb implements AuthenticationClientBase {
 
@@ -94,17 +92,6 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
             redirectUrl,
             discoveryUrl: discoveryUrl,
             scopes: scopes));
-  }
-
-  @override
-  Future<String> getAuthenticationInfo() async {
-    final authUrl = html.window.sessionStorage[OIDCConstant.authResponseKey];
-    log('AuthenticationClientWeb::getAuthenticationInfo(): authUrl: $authUrl');
-    if (authUrl != null && authUrl.isNotEmpty) {
-      return authUrl;
-    } else {
-      throw CanNotAuthenticationInfoOnWeb();
-    }
   }
 
   @override
