@@ -58,7 +58,7 @@ dependencies:
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
-      ref: main
+      ref: bugfix/format-style-text-not-work
 
   html_editor_enhanced:
     git:

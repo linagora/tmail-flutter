@@ -499,11 +499,11 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: master
-      resolved-ref: "0a2684235bccbb701b55559b75502984dd9091d3"
+      ref: "bugfix/fix-format-style-incorrect"
+      resolved-ref: "945ead73fabc49d4a7189778262340bc74dcd105"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
-    version: "0.1.5"
+    version: "0.1.6"
   enough_platform_widgets:
     dependency: transitive
     description:
@@ -1879,11 +1879,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "4a4ee913fbdec0f98cc1755f31df54fb402d0957"
+      ref: "bugfix/format-style-text-not-work"
+      resolved-ref: "4b2f15b667826e9967873b69c9d27c5ee4387cc2"
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
-    version: "0.1.0"
+    version: "0.1.1"
   rule_filter:
     dependency: "direct main"
     description:
