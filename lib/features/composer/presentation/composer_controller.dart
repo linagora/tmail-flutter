@@ -1938,6 +1938,7 @@ class ComposerController extends BaseController
       outsideDismissible: false,
       autoPerformPopBack: false,
       isArrangeActionButtonsVertical: true,
+      isScrollContentEnabled: responsiveUtils.isLandscapeMobile(context),
       usePopScope: true,
       onConfirmAction: () => _handleSaveMessageToDraft(context),
       onCancelAction: () {
