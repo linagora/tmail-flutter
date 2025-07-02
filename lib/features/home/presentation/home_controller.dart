@@ -20,9 +20,16 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_lo
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
+import 'package:tmail_ui_user/features/home/presentation/extensions/handle_web_finger_to_get_token_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_type.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
@@ -39,6 +46,10 @@ class HomeController extends ReloadableController {
   final EmailReceiveManager _emailReceiveManager;
   final CleanupRecentLoginUrlCacheInteractor _cleanupRecentLoginUrlCacheInteractor;
   final CleanupRecentLoginUsernameCacheInteractor _cleanupRecentLoginUsernameCacheInteractor;
+  final CheckOIDCIsAvailableInteractor checkOIDCIsAvailableInteractor;
+  final GetOIDCConfigurationInteractor getOIDCConfigurationInteractor;
+  final AuthenticateOidcOnBrowserInteractor authenticateOidcOnBrowserInteractor;
+  final RemoveAuthDestinationUrlInteractor removeAuthDestinationUrlInteractor;
 
   IOSNotificationManager? _iosNotificationManager;
   DeepLinksManager? _deepLinksManager;
@@ -48,6 +59,10 @@ class HomeController extends ReloadableController {
     this._emailReceiveManager,
     this._cleanupRecentLoginUrlCacheInteractor,
     this._cleanupRecentLoginUsernameCacheInteractor,
+    this.checkOIDCIsAvailableInteractor,
+    this.getOIDCConfigurationInteractor,
+    this.authenticateOidcOnBrowserInteractor,
+    this.removeAuthDestinationUrlInteractor,
   );
 
   @override
@@ -95,7 +110,7 @@ class HomeController extends ReloadableController {
     if (arguments is LoginNavigateArguments) {
       _handleLoginNavigateArguments(arguments);
     } else {
-     _cleanupCache();
+      await _cleanupCache();
     }
   }
 
@@ -283,6 +298,12 @@ class HomeController extends ReloadableController {
         },
         onFailureCallback: goToLogin,
       );
+    } else if (isNotSignInOnWeb(failure)) {
+      checkOIDCIsAvailable();
+    } else if (failure is CheckOIDCIsAvailableFailure) {
+      handleCheckOIDCIsAvailableFailure();
+    } else if (isGetTokenOIDCFailure(failure)) {
+      goToLogin();
     } else {
       super.handleFailureViewState(failure);
     }
@@ -313,8 +334,30 @@ class HomeController extends ReloadableController {
         },
         onFailureCallback: () => _continueUsingTheApp(success),
       );
+    } else if (success is CheckOIDCIsAvailableSuccess) {
+      getOIDCConfiguration(success.oidcResponse);
+    } else if (success is GetOIDCConfigurationSuccess) {
+      handleOIDCConfigurationSuccess(success.oidcConfiguration);
     } else {
       super.handleSuccessViewState(success);
+    }
+  }
+
+  @override
+  void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
+    if (failure is CheckOIDCIsAvailableFailure) {
+      handleCheckOIDCIsAvailableFailure();
+    } else if (isGetTokenOIDCFailure(failure)) {
+      goToLogin();
+    } else {
+      super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
+    }
+  }
+
+  @override
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    if (PlatformInfo.isWeb) {
+      goToLogin();
     }
   }
 }

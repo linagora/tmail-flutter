@@ -9,6 +9,13 @@ class OIDCRequest with EquatableMixin {
 
   OIDCRequest({required this.baseUrl, required this.resourceUrl});
 
+  factory OIDCRequest.fromUri(Uri uri) {
+    return OIDCRequest(
+      baseUrl: uri.toString(),
+      resourceUrl: uri.origin,
+    );
+  }
+
   @override
   List<Object?> get props => [baseUrl, resourceUrl, relUrl];
 }
