@@ -1,6 +1,6 @@
-
-import 'package:core/presentation/constants/constants_ui.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
@@ -34,20 +34,22 @@ class SettingOptionItem extends StatelessWidget {
       children: [
         Text(
           optionType.getTitle(appLocalizations),
-          style: const TextStyle(
-            fontFamily: ConstantsUI.fontApp,
-            fontSize: 15,
-            height: 20 / 15,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+          style: ThemeUtils.textStyleInter600().copyWith(
+            fontSize: 14,
+            height: 20 / 14,
+            letterSpacing: 0.25,
+            color: AppColor.gray424244,
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             optionType.getExplanation(appLocalizations),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.black,
+            style: ThemeUtils.textStyleInter400.copyWith(
+              fontSize: 14,
+              height: 21.01 / 14,
+              letterSpacing: -0.15,
+              color: AppColor.gray424244.withOpacity(0.64),
             ),
           ),
         ),
@@ -71,7 +73,7 @@ class SettingOptionItem extends StatelessWidget {
             Expanded(
               child: Text(
                 optionType.getToggleDescription(appLocalizations),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: ThemeUtils.textStyleBodyBody2().copyWith(
                   color: Colors.black,
                 ),
               ),

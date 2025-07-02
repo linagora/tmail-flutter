@@ -3,9 +3,11 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/setting_option_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/widgets/setting_option_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 
 class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMixin {
   const PreferencesView({super.key});
@@ -41,30 +43,39 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                 controller.responsiveUtils,
               ),
               width: double.infinity,
-              padding: SettingsUtils.getPreferencesSettingPadding(
-                context,
-                controller.responsiveUtils,
-              ),
-              child: Obx(() {
-                final settingOption = controller.settingOption.value;
+              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 22),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (controller.responsiveUtils.isWebDesktop(context))
+                    const SettingHeaderWidget(
+                      menuItem: AccountMenuItem.preferences,
+                      padding: EdgeInsets.only(bottom: 21),
+                    ),
+                  Obx(() {
+                    final settingOption = controller.settingOption.value;
 
-                if (settingOption == null) return const SizedBox.shrink();
+                    if (settingOption == null) return const SizedBox.shrink();
 
-                final settingOptionList = SettingOptionType.values.toList();
+                    final settingOptionList = SettingOptionType.values.toList();
 
-                return ListView.separated(
-                  itemCount: settingOptionList.length,
-                  itemBuilder: (context, index) {
-                    return SettingOptionItem(
-                      imagePaths: controller.imagePaths,
-                      settingOption: settingOption,
-                      optionType: settingOptionList[index],
-                      onTapSettingOptionAction: controller.updateStateSettingOption,
+                    return Expanded(
+                      child: ListView.separated(
+                        itemCount: settingOptionList.length,
+                        itemBuilder: (context, index) {
+                          return SettingOptionItem(
+                            imagePaths: controller.imagePaths,
+                            settingOption: settingOption,
+                            optionType: settingOptionList[index],
+                            onTapSettingOptionAction: controller.updateStateSettingOption,
+                          );
+                        },
+                        separatorBuilder: (_, __) => const SizedBox(height: 60),
+                      ),
                     );
-                  },
-                  separatorBuilder: (_, __) => const SizedBox(height: 60),
-                );
-              }),
+                  }),
+                ],
+              ),
             ),
           ),
         ),
