@@ -17,22 +17,34 @@ class SettingHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
-    return Padding(
-      padding: padding ?? const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            menuItem.getName(appLocalizations),
-            style: ThemeUtils.textStyleHeadingH6(color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          Text(
+
+    final children = [
+      Text(
+        menuItem.getName(appLocalizations),
+        style: ThemeUtils.textStyleInter600().copyWith(
+          color: Colors.black,
+        ),
+      ),
+      if (menuItem.getExplanation(appLocalizations).isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Text(
             menuItem.getExplanation(appLocalizations),
             style: ThemeUtils.textStyleBodyBody1(color: AppColor.steelGray400),
           ),
-        ],
-      ),
+        ),
+    ];
+
+    final child = children.length == 1
+        ? children.first
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          );
+
+    return Padding(
+      padding: padding ?? const EdgeInsets.all(16),
+      child: child,
     );
   }
 }
