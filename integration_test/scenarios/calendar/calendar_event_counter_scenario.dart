@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
@@ -52,7 +53,7 @@ class CalendarEventCounterScenario extends BaseTestScenario {
   ) async {
     final yesButton = $(CalendarEventActionButtonWidget)
       .$(appLocalizations.yes);
-    await yesButton.scrollTo();
+    await yesButton.scrollTo(scrollDirection: AxisDirection.down);
     await expectViewVisible(yesButton);
   }
 
@@ -87,7 +88,7 @@ class CalendarEventCounterScenario extends BaseTestScenario {
     final proposedEventChangesText = $(CalendarEventActionBannerWidget)
       .$(appLocalizations.anAttendee
         + appLocalizations.messageEventActionBannerAttendeeCounter);
-    await proposedEventChangesText.scrollTo();
+    await proposedEventChangesText.scrollTo(scrollDirection: AxisDirection.down);
     await expectViewVisible(proposedEventChangesText);
   }
 }

@@ -8,7 +8,7 @@ curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/tru
 
 # Install patrol CLI
 echo "Installing patrol CLI..."
-dart pub global activate patrol_cli
+dart pub global activate patrol_cli 3.6.0
 flutter build apk --config-only
 
 # Forward traffic to tmail-backend
@@ -59,7 +59,7 @@ gcloud firebase test android run \
     --type instrumentation \
     --app build/app/outputs/apk/debug/app-debug.apk \
     --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-    --device 'model=oriole,version=33,locale=en,orientation=portrait' \
+    --device 'model=MediumPhone.arm,version=33,locale=en,orientation=portrait' \
     --timeout 10m \
     --use-orchestrator \
     --environment-variables clearPackageData=true

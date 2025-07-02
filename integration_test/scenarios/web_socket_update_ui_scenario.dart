@@ -21,7 +21,7 @@ class WebSocketUpdateUiScenario extends BaseTestScenario {
       refreshEmailView: false,
     );
     await $.pumpAndSettle();
-    await _expectEmailVisible(email);
+    await _expectEmailVisible(subject);
     await _expectEmailUnreadWithSubject(subject);
     await _expectEmailUnstarredWithSubject(subject);
 
@@ -40,7 +40,9 @@ class WebSocketUpdateUiScenario extends BaseTestScenario {
     await _expectEmailStarredWithSubject(subject);
   }
 
-  Future<void> _expectEmailVisible(String email) => expectViewVisible($(email));
+  Future<void> _expectEmailVisible(String subject) async {
+    await expectViewVisible($(subject));
+  }
 
   Future<void> _expectEmailUnreadWithSubject(String subject) => expectViewVisible(
     $(EmailTileBuilder)

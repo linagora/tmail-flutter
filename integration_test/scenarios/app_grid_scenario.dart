@@ -2,8 +2,8 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_list_dashboard_item.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid/app_grid_icon.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid/app_shortcut.dart';
 
 import '../base/base_test_scenario.dart';
 import '../robots/app_grid_robot.dart';
@@ -34,7 +34,8 @@ class AppGridScenario extends BaseTestScenario {
     await Future.delayed(const Duration(seconds: 2));
 
     if (PlatformInfo.isAndroid) {
-      await $.native.pressBack();
+      await $.native.pressHome();
+      await $.native.openApp();
 
       await appGridRobot.openAppInAppGridByAppName('Twake Sync');
       await Future.delayed(const Duration(seconds: 2));
@@ -45,6 +46,7 @@ class AppGridScenario extends BaseTestScenario {
       await Future.delayed(const Duration(seconds: 2));
 
       await $.native.pressBack();
+      await $.native.pressBack();
 
       await _expectMailboxViewVisible();
     } else if (PlatformInfo.isIOS) {
@@ -54,18 +56,18 @@ class AppGridScenario extends BaseTestScenario {
 
   Future<void> _expectMailboxViewVisible() => expectViewVisible($(MailboxView));
 
-  Future<void> _expectAppGridViewVisible() => expectViewVisible($(AppGridView));
+  Future<void> _expectAppGridViewVisible() => expectViewVisible($(AppGridIcon));
 
   Future<void> _expectListViewAppGridVisible() => expectViewVisible($(#list_view_app_grid));
 
   Future<void> _expectAllAppInAppGridDisplayedIsFull() async {
     int totalApp = PlatformInfo.isIOS ? 2 : 3;
-    expect(find.byType(AppListDashboardItem), findsNWidgets(totalApp));
+    expect(find.byType(AppShortcut), findsNWidgets(totalApp));
 
     final listAppItem = $.tester
-        .widgetList<AppListDashboardItem>(find.byType(AppListDashboardItem));
+        .widgetList<AppShortcut>(find.byType(AppShortcut));
 
-    final listAppNames = listAppItem.map((item) => item.app.appName).toList();
+    final listAppNames = listAppItem.map((item) => item.label).toList();
 
     if (PlatformInfo.isIOS) {
       expect(listAppNames, equals(['Twake Drive', 'Twake Chat']));
