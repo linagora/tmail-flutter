@@ -42,7 +42,7 @@ class SettingOptionItem extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(
             optionType.getExplanation(appLocalizations),
             style: ThemeUtils.textStyleInter400.copyWith(
