@@ -5,6 +5,7 @@ class ConfirmDialogButton extends StatelessWidget {
   final String label;
   final Color? backgroundColor;
   final Color? textColor;
+  final Color? borderColor;
   final VoidCallback? onTapAction;
 
   const ConfirmDialogButton({
@@ -12,18 +13,26 @@ class ConfirmDialogButton extends StatelessWidget {
     required this.label,
     this.backgroundColor,
     this.textColor,
+    this.borderColor,
     this.onTapAction,
   });
 
   @override
   Widget build(BuildContext context) {
+    final outlineBorder = borderColor != null
+        ? RoundedRectangleBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(100)),
+            side: BorderSide(width: 1, color: borderColor!),
+          )
+        : const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(100)),
+          );
+
     return TextButton(
       style: TextButton.styleFrom(
         backgroundColor: backgroundColor,
         overlayColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(100)),
-        ),
+        shape: outlineBorder,
         padding: const EdgeInsets.symmetric(horizontal: 10),
       ),
       onPressed: onTapAction,

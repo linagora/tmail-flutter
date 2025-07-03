@@ -32,6 +32,7 @@ class ConfirmationDialogBuilder extends StatelessWidget {
   final List<TextSpan>? listTextSpan;
   final bool isArrangeActionButtonsVertical;
   final bool useIconAsBasicLogo;
+  final bool isScrollContentEnabled;
   final OnConfirmButtonAction? onConfirmButtonAction;
   final OnCancelButtonAction? onCancelButtonAction;
   final OnCloseButtonAction? onCloseButtonAction;
@@ -59,6 +60,7 @@ class ConfirmationDialogBuilder extends StatelessWidget {
     this.listTextSpan,
     this.isArrangeActionButtonsVertical = false,
     this.useIconAsBasicLogo = false,
+    this.isScrollContentEnabled = false,
     this.onConfirmButtonAction,
     this.onCancelButtonAction,
     this.onCloseButtonAction,
@@ -84,6 +86,7 @@ class ConfirmationDialogBuilder extends StatelessWidget {
             listTextSpan: listTextSpan,
             isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
             useIconAsBasicLogo: useIconAsBasicLogo,
+            isScrollContentEnabled: isScrollContentEnabled,
             onConfirmButtonAction: onConfirmButtonAction,
             onCancelButtonAction: onCancelButtonAction,
             onCloseButtonAction: onCloseButtonAction,
@@ -112,6 +115,7 @@ class ConfirmationDialogBuilder extends StatelessWidget {
               listTextSpan: listTextSpan,
               isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
               useIconAsBasicLogo: useIconAsBasicLogo,
+              isScrollContentEnabled: isScrollContentEnabled,
               onConfirmButtonAction: onConfirmButtonAction,
               onCancelButtonAction: onCancelButtonAction,
               onCloseButtonAction: onCloseButtonAction,
@@ -137,6 +141,7 @@ class _BodyContent extends StatelessWidget {
   final List<TextSpan>? listTextSpan;
   final bool isArrangeActionButtonsVertical;
   final bool useIconAsBasicLogo;
+  final bool isScrollContentEnabled;
   final OnConfirmButtonAction? onConfirmButtonAction;
   final OnCancelButtonAction? onCancelButtonAction;
   final OnCloseButtonAction? onCloseButtonAction;
@@ -147,6 +152,10 @@ class _BodyContent extends StatelessWidget {
     required this.textContent,
     required this.confirmText,
     required this.cancelText,
+    required this.maxWidth,
+    required this.isArrangeActionButtonsVertical,
+    required this.useIconAsBasicLogo,
+    this.isScrollContentEnabled = false,
     this.iconWidget,
     this.additionalWidgetContent,
     this.cancelBackgroundButtonColor,
@@ -154,10 +163,7 @@ class _BodyContent extends StatelessWidget {
     this.cancelLabelButtonColor,
     this.confirmLabelButtonColor,
     this.margin,
-    required this.maxWidth,
     this.listTextSpan,
-    required this.isArrangeActionButtonsVertical,
-    required this.useIconAsBasicLogo,
     this.onConfirmButtonAction,
     this.onCancelButtonAction,
     this.onCloseButtonAction,
@@ -165,7 +171,7 @@ class _BodyContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final child = Container(
       width: 421,
       constraints: BoxConstraints(maxWidth: maxWidth),
       decoration: const BoxDecoration(
@@ -197,6 +203,12 @@ class _BodyContent extends StatelessWidget {
         ],
       ),
     );
+
+    if (isScrollContentEnabled) {
+      return SingleChildScrollView(child: child);
+    } else {
+      return child;
+    }
   }
 
   bool _showCloseButton() => onCloseButtonAction != null;

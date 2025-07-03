@@ -262,6 +262,7 @@ extension AppColor on Color {
   static const textSecondary = Color(0xFF1C1B1F);
   static const profileMenuDivider = Color(0xFF1D192B);
   static const popupMenuItemHovered = Color(0xFFF8F8F8);
+  static const secondaryContrastText = Color(0xFFFFFFFF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

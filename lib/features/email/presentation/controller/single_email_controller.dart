@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
@@ -13,6 +12,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -1515,22 +1515,43 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void openEmailAddressDialog(BuildContext context, EmailAddress emailAddress) {
     if (responsiveUtils.isScreenWithShortestSide(context)) {
-      (EmailAddressBottomSheetBuilder(context, imagePaths, emailAddress)
-        ..addOnCloseContextMenuAction(() => popBack())
-        ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))
-        ..addOnComposeEmailAction((emailAddress) => composeEmailFromEmailAddress(emailAddress))
-        ..addOnQuickCreatingRuleEmailBottomSheetAction((emailAddress) => quickCreatingRule(context, emailAddress))
-      ).show();
+      Get.bottomSheet(
+        PointerInterceptor(
+          child: EmailAddressBottomSheetBuilder(
+            imagePaths: imagePaths,
+            emailAddress: emailAddress,
+            onCloseDialogAction: popBack,
+            onCopyEmailAddressAction: (emailAddress) =>
+                copyEmailAddress(context, emailAddress),
+            onComposeEmailAction: composeEmailFromEmailAddress,
+            onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
+                quickCreatingRule(context, emailAddress),
+          ),
+        ),
+        useRootNavigator: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadiusDirectional.only(
+            topStart: Radius.circular(16.0),
+            topEnd: Radius.circular(16.0),
+          ),
+        ),
+        isScrollControlled: true,
+        enableDrag: false,
+        backgroundColor: Colors.transparent,
+      );
     } else {
       Get.dialog(
         PointerInterceptor(
           child: EmailAddressDialogBuilder(
-            emailAddress,
-            onCloseDialogAction: () => popBack(),
-            onCopyEmailAddressAction: (emailAddress) => copyEmailAddress(context, emailAddress),
-            onComposeEmailAction: (emailAddress) => composeEmailFromEmailAddress(emailAddress),
-            onQuickCreatingRuleEmailDialogAction: (emailAddress) => quickCreatingRule(context, emailAddress)
-          )
+            imagePaths: imagePaths,
+            emailAddress: emailAddress,
+            onCloseDialogAction: popBack,
+            onCopyEmailAddressAction: (emailAddress) =>
+                copyEmailAddress(context, emailAddress),
+            onComposeEmailAction: composeEmailFromEmailAddress,
+            onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
+                quickCreatingRule(context, emailAddress),
+          ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
@@ -1538,8 +1559,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void copyEmailAddress(BuildContext context, EmailAddress emailAddress) {
-    popBack();
-    AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+    Clipboard.setData(ClipboardData(text: emailAddress.emailAddress));
+    appToast.showToastSuccessMessage(
+      context,
+      AppLocalizations.of(context).email_address_copied_to_clipboard,
+    );
   }
 
   void composeEmailFromEmailAddress(EmailAddress emailAddress) {
