@@ -71,7 +71,7 @@ class _TMailAppState extends State<TMailApp> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeUtils.appTheme,
+      theme: ThemeUtils.buildAppTheme(context),
       supportedLocales: LocalizationService.supportedLocales,
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
