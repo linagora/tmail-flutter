@@ -64,7 +64,7 @@ class SettingsUtils {
   ) {
     if (responsiveUtils.isWebDesktop(context)) {
       return BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         color: backgroundColor,
       );
     } else {

@@ -21,7 +21,6 @@ class LanguageAndRegionController extends BaseController {
 
   final listSupportedLanguages = <Locale>[].obs;
   final languageSelected = LocalizationService.defaultLocale.obs;
-  final isLanguageMenuOverlayOpen = RxBool(false);
 
   final manageAccountDashBoardController = Get.find<ManageAccountDashBoardController>();
 
@@ -57,7 +56,6 @@ class LanguageAndRegionController extends BaseController {
   }
 
   void selectLanguage(Locale? selectedLocale) {
-    isLanguageMenuOverlayOpen.value = false;
     languageSelected.value = selectedLocale ?? LocalizationService.defaultLocale;
     _saveLanguage(languageSelected.value);
   }
@@ -76,9 +74,5 @@ class LanguageAndRegionController extends BaseController {
       accountId,
       localeCurrent,
     ));
-  }
-
-  void toggleLanguageMenuOverlay() {
-    isLanguageMenuOverlayOpen.toggle();
   }
 }
