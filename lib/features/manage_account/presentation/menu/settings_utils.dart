@@ -124,11 +124,28 @@ class SettingsUtils {
     }
   }
 
-  static EdgeInsets getMarginSettingDetailsView(BuildContext context, ResponsiveUtils responsiveUtils) {
+  static EdgeInsetsGeometry getSettingProgressBarPadding(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+  ) {
     if (responsiveUtils.isWebDesktop(context)) {
-      return const EdgeInsets.all(16);
+      return const EdgeInsetsDirectional.only(end: 16, top: 16);
+    } else if (responsiveUtils.isTablet(context) ||
+        responsiveUtils.isTabletLarge(context)) {
+      return const EdgeInsetsDirectional.only(start: 32, end: 32, top: 16);
     } else {
-      return EdgeInsets.zero;
+      return const EdgeInsetsDirectional.only(start: 16, end: 16, top: 16);
+    }
+  }
+
+  static EdgeInsetsGeometry? getMarginSettingDetailsView(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+  ) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return const EdgeInsetsDirectional.only(end: 16, top: 16, bottom: 16);
+    } else {
+      return null;
     }
   }
 
