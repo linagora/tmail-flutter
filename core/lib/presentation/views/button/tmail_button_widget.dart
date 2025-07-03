@@ -44,6 +44,7 @@ class TMailButtonWidget extends StatelessWidget {
   final Color? hoverColor;
   final TextOverflow? textOverflow;
   final Alignment? alignment;
+  final bool isTextExpanded;
 
   const TMailButtonWidget({
     super.key,
@@ -81,6 +82,7 @@ class TMailButtonWidget extends StatelessWidget {
     this.hoverColor,
     this.textOverflow,
     this.alignment,
+    this.isTextExpanded = false,
   });
 
   factory TMailButtonWidget.fromIcon({
@@ -163,6 +165,7 @@ class TMailButtonWidget extends StatelessWidget {
     Color? hoverColor,
     TextOverflow? textOverflow,
     Alignment? alignment,
+    bool isTextExpanded = false,
   }) {
     return TMailButtonWidget(
       key: key,
@@ -189,48 +192,63 @@ class TMailButtonWidget extends StatelessWidget {
       hoverColor: hoverColor,
       textOverflow: textOverflow,
       alignment: alignment,
+      isTextExpanded: isTextExpanded,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     Widget childWidget;
+    Widget? textWidget;
+    Widget? iconWidget;
+    Widget? trailingIconWidget;
 
+    if (text.isNotEmpty) {
+      textWidget = Text(
+        text,
+        textAlign: textAlign,
+        style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
+          fontSize: 12,
+          color: AppColor.colorTextButtonHeaderThread,
+        ),
+        maxLines: maxLines,
+        overflow: textOverflow ??
+            (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
+        softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
+      );
+    }
+
+    if (icon != null) {
+      iconWidget = SvgPicture.asset(
+        icon!,
+        width: iconSize,
+        height: iconSize,
+        fit: BoxFit.fill,
+        colorFilter: iconColor?.asFilter(),
+      );
+    }
+
+    if (trailingIcon != null) {
+      trailingIconWidget = Padding(
+        padding: EdgeInsetsDirectional.only(top: iconSpace),
+        child: SvgPicture.asset(
+          trailingIcon!,
+          width: trailingIconSize,
+          height: trailingIconSize,
+          fit: BoxFit.fill,
+          colorFilter: trailingIconColor?.asFilter(),
+        ),
+      );
+    }
     if (icon != null && text.isNotEmpty) {
       if (verticalDirection) {
         childWidget = Column(
           mainAxisSize: mainAxisSize,
           children: [
-            SvgPicture.asset(
-              icon!,
-              width: iconSize,
-              height: iconSize,
-              fit: BoxFit.fill,
-              colorFilter: iconColor?.asFilter()
-            ),
+            iconWidget!,
             SizedBox(height: iconSpace),
-            Text(
-              text,
-              textAlign: textAlign,
-              style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
-                fontSize: 12,
-                color: AppColor.colorTextButtonHeaderThread
-              ),
-              maxLines: maxLines,
-              overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
-              softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
-            ),
-            if (trailingIcon != null)
-              Padding(
-                padding: EdgeInsetsDirectional.only(top: iconSpace),
-                child: SvgPicture.asset(
-                  trailingIcon!,
-                  width: trailingIconSize,
-                  height: trailingIconSize,
-                  fit: BoxFit.fill,
-                  colorFilter: trailingIconColor?.asFilter()
-                ),
-              ),
+            textWidget!,
+            if (trailingIcon != null) trailingIconWidget!,
           ]
         );
       } else {
@@ -239,51 +257,15 @@ class TMailButtonWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: mainAxisSize,
             children: [
-              SvgPicture.asset(
-                icon!,
-                width: iconSize,
-                height: iconSize,
-                fit: BoxFit.fill,
-                colorFilter: iconColor?.asFilter()
-              ),
+              iconWidget!,
               SizedBox(width: iconSpace),
               if (flexibleText)
-                Flexible(
-                  child: Text(
-                    text,
-                    textAlign: textAlign,
-                    style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
-                      fontSize: 12,
-                      color: AppColor.colorTextButtonHeaderThread
-                    ),
-                    maxLines: maxLines,
-                    overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
-                    softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
-                  ),
-                )
+                Flexible(child: textWidget!)
+              else if (isTextExpanded)
+                Expanded(child: textWidget!)
               else
-                Text(
-                  text,
-                  textAlign: textAlign,
-                  style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    fontSize: 12,
-                    color: AppColor.colorTextButtonHeaderThread
-                  ),
-                  maxLines: maxLines,
-                  overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
-                  softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
-                ),
-              if (trailingIcon != null)
-                Padding(
-                  padding: EdgeInsetsDirectional.only(start: iconSpace),
-                  child: SvgPicture.asset(
-                    trailingIcon!,
-                    width: trailingIconSize,
-                    height: trailingIconSize,
-                    fit: BoxFit.fill,
-                    colorFilter: trailingIconColor?.asFilter()
-                  ),
-                ),
+                textWidget!,
+              if (trailingIcon != null) trailingIconWidget!,
             ]
           );
         } else {
@@ -292,40 +274,14 @@ class TMailButtonWidget extends StatelessWidget {
             mainAxisSize: mainAxisSize,
             children: [
               if (flexibleText)
-                Flexible(
-                  child: Text(
-                    text,
-                    textAlign: textAlign,
-                    style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
-                      fontSize: 12,
-                      color: AppColor.colorTextButtonHeaderThread
-                    ),
-                    maxLines: maxLines,
-                    overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
-                    softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
-                  ),
-                )
+                Flexible(child: textWidget!)
+              else if (isTextExpanded)
+                Expanded(child: textWidget!)
               else
-                Text(
-                  text,
-                  textAlign: textAlign,
-                  style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    fontSize: 12,
-                    color: AppColor.colorTextButtonHeaderThread
-                  ),
-                  maxLines: maxLines,
-                  overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
-                  softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
-                ),
+                textWidget!,
               SizedBox(width: iconSpace),
               if (!isLoading)
-                SvgPicture.asset(
-                  icon!,
-                  width: iconSize,
-                  height: iconSize,
-                  fit: BoxFit.fill,
-                  colorFilter: iconColor?.asFilter()
-                )
+                iconWidget!
               else 
                 SizedBox(
                   width: iconSize,
@@ -340,25 +296,9 @@ class TMailButtonWidget extends StatelessWidget {
         }
       }
     } else if (icon != null) {
-      childWidget = SvgPicture.asset(
-        icon!,
-        width: iconSize,
-        height: iconSize,
-        fit: BoxFit.fill,
-        colorFilter: iconColor?.asFilter()
-      );
+      childWidget = iconWidget!;
     } else {
-      childWidget = Text(
-        text,
-        textAlign: textAlign,
-        style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
-          fontSize: 12,
-          color: AppColor.colorTextButtonHeaderThread
-        ),
-        maxLines: maxLines,
-        overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
-        softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
-      );
+      childWidget = textWidget!;
     }
 
     return TMailContainerWidget(
