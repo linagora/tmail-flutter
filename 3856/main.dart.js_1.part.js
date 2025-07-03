@@ -335,7 +335,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).toString;
       t1 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data;
-      t2 = A.ElevatedButton_styleFrom(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, C.Color_4294967295, _null, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_UKi0), _null, _null, _null, _null);
+      t2 = A.ElevatedButton_styleFrom(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, C.Color_4294967295, _null, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), D.BorderSide_UKi0), _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6nc4, _null, _null, _null, _null, _null), _null, _null, C.IconAlignment_0, D.ValueKey_loginSubmitForm, _null, _null, _null, new B.BaseLoginView_buildLoginButton_closure(_this, context), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, G.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t1.size._dx);
     },
@@ -850,6 +850,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   (function constants() {
     var makeConstList = hunkHelpers.makeConstList;
     D.AutofillContextAction_0 = new B.AutofillContextAction(0, "commit");
+    D.BorderSide_UKi0 = new A.BorderSide(C.Color_4278221567, 0, C.BorderStyle_1, -1);
     D.BoxConstraints_oA88 = new A.BoxConstraints(200, 720, 720, 1 / 0);
     D.EdgeInsetsDirectional_25_15_25_15 = new A.EdgeInsetsDirectional(25, 15, 25, 15);
     D.EdgeInsetsDirectional_25_15_40_15 = new A.EdgeInsetsDirectional(25, 15, 40, 15);
@@ -895,5 +896,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "X66Aqboz0v1Mj5Jq7+0JBlNxsGE=");
+})($__dart_deferred_initializers__, "G3drlRo9VN9aMUNKbYdjQotP22E=");
 ;

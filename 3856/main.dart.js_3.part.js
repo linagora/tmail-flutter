@@ -378,7 +378,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(e) {
       return this.completer.completeError$1(e);
     },
-    $signature: 78
+    $signature: 77
   };
   A.NetworkImage__loadAsync_closure1.prototype = {
     call$2(bytes, total) {
@@ -456,5 +456,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "WA6Ttv4UZShjXFsevMKMMvB/bHQ=");
+})($__dart_deferred_initializers__, "w0mueV5cvuPb8R1bj0G1XAKW70I=");
 ;
