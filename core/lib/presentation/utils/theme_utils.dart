@@ -6,12 +6,13 @@ import 'package:flutter/services.dart';
 class ThemeUtils {
   ThemeUtils._();
 
-  static ThemeData get appTheme {
+  static ThemeData buildAppTheme(BuildContext context) {
     return ThemeData(
       scaffoldBackgroundColor: Colors.white,
       fontFamily: ConstantsUI.fontApp,
       appBarTheme: _appBarTheme,
       textTheme: _textTheme,
+      hoverColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
       textSelectionTheme: _textSelectionTheme,
       dividerTheme: _dividerTheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,
