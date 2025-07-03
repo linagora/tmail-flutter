@@ -21,9 +21,10 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
             return const SizedBox.shrink();
           }
           return Padding(
-            padding: controller.responsiveUtils.isTablet(context)
-              ? const EdgeInsetsDirectional.only(start: 32, end: 32, top: 16)
-              : const EdgeInsetsDirectional.only(start: 16, end: 16, top: 16),
+            padding: SettingsUtils.getSettingProgressBarPadding(
+              context,
+              controller.responsiveUtils,
+            ),
             child: horizontalLoadingWidget,
           );
         }),
@@ -43,7 +44,9 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                 controller.responsiveUtils,
               ),
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 22),
+              padding: controller.responsiveUtils.isDesktop(context)
+                ? const EdgeInsets.symmetric(vertical: 30, horizontal: 22)
+                : null,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -70,7 +73,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                             onTapSettingOptionAction: controller.updateStateSettingOption,
                           );
                         },
-                        separatorBuilder: (_, __) => const SizedBox(height: 60),
+                        separatorBuilder: (_, __) => const SizedBox(height: 49),
                       ),
                     );
                   }),
