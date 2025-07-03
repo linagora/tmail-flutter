@@ -2,131 +2,130 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
-import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/widget/tmail_drop_down_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/extensions/locale_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/widgets/language_menu_overlay.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class ChangeLanguageButtonWidget extends StatelessWidget {
+class ChangeLanguageButtonWidget extends StatefulWidget {
 
-  final _controller = Get.find<LanguageAndRegionController>();
+  const ChangeLanguageButtonWidget({Key? key}) : super(key: key);
+
+  @override
+  State<ChangeLanguageButtonWidget> createState() => _ChangeLanguageButtonWidgetState();
+}
+
+class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget> {
+
+  final _languageAndRegionController = Get.find<LanguageAndRegionController>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
 
-  ChangeLanguageButtonWidget({Key? key}) : super(key: key);
+  final ValueNotifier<bool> _languageMenuIsVisibleNotifier =
+    ValueNotifier<bool>(false);
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return ResponsiveWidget(
-        responsiveUtils: _responsiveUtils,
-        mobile: Scaffold(
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTitleLanguageWidget(context),
-              const SizedBox(height: 8),
-              _buildLanguageMenu(context, constraints.maxWidth)
-            ]
-          )
-        ),
-        desktop: Column(
+    if (_responsiveUtils.isDesktop(context)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTitleLanguageWidget(context),
+          const SizedBox(height: 15),
+          SizedBox(
+            width: 385,
+            child: _buildLanguageMenu(context, 385),
+          ),
+        ],
+      );
+    } else {
+      return Scaffold(
+        body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTitleLanguageWidget(context),
             const SizedBox(height: 8),
-            SizedBox(
-              width: constraints.maxWidth / 2,
-              child: _buildLanguageMenu(context, constraints.maxWidth / 2)
-            ),
-          ]
-        )
+            _buildLanguageMenu(context, double.infinity),
+          ],
+        ),
       );
-    });
+    }
   }
 
   Widget _buildTitleLanguageWidget(BuildContext context) {
     return Text(
       AppLocalizations.of(context).language,
-      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+      style: ThemeUtils.textStyleInter400.copyWith(
         fontSize: 14,
-        fontWeight: FontWeight.normal,
-        color: AppColor.colorContentEmail
-      )
+        height: 21.01 / 14,
+        letterSpacing: -0.15,
+        color: AppColor.gray424244.withOpacity(0.64),
+      ),
     );
   }
 
   Widget _buildLanguageMenu(BuildContext context, double maxWidth) {
-    return Obx(() => PortalTarget(
-      visible: _controller.isLanguageMenuOverlayOpen.isTrue,
-      portalFollower: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => _controller.toggleLanguageMenuOverlay()
-      ),
-      child: PortalTarget(
-        anchor: const Aligned(
-          follower: Alignment.topRight,
-          target: Alignment.bottomRight,
-          widthFactor: 1,
-          backup: Aligned(
-            follower: Alignment.topRight,
-            target: Alignment.bottomRight,
-            widthFactor: 1,
+    return ValueListenableBuilder<bool>(
+      valueListenable: _languageMenuIsVisibleNotifier,
+      builder: (context, isVisible, child) {
+        return PortalTarget(
+          visible: isVisible,
+          portalFollower: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => _toggleLanguageMenuOverlay(false),
           ),
-        ),
-        portalFollower: Obx(() => LanguageRegionOverlay(
-          listSupportedLanguages: _controller.listSupportedLanguages,
-          localeSelected: _controller.languageSelected.value,
-          maxWidth: maxWidth,
-          onSelectLanguageAction: _controller.selectLanguage,
-        )),
-        visible: _controller.isLanguageMenuOverlayOpen.isTrue,
-        child: _buildDropDownMenuButton(context, maxWidth)
-      )
-    ));
+          child: PortalTarget(
+            anchor: const Aligned(
+              follower: Alignment.topRight,
+              target: Alignment.bottomRight,
+              widthFactor: 1,
+              backup: Aligned(
+                follower: Alignment.topRight,
+                target: Alignment.bottomRight,
+                widthFactor: 1,
+              ),
+            ),
+            portalFollower: Obx(() => LanguageRegionOverlay(
+              imagePaths: _imagePaths,
+              responsiveUtils: _responsiveUtils,
+              listSupportedLanguages: _languageAndRegionController.listSupportedLanguages,
+              localeSelected: _languageAndRegionController.languageSelected.value,
+              maxWidth: maxWidth,
+              onSelectLanguageAction: (language) {
+                _toggleLanguageMenuOverlay(false);
+                _languageAndRegionController.selectLanguage(language);
+              },
+            )),
+            visible: isVisible,
+            child: TMailDropDownWidget(
+              text: _languageAndRegionController
+                .languageSelected
+                .value
+                .getLanguageNameByCurrentLocale(context),
+              dropDownIcon: _imagePaths.icDropDown,
+              backgroundColor: isVisible
+                ? AppColor.lightGrayEBEDF0.withOpacity(0.6)
+                : null,
+              onTap: () => _toggleLanguageMenuOverlay(true),
+            )
+          )
+        );
+      }
+    );
   }
 
-  Widget _buildDropDownMenuButton(BuildContext context, double maxWidth) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => _controller.toggleLanguageMenuOverlay(),
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        child: Container(
-          height: 44,
-          width: maxWidth,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: AppColor.colorInputBorderCreateMailbox,
-              width: 0.5,
-            ),
-            color: AppColor.colorItemSelected,
-          ),
-          padding: const EdgeInsetsDirectional.only(start: 12, end: 10),
-          child: Row(children: [
-            Expanded(child: Text(
-              _controller.languageSelected.value.getLanguageNameByCurrentLocale(context),
-              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-                color: Colors.black
-              ),
-              maxLines: 1,
-              softWrap: CommonTextStyle.defaultSoftWrap,
-              overflow: CommonTextStyle.defaultTextOverFlow,
-            )),
-            SvgPicture.asset(_imagePaths.icDropDown)
-          ]),
-        ),
-      ),
-    );
+  void _toggleLanguageMenuOverlay(bool visible) {
+    _languageMenuIsVisibleNotifier.value = visible;
+  }
+
+  @override
+  void dispose() {
+    _languageMenuIsVisibleNotifier.dispose();
+    super.dispose();
   }
 }

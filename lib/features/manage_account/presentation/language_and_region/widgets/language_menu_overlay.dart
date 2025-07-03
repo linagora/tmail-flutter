@@ -1,22 +1,22 @@
-
-import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/widgets/lanuage_item_widget.dart';
 
 class LanguageRegionOverlay extends StatelessWidget {
 
+  final ImagePaths imagePaths;
+  final ResponsiveUtils responsiveUtils;
   final List<Locale> listSupportedLanguages;
   final Locale localeSelected;
   final double? maxWidth;
   final OnSelectLanguageAction onSelectLanguageAction;
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
-  LanguageRegionOverlay({
+  const LanguageRegionOverlay({
     Key? key,
+    required this.imagePaths,
     required this.listSupportedLanguages,
+    required this.responsiveUtils,
     required this.localeSelected,
     required this.onSelectLanguageAction,
     this.maxWidth,
@@ -31,22 +31,27 @@ class LanguageRegionOverlay extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        boxShadow: [
           BoxShadow(
-            color: AppColor.colorShadowBgContentEmail,
-            blurRadius: 24,
-            offset: Offset(0, 8)),
-          BoxShadow(
-            color: AppColor.colorShadowBgContentEmail,
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 2,
-            offset: Offset.zero),
-          ]
+            offset: const Offset(0, 1),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            spreadRadius: 2,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ListView.builder(
         shrinkWrap: true,
         itemCount: listSupportedLanguages.length,
-        itemBuilder: (context, index) => LanguageItemWidget(
+        padding: const EdgeInsets.all(7),
+        itemBuilder: (_, index) => LanguageItemWidget(
+          imagePaths: imagePaths,
           localeSelected: localeSelected,
           localeCurrent: listSupportedLanguages[index],
           onSelectLanguageAction: onSelectLanguageAction
@@ -59,7 +64,7 @@ class LanguageRegionOverlay extends StatelessWidget {
     const double maxHeightTopBar = 80;
     const double maxHeightTitleLanguage = 200;
     const double paddingBottom = 16;
-    final currentHeight = _responsiveUtils.getSizeScreenHeight(context);
+    final currentHeight = responsiveUtils.getSizeScreenHeight(context);
     double maxHeightForm = currentHeight - maxHeightTopBar - maxHeightTitleLanguage - paddingBottom;
     return maxHeightForm;
   }

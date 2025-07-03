@@ -1,22 +1,22 @@
-
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/extensions/locale_extension.dart';
 
 typedef OnSelectLanguageAction = Function(Locale? localeSelected);
 
 class LanguageItemWidget extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final Locale localeSelected;
   final Locale localeCurrent;
   final OnSelectLanguageAction onSelectLanguageAction;
 
   const LanguageItemWidget({
     super.key,
+    required this.imagePaths,
     required this.localeCurrent,
     required this.localeSelected,
     required this.onSelectLanguageAction,
@@ -24,48 +24,33 @@ class LanguageItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: () => onSelectLanguageAction.call(localeCurrent),
         borderRadius: const BorderRadius.all(Radius.circular(8)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        hoverColor: AppColor.lightGrayEBEDF0.withOpacity(0.6),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 17),
+          height: 51,
           child: Row(children: [
-            Expanded(child: Row(
-              children: [
-                Text(
-                  localeCurrent.getLanguageNameByCurrentLocale(context),
-                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    fontSize: 17,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.black
-                  ),
-                  maxLines: 1,
-                  softWrap: CommonTextStyle.defaultSoftWrap,
-                  overflow: CommonTextStyle.defaultTextOverFlow,
-                ),
-                Text(
-                  ' - ${localeCurrent.getSourceLanguageName()}',
-                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black
-                  ),
-                  maxLines: 1,
-                  softWrap: CommonTextStyle.defaultSoftWrap,
-                  overflow: CommonTextStyle.defaultTextOverFlow,
-                )
-              ]
+            Expanded(child: Text(
+              '${localeCurrent.getLanguageNameByCurrentLocale(context)} - ${localeCurrent.getSourceLanguageName()}',
+              style: ThemeUtils.textStyleInter400.copyWith(
+                letterSpacing: -0.15,
+                fontSize: 16,
+                height: 21.01 / 16,
+                color: AppColor.gray424244.withOpacity(0.9),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             )),
             if (localeCurrent == localeSelected)
               SvgPicture.asset(
                 imagePaths.icChecked,
                 width: 20,
                 height: 20,
-                fit: BoxFit.fill
+                fit: BoxFit.fill,
               )
           ]),
         ),
