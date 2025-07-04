@@ -132,6 +132,7 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
 
   Widget _buildMobileLanguageMenu(BuildContext context) {
     return Obx(() => TMailDropDownWidget(
+      key: const Key('language_drop_down_button'),
       text: _languageAndRegionController
           .languageSelected
           .value
