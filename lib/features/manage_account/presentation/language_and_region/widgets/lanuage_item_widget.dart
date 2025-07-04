@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/extensions/locale_extension.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSelectLanguageAction = Function(Locale? localeSelected);
 
@@ -35,7 +36,7 @@ class LanguageItemWidget extends StatelessWidget {
           height: 51,
           child: Row(children: [
             Expanded(child: Text(
-              '${localeCurrent.getLanguageNameByCurrentLocale(context)} - ${localeCurrent.getSourceLanguageName()}',
+              '${localeCurrent.getLanguageNameByCurrentLocale(AppLocalizations.of(context))} - ${localeCurrent.getSourceLanguageName()}',
               style: ThemeUtils.textStyleInter400.copyWith(
                 letterSpacing: -0.15,
                 fontSize: 16,

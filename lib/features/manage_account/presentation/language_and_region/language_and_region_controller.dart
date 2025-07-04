@@ -1,8 +1,6 @@
-
-import 'dart:ui';
-
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -11,8 +9,11 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/save_language
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_language_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_language_to_server_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/language/context_item_language_action.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LanguageAndRegionController extends BaseController {
 
@@ -74,5 +75,25 @@ class LanguageAndRegionController extends BaseController {
       accountId,
       localeCurrent,
     ));
+  }
+
+  void openLanguageContextMenu(BuildContext context) {
+    final contextMenuActions = listSupportedLanguages.map((language) {
+      return ContextItemLanguageAction(
+        language,
+        languageSelected.value,
+        AppLocalizations.of(context),
+        imagePaths,
+      );
+    }).toList();
+
+    openBottomSheetContextMenuAction(
+      context: context,
+      itemActions: contextMenuActions,
+      onContextMenuActionClick: (menuAction) {
+        popBack();
+        selectLanguage(menuAction.action);
+      },
+    );
   }
 }
