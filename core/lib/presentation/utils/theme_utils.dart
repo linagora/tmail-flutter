@@ -280,6 +280,15 @@ class ThemeUtils {
     color: AppColor.textSecondary.withOpacity(0.48),
   );
 
+  static const TextStyle textStyleM3BodyLarge = TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 00.15,
+    fontSize: 17,
+    height: 24 / 17,
+    color: AppColor.m3SurfaceBackground,
+  );
+
   static TextStyle textStyleAppShortcut() => const TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: FontWeight.normal,
