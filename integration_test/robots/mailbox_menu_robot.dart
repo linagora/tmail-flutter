@@ -18,4 +18,8 @@ class MailboxMenuRobot extends CoreRobot {
       .$(find.text(name))
       .tap();
   }
+
+  Future<void> openSetting() async {
+    await $(#user_avatar).tap();
+  }
 }

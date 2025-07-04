@@ -88,6 +88,7 @@ class LanguageAndRegionController extends BaseController {
     }).toList();
 
     openBottomSheetContextMenuAction(
+      key: const Key('language_context_menu'),
       context: context,
       itemActions: contextMenuActions,
       onContextMenuActionClick: (menuAction) {
