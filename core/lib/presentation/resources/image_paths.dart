@@ -231,7 +231,10 @@ class ImagePaths {
   String get icDoubleArrowDown => _getImagePath('ic_double_arrow_down.svg');
   String get icRefreshQuotas => _getImagePath('ic_refresh_quotas.svg');
   String get icCreateFilter => _getImagePath('ic_create_filter.svg');
+  String get icArrowBack => _getImagePath('ic_arrow_back.svg');
+
   String get icTwakeWorkplace => _getIconPath('icon_twp.png');
+
   String get animLottieTmail => _getAnimationPath('lottie-tmail.json');
 
   String _getImagePath(String imageName) {

@@ -17,6 +17,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      key: const Key('setting_menu'),
       child: Column(children: [
         Obx(() => UserInformationWidget(
           userName: controller.manageAccountDashboardController.accountId.value != null
@@ -141,6 +142,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
               endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
             ),
             SettingFirstLevelTileBuilder(
+              key: const Key('setting_language_region'),
               AccountMenuItem.languageAndRegion.getName(AppLocalizations.of(context)),
               AccountMenuItem.languageAndRegion.getIcon(controller.imagePaths),
               () => controller.selectSettings(AccountMenuItem.languageAndRegion)

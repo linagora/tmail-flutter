@@ -22,16 +22,6 @@ class SettingsUtils {
     }
   }
 
-  static EdgeInsets getPaddingAppBar(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16);
-    } else if (responsiveUtils.isLandscapeMobile(context)) {
-      return const EdgeInsets.symmetric(horizontal: 12);
-    } else {
-      return const EdgeInsets.symmetric(horizontal: 32);
-    }
-  }
-
   static EdgeInsets getMarginViewForSettingDetails(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (PlatformInfo.isWeb) {
       if (responsiveUtils.isDesktop(context)) {
@@ -64,7 +54,7 @@ class SettingsUtils {
   ) {
     if (responsiveUtils.isWebDesktop(context)) {
       return BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
         color: backgroundColor,
       );
     } else {
