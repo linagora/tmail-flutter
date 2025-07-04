@@ -25,33 +25,34 @@ class VacationController extends BaseController {
   final _settingController = Get.find<SettingsController>();
 
   final UpdateVacationInteractor _updateVacationInteractor;
-  final RichTextWebController _richTextControllerForWeb;
 
   final vacationPresentation = VacationPresentation.initialize().obs;
   final errorMessageBody = Rxn<String>();
 
   final subjectTextController = TextEditingController();
   final subjectTextFocusNode = FocusNode();
-  final richTextControllerForMobile = RichTextController();
 
   final GlobalKey htmlKey = GlobalKey();
 
   VacationResponse? currentVacation;
   String? _vacationMessageHtmlText;
 
+  RichTextController? richTextControllerForMobile;
+  RichTextWebController? richTextControllerForWeb;
+
   final ScrollController scrollController = ScrollController();
 
-  VacationController(
-    this._updateVacationInteractor,
-    this._richTextControllerForWeb
-  );
+  VacationController(this._updateVacationInteractor);
 
   String? get vacationMessageHtmlText => _vacationMessageHtmlText;
 
-  RichTextWebController get richTextControllerForWeb => _richTextControllerForWeb;
-
   @override
   void onInit() {
+    if (PlatformInfo.isWeb) {
+      richTextControllerForWeb = RichTextWebController();
+    } else {
+      richTextControllerForMobile = RichTextController();
+    }
     _initWorker();
     _initFocusListener();
     super.onInit();
@@ -82,7 +83,7 @@ class VacationController extends BaseController {
 
   void _onSubjectTextListener() {
     if (subjectTextFocusNode.hasFocus && PlatformInfo.isMobile) {
-      richTextControllerForMobile.hideRichTextView();
+      richTextControllerForMobile?.hideRichTextView();
     }
   }
 
@@ -91,9 +92,9 @@ class VacationController extends BaseController {
     subjectTextController.text = newVacation.subject ?? '';
     updateMessageHtmlText(newVacation.messageHtmlText ?? '');
     if (PlatformInfo.isWeb) {
-      _richTextControllerForWeb.editorController.setText(newVacation.messageHtmlText ?? '');
+      richTextControllerForWeb?.editorController.setText(newVacation.messageHtmlText ?? '');
     } else {
-      richTextControllerForMobile.htmlEditorApi?.setText(newVacation.messageHtmlText ?? '');
+      richTextControllerForMobile?.htmlEditorApi?.setText(newVacation.messageHtmlText ?? '');
     }
   }
 
@@ -131,7 +132,7 @@ class VacationController extends BaseController {
 
   void selectDate(BuildContext context, DateType dateType, DateTime? currentDate) async {
     if (PlatformInfo.isMobile) {
-      richTextControllerForMobile.htmlEditorApi?.unfocus();
+      richTextControllerForMobile?.htmlEditorApi?.unfocus();
     }
     FocusScope.of(context).unfocus();
 
@@ -177,7 +178,7 @@ class VacationController extends BaseController {
 
   void selectTime(BuildContext context, DateType dateType, TimeOfDay? currentTime) async {
     if (PlatformInfo.isMobile) {
-      richTextControllerForMobile.htmlEditorApi?.unfocus();
+      richTextControllerForMobile?.htmlEditorApi?.unfocus();
     }
     FocusScope.of(context).unfocus();
 
@@ -298,15 +299,15 @@ class VacationController extends BaseController {
 
   Future<String>? _getMessageHtmlText() {
     if (PlatformInfo.isWeb) {
-      return _richTextControllerForWeb.editorController.getText();
+      return richTextControllerForWeb?.editorController.getText();
     } else {
-      return richTextControllerForMobile.htmlEditorApi?.getText();
+      return richTextControllerForMobile?.htmlEditorApi?.getText();
     }
   }
 
   void clearFocusEditor(BuildContext context) {
     if (PlatformInfo.isMobile) {
-      richTextControllerForMobile.htmlEditorApi?.unfocus();
+      richTextControllerForMobile?.htmlEditorApi?.unfocus();
     }
     KeyboardUtils.hideKeyboard(context);
   }
@@ -317,7 +318,7 @@ class VacationController extends BaseController {
   }
 
   void initRichTextForMobile(BuildContext context, HtmlEditorApi editorApi) {
-    richTextControllerForMobile.onCreateHTMLEditor(
+    richTextControllerForMobile?.onCreateHTMLEditor(
       editorApi,
       onFocus: () => onFocusHTMLEditor(context),
       onEnterKeyDown: onEnterKeyDown,
@@ -329,7 +330,7 @@ class VacationController extends BaseController {
       FocusScope.of(context).unfocus();
       await Future.delayed(
         const Duration(milliseconds: 300),
-        richTextControllerForMobile.showDeviceKeyboard);
+        richTextControllerForMobile?.showDeviceKeyboard);
     }
 
     subjectTextFocusNode.unfocus();
@@ -359,8 +360,12 @@ class VacationController extends BaseController {
     subjectTextFocusNode.removeListener(_onSubjectTextListener);
     subjectTextFocusNode.dispose();
     subjectTextController.dispose();
-    richTextControllerForMobile.dispose();
     scrollController.dispose();
+    if (PlatformInfo.isWeb) {
+      richTextControllerForWeb?.onClose();
+    } else {
+      richTextControllerForMobile?.dispose();
+    }
     super.onClose();
   }
 }
