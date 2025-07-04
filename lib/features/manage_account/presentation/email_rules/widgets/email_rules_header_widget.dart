@@ -35,7 +35,10 @@ class EmailRulesHeaderWidget extends StatelessWidget {
           if (responsiveUtils.isWebDesktop(context))
             const SettingHeaderWidget(menuItem: AccountMenuItem.emailRules)
           else
-            const SettingExplanationWidget(menuItem: AccountMenuItem.emailRules),
+            const SettingExplanationWidget(
+              menuItem: AccountMenuItem.emailRules,
+              padding: EdgeInsets.all(16),
+            ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: _buildButtonAddNewRule(context),

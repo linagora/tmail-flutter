@@ -12,9 +12,16 @@ import 'package:tmail_ui_user/features/manage_account/presentation/language_and_
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/widgets/language_menu_overlay.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
+typedef OnOpenLanguageContextMenuAction = Function(BuildContext context);
+
 class ChangeLanguageButtonWidget extends StatefulWidget {
 
-  const ChangeLanguageButtonWidget({Key? key}) : super(key: key);
+  final OnOpenLanguageContextMenuAction? onOpenLanguageContextMenu;
+
+  const ChangeLanguageButtonWidget({
+    Key? key,
+    this.onOpenLanguageContextMenu,
+  }) : super(key: key);
 
   @override
   State<ChangeLanguageButtonWidget> createState() => _ChangeLanguageButtonWidgetState();
@@ -44,15 +51,19 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
         ],
       );
     } else {
-      return Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTitleLanguageWidget(context),
-            const SizedBox(height: 8),
-            _buildLanguageMenu(context, double.infinity),
-          ],
-        ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: _getMobileTitlePadding(context),
+            child: _buildTitleLanguageWidget(context),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: _getMobileLanguageMenuPadding(context),
+            child: _buildMobileLanguageMenu(context),
+          ),
+        ],
       );
     }
   }
@@ -90,7 +101,7 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
                 widthFactor: 1,
               ),
             ),
-            portalFollower: Obx(() => LanguageRegionOverlay(
+            portalFollower: LanguageRegionOverlay(
               imagePaths: _imagePaths,
               responsiveUtils: _responsiveUtils,
               listSupportedLanguages: _languageAndRegionController.listSupportedLanguages,
@@ -100,13 +111,13 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
                 _toggleLanguageMenuOverlay(false);
                 _languageAndRegionController.selectLanguage(language);
               },
-            )),
+            ),
             visible: isVisible,
             child: TMailDropDownWidget(
               text: _languageAndRegionController
                 .languageSelected
                 .value
-                .getLanguageNameByCurrentLocale(context),
+                .getLanguageNameByCurrentLocale(AppLocalizations.of(context)),
               dropDownIcon: _imagePaths.icDropDown,
               backgroundColor: isVisible
                 ? AppColor.lightGrayEBEDF0.withOpacity(0.6)
@@ -119,13 +130,38 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
     );
   }
 
+  Widget _buildMobileLanguageMenu(BuildContext context) {
+    return Obx(() => TMailDropDownWidget(
+      text: _languageAndRegionController
+          .languageSelected
+          .value
+          .getLanguageNameByCurrentLocale(AppLocalizations.of(context)),
+      dropDownIcon: _imagePaths.icDropDown,
+      onTap: () => widget.onOpenLanguageContextMenu?.call(context),
+    ));
+  }
+
   void _toggleLanguageMenuOverlay(bool visible) {
     _languageMenuIsVisibleNotifier.value = visible;
   }
 
-  @override
-  void dispose() {
-    _languageMenuIsVisibleNotifier.dispose();
-    super.dispose();
+  EdgeInsetsGeometry _getMobileTitlePadding(BuildContext context) {
+    if (_responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 28);
+    } else if (_responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 40);
+    } else {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 50);
+    }
+  }
+
+  EdgeInsetsGeometry _getMobileLanguageMenuPadding(BuildContext context) {
+    if (_responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 20);
+    } else if (_responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 24);
+    } else {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 44);
+    }
   }
 }

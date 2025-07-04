@@ -45,11 +45,20 @@ class LanguageAndRegionView extends GetWidget<LanguageAndRegionController> {
               else
                 const SettingExplanationWidget(
                   menuItem: AccountMenuItem.languageAndRegion,
+                  padding: EdgeInsetsDirectional.only(
+                    start: 16,
+                    end: 16,
+                    bottom: 16,
+                  ),
+                  isCenter: true,
                 ),
-              const Expanded(
+              Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(top: 39),
-                  child: ChangeLanguageButtonWidget(),
+                  padding: const EdgeInsets.only(top: 39),
+                  child: ChangeLanguageButtonWidget(
+                    onOpenLanguageContextMenu:
+                      controller.openLanguageContextMenu,
+                  ),
                 ),
               ),
             ],

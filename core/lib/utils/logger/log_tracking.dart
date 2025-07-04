@@ -23,6 +23,7 @@ class LogTracking {
 
   final Queue<String> _messagesQueue = Queue();
   bool _isScheduled = false;
+  bool isEnabled = false;
 
   Future<void> addLog({required String message}) async {
     try {
