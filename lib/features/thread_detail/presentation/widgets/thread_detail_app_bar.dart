@@ -139,21 +139,23 @@ class ThreadDetailAppBar extends StatelessWidget {
                   ),
                 ],
                 if (!responsiveUtils.isMobile(context)) const Spacer(),
-                ...optionWidgets,
-                TMailButtonWidget.fromIcon(
-                  icon: imagePaths.icMoreVertical,
-                  iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                  backgroundColor: Colors.transparent,
-                  tooltipMessage: AppLocalizations.of(context).more,
-                  onTapActionCallback: responsiveUtils.isScreenWithShortestSide(context)
-                    ? () => onMoreActionClick?.call(lastEmailOfThread!, null)
-                    : null,
-                  onTapActionAtPositionCallback: !responsiveUtils.isScreenWithShortestSide(context)
-                    ? (position) => onMoreActionClick?.call(lastEmailOfThread!, position)
-                    : null,
-                ),
               ] else const Spacer(),
+              ...optionWidgets,
+              TMailButtonWidget.fromIcon(
+                icon: imagePaths.icMoreVertical,
+                iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                backgroundColor: Colors.transparent,
+                tooltipMessage: AppLocalizations.of(context).more,
+                onTapActionCallback: responsiveUtils.isScreenWithShortestSide(context) &&
+                    lastEmailOfThread != null
+                  ? () => onMoreActionClick?.call(lastEmailOfThread!, null)
+                  : null,
+                onTapActionAtPositionCallback: !responsiveUtils.isScreenWithShortestSide(context) &&
+                    lastEmailOfThread != null
+                  ? (position) => onMoreActionClick?.call(lastEmailOfThread!, position)
+                  : null,
+              ),
             ],
           ),
         );

@@ -2,37 +2,38 @@ import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
+import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_loading_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_details_email_views.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_page_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_app_bar.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ThreadDetailView extends GetWidget<ThreadDetailController> {
   const ThreadDetailView({super.key});
   
   @override
   Widget build(BuildContext context) {
-    final multipleEmailsView = SelectionArea(child: SafeArea(
+    return SelectionArea(child: SafeArea(
       child: Column(
         children: [
           Obx(() {
-            if (showLoadingView(controller.viewState.value)) {
-              return const SizedBox.shrink();
-            }
+            final isLoading = showLoadingView(controller.viewState.value);
 
             return ThreadDetailAppBar(
               responsiveUtils: controller.responsiveUtils,
@@ -42,39 +43,92 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
               ownUserName: controller.session?.getOwnEmailAddress() ?? '',
               mailboxContain: _getMailboxContain(),
-              onEmailActionClick: controller.threadDetailOnEmailActionClick,
-              onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
-                mailboxContain: controller.getThreadDetailEmailMailboxContains(presentationEmail),
-                presentationEmail: presentationEmail,
-                position: position,
-                responsiveUtils: controller.responsiveUtils,
-                imagePaths: controller.imagePaths,
-                username: controller.session?.username,
-                handleEmailAction: controller.threadDetailOnEmailActionClick,
-                additionalActions: [
-                  if (controller.responsiveUtils.isMobile(context)) ...[
-                    EmailActionType.forward,
-                    EmailActionType.replyAll,
-                    EmailActionType.replyToList,
-                  ],
-                  EmailActionType.markAsStarred,
-                  EmailActionType.unMarkAsStarred,
-                  EmailActionType.moveToTrash,
-                  EmailActionType.deletePermanently,
-                  EmailActionType.printAll,
-                  EmailActionType.moveToMailbox,
-                ],
-                emailIsRead: presentationEmail.hasRead,
-              ),
+              onEmailActionClick: isLoading
+                ? null
+                : controller.threadDetailOnEmailActionClick,
+              onMoreActionClick: (presentationEmail, position) => isLoading
+                ? null
+                : controller.emailActionReactor.handleMoreEmailAction(
+                    mailboxContain: controller.getThreadDetailEmailMailboxContains(
+                      presentationEmail,
+                    ),
+                    presentationEmail: presentationEmail,
+                    position: position,
+                    responsiveUtils: controller.responsiveUtils,
+                    imagePaths: controller.imagePaths,
+                    username: controller.session?.username,
+                    handleEmailAction: controller.threadDetailOnEmailActionClick,
+                    additionalActions: [
+                      if (controller.responsiveUtils.isMobile(context)) ...[
+                        EmailActionType.forward,
+                        EmailActionType.replyAll,
+                        EmailActionType.replyToList,
+                      ],
+                      EmailActionType.markAsStarred,
+                      EmailActionType.unMarkAsStarred,
+                      EmailActionType.moveToTrash,
+                      EmailActionType.deletePermanently,
+                      EmailActionType.printAll,
+                      EmailActionType.moveToMailbox,
+                    ],
+                    emailIsRead: presentationEmail.hasRead,
+                  ),
+              optionWidgets: [
+                if (controller.previousAvailable)
+                  TMailButtonWidget.fromIcon(
+                    icon: controller.imagePaths.icNewer,
+                    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                    iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                    tooltipMessage: AppLocalizations.of(context).newer,
+                    backgroundColor: Colors.transparent,
+                    onTapActionCallback: controller.onPrevious,
+                  ),
+                if (controller.nextAvailable)
+                  TMailButtonWidget.fromIcon(
+                    icon: controller.imagePaths.icOlder,
+                    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                    iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                    tooltipMessage: AppLocalizations.of(context).older,
+                    backgroundColor: Colors.transparent,
+                    onTapActionCallback: controller.onNext,
+                  ),
+              ],
             );
           }),
           Obx(() => controller.getThreadDetailLoadingView(
             isResponsiveDesktop: controller.responsiveUtils.isDesktop(context),
-            isLoading: showLoadingView(controller.viewState.value),
+            isLoading: showLoadingView(controller.viewState.value) && !PlatformInfo.isMobile,
           )),
           Obx(() {
-            if (showLoadingView(controller.viewState.value)) {
+            if (showLoadingView(controller.viewState.value) && !PlatformInfo.isMobile) {
               return const SizedBox.shrink();
+            }
+
+            if (PlatformInfo.isMobile) {
+              final manager = controller.threadDetailManager;
+              final currentIndex = manager.currentMobilePageViewIndex.value;
+
+              return Expanded(
+                child: PageView.builder(
+                  controller: manager.pageController,
+                  itemCount: manager.isThreadDetailEnabled
+                    ? manager.availableThreadIds.length
+                    : manager.currentDisplayedEmails.length,
+                  itemBuilder: (context, index) {
+                    if (index != currentIndex) {
+                      return const SizedBox.shrink();
+                    }
+                
+                    return SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: controller.getThreadDetailEmailViews()
+                      ),
+                    );
+                  },
+                  onPageChanged: controller.onThreadPageChanged,
+                ),
+              );
             }
 
             return Expanded(
@@ -161,30 +215,6 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
         ],
       ),
     ));
-
-    return Obx(() {
-      if (showLoadingView(controller.viewState.value) &&
-          controller.emailIdsPresentation.isEmpty &&
-          controller.responsiveUtils.isTabletLarge(context)) {
-        return controller.getThreadDetailLoadingView(
-          isResponsiveDesktop: false,
-          isLoading: true,
-          isExpanded: false,
-        );
-      }
-
-      if (controller.emailIdsPresentation.length == 1 &&
-          controller.emailIdsPresentation.values.firstOrNull?.emailInThreadStatus == EmailInThreadStatus.expanded) {
-        final emailId = controller.emailIdsPresentation.values.firstOrNull!.id;
-
-        return EmailView(
-          key: ValueKey(emailId?.id.value),
-          emailId: emailId,
-        );
-      }
-
-      return multipleEmailsView;
-    });
   }
 
   EdgeInsetsGeometry _padding(BuildContext context) {
