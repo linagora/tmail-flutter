@@ -289,7 +289,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
               top: false,
               right: controller.responsiveUtils.isPortraitMobile(context),
               child: KeyboardRichText(
-                richTextController: controller.richTextControllerForMobile,
+                richTextController: controller.richTextControllerForMobile!,
                 keyBroadToolbar: RichTextKeyboardToolBar(
                   rootContext: context,
                   titleBack: AppLocalizations.of(context).format,
@@ -297,7 +297,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                     ? AppColor.colorBackgroundKeyboard
                     : AppColor.colorBackgroundKeyboardAndroid,
                   formatLabel: AppLocalizations.of(context).format,
-                  richTextController: controller.richTextControllerForMobile,
+                  richTextController: controller.richTextControllerForMobile!,
                   quickStyleLabel: AppLocalizations.of(context).quickStyles,
                   backgroundLabel: AppLocalizations.of(context).background,
                   foregroundLabel: AppLocalizations.of(context).foreground,
@@ -323,7 +323,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
               backgroundColor: SettingsUtils.getBackgroundColor(context, controller.responsiveUtils),
               body: SafeArea(
                 child: KeyboardRichText(
-                  richTextController: controller.richTextControllerForMobile,
+                  richTextController: controller.richTextControllerForMobile!,
                   keyBroadToolbar: RichTextKeyboardToolBar(
                     rootContext: context,
                     titleBack: AppLocalizations.of(context).format,
@@ -331,7 +331,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                       ? AppColor.colorBackgroundKeyboard
                       : AppColor.colorBackgroundKeyboardAndroid,
                     formatLabel: AppLocalizations.of(context).format,
-                    richTextController: controller.richTextControllerForMobile,
+                    richTextController: controller.richTextControllerForMobile!,
                     quickStyleLabel: AppLocalizations.of(context).quickStyles,
                     backgroundLabel: AppLocalizations.of(context).background,
                     foregroundLabel: AppLocalizations.of(context).foreground,
@@ -462,7 +462,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
             child: PointerInterceptor(
               child: buildToolbarRichTextForWeb(
                 context,
-                controller.richTextControllerForWeb,
+                controller.richTextControllerForWeb!,
                 layoutType: ButtonLayoutType.scrollHorizontal
               )
             )
@@ -477,7 +477,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
         constraints: const BoxConstraints(maxHeight: 300),
         child: html_editor_browser.HtmlEditor(
           key: const Key('vacation_message_html_text_editor_web'),
-          controller: controller.richTextControllerForWeb.editorController,
+          controller: controller.richTextControllerForWeb!.editorController,
           htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
             hint: '',
             darkMode: false,
@@ -491,14 +491,14 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
               defaultToolbarButtons: []),
           otherOptions: const html_editor_browser.OtherOptions(height: 150),
           callbacks: html_editor_browser.Callbacks(
-            onChangeSelection: controller.richTextControllerForWeb.onEditorSettingsChange,
+            onChangeSelection: controller.richTextControllerForWeb?.onEditorSettingsChange,
             onChangeContent: controller.updateMessageHtmlText,
             onFocus: () {
               KeyboardUtils.hideKeyboard(context);
               Future.delayed(const Duration(milliseconds: 500), () {
-                controller.richTextControllerForWeb.editorController.setFocus();
+                controller.richTextControllerForWeb?.editorController.setFocus();
               });
-              controller.richTextControllerForWeb.closeAllMenuPopup();
+              controller.richTextControllerForWeb?.closeAllMenuPopup();
             }
           ),
         ),
