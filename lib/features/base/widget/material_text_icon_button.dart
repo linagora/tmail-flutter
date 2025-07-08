@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -47,7 +48,7 @@ class MaterialTextIconButton extends StatelessWidget {
       ),
       label: Text(
         label,
-        style: labelStyle ?? TextStyle(
+        style: labelStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 16,
           color: labelColor ?? AppColor.colorTextButton,
           fontWeight: FontWeight.w500

@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -83,7 +84,7 @@ class LoginMessageWidget extends StatelessWidget {
             }
           ),
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: 15,
             fontWeight: FontWeight.w400,
             color: viewState.fold(

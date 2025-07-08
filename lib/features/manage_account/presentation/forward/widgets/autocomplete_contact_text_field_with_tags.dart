@@ -6,6 +6,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -125,14 +126,14 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         emailAddress: EmailAddress(null, value),
         isClearInput: true
       ),
-      textStyle: const TextStyle(
+      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
         color: Colors.black,
         fontSize: 16,
         fontWeight: FontWeight.w500),
       inputDecoration: InputDecoration(
         border: InputBorder.none,
         hintText: AppLocalizations.of(context).hintInputAutocompleteContact,
-        hintStyle: const TextStyle(
+        hintStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontWeight: FontWeight.w500,
           color: AppColor.colorSettingExplanation,
           fontSize: 16

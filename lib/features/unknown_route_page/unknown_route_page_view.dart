@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -41,7 +42,7 @@ class UnknownRoutePageView extends StatelessWidget {
                   Text(
                     AppLocalizations.of(context).titlePageNotFound,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
                       fontSize: _getFontSizeTitle(context)
@@ -51,7 +52,7 @@ class UnknownRoutePageView extends StatelessWidget {
                   Text(
                     AppLocalizations.of(context).subTitlePageNotFound,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                       fontWeight: FontWeight.w500,
                       color: AppColor.colorSettingExplanation,
                       fontSize: 16

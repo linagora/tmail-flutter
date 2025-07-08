@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -53,10 +54,11 @@ class ContactInputTagItem extends StatelessWidget {
         maxLines: 1,
         softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow,
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.normal,
-          color: Colors.black)
+          color: Colors.black,
+        ),
       ),
       deleteIcon: deleteContactCallbackAction != null
         ? SvgPicture.asset(
@@ -66,7 +68,11 @@ class ContactInputTagItem extends StatelessWidget {
             colorFilter: AppColor.colorDeleteContactIcon.asFilter(),
             fit: BoxFit.fill)
         : null,
-      labelStyle: const TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.normal),
+      labelStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+        color: Colors.black,
+        fontSize: 14,
+        fontWeight: FontWeight.normal,
+      ),
       backgroundColor: _getTagBackgroundColor(),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),

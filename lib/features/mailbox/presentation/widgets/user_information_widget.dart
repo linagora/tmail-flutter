@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class UserInformationWidget extends StatelessWidget {
             SelectableText(
               userName,
               maxLines: 1,
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 17,
                 color: AppColor.colorNameEmail,
                 fontWeight: FontWeight.w600
@@ -66,7 +67,10 @@ class UserInformationWidget extends StatelessWidget {
                     onTap: onSubtitleClick,
                     borderRadius: 20,
                     padding: const EdgeInsetsDirectional.symmetric(horizontal: 8, vertical: 8),
-                    customStyle: const TextStyle(fontSize: 14, color: AppColor.colorTextButton),
+                    customStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                      fontSize: 14,
+                      color: AppColor.colorTextButton,
+                    ),
                   ),
                 ),
               )

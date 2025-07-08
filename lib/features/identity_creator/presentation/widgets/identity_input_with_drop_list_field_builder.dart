@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class IdentityInputWithDropListFieldBuilder extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         _label,
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.normal,
           color: AppColor.colorContentEmail)),
@@ -67,7 +68,7 @@ class IdentityInputWithDropListFieldBuilder extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Text(
               emailAddress.email ?? '',
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.normal,
                 color: Colors.black)));

@@ -59,7 +59,7 @@ enum AdvancedSearchFilterField {
   }
 
   TextStyle getTitleTextStyle() {
-    return const TextStyle(
+    return ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: AppColor.colorContentEmail);
@@ -77,7 +77,7 @@ enum AdvancedSearchFilterField {
   }
 
   TextStyle getHintTextStyle() {
-    return const TextStyle(
+    return ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: AppColor.colorHintSearchBar);

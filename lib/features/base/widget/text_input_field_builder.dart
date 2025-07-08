@@ -41,7 +41,7 @@ class TextInputFieldBuilder extends StatelessWidget {
       if (label != null)
         ...[
           Text(isMandatory ? '${label!}*' : label!,
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
                   color: AppColor.colorContentEmail)),
@@ -52,7 +52,7 @@ class TextInputFieldBuilder extends StatelessWidget {
         textInputAction: TextInputAction.next,
         controller: editingController,
         focusNode: focusNode,
-        textStyle: const TextStyle(color: Colors.black, fontSize: 16),
+        textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(color: Colors.black, fontSize: 16),
         keyboardType: inputType ?? TextInputType.text,
         textDirection: DirectionUtils.getDirectionByLanguage(context),
         minLines: minLines,

@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class SearchFilterButtonStyle {
@@ -16,7 +17,7 @@ class SearchFilterButtonStyle {
   static const EdgeInsetsGeometry elementPadding = EdgeInsetsDirectional.only(start: 8);
   static const BorderRadius borderRadius = BorderRadius.all(Radius.circular(10));
 
-  static const TextStyle titleStyle = TextStyle(
+  static TextStyle titleStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 13,
     fontWeight: FontWeight.normal,
     color: AppColor.colorSearchFilterTitle);

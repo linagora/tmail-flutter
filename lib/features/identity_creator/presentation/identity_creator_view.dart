@@ -4,6 +4,7 @@ import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -105,7 +106,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           )),
           const SizedBox(height: 32),
           Text(AppLocalizations.of(context).signature,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontWeight: FontWeight.normal,
               fontSize: 14,
               color: AppColor.colorContentEmail,
@@ -430,7 +431,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
             textAlign: TextAlign.center,
             overflow: CommonTextStyle.defaultTextOverFlow,
             softWrap: CommonTextStyle.defaultSoftWrap,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 20,
               color: Colors.black
@@ -621,7 +622,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
   Widget _buildCancelButton(BuildContext context, {double? width}) {
     return buildTextButton(
       AppLocalizations.of(context).cancel,
-      textStyle: const TextStyle(
+      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontWeight: FontWeight.w500,
         fontSize: 17,
         color: AppColor.colorTextButton,

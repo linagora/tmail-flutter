@@ -1,20 +1,23 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
 class ContactItemWidgetStyle {
-  static const TextStyle nameAddressTextStyle = TextStyle(
+  static TextStyle nameAddressTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 15,
-    fontWeight: FontWeight.w600
+    fontWeight: FontWeight.w600,
   );
 
-  static const TextStyle emailAddressTextStyle = TextStyle(
+  static TextStyle emailAddressTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: AppColor.colorSubtitle,
     fontSize: 13,
-    fontWeight: FontWeight.w400
+    fontWeight: FontWeight.w400,
   );
 
   static EdgeInsetsGeometry getItemPadding(

@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -115,7 +116,7 @@ class DateDropDownButton extends StatelessWidget {
           child: Row(children: [
             Expanded(child: Text(
               receiveTime.getTitle(context),
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
                 color: Colors.black

@@ -87,7 +87,7 @@ class EmailAddressBottomSheetBuilder {
                   (AvatarBuilder()
                       ..text(_emailAddress.asString().firstLetterToUpperCase)
                       ..size(64)
-                      ..addTextStyle(const TextStyle(
+                      ..addTextStyle(ThemeUtils.defaultTextStyleInterFont.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: 23,
                           color: Colors.white))
@@ -103,7 +103,7 @@ class EmailAddressBottomSheetBuilder {
                           _emailAddress.displayName,
                           textAlign: TextAlign.center,
                           maxLines: 2,
-                          style: const TextStyle(
+                          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             overflow: CommonTextStyle.defaultTextOverFlow,
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
@@ -125,7 +125,7 @@ class EmailAddressBottomSheetBuilder {
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
                           maxLines: 2,
-                          style: const TextStyle(
+                          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontSize: 17,
                             fontWeight: FontWeight.normal,
                             color: AppColor.colorMessageConfirmDialog),
@@ -139,7 +139,7 @@ class EmailAddressBottomSheetBuilder {
                       child: TextButton(
                           child: Text(
                             AppLocalizations.of(_context).copy_email_address,
-                            style: const TextStyle(
+                            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                                 fontSize: 13,
                                 color: AppColor.colorTextButton,
                                 fontWeight: FontWeight.normal),
@@ -167,7 +167,7 @@ class EmailAddressBottomSheetBuilder {
                               color: AppColor.colorItemEmailSelectedDesktop)))),
                         child: Text(
                           AppLocalizations.of(_context).quickCreatingRule,
-                          style: const TextStyle(
+                          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontSize: 17,
                             color: AppColor.colorTextButton,
                             fontWeight: FontWeight.w500)),
@@ -193,7 +193,7 @@ class EmailAddressBottomSheetBuilder {
                                         color: AppColor.colorTextButton)))),
                             child: Text(
                                 AppLocalizations.of(_context).compose_email,
-                                style: const TextStyle(
+                                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                                     fontSize: 17,
                                     color: Colors.white,
                                     fontWeight: FontWeight.w500)),

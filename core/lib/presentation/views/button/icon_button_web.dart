@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -103,7 +104,7 @@ Widget buildTextButton(String text, {
         child: Text(
             text,
             textAlign: TextAlign.center,
-            style: textStyle ?? const TextStyle(
+            style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 17,
                 color: Colors.white,
                 fontWeight: FontWeight.w500)),
@@ -145,7 +146,7 @@ Widget buildButtonWrapText(String name, {
       child: Text(name,
           textAlign: TextAlign.center,
           style: textStyle ??
-              const TextStyle(
+              ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontSize: 17,
                   fontWeight: FontWeight.w500,
                   color: Colors.white)),

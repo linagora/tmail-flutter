@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 
@@ -59,7 +60,7 @@ class BorderButtonField<T> extends StatelessWidget {
     );
     if (label != null) {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label!, style: const TextStyle(
+        Text(label!, style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.normal,
           color: AppColor.colorContentEmail)),
@@ -73,12 +74,12 @@ class BorderButtonField<T> extends StatelessWidget {
 
   TextStyle? _getTextStyle(T? value) {
     if (hintText != null && value == null) {
-      return const TextStyle(
+      return ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.normal,
         color: AppColor.colorHintInputCreateMailbox);
     }
-    return textStyle ?? const TextStyle(
+    return textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.normal,
         color: Colors.black);

@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class AttachmentItemWidgetStyle {
@@ -16,20 +17,23 @@ class AttachmentItemWidgetStyle {
 
   static const Color borderColor = AppColor.attachmentFileBorderColor;
 
-  static const TextStyle labelTextStyle = TextStyle(
+  static TextStyle labelTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 14,
     color: AppColor.attachmentFileNameColor,
-    fontWeight: FontWeight.w500
+    fontWeight: FontWeight.w500,
   );
-  static const TextStyle dotsLabelTextStyle = TextStyle(
+  static TextStyle dotsLabelTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 12,
     color: AppColor.attachmentFileNameColor,
-    fontWeight: FontWeight.w500
+    fontWeight: FontWeight.w500,
   );
-  static const TextStyle sizeLabelTextStyle = TextStyle(
+  static TextStyle sizeLabelTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 12,
     color: AppColor.attachmentFileSizeColor,
-    fontWeight: FontWeight.normal
+    fontWeight: FontWeight.normal,
   );
 
   static double getMaxWidthItem({

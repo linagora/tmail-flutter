@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 
@@ -19,12 +20,12 @@ class SuggestionItemWidgetStyles {
     borderRadius: BorderRadius.all(Radius.circular(20))
   );
 
-  static const TextStyle subTitleTextOriginStyle = TextStyle(
+  static TextStyle subTitleTextOriginStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: AppColor.colorHintSearchBar,
     fontSize: 13,
     fontWeight: FontWeight.normal
   );
-  static const TextStyle subTitleWordSearchedStyle = TextStyle(
+  static TextStyle subTitleWordSearchedStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 13,
     fontWeight: FontWeight.bold

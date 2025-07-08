@@ -55,7 +55,7 @@ class TopBarDestinationPickerBuilder extends StatelessWidget {
                 softWrap: CommonTextStyle.defaultSoftWrap,
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 20,
                     color: Colors.black,
                     fontWeight: FontWeight.w700))),
@@ -103,7 +103,7 @@ class TopBarDestinationPickerBuilder extends StatelessWidget {
                             softWrap: CommonTextStyle.defaultSoftWrap,
                             overflow: CommonTextStyle.defaultTextOverFlow,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                               fontSize: 15,
                               color: AppColor.colorTextButton,
                               fontWeight: FontWeight.normal))

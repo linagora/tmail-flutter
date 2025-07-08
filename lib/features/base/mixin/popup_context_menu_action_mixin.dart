@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/bottom_popup/cupertino_action_sheet_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
@@ -81,8 +82,13 @@ mixin PopupContextMenuActionMixin {
       cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
       child: CupertinoActionSheetAction(
         child: Text(
-            AppLocalizations.of(context).cancel,
-            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorTextButton)),
+          AppLocalizations.of(context).cancel,
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+            color: AppColor.colorTextButton,
+          ),
+        ),
         onPressed: () => popBack(),
       ),
     );

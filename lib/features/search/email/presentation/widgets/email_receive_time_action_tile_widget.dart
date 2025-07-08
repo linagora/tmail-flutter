@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -30,11 +31,13 @@ class EmailReceiveTimeActionTileWidget extends StatelessWidget {
               width: 320,
               child: Row(children: [
                 Expanded(child: Text(
-                    receiveTimeType.getTitle(context),
-                    style: const TextStyle(
-                        fontSize: 17,
-                        color: Colors.black,
-                        fontWeight: FontWeight.normal))),
+                  receiveTimeType.getTitle(context),
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    fontSize: 17,
+                    color: Colors.black,
+                    fontWeight: FontWeight.normal,
+                  ),
+                )),
                 if (receiveTimeType == receiveTimeSelected)
                   const SizedBox(width: 12),
                 if (receiveTimeType == receiveTimeSelected)

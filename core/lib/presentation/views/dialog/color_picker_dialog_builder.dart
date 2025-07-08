@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
@@ -45,11 +46,11 @@ class ColorPickerDialogBuilder {
           title: Text(
             title ?? '',
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 20,
               color: Colors.black)),
-          titleTextStyle: const TextStyle(
+          titleTextStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontWeight: FontWeight.bold,
             fontSize: 20,
             color: Colors.black),
@@ -116,7 +117,7 @@ class ColorPickerDialogBuilder {
                 textActionCancel ?? '',
                 radius: 5,
                 height: 30,
-                textStyle: const TextStyle(
+                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.normal),
@@ -126,7 +127,7 @@ class ColorPickerDialogBuilder {
                 textActionResetDefault ?? '',
                 radius: 5,
                 height: 30,
-                textStyle: const TextStyle(
+                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.normal),
@@ -137,7 +138,7 @@ class ColorPickerDialogBuilder {
                 textActionSetColor ?? '',
                 radius: 5,
                 height: 30,
-                textStyle: const TextStyle(
+                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500),

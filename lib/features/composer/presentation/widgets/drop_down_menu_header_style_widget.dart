@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -106,10 +107,11 @@ class DropDownMenuHeaderStyleWidget extends StatelessWidget {
 
   Widget _buildHeaderStyle(String name, double size, FontWeight fontWeight) {
     return Text(name,
-        style: TextStyle(
-            fontSize: size,
-            fontWeight: fontWeight,
-            color: Colors.black),
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+          fontSize: size,
+          fontWeight: fontWeight,
+          color: Colors.black,
+        ),
         maxLines: 1,
         softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow);

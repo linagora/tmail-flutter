@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/semantics/text_field_semantics.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class TextFieldBuilder extends StatefulWidget {
     this.obscureText = false,
     this.autoFocus = false,
     this.readOnly = false,
-    this.textStyle = const TextStyle(color: AppColor.textFieldTextColor),
+    this.textStyle,
     this.textDirection = TextDirection.ltr,
     this.textInputAction,
     this.decoration = const InputDecoration(),
@@ -89,7 +90,9 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
       maxLines: widget.maxLines,
       minLines: widget.minLines,
       keyboardAppearance: widget.keyboardAppearance,
-      style: widget.textStyle,
+      style: widget.textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
+        color: AppColor.textFieldTextColor,
+      ),
       obscureText: widget.obscureText,
       keyboardType: widget.keyboardType,
       autofocus: widget.autoFocus,

@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -17,7 +18,7 @@ class PrivacyLinkWidget extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context).byContinuingYouAreAgreeingToOur,
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             color: AppColor.colorTextBody,
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -26,7 +27,7 @@ class PrivacyLinkWidget extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: AppLocalizations.of(context).privacyPolicy,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               color: AppColor.loginTextFieldFocusedBorder,
               fontSize: 14),
             recognizer: TapGestureRecognizer()..onTap = () => AppUtils.launchLink(privacyUrlString)

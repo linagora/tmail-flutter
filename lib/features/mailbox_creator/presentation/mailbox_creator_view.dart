@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
@@ -104,7 +105,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
         controller: controller.nameInputController,
         textDirection: DirectionUtils.getDirectionByLanguage(context),
         maxLines: 1,
-        textStyle: const TextStyle(
+        textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
           color: AppColor.colorNameEmail,
           fontSize: 16,
           overflow: CommonTextStyle.defaultTextOverFlow),
@@ -124,7 +125,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
         child: Text(
           AppLocalizations.of(context).selectParentFolder,
           textAlign: TextAlign.left,
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 13,
               color: AppColor.colorHintSearchBar,
               fontWeight: FontWeight.normal)),
@@ -154,7 +155,7 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                   maxLines: 1,
                   softWrap: CommonTextStyle.defaultSoftWrap,
                   overflow: CommonTextStyle.defaultTextOverFlow,
-                  style: TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                       fontSize: 15,
                       color: controller.selectedMailbox.value == null
                           ? AppColor.colorHintSearchBar

@@ -109,7 +109,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
               padding: const EdgeInsets.only(left: 12, right: 12, bottom: 8, top: 12),
               child: Text(
                 AppLocalizations.of(context).recent,
-                style: const TextStyle(
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontSize: 13.0,
                   color: AppColor.colorTextButtonHeaderThread,
                   fontWeight: FontWeight.w500
@@ -222,7 +222,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         child: Row(children: [
           Text(
             AppLocalizations.of(context).showingResultsFor,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 13.0,
               color: AppColor.colorTextButtonHeaderThread,
               fontWeight: FontWeight.w500
@@ -231,7 +231,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           const SizedBox(width: 4),
           Expanded(child: Text(
             '"$keyword"',
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 13.0,
               color: Colors.black,
               fontWeight: FontWeight.w500
@@ -262,7 +262,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         hintStyle: ThemeUtils.textStyleBodyBody2(
           color: AppColor.steelGray400,
         ),
-        labelStyle: const TextStyle(color: Colors.black, fontSize: 16.0)
+        labelStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(color: Colors.black, fontSize: 16.0)
       ),
       leftButton: Padding(
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),

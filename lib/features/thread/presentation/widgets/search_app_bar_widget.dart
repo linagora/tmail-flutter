@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
@@ -126,7 +127,7 @@ class SearchAppBarWidget extends StatelessWidget {
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       autoFocus: autoFocus ?? true,
       focusNode: searchFocusNode,
-      textStyle: inputTextStyle ?? const TextStyle(
+      textStyle: inputTextStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
         color: AppColor.colorNameEmail,
         fontSize: 17
       ),
@@ -136,11 +137,15 @@ class SearchAppBarWidget extends StatelessWidget {
         enabledBorder: InputBorder.none,
         contentPadding: EdgeInsets.zero,
         hintText: hintText,
-        hintStyle: inputHintTextStyle ?? const TextStyle(
+        hintStyle: inputHintTextStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
           color: AppColor.colorHintSearchBar,
           fontSize: 17.0
         ),
-        labelStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)),
+        labelStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+          color: AppColor.colorHintSearchBar,
+          fontSize: 17.0,
+        ),
+      ),
       controller: searchInputController,
     );
   }

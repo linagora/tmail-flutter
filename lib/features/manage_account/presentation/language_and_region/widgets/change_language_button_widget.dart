@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -54,7 +55,7 @@ class ChangeLanguageButtonWidget extends StatelessWidget {
   Widget _buildTitleLanguageWidget(BuildContext context) {
     return Text(
       AppLocalizations.of(context).language,
-      style: const TextStyle(
+      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.normal,
         color: AppColor.colorContentEmail
@@ -113,7 +114,7 @@ class ChangeLanguageButtonWidget extends StatelessWidget {
           child: Row(children: [
             Expanded(child: Text(
               _controller.languageSelected.value.getLanguageNameByCurrentLocale(context),
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
                 color: Colors.black

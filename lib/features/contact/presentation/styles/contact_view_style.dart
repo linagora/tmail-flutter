@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
@@ -8,16 +9,18 @@ class ContactViewStyle {
   static const double viewMaxHeight = 624.0;
   static const double viewMaxWidth = 558.0;
 
-  static TextStyle searchInputHintTextStyle = const TextStyle(
+  static TextStyle searchInputHintTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 15,
     fontWeight: FontWeight.w400,
-    color: AppColor.colorHintSearchBar
+    color: AppColor.colorHintSearchBar,
   );
 
-  static TextStyle searchInputTextStyle = const TextStyle(
+  static TextStyle searchInputTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 15,
     fontWeight: FontWeight.w400,
-    color: Colors.black
+    color: Colors.black,
   );
 
   static double getContactViewHeight(

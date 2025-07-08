@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/button/multi_click_widget.dart';
 import 'package:core/utils/direction_utils.dart';
@@ -98,7 +99,7 @@ class SettingsView extends GetWidget<SettingsController> {
             maxLines: 1,
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 20,
               color: AppColor.colorNameEmail,
               fontWeight: FontWeight.w700,
@@ -149,7 +150,7 @@ class SettingsView extends GetWidget<SettingsController> {
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
-                    style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton)
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 17, color: AppColor.colorTextButton)
                   )
                 ),
               ]),
@@ -163,7 +164,7 @@ class SettingsView extends GetWidget<SettingsController> {
         textAlign: TextAlign.center,
         overflow: CommonTextStyle.defaultTextOverFlow,
         softWrap: CommonTextStyle.defaultSoftWrap,
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 20,
           color: Colors.black,
           fontWeight: FontWeight.bold

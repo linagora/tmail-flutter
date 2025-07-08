@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class TabletBottomBarComposerWidgetStyle {
@@ -18,7 +19,7 @@ class TabletBottomBarComposerWidgetStyle {
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.symmetric(horizontal: 32, vertical: 12);
   static const EdgeInsetsGeometry iconPadding = EdgeInsetsDirectional.all(5);
   static const EdgeInsetsGeometry sendButtonPadding = EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 24);
-  static const TextStyle sendButtonTextStyle = TextStyle(
+  static TextStyle sendButtonTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontWeight: FontWeight.w500,
     fontSize: 15,
     color: Colors.white,

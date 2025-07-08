@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_icon_button.dart';
@@ -25,14 +26,14 @@ class IdentitiesHeaderWidget extends StatelessWidget {
       children: [
         Text(
           AppLocalizations.of(context).identities,
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: 17,
             fontWeight: FontWeight.w500,
             color: Colors.black)),
         const SizedBox(height: 4),
         Text(
           AppLocalizations.of(context).identitiesSettingExplanation,
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: 15,
             fontWeight: FontWeight.normal,
             color: AppColor.colorSettingExplanation)),

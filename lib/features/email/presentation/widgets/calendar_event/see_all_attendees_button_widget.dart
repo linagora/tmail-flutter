@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/see_all_attendees_button_widget_styles.dart';
@@ -25,7 +26,7 @@ class SeeAllAttendeesButtonWidget extends StatelessWidget {
           horizontal: SeeAllAttendeesButtonWidgetStyles.horizontalPadding,
           vertical: SeeAllAttendeesButtonWidgetStyles.verticalPadding
         ),
-        customStyle: const TextStyle(
+        customStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: SeeAllAttendeesButtonWidgetStyles.textSize,
           color: SeeAllAttendeesButtonWidgetStyles.textColor
         ),

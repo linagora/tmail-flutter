@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                              ? const EdgeInsets.symmetric(vertical: 5)
                              : const EdgeInsets.symmetric(vertical: 10),
                            iconSize: DirectionUtils.isDirectionRTLByLanguage(context) ? null : 16,
-                           textStyle: const TextStyle(
+                           textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                              fontSize: 15,
                              color: AppColor.colorTextButton,
                              fontWeight: FontWeight.normal
@@ -71,7 +72,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                          padding: const EdgeInsetsDirectional.only(start: 32, top: 20),
                          child: Text(
                            AppLocalizations.of(context).manage_account,
-                           style: const TextStyle(
+                           style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                              color: Colors.black,
                              fontWeight: FontWeight.bold,
                              fontSize: 17

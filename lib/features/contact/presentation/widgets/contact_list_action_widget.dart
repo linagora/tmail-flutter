@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -33,7 +34,7 @@ class ContactListActionWidget extends StatelessWidget {
               minWidth: 156,
               maxLines: 1,
               textAlign: TextAlign.center,
-              textStyle: const TextStyle(
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontWeight: FontWeight.w500,
                 fontSize: 17,
                 color: AppColor.primaryColor
@@ -51,7 +52,7 @@ class ContactListActionWidget extends StatelessWidget {
               minWidth: 156,
               maxLines: 1,
               textAlign: TextAlign.center,
-              textStyle: const TextStyle(
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontWeight: FontWeight.w500,
                 fontSize: 17,
                 color: Colors.white

@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
@@ -210,7 +211,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   Widget _buildTitleItem(BuildContext context) {
     return TextOverflowBuilder(
       widget.presentationMailbox.getDisplayName(context),
-      style: const TextStyle(
+      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: 15,
         color: Colors.black
       ),
@@ -221,7 +222,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
     if (widget.presentationMailbox.mailboxPath?.isNotEmpty == true) {
       return TextOverflowBuilder(
         (widget.presentationMailbox.mailboxPath ?? ''),
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 11,
           color: AppColor.colorMailboxPath,
           fontWeight: FontWeight.normal
@@ -230,7 +231,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
     } else if (widget.presentationMailbox.isTeamMailboxes) {
       return TextOverflowBuilder(
         widget.presentationMailbox.emailTeamMailBoxes,
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 11,
           color: AppColor.colorEmailAddressFull,
           fontWeight: FontWeight.normal

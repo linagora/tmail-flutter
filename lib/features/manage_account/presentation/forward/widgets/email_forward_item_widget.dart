@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
@@ -112,7 +113,7 @@ class EmailForwardItemWidget extends StatelessWidget {
                         overflow: CommonTextStyle.defaultTextOverFlow,
                         softWrap: CommonTextStyle.defaultSoftWrap,
                         maxLines: 1,
-                        style: const TextStyle(
+                        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.normal,
                           color: AppColor.colorContentEmail
@@ -166,7 +167,7 @@ class EmailForwardItemWidget extends StatelessWidget {
       return (AvatarBuilder()
         ..text(recipientForward.emailAddress.asString().firstLetterToUpperCase)
         ..size(40)
-        ..addTextStyle(const TextStyle(
+        ..addTextStyle(ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontWeight: FontWeight.w500,
             fontSize: 16,
             color: Colors.white))

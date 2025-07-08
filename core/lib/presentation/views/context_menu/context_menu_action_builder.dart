@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,7 +22,7 @@ abstract class ContextMenuActionBuilder<T> {
   }
 
   TextStyle actionTextStyle() {
-    return const TextStyle(
+    return ThemeUtils.defaultTextStyleInterFont.copyWith(
       fontSize: 15,
       color: AppColor.nameUserColor);
   }

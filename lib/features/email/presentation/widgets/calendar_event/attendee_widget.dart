@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
@@ -23,7 +24,7 @@ class AttendeeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text.rich(
       TextSpan(
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: AttendeeWidgetStyles.textSize,
           fontWeight: FontWeight.w500,
           color: AttendeeWidgetStyles.textColor
@@ -34,7 +35,7 @@ class AttendeeWidget extends StatelessWidget {
           if (attendee.mailto?.mailAddress.value.isNotEmpty == true)
             TextSpan(
               text: ' <${attendee.mailto!.mailAddress.value}> ',
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 color: AttendeeWidgetStyles.mailtoColor,
                 fontSize: AttendeeWidgetStyles.textSize,
                 fontWeight: FontWeight.w500

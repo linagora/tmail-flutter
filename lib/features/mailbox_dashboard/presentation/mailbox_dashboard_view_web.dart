@@ -424,7 +424,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 label: Text(
                   AppLocalizations.of(context).selectAllMessagesOfThisPage,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis
+                  overflow: TextOverflow.ellipsis,
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.normal,
+                    color: AppColor.colorFilterMessageTitle,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
@@ -436,7 +441,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   elevation: 0.0,
                   foregroundColor: AppColor.colorTextButtonHeaderThread,
                   maximumSize: const Size.fromWidth(250),
-                  textStyle: const TextStyle(
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 13,
                     fontWeight: FontWeight.normal,
                     color: AppColor.colorFilterMessageTitle
@@ -562,7 +567,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   child: TMailButtonWidget.fromText(
                     text: appLocalizations.hide,
                     backgroundColor: Colors.transparent,
-                    textStyle: const TextStyle(
+                    textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                       color: AppColor.colorCancelButton,
                     ),
                     onTapActionCallback: () {
@@ -642,7 +647,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   backgroundColor: Colors.transparent,
                   margin: const EdgeInsetsDirectional.only(start: 8),
                   borderRadius: 10,
-                  textStyle: const TextStyle(
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     color: AppColor.primaryColor,
                     fontSize: 13,
                     fontWeight: FontWeight.w500),
@@ -653,7 +658,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   backgroundColor: Colors.transparent,
                   margin: const EdgeInsetsDirectional.only(start: 8),
                   borderRadius: 10,
-                  textStyle: const TextStyle(
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     color: AppColor.primaryColor,
                     fontSize: 13,
                     fontWeight: FontWeight.w500),

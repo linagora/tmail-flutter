@@ -1,14 +1,15 @@
 import 'package:core/presentation/extensions/list_extensions.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const normalTextStyle = TextStyle(
+  final normalTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 16,
   );
-  const highlightTextStyle = TextStyle(
+  final highlightTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.red,
     fontSize: 16,
   );
