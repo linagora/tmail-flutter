@@ -47,7 +47,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                   return Obx(() => NavigationBarWidget(
                       imagePaths: controller.imagePaths,
                       accountId: controller.accountId.value,
-                      ownEmailAddress: controller.getOwnEmailAddress(),
+                      ownEmailAddress: controller.ownEmailAddress.value,
                       onTapApplicationLogoAction: () =>
                           controller.backToMailboxDashBoard(context: context),
                   settingActionTypes: const [ProfileSettingActionType.signOut],

@@ -113,6 +113,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_own_email_address_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -259,6 +260,7 @@ class MailboxDashBoardController extends ReloadableController
   final isDrawerOpened = RxBool(false);
   final isContextMenuOpened = RxBool(false);
   final isPopupMenuOpened = RxBool(false);
+  final ownEmailAddress = RxString('');
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -757,6 +759,7 @@ class MailboxDashBoardController extends ReloadableController
     _isFirstSessionLoad = true;
     sessionCurrent = session;
     accountId.value = currentAccountId;
+    synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
 
     injectAutoCompleteBindings(session, currentAccountId);
     injectRuleFilterBindings(session, currentAccountId);
@@ -3099,12 +3102,17 @@ class MailboxDashBoardController extends ReloadableController
 
   void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
     log('MailboxDashBoardController::_handleGetAllIdentitiesSuccess: IDENTITIES_SIZE = ${_identities?.length}');
-    final listIdentitiesMayDeleted = success.identities?.toListMayDeleted() ?? [];
+    final listIdentities = success.identities ?? [];
+    
+    final listIdentitiesMayDeleted = listIdentities.toListMayDeleted();
     _identities = listIdentitiesMayDeleted;
+
+    updateOwnEmailAddressFromIdentities(listIdentities);
   }
 
   void _handleGetAllIdentitiesFailure() {
     _identities = null;
+    synchronizeOwnEmailAddress(sessionCurrent?.getUserDisplayName() ?? '');
   }
 
   List<Identity> get listIdentities => _identities ?? [];
@@ -3159,8 +3167,6 @@ class MailboxDashBoardController extends ReloadableController
       );
     }
   }
-
-  String getOwnEmailAddress() => sessionCurrent?.getOwnEmailAddressOrEmpty() ?? '';
 
   @override
   void onClose() {

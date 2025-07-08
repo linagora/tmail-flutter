@@ -72,6 +72,20 @@ extension SessionExtension on Session {
     }
   }
 
+  String getUserDisplayName() {
+    try {
+      final accountDisplayName = personalAccount.name.value;
+      if (accountDisplayName.isNotEmpty) {
+        return accountDisplayName;
+      } else {
+        return username.value;
+      }
+    } catch (e) {
+      logError('SessionExtension::getUserDisplayName:Exception: $e');
+      return '';
+    }
+  }
+
   String getOwnEmailAddressOrEmpty() {
     try {
       return getOwnEmailAddress();

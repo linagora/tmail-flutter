@@ -243,6 +243,7 @@ void main() {
         .thenAnswer((_) => Stream.value(Right(GetAllIdentitiesSuccess(
           [identity1, identity2, identity3, identity4],
           null))));
+      when(mockManageAccountDashBoardController.ownEmailAddress).thenReturn(Rx(''));
       when(mockManageAccountDashBoardController.accountId).thenReturn(Rxn());
       when(mockManageAccountDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
         
