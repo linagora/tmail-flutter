@@ -424,7 +424,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 label: Text(
                   AppLocalizations.of(context).selectAllMessagesOfThisPage,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis
+                  overflow: TextOverflow.ellipsis,
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.normal,
+                    color: AppColor.colorFilterMessageTitle,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),

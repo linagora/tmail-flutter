@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';

@@ -374,6 +374,21 @@ flutter:
         - asset: assets/fonts/Inter/Inter-Medium.ttf
           weight: 500
         - asset: assets/fonts/Inter/Inter-Regular.ttf
+    - family: Roboto
+      fonts:
+       - asset: assets/fonts/roboto/Roboto-Regular.ttf
+    - family: NotoSansArabic
+      fonts:
+       - asset: assets/fonts/noto/NotoSansArabic-Regular.ttf
+    - family: NotoSansSymbols
+      fonts:
+       - asset: assets/fonts/noto/NotoSansSymbols-Regular.ttf
+    - family: NotoColorEmoji
+      fonts:
+       - asset: assets/fonts/noto/NotoColorEmoji.ttf
+    - family: NotoEmoji
+      fonts:
+       - asset: assets/fonts/noto/NotoEmoji-Regular.ttf
 
 flutter_icons:
   android: true

@@ -1,6 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/presentation/utils/theme_utils.dart';
-import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';

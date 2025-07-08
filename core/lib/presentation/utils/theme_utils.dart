@@ -10,6 +10,7 @@ class ThemeUtils {
     return ThemeData(
       scaffoldBackgroundColor: Colors.white,
       fontFamily: ConstantsUI.fontApp,
+      fontFamilyFallback: ConstantsUI.fontFamilyFallback,
       appBarTheme: _appBarTheme,
       textTheme: _textTheme,
       textSelectionTheme: _textSelectionTheme,
@@ -109,6 +110,7 @@ class ThemeUtils {
     double? fontSize,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: fontWeight ?? FontWeight.w500,
     letterSpacing: 0.0,
     fontSize: fontSize ?? 16,
@@ -122,6 +124,7 @@ class ThemeUtils {
     FontWeight? fontWeight,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: fontWeight ?? FontWeight.w400,
     letterSpacing: 0.0,
     fontSize: 15,
@@ -135,6 +138,7 @@ class ThemeUtils {
     FontWeight? fontWeight,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: fontWeight ?? FontWeight.w400,
     letterSpacing: 0.0,
     fontSize: 14,
@@ -148,6 +152,7 @@ class ThemeUtils {
     FontWeight? fontWeight,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: fontWeight ?? FontWeight.w600,
     letterSpacing: 0.0,
     fontSize: 15,
@@ -161,6 +166,7 @@ class ThemeUtils {
     FontWeight? fontWeight,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: fontWeight ?? FontWeight.w700,
     letterSpacing: 0.0,
     fontSize: 20,
@@ -173,6 +179,7 @@ class ThemeUtils {
     FontWeight? fontWeight,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: fontWeight ?? FontWeight.w500,
     letterSpacing: 0.0,
     fontSize: 24,
@@ -185,6 +192,7 @@ class ThemeUtils {
     FontWeight? fontWeight,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: fontWeight ?? FontWeight.w500,
     letterSpacing: 0.0,
     fontSize: 32,
@@ -197,6 +205,7 @@ class ThemeUtils {
     FontWeight? fontWeight,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: fontWeight ?? FontWeight.w500,
     letterSpacing: 0.0,
     fontSize: 17,
@@ -206,6 +215,7 @@ class ThemeUtils {
 
   static const textStyleM3HeadlineSmall = TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.0,
     fontSize: 24,
@@ -218,6 +228,7 @@ class ThemeUtils {
     double? fontSize,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.w700,
     letterSpacing: 0.0,
     fontSize: fontSize ?? 15,
@@ -227,6 +238,7 @@ class ThemeUtils {
 
   static TextStyle textStyleInter500() => const TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.0,
     fontSize: 14,
@@ -236,6 +248,7 @@ class ThemeUtils {
 
   static const TextStyle textStyleInter400 = TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.normal,
     letterSpacing: -0.13,
     fontSize: 13,
@@ -245,6 +258,7 @@ class ThemeUtils {
 
   static TextStyle textStyleM3LabelLarge({Color? color}) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
     fontSize: 14,
@@ -254,6 +268,7 @@ class ThemeUtils {
 
   static const TextStyle textStyleM3BodyMedium1 = TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.w400,
     letterSpacing: -0.15,
     fontSize: 16,
@@ -263,6 +278,7 @@ class ThemeUtils {
 
   static const TextStyle textStyleM3BodyMedium3 = TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.25,
     fontSize: 14,
@@ -272,6 +288,7 @@ class ThemeUtils {
 
   static final TextStyle textStyleM3BodyMedium = TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.25,
     fontSize: 14,
@@ -281,6 +298,7 @@ class ThemeUtils {
 
   static TextStyle textStyleAppShortcut() => const TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.normal,
     letterSpacing: 0.0,
     fontSize: 12,
@@ -290,6 +308,7 @@ class ThemeUtils {
 
   static TextStyle textStyleContentCaption() => const TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.normal,
     letterSpacing: 0,
     fontSize: 11,
@@ -299,6 +318,7 @@ class ThemeUtils {
 
   static TextStyle textStyleInter600() => TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.0,
     fontSize: 24,
@@ -308,6 +328,7 @@ class ThemeUtils {
 
   static const TextStyle defaultTextStyleInterFont = TextStyle(
     fontFamily: ConstantsUI.fontApp,
+    fontFamilyFallback: ConstantsUI.fontFamilyFallback,
   );
 
   static TextSelectionThemeData get _textSelectionTheme {
