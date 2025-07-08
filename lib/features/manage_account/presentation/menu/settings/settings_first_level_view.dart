@@ -19,11 +19,16 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
     return SingleChildScrollView(
       child: Column(children: [
         Obx(() => UserInformationWidget(
-          userName: controller.manageAccountDashboardController.accountId.value != null
-            ? controller.manageAccountDashboardController.getOwnEmailAddress()
-            : '',
-          padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils),
-          titlePadding: const EdgeInsetsDirectional.only(start: 16))),
+          ownEmailAddress: controller
+            .manageAccountDashboardController
+            .ownEmailAddress
+            .value,
+          padding: SettingsUtils.getPaddingInFirstLevel(
+            context,
+            controller.responsiveUtils,
+          ),
+          titlePadding: const EdgeInsetsDirectional.only(start: 16),
+        )),
         Divider(
           color: AppColor.colorDividerHorizontal,
           height: 1,

@@ -34,9 +34,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
       final dashboardController = controller.mailboxDashBoardController;
       final accountId = dashboardController.accountId.value;
       final session = dashboardController.sessionCurrent;
-      final username = accountId != null
-          ? dashboardController.getOwnEmailAddress()
-          : '';
+      final username = dashboardController.ownEmailAddress.value;
 
       final linagoraApps = dashboardController
           .appGridDashboardController

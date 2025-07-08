@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vac
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/update_own_email_address_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
@@ -53,6 +54,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   final settingsPageLevel = SettingsPageLevel.universal.obs;
   final vacationResponse = Rxn<VacationResponse>();
   final dashboardSettingAction = Rxn<UIAction>();
+  final ownEmailAddress = Rx<String>('');
 
   Session? sessionCurrent;
   bool? isVacationDateDialogDisplayed;
@@ -103,6 +105,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     log('ManageAccountDashBoardController::handleReloaded:');
     sessionCurrent = session;
     accountId.value = session.accountId;
+    synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
     _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
     _getVacationResponse();
     _getParametersRouter();
@@ -112,7 +115,8 @@ class ManageAccountDashBoardController extends ReloadableController {
     final arguments = Get.arguments;
     if (arguments is ManageAccountArguments) {
       sessionCurrent = arguments.session;
-      accountId.value = arguments.session?.personalAccount.accountId;
+      accountId.value = arguments.session?.accountId;
+      synchronizeOwnEmailAddress(arguments.session?.getOwnEmailAddressOrEmpty() ?? '');
       previousUri = arguments.previousUri;
       _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
       _getVacationResponse();
@@ -398,9 +402,6 @@ class ManageAccountDashBoardController extends ReloadableController {
       session: sessionCurrent!,
       accountId: accountId.value!);
   }
-
-  String getOwnEmailAddress() =>
-      sessionCurrent?.getOwnEmailAddressOrEmpty() ?? '';
 
   @override
   void onClose() {
