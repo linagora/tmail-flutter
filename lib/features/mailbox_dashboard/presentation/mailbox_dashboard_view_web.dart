@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_drawer_changed_extension.dart';
@@ -176,7 +177,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         )),
                         Obx(() {
                           final spamController = controller.spamReportController;
-                          if (spamController.showReportBanner) {
+
+                          if (spamController.spamReportState.value == SpamReportState.disabled ||
+                              spamController.presentationSpamMailbox.value == null) {
                             return const SizedBox.shrink();
                           }
 
