@@ -109,4 +109,8 @@ class SpamReportController extends BaseController {
   void setSpamPresentationMailbox(PresentationMailbox? spamMailbox) {
     presentationSpamMailbox.value = spamMailbox;
   }
+
+  bool get showReportBanner =>
+      spamReportState.value == SpamReportState.disabled ||
+      presentationSpamMailbox.value == null;
 }
