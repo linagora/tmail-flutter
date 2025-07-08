@@ -4801,4 +4801,19 @@ class AppLocalizations {
       name: 'youAreNotInvitedToThisEventPleaseContactTheOrganizer',
     );
   }
+
+  String countMessageInSpam(String count) {
+    return Intl.message(
+      '$count message in spam',
+      name: 'countMessageInSpam',
+      args: [count],
+    );
+  }
+
+  String get view {
+    return Intl.message(
+      'View',
+      name: 'view',
+    );
+  }
 }
