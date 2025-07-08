@@ -220,7 +220,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
-  String get ownEmailAddress => mailboxDashBoardController.getOwnEmailAddress();
+  String get ownEmailAddress => mailboxDashBoardController.ownEmailAddress.value;
 
   SingleEmailController(
     this._getEmailContentInteractor,
@@ -2052,7 +2052,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _printEmailInteractor.execute(
         EmailPrint(
           appName: appLocalizations.app_name,
-          userName: mailboxDashBoardController.getOwnEmailAddress(),
+          userName: mailboxDashBoardController.ownEmailAddress.value,
           attachments: currentEmailLoaded.value!.attachments,
           emailContent: currentEmailLoaded.value!.htmlContent,
           fromPrefix: appLocalizations.from_email_address_prefix,
@@ -2555,7 +2555,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     listEmailAddressAttendees.addAll(listEmailAddress);
 
-    final currentUserEmail = mailboxDashBoardController.getOwnEmailAddress();
+    final currentUserEmail = mailboxDashBoardController.ownEmailAddress.value;
     final listEmailAddressMailTo = listEmailAddressAttendees.removeInvalidEmails(currentUserEmail);
     log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
     mailboxDashBoardController.openComposer(

@@ -357,7 +357,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       case MailboxActions.copySubaddress:
         try {
           final subAddress = getSubAddress(
-            dashboardController.getOwnEmailAddress(),
+            dashboardController.ownEmailAddress.value,
             findNodePathWithSeparator(mailbox.id, '.')!,
           );
           copySubAddressAction(context, subAddress);
@@ -371,7 +371,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       case MailboxActions.allowSubaddressing:
         try{
           final subAddress = getSubAddress(
-            dashboardController.getOwnEmailAddress(),
+            dashboardController.ownEmailAddress.value,
             findNodePathWithSeparator(mailbox.id, '.')!,
           );
           openConfirmationDialogSubAddressingAction(

@@ -11,7 +11,7 @@ typedef OnSubtitleClick = void Function();
 
 class UserInformationWidget extends StatelessWidget {
 
-  final String userName;
+  final String ownEmailAddress;
   final String? subtitle;
   final EdgeInsetsGeometry? titlePadding;
   final OnSubtitleClick? onSubtitleClick;
@@ -20,7 +20,7 @@ class UserInformationWidget extends StatelessWidget {
 
   const UserInformationWidget({
     Key? key,
-    required this.userName,
+    required this.ownEmailAddress,
     this.subtitle,
     this.titlePadding,
     this.onSubtitleClick,
@@ -35,7 +35,7 @@ class UserInformationWidget extends StatelessWidget {
       decoration: BoxDecoration(border: border),
       child: Row(children: [
         UserAvatarBuilder(
-          username: userName.firstLetterToUpperCase,
+          username: ownEmailAddress.firstLetterToUpperCase,
           size: 51,
           textStyle: ThemeUtils.textStyleInter500().copyWith(
             fontSize: 25.5,
@@ -49,7 +49,7 @@ class UserInformationWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SelectableText(
-              userName,
+              ownEmailAddress,
               maxLines: 1,
               style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 17,

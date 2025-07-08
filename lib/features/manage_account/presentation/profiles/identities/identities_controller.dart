@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/extensions/identity_request_dto_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
@@ -39,6 +40,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_html_signature_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/update_own_email_address_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/delete_identity_dialog_builder.dart';
@@ -128,6 +130,10 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       _deleteIdentityAction(failure.identityId);
     } else if (failure is GetIdentityCacheOnWebFailure) {
       _removeIdentityCache();
+    } else if (failure is GetAllIdentitiesFailure) {
+      accountDashBoardController.synchronizeOwnEmailAddress(
+        accountDashBoardController.sessionCurrent?.getUserDisplayName() ?? '',
+      );
     }
   }
 
@@ -158,12 +164,16 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   }
 
   void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
-    if (success.identities?.isNotEmpty == true) {
-      final newListIdentities = success.identities!
+    final listIdentities = success.identities ?? [];
+
+    if (listIdentities.isNotEmpty) {
+      final newListIdentities = listIdentities
         .where((identity) => identity.mayDelete == true && identity.name?.trim().isNotEmpty == true)
         .toList();
       listAllIdentities.addAll(newListIdentities);
     }
+
+    accountDashBoardController.updateOwnEmailAddressFromIdentities(listIdentities);
 
     if (listAllIdentities.isNotEmpty) {
       selectIdentity(listAllIdentities.first);

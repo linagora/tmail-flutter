@@ -1229,7 +1229,7 @@ class MailboxController extends BaseMailboxController
       case MailboxActions.copySubaddress:
         try{
           final subaddress = getSubAddress(
-            mailboxDashBoardController.getOwnEmailAddress(),
+            mailboxDashBoardController.ownEmailAddress.value,
             findNodePathWithSeparator(mailbox.id, '.')!,
           );
           copySubAddressAction(context, subaddress);
@@ -1247,7 +1247,7 @@ class MailboxController extends BaseMailboxController
       case MailboxActions.allowSubaddressing:
         try{
           final subAddress = getSubAddress(
-            mailboxDashBoardController.getOwnEmailAddress(),
+            mailboxDashBoardController.ownEmailAddress.value,
             findNodePathWithSeparator(mailbox.id, '.')!,
           );
           openConfirmationDialogSubAddressingAction(

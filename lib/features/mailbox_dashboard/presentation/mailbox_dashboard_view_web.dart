@@ -78,30 +78,34 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
                         return Obx(() {
                           final accountId = controller.accountId.value;
-
-                        return NavigationBarWidget(
-                          imagePaths: controller.imagePaths,
-                          accountId: accountId,
-                          ownEmailAddress: controller.getOwnEmailAddress(),
-                          contactSupportCapability: accountId != null
+                          final ownEmailAddress = controller.ownEmailAddress.value;
+                          final contactSupportCapability = accountId != null
                             ? controller.sessionCurrent?.getContactSupportCapability(accountId)
-                            : null,
-                          searchForm: SearchInputFormWidget(),
-                          appGridController: controller.appGridDashboardController,
-                          settingActionTypes: ProfileSettingActionType.values,
-                          onTapApplicationLogoAction: controller.redirectToInboxAction,
-                          onTapContactSupportAction: (contactSupport) =>
-                              controller.onGetHelpOrReportBug(contactSupport),
-                          onProfileSettingActionTypeClick: (actionType) =>
-                            controller.handleProfileSettingActionTypeClick(
+                            : null;
+
+                          return NavigationBarWidget(
+                            imagePaths: controller.imagePaths,
+                            accountId: accountId,
+                            ownEmailAddress: ownEmailAddress,
+                            contactSupportCapability: contactSupportCapability,
+                            searchForm: SearchInputFormWidget(),
+                            appGridController:
+                                controller.appGridDashboardController,
+                            settingActionTypes: ProfileSettingActionType.values,
+                            onTapApplicationLogoAction:
+                                controller.redirectToInboxAction,
+                            onTapContactSupportAction: (contactSupport) =>
+                                controller.onGetHelpOrReportBug(contactSupport),
+                            onProfileSettingActionTypeClick: (actionType) =>
+                                controller.handleProfileSettingActionTypeClick(
                               context: context,
                               actionType: actionType,
                             ),
                           );
                         });
-                      }
+                      },
                     ),
-                    Expanded(child: Row(children: [
+                  Expanded(child: Row(children: [
                       Column(children: [
                         ComposeButtonWidget(
                           imagePaths: controller.imagePaths,
@@ -144,13 +148,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                   ),
                                   const Spacer(),
                                   Obx(() {
-                                    final accountId = controller.accountId.value;
-                                    final ownEmailAddress = accountId == null
-                                      ? ''
-                                      : controller.getOwnEmailAddress();
-
                                     return ProfileSettingIcon(
-                                      ownEmailAddress: ownEmailAddress,
+                                      ownEmailAddress: controller.ownEmailAddress.value,
                                       settingActionTypes: ProfileSettingActionType.values,
                                       onProfileSettingActionTypeClick: (actionType) =>
                                         controller.handleProfileSettingActionTypeClick(
