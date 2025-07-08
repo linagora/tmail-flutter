@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -110,7 +111,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                       AppLocalizations.of(context).keepLocalCopyForwardLabel,
                       overflow: CommonTextStyle.defaultTextOverFlow,
                       softWrap: CommonTextStyle.defaultSoftWrap,
-                      style: const TextStyle(
+                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: Colors.black)

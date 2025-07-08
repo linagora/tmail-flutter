@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class AttachmentsInfo extends StatelessWidget {
           numberOfAttachments,
           totalSizeInfo,
         ),
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: EmailAttachmentsStyles.headerTextSize,
           fontWeight: EmailAttachmentsStyles.headerFontWeight,
           color: EmailAttachmentsStyles.headerTextColor
@@ -58,7 +59,7 @@ class AttachmentsInfo extends StatelessWidget {
           backgroundColor: Colors.transparent,
           borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
           padding: EmailAttachmentsStyles.buttonPadding,
-          textStyle: const TextStyle(
+          textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: EmailAttachmentsStyles.buttonTextSize,
             color: EmailAttachmentsStyles.buttonTextColor,
             fontWeight: EmailAttachmentsStyles.buttonFontWeight
@@ -77,7 +78,7 @@ class AttachmentsInfo extends StatelessWidget {
             backgroundColor: Colors.transparent,
             borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
             padding: EmailAttachmentsStyles.buttonPadding,
-            textStyle: const TextStyle(
+            textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: EmailAttachmentsStyles.buttonTextSize,
               color: EmailAttachmentsStyles.buttonTextColor,
               fontWeight: EmailAttachmentsStyles.buttonFontWeight

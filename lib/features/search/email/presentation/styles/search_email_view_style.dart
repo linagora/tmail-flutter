@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +9,11 @@ import 'package:flutter/material.dart';
 class SearchEmailViewStyle {
   static const SizedBox searchFilterSizeBoxMargin = SizedBox(width: 8);
 
-  static const TextStyle searchRecentTitleStyle = TextStyle(
+  static TextStyle searchRecentTitleStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 13.0,
     color: AppColor.colorTextButtonHeaderThread,
-    fontWeight: FontWeight.w500
+    fontWeight: FontWeight.w500,
   );
 
   static const EdgeInsetsGeometry listSearchFilterButtonMargin = EdgeInsetsDirectional.only(top: 16);

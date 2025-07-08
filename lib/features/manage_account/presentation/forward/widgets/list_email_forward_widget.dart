@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -78,7 +79,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           child: Text(
             AppLocalizations.of(context).select_all,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 15,
               fontWeight: FontWeight.normal,
               color: AppColor.colorTextButton
@@ -107,7 +108,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
             controller.isAllSelected
               ? AppLocalizations.of(context).totalEmailSelected(controller.listRecipientForwardSelected.length)
               : AppLocalizations.of(context).count_email_selected(controller.listRecipientForwardSelected.length),
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 15,
               fontWeight: FontWeight.normal,
               color: AppColor.colorTextButton
@@ -127,7 +128,7 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
           child: Text(
             AppLocalizations.of(context).remove,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 15,
               fontWeight: FontWeight.normal,
               color: AppColor.colorDeletePermanentlyButton

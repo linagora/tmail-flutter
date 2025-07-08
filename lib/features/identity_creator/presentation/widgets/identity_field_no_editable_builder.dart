@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 
@@ -20,7 +21,7 @@ class IdentityFieldNoEditableBuilder extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         _label,
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.normal,
           color: AppColor.colorContentEmail)),
@@ -36,7 +37,7 @@ class IdentityFieldNoEditableBuilder extends StatelessWidget {
           color: AppColor.colorInputBackgroundCreateMailbox),
         child: Text(
           _emailAddressSelected?.email ?? '',
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: 16,
             fontWeight: FontWeight.normal,
             color: AppColor.colorInputBorderCreateMailbox),

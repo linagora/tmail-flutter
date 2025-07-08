@@ -1,4 +1,6 @@
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -549,7 +551,7 @@ class ThreadView extends GetWidget<ThreadController>
               !presentationEmail.hasRead
                 ? AppLocalizations.of(context).mark_as_read
                 : AppLocalizations.of(context).mark_as_unread,
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 15,
                 color: AppColor.primaryColor,
               ),
@@ -576,7 +578,7 @@ class ThreadView extends GetWidget<ThreadController>
                 const SizedBox(width: 11),
                 Text(
                   AppLocalizations.of(context).archiveMessage,
-                  style: const TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 15,
                     color: AppColor.primaryColor,
                   ),
@@ -707,7 +709,7 @@ class ThreadView extends GetWidget<ThreadController>
                 () => Text(
                   AppLocalizations.of(context).moveConversation(controller.listEmailDrag.length),
                   overflow: TextOverflow.clip,
-                  style: const TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

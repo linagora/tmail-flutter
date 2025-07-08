@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_time_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -69,7 +70,7 @@ enum EmailRecoveryField {
   }
 
   TextStyle getTitleTextStyle() {
-    return const TextStyle(
+    return ThemeUtils.defaultTextStyleInterFont.copyWith(
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: AppColor.colorContentEmail,
@@ -89,7 +90,7 @@ enum EmailRecoveryField {
         color = AppColor.colorHintSearchBar;
         break;
     }
-    return TextStyle(
+    return ThemeUtils.defaultTextStyleInterFont.copyWith(
       fontSize: 16,
       fontWeight: FontWeight.w400,
       color: color,

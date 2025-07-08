@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_attendance.dart';
@@ -86,7 +87,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
               ),
               child: Text.rich(
                 TextSpan(
-                  style: const TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: CalendarEventInformationWidgetStyles
                         .invitationMessageTextSize,
                     fontWeight: FontWeight.w500,
@@ -96,7 +97,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: calendarEvent.organizerName,
-                      style: const TextStyle(
+                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         color: CalendarEventInformationWidgetStyles
                             .invitationMessageColor,
                         fontSize: CalendarEventInformationWidgetStyles
@@ -159,7 +160,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                 AppLocalizations
                     .of(context)
                     .youAreNotInvitedToThisEventPleaseContactTheOrganizer,
-                style: const TextStyle(
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontSize: CalendarEventInformationWidgetStyles
                       .invitationMessageTextSize,
                   fontWeight: FontWeight.w500,

@@ -29,7 +29,7 @@ class EmailRulesItemWidget extends StatelessWidget {
       color: Colors.white,
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Text(rule.name,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 color: Colors.black)),

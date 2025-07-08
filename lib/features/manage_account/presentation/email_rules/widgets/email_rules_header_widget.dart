@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -58,7 +59,7 @@ class EmailRulesHeaderWidget extends StatelessWidget {
             minWidth: 130,
             padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 8),
             iconSize: 20,
-            textStyle: const TextStyle(
+            textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 17,
               color: Colors.white,
               fontWeight: FontWeight.w500,
@@ -78,7 +79,7 @@ class EmailRulesHeaderWidget extends StatelessWidget {
         iconColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 12),
         iconSize: 20,
-        textStyle: const TextStyle(
+        textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 17,
           color: Colors.white,
           fontWeight: FontWeight.w500,

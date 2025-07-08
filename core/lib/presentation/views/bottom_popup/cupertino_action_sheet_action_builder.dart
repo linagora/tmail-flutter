@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -26,7 +27,11 @@ abstract class CupertinoActionSheetActionBuilder<T> {
   }
 
   TextStyle actionTextStyle({TextStyle? textStyle}) {
-    return textStyle ?? const TextStyle(fontSize: 17, color: AppColor.colorNameEmail);
+    return textStyle ??
+        ThemeUtils.defaultTextStyleInterFont.copyWith(
+          fontSize: 17,
+          color: AppColor.colorNameEmail,
+        );
   }
 
   Widget build();

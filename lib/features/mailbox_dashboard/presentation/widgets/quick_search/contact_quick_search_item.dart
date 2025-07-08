@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -31,7 +32,7 @@ class ContactQuickSearchItem extends StatelessWidget {
                   maxLines: 1,
                   softWrap: CommonTextStyle.defaultSoftWrap,
                   overflow: CommonTextStyle.defaultTextOverFlow,
-                  style: const TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.normal
@@ -43,7 +44,7 @@ class ContactQuickSearchItem extends StatelessWidget {
                     maxLines: 1,
                     softWrap: CommonTextStyle.defaultSoftWrap,
                     overflow: CommonTextStyle.defaultTextOverFlow,
-                    style: const TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                       color: AppColor.colorHintSearchBar,
                       fontSize: 13,
                       fontWeight: FontWeight.normal

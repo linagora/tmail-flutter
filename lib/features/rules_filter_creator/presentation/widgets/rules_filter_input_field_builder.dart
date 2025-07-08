@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -30,7 +31,10 @@ class RulesFilterInputField extends StatelessWidget {
       onTextChange: onChangeAction,
       textInputAction: TextInputAction.next,
       controller: editingController,
-      textStyle: const TextStyle(color: Colors.black, fontSize: 16),
+      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+        color: Colors.black,
+        fontSize: 16,
+      ),
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       keyboardType: TextInputType.text,
       focusNode: focusNode,

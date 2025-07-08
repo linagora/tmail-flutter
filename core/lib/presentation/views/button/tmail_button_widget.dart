@@ -2,6 +2,7 @@
 import 'package:core/presentation/action/action_callback_define.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/container/tmail_container_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -211,7 +212,7 @@ class TMailButtonWidget extends StatelessWidget {
             Text(
               text,
               textAlign: textAlign,
-              style: textStyle ?? const TextStyle(
+              style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 12,
                 color: AppColor.colorTextButtonHeaderThread
               ),
@@ -251,7 +252,7 @@ class TMailButtonWidget extends StatelessWidget {
                   child: Text(
                     text,
                     textAlign: textAlign,
-                    style: textStyle ?? const TextStyle(
+                    style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                       fontSize: 12,
                       color: AppColor.colorTextButtonHeaderThread
                     ),
@@ -264,7 +265,7 @@ class TMailButtonWidget extends StatelessWidget {
                 Text(
                   text,
                   textAlign: textAlign,
-                  style: textStyle ?? const TextStyle(
+                  style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 12,
                     color: AppColor.colorTextButtonHeaderThread
                   ),
@@ -295,7 +296,7 @@ class TMailButtonWidget extends StatelessWidget {
                   child: Text(
                     text,
                     textAlign: textAlign,
-                    style: textStyle ?? const TextStyle(
+                    style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                       fontSize: 12,
                       color: AppColor.colorTextButtonHeaderThread
                     ),
@@ -308,7 +309,7 @@ class TMailButtonWidget extends StatelessWidget {
                 Text(
                   text,
                   textAlign: textAlign,
-                  style: textStyle ?? const TextStyle(
+                  style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 12,
                     color: AppColor.colorTextButtonHeaderThread
                   ),
@@ -350,7 +351,7 @@ class TMailButtonWidget extends StatelessWidget {
       childWidget = Text(
         text,
         textAlign: textAlign,
-        style: textStyle ?? const TextStyle(
+        style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 12,
           color: AppColor.colorTextButtonHeaderThread
         ),

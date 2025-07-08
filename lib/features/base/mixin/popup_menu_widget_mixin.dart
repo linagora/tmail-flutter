@@ -30,7 +30,7 @@ mixin PopupMenuWidgetMixin {
             const SizedBox(width: 12),
             Expanded(child: Text(
               nameAction,
-              style: styleName ?? const TextStyle(
+              style: styleName ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 17,
                 fontWeight: FontWeight.normal,
                 color: Colors.black)

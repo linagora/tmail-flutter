@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 
@@ -9,7 +10,7 @@ class SendingStateWidgetStyle {
 
   static const EdgeInsetsGeometry padding = EdgeInsets.symmetric(horizontal: 8, vertical: 6);
 
-  static TextStyle getTitleTextStyle(SendingState state) => TextStyle(
+  static TextStyle getTitleTextStyle(SendingState state) => ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 15,
     color: state.getTitleColor(),
     fontWeight: FontWeight.normal

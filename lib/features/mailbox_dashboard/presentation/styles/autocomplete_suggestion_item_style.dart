@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class AutocompleteSuggestionItemStyle {
@@ -7,12 +8,12 @@ class AutocompleteSuggestionItemStyle {
 
   static const EdgeInsetsGeometry padding = EdgeInsets.symmetric(vertical: 10, horizontal: 12);
 
-  static const TextStyle displayNameTextStyle = TextStyle(
+  static TextStyle displayNameTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 16,
     fontWeight: FontWeight.normal
   );
-  static const TextStyle emailAddressNameTextStyle = TextStyle(
+  static TextStyle emailAddressNameTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: AppColor.colorHintSearchBar,
     fontSize: 13,
     fontWeight: FontWeight.normal

@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -38,7 +39,7 @@ class PopupItemNoIconWidget extends StatelessWidget {
             child: Row(children: [
               Expanded(child: Text(
                 _nameAction,
-                style: const TextStyle(
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontSize: 17,
                   color: Colors.black,
                   fontWeight: FontWeight.normal

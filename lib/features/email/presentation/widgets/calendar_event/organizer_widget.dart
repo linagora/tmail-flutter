@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
@@ -22,7 +23,7 @@ class OrganizerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text.rich(
       TextSpan(
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: OrganizerWidgetStyles.textSize,
           fontWeight: FontWeight.w500,
           color: OrganizerWidgetStyles.textColor
@@ -33,7 +34,7 @@ class OrganizerWidget extends StatelessWidget {
           if (organizer.mailto?.value.isNotEmpty == true)
             TextSpan(
               text: ' <${organizer.mailto!.value}> ',
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 color: OrganizerWidgetStyles.mailtoColor,
                 fontSize: OrganizerWidgetStyles.textSize,
                 fontWeight: FontWeight.w500

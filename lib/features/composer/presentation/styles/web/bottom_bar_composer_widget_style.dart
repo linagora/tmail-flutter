@@ -26,11 +26,7 @@ class BottomBarComposerWidgetStyle {
   static const EdgeInsetsGeometry richTextIconPadding = EdgeInsetsDirectional.all(2);
   static const EdgeInsetsGeometry popupItemPadding = EdgeInsetsDirectional.symmetric(horizontal: 12);
 
-  static const TextStyle sendButtonTextStyle = TextStyle(
-    fontFamily: ConstantsUI.fontApp,
-    fontWeight: FontWeight.w500,
-    fontSize: 17,
-    height: 22 / 17,
+  static TextStyle sendButtonTextStyle = ThemeUtils.textStyleHeadingHeadingSmall().copyWith(
     color: Colors.white,
     letterSpacing: -0.41,
   );

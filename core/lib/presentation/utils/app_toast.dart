@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:core/presentation/views/toast/toast_position.dart';
 import 'package:flutter/material.dart';
@@ -106,7 +107,7 @@ class AppToast {
             },
             child: Text(
               actionName,
-              style: TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 15,
                 fontWeight: FontWeight.normal,
                 color: textActionColor ?? Colors.white
@@ -132,7 +133,7 @@ class AppToast {
                     actionIcon,
                     Text(
                       actionName,
-                      style: TextStyle(
+                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: 15,
                         fontWeight: FontWeight.normal,
                         color: textActionColor ?? Colors.white
@@ -169,7 +170,7 @@ class AppToast {
       context,
       maxWidth: maxWidth ?? responsiveUtils.getMaxWidthToast(context),
       toastPosition: ToastPosition.BOTTOM,
-      textStyle: textStyle ?? TextStyle(
+      textStyle: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: 15,
         fontWeight: FontWeight.normal,
         color: textColor ?? AppColor.primaryColor
@@ -222,7 +223,7 @@ class AppToast {
             },
             child: Text(
               action.actionName!,
-              style: TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 15,
                 fontWeight: FontWeight.normal,
                 color: textActionColor ?? Colors.white
@@ -250,7 +251,7 @@ class AppToast {
                     action.actionIcon!,
                     Text(
                       action.actionName!,
-                      style: TextStyle(
+                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: 15,
                         fontWeight: FontWeight.normal,
                         color: textActionColor ?? Colors.white
@@ -287,7 +288,7 @@ class AppToast {
       context,
       maxWidth: maxWidth ?? responsiveUtils.getMaxWidthToast(context),
       toastPosition: ToastPosition.BOTTOM,
-      textStyle: textStyle ?? TextStyle(
+      textStyle: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: 15,
         fontWeight: FontWeight.normal,
         color: textColor ?? AppColor.primaryColor

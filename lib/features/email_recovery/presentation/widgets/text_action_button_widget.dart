@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/styles/text_action_button_widget_styles.dart';
@@ -25,7 +26,7 @@ class TextActionButtonWidget extends StatelessWidget {
       radius: TextActionButtonWidgetStyles.radius,
       height: TextActionButtonWidgetStyles.height,
       minWidth: minWidth,
-      textStyle: TextStyle(
+      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: TextActionButtonWidgetStyles.fontSize,
         color: colorText,
         fontWeight: FontWeight.w500

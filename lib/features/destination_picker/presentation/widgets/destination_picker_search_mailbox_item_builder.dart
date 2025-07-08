@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -97,7 +98,7 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
       maxLines: 1,
       overflow: CommonTextStyle.defaultTextOverFlow,
       softWrap: CommonTextStyle.defaultSoftWrap,
-      style: const TextStyle(
+      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: 15,
         color: Colors.black
       ),
@@ -111,7 +112,7 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
         maxLines: 1,
         overflow: CommonTextStyle.defaultTextOverFlow,
         softWrap: CommonTextStyle.defaultSoftWrap,
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 11,
           color: AppColor.colorMailboxPath,
           fontWeight: FontWeight.normal
@@ -123,7 +124,7 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
         maxLines: 1,
         softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow,
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 11,
           color: AppColor.colorEmailAddressFull,
           fontWeight: FontWeight.normal

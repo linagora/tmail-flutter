@@ -2,6 +2,7 @@
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -74,7 +75,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
               Expanded(
                 child: Text(
                   AppLocalizations.of(context).vacationSettingToggleButtonAutoReply,
-                  style: const TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 16,
                     height: 20 / 16,
                     fontWeight: FontWeight.normal,
@@ -157,7 +158,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                   Expanded(
                     child: Text(
                       AppLocalizations.of(context).vacationStopsAt,
-                      style: const TextStyle(
+                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.normal,
                         color: Colors.black
@@ -357,7 +358,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
         alignment: Alignment.centerRight,
         child: buildTextButton(
             AppLocalizations.of(context).saveChanges,
-            textStyle: const TextStyle(
+            textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.normal,
                 fontSize: 16
@@ -373,7 +374,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           Expanded(
             child: buildTextButton(
                 AppLocalizations.of(context).cancel,
-                textStyle: const TextStyle(
+                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontWeight: FontWeight.w500,
                     fontSize: 17,
                     color: AppColor.colorTextButton),
@@ -387,7 +388,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           Expanded(
             child: buildTextButton(
                 AppLocalizations.of(context).saveChanges,
-                textStyle: const TextStyle(
+                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.normal,
                     fontSize: 16
@@ -403,7 +404,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           const Spacer(),
           buildTextButton(
               AppLocalizations.of(context).cancel,
-              textStyle: const TextStyle(
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontWeight: FontWeight.w500,
                   fontSize: 17,
                   color: AppColor.colorTextButton),
@@ -415,7 +416,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           const SizedBox(width: 12),
           buildTextButton(
               AppLocalizations.of(context).saveChanges,
-              textStyle: const TextStyle(
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.normal,
                   fontSize: 16
@@ -435,7 +436,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
       children: [
         Text(
           AppLocalizations.of(context).message,
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: 14,
             fontWeight: FontWeight.normal,
             color: AppColor.colorContentEmail

@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
@@ -34,8 +35,7 @@ class SettingOptionItem extends StatelessWidget {
       children: [
         Text(
           optionType.getTitle(appLocalizations),
-          style: const TextStyle(
-            fontFamily: ConstantsUI.fontApp,
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: 15,
             height: 20 / 15,
             fontWeight: FontWeight.bold,

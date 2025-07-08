@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class EmptyMailboxDialogOverlayStyles {
@@ -23,24 +24,28 @@ class EmptyMailboxDialogOverlayStyles {
   static const Color emptyButtonBackground = Colors.transparent;
   static Color get shadowColor => Colors.grey.shade500;
 
-  static const TextStyle titleTextStyle = TextStyle(
+  static TextStyle titleTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 17,
     fontWeight: FontWeight.bold,
-    color: Colors.black
+    color: Colors.black,
   );
-  static const TextStyle messageTextStyle = TextStyle(
+  static TextStyle messageTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: Colors.black
+    color: Colors.black,
   );
-  static const TextStyle buttonTextStyle = TextStyle(
+  static TextStyle buttonTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 13,
     fontWeight: FontWeight.w400,
-    color: Colors.black
+    color: Colors.black,
   );
-  static const TextStyle cleanButtonTextStyle = TextStyle(
+  static TextStyle cleanButtonTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontWeight: FontWeight.w400,
     fontSize: 13,
-    color: Colors.white
+    color: Colors.white,
   );
 }

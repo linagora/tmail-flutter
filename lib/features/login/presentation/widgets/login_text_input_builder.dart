@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/text_form_field_builder.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,7 @@ class _LoginTextInputBuilderState extends State<LoginTextInputBuilder> {
           textInputAction: widget.textInputAction,
           autofillHints: widget.autofillHints,
           controller: _controller,
-          textStyle: const TextStyle(
+          textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
             color: AppColor.loginTextFieldHintColor,
             fontSize: 16,
             fontWeight: FontWeight.normal
@@ -83,17 +84,17 @@ class _LoginTextInputBuilderState extends State<LoginTextInputBuilder> {
                 bottom: 15,
                 end: 40
             ))
-            ..setHintStyle(const TextStyle(
+            ..setHintStyle(ThemeUtils.defaultTextStyleInterFont.copyWith(
                 color: AppColor.loginTextFieldHintColor,
                 fontSize: 16,
                 fontWeight: FontWeight.normal
             ))
-            ..setPrefixStyle(const TextStyle(
+            ..setPrefixStyle(ThemeUtils.defaultTextStyleInterFont.copyWith(
                 color: AppColor.loginTextFieldHintColor,
                 fontSize: 16,
                 fontWeight: FontWeight.normal
             ))
-            ..setErrorTextStyle(const TextStyle(
+            ..setErrorTextStyle(ThemeUtils.defaultTextStyleInterFont.copyWith(
                 color: AppColor.loginTextFieldErrorBorder,
                 fontSize: 13,
                 fontWeight: FontWeight.normal

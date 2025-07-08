@@ -3,6 +3,7 @@ import 'package:byte_converter/byte_converter.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -64,7 +65,10 @@ class DownloadTaskItemWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 DefaultTextStyle(
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
                   child: Text(
                     taskState.attachment.generateFileName(),
                     overflow: CommonTextStyle.defaultTextOverFlow,
@@ -74,7 +78,10 @@ class DownloadTaskItemWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 DefaultTextStyle(
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
                   child: Text(
                     '${ByteConverter(taskState.downloaded.toDouble()).toHumanReadable(SizeUnit.MB)}'
                       '${_getTotalSizeText()}',

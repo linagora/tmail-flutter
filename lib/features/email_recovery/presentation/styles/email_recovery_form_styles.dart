@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class EmailRecoveryFormStyles {
@@ -11,7 +12,7 @@ class EmailRecoveryFormStyles {
     vertical: 12,
   );
 
-  static const TextStyle titleTextStyle = TextStyle(
+  static TextStyle titleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 20,
     fontWeight: FontWeight.w700,
     color: Colors.black,

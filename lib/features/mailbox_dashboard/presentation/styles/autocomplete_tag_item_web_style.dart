@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class AutoCompleteTagItemWebStyle {
@@ -13,12 +14,12 @@ class AutoCompleteTagItemWebStyle {
 
   static const Color collapsedBackgroundColor = AppColor.colorEmailAddressTag;
 
-  static const TextStyle labelTextStyle = TextStyle(
+  static TextStyle labelTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 17,
     fontWeight: FontWeight.w400
   );
-  static const TextStyle collapsedTextStyle = TextStyle(
+  static TextStyle collapsedTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 17,
     fontWeight: FontWeight.w400

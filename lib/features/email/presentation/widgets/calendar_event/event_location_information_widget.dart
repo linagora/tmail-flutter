@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -28,7 +29,7 @@ class EventLocationInformationWidget extends StatelessWidget {
           width: EventLocationInformationWidgetStyles.maxWidth,
           child: Text(
             AppLocalizations.of(context).where,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: EventLocationInformationWidgetStyles.textSize,
               fontWeight: FontWeight.w500,
               color: EventLocationInformationWidgetStyles.labelColor
@@ -49,7 +50,7 @@ class EventLocationInformationWidget extends StatelessWidget {
             EmailLinkifier(),
             UrlLinkifier()
           ],
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: EventLocationInformationWidgetStyles.textSize,
             fontWeight: FontWeight.w500,
             color: EventLocationInformationWidgetStyles.valueColor

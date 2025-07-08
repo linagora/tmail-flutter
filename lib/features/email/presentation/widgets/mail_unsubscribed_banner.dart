@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
@@ -22,7 +23,7 @@ class MailUnsubscribedBanner extends StatelessWidget {
         padding: const EdgeInsetsDirectional.only(bottom: 16, start: 20, end: 20),
         child: Text(
           AppLocalizations.of(context).mailUnsubscribedMessage(presentationEmail?.firstEmailAddressInFrom ?? ''),
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontWeight: FontWeight.normal,
             fontSize: 15,
             color: AppColor.labelColor

@@ -129,7 +129,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                           child: Text(
                                             AppLocalizations.of(context).selectParentFolder,
                                             textAlign: TextAlign.left,
-                                            style: const TextStyle(
+                                            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                                               fontSize: 13,
                                               color: AppColor.colorHintSearchBar,
                                               fontWeight: FontWeight.normal)),
@@ -220,7 +220,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         controller: controller.nameInputController,
         textDirection: DirectionUtils.getDirectionByLanguage(context),
         maxLines: 1,
-        textStyle: const TextStyle(
+        textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
           color: AppColor.colorNameEmail,
           fontSize: 16,
           overflow: CommonTextStyle.defaultTextOverFlow),
