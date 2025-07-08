@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-06-20T15:26:10.574669",
+  "@@last_modified": "2025-07-08T10:52:37.280039",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4516,7 +4516,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editLocalCopyInForwardFailed": "Failed to toggle local copy when transferring emails.",
+  "editLocalCopyInForwardFailed": "Edit local copy in forward failed.",
   "@editLocalCopyInForwardFailed": {
     "type": "text",
     "placeholders_order": [],
@@ -4554,6 +4554,22 @@
   },
   "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "You are not invited to this event. Please contact the organizer.",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "countMessageInSpam": "{count} message in spam",
+  "@countMessageInSpam": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "view": "View",
+  "@view": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
