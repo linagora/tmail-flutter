@@ -375,7 +375,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                 attendanceStatus: controller.attendanceStatus.value,
                 ownEmailAddress: controller
                     .mailboxDashBoardController
-                    .getOwnEmailAddress(),
+                    .ownEmailAddress
+                    .value,
                 onMailtoAttendeesAction: controller.handleMailToAttendees,
                 openEmailAddressDetailAction: controller.openEmailAddressDialog,
                 isFree: controller.isCalendarEventFree,
