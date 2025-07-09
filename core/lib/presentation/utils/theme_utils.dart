@@ -252,6 +252,24 @@ class ThemeUtils {
     color: color ?? AppColor.primaryMain,
   );
 
+  static TextStyle get textStyleM3LabelSmall => const TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.5,
+    fontSize: 11,
+    height: 16 / 11,
+    color: AppColor.m3Tertiary,
+  );
+
+  static TextStyle get textStyleM3TitleSmall => const TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.1,
+    fontSize: 14,
+    height: 20 / 14,
+    color: AppColor.m3Tertiary20,
+  );
+
   static const TextStyle textStyleM3BodyMedium1 = TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: FontWeight.w400,

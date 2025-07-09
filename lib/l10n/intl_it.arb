@@ -2179,7 +2179,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} Allegati ({totalSize}):",
+  "titleHeaderAttachment": "{count} Allegati ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [

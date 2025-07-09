@@ -142,8 +142,6 @@ extension AppColor on Color {
   static const colorShadowLayerTop = Color(0x1F000000);
   static const colorDividerHorizontal = Color(0x1F000000);
   static const colorEmailAddressFull = Color(0xFF818C99);
-  static const colorTitleHeaderAttachment = Color(0xFF818C99);
-  static const colorAttachmentIcon = Color(0xFFAEB7C2);
   static const colorDividerDestinationPicker = Color(0x1F000000);
   static const colorItemAlreadySelected = Color(0xFF818C99);
   static const colorItemSelected = Color(0xFFF2F3F5);
@@ -244,6 +242,8 @@ extension AppColor on Color {
   static const blue100 = Color(0xFFDFEEFF);
   static const blue400 = Color(0xFF80BDFF);
   static const m3Tertiary = Color(0xFF8C9CAF);
+  static const m3Tertiary70 = Color(0xFFE5ECF3);
+  static const m3Tertiary20 = Color(0xFF71767C);
   static const m3Neutral70 = Color(0xFFAEAAAE);
   static const m3Neutral90 = Color(0xFFE6E1E5);
   static const grayBackgroundColor = Color(0xFFF3F6F9);
@@ -257,8 +257,10 @@ extension AppColor on Color {
   static const iconFolder = Color(0xFF297EF2);
   static const folderDivider = Color(0xFFE4E8EC);
   static const gray424244 = Color(0xFF424244);
+  static const gray959DAD = Color(0xFF959DAD);
   static const redFF3347 = Color(0xFFFF3347);
   static const gray686E76 = Color(0xFF686E76);
+  static const gray99A2AD = Color(0xFF99A2AD);
   static const textSecondary = Color(0xFF1C1B1F);
   static const profileMenuDivider = Color(0xFF1D192B);
   static const popupMenuItemHovered = Color(0xFFF8F8F8);

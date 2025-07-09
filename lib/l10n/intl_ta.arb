@@ -3727,7 +3727,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} இணைப்புகள் ({totalSize}):",
+  "titleHeaderAttachment": "{count} இணைப்புகள் ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [

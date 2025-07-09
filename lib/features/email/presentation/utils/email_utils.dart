@@ -19,8 +19,6 @@ import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
-import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_item_widget_style.dart';
-import 'package:tmail_ui_user/features/email/presentation/styles/email_attachments_styles.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -249,24 +247,17 @@ class EmailUtils {
     if (attachments.isEmpty) return [];
 
     final bool isMobile = responsiveUtils.isMobile(context);
-    log('EmailUtils::getAttachmentDisplayed:isMobile = $isMobile:');
 
     if (isMobile) {
-      return attachments.length < 3 ? attachments : attachments.sublist(0, 2);
+      return attachments.length <= 3 ? attachments : attachments.sublist(0, 3);
     }
 
-    final double maxWidthItem = AttachmentItemWidgetStyle.getMaxWidthItem(
-      platformIsMobile: platformIsMobile,
-      responsiveIsMobile: isMobile,
-      responsiveIsTablet: responsiveUtils.isTablet(context),
-      responsiveIsTabletLarge: responsiveUtils.isTabletLarge(context),
-    );
-    log('EmailUtils::getAttachmentDisplayed:maxWidthItem = $maxWidthItem:');
+    const double maxWidthItem = 260;
+    const double buttonMoreMaxWidth = 120;
 
     final int possibleDisplayedCount =
-        ((maxWidth - EmailAttachmentsStyles.buttonMoreMaxWidth) ~/ maxWidthItem)
+        ((maxWidth - buttonMoreMaxWidth) ~/ maxWidthItem)
             .clamp(0, attachments.length);
-    log('EmailUtils::getAttachmentDisplayed:possibleDisplayedCount = $possibleDisplayedCount:');
 
     return possibleDisplayedCount == 0
         ? [attachments.first]

@@ -341,7 +341,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} 个附件（{totalSize}）：",
+  "titleHeaderAttachment": "{count} 个附件（{totalSize}",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
