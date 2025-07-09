@@ -1,10 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/mail/mail_address.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:http_parser/http_parser.dart';
@@ -24,6 +22,10 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class EmailUtils {
+  static const double desktopItemMaxWidth = 260;
+  static const double desktopMoreButtonMaxWidth = 70;
+  static const double maxMobileVisibleAttachments = 3;
+
   EmailUtils._();
 
   static Properties getPropertiesForEmailGetMethod(Session session, AccountId accountId) {
@@ -238,29 +240,29 @@ class EmailUtils {
   }
 
   static List<Attachment> getAttachmentDisplayed({
-    required BuildContext context,
     required double maxWidth,
-    required bool platformIsMobile,
     required List<Attachment> attachments,
-    required ResponsiveUtils responsiveUtils,
+    required bool isMobile,
   }) {
     if (attachments.isEmpty) return [];
 
-    final bool isMobile = responsiveUtils.isMobile(context);
-
     if (isMobile) {
-      return attachments.length <= 3 ? attachments : attachments.sublist(0, 3);
+      return attachments.length <= maxMobileVisibleAttachments
+          ? attachments
+          : attachments.sublist(0, 3);
     }
 
-    const double maxWidthItem = 260;
-    const double buttonMoreMaxWidth = 120;
+    final displayedCount = maxWidth ~/ desktopItemMaxWidth;
+    if (displayedCount == attachments.length) {
+      return attachments;
+    } else {
+      final int possibleDisplayedCount =
+          ((maxWidth - desktopMoreButtonMaxWidth) ~/ desktopItemMaxWidth)
+              .clamp(0, attachments.length);
 
-    final int possibleDisplayedCount =
-        ((maxWidth - buttonMoreMaxWidth) ~/ maxWidthItem)
-            .clamp(0, attachments.length);
-
-    return possibleDisplayedCount == 0
-        ? [attachments.first]
-        : attachments.sublist(0, possibleDisplayedCount);
+      return possibleDisplayedCount == 0
+          ? [attachments.first]
+          : attachments.sublist(0, possibleDisplayedCount);
+    }
   }
 }

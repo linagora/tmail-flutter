@@ -22,6 +22,7 @@ class AttachmentItemWidget extends StatelessWidget {
   final Attachment attachment;
   final ImagePaths imagePaths;
   final double? width;
+  final EdgeInsetsGeometry? margin;
   final OnDownloadAttachmentFileAction? downloadAttachmentAction;
   final OnViewAttachmentFileAction? viewAttachmentAction;
   final String? singleEmailControllerTag;
@@ -31,6 +32,7 @@ class AttachmentItemWidget extends StatelessWidget {
     required this.attachment,
     required this.imagePaths,
     this.width,
+    this.margin,
     this.downloadAttachmentAction,
     this.viewAttachmentAction,
     this.singleEmailControllerTag,
@@ -124,7 +126,7 @@ class AttachmentItemWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8),
         backgroundColor: Colors.transparent,
         width: width,
-        margin: const EdgeInsets.only(top: 8),
+        margin: margin,
         onTapActionCallback:
             isLoading ? null : () => _onViewOrDownloadAction(attachment),
         child: bodyItemWidget,
