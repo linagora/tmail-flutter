@@ -235,6 +235,7 @@ class ImagePaths {
   String get icRadio => _getImagePath('ic_radio.svg');
   String get icRadioSelected => _getImagePath('ic_radio_selected.svg');
 
+  String get icFileDownload => _getImagePath('ic_file_download.svg');
   String get icTwakeWorkplace => _getIconPath('icon_twp.png');
 
   String get animLottieTmail => _getAnimationPath('lottie-tmail.json');
