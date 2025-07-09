@@ -14,17 +14,17 @@ class CalendarEventDetailWidget extends StatelessWidget {
 
   final CalendarEvent calendarEvent;
   final String emailContent;
-  final bool? isDraggableAppActive;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
   final PresentationEmail? presentationEmail;
+  final ScrollController? scrollController;
 
   const CalendarEventDetailWidget({
     super.key,
     required this.calendarEvent,
     required this.emailContent,
-    this.isDraggableAppActive,
     this.onMailtoDelegateAction,
     this.presentationEmail,
+    this.scrollController,
   });
 
   @override
@@ -60,8 +60,10 @@ class CalendarEventDetailWidget extends StatelessWidget {
               padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
               child: EventBodyContentWidget(
                 content: eventDesc,
-                isDraggableAppActive: isDraggableAppActive,
-                onMailtoDelegateAction: onMailtoDelegateAction)),
+                scrollController: scrollController,
+                onMailtoDelegateAction: onMailtoDelegateAction,
+              ),
+            ),
         ],
       ),
     );

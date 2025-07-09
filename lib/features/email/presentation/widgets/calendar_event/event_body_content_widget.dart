@@ -8,20 +8,19 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/event_description_detail_widget_styles.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class EventBodyContentWidget extends StatelessWidget {
 
   final String content;
-  final bool? isDraggableAppActive;
+  final ScrollController? scrollController;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
 
   const EventBodyContentWidget({
     super.key,
     required this.content,
-    this.isDraggableAppActive,
+    this.scrollController,
     this.onMailtoDelegateAction,
   });
 
@@ -45,26 +44,14 @@ class EventBodyContentWidget extends StatelessWidget {
         children: [
           if (PlatformInfo.isWeb)
             Container(
-              constraints: const BoxConstraints(maxHeight: EventDescriptionDetailWidgetStyles.maxHeight),
               padding: const EdgeInsetsDirectional.only(end: EventDescriptionDetailWidgetStyles.webContentPadding),
               child: LayoutBuilder(builder: (context, constraints) {
-                return Stack(
-                  children: [
-                    HtmlContentViewerOnWeb(
-                      widthContent: constraints.maxWidth,
-                      heightContent: constraints.maxHeight,
-                      contentHtml: content,
-                      mailtoDelegate: onMailtoDelegateAction,
-                      direction: AppUtils.getCurrentDirection(context),
-                    ),
-                    if (isDraggableAppActive == true)
-                      PointerInterceptor(
-                        child: SizedBox(
-                          width: constraints.maxWidth,
-                          height: constraints.maxHeight,
-                        )
-                      )
-                  ],
+                return HtmlContentViewerOnWeb(
+                  widthContent: constraints.maxWidth,
+                  contentHtml: content,
+                  mailtoDelegate: onMailtoDelegateAction,
+                  direction: AppUtils.getCurrentDirection(context),
+                  scrollController: scrollController,
                 );
               })
             )
