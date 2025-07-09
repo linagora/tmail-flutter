@@ -32,12 +32,13 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final bool allowResizeToDocumentSize;
 
   final bool keepWidthWhileLoading;
+  final ScrollController? scrollController;
 
   const HtmlContentViewerOnWeb({
     Key? key,
     required this.contentHtml,
     required this.widthContent,
-    required this.heightContent,
+    this.heightContent = 200,
     this.allowResizeToDocumentSize = true,
     this.useDefaultFont = false,
     this.mailtoDelegate,
@@ -45,6 +46,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.onClickHyperLinkAction,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
+    this.scrollController,
   }) : super(key: key);
 
   @override
@@ -65,10 +67,11 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   String? _htmlData;
   bool _isLoading = true;
   double minHeight = 100;
-  late final StreamSubscription<html.MessageEvent> sizeListener;
+  late final StreamSubscription<html.MessageEvent> _onMessageSubscription;
   bool _iframeLoaded = false;
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
   static const String onClickHyperLinkName = 'onClickHyperLink';
+  static const String onScrollChangedEvent = 'onScrollChanged';
 
   @override
   void initState() {
@@ -77,11 +80,21 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     _actualWidth = widget.widthContent;
     _createdViewId = _getRandString(10);
     _setUpWeb();
+    _onMessageSubscription = html.window.onMessage.listen(_handleMessageEvent);
+  }
 
-    sizeListener = html.window.onMessage.listen((event) {
-      var data = json.decode(event.data);
+  void _handleMessageEvent(html.MessageEvent event) {
+    try {
+      final data = json.decode(event.data);
 
-      if (data['view'] != _createdViewId) return;
+      final viewId = data['view'];
+      if (viewId != _createdViewId) return;
+
+      final type = data['type'];
+      if (_isScrollChangedEventTriggered(type)) {
+        _handleIframeOnScrollChangedListener(data, widget.scrollController!);
+        return;
+      }
 
       if (data['message'] == iframeOnLoadMessage) {
         _iframeLoaded = true;
@@ -89,52 +102,91 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
       if (!_iframeLoaded) return;
 
-      if (data['type'] != null && data['type'].contains('toDart: htmlHeight')) {
-        final docHeight = data['height'] ?? _actualHeight;
-        if (docHeight != null && mounted) {
-          final scrollHeightWithBuffer = docHeight + 30.0;
-          if (scrollHeightWithBuffer > minHeight) {
-            setState(() {
-              _actualHeight = scrollHeightWithBuffer;
-              _isLoading = false;
-            });
-          }
-        }
-        if (mounted && _isLoading) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+      if (_isHtmlContentHeightEventTriggered(type)) {
+        _handleContentHeightEvent(data['height']);
+      } else if (_isHtmlContentWidthEventTriggered(type)) {
+        _handleContentWidthEvent(data['width']);
+      } else if (_isMailtoLinkEventTriggered(type)) {
+        _handleMailtoLinkEvent(data['url']);
+      } else if (_isHyperLinkEventTriggered(type)) {
+        _handleHyperLinkEvent(data['url']);
       }
+    } catch (e) {
+      logError('_HtmlContentViewerOnWebState::_handleMessageEvent:Exception = $e');
+    }
+  }
 
-      if (data['type'] != null && data['type'].contains('toDart: htmlWidth') && !widget.keepWidthWhileLoading) {
-        final docWidth = data['width'] ?? _actualWidth;
-        if (docWidth != null && mounted) {
-          if (docWidth > _minWidth && widget.allowResizeToDocumentSize) {
-            setState(() {
-              _actualWidth = docWidth;
-            });
-          }
-        }
-      }
+  bool _isScrollChangedEventTriggered(String? type) {
+    return widget.scrollController != null &&
+        type?.contains('toDart: $onScrollChangedEvent') == true;
+  }
 
-      if (data['type'] != null && data['type'].contains('toDart: OpenLink')) {
-        final link = data['url'];
-        if (link != null && mounted) {
-          final urlString = link as String;
-          if (urlString.startsWith('mailto:')) {
-            widget.mailtoDelegate?.call(Uri.parse(urlString));
-          }
-        }
-      }
+  void _handleIframeOnScrollChangedListener(
+    dynamic data,
+    ScrollController controller,
+  ) {
+    final deltaY = data['deltaY'] ?? 0.0;
+    final newOffset = controller.offset + deltaY;
 
-      if (data['type'] != null && data['type'].contains('toDart: $onClickHyperLinkName')) {
-        final link = data['url'] as String?;
-        if (link != null && mounted) {
-          widget.onClickHyperLinkAction?.call(Uri.parse(link));
-        }
+    if (newOffset < controller.position.minScrollExtent) {
+      controller.jumpTo(controller.position.minScrollExtent);
+    } else if (newOffset > controller.position.maxScrollExtent) {
+      controller.jumpTo(controller.position.maxScrollExtent);
+    } else {
+      controller.jumpTo(newOffset);
+    }
+  }
+
+  bool _isHtmlContentHeightEventTriggered(String? type) =>
+      type?.contains('toDart: htmlHeight') == true;
+
+  void _handleContentHeightEvent(dynamic height) {
+    final docHeight = height ?? _actualHeight;
+    if (docHeight != null && mounted) {
+      final scrollHeightWithBuffer = docHeight + 12.0;
+      if (scrollHeightWithBuffer > minHeight) {
+        setState(() {
+          _actualHeight = scrollHeightWithBuffer;
+          _isLoading = false;
+        });
       }
-    });
+    }
+    if (mounted && _isLoading) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  bool _isHtmlContentWidthEventTriggered(String? type) =>
+      type?.contains('toDart: htmlWidth') == true &&
+          !widget.keepWidthWhileLoading;
+
+  void _handleContentWidthEvent(dynamic width) {
+    final docWidth = width ?? _actualWidth;
+    if (docWidth != null && mounted &&
+        docWidth > _minWidth &&
+        widget.allowResizeToDocumentSize) {
+      setState(() => _actualWidth = docWidth);
+    }
+  }
+
+  bool _isMailtoLinkEventTriggered(String? type) =>
+      type?.contains('toDart: OpenLink') == true;
+
+  void _handleMailtoLinkEvent(dynamic url) {
+    if (url != null && mounted && url is String && url.startsWith('mailto:')) {
+      widget.mailtoDelegate?.call(Uri.tryParse(url));
+    }
+  }
+
+  bool _isHyperLinkEventTriggered(String? type) =>
+      type?.contains('toDart: $onClickHyperLinkName') == true;
+
+  void _handleHyperLinkEvent(dynamic url) {
+    if (url != null && mounted && url is String) {
+      widget.onClickHyperLinkAction?.call(Uri.tryParse(url));
+    }
   }
 
   @override
@@ -193,6 +245,11 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
             }
           }
         }
+
+        const resizeObserver = new ResizeObserver((entries) => {
+          var height = document.body.scrollHeight;
+          window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
+        });
         
         ${widget.mailtoDelegate != null
             ? '''
@@ -238,7 +295,20 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                   }
                 '''
               : ''}
+          
+          resizeObserver.observe(document.body);
         }
+        
+        ${widget.scrollController != null ? '''
+          window.addEventListener('wheel', function (event) {
+            const deltaY = event.deltaY;
+            window.parent.postMessage(JSON.stringify({
+              "view": "$_createdViewId",
+              "type": "toDart: $onScrollChangedEvent",
+              "deltaY": deltaY
+            }), "*");
+          });
+        ''' : ''}
       </script>
     ''';
 
@@ -303,7 +373,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
-      minHeight = math.max(constraint.maxHeight, minHeight);
+      minHeight = math.min(constraint.maxHeight, minHeight);
       final child = Stack(
         children: [
           if (_htmlData?.isNotEmpty == false)
@@ -317,7 +387,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                     height: _actualHeight,
                     width: _actualWidth,
                     child: HtmlElementView(
-                      key: ValueKey(_htmlData),
+                      key: ValueKey('$_htmlData-${widget.key}'),
                       viewType: _createdViewId,
                     ),
                   );
@@ -355,7 +425,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   @override
   void dispose() {
     _htmlData = null;
-    sizeListener.cancel();
+    _onMessageSubscription.cancel();
     super.dispose();
   }
 }

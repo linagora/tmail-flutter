@@ -198,6 +198,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final attendanceStatus = Rxn<AttendanceStatus>();
   final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
 
+  final ScrollController emailScrollController = ScrollController();
+
   EmailId? _currentEmailId;
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
@@ -252,6 +254,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void onClose() {
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
+    emailScrollController.dispose();
     super.onClose();
   }
 
