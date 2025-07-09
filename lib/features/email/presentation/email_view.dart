@@ -338,27 +338,6 @@ class EmailView extends GetWidget<SingleEmailController> {
           presentationEmail: controller.currentEmail,
           emailUnsubscribe: controller.emailUnsubscribe.value
         )),
-        Obx(() {
-          if (controller.attachments.isNotEmpty) {
-            return EmailAttachmentsWidget(
-              responsiveUtils: controller.responsiveUtils,
-              attachments: controller.attachments,
-              imagePaths: controller.imagePaths,
-              onDragStarted: controller.mailboxDashBoardController.enableAttachmentDraggableApp,
-              onDragEnd: (details) {
-                controller.mailboxDashBoardController.disableAttachmentDraggableApp();
-              },
-              downloadAttachmentAction: (attachment) => controller.handleDownloadAttachmentAction(context, attachment),
-              viewAttachmentAction: (attachment) => controller.handleViewAttachmentAction(context, attachment),
-              onTapShowAllAttachmentFile: () => controller.openAttachmentList(context, controller.attachments),
-              showDownloadAllAttachmentsButton: controller.downloadAllButtonIsEnabled(),
-              onTapDownloadAllButton: () => controller.handleDownloadAllAttachmentsAction(context, 'TwakeMail-${DateTime.now()}'),
-              singleEmailControllerTag: tag,
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
         Obx(() => EmailViewLoadingBarWidget(
           viewState: controller.emailLoadedViewState.value
         )),
@@ -524,7 +503,47 @@ class EmailView extends GetWidget<SingleEmailController> {
             } else {
               return const SizedBox.shrink();
             }
-          })
+          }),
+        Obx(() {
+          if (controller.attachments.isNotEmpty) {
+            return EmailAttachmentsWidget(
+              responsiveUtils: controller.responsiveUtils,
+              attachments: controller.attachments,
+              imagePaths: controller.imagePaths,
+              onDragStarted: controller
+                  .mailboxDashBoardController.enableAttachmentDraggableApp,
+              onDragEnd: (_) {
+                controller
+                    .mailboxDashBoardController
+                    .disableAttachmentDraggableApp();
+              },
+              downloadAttachmentAction: (attachment) =>
+                  controller.handleDownloadAttachmentAction(
+                    context,
+                    attachment,
+                  ),
+              viewAttachmentAction: (attachment) =>
+                  controller.handleViewAttachmentAction(
+                    context,
+                    attachment,
+                  ),
+              onTapShowAllAttachmentFile: () => controller.openAttachmentList(
+                context,
+                controller.attachments,
+              ),
+              showDownloadAllAttachmentsButton:
+                  controller.downloadAllButtonIsEnabled(),
+              onTapDownloadAllButton: () =>
+                  controller.handleDownloadAllAttachmentsAction(
+                context,
+                'TwakeMail-${DateTime.now()}',
+              ),
+              singleEmailControllerTag: tag,
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
       ],
     );
   }

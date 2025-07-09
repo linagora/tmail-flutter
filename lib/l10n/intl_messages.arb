@@ -378,7 +378,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} Attachments ({totalSize}):",
+  "titleHeaderAttachment": "{count} Attachments ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
@@ -4572,6 +4572,12 @@
   },
   "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "You are not invited to this event. Please contact the organizer.",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "archiveAndDownload": "Archive and download",
+  "@archiveAndDownload": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

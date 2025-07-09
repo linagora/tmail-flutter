@@ -233,6 +233,7 @@ class ImagePaths {
   String get icCreateFilter => _getImagePath('ic_create_filter.svg');
   String get icArrowBack => _getImagePath('ic_arrow_back.svg');
 
+  String get icFileDownload => _getImagePath('ic_file_download.svg');
   String get icTwakeWorkplace => _getIconPath('icon_twp.png');
 
   String get animLottieTmail => _getAnimationPath('lottie-tmail.json');
