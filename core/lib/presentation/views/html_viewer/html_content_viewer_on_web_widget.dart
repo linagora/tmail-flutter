@@ -48,7 +48,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     Key? key,
     required this.contentHtml,
     required this.widthContent,
-    required this.heightContent,
+    this.heightContent = 200,
     this.allowResizeToDocumentSize = true,
     this.useDefaultFont = false,
     this.mailtoDelegate,

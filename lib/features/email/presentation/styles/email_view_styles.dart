@@ -14,7 +14,6 @@ class EmailViewStyles {
   static const EdgeInsetsGeometry emailContentPadding =
     EdgeInsetsDirectional.only(
       start: 16,
-      bottom: 16,
       end: 16,
       top: 8,
     );
