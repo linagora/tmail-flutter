@@ -4,7 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/attachment.dart';
@@ -44,41 +44,46 @@ class EmailAttachmentsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final attachmentRecord = _getDisplayedAndHiddenAttachment(
-        context,
-        constraints.maxWidth,
-      );
-
-      final attachmentHeader = AttachmentsInfo(
-        imagePaths: imagePaths,
-        numberOfAttachments: attachments.length,
-        totalSizeInfo: filesize(attachments.totalSize, 1),
-        responsiveUtils: responsiveUtils,
-        onTapShowAllAttachmentFile: onTapShowAllAttachmentFile,
-        onTapDownloadAllButton: showDownloadAllAttachmentsButton
+    final attachmentHeader = AttachmentsInfo(
+      imagePaths: imagePaths,
+      numberOfAttachments: attachments.length,
+      totalSizeInfo: filesize(attachments.totalSize, 1),
+      responsiveUtils: responsiveUtils,
+      onTapShowAllAttachmentFile: onTapShowAllAttachmentFile,
+      onTapDownloadAllButton: showDownloadAllAttachmentsButton
           ? onTapDownloadAllButton
           : null,
+    );
+
+    if (responsiveUtils.isMobile(context)) {
+      final attachmentRecord = _getDisplayedAndHiddenAttachment(
+        context,
+        responsiveUtils.getDeviceWidth(context),
       );
+      final displayedAttachments = attachmentRecord.displayedAttachments;
+      final hiddenItemsCount = attachmentRecord.hiddenItemsCount;
 
-      late Widget attachmentWidget;
-
-      if (responsiveUtils.isMobile(context)) {
-        attachmentWidget = Column(
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(top: 12, bottom: 24),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
               child: attachmentHeader,
             ),
-            const SizedBox(height: 4),
             Padding(
-              padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
+              padding: const EdgeInsetsDirectional.only(
+                start: 12,
+                end: 12,
+                top: 4,
+              ),
               child: Column(
-                children: attachmentRecord.displayedAttachments.map((attachment) {
+                children: displayedAttachments.map((attachment) {
                   return AttachmentItemWidget(
                     attachment: attachment,
                     imagePaths: imagePaths,
+                    margin: const EdgeInsets.only(top: 8),
                     downloadAttachmentAction: downloadAttachmentAction,
                     viewAttachmentAction: viewAttachmentAction,
                   );
@@ -86,15 +91,14 @@ class EmailAttachmentsWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            if (attachmentRecord.hiddenItemsCount > 0 &&
-                showDownloadAllAttachmentsButton)
+            if (hiddenItemsCount > 0 && showDownloadAllAttachmentsButton)
               Padding(
                 padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
                 child: Row(
                   children: [
                     TMailButtonWidget.fromText(
                       text: AppLocalizations.of(context).moreAttachments(
-                        attachmentRecord.hiddenItemsCount,
+                        hiddenItemsCount,
                       ),
                       backgroundColor: Colors.transparent,
                       borderRadius: 5,
@@ -114,7 +118,9 @@ class EmailAttachmentsWidget extends StatelessWidget {
                         children: [
                           Flexible(
                             child: TMailButtonWidget(
-                              text: AppLocalizations.of(context).archiveAndDownload,
+                              text: AppLocalizations
+                                  .of(context)
+                                  .archiveAndDownload,
                               icon: imagePaths.icDownloadAll,
                               iconSize: 20,
                               iconColor: AppColor.steelGrayA540,
@@ -128,9 +134,8 @@ class EmailAttachmentsWidget extends StatelessWidget {
                                 vertical: 3,
                                 horizontal: 5,
                               ),
-                              textStyle: ThemeUtils.textStyleBodyBody1().copyWith(
-                                color: AppColor.steelGray400,
-                              ),
+                              textStyle: ThemeUtils.textStyleBodyBody1()
+                                  .copyWith(color: AppColor.steelGray400),
                               onTapActionCallback: onTapDownloadAllButton,
                             ),
                           ),
@@ -140,10 +145,10 @@ class EmailAttachmentsWidget extends StatelessWidget {
                   ],
                 ),
               )
-            else if (attachmentRecord.hiddenItemsCount > 0)
+            else if (hiddenItemsCount > 0)
               TMailButtonWidget.fromText(
                 text: AppLocalizations.of(context).moreAttachments(
-                  attachmentRecord.hiddenItemsCount,
+                  hiddenItemsCount,
                 ),
                 backgroundColor: Colors.transparent,
                 borderRadius: 5,
@@ -157,95 +162,125 @@ class EmailAttachmentsWidget extends StatelessWidget {
                 onTapActionCallback: onTapShowAllAttachmentFile,
               )
             else if (showDownloadAllAttachmentsButton)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Flexible(
-                    child: TMailButtonWidget(
-                      text: AppLocalizations.of(context).archiveAndDownload,
-                      icon: imagePaths.icDownloadAll,
-                      iconSize: 20,
-                      iconColor: AppColor.steelGrayA540,
-                      iconAlignment: TextDirection.rtl,
-                      backgroundColor: Colors.transparent,
-                      borderRadius: 5,
-                      mainAxisSize: MainAxisSize.min,
-                      maxLines: 1,
-                      flexibleText: true,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 3,
-                        horizontal: 5,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Flexible(
+                      child: TMailButtonWidget(
+                        text: AppLocalizations.of(context).archiveAndDownload,
+                        icon: imagePaths.icDownloadAll,
+                        iconSize: 20,
+                        iconColor: AppColor.steelGrayA540,
+                        iconAlignment: TextDirection.rtl,
+                        backgroundColor: Colors.transparent,
+                        borderRadius: 5,
+                        mainAxisSize: MainAxisSize.min,
+                        maxLines: 1,
+                        flexibleText: true,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 3,
+                          horizontal: 5,
+                        ),
+                        margin: const EdgeInsetsDirectional.symmetric(
+                          horizontal: 8,
+                        ),
+                        textStyle: ThemeUtils.textStyleBodyBody1().copyWith(
+                          color: AppColor.steelGray400,
+                        ),
+                        onTapActionCallback: onTapDownloadAllButton,
                       ),
-                      margin: const EdgeInsetsDirectional.symmetric(horizontal: 8),
-                      textStyle: ThemeUtils.textStyleBodyBody1().copyWith(
-                        color: AppColor.steelGray400,
-                      ),
-                      onTapActionCallback: onTapDownloadAllButton,
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
           ],
-        );
-      } else {
-        attachmentWidget = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
-              child: attachmentHeader,
-            ),
-            const SizedBox(height: 4),
-            Padding(
-              padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: attachmentRecord.displayedAttachments.map((attachment) {
-                  if (responsiveUtils.isDesktop(context)) {
-                    return DraggableAttachmentItemWidget(
-                      attachment: attachment,
-                      imagePaths: imagePaths,
-                      onDragStarted: onDragStarted,
-                      onDragEnd: onDragEnd,
-                      downloadAttachmentAction: downloadAttachmentAction,
-                      viewAttachmentAction: viewAttachmentAction,
-                    );
-                  } else {
-                    return AttachmentItemWidget(
-                      attachment: attachment,
-                      imagePaths: imagePaths,
-                      width: 260,
-                      downloadAttachmentAction: downloadAttachmentAction,
-                      viewAttachmentAction: viewAttachmentAction,
-                    );
-                  }
-                }).toList(),
-              ),
-            ),
-          ],
-        );
-      }
-
-      return Padding(
-        padding: const EdgeInsetsDirectional.only(top: 12, bottom: 24),
-        child: attachmentWidget,
+        ),
       );
-    });
+    } else {
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(
+          start: 16,
+          end: 16,
+          top: 16,
+          bottom: 28,
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final attachmentRecord = _getDisplayedAndHiddenAttachment(
+              context,
+              constraints.maxWidth,
+            );
+            final displayedAttachments = attachmentRecord.displayedAttachments;
+            final hiddenItemsCount = attachmentRecord.hiddenItemsCount;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
+                  child: attachmentHeader,
+                ),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(
+                    start: 12,
+                    end: 12,
+                    top: 12,
+                  ),
+                  child: Wrap(
+                    spacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      ...displayedAttachments.map((attachment) {
+                        if (responsiveUtils.isDesktop(context)) {
+                          return DraggableAttachmentItemWidget(
+                            attachment: attachment,
+                            imagePaths: imagePaths,
+                            width: EmailUtils.desktopItemMaxWidth,
+                            onDragStarted: onDragStarted,
+                            onDragEnd: onDragEnd,
+                            downloadAttachmentAction: downloadAttachmentAction,
+                            viewAttachmentAction: viewAttachmentAction,
+                          );
+                        } else {
+                          return AttachmentItemWidget(
+                            attachment: attachment,
+                            imagePaths: imagePaths,
+                            width: EmailUtils.desktopItemMaxWidth,
+                            downloadAttachmentAction: downloadAttachmentAction,
+                            viewAttachmentAction: viewAttachmentAction,
+                          );
+                        }
+                      }).toList(),
+                      if (hiddenItemsCount > 0)
+                        TMailButtonWidget.fromText(
+                          text: '+ $hiddenItemsCount',
+                          backgroundColor: Colors.transparent,
+                          borderRadius: 5,
+                          maxWidth: EmailUtils.desktopMoreButtonMaxWidth,
+                          maxLines: 1,
+                          textStyle: ThemeUtils.textStyleM3TitleSmall,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 3,
+                            horizontal: 5,
+                          ),
+                          onTapActionCallback: onTapShowAllAttachmentFile,
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }
+        ),
+      );
+    }
   }
 
   ({List<Attachment> displayedAttachments, int hiddenItemsCount})
       _getDisplayedAndHiddenAttachment(BuildContext context, double maxWidth) {
-    const itemSpace = 8.0;
-    const itemHorizontalPadding = 24;
-    final maxWidthDesktop = maxWidth - itemHorizontalPadding - itemSpace * 2;
-
     final displayedAttachments = EmailUtils.getAttachmentDisplayed(
-      context: context,
-      maxWidth: maxWidthDesktop,
-      platformIsMobile: PlatformInfo.isMobile,
+      maxWidth: maxWidth,
       attachments: attachments,
-      responsiveUtils: responsiveUtils,
+      isMobile: responsiveUtils.isMobile(context),
     );
 
     int hiddenItemsCount = attachments.length - displayedAttachments.length;
@@ -254,7 +289,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
     } else if (hiddenItemsCount < 0) {
       hiddenItemsCount = 0;
     }
-
+    log('EmailAttachmentsWidget::_getDisplayedAndHiddenAttachment: Displayed: ${displayedAttachments.length}, Hidden: $hiddenItemsCount');
     return (
       displayedAttachments: displayedAttachments,
       hiddenItemsCount: hiddenItemsCount,

@@ -12,6 +12,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
 
   final Attachment attachment;
   final ImagePaths imagePaths;
+  final double? width;
   final OnDragAttachmentStarted? onDragStarted;
   final OnDragAttachmentEnd? onDragEnd;
   final OnDownloadAttachmentFileAction? downloadAttachmentAction;
@@ -21,6 +22,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
     Key? key,
     required this.attachment,
     required this.imagePaths,
+    this.width,
     this.onDragStarted,
     this.onDragEnd,
     this.downloadAttachmentAction,
@@ -37,6 +39,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
       child: AttachmentItemWidget(
         attachment: attachment,
         imagePaths: imagePaths,
+        width: width,
         downloadAttachmentAction: downloadAttachmentAction,
         viewAttachmentAction: viewAttachmentAction,
       ),
