@@ -139,76 +139,12 @@ class EmailView extends GetWidget<SingleEmailController> {
               OptionalExpanded(
                 expandedEnabled: !isInsideThreadDetailView,
                 child: LayoutBuilder(builder: (context, constraints) {
-                  if (PlatformInfo.isMobile) {
-                    return OptionalScroll(
-                      scrollEnabled: !isInsideThreadDetailView,
-                      child: Container(
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        color: Colors.white,
-                        child: Obx(
-                          () => _buildEmailMessage(
-                            context: context,
-                            presentationEmail: currentEmail,
-                            calendarEvent: controller.calendarEvent,
-                            bodyConstraints: constraints,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Obx(() {
-                      final calendarEvent = controller.calendarEvent;
-                      if (currentEmail.hasCalendarEvent && calendarEvent != null) {
-                        return Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: 4,
-                          ),
-                          child: OptionalScroll(
-                            scrollEnabled: !isInsideThreadDetailView,
-                            child: Container(
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              color: Colors.white,
-                              child: _buildEmailMessage(
-                                context: context,
-                                presentationEmail: currentEmail,
-                                calendarEvent: calendarEvent,
-                                emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
-                                bodyConstraints: constraints,
-                              ),
-                            ),
-                          ),
-                        );
-                      } else {
-                        return Stack(
-                          children: [
-                            OptionalScroll(
-                              scrollEnabled: !isInsideThreadDetailView,
-                              scrollPhysics : const ClampingScrollPhysics(),
-                              child: _buildEmailMessage(
-                                context: context,
-                                presentationEmail: currentEmail,
-                                bodyConstraints: constraints,
-                              ),
-                            ),
-                            Obx(() {
-                              if (controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame) {
-                                return PointerInterceptor(
-                                  child: SizedBox(
-                                    width: constraints.maxWidth,
-                                    height: constraints.maxHeight,
-                                  ),
-                                );
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            }),
-                          ],
-                        );
-                      }
-                    });
-                  }
+                  return _buildBodyWidget(
+                    context,
+                    currentEmail,
+                    constraints,
+                    scrollController: scrollController,
+                  );
                 }),
               ),
               Obx(() {
@@ -291,6 +227,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     required BoxConstraints bodyConstraints,
     CalendarEvent? calendarEvent,
     List<String>? emailAddressSender,
+    ScrollController? scrollController,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -398,7 +335,6 @@ class EmailView extends GetWidget<SingleEmailController> {
               Obx(() => CalendarEventDetailWidget(
                 calendarEvent: calendarEvent,
                 emailContent: controller.currentEmailLoaded.value?.htmlContent ?? '',
-                isDraggableAppActive: controller.mailboxDashBoardController.isAttachmentDraggableAppActive,
                 onMailtoDelegateAction: controller.openMailToLink,
                 presentationEmail: controller.currentEmail,
                 scrollController: scrollController,
@@ -553,5 +489,96 @@ class EmailView extends GetWidget<SingleEmailController> {
     final titleEvent = event.getTitleEventAction(context, emailAddressSender);
 
     return usernameEvent.isNotEmpty && titleEvent.isNotEmpty;
+  }
+
+  Widget _buildMobileBodyWidget(
+    BuildContext context,
+    PresentationEmail currentEmail,
+    BoxConstraints constraints,
+  ) {
+    return OptionalScroll(
+      scrollEnabled: !isInsideThreadDetailView,
+      child: Container(
+        width: double.infinity,
+        alignment: Alignment.center,
+        color: Colors.white,
+        child: Obx(() => _buildEmailMessage(
+          context: context,
+          presentationEmail: currentEmail,
+          calendarEvent: controller.calendarEvent,
+          bodyConstraints: constraints,
+        ))
+      )
+    );
+  }
+
+  Widget _buildWebBodyWidget(
+    BuildContext context,
+    PresentationEmail currentEmail,
+    BoxConstraints constraints, {
+    required ScrollController? scrollController
+  }) {
+    return Obx(() {
+      final calendarEvent = controller.calendarEvent;
+
+      final emailContentWidget = Stack(
+        children: [
+          OptionalScroll(
+            scrollEnabled: !isInsideThreadDetailView,
+            scrollPhysics : const ClampingScrollPhysics(),
+            child: _buildEmailMessage(
+              context: context,
+              presentationEmail: currentEmail,
+              bodyConstraints: constraints,
+              scrollController: scrollController,
+              calendarEvent: calendarEvent,
+              emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
+            ),
+          ),
+          Obx(() {
+            if (controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame) {
+              return Positioned.fill(
+                child: PointerInterceptor(
+                  child: const SizedBox.expand(),
+                ),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
+        ],
+      );
+
+      if (calendarEvent != null) {
+        return Padding(
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
+          child: emailContentWidget,
+        );
+      } else {
+        return emailContentWidget;
+      }
+    });
+  }
+
+  Widget _buildBodyWidget(
+    BuildContext context,
+    PresentationEmail currentEmail,
+    BoxConstraints constraints, {
+    required ScrollController? scrollController,
+  }) {
+    if (PlatformInfo.isWeb) {
+      return _buildWebBodyWidget(
+        context,
+        currentEmail,
+        constraints,
+        scrollController: scrollController,
+      );
+    } else {
+      return _buildMobileBodyWidget(
+        context,
+        currentEmail,
+        constraints,
+      );
+    }
   }
 }

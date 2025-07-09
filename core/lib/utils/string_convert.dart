@@ -113,7 +113,6 @@ class StringConvert {
     try {
       final emailDocument = parse(content);
       final contentOriginal = emailDocument.body?.innerHtml ?? content;
-      log('StringConvert::getContentOriginal:contentOriginal = $contentOriginal');
       return contentOriginal;
     } catch (e) {
       logError('StringConvert::getContentOriginal:Exception = $e');
