@@ -921,7 +921,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} Anhänge ({totalSize}):",
+  "titleHeaderAttachment": "{count} Anhänge ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [

@@ -386,7 +386,7 @@ class AppLocalizations {
 
   String titleHeaderAttachment(int count, String totalSize) {
     return Intl.message(
-        '$count Attachments ($totalSize):',
+        '$count Attachments ($totalSize)',
         name: 'titleHeaderAttachment',
         args: [count, totalSize]
     );
@@ -4903,6 +4903,13 @@ class AppLocalizations {
     return Intl.message(
       'Enter email address',
       name: 'enterEmailAddress',
+    );
+  }
+
+  String get archiveAndDownload {
+    return Intl.message(
+      'Archive and download',
+      name: 'archiveAndDownload',
     );
   }
 }

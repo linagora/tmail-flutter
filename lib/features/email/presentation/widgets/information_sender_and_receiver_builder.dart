@@ -147,7 +147,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                 padding: const EdgeInsetsDirectional.only(start: 16),
                                 child: SvgPicture.asset(
                                   imagePaths.icAttachment,
-                                  colorFilter: AppColor.colorAttachmentIcon.asFilter(),
+                                  colorFilter: AppColor.steelGray200.asFilter(),
                                   width: 20,
                                   height: 20,
                                 ),
@@ -215,7 +215,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                             padding: const EdgeInsetsDirectional.only(end: 8),
                             child: SvgPicture.asset(
                               imagePaths.icAttachment,
-                              colorFilter: AppColor.colorAttachmentIcon.asFilter(),
+                              colorFilter: AppColor.steelGray200.asFilter(),
                               width: 20,
                               height: 20,
                             ),

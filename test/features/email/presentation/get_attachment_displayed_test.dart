@@ -49,7 +49,7 @@ void main() {
     expect(result, attachments.sublist(0, 2));
   });
 
-  test('should return first 2 attachments when mobile and attachments >= 3', () {
+  test('should return first 3 attachments when mobile and attachments >= 4', () {
     when(mockResponsiveUtils.isMobile(mockContext)).thenReturn(true);
 
     final result = EmailUtils.getAttachmentDisplayed(
@@ -59,8 +59,8 @@ void main() {
       platformIsMobile: true,
       attachments: attachments,
     );
-    expect(result.length, 2);
-    expect(result, attachments.sublist(0, 2));
+    expect(result.length, 3);
+    expect(result, attachments.sublist(0, 3));
   });
 
   test('should return sublist based on maxWidthTabletLarge when responsiveIsTabletLarge is true', () {
@@ -122,8 +122,8 @@ void main() {
       platformIsMobile: true,
       attachments: attachments,
     );
-    expect(result.length, 2);
-    expect(result, attachments.sublist(0, 2));
+    expect(result.length, 3);
+    expect(result, attachments.sublist(0, 3));
   });
 
   test('should return sublist based on maxWidthTablet when platformIsMobile is true and responsiveIsMobile is false', () {

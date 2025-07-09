@@ -2608,7 +2608,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} Tệp đính kèm ({totalSize}):",
+  "titleHeaderAttachment": "{count} Tệp đính kèm ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
