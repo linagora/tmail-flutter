@@ -190,6 +190,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final attendanceStatus = Rxn<AttendanceStatus>();
   final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
 
+  final ScrollController emailScrollController = ScrollController();
+
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
   final obxListeners = <Worker>[];
@@ -263,6 +265,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _threadDetailController = null;
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
+    emailScrollController.dispose();
     super.onClose();
   }
 
