@@ -6,6 +6,7 @@ class UserAvatarBuilder extends StatelessWidget {
   final String username;
   final double? size;
   final EdgeInsetsGeometry? padding;
+  final TextStyle? textStyle;
   final VoidCallback? onTapAction;
 
   const UserAvatarBuilder({
@@ -13,6 +14,7 @@ class UserAvatarBuilder extends StatelessWidget {
     required this.username,
     this.size,
     this.padding,
+    this.textStyle,
     this.onTapAction,
   }) : super(key: key);
 
@@ -21,7 +23,7 @@ class UserAvatarBuilder extends StatelessWidget {
     final avatarBuilder = AvatarBuilder()
       ..text(username.firstLetterToUpperCase)
       ..size(size ?? 32)
-      ..addTextStyle(Theme.of(context).textTheme.titleMedium?.copyWith(
+      ..addTextStyle(textStyle ?? Theme.of(context).textTheme.titleMedium?.copyWith(
             color: Colors.white,
           ))
       ..avatarColor(username.gradientColors);
