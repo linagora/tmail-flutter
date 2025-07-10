@@ -4912,4 +4912,11 @@ class AppLocalizations {
       name: 'archiveAndDownload',
     );
   }
+
+  String get creatingAnArchiveForDownloading {
+    return Intl.message(
+      'Creating an archive for downloading',
+      name: 'creatingAnArchiveForDownloading',
+    );
+  }
 }
