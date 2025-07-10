@@ -13,26 +13,27 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
+import 'package:tmail_ui_user/features/base/widget/default_field/default_autocomplete_tag_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/text_field_autocomplete_email_address_web_style.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_tag_item_widget_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/label_advanced_search_field_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word, {int? limit});
-typedef OnUpdateListEmailAddressAction = void Function(AdvancedSearchFilterField field, List<EmailAddress> newData);
-typedef OnDeleteEmailAddressTypeAction = void Function(AdvancedSearchFilterField field);
-typedef OnShowFullListEmailAddressAction = void Function(AdvancedSearchFilterField field);
+typedef OnUpdateListEmailAddressAction = void Function(FilterField field, List<EmailAddress> newData);
+typedef OnDeleteEmailAddressTypeAction = void Function(FilterField field);
+typedef OnShowFullListEmailAddressAction = void Function(FilterField field);
 typedef OnDeleteTagAction = void Function(EmailAddress emailAddress);
 
 class TextFieldAutocompleteEmailAddressWeb extends StatefulWidget {
 
-  final AdvancedSearchFilterField field;
+  final FilterField field;
   final List<EmailAddress> listEmailAddress;
   final ExpandMode expandMode;
   final FocusNode? focusNode;
@@ -106,7 +107,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
             SizedBox(
               width: TextFieldAutoCompleteEmailAddressWebStyles.fieldTitleWidth,
               child: LabelAdvancedSearchFieldWidget(
-                name: widget.field.getTitle(context),
+                name: widget.field.getTitle(AppLocalizations.of(context)),
               ),
             ),
             const SizedBox(width: TextFieldAutoCompleteEmailAddressWebStyles.space),
@@ -147,7 +148,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                           ),
                           fillColor: TextFieldAutoCompleteEmailAddressWebStyles.textInputFillColor,
                           border: TextFieldAutoCompleteEmailAddressWebStyles.textInputBorder,
-                          hintText: widget.field.getHintText(context),
+                          hintText: widget.field.getHintText(AppLocalizations.of(context)),
                           hintStyle: TextFieldAutoCompleteEmailAddressWebStyles.textInputHintStyle,
                           isDense: true,
                           contentPadding: _currentListEmailAddress.isNotEmpty
@@ -181,7 +182,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                         tagBuilder: (context, index) {
                           final currentEmailAddress = _currentListEmailAddress.elementAt(index);
                           final isLatestEmail = currentEmailAddress == _currentListEmailAddress.last;
-                          return AutoCompleteTagItemWidgetWeb(
+                          return DefaultAutocompleteTagItemWidget(
                             field: widget.field,
                             currentEmailAddress: currentEmailAddress,
                             currentListEmailAddress: _currentListEmailAddress,
@@ -189,6 +190,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                             isLatestEmail: isLatestEmail,
                             isCollapsed: _isCollapse,
                             isLatestTagFocused: _lastTagFocused,
+                            iconClose: _imagePaths.icClose,
                             onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, setState),
                             onShowFullAction: widget.onShowFullListEmailAddressAction,
                           );
@@ -389,7 +391,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
     StateSetter stateSetter
   ) {
     log('_TextFieldAutocompleteEmailAddressWebState::_handleAcceptDraggableEmailAddressAction:draggableEmailAddress = $draggableEmailAddress');
-    if (draggableEmailAddress.prefix != widget.field.getPrefixEmailAddress()) {
+    if (draggableEmailAddress.filterField != widget.field) {
       if (!_currentListEmailAddress.contains(draggableEmailAddress.emailAddress)) {
         stateSetter(() {
           _currentListEmailAddress.add(draggableEmailAddress.emailAddress);
