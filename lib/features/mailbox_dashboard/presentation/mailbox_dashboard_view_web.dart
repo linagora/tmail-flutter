@@ -818,7 +818,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   }
 
   void _openPopupMenuDateFilter(BuildContext context, RelativeRect position) {
-    final popupMenuItems = EmailReceiveTimeType.values.map((timeType) {
+    final popupMenuItems = EmailReceiveTimeType.valuesForSearch.map((timeType) {
       return PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupMenuItemActionWidget(

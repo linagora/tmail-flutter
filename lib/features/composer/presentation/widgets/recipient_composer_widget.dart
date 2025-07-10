@@ -594,7 +594,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   ) {
     log('_RecipientComposerWidgetState::_handleAcceptDraggableEmailAddressAction: $draggableEmailAddress');
     if (draggableEmailAddress.composerId == widget.composerId) {
-      if (draggableEmailAddress.prefix != widget.prefix) {
+      if (draggableEmailAddress.filterField != widget.prefix.filterField) {
         if (!_currentListEmailAddress.contains(draggableEmailAddress.emailAddress)) {
           stateSetter(() {
             _currentListEmailAddress.add(draggableEmailAddress.emailAddress);

@@ -11,6 +11,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/card_with_smart_interaction_overlay_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_tag_item_widget_style.dart';
@@ -137,7 +138,7 @@ class RecipientTagItemWidget extends StatelessWidget {
       tagWidget = Draggable<DraggableEmailAddress>(
         data: DraggableEmailAddress(
           emailAddress: currentEmailAddress,
-          prefix: prefix,
+          filterField: prefix.filterField,
           composerId: composerId,
         ),
         feedback: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
