@@ -2471,7 +2471,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} Atasman ({totalSize}):",
+  "titleHeaderAttachment": "{count} Atasman ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [

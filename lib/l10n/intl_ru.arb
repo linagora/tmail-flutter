@@ -2212,7 +2212,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} Приложения(-ий) ({totalSize}):",
+  "titleHeaderAttachment": "{count} Приложения(-ий) ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
