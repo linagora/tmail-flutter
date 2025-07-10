@@ -18,6 +18,7 @@ class CustomIconLabeledCheckbox extends LabeledCheckbox {
     required this.focusNode,
     super.value,
     super.gap = 16.0,
+    super.padding,
   });
 
   @override

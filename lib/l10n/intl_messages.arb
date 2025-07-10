@@ -4619,5 +4619,27 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "enterSubjectKeywords": "Enter subject keywords...",
+  "@enterSubjectKeywords": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAnEmailAddress": "Add an email address",
+  "@addAnEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogRecoverDeletedMessagesDescription": "You can recover messages deleted within the last {period} days. Recovered emails will be restored to your recovered folder.",
+  "@dialogRecoverDeletedMessagesDescription": {
+    "type": "text",
+    "placeholders_order": [
+      "period"
+    ],
+    "placeholders": {
+      "period": {}
+    }
   }
 }
