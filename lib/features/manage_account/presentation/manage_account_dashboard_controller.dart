@@ -59,6 +59,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   Session? sessionCurrent;
   bool? isVacationDateDialogDisplayed;
   Uri? previousUri;
+  int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
 
   @override
   void onInit() {
@@ -103,29 +104,30 @@ class ManageAccountDashBoardController extends ReloadableController {
   @override
   void handleReloaded(Session session) {
     log('ManageAccountDashBoardController::handleReloaded:');
-    sessionCurrent = session;
-    accountId.value = session.accountId;
-    synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
-    _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
-    _getVacationResponse();
+    _setUpComponentsFromSession(session);
     _getParametersRouter();
   }
 
   void _getArguments() {
     final arguments = Get.arguments;
     if (arguments is ManageAccountArguments) {
-      sessionCurrent = arguments.session;
-      accountId.value = arguments.session?.accountId;
-      synchronizeOwnEmailAddress(arguments.session?.getOwnEmailAddressOrEmpty() ?? '');
       previousUri = arguments.previousUri;
-      _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
-      _getVacationResponse();
+      _setUpComponentsFromSession(arguments.session);
       if (arguments.menuSettingCurrent != null) {
         selectAccountMenuItem(arguments.menuSettingCurrent!);
       }
     } else if (PlatformInfo.isWeb) {
       reload();
     }
+  }
+
+  void _setUpComponentsFromSession(Session? session) {
+    sessionCurrent = session;
+    accountId.value = session?.accountId;
+    synchronizeOwnEmailAddress(session?.getOwnEmailAddressOrEmpty() ?? '');
+    _setUpMinInputLengthAutocomplete();
+    _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
+    _getVacationResponse();
   }
 
   void _getParametersRouter() {
@@ -394,13 +396,14 @@ class ManageAccountDashBoardController extends ReloadableController {
     return false;
   }
 
-  int get minInputLengthAutocomplete {
+  void _setUpMinInputLengthAutocomplete() {
     if (sessionCurrent == null || accountId.value == null) {
-      return AppConfig.defaultMinInputLengthAutocomplete;
+      minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
     }
-    return getMinInputLengthAutocomplete(
+    minInputLengthAutocomplete = getMinInputLengthAutocomplete(
       session: sessionCurrent!,
-      accountId: accountId.value!);
+      accountId: accountId.value!,
+    );
   }
 
   @override
