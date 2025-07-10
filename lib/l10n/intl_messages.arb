@@ -4576,12 +4576,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "archiveAndDownload": "Archive and download",
-  "@archiveAndDownload": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "countMessageInSpam": "{count} message in spam",
   "@countMessageInSpam": {
     "type": "text",
@@ -4656,6 +4650,18 @@
   },
   "enterEmailAddress": "Enter email address",
   "@enterEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "archiveAndDownload": "Archive and download",
+  "@archiveAndDownload": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "creatingAnArchiveForDownloading": "Creating an archive for downloading",
+  "@creatingAnArchiveForDownloading": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
