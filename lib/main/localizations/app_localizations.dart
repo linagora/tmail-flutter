@@ -4869,4 +4869,26 @@ class AppLocalizations {
       name: 'createARule',
     );
   }
+
+  String get enterSubjectKeywords {
+    return Intl.message(
+      'Enter subject keywords...',
+      name: 'enterSubjectKeywords',
+    );
+  }
+
+  String get addAnEmailAddress {
+    return Intl.message(
+      'Add an email address',
+      name: 'addAnEmailAddress',
+    );
+  }
+
+  String dialogRecoverDeletedMessagesDescription(String period) {
+    return Intl.message(
+      'You can recover messages deleted within the last $period days. Recovered emails will be restored to your recovered folder.',
+      name: 'dialogRecoverDeletedMessagesDescription',
+      args: [period],
+    );
+  }
 }
