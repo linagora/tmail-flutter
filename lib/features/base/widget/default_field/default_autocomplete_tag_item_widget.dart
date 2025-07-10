@@ -1,38 +1,38 @@
-
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:tmail_ui_user/features/base/widget/default_field/default_autocomplete_input_field_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/draggable_recipient_tag_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/autocomplete_tag_item_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/avatar_tag_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_autocomplete_email_address_web.dart';
 
-class AutoCompleteTagItemWidgetWeb extends StatelessWidget {
+class DefaultAutocompleteTagItemWidget extends StatelessWidget {
 
   final bool isCollapsed;
   final bool isLatestTagFocused;
   final bool isLatestEmail;
-  final AdvancedSearchFilterField field;
+  final FilterField field;
   final EmailAddress currentEmailAddress;
+  final String iconClose;
   final List<EmailAddress> currentListEmailAddress;
   final List<EmailAddress> collapsedListEmailAddress;
   final OnDeleteTagAction? onDeleteTagAction;
   final OnShowFullListEmailAddressAction? onShowFullAction;
 
-  final _imagePaths = Get.find<ImagePaths>();
-
-  AutoCompleteTagItemWidgetWeb({
+  const DefaultAutocompleteTagItemWidget({
     Key? key,
     required this.field,
     required this.currentEmailAddress,
     required this.currentListEmailAddress,
     required this.collapsedListEmailAddress,
+    required this.iconClose,
     this.isCollapsed = false,
     this.isLatestTagFocused = false,
     this.isLatestEmail = false,
@@ -53,7 +53,7 @@ class AutoCompleteTagItemWidgetWeb extends StatelessWidget {
           child: Draggable<DraggableEmailAddress>(
             data: DraggableEmailAddress(
               emailAddress: currentEmailAddress,
-              prefix: field.getPrefixEmailAddress()
+              filterField: field,
             ),
             feedback: DraggableRecipientTagWidget(
               emailAddress: currentEmailAddress,
@@ -82,7 +82,7 @@ class AutoCompleteTagItemWidgetWeb extends StatelessWidget {
                       softWrap: CommonTextStyle.defaultSoftWrap,
                     ),
                     deleteIcon: SvgPicture.asset(
-                      _imagePaths.icClose,
+                      iconClose,
                       fit: BoxFit.fill,
                     ),
                     padding: EdgeInsets.zero,

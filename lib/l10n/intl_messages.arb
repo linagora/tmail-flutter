@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-06-20T15:26:10.574669",
+  "@@last_modified": "2025-07-11T01:15:29.777431",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4516,7 +4516,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editLocalCopyInForwardFailed": "Failed to toggle local copy when transferring emails.",
+  "editLocalCopyInForwardFailed": "Edit local copy in forward failed.",
   "@editLocalCopyInForwardFailed": {
     "type": "text",
     "placeholders_order": [],
@@ -4557,5 +4557,27 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "enterSubjectKeywords": "Enter subject keywords...",
+  "@enterSubjectKeywords": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAnEmailAddress": "Add an email address",
+  "@addAnEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogRecoverDeletedMessagesDescription": "You can recover messages deleted within the last {period} days. Recovered emails will be restored to your recovered folder.",
+  "@dialogRecoverDeletedMessagesDescription": {
+    "type": "text",
+    "placeholders_order": [
+      "period"
+    ],
+    "placeholders": {
+      "period": {}
+    }
   }
 }

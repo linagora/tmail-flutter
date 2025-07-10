@@ -11,6 +11,7 @@ class LabeledCheckbox extends StatelessWidget {
     this.value = false,
     this.gap = 4.0,
     this.textStyle,
+    this.padding,
   }) : super(key: key);
 
   final String label;
@@ -18,10 +19,11 @@ class LabeledCheckbox extends StatelessWidget {
   final OnChangedAction onChanged;
   final double gap;
   final TextStyle? textStyle;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    final bodyWidget = InkWell(
       onTap: () => onChanged(!(value)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -32,6 +34,12 @@ class LabeledCheckbox extends StatelessWidget {
         ],
       ),
     );
+
+    if (padding != null) {
+      return Padding(padding: padding!, child: bodyWidget);
+    } else {
+      return bodyWidget;
+    }
   }
 
   Widget get buildCheckboxWidget => Checkbox(
