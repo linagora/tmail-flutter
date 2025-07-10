@@ -215,7 +215,6 @@ void main() {
         expect(advancedFilterController.notKeyWordFilterInputController.text, equals('hello,nice'));
         expect(advancedFilterController.receiveTimeType.value, equals(EmailReceiveTimeType.last7Days));
         expect(advancedFilterController.sortOrderType.value, equals(EmailSortOrderType.oldest));
-        expect(advancedFilterController.mailBoxFilterInputController.text, equals('mailbox1'));
         expect(advancedFilterController.hasAttachment.value, equals(true));
         expect(advancedFilterController.listFromEmailAddress, equals([EmailAddress(null, 'user1@example.com')]));
         expect(advancedFilterController.listToEmailAddress, equals([EmailAddress(null, 'user2@example.com')]));

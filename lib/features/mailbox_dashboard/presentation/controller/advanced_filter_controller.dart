@@ -37,6 +37,7 @@ class AdvancedFilterController extends BaseController {
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
   final sortOrderType = EmailSortOrderType.mostRecent.obs;
+  final selectedFolderName = Rxn<String>();
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
@@ -51,7 +52,6 @@ class AdvancedFilterController extends BaseController {
   TextEditingController subjectFilterInputController = TextEditingController();
   TextEditingController hasKeyWordFilterInputController = TextEditingController();
   TextEditingController notKeyWordFilterInputController = TextEditingController();
-  TextEditingController mailBoxFilterInputController = TextEditingController();
 
   final search.SearchController searchController = Get.find<search.SearchController>();
   final MailboxDashBoardController _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -206,7 +206,7 @@ class AdvancedFilterController extends BaseController {
     final mailboxName = context.mounted
       ? _destinationMailboxSelected?.getDisplayName(context)
       : _destinationMailboxSelected?.name?.name;
-    mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
+    selectedFolderName.value = StringConvert.writeNullToEmpty(mailboxName);
     _updateMemorySearchFilter(mailboxOption: optionOf(_destinationMailboxSelected));
   }
 
@@ -276,7 +276,7 @@ class AdvancedFilterController extends BaseController {
     }
 
     if (context != null) {
-      mailBoxFilterInputController.text = _memorySearchFilter.mailbox == null
+      selectedFolderName.value = _memorySearchFilter.mailbox == null
         ? AppLocalizations.of(context).allFolders
         : StringConvert.writeNullToEmpty(
             _memorySearchFilter.mailbox?.getDisplayName(context));
@@ -450,6 +450,7 @@ class AdvancedFilterController extends BaseController {
     endDate.value = null;
     receiveTimeType.value = EmailReceiveTimeType.allTime;
     hasAttachment.value = false;
+    selectedFolderName.value = null;
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
     _destinationMailboxSelected = null;
@@ -459,7 +460,6 @@ class AdvancedFilterController extends BaseController {
     subjectFilterInputController.clear();
     hasKeyWordFilterInputController.clear();
     notKeyWordFilterInputController.clear();
-    mailBoxFilterInputController.clear();
     fromEmailAddressController.clear();
     toEmailAddressController.clear();
   }
@@ -600,7 +600,6 @@ class AdvancedFilterController extends BaseController {
     subjectFilterInputController.dispose();
     hasKeyWordFilterInputController.dispose();
     notKeyWordFilterInputController.dispose();
-    mailBoxFilterInputController.dispose();
     toEmailAddressController.dispose();
     fromEmailAddressController.dispose();
     _unregisterWorkerListener();

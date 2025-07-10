@@ -8,7 +8,7 @@ typedef OnTextChange = void Function(String text);
 class DefaultInputFieldWithTabKeyWidget extends StatelessWidget {
   final TextEditingController textEditingController;
   final FocusNode currentFocusNode;
-  final FocusNode? nextFocusNode;
+  final FocusNode nextFocusNode;
   final String? hintText;
   final OnTextChange? onTextChange;
   final OnTextSubmitted? onTextSubmitted;
@@ -18,7 +18,7 @@ class DefaultInputFieldWithTabKeyWidget extends StatelessWidget {
     super.key,
     required this.textEditingController,
     required this.currentFocusNode,
-    this.nextFocusNode,
+    required this.nextFocusNode,
     this.hintText,
     this.onTextChange,
     this.onTextSubmitted,
@@ -29,7 +29,7 @@ class DefaultInputFieldWithTabKeyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bodyWidget = KeyboardListener(
       focusNode: currentFocusNode,
-      onKeyEvent: nextFocusNode == null ? null : _onKeyEvent,
+      onKeyEvent: _onKeyEvent,
       child: DefaultInputFieldWidget(
         textEditingController: textEditingController,
         hintText: hintText,
@@ -48,7 +48,7 @@ class DefaultInputFieldWithTabKeyWidget extends StatelessWidget {
   void _onKeyEvent(KeyEvent event) {
     if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.tab) {
-      nextFocusNode?.requestFocus();
+      nextFocusNode.requestFocus();
     }
   }
 }
