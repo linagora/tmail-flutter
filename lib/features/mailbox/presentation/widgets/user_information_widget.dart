@@ -1,10 +1,9 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/extensions/string_extension.dart';
-import 'package:core/presentation/views/image/avatar_builder.dart';
-import 'package:core/utils/platform_info.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
+import 'package:tmail_ui_user/features/base/widget/user_avatar_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSubtitleClick = void Function();
@@ -34,15 +33,16 @@ class UserInformationWidget extends StatelessWidget {
       padding: padding ?? const EdgeInsetsDirectional.only(start: 16, end: 4, top: 16, bottom: 16),
       decoration: BoxDecoration(border: border),
       child: Row(children: [
-        (AvatarBuilder()
-            ..text(userName.firstCharacterToUpperCase)
-            ..backgroundColor(Colors.white)
-            ..textColor(Colors.black)
-            ..addBoxShadows([const BoxShadow(
-                color: AppColor.colorShadowBgContentEmail,
-                spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
-            ..size(PlatformInfo.isWeb ? 48 : 56))
-          .build(),
+        UserAvatarBuilder(
+          username: userName,
+          size: 51,
+          textStyle: ThemeUtils.textStyleInter500().copyWith(
+            fontSize: 25.5,
+            height: 38.3 / 25.5,
+            letterSpacing: 0.24,
+            color: Colors.white,
+          ),
+        ),
         const SizedBox(width: 16),
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
