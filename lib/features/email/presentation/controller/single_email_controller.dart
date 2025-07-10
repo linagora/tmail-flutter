@@ -503,11 +503,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               );
 
               if (currentOverlayContext != null && currentContext != null) {
-                appToast.showToastMessage(
+                appToast.showToastSuccessMessage(
                   currentOverlayContext!,
-                  AppLocalizations.of(currentContext!).your_download_has_started,
-                  leadingSVGIconColor: AppColor.primaryColor,
-                  leadingSVGIcon: imagePaths.icDownload);
+                  AppLocalizations.of(currentContext!).creatingAnArchiveForDownloading,
+                  leadingSVGIconColor: Colors.white,
+                  leadingSVGIcon: imagePaths.icDownloadAll,
+                );
               }
             } else if (success is DownloadingAllAttachmentsForWeb) {
               final percent = success.progress.round();

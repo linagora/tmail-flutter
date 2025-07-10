@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-07-09T00:09:18.166437",
+  "@@last_modified": "2025-07-09T17:01:12.289016",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4560,6 +4560,12 @@
   },
   "archiveAndDownload": "Archive and download",
   "@archiveAndDownload": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "creatingAnArchiveForDownloading": "Creating an archive for downloading",
+  "@creatingAnArchiveForDownloading": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
