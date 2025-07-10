@@ -292,6 +292,7 @@ class MailboxDashBoardController extends ReloadableController
   bool _isFirstSessionLoad = false;
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
+  int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -795,6 +796,7 @@ class MailboxDashBoardController extends ReloadableController
     accountId.value = currentAccountId;
     synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
 
+    _setUpMinInputLengthAutocomplete();
     injectAutoCompleteBindings(session, currentAccountId);
     injectRuleFilterBindings(session, currentAccountId);
     injectVacationBindings(session, currentAccountId);
@@ -3220,13 +3222,14 @@ class MailboxDashBoardController extends ReloadableController
     dispatchAction(ClearSearchFilterAppliedAction());
   }
 
-  int get minInputLengthAutocomplete {
+  void _setUpMinInputLengthAutocomplete() {
     if (sessionCurrent == null || accountId.value == null) {
-      return AppConfig.defaultMinInputLengthAutocomplete;
+      minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
     }
-    return getMinInputLengthAutocomplete(
+    minInputLengthAutocomplete = getMinInputLengthAutocomplete(
       session: sessionCurrent!,
-      accountId: accountId.value!);
+      accountId: accountId.value!,
+    );
   }
 
   void setCurrentEmailState(jmap.State? newState) {
