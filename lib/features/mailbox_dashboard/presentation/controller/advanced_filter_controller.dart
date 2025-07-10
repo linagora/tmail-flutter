@@ -18,7 +18,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/das
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -359,14 +359,14 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  void showFullEmailAddress(AdvancedSearchFilterField field) {
+  void showFullEmailAddress(FilterField field) {
     FocusManager.instance.primaryFocus?.unfocus();
 
     switch(field) {
-      case AdvancedSearchFilterField.from:
+      case FilterField.from:
         fromAddressExpandMode.value = ExpandMode.EXPAND;
         break;
-      case AdvancedSearchFilterField.to:
+      case FilterField.to:
         toAddressExpandMode.value = ExpandMode.EXPAND;
         break;
       default:
@@ -375,18 +375,18 @@ class AdvancedFilterController extends BaseController {
   }
 
   void updateListEmailAddress(
-    AdvancedSearchFilterField field,
+    FilterField field,
     List<EmailAddress> listEmailAddress,
   ) {
     switch(field) {
-      case AdvancedSearchFilterField.from:
+      case FilterField.from:
         listFromEmailAddress = List.from(listEmailAddress);
         _updateMemorySearchFilter(
           fromOption: option(
             listFromEmailAddress.isNotEmpty,
             listFromEmailAddress.asSetAddress()));
         break;
-      case AdvancedSearchFilterField.to:
+      case FilterField.to:
         listToEmailAddress = List.from(listEmailAddress);
         _updateMemorySearchFilter(
           toOption: option(
@@ -526,19 +526,19 @@ class AdvancedFilterController extends BaseController {
     _updateMemorySearchFilter(hasAttachmentOption: Some(hasAttachment.value));
   }
 
-  void onTextChanged(AdvancedSearchFilterField filterField, String value) {
+  void onTextChanged(FilterField filterField, String value) {
     switch (filterField) {
-      case AdvancedSearchFilterField.subject:
+      case FilterField.subject:
         final subjectOption = option(value.trim().isNotEmpty, value.trim());
         _updateMemorySearchFilter(subjectOption: subjectOption);
         break;
-      case AdvancedSearchFilterField.hasKeyword:
+      case FilterField.hasKeyword:
         final textOption = option(
           value.trim().isNotEmpty,
           SearchQuery(value.trim()));
         _updateMemorySearchFilter(textOption: textOption);
         break;
-      case AdvancedSearchFilterField.notKeyword:
+      case FilterField.notKeyword:
         final notKeywordsOption = option(
           value.trim().isNotEmpty,
           value.trim().split(',').map((value) => value.trim()).toSet());
@@ -551,8 +551,8 @@ class AdvancedFilterController extends BaseController {
 
   void removeDraggableEmailAddress(DraggableEmailAddress draggableEmailAddress) {
     log('AdvancedFilterController::removeDraggableEmailAddress:removeDraggableEmailAddress: $draggableEmailAddress');
-    switch(draggableEmailAddress.prefix) {
-      case PrefixEmailAddress.to:
+    switch(draggableEmailAddress.filterField) {
+      case FilterField.to:
         listToEmailAddress.remove(draggableEmailAddress.emailAddress);
         _updateMemorySearchFilter(
           toOption: option(
@@ -563,7 +563,7 @@ class AdvancedFilterController extends BaseController {
         toAddressExpandMode.value = ExpandMode.EXPAND;
         toAddressExpandMode.refresh();
         break;
-      case PrefixEmailAddress.from:
+      case FilterField.from:
         listFromEmailAddress.remove(draggableEmailAddress.emailAddress);
         _updateMemorySearchFilter(
           fromOption: option(

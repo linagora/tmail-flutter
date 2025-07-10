@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_re
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -225,10 +225,10 @@ void main() {
     group('onTextChanged::test', () {
       test(
         'SHOULD update memory search filter for subject\n'
-        'WHEN onTextChanged called with AdvancedSearchFilterField is Subject',
+        'WHEN onTextChanged called with FilterField is Subject',
       () {
         // Arrange
-        const filterField = AdvancedSearchFilterField.subject;
+        const filterField = FilterField.subject;
         const value = 'Subject';
 
         // Act
@@ -242,10 +242,10 @@ void main() {
 
       test(
         'SHOULD update memory search filter for text\n'
-        'WHEN onTextChanged called with AdvancedSearchFilterField is hasKeyword',
+        'WHEN onTextChanged called with FilterField is hasKeyword',
       () {
         // Arrange
-        const filterField = AdvancedSearchFilterField.hasKeyword;
+        const filterField = FilterField.hasKeyword;
         const value = 'keyword';
 
         // Act
@@ -259,10 +259,10 @@ void main() {
 
       test(
         'SHOULD update memory search filter for notKeyword\n'
-        'WHEN onTextChanged called with AdvancedSearchFilterField is notKeyword',
+        'WHEN onTextChanged called with FilterField is notKeyword',
       () {
         // Arrange
-        const filterField = AdvancedSearchFilterField.notKeyword;
+        const filterField = FilterField.notKeyword;
         const value = 'keyword1,keyword2';
 
         // Act
@@ -276,10 +276,10 @@ void main() {
 
       test(
         'SHOULD update memory search filter for subject is null\n'
-        'WHEN onTextChanged called with AdvancedSearchFilterField is subject',
+        'WHEN onTextChanged called with FilterField is subject',
       () {
         // Arrange
-        const filterField = AdvancedSearchFilterField.subject;
+        const filterField = FilterField.subject;
         const value = '   ';
 
         // Act
@@ -293,10 +293,10 @@ void main() {
 
       test(
         'SHOULD update memory search filter for notKeyword is empty values\n'
-        'WHEN onTextChanged called with AdvancedSearchFilterField is notKeyword',
+        'WHEN onTextChanged called with FilterField is notKeyword',
       () {
         // Arrange
-        const filterField = AdvancedSearchFilterField.notKeyword;
+        const filterField = FilterField.notKeyword;
         const value = '    ';
 
         // Act
@@ -310,11 +310,11 @@ void main() {
 
       test(
         'SHOULD update memory search filter for subject and notKeyword is empty values\n'
-        'WHEN onTextChanged called with AdvancedSearchFilterField are subject and notKeyword',
+        'WHEN onTextChanged called with FilterField are subject and notKeyword',
       () {
         // Arrange
-        const filterFieldSubject = AdvancedSearchFilterField.subject;
-        const filterFieldNotKeyword = AdvancedSearchFilterField.notKeyword;
+        const filterFieldSubject = FilterField.subject;
+        const filterFieldNotKeyword = FilterField.notKeyword;
         const validSubject = 'Subject';
         const emptyNotKeyword = '    ';
 
