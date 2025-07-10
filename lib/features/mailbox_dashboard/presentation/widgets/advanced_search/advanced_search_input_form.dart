@@ -6,11 +6,11 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/date_drop_down_button.dart';
+import 'package:tmail_ui_user/features/base/widget/default_field/date_drop_down_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/label_advanced_search_field_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/sort_by_drop_down_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_autocomplete_email_address_web.dart';
@@ -29,7 +29,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
       child: Column(
         children: [
           Obx(() => TextFieldAutocompleteEmailAddressWeb(
-            field: AdvancedSearchFilterField.from,
+            field: FilterField.from,
             listEmailAddress: controller.listFromEmailAddress,
             expandMode: controller.fromAddressExpandMode.value,
             minInputLengthAutocomplete: controller
@@ -47,7 +47,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           )),
           const SizedBox(height: 12),
           Obx(() => TextFieldAutocompleteEmailAddressWeb(
-            field: AdvancedSearchFilterField.to,
+            field: FilterField.to,
             listEmailAddress: controller.listToEmailAddress,
             expandMode: controller.toAddressExpandMode.value,
             minInputLengthAutocomplete: controller
@@ -67,11 +67,11 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           _buildFilterField(
             textEditingController: controller.subjectFilterInputController,
             context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.subject,
+            filterField: FilterField.subject,
             currentFocusNode: controller.focusManager.subjectFieldFocusNode,
             nextFocusNode: controller.focusManager.hasKeywordFieldFocusNode,
             onTextChange: (value) => controller.onTextChanged(
-              AdvancedSearchFilterField.subject,
+              FilterField.subject,
               value
             ),
           ),
@@ -79,11 +79,11 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           _buildFilterField(
             textEditingController: controller.hasKeyWordFilterInputController,
             context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.hasKeyword,
+            filterField: FilterField.hasKeyword,
             currentFocusNode: controller.focusManager.hasKeywordFieldFocusNode,
             nextFocusNode: controller.focusManager.notKeywordFieldFocusNode,
             onTextChange: (value) => controller.onTextChanged(
-              AdvancedSearchFilterField.hasKeyword,
+              FilterField.hasKeyword,
               value
             ),
           ),
@@ -91,11 +91,11 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           _buildFilterField(
             textEditingController: controller.notKeyWordFilterInputController,
             context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.notKeyword,
+            filterField: FilterField.notKeyword,
             currentFocusNode: controller.focusManager.notKeywordFieldFocusNode,
             nextFocusNode: controller.focusManager.mailboxFieldFocusNode,
             onTextChange: (value) => controller.onTextChanged(
-              AdvancedSearchFilterField.notKeyword,
+              FilterField.notKeyword,
               value
             ),
           ),
@@ -103,7 +103,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           _buildFilterField(
             textEditingController: controller.mailBoxFilterInputController,
             context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.mailBox,
+            filterField: FilterField.mailBox,
             isSelectFormList: true,
             currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
             nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
@@ -114,7 +114,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           Row(children: [
            Expanded(child: _buildFilterField(
              context: context,
-             advancedSearchFilterField: AdvancedSearchFilterField.date,
+             filterField: FilterField.date,
              isSelectFormList: true,
              onTap: () {
                openContextMenuAction(
@@ -151,7 +151,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           const SizedBox(height: 12),
           _buildFilterField(
             context: context,
-            advancedSearchFilterField: AdvancedSearchFilterField.sortBy
+            filterField: FilterField.sortBy
           ),
           const SizedBox(height: 24),
           AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
@@ -161,7 +161,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   }
 
   List<Widget> _buildEmailReceiveTimeTypeActionTiles(BuildContext context) {
-    return EmailReceiveTimeType.values
+    return EmailReceiveTimeType.valuesForSearch
       .map((receiveTime) => PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemNoIconWidget(
@@ -176,7 +176,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
 
   Widget _buildFilterField({
     required BuildContext context,
-    required AdvancedSearchFilterField advancedSearchFilterField,
+    required FilterField filterField,
     TextEditingController? textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
@@ -189,7 +189,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
       SizedBox(
         width: _isVerticalArrange(context) ? null : 112,
         child: LabelAdvancedSearchFieldWidget(
-          name: advancedSearchFilterField.getTitle(context),
+          name: filterField.getTitle(AppLocalizations.of(context)),
         ),
       ),
       if (_isVerticalArrange(context))
@@ -204,20 +204,21 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           mouseCursor: mouseCursor,
           currentFocusNode: currentFocusNode,
           nextFocusNode: nextFocusNode,
-          advancedSearchFilterField: advancedSearchFilterField,
+          filterField: filterField,
           textEditingController: textEditingController,
           onTextChange: onTextChange,
         )
       else if (controller.responsiveUtils.landscapeTabletSupported(context))
-        if (advancedSearchFilterField == AdvancedSearchFilterField.date)
+        if (filterField == FilterField.date)
           Obx(() => DateDropDownButton(
-            controller.imagePaths,
+            imagePaths: controller.imagePaths,
+            receiveTimeTypes: EmailReceiveTimeType.valuesForSearch,
             startDate: controller.startDate.value,
             endDate: controller.endDate.value,
-            receiveTimeSelected: controller.receiveTimeType.value,
+            receiveTimeTypeSelected: controller.receiveTimeType.value,
             onReceiveTimeSelected: (receiveTime) => controller.updateReceiveDateSearchFilter(context, receiveTime),
           ))
-        else if (advancedSearchFilterField == AdvancedSearchFilterField.sortBy)
+        else if (filterField == FilterField.sortBy)
           Obx(() => SortByDropDownButton(
             imagePaths: controller.imagePaths,
             sortOrderSelected: controller.sortOrderType.value,
@@ -231,7 +232,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             mouseCursor: mouseCursor,
             currentFocusNode: currentFocusNode,
             nextFocusNode: nextFocusNode,
-            advancedSearchFilterField: advancedSearchFilterField,
+            filterField: filterField,
             textEditingController: textEditingController,
             onTextChange: onTextChange,
           )
@@ -244,7 +245,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             mouseCursor: mouseCursor,
             currentFocusNode: currentFocusNode,
             nextFocusNode: nextFocusNode,
-            advancedSearchFilterField: advancedSearchFilterField,
+            filterField: filterField,
             textEditingController: textEditingController,
             onTextChange: onTextChange,
           ),
@@ -269,7 +270,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
 
   Widget _buildTextFieldFilterForWeb({
     required BuildContext context,
-    required AdvancedSearchFilterField advancedSearchFilterField,
+    required FilterField filterField,
     TextEditingController? textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
@@ -278,16 +279,17 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     FocusNode? nextFocusNode,
     ValueChanged<String>? onTextChange,
   }) {
-    switch (advancedSearchFilterField) {
-      case AdvancedSearchFilterField.date:
+    switch (filterField) {
+      case FilterField.date:
         return Obx(() => DateDropDownButton(
-          controller.imagePaths,
+          imagePaths: controller.imagePaths,
+          receiveTimeTypes: EmailReceiveTimeType.valuesForSearch,
           startDate: controller.startDate.value,
           endDate: controller.endDate.value,
-          receiveTimeSelected: controller.receiveTimeType.value,
+          receiveTimeTypeSelected: controller.receiveTimeType.value,
           onReceiveTimeSelected: (receiveTime) => controller.updateReceiveDateSearchFilter(context, receiveTime),
         ));
-      case AdvancedSearchFilterField.sortBy:
+      case FilterField.sortBy:
         return Obx(() => SortByDropDownButton(
           imagePaths: controller.imagePaths,
           sortOrderSelected: controller.sortOrderType.value,
@@ -301,7 +303,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           mouseCursor: mouseCursor,
           currentFocusNode: currentFocusNode,
           nextFocusNode: nextFocusNode,
-          advancedSearchFilterField: advancedSearchFilterField,
+          filterField: filterField,
           textEditingController: textEditingController,
           onTextChange: onTextChange,
         );
@@ -310,7 +312,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
 
   Widget _buildTextField({
     required BuildContext context,
-    required AdvancedSearchFilterField advancedSearchFilterField,
+    required FilterField filterField,
     TextEditingController? textEditingController,
     VoidCallback? onTap,
     bool isSelectFormList = false,
@@ -378,9 +380,9 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               color: AppColor.primaryColor,
             ),
           ),
-          hintText: advancedSearchFilterField.getHintText(context),
+          hintText: filterField.getHintText(AppLocalizations.of(context)),
           hintStyle: ThemeUtils.textStyleBodyBody3(
-            color: advancedSearchFilterField == AdvancedSearchFilterField.mailBox
+            color: filterField == FilterField.mailBox
                 ? Colors.black
                 : AppColor.m3Tertiary,
           ),
