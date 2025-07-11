@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
@@ -14,8 +13,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:rich_text_composer/rich_text_composer.dart';
-import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_email_address_drop_down_button.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_horizontal_field_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_label_field_widget.dart';
@@ -68,9 +65,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
               keyboardType: TextInputType.text,
               semanticLabel: 'Identity input field',
               decoration: (IdentityInputDecorationBuilder()
-                ..setContentPadding(const EdgeInsets.symmetric(
+                ..setContentPadding(EdgeInsets.symmetric(
                   horizontal: 12,
-                  vertical: 15,
+                  vertical: PlatformInfo.isWeb ? 15 : 12,
                 ))
                 ..setErrorText(controller.errorNameIdentity.value)
                 ..setHintText(appLocalizations.enterName)
@@ -115,9 +112,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                   color: AppColor.m3SurfaceBackground,
                 ),
                 decoration: (IdentityInputDecorationBuilder()
-                  ..setContentPadding(const EdgeInsets.symmetric(
+                  ..setContentPadding(EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 15,
+                    vertical: PlatformInfo.isWeb ? 15 : 12,
                   ))
                   ..setErrorText(controller.errorBccIdentity.value)
                   ..setHintText(appLocalizations.enterEmailAddress)
@@ -203,9 +200,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                   keyboardType: TextInputType.text,
                   semanticLabel: 'Identity input field',
                   decoration: (IdentityInputDecorationBuilder()
-                    ..setContentPadding(const EdgeInsets.symmetric(
+                    ..setContentPadding(EdgeInsets.symmetric(
                       horizontal: 12,
-                      vertical: 15,
+                      vertical: PlatformInfo.isWeb ? 15 : 12,
                     ))
                     ..setErrorText(controller.errorNameIdentity.value)
                     ..setHintText(appLocalizations.enterName)
@@ -256,9 +253,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                       color: AppColor.m3SurfaceBackground,
                     ),
                     decoration: (IdentityInputDecorationBuilder()
-                      ..setContentPadding(const EdgeInsets.symmetric(
+                      ..setContentPadding(EdgeInsets.symmetric(
                         horizontal: 12,
-                        vertical: 15,
+                        vertical: PlatformInfo.isWeb ? 15 : 12,
                       ))
                       ..setErrorText(controller.errorBccIdentity.value)
                       ..setHintText(appLocalizations.enterEmailAddress)
@@ -318,132 +315,21 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
       );
     }
 
-    if (PlatformInfo.isWeb) {
-      bodyCreatorView = NotificationListener<ScrollNotification>(
-        onNotification: (scrollInfo) {
-          if (scrollInfo is ScrollEndNotification &&
-              scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-            controller.clearFocusEditor(context);
-          }
-          return false;
-        },
-        child: bodyCreatorView,
-      );
-
-      return PointerInterceptor(
-        child: ResponsiveWidget(
-          responsiveUtils: controller.responsiveUtils,
-          mobile: IdentityCreatorFormMobileBuilder(
-            controller: controller,
-            formView: bodyCreatorView,
-          ),
-          tablet: IdentityCreatorFormDesktopBuilder(
-            controller: controller,
-            formView: bodyCreatorView,
-          )
-        ),
-      );
-    } else {
-      return ResponsiveWidget(
+    return PointerInterceptor(
+      child: ResponsiveWidget(
         responsiveUtils: controller.responsiveUtils,
-        mobile: GestureDetector(
-          onTap: () => controller.clearFocusEditor(context),
-          child: Scaffold(
-            backgroundColor: Colors.black38,
-            body: SafeArea(
-              bottom: false,
-              child: KeyboardRichText(
-                keyBroadToolbar: RichTextKeyboardToolBar(
-                  rootContext: context,
-                  titleBack: AppLocalizations.of(context).titleFormat,
-                  backgroundKeyboardToolBarColor: PlatformInfo.isIOS
-                    ? AppColor.colorBackgroundKeyboard
-                    : AppColor.colorBackgroundKeyboardAndroid,
-                  richTextController: controller.richTextMobileTabletController!.richTextController,
-                  quickStyleLabel: AppLocalizations.of(context).titleQuickStyles,
-                  backgroundLabel: AppLocalizations.of(context).titleBackground,
-                  foregroundLabel: AppLocalizations.of(context).titleForeground,
-                  formatLabel: AppLocalizations.of(context).titleFormat,
-                  insertImage: () => controller.pickImage(context),
-                ),
-                richTextController: controller.richTextMobileTabletController!.richTextController,
-                child: Card(
-                  margin: EdgeInsets.zero,
-                  elevation: 16,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(16),
-                        topLeft: Radius.circular(16)
-                    ),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(16),
-                        topLeft: Radius.circular(16)
-                      ),
-                    ),
-                    child: Column(children: [
-                      Expanded(child: bodyCreatorView)
-                    ]),
-                  ),
-                ),
-              ),
-            ),
-          ),
+        mobile: IdentityCreatorFormMobileBuilder(
+          controller: controller,
+          formView: bodyCreatorView,
+          enableRichTextKeyboard: PlatformInfo.isMobile,
         ),
         tablet: Portal(
-          child: GestureDetector(
-            onTap: () => controller.clearFocusEditor(context),
-            child: Scaffold(
-              backgroundColor: Colors.black38,
-              body: SafeArea(
-                child: KeyboardRichText(
-                  keyBroadToolbar: RichTextKeyboardToolBar(
-                    rootContext: context,
-                    titleBack: AppLocalizations.of(context).titleFormat,
-                    backgroundKeyboardToolBarColor: PlatformInfo.isIOS
-                      ? AppColor.colorBackgroundKeyboard
-                      : AppColor.colorBackgroundKeyboardAndroid,
-                    richTextController: controller.richTextMobileTabletController!.richTextController,
-                    quickStyleLabel: AppLocalizations.of(context).titleQuickStyles,
-                    backgroundLabel: AppLocalizations.of(context).titleBackground,
-                    foregroundLabel: AppLocalizations.of(context).titleForeground,
-                    formatLabel: AppLocalizations.of(context).titleFormat,
-                    insertImage: () => controller.pickImage(context),
-                  ),
-                  richTextController: controller.richTextMobileTabletController!.richTextController,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
-                      child: Card(
-                        color: Colors.transparent,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(16))
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(16))
-                          ),
-                          width: math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 700),
-                          height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.8,
-                          child: Column(children: [
-                            Expanded(child: bodyCreatorView),
-                          ])
-                        )
-                      ),
-                    )
-                  ),
-                ),
-              ),
-            ),
+          child: IdentityCreatorFormDesktopBuilder(
+            controller: controller,
+            formView: bodyCreatorView,
           ),
-        )
-      );
-    }
+        ),
+      ),
+    );
   }
 }
