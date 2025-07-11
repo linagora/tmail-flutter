@@ -244,6 +244,7 @@ extension AppColor on Color {
   static const blue100 = Color(0xFFDFEEFF);
   static const blue400 = Color(0xFF80BDFF);
   static const m3Tertiary = Color(0xFF8C9CAF);
+  static const m3Tertiary60 = Color(0xFFD8E1EB);
   static const m3Neutral70 = Color(0xFFAEAAAE);
   static const m3Neutral90 = Color(0xFFE6E1E5);
   static const grayBackgroundColor = Color(0xFFF3F6F9);
@@ -257,6 +258,7 @@ extension AppColor on Color {
   static const iconFolder = Color(0xFF297EF2);
   static const folderDivider = Color(0xFFE4E8EC);
   static const gray424244 = Color(0xFF424244);
+  static const lightGrayF4F4F4 = Color(0xFFF4F4F4);
   static const redFF3347 = Color(0xFFFF3347);
   static const gray686E76 = Color(0xFF686E76);
   static const textSecondary = Color(0xFF1C1B1F);
