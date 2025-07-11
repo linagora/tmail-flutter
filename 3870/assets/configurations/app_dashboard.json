@@ -1,0 +1,34 @@
+{
+  "apps": [
+    {
+      "appName": "Twake",
+      "icon": "ic_twake_app.svg",
+      "appLink": "http://twake.linagora.com/"
+    },
+    {
+      "appName": "Contacts",
+      "icon": "ic_contacts_app.svg",
+      "appLink": "https://openpaas.linagora.com/contacts/"
+    },
+    {
+      "appName": "Calendar",
+      "icon": "ic_calendar_app.svg",
+      "appLink": "https://openpaas.linagora.com/calendar/"
+    },
+    {
+      "appName": "TMail",
+      "icon": "ic_tmail_app.svg",
+      "appLink": "https://tmail.linagora.com/"
+    },
+    {
+      "appName": "TDrive",
+      "icon": "ic_tdrive_app.svg",
+      "appLink": "https://tdrive.linagora.com/"
+    },
+    {
+      "appName": "Teleskop",
+      "icon": "ic_teleskop_app.svg",
+      "appLink": "https://jitsi.linagora.com/"
+    }
+  ]
+}
