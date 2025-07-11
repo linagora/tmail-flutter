@@ -339,7 +339,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   void _openPopupMenuDateFilter(BuildContext context, RelativeRect position) {
-    final popupMenuItems = EmailReceiveTimeType.values.map((timeType) {
+    final popupMenuItems = EmailReceiveTimeType.valuesForSearch.map((timeType) {
       return PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupMenuItemActionWidget(
@@ -364,7 +364,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   void _openContextMenuDateFilter(BuildContext context) {
-    final contextMenuActions = EmailReceiveTimeType.values.map((timeType) {
+    final contextMenuActions = EmailReceiveTimeType.valuesForSearch.map((timeType) {
       return ContextItemReceiveTimeTypeAction(
         timeType,
         controller.emailReceiveTimeType.value,

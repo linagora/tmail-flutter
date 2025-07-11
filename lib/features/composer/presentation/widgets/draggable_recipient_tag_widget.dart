@@ -37,10 +37,10 @@ class DraggableRecipientTagWidget extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (emailAddress.displayName.isNotEmpty)
+            if (emailAddress.emailAddress.isNotEmpty)
               GradientCircleAvatarIcon(
                 colors: emailAddress.avatarColors,
-                label: emailAddress.displayName.firstLetterToUpperCase,
+                label: emailAddress.emailAddress.firstCharacterToUpperCase,
                 labelFontSize: DraggableRecipientTagWidgetStyle.avatarLabelFontSize,
                 iconSize: DraggableRecipientTagWidgetStyle.avatarIconSize,
               ),

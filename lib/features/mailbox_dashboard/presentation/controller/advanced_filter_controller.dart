@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/das
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -37,6 +36,7 @@ class AdvancedFilterController extends BaseController {
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
   final sortOrderType = EmailSortOrderType.mostRecent.obs;
+  final selectedFolderName = Rxn<String>();
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
@@ -51,7 +51,6 @@ class AdvancedFilterController extends BaseController {
   TextEditingController subjectFilterInputController = TextEditingController();
   TextEditingController hasKeyWordFilterInputController = TextEditingController();
   TextEditingController notKeyWordFilterInputController = TextEditingController();
-  TextEditingController mailBoxFilterInputController = TextEditingController();
 
   final search.SearchController searchController = Get.find<search.SearchController>();
   final MailboxDashBoardController _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -206,7 +205,7 @@ class AdvancedFilterController extends BaseController {
     final mailboxName = context.mounted
       ? _destinationMailboxSelected?.getDisplayName(context)
       : _destinationMailboxSelected?.name?.name;
-    mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
+    selectedFolderName.value = StringConvert.writeNullToEmpty(mailboxName);
     _updateMemorySearchFilter(mailboxOption: optionOf(_destinationMailboxSelected));
   }
 
@@ -276,7 +275,7 @@ class AdvancedFilterController extends BaseController {
     }
 
     if (context != null) {
-      mailBoxFilterInputController.text = _memorySearchFilter.mailbox == null
+      selectedFolderName.value = _memorySearchFilter.mailbox == null
         ? AppLocalizations.of(context).allFolders
         : StringConvert.writeNullToEmpty(
             _memorySearchFilter.mailbox?.getDisplayName(context));
@@ -359,14 +358,14 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  void showFullEmailAddress(AdvancedSearchFilterField field) {
+  void showFullEmailAddress(FilterField field) {
     FocusManager.instance.primaryFocus?.unfocus();
 
     switch(field) {
-      case AdvancedSearchFilterField.from:
+      case FilterField.from:
         fromAddressExpandMode.value = ExpandMode.EXPAND;
         break;
-      case AdvancedSearchFilterField.to:
+      case FilterField.to:
         toAddressExpandMode.value = ExpandMode.EXPAND;
         break;
       default:
@@ -375,18 +374,18 @@ class AdvancedFilterController extends BaseController {
   }
 
   void updateListEmailAddress(
-    AdvancedSearchFilterField field,
+    FilterField field,
     List<EmailAddress> listEmailAddress,
   ) {
     switch(field) {
-      case AdvancedSearchFilterField.from:
+      case FilterField.from:
         listFromEmailAddress = List.from(listEmailAddress);
         _updateMemorySearchFilter(
           fromOption: option(
             listFromEmailAddress.isNotEmpty,
             listFromEmailAddress.asSetAddress()));
         break;
-      case AdvancedSearchFilterField.to:
+      case FilterField.to:
         listToEmailAddress = List.from(listEmailAddress);
         _updateMemorySearchFilter(
           toOption: option(
@@ -398,20 +397,13 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  bool _isDuplicatedEmailAddress(String inputEmail, List<EmailAddress> listEmailAddress) {
-    return listEmailAddress
-      .map((emailAddress) => emailAddress.email)
-      .whereNotNull()
-      .contains(inputEmail);
-  }
-
   void _autoCreateTagFromField() {
     final inputEmail = fromEmailAddressController.text;
     if (inputEmail.isEmpty) {
       return;
     }
 
-    if (!_isDuplicatedEmailAddress(inputEmail, listFromEmailAddress)) {
+    if (!listFromEmailAddress.isDuplicatedEmail(inputEmail)) {
       final emailAddress = EmailAddress(null, inputEmail);
       listFromEmailAddress.add(emailAddress);
       _updateMemorySearchFilter(fromOption: Some(listFromEmailAddress.asSetAddress()));
@@ -428,7 +420,7 @@ class AdvancedFilterController extends BaseController {
       return;
     }
 
-    if (!_isDuplicatedEmailAddress(inputEmail, listToEmailAddress)) {
+    if (!listToEmailAddress.isDuplicatedEmail(inputEmail)) {
       listToEmailAddress.add(EmailAddress(null, inputEmail));
       _updateMemorySearchFilter(toOption: Some(listToEmailAddress.asSetAddress()));
       keyToEmailTagEditor.currentState?.resetTextField();
@@ -450,6 +442,7 @@ class AdvancedFilterController extends BaseController {
     endDate.value = null;
     receiveTimeType.value = EmailReceiveTimeType.allTime;
     hasAttachment.value = false;
+    selectedFolderName.value = null;
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
     _destinationMailboxSelected = null;
@@ -459,7 +452,6 @@ class AdvancedFilterController extends BaseController {
     subjectFilterInputController.clear();
     hasKeyWordFilterInputController.clear();
     notKeyWordFilterInputController.clear();
-    mailBoxFilterInputController.clear();
     fromEmailAddressController.clear();
     toEmailAddressController.clear();
   }
@@ -526,19 +518,19 @@ class AdvancedFilterController extends BaseController {
     _updateMemorySearchFilter(hasAttachmentOption: Some(hasAttachment.value));
   }
 
-  void onTextChanged(AdvancedSearchFilterField filterField, String value) {
+  void onTextChanged(FilterField filterField, String value) {
     switch (filterField) {
-      case AdvancedSearchFilterField.subject:
+      case FilterField.subject:
         final subjectOption = option(value.trim().isNotEmpty, value.trim());
         _updateMemorySearchFilter(subjectOption: subjectOption);
         break;
-      case AdvancedSearchFilterField.hasKeyword:
+      case FilterField.hasKeyword:
         final textOption = option(
           value.trim().isNotEmpty,
           SearchQuery(value.trim()));
         _updateMemorySearchFilter(textOption: textOption);
         break;
-      case AdvancedSearchFilterField.notKeyword:
+      case FilterField.notKeyword:
         final notKeywordsOption = option(
           value.trim().isNotEmpty,
           value.trim().split(',').map((value) => value.trim()).toSet());
@@ -551,13 +543,13 @@ class AdvancedFilterController extends BaseController {
 
   void removeDraggableEmailAddress(DraggableEmailAddress draggableEmailAddress) {
     log('AdvancedFilterController::removeDraggableEmailAddress:removeDraggableEmailAddress: $draggableEmailAddress');
-    switch(draggableEmailAddress.prefix) {
-      case PrefixEmailAddress.to:
+    switch(draggableEmailAddress.filterField) {
+      case FilterField.to:
         listToEmailAddress.remove(draggableEmailAddress.emailAddress);
         toAddressExpandMode.value = ExpandMode.EXPAND;
         toAddressExpandMode.refresh();
         break;
-      case PrefixEmailAddress.from:
+      case FilterField.from:
         listFromEmailAddress.remove(draggableEmailAddress.emailAddress);
         fromAddressExpandMode.value = ExpandMode.EXPAND;
         fromAddressExpandMode.refresh();
@@ -588,7 +580,6 @@ class AdvancedFilterController extends BaseController {
     subjectFilterInputController.dispose();
     hasKeyWordFilterInputController.dispose();
     notKeyWordFilterInputController.dispose();
-    mailBoxFilterInputController.dispose();
     toEmailAddressController.dispose();
     fromEmailAddressController.dispose();
     _unregisterWorkerListener();
