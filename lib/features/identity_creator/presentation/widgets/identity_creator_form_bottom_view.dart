@@ -23,18 +23,16 @@ class IdentityCreatorFormBottomView extends StatelessWidget {
 
     final checkboxWidget = Obx(() {
       if (controller.isDefaultIdentitySupported.isTrue) {
-        return Expanded(
-          child: Obx(() {
-            return CustomIconLabeledCheckbox(
-              label: appLocalizations.setDefaultIdentity,
-              svgIconPath: controller.imagePaths.icCheckboxUnselected,
-              selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,
-              value: controller.isDefaultIdentity.value,
-              semanticsLabel: 'Set default identity checkbox',
-              onChanged: (_) => controller.onCheckboxChanged(),
-            );
-          }),
-        );
+        return Obx(() {
+          return CustomIconLabeledCheckbox(
+            label: appLocalizations.setDefaultIdentity,
+            svgIconPath: controller.imagePaths.icCheckboxUnselected,
+            selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,
+            value: controller.isDefaultIdentity.value,
+            semanticsLabel: 'Set default identity checkbox',
+            onChanged: (_) => controller.onCheckboxChanged(),
+          );
+        });
       } else {
         return const SizedBox.shrink();
       }
@@ -113,7 +111,7 @@ class IdentityCreatorFormBottomView extends StatelessWidget {
         ),
         child: Row(
           children: [
-            checkboxWidget,
+            Expanded(child: checkboxWidget),
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
