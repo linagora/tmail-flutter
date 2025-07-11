@@ -1065,7 +1065,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this._isExpandedNotifier;
       t1.set$value(0, !t1._change_notifier$_value);
     },
-    $signature: 134
+    $signature: 140
   };
   C.ProfileSettingMenuOverlay_build_closure.prototype = {
     call$1(actionType) {
@@ -1187,5 +1187,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "c0mLEw1WAjneOylfhT++FbqGiGE=");
+})($__dart_deferred_initializers__, "+GhSZiX6bd6qHCuvMi3dyW80fbc=");
 ;
