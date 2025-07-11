@@ -554,11 +554,23 @@ class AdvancedFilterController extends BaseController {
     switch(draggableEmailAddress.prefix) {
       case PrefixEmailAddress.to:
         listToEmailAddress.remove(draggableEmailAddress.emailAddress);
+        _updateMemorySearchFilter(
+          toOption: option(
+            listToEmailAddress.isNotEmpty,
+            listToEmailAddress.asSetAddress(),
+          ),
+        );
         toAddressExpandMode.value = ExpandMode.EXPAND;
         toAddressExpandMode.refresh();
         break;
       case PrefixEmailAddress.from:
         listFromEmailAddress.remove(draggableEmailAddress.emailAddress);
+        _updateMemorySearchFilter(
+          fromOption: option(
+            listFromEmailAddress.isNotEmpty,
+            listFromEmailAddress.asSetAddress(),
+          ),
+        );
         fromAddressExpandMode.value = ExpandMode.EXPAND;
         fromAddressExpandMode.refresh();
         break;
