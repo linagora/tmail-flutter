@@ -7,29 +7,37 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class AdvancedSearchFieldWidget extends StatelessWidget {
   final FilterField filterField;
   final Widget child;
+  final bool useHeight;
 
   const AdvancedSearchFieldWidget({
     super.key,
     required this.filterField,
     required this.child,
+    this.useHeight = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: AdvancedSearchInputFormStyle.inputFieldHeight,
-      child: Row(
-        children: [
-          SizedBox(
-            width: AdvancedSearchInputFormStyle.labelMaxWidth,
-            child: LabelAdvancedSearchFieldWidget(
-              name: filterField.getTitle(AppLocalizations.of(context)),
-            ),
+    final bodyWidget = Row(
+      children: [
+        SizedBox(
+          width: AdvancedSearchInputFormStyle.labelMaxWidth,
+          child: LabelAdvancedSearchFieldWidget(
+            name: filterField.getTitle(AppLocalizations.of(context)),
           ),
-          const SizedBox(width: AdvancedSearchInputFormStyle.labelSpace),
-          Expanded(child: child),
-        ],
-      ),
+        ),
+        const SizedBox(width: AdvancedSearchInputFormStyle.labelSpace),
+        Expanded(child: child),
+      ],
     );
+
+    if (useHeight) {
+      return SizedBox(
+        height: AdvancedSearchInputFormStyle.inputFieldHeight,
+        child: bodyWidget,
+      );
+    } else {
+      return bodyWidget;
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/avatar_tag_item_style.dart';
 
@@ -27,7 +28,7 @@ class AvatarTagItemWidget extends StatelessWidget {
         )
       ),
       child: Text(
-        tagName.isNotEmpty ? tagName[0].toUpperCase() : '',
+        tagName.firstCharacterToUpperCase,
         style: AvatarTagItemStyle.labelTextStyle
       )
     );
