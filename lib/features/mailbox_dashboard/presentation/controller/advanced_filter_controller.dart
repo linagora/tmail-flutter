@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -398,20 +397,13 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  bool _isDuplicatedEmailAddress(String inputEmail, List<EmailAddress> listEmailAddress) {
-    return listEmailAddress
-      .map((emailAddress) => emailAddress.email)
-      .whereNotNull()
-      .contains(inputEmail);
-  }
-
   void _autoCreateTagFromField() {
     final inputEmail = fromEmailAddressController.text;
     if (inputEmail.isEmpty) {
       return;
     }
 
-    if (!_isDuplicatedEmailAddress(inputEmail, listFromEmailAddress)) {
+    if (!listFromEmailAddress.isDuplicatedEmail(inputEmail)) {
       final emailAddress = EmailAddress(null, inputEmail);
       listFromEmailAddress.add(emailAddress);
       _updateMemorySearchFilter(fromOption: Some(listFromEmailAddress.asSetAddress()));
@@ -428,7 +420,7 @@ class AdvancedFilterController extends BaseController {
       return;
     }
 
-    if (!_isDuplicatedEmailAddress(inputEmail, listToEmailAddress)) {
+    if (!listToEmailAddress.isDuplicatedEmail(inputEmail)) {
       listToEmailAddress.add(EmailAddress(null, inputEmail));
       _updateMemorySearchFilter(toOption: Some(listToEmailAddress.asSetAddress()));
       keyToEmailTagEditor.currentState?.resetTextField();

@@ -96,4 +96,8 @@ extension ListEmailAddressExtension on List<EmailAddress> {
       }
     }).toList();
   }
+
+  bool isDuplicatedEmail(String inputEmail) {
+    return any((emailAddress) => emailAddress.emailAddress == inputEmail);
+  }
 }
