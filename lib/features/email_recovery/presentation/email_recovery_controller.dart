@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomp
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/controller/input_field_focus_manager.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/extension/handle_auto_create_email_address_tag_extension.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/session_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -147,6 +148,9 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
       recipientsExpandMode.value = ExpandMode.EXPAND;
       senderExpandMode.value = ExpandMode.COLLAPSE;
       _closeSuggestionBox();
+    } else {
+      recipientsExpandMode.value = ExpandMode.COLLAPSE;
+      autoCreateTagForFilterField(FilterField.recipients);
     }
   }
 
@@ -155,6 +159,9 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
       senderExpandMode.value = ExpandMode.EXPAND;
       recipientsExpandMode.value = ExpandMode.COLLAPSE;
       _closeSuggestionBox();
+    } else {
+      senderExpandMode.value = ExpandMode.COLLAPSE;
+      autoCreateTagForFilterField(FilterField.sender);
     }
   }
 
