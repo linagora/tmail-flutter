@@ -4641,5 +4641,17 @@
     "placeholders": {
       "period": {}
     }
+  },
+  "enterName": "Enter name",
+  "@enterName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterEmailAddress": "Enter email address",
+  "@enterEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
