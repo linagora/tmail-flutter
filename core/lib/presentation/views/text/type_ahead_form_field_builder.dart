@@ -4,6 +4,8 @@ import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
+typedef SuggestionBoxDecorationBuilder = Widget Function(Widget child);
+
 class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
 
   final TextDirection textDirection;
@@ -11,7 +13,7 @@ class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
   final SuggestionsCallback<T> suggestionsCallback;
   final ItemBuilder<T> itemBuilder;
   final SuggestionSelectionCallback<T> onSuggestionSelected;
-  final Widget? suggestionsBoxDecoration;
+  final SuggestionBoxDecorationBuilder? suggestionsBoxDecoration;
   final WidgetBuilder? noItemsFoundBuilder;
   final bool hideOnEmpty;
   final bool hideOnError;
@@ -26,6 +28,7 @@ class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
   final TextInputType keyboardType;
   final InputDecoration decoration;
   final Color cursorColor;
+  final TextStyle? textStyle;
 
   const TypeAheadFormFieldBuilder({
     super.key,
@@ -47,6 +50,7 @@ class TypeAheadFormFieldBuilder<T> extends StatefulWidget {
     this.cursorColor = AppColor.primaryColor,
     this.autofillHints,
     this.textInputAction,
+    this.textStyle,
     this.onTextChange,
     this.onTextSubmitted,
   });
@@ -73,13 +77,14 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
       key: widget.key,
       controller: widget.controller,
       focusNode: widget.focusNode,
-      builder: (context, controller, focusNode) {
+      builder: (_, controller, focusNode) {
         return TextField(
           controller: controller,
           focusNode: focusNode,
           textInputAction: widget.textInputAction,
           autocorrect: widget.autocorrect,
           autofillHints: widget.autofillHints,
+          style: widget.textStyle,
           keyboardType: widget.keyboardType,
           decoration: widget.decoration,
           textDirection: _textDirection,
@@ -103,12 +108,17 @@ class _TypeAheadFormFieldBuilderState<T> extends State<TypeAheadFormFieldBuilder
       itemBuilder: widget.itemBuilder,
       onSelected: widget.onSuggestionSelected,
       decorationBuilder: (context, child) {
-        return widget.suggestionsBoxDecoration ?? Material(
-          type: MaterialType.card,
-          elevation: 4,
-          borderRadius: BorderRadius.circular(14),
-          child: child,
-        );
+        if (widget.suggestionsBoxDecoration == null) {
+          return Material(
+            type: MaterialType.card,
+            elevation: 4,
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
+            child: child,
+          );
+        } else {
+          return widget.suggestionsBoxDecoration!(child);
+        }
       },
       emptyBuilder: widget.noItemsFoundBuilder,
       hideOnEmpty: widget.hideOnEmpty,

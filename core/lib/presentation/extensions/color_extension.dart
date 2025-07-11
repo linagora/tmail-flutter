@@ -259,6 +259,7 @@ extension AppColor on Color {
   static const iconFolder = Color(0xFF297EF2);
   static const folderDivider = Color(0xFFE4E8EC);
   static const gray424244 = Color(0xFF424244);
+  static const lightGrayF4F4F4 = Color(0xFFF4F4F4);
   static const redFF3347 = Color(0xFFFF3347);
   static const gray686E76 = Color(0xFF686E76);
   static const lightGrayEBEDF0 = Color(0xFFEBEDF0);
