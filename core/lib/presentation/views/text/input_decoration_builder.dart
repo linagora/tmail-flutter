@@ -63,8 +63,8 @@ abstract class InputDecorationBuilder {
     errorTextStyle = newStyle;
   }
 
-  void setFocusBorder(OutlineInputBorder focusBorder) {
-    focusBorder = focusBorder;
+  void setFocusBorder(OutlineInputBorder newFocusBorder) {
+    focusBorder = newFocusBorder;
   }
 
   InputDecoration build() {

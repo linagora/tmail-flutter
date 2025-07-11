@@ -4816,4 +4816,18 @@ class AppLocalizations {
       name: 'view',
     );
   }
+
+  String get enterName {
+    return Intl.message(
+      'Enter name',
+      name: 'enterName',
+    );
+  }
+
+  String get enterEmailAddress {
+    return Intl.message(
+      'Enter email address',
+      name: 'enterEmailAddress',
+    );
+  }
 }
