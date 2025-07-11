@@ -23,6 +23,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
         children: [
           AdvancedSearchFieldWidget(
             filterField: FilterField.from,
+            useHeight: false,
             child: Obx(() => DefaultAutocompleteInputFieldWidget(
               field: FilterField.from,
               listEmailAddress: controller.listFromEmailAddress,
@@ -44,6 +45,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
           const SizedBox(height: 12),
           AdvancedSearchFieldWidget(
             filterField: FilterField.to,
+            useHeight: false,
             child: Obx(() => DefaultAutocompleteInputFieldWidget(
               field: FilterField.to,
               listEmailAddress: controller.listToEmailAddress,

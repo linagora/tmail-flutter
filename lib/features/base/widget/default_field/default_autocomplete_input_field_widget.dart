@@ -130,18 +130,10 @@ class _DefaultAutocompleteInputFieldWidgetState
             color: AppColor.m3Tertiary,
           ),
           isDense: true,
-          contentPadding: _currentListEmailAddress.isNotEmpty
-              ? const EdgeInsetsDirectional.symmetric(vertical: 14)
-              : const EdgeInsetsDirectional.only(
-                  top: 14,
-                  bottom: 14,
-                  start: 12,
-                  end: 8,
-                ),
+          contentPadding: _getTextFieldContentPadding(),
         ),
-        padding: _currentListEmailAddress.isNotEmpty
-            ? const EdgeInsets.symmetric(horizontal: 12)
-            : EdgeInsets.zero,
+        padding: _getTagEditorPadding(),
+        tagSpacing: PlatformInfo.isWeb ? 4.0 : 8.0,
         borderRadius: 10,
         borderSize: 1,
         focusedBorderColor: AppColor.primaryColor,
@@ -432,6 +424,42 @@ class _DefaultAutocompleteInputFieldWidgetState
   void _setStateSafety(VoidCallback onAction) {
     if (mounted) {
       setState(onAction);
+    }
+  }
+
+  EdgeInsetsGeometry? _getTextFieldContentPadding() {
+    if (_currentListEmailAddress.isNotEmpty) {
+      if (PlatformInfo.isWeb) {
+        return const EdgeInsetsDirectional.symmetric(
+          vertical: 14,
+          horizontal: 4,
+        );
+      } else {
+        return const EdgeInsetsDirectional.symmetric(vertical: 12);
+      }
+    } else {
+      if (PlatformInfo.isWeb) {
+        return const EdgeInsetsDirectional.only(
+          top: 14,
+          bottom: 14,
+          start: 12,
+          end: 8,
+        );
+      } else {
+        return const EdgeInsetsDirectional.all(12);
+      }
+    }
+  }
+
+  EdgeInsets? _getTagEditorPadding() {
+    if (_currentListEmailAddress.isNotEmpty) {
+      if (PlatformInfo.isWeb) {
+        return const EdgeInsets.symmetric(horizontal: 12);
+      } else {
+        return const EdgeInsets.only(left: 12, right: 12, bottom: 9);
+      }
+    } else {
+      return null;
     }
   }
 }

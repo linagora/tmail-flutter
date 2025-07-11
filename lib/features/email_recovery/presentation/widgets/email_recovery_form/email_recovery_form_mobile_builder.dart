@@ -161,6 +161,7 @@ class EmailRecoveryFormMobileBuilder extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 17),
                             onChanged: controller.onChangeHasAttachment,
                           )),
+                          const SizedBox(height: 32.0),
                         ],
                       ),
                     ),
@@ -170,9 +171,11 @@ class EmailRecoveryFormMobileBuilder extends StatelessWidget {
                     onRestore: () => controller.onRestore(context),
                     nextFocusNode: controller.focusManager.subjectFieldFocusNode,
                     isMobile: true,
-                    padding: const EdgeInsetsDirectional.symmetric(
-                      horizontal: 16,
-                      vertical: 44,
+                    padding: const EdgeInsetsDirectional.only(
+                      start: 16,
+                      end: 16,
+                      top: 12,
+                      bottom: 44,
                     ),
                   )
                 ],
