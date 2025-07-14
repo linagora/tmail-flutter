@@ -336,7 +336,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).toString;
       t1 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data;
-      t2 = A.ElevatedButton_styleFrom(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, C.Color_4294967295, _null, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_UKi0), _null, _null, _null, _null);
+      t2 = A.ElevatedButton_styleFrom(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, C.Color_4294967295, _null, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), D.BorderSide_UKi0), _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6nc4, _null, _null, _null, _null, _null), _null, _null, C.IconAlignment_0, D.ValueKey_loginSubmitForm, _null, _null, _null, new B.BaseLoginView_buildLoginButton_closure(_this, context), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, F.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t1.size._dx);
     },
@@ -713,7 +713,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 53
+    $signature: 51
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -852,6 +852,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     var makeConstList = hunkHelpers.makeConstList;
     D.ApplicationVersionWidget_Rm0 = new G.ApplicationVersionWidget(C.EdgeInsets_0_8_0_0, null, null, null);
     D.AutofillContextAction_0 = new B.AutofillContextAction(0, "commit");
+    D.BorderSide_UKi0 = new A.BorderSide(C.Color_4278221567, 0, C.BorderStyle_1, -1);
     D.BoxConstraints_oA88 = new A.BoxConstraints(200, 720, 720, 1 / 0);
     D.EdgeInsetsDirectional_25_15_25_15 = new A.EdgeInsetsDirectional(25, 15, 25, 15);
     D.EdgeInsetsDirectional_25_15_40_15 = new A.EdgeInsetsDirectional(25, 15, 40, 15);
@@ -867,15 +868,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.List_email = A._setArrayType(makeConstList(["email"]), type$.JSArray_String);
     D.List_password = A._setArrayType(makeConstList(["password"]), type$.JSArray_String);
     D.BorderSide_Fkb = new A.BorderSide(C.Color_4294112245, 1, C.BorderStyle_1, -1);
-    D.OutlineInputBorder_AuK = new A.OutlineInputBorder(4, C.BorderRadius_ww89, D.BorderSide_Fkb);
+    D.OutlineInputBorder_AuK = new A.OutlineInputBorder(4, C.BorderRadius_ww810, D.BorderSide_Fkb);
     D.BorderSide_UKi1 = new A.BorderSide(C.Color_4278221567, 2, C.BorderStyle_1, -1);
-    D.OutlineInputBorder_ieL1 = new A.OutlineInputBorder(4, C.BorderRadius_ww89, D.BorderSide_UKi1);
+    D.OutlineInputBorder_ieL1 = new A.OutlineInputBorder(4, C.BorderRadius_ww810, D.BorderSide_UKi1);
     D.PrivacyLinkWidget_null = new B.PrivacyLinkWidget(null);
     D.Padding_HfL = new A.Padding(C.EdgeInsets_0_16_0_0, D.PrivacyLinkWidget_null, null);
     D.Color_1035779260 = new A.Color(1035779260);
     D.BoxShadow_c9P = new A.BoxShadow(2, C.BlurStyle_0, D.Color_1035779260, C.Offset_0_2, 40);
     D.List_1WK = A._setArrayType(makeConstList([D.BoxShadow_c9P]), A.findType("JSArray<BoxShadow>"));
-    D.RoundedRectangleBorder_NYu17 = new A.RoundedRectangleBorder(C.BorderRadius_ww818, C.BorderSide_Q1M);
+    D.RoundedRectangleBorder_NYu17 = new A.RoundedRectangleBorder(C.BorderRadius_ww819, C.BorderSide_Q1M);
     D.ShapeDecoration_OJ5 = new A.ShapeDecoration(C.Color_4294967295, null, null, D.List_1WK, D.RoundedRectangleBorder_NYu17);
     D.ValueKey_login_loading_icon = new A.ValueKey("login_loading_icon", type$.ValueKey_String);
     D.SizedBox_gg9 = new A.SizedBox(40, 40, C.CircularProgressIndicator_86y, D.ValueKey_login_loading_icon);
@@ -897,5 +898,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "aPQ+jC/HHsffIvHJXTCrXjxRvYo=");
+})($__dart_deferred_initializers__, "I/wHMyoSBPN2P51iyhJCp+Yx2XA=");
 ;
