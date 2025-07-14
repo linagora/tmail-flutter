@@ -19,10 +19,6 @@ class SignatureBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (value.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
     if (PlatformInfo.isWeb) {
       return HtmlContentViewerOnWeb(
         contentHtml: value,
@@ -39,7 +35,13 @@ class SignatureBuilder extends StatelessWidget {
       return HtmlContentViewer(
         contentHtml: value,
         initialWidth: width,
+        maxViewHeight: height,
+        contentPadding: 0,
+        minHtmlContentHeight: 0.0,
+        offsetHtmlContentHeight: 0.0,
         direction: AppUtils.getCurrentDirection(context),
+        keepAlive: true,
+        disableScrolling: true,
       );
     }
   }

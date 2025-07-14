@@ -1,4 +1,6 @@
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/views/list/no_stretch_scroll_behavior.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
@@ -42,77 +44,96 @@ class IdentitiesView extends GetWidget<IdentitiesController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (isDesktop)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: SettingHeaderWidget(
-                      menuItem: AccountMenuItem.profiles,
-                      textStyle: ThemeUtils.textStyleInter600().copyWith(
-                        color: Colors.black.withOpacity(0.9),
+              ...[
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: SettingHeaderWidget(
+                        menuItem: AccountMenuItem.profiles,
+                        textStyle: ThemeUtils.textStyleInter600().copyWith(
+                          color: Colors.black.withOpacity(0.9),
+                        ),
+                        padding: const EdgeInsetsDirectional.only(end: 16),
                       ),
-                      padding: const EdgeInsetsDirectional.only(end: 16),
                     ),
-                  ),
-                  CreateNewIdentityButtonWidget(
+                    CreateNewIdentityButtonWidget(
+                      imagePaths: controller.imagePaths,
+                      onCreateNewIdentityAction: () =>
+                          controller.goToCreateNewIdentity(context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+              ]
+            else
+              ...[
+                const SettingExplanationWidget(
+                  menuItem: AccountMenuItem.profiles,
+                  padding: EdgeInsetsDirectional.symmetric(horizontal: 16),
+                  isCenter: true,
+                  textAlign: TextAlign.center,
+                ),
+                Center(
+                  child: CreateNewIdentityButtonWidget(
                     imagePaths: controller.imagePaths,
+                    margin: const EdgeInsets.only(top: 24, bottom: 16),
                     onCreateNewIdentityAction: () =>
                         controller.goToCreateNewIdentity(context),
                   ),
-                ],
-              )
-            else
-              const SettingExplanationWidget(
-                menuItem: AccountMenuItem.profiles,
-                padding: EdgeInsetsDirectional.only(
-                  start: 16,
-                  end: 16,
-                  bottom: 16,
                 ),
-                isCenter: true,
-              ),
-            const SizedBox(height: 14),
+              ],
             Obx(() => IdentityLoadingWidget(
               identityViewState: controller.identitiesViewState.value,
             )),
             Expanded(
-              child: Obx(() => ListView.separated(
-                shrinkWrap: true,
-                itemCount: controller.listAllIdentities.length + 1,
-                padding: const EdgeInsetsDirectional.only(
-                  start: 16,
-                  end: 16,
-                  bottom: 24,
-                ),
-                itemBuilder: (context, index) {
-                  if (index == controller.listAllIdentities.length) {
-                    return const SizedBox.shrink();
-                  }
+              child: Obx(() {
+                final Widget listView = ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: controller.listAllIdentities.length + 1,
+                  padding: const EdgeInsetsDirectional.only(
+                    start: 24,
+                    end: 24,
+                    bottom: 24,
+                  ),
+                  itemBuilder: (context, index) {
+                    if (index == controller.listAllIdentities.length) {
+                      return const SizedBox.shrink();
+                    }
 
-                  final identity = controller.listAllIdentities[index];
-                  final isSelected = identity == controller.identitySelected.value;
-                  return Obx(() => IdentityListTileBuilder(
-                    imagePaths: controller.imagePaths,
-                    identity: controller.listAllIdentities[index],
-                    isSelected: isSelected,
-                    mapIdentitySignatures: controller.mapIdentitySignatures,
-                    signatureViewState: controller.signatureViewState.value,
-                    isDesktop: isDesktop,
-                    onEditIdentityAction: (identitySelected) =>
-                        controller.goToEditIdentity(context, identitySelected),
-                    onDeleteIdentityAction: (identitySelected) =>
-                      controller.openConfirmationDialogDeleteIdentityAction(
-                        context,
-                        identitySelected,
-                      ),
-                  ));
-                },
-                separatorBuilder: (_, index) =>
-                  Padding(
+                    final identity = controller.listAllIdentities[index];
+                    final isSelected = identity == controller.identitySelected.value;
+                    return Obx(() => IdentityListTileBuilder(
+                      imagePaths: controller.imagePaths,
+                      identity: identity,
+                      isSelected: isSelected,
+                      mapIdentitySignatures: controller.mapIdentitySignatures,
+                      signatureViewState: controller.signatureViewState.value,
+                      isDesktop: isDesktop,
+                      onEditIdentityAction: (identitySelected) =>
+                          controller.goToEditIdentity(context, identitySelected),
+                      onDeleteIdentityAction: (identitySelected) =>
+                        controller.openConfirmationDialogDeleteIdentityAction(
+                          context,
+                          identitySelected,
+                        ),
+                    ));
+                  },
+                  separatorBuilder: (_, index) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     child: Divider(color: Colors.black.withOpacity(.08)),
                   ),
-              )),
+                );
+
+                if (PlatformInfo.isMobile) {
+                  return ScrollConfiguration(
+                    behavior: NoStretchScrollBehavior(),
+                    child: listView,
+                  );
+                } else {
+                  return listView;
+                }
+              }),
             ),
           ]
         ),

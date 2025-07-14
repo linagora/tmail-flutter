@@ -250,4 +250,16 @@ class HtmlTemplate {
       }
     </style>
   ''';
+
+  static const String disableScrollingStyleCSS = '''
+    html, body {
+      overflow: hidden;
+      overscroll-behavior: none;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    ::-webkit-scrollbar {
+        display: none;
+      }
+  ''';
 }

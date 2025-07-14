@@ -10,11 +10,13 @@ typedef OnCreateNewIdentityAction = void Function();
 class CreateNewIdentityButtonWidget extends StatelessWidget {
   final ImagePaths imagePaths;
   final OnCreateNewIdentityAction onCreateNewIdentityAction;
+  final EdgeInsetsGeometry? margin;
 
   const CreateNewIdentityButtonWidget({
     super.key,
     required this.imagePaths,
     required this.onCreateNewIdentityAction,
+    this.margin,
   });
 
   @override
@@ -26,6 +28,7 @@ class CreateNewIdentityButtonWidget extends StatelessWidget {
       borderRadius: 100,
       height: 48,
       maxWidth: 300,
+      margin: margin,
       textStyle: ThemeUtils.textStyleM3LabelLarge(color: Colors.white),
       padding: const EdgeInsetsDirectional.symmetric(
         horizontal: 32,

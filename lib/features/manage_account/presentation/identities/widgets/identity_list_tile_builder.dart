@@ -46,11 +46,14 @@ class IdentityListTileBuilder extends StatelessWidget {
       fit: BoxFit.fill,
     );
 
+    final signatureContent = mapIdentitySignatures[identity.id!] ??
+        identity.signatureAsString;
+
     final identityContent = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 3),
+          padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             (identity.name ?? ''),
             style: ThemeUtils.textStyleBodyBody1(color: Colors.black),
@@ -58,7 +61,7 @@ class IdentityListTileBuilder extends StatelessWidget {
         ),
         if (identity.email?.isNotEmpty == true)
           Padding(
-            padding: const EdgeInsets.only(bottom: 3),
+            padding: const EdgeInsets.only(bottom: 8),
             child: Text(
               identity.email ?? '',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -68,7 +71,7 @@ class IdentityListTileBuilder extends StatelessWidget {
           ),
         if (identity.replyTo?.isNotEmpty == true)
           Padding(
-            padding: const EdgeInsets.only(bottom: 3),
+            padding: const EdgeInsets.only(bottom: 8),
             child: Text(
               '${AppLocalizations.of(context).reply_to.toUpperCase()}: ${identity.replyTo?.listEmailAddressToString(isFullEmailAddress: true)}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -78,7 +81,7 @@ class IdentityListTileBuilder extends StatelessWidget {
           ),
         if (identity.bcc?.isNotEmpty == true)
           Padding(
-            padding: const EdgeInsets.only(bottom: 3),
+            padding: const EdgeInsets.only(bottom: 8),
             child: Text(
               '${AppLocalizations.of(context).bcc_email_address_prefix.toUpperCase()}: ${identity.bcc?.listEmailAddressToString(isFullEmailAddress: true)}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -86,7 +89,7 @@ class IdentityListTileBuilder extends StatelessWidget {
               ),
             ),
           ),
-        if (identity.signatureAsString.isNotEmpty)
+        if (signatureContent.trim().isNotEmpty)
           ...[
             Text(
               '--',
@@ -96,11 +99,10 @@ class IdentityListTileBuilder extends StatelessWidget {
             ),
             SignatureLoadingWidget(signatureViewState: signatureViewState),
             SignatureBuilder(
-              value: mapIdentitySignatures[identity.id!] ??
-                identity.signatureAsString,
-              height: isDesktop ? 150 : 280,
-          ),
-        ],
+              value: signatureContent,
+              width: isDesktop ? 280 : double.infinity,
+            ),
+          ],
       ],
     );
 
