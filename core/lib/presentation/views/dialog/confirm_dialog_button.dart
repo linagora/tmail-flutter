@@ -31,7 +31,7 @@ class ConfirmDialogButton extends StatelessWidget {
     return TextButton(
       style: TextButton.styleFrom(
         backgroundColor: backgroundColor,
-        overlayColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
+        overlayColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.08),
         shape: outlineBorder,
         padding: const EdgeInsets.symmetric(horizontal: 10),
       ),

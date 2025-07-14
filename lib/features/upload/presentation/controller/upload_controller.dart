@@ -2,7 +2,6 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
-import 'package:collection/collection.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -243,7 +242,7 @@ class UploadController extends BaseController {
 
   void _refreshListUploadAttachmentState() {
     listUploadAttachments.value =
-        _uploadingStateFiles.uploadingStateFiles.whereNotNull().toList();
+        _uploadingStateFiles.uploadingStateFiles.nonNulls.toList();
     listUploadAttachments.refresh();
   }
 
@@ -253,7 +252,7 @@ class UploadController extends BaseController {
     }
     return listUploadAttachments
         .map((fileState) => fileState.attachment)
-        .whereNotNull()
+        .nonNulls
         .toList();
   }
 
@@ -263,7 +262,7 @@ class UploadController extends BaseController {
     }
     return listUploadAttachments
       .map((fileState) => fileState.file)
-      .whereNotNull()
+      .nonNulls
       .toList();
   }
 

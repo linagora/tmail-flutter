@@ -276,7 +276,7 @@ class ThemeUtils {
     letterSpacing: 0.25,
     fontSize: 14,
     height: 20 / 14,
-    color: AppColor.textSecondary.withOpacity(0.48),
+    color: AppColor.textSecondary.withValues(alpha: 0.48),
   );
 
   static TextStyle textStyleAppShortcut() => const TextStyle(
@@ -303,7 +303,7 @@ class ThemeUtils {
     letterSpacing: 0.0,
     fontSize: 24,
     height: 28.01 / 24,
-    color: AppColor.gray424244.withOpacity(0.9),
+    color: AppColor.gray424244.withValues(alpha: 0.9),
   );
 
   static TextSelectionThemeData get _textSelectionTheme {

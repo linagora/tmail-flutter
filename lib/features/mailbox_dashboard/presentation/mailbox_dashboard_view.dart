@@ -79,14 +79,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   width: 30,
                   height: 30,
                   child: CupertinoActivityIndicator(color: AppColor.colorLoading)));
-            default:
-              return ResponsiveWidget(
-                  responsiveUtils: controller.responsiveUtils,
-                  desktop: bodyView,
-                  tabletLarge: bodyView,
-                  landscapeTablet: bodyView,
-                  mobile: _buildScaffoldHaveDrawer(body: ThreadView()));
-          }
+            }
         }),
       ),
     );

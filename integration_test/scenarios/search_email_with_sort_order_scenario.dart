@@ -174,7 +174,7 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
 
     final listReceiveAtTime = listEmailTile
       .map((emailTile) => emailTile.presentationEmail.receivedAt?.value)
-      .whereNotNull()
+      .nonNulls
       .toList();
 
     expect(listReceiveAtTime.isSortedByMostRecent(), isTrue);
@@ -186,7 +186,7 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
 
     final listReceiveAtTime = listEmailTile
       .map((emailTile) => emailTile.presentationEmail.receivedAt?.value)
-      .whereNotNull()
+      .nonNulls
       .toList();
 
     expect(listReceiveAtTime.isSortedByOldestFirst(), isTrue);
@@ -200,7 +200,7 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
 
     List<UnsignedInt> sizeList = listEmailTile
       .mapIndexed((index, emailTile) => listEmailTile.elementAt(index).presentationEmail.size)
-      .whereNotNull()
+      .nonNulls
       .toList();
 
     expect(_isSortedAscending(sizeList), isTrue);
@@ -214,7 +214,7 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
 
     List<UnsignedInt> sizeList = listEmailTile
       .mapIndexed((index, emailTile) => listEmailTile.elementAt(index).presentationEmail.size)
-      .whereNotNull()
+      .nonNulls
       .toList();
 
     expect(_isSortedAscending(sizeList), isFalse);

@@ -390,7 +390,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         if (controller.isRefreshingAllMailboxAndEmail) {
           return TMailContainerWidget(
             borderRadius: 10,
-            backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
+            backgroundColor: AppColor.colorFilterMessageButton.withValues(alpha: 0.6),
             padding: const EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 8.5),
             child: const CupertinoLoadingWidget(size: 16));
         } else {
@@ -399,7 +399,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             icon: controller.imagePaths.icRefresh,
             borderRadius: 10,
             iconSize: 16,
-            backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
+            backgroundColor: AppColor.colorFilterMessageButton.withValues(alpha: 0.6),
             onTapActionCallback: controller.refreshMailboxAction,
           );
         }
@@ -427,7 +427,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   overflow: TextOverflow.ellipsis
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
+                  backgroundColor: AppColor.colorFilterMessageButton.withValues(alpha: 0.6),
                   shadowColor: Colors.transparent,
                   padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
                   shape: const RoundedRectangleBorder(
@@ -472,7 +472,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             icon: controller.imagePaths.icRecoverDeletedMessages,
             borderRadius: 10,
             iconSize: 16,
-            backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
+            backgroundColor: AppColor.colorFilterMessageButton.withValues(alpha: 0.6),
             margin: const EdgeInsetsDirectional.only(start: 16),
             onTapActionCallback: () => controller.gotoEmailRecovery(),
           );

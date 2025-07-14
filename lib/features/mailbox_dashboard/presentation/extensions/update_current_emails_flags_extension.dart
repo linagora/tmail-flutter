@@ -18,7 +18,9 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
     if (readAction == null &&
         markStarAction == null &&
         !markAsAnswered &&
-        !markAsForwarded) return;
+        !markAsForwarded) {
+      return;
+    }
 
     final currentEmails = dashboardRoute.value == DashboardRoutes.searchEmail
       ? listResultSearch

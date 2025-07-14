@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -401,7 +400,7 @@ class AdvancedFilterController extends BaseController {
   bool _isDuplicatedEmailAddress(String inputEmail, List<EmailAddress> listEmailAddress) {
     return listEmailAddress
       .map((emailAddress) => emailAddress.email)
-      .whereNotNull()
+      .nonNulls
       .contains(inputEmail);
   }
 

@@ -39,7 +39,7 @@ mixin PopupContextMenuActionMixin {
         ),
       ),
       backgroundColor: Colors.white,
-      barrierColor: Colors.black.withOpacity(0.2),
+      barrierColor: Colors.black.withValues(alpha: 0.2),
       builder: (_) {
         return PointerInterceptor(
           child: Container(

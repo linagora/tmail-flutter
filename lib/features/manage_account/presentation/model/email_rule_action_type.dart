@@ -35,7 +35,7 @@ enum EmailRuleActionType {
     if (this == EmailRuleActionType.delete) {
       return AppColor.redFF3347;
     } else {
-      return AppColor.gray424244.withOpacity(0.72);
+      return AppColor.gray424244.withValues(alpha: 0.72);
     }
   }
 
@@ -43,7 +43,7 @@ enum EmailRuleActionType {
     if (this == EmailRuleActionType.delete) {
       return AppColor.redFF3347;
     } else {
-      return AppColor.gray424244.withOpacity(0.79);
+      return AppColor.gray424244.withValues(alpha: 0.79);
     }
   }
 }

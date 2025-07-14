@@ -117,7 +117,7 @@ class CleanMessagesBanner extends StatelessWidget {
 
       return Container(
         decoration: BoxDecoration(
-          color: AppColor.m3LayerDarkOutline.withOpacity(0.08),
+          color: AppColor.m3LayerDarkOutline.withValues(alpha: 0.08),
           borderRadius: const BorderRadius.all(Radius.circular(8)),
         ),
         padding: displayPositiveActionIsNewLine

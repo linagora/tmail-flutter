@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart' hide State;
 import 'package:get/get.dart';
@@ -400,7 +399,7 @@ class MailboxAPI with HandleSetErrorMixin {
     );
 
     final listMailboxIdSubscribe = setMailboxResponse?.updated?.keys
-      .whereNotNull()
+      .nonNulls
       .map((id) => MailboxId(id))
       .toList();
 

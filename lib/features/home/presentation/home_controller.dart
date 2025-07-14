@@ -87,7 +87,7 @@ class HomeController extends ReloadableController {
       .then((_) => FlutterDownloader.registerCallback(downloadCallback));
   }
 
-  static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
+  static void downloadCallback(String id, int status, int progress) {}
 
   Future<void> _handleNavigateToScreen() async {
     await Future.delayed(2.seconds);
@@ -113,9 +113,6 @@ class HomeController extends ReloadableController {
     switch (arguments.navigateType) {
       case LoginNavigateType.autoSignIn:
         _handleAutoSignInViaDeepLinkSuccess(arguments.autoSignInViaDeepLinkSuccess!);
-        break;
-      default:
-        _cleanupCache();
         break;
     }
   }

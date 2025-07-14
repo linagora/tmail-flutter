@@ -66,7 +66,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
             EmailActionType.selection,
             widget.presentationEmail
           ),
-          hoverColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
+          hoverColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.08),
           child: Container(
             padding: widget.padding ?? _getPaddingItem(context),
             decoration: _getDecorationItem(),
@@ -202,7 +202,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
               widget.presentationEmail
             ),
             onHover: (value) => _hoverNotifier.value = value,
-            hoverColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
+            hoverColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.08),
             borderRadius: const BorderRadius.all(Radius.circular(14)),
             child: Container(
               padding: widget.padding ?? _getPaddingItem(context),

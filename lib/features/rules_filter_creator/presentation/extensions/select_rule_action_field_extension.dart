@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart';
 import 'package:rule_filter/rule_filter/rule_condition_group.dart';
@@ -123,7 +122,7 @@ extension SelectRuleActionFieldExtension on RulesFilterCreatorController {
       } else {
         return null;
       }
-    }).whereNotNull().toList();
+    }).nonNulls.toList();
 
     if (contextMenuActions.isEmpty) return;
 

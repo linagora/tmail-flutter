@@ -101,8 +101,6 @@ enum RichTextStyleType {
         return AppLocalizations.of(context).paragraph;
       case orderList:
         return AppLocalizations.of(context).orderList;
-      default:
-        return '';
-    }
+      }
   }
 }

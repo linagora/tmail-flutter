@@ -42,8 +42,6 @@ extension MailboxCategoriessExtension on MailboxCategories {
         return categoriesExpandMode.personalFolders;
       case MailboxCategories.teamMailboxes:
         return categoriesExpandMode.teamMailboxes;
-      default:
-        return ExpandMode.COLLAPSE;
-    }
+      }
   }
 }

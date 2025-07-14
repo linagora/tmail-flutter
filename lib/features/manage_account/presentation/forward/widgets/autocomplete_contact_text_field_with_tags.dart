@@ -1,7 +1,6 @@
 
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
@@ -206,7 +205,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     }
     return listEmailAddress
       .map((emailAddress) => emailAddress.email)
-      .whereNotNull()
+      .nonNulls
       .contains(inputEmail);
   }
 

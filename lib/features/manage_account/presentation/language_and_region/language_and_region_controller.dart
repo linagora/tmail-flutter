@@ -70,7 +70,9 @@ class LanguageAndRegionController extends BaseController {
     if (accountId == null ||
         session == null ||
         !capabilityServerSettings.isSupported(session, accountId) ||
-        session.isLanguageReadOnly(accountId)) return;
+        session.isLanguageReadOnly(accountId)) {
+      return;
+    }
 
     consumeState(saveLanguageToServerSettingsInteractor.execute(
       accountId,

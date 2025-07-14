@@ -423,7 +423,9 @@ class ThreadController extends BaseController with EmailActionController {
     final totalEmailsCount = currentMailbox.countTotalEmails;
     if (totalEmailsCount == 0
       || mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
-    ) return;
+    ) {
+      return;
+    }
 
     dispatchState(Right(GetAllEmailLoading()));
   }

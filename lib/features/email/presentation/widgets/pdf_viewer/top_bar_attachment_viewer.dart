@@ -20,7 +20,7 @@ class TopBarAttachmentViewer extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       height: 52,
-      color: Colors.black.withOpacity(0.3),
+      color: Colors.black.withValues(alpha: 0.3),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -32,8 +32,8 @@ class TopBarAttachmentViewer extends StatelessWidget {
               color: Colors.white,
               size: 24,
             ),
-            focusColor: Colors.black.withOpacity(0.3),
-            hoverColor: Colors.black.withOpacity(0.3),
+            focusColor: Colors.black.withValues(alpha: 0.3),
+            hoverColor: Colors.black.withValues(alpha: 0.3),
             tooltip: AppLocalizations.of(context).close,
           ),
           const SizedBox(width: 8),
@@ -59,8 +59,8 @@ class TopBarAttachmentViewer extends StatelessWidget {
                   color: Colors.white,
                   size: 24,
                 ),
-                focusColor: Colors.black.withOpacity(0.3),
-                hoverColor: Colors.black.withOpacity(0.3),
+                focusColor: Colors.black.withValues(alpha: 0.3),
+                hoverColor: Colors.black.withValues(alpha: 0.3),
                 tooltip: AppLocalizations.of(context).print,
               ),
             ),
@@ -75,8 +75,8 @@ class TopBarAttachmentViewer extends StatelessWidget {
                   color: Colors.white,
                   size: 24,
                 ),
-                focusColor: Colors.black.withOpacity(0.3),
-                hoverColor: Colors.black.withOpacity(0.3),
+                focusColor: Colors.black.withValues(alpha: 0.3),
+                hoverColor: Colors.black.withValues(alpha: 0.3),
                 tooltip: AppLocalizations.of(context).download,
               ),
             )
