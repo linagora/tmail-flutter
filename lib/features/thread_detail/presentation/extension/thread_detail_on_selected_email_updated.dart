@@ -20,7 +20,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       return;
     }
 
-    scrollController = ScrollController();
+    scrollController ??= ScrollController();
 
     if (currentExpandedEmailId.value == null) {
       loadThreadOnThreadChanged = isThreadDetailEnabled;

@@ -92,13 +92,11 @@ class ThreadDetailManager extends BaseController {
             selectedEmail.threadId!,
           );
           currentMobilePageViewIndex.value = currentThreadIndex;
-        } else {
-          if (selectedEmail.id != null) {
-            final currentEmailIndex = currentDisplayedEmails.indexOf(
-              selectedEmail,
-            );
-            currentMobilePageViewIndex.value = currentEmailIndex;
-          }
+        } else if (selectedEmail.id != null) {
+          final currentEmailIndex = currentDisplayedEmails.indexOf(
+            selectedEmail,
+          );
+          currentMobilePageViewIndex.value = currentEmailIndex;
         }
 
         pageController ??= PageController(
@@ -127,8 +125,8 @@ class ThreadDetailManager extends BaseController {
     if (failure is GetThreadDetailStatusFailure) {
       threadDetailSettingStatus.value = ThreadDetailSettingStatus.enabled;
       refreshThreadDetailOnSettingChanged();
-      return;
+    } else {
+      super.handleFailureViewState(failure);
     }
-    super.handleFailureViewState(failure);
   }
 }

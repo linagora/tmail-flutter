@@ -9,6 +9,7 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
   bool get nextAvailable => isThreadDetailEnabled
       ? currentThreadId != availableThreadIds.lastOrNull
       : currentEmailId != currentDisplayedEmails.lastOrNull?.id;
+
   void onNext() {
     if (!nextAvailable) return;
 
@@ -22,6 +23,7 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
   bool get previousAvailable => isThreadDetailEnabled
       ? currentThreadId != availableThreadIds.firstOrNull
       : currentEmailId != currentDisplayedEmails.firstOrNull?.id;
+      
   void onPrevious() {
     if (!previousAvailable) return;
 
