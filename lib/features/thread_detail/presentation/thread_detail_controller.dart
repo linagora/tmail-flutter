@@ -95,6 +95,7 @@ class ThreadDetailController extends BaseController {
 
   ScrollController? scrollController;
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
+  bool loadThreadOnThreadChanged = false;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -159,7 +160,7 @@ class ThreadDetailController extends BaseController {
         handleEmailMovedAction(action);
       } else if (action is LoadThreadDetailAfterSelectedEmailAction) {
         if (_validateLoadThread(action)) {
-          scrollController = ScrollController();
+          loadThreadOnThreadChanged = false;
           consumeState(_getEmailIdsByThreadIdInteractor.execute(
             action.threadId,
             session!,

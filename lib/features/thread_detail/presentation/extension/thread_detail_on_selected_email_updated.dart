@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
@@ -19,15 +20,35 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       return;
     }
 
-    if (currentExpandedEmailId.value != null) {
-      mailboxDashBoardController.dispatchEmailUIAction(
-        DisposePreviousExpandedEmailAction(
-          currentExpandedEmailId.value!,
-        ),
-      );
+    scrollController = ScrollController();
+
+    if (currentExpandedEmailId.value == null) {
+      loadThreadOnThreadChanged = isThreadDetailEnabled;
+      _preloadSelectedEmail(selectedEmail!);
+      return;
     }
 
-    _preloadSelectedEmail(selectedEmail!);
+    // Thread setting updated, no need to dispose current single email controller
+    if (currentExpandedEmailId.value == selectedEmail!.id) {
+      _preloadSelectedEmail(selectedEmail);
+
+      if (isThreadDetailEnabled && selectedEmail.threadId != null) {
+        mailboxDashBoardController.dispatchThreadDetailUIAction(
+          LoadThreadDetailAfterSelectedEmailAction(
+            selectedEmail.threadId!,
+          )
+        );
+      }
+      return;
+    }
+
+    mailboxDashBoardController.dispatchEmailUIAction(
+      DisposePreviousExpandedEmailAction(
+        currentExpandedEmailId.value!,
+      ),
+    );
+    loadThreadOnThreadChanged = isThreadDetailEnabled;
+    _preloadSelectedEmail(selectedEmail);
   }
 
   void _preloadSelectedEmail(PresentationEmail selectedEmail) {

@@ -23,6 +23,7 @@ extension OnThreadPageChanged on ThreadDetailController {
         CollapseEmailInThreadDetailAction(currentExpandedEmailId.value!),
       );
     }
+    loadThreadOnThreadChanged = isThreadDetailEnabled;
     threadDetailManager.onNext();
   }
 
@@ -32,6 +33,7 @@ extension OnThreadPageChanged on ThreadDetailController {
         CollapseEmailInThreadDetailAction(currentExpandedEmailId.value!),
       );
     }
+    loadThreadOnThreadChanged = isThreadDetailEnabled;
     threadDetailManager.onPrevious();
   }
 }

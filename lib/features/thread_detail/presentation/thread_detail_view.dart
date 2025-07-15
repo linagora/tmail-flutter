@@ -16,7 +16,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bot
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_loading_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_details_email_views.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_page_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
@@ -95,15 +94,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               ],
             );
           }),
-          Obx(() => controller.getThreadDetailLoadingView(
-            isResponsiveDesktop: controller.responsiveUtils.isDesktop(context),
-            isLoading: showLoadingView(controller.viewState.value) && !PlatformInfo.isMobile,
-          )),
           Obx(() {
-            if (showLoadingView(controller.viewState.value) && !PlatformInfo.isMobile) {
-              return const SizedBox.shrink();
-            }
-
             if (PlatformInfo.isMobile) {
               final manager = controller.threadDetailManager;
               final currentIndex = manager.currentMobilePageViewIndex.value;

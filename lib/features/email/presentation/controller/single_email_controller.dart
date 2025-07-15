@@ -762,7 +762,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
     if (currentEmail?.threadId != null &&
         currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id &&
-        success is! GetEmailContentFromThreadCacheSuccess) {
+        _threadDetailController?.loadThreadOnThreadChanged == true) {
       mailboxDashBoardController.dispatchThreadDetailUIAction(
         LoadThreadDetailAfterSelectedEmailAction(
           currentEmail!.threadId!,
