@@ -115,8 +115,19 @@ class ThreadView extends GetWidget<ThreadController>
                                 .mailboxDashBoardController
                                 .spamReportController;
 
-                            if (spamController.spamReportState.value == SpamReportState.disabled ||
-                                spamController.presentationSpamMailbox.value == null) {
+                            final isSpamReportDisabled = spamController.spamReportState.value == SpamReportState.disabled;
+
+                            final isSpamFolderSelected = controller
+                                .mailboxDashBoardController
+                                .selectedMailbox
+                                .value
+                                ?.isSpam == true;
+
+                            final isPresentationSpamMailboxIsNull = spamController.presentationSpamMailbox.value == null;
+
+                            if (isSpamReportDisabled ||
+                              isPresentationSpamMailboxIsNull ||
+                              isSpamFolderSelected) {
                               return const SizedBox.shrink();
                             }
 

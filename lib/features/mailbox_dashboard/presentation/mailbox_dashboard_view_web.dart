@@ -178,8 +178,18 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         Obx(() {
                           final spamController = controller.spamReportController;
 
-                          if (spamController.spamReportState.value == SpamReportState.disabled ||
-                              spamController.presentationSpamMailbox.value == null) {
+                          final isSpamReportDisabled = spamController.spamReportState.value == SpamReportState.disabled;
+
+                          final isSpamFolderSelected = controller
+                              .selectedMailbox
+                              .value
+                              ?.isSpam == true;
+
+                          final isPresentationSpamMailboxIsNull = spamController.presentationSpamMailbox.value == null;
+
+                          if (isSpamReportDisabled ||
+                              isPresentationSpamMailboxIsNull ||
+                              isSpamFolderSelected) {
                             return const SizedBox.shrink();
                           }
 
