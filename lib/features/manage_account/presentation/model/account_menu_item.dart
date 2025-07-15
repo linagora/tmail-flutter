@@ -72,7 +72,7 @@ enum AccountMenuItem {
   String getExplanation(AppLocalizations appLocalizations) {
     switch(this) {
       case AccountMenuItem.profiles:
-        return appLocalizations.profilesSettingExplanation;
+        return appLocalizations.identitiesSettingExplanation;
       case AccountMenuItem.languageAndRegion:
         return appLocalizations.languageSubtitle;
       case AccountMenuItem.emailRules:

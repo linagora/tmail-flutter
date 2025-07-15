@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/identities/identities_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/setting_app_bar.dart';
@@ -12,7 +13,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/notification_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 
@@ -87,7 +87,7 @@ class SettingsView extends GetWidget<SettingsController> {
     return Obx(() {
       switch(controller.manageAccountDashboardController.accountMenuItemSelected.value) {
         case AccountMenuItem.profiles:
-          return ProfilesView(responsiveUtils: controller.responsiveUtils);
+          return const IdentitiesView();
         case AccountMenuItem.languageAndRegion:
           if (controller.manageAccountDashboardController.isLanguageSettingDisplayed) {
             return const LanguageAndRegionView();
