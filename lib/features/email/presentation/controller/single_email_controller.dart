@@ -694,16 +694,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         )
       );
     }
-    if (currentEmail?.threadId != null &&
-        currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id &&
-        _threadDetailController?.loadThreadOnThreadChanged == true) {
-      _threadDetailController?.loadThreadOnThreadChanged = false;
-      mailboxDashBoardController.dispatchThreadDetailUIAction(
-        LoadThreadDetailAfterSelectedEmailAction(
-          currentEmail!.threadId!,
-        )
-      );
-    }
+    _loadThreadOnGetEmailContentSuccess();
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
@@ -774,6 +765,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if ((_threadDetailController?.emailIdsPresentation.keys.length ?? 0) > 1 == true) {
       _jumpScrollViewToTopOfEmail();
     }
+    _loadThreadOnGetEmailContentSuccess();
+  }
+
+  void _loadThreadOnGetEmailContentSuccess() {
     if (currentEmail?.threadId != null &&
         currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id &&
         _threadDetailController?.loadThreadOnThreadChanged == true) {
