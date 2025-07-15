@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -59,7 +60,7 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
                           maxLines: 1,
                           softWrap: CommonTextStyle.defaultSoftWrap,
                           overflow: CommonTextStyle.defaultTextOverFlow,
-                          style: const TextStyle(
+                          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontSize: 16,
                             color: AppColor.colorNameEmail,
                             fontWeight: FontWeight.w400,
@@ -77,7 +78,7 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
                         ),
                         child: Text(
                           subtitle!,
-                          style: const TextStyle(
+                          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontSize: 13,
                             color: AppColor.colorContentEmail,
                             fontWeight: FontWeight.w400)))

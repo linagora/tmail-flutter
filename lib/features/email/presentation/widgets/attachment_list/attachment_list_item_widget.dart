@@ -68,7 +68,7 @@ class AttachmentListItemWidget extends StatelessWidget {
                           ExtendedText(
                             (attachment.name ?? ''),
                             maxLines: 1,
-                            overflowWidget: const TextOverflowWidget(
+                            overflowWidget: TextOverflowWidget(
                               position: TextOverflowPosition.middle,
                               clearType: TextOverflowClearType.clipRect,
                               child: Text(

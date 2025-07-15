@@ -19,9 +19,9 @@ class LoginInputDecorationBuilder extends InputDecorationBuilder {
       prefixText: prefixText,
       labelText: labelText,
       floatingLabelBehavior: FloatingLabelBehavior.never,
-      labelStyle: labelStyle ?? const TextStyle(color: AppColor.textFieldLabelColor, fontSize: 16),
+      labelStyle: labelStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(color: AppColor.textFieldLabelColor, fontSize: 16),
       hintText: hintText,
-      hintStyle: hintStyle ?? const TextStyle(color: AppColor.textFieldHintColor, fontSize: 16),
+      hintStyle: hintStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(color: AppColor.textFieldHintColor, fontSize: 16),
       contentPadding: contentPadding ?? const EdgeInsetsDirectional.only(start: 25, top: 15, bottom: 15, end: 25),
       filled: true,
       fillColor: AppColor.textFieldBorderColor);

@@ -1,6 +1,7 @@
 import 'package:core/presentation/action/action_callback_define.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
@@ -54,7 +55,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
       padding: padding,
       maxWidth: EmailAttachmentsStyles.buttonMoreMaxWidth,
       margin: margin,
-      textStyle: const TextStyle(
+      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
         fontSize: EmailAttachmentsStyles.buttonMoreAttachmentsTextSize,
         color: EmailAttachmentsStyles.buttonMoreAttachmentsTextColor,
         fontWeight: EmailAttachmentsStyles.buttonMoreAttachmentsFontWeight,
@@ -152,7 +153,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
                       backgroundColor: Colors.transparent,
                       borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
                       padding: EmailAttachmentsStyles.mobileButtonPadding,
-                      textStyle: const TextStyle(
+                      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: EmailAttachmentsStyles.buttonTextSize,
                         color: EmailAttachmentsStyles.buttonTextColor,
                         fontWeight: EmailAttachmentsStyles.buttonFontWeight

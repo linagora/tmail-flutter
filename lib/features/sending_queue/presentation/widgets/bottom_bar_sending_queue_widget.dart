@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
               borderRadius: 0,
               backgroundColor: Colors.transparent,
               iconColor: SendingEmailActionType.edit.getButtonIconColor(_canEditable ? ButtonState.enabled : ButtonState.disabled),
-              textStyle: TextStyle(
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 12,
                 color: SendingEmailActionType.edit.getButtonTitleColor(_canEditable ? ButtonState.enabled : ButtonState.disabled)
               ),
@@ -70,7 +71,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
               borderRadius: 0,
               backgroundColor: Colors.transparent,
               iconColor: SendingEmailActionType.resend.getButtonIconColor(_canResend ? ButtonState.enabled : ButtonState.disabled),
-              textStyle: TextStyle(
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 12,
                 color: SendingEmailActionType.resend.getButtonTitleColor(_canResend ? ButtonState.enabled : ButtonState.disabled)
               ),
@@ -90,7 +91,7 @@ class BottomBarSendingQueueWidget extends StatelessWidget {
               borderRadius: 0,
               backgroundColor: Colors.transparent,
               iconColor: SendingEmailActionType.delete.getButtonIconColor(ButtonState.enabled),
-              textStyle: TextStyle(
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 12,
                 color: SendingEmailActionType.delete.getButtonTitleColor(ButtonState.enabled)
               ),

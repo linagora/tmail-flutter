@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 typedef OnTapAvatarActionClick = void Function();
@@ -97,7 +98,7 @@ class AvatarBuilder {
           ),
           child: Text(
               _text ?? '',
-              style: _textStyle ?? TextStyle(fontSize: 20, color: _textColor ?? AppColor.avatarTextColor, fontWeight: FontWeight.w500)
+              style: _textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 20, color: _textColor ?? AppColor.avatarTextColor, fontWeight: FontWeight.w500)
           )
       ),
     );

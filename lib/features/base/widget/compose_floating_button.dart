@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/floating_button/scrolling_floating_button_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -37,7 +38,7 @@ class ComposeFloatingButton extends StatelessWidget {
           child: Text(AppLocalizations.of(context).compose,
             overflow: CommonTextStyle.defaultTextOverFlow,
             softWrap: CommonTextStyle.defaultSoftWrap,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               color: Colors.white,
               fontSize: 16.0,
               fontWeight: FontWeight.w500

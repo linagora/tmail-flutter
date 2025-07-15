@@ -30,19 +30,19 @@ class TextInputDecorationBuilder extends InputDecorationBuilder {
       prefixText: prefixText,
       labelText: labelText,
       floatingLabelBehavior: FloatingLabelBehavior.never,
-      labelStyle: labelStyle ?? const TextStyle(
+      labelStyle: labelStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
           color: Colors.black,
           fontSize: 16),
       hintText: hintText,
       isDense: true,
-      hintStyle: hintStyle ?? const TextStyle(
+      hintStyle: hintStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
           color: AppColor.loginTextFieldHintColor,
           fontSize: 16),
       contentPadding: contentPadding ?? const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 12),
       errorText: errorText,
-      errorStyle: errorTextStyle ?? const TextStyle(
+      errorStyle: errorTextStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
           color: AppColor.colorInputBorderErrorVerifyName,
           fontSize: 13),
       filled: true,

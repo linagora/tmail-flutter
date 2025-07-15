@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class AttachmentHeaderComposerWidgetStyle {
@@ -13,12 +14,12 @@ class AttachmentHeaderComposerWidgetStyle {
   static const EdgeInsetsGeometry sizeLabelPadding = EdgeInsetsDirectional.symmetric(horizontal: 5, vertical: 2);
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.all(8);
 
-  static const TextStyle labelTextSize = TextStyle(
+  static TextStyle labelTextSize = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 13,
     color: AppColor.colorLabelComposer,
     fontWeight: FontWeight.w500
   );
-  static const TextStyle sizeLabelTextSize = TextStyle(
+  static TextStyle sizeLabelTextSize = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 12,
     color: Colors.white,
     fontWeight: FontWeight.w500

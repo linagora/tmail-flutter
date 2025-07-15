@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class SelectionWebAppBarThreadWidgetStyle {
@@ -18,9 +19,10 @@ class SelectionWebAppBarThreadWidgetStyle {
     }
   }
 
-  static const TextStyle emailCounterStyle = TextStyle(
+  static TextStyle emailCounterStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 15,
     fontWeight: FontWeight.w400,
-    color: AppColor.steelGrayA540
+    color: AppColor.steelGrayA540,
   );
 }

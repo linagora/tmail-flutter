@@ -50,7 +50,7 @@ class FeedbackDraggableAttachmentItemWidget extends StatelessWidget {
                   child: ExtendedText(
                     attachment.name ?? '',
                     maxLines: 1,
-                    overflowWidget: const TextOverflowWidget(
+                    overflowWidget: TextOverflowWidget(
                       position: TextOverflowPosition.middle,
                       clearType: TextOverflowClearType.clipRect,
                       child: Text(

@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 typedef OnTapMaterialTextButton = Function();
@@ -48,7 +49,7 @@ class MaterialTextButton extends StatelessWidget {
             label,
             overflow: overflow,
             softWrap: softWrap,
-            style: customStyle ?? TextStyle(
+            style: customStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: labelSize,
               color: labelColor ?? AppColor.colorTextButton,
               fontWeight: labelWeight ?? FontWeight.normal

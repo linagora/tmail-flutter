@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/text_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -123,7 +124,7 @@ class EditTextModalSheetBuilder {
                     children: <Widget>[
                       Text(
                           _title,
-                          style: const TextStyle(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700),
+                          style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 20, color: AppColor.colorNameEmail, fontWeight: FontWeight.w700),
                           textAlign: TextAlign.center),
                       Padding(
                           padding: const EdgeInsets.only(top: 20),
@@ -143,12 +144,12 @@ class EditTextModalSheetBuilder {
                         children: [
                           TextButton(
                             onPressed: () => _onCancelButtonPress(context),
-                            child: Text(_cancelText.toUpperCase(), style: const TextStyle(color: AppColor.colorTextButton)),
+                            child: Text(_cancelText.toUpperCase(), style: ThemeUtils.defaultTextStyleInterFont.copyWith(color: AppColor.colorTextButton)),
                           ),
                           TextButton(
                             onPressed: () => _onConfirmButtonPress(context),
                             child: Text(_confirmText.toUpperCase(),
-                                style: TextStyle(
+                                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                                     color: (_error == null || (_error != null && _error!.isEmpty))
                                         ? AppColor.colorTextButton
                                         : AppColor.colorDisableMailboxCreateButton)),

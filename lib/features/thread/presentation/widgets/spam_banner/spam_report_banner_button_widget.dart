@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/spam_banner/spam_report_banner_button_styles.dart';
@@ -42,7 +43,7 @@ class SpamReportBannerButtonWidget extends StatelessWidget {
             ? Text(
                 label,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontSize: SpamReportBannerButtonStyles.labelTextSize,
                   color: labelColor,
                   fontWeight: FontWeight.w400
@@ -67,7 +68,7 @@ class SpamReportBannerButtonWidget extends StatelessWidget {
                     textAlign: TextAlign.center,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
-                    style: TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                       fontSize: SpamReportBannerButtonStyles.labelTextSize,
                       color: labelColor,
                       fontWeight: FontWeight.w400

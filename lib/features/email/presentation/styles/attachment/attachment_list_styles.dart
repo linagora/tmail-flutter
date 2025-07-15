@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class AttachmentListStyles {
@@ -89,24 +90,28 @@ class AttachmentListStyles {
   static const FontWeight subTitleFontWeight = FontWeight.w400;
   static const FontWeight buttonFontWeight = FontWeight.w500;
 
-  static const TextStyle titleTextStyle = TextStyle(
+  static TextStyle titleTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: titleFontSize,
     fontWeight: titleFontWeight,
-    color: titleTextColor
+    color: titleTextColor,
   );
-  static const TextStyle subTitleTextStyle = TextStyle(
+  static TextStyle subTitleTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: subTitleFontSize,
     fontWeight: subTitleFontWeight,
-    color: subTitleTextColor
+    color: subTitleTextColor,
   );
-  static const TextStyle downloadAllButtonTextStyle = TextStyle(
+  static TextStyle downloadAllButtonTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: titleFontSize,
     fontWeight: buttonFontWeight,
-    color: downloadAllButtonTextColor
+    color: downloadAllButtonTextColor,
   );
-  static const TextStyle cancelButtonTextStyle = TextStyle(
+  static TextStyle cancelButtonTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: titleFontSize,
     fontWeight: buttonFontWeight,
-    color: cancelButtonTextColor
+    color: cancelButtonTextColor,
   );
 }

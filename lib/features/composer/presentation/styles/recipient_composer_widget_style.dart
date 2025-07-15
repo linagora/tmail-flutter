@@ -31,7 +31,7 @@ class RecipientComposerWidgetStyle {
   static const EdgeInsetsGeometry recipientMargin = EdgeInsetsDirectional.only(top: 12);
   static const EdgeInsetsGeometry enableRecipientButtonMargin = EdgeInsetsDirectional.only(top: 10);
 
-  static const TextStyle prefixButtonTextStyle = TextStyle(
+  static TextStyle prefixButtonTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontFamily: ConstantsUI.fontApp,
     fontSize: 15,
     fontWeight: FontWeight.w400,

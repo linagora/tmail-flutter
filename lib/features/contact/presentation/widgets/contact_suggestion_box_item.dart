@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -46,7 +47,7 @@ class ContactSuggestionBoxItem extends StatelessWidget {
             maxLines: 1,
             overflow: CommonTextStyle.defaultTextOverFlow,
             softWrap: CommonTextStyle.defaultSoftWrap,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               color: Colors.black,
               fontSize: 16,
               fontWeight: FontWeight.w500)
@@ -59,7 +60,7 @@ class ContactSuggestionBoxItem extends StatelessWidget {
                 maxLines: 1,
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 softWrap: CommonTextStyle.defaultSoftWrap,
-                style: const TextStyle(
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   color: AppColor.colorEmailAddressFull,
                   fontSize: 14,
                   fontWeight: FontWeight.normal)

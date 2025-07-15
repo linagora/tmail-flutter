@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -40,7 +41,7 @@ class QuotasBannerWidget extends StatelessWidget {
                   children: [
                     Text(
                       octetQuota.getQuotaBannerTitle(context),
-                      style: TextStyle(
+                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: QuotasBannerStyles.titleTextSize,
                         fontWeight: QuotasBannerStyles.titleFontWeight,
                         color: octetQuota.getQuotaBannerTitleColor(),
@@ -49,7 +50,7 @@ class QuotasBannerWidget extends StatelessWidget {
                     const SizedBox(height: QuotasBannerStyles.space),
                     Text(
                       octetQuota.getQuotaBannerMessage(context),
-                      style: const TextStyle(
+                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: QuotasBannerStyles.messageTextSize,
                         fontWeight: QuotasBannerStyles.messageFontWeight,
                         color: QuotasBannerStyles.messageTextColor,

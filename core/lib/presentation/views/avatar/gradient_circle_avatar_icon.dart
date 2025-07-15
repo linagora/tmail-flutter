@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class GradientCircleAvatarIcon extends StatelessWidget {
@@ -36,7 +37,7 @@ class GradientCircleAvatarIcon extends StatelessWidget {
         color: AppColor.avatarColor
       ),
       child: DefaultTextStyle(
-        style: textStyle ?? TextStyle(
+        style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
           color: Colors.white,
           fontSize: labelFontSize,
           fontWeight: FontWeight.w600

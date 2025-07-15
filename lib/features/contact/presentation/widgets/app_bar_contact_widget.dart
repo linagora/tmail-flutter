@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/contact/presentation/styles/app_bar_contact_widget_style.dart';
@@ -37,7 +38,7 @@ class AppBarContactWidget extends StatelessWidget {
         children: [
           Text(
             title ?? AppLocalizations.of(context).contact,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black

@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
@@ -53,7 +54,7 @@ class _EventAttendeeDetailWidgetState extends State<EventAttendeeDetailWidget> {
           width: EventAttendeeDetailWidgetStyles.maxWidth,
           child: Text(
             AppLocalizations.of(context).who,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: EventAttendeeDetailWidgetStyles.textSize,
               fontWeight: FontWeight.w500,
               color: EventAttendeeDetailWidgetStyles.labelColor

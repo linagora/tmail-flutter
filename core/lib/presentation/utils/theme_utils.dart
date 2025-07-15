@@ -307,6 +307,10 @@ class ThemeUtils {
     color: AppColor.gray424244.withOpacity(0.9),
   );
 
+  static const TextStyle defaultTextStyleInterFont = TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+  );
+
   static TextSelectionThemeData get _textSelectionTheme {
     return const TextSelectionThemeData(
       cursorColor: AppColor.primaryColor,
@@ -316,12 +320,16 @@ class ThemeUtils {
   }
 
   static AppBarTheme get _appBarTheme {
-    return const AppBarTheme(
+    return AppBarTheme(
       color: Colors.white,
       elevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
-      iconTheme: IconThemeData(color: Colors.black),
-      titleTextStyle: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
+      iconTheme: const IconThemeData(color: Colors.black),
+      titleTextStyle: defaultTextStyleInterFont.copyWith(
+        color: const Color(0XFF8B8B8B),
+        fontSize: 18,
+      ),
+      toolbarTextStyle: defaultTextStyleInterFont,
     );
   }
 

@@ -75,7 +75,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
                         ? ExtendedText(
                             fileName,
                             maxLines: 1,
-                            overflowWidget: const TextOverflowWidget(
+                            overflowWidget: TextOverflowWidget(
                               position: TextOverflowPosition.middle,
                               clearType: TextOverflowClearType.clipRect,
                               child: Text(

@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class FromComposerMobileWidgetStyle {
@@ -24,18 +25,18 @@ class FromComposerMobileWidgetStyle {
     )
   );
 
-  static const TextStyle prefixTextStyle = TextStyle(
+  static TextStyle prefixTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: AppColor.colorLabelComposer
   );
-  static const TextStyle buttonTitleTextStyle = TextStyle(
+  static TextStyle buttonTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 16,
     fontWeight: FontWeight.w500,
     color: AppColor.colorCalendarEventUnread,
     overflow: TextOverflow.ellipsis,
   );
-  static const TextStyle buttonSubTitleTextStyle = TextStyle(
+  static TextStyle buttonSubTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 16,
     fontWeight: FontWeight.w500,
     color: AppColor.colorLabelComposer,

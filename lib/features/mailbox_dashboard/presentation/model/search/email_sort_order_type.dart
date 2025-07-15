@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -99,7 +100,7 @@ enum EmailSortOrderType {
   }
 
   TextStyle getTextStyle({required bool isInDropdown}) {
-    return TextStyle(
+    return ThemeUtils.defaultTextStyleInterFont.copyWith(
       fontSize: isInDropdown ? 15 : 16,
       fontWeight: FontWeight.w400,
       color: Colors.black,

@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 
@@ -34,7 +35,7 @@ class TextInputSuggestionFieldWidgetStyles {
     borderSide: BorderSide.none,
   );
 
-  static const TextStyle inputFieldTextStyle = TextStyle(
+  static TextStyle inputFieldTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 16,
     fontWeight: FontWeight.w400,

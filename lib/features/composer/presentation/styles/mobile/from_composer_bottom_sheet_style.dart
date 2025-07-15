@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class FromComposerBottomSheetStyle {
@@ -29,27 +30,27 @@ class FromComposerBottomSheetStyle {
     color: AppColor.colorBgSearchBar
   );
 
-  static const TextStyle appBarTitleTextStyle = TextStyle(
+  static TextStyle appBarTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontWeight: FontWeight.w700,
     fontSize: 20.0,
   );
-  static const TextStyle searchBarTextStyle = TextStyle(
+  static TextStyle searchBarTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 16.0,
     fontWeight: FontWeight.w600,
   );
-  static const TextStyle searchHintTextStyle = TextStyle(
+  static TextStyle searchHintTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: AppColor.loginTextFieldHintColor,
     fontSize: 16.0,
     fontWeight: FontWeight.w400,
   );
-  static const TextStyle identityItemTitleTextStyle = TextStyle(
+  static TextStyle identityItemTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 16.0,
     fontWeight: FontWeight.w500,
   );
-  static const TextStyle identityItemSubTitleTextStyle = TextStyle(
+  static TextStyle identityItemSubTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 13,
     fontWeight: FontWeight.w400,
     color: AppColor.colorLabelQuotas

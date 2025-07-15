@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,8 +31,11 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
         onPressed: () => controller.handleLoginPressed(context),
         child: Text(
           AppLocalizations.of(context).signIn,
-          style: const TextStyle(fontSize: 16, color: Colors.white)
-        )
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
       )
     );
   }

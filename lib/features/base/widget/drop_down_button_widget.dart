@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -67,7 +68,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
               ? Row(children: [
                   Expanded(child: Text(
                     _getTextItemDropdown(context, item: itemSelected),
-                    style: TextStyle(fontSize: 16,
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 16,
                         fontWeight: FontWeight.normal,
                         color: Colors.black.withOpacity(opacity)),
                     maxLines: 1,
@@ -85,7 +86,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                         height: heightItem,
                         child: Row(children: [
                           Expanded(child: Text(_getTextItemDropdown(context, item: item),
-                            style: const TextStyle(
+                            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                                 fontSize: 16,
                                 fontWeight: FontWeight.normal,
                                 color: Colors.black),
@@ -121,7 +122,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                   child: Row(children: [
                     Expanded(child: Text(
                       _getTextItemDropdown(context, item: itemSelected),
-                      style: TextStyle(fontSize: 16,
+                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: itemSelected != null ? Colors.black.withOpacity(opacity) : AppColor.textFieldHintColor),
                       maxLines: 1,

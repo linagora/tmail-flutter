@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
@@ -58,7 +59,10 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
                   textAlign: TextAlign.center,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                   backgroundColor: Colors.transparent,
-                  textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    fontSize: 12,
+                    color: AppColor.steelGrayA540,
+                  ),
                   verticalDirection: _verticalDirection(context),
                   onTapActionCallback: () {
                     onPressEmailSelectionActionClick?.call(
@@ -84,7 +88,10 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
                 textAlign: TextAlign.center,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                 backgroundColor: Colors.transparent,
-                textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
+                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                  fontSize: 12,
+                  color: AppColor.steelGrayA540,
+                ),
                 verticalDirection: _verticalDirection(context),
                 onTapActionCallback: () {
                   onPressEmailSelectionActionClick?.call(
@@ -107,7 +114,10 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
                   flexibleText: true,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                   backgroundColor: Colors.transparent,
-                  textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    fontSize: 12,
+                    color: AppColor.steelGrayA540,
+                  ),
                   verticalDirection: _verticalDirection(context),
                   onTapActionCallback: () {
                     onPressEmailSelectionActionClick?.call(EmailActionType.moveToMailbox, _listSelectionEmail);
@@ -129,7 +139,10 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
                   textAlign: TextAlign.center,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                   backgroundColor: Colors.transparent,
-                  textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    fontSize: 12,
+                    color: AppColor.steelGrayA540,
+                  ),
                   verticalDirection: _verticalDirection(context),
                   onTapActionCallback: () {
                     if (_currentMailbox?.isSpam == true) {
@@ -152,7 +165,10 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
                 textAlign: TextAlign.center,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                 backgroundColor: Colors.transparent,
-                textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
+                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                  fontSize: 12,
+                  color: AppColor.steelGrayA540,
+                ),
                 verticalDirection: _verticalDirection(context),
                 onTapActionCallback: () {
                   if (canDeletePermanently) {

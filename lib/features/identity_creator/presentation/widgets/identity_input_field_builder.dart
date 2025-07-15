@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -37,7 +38,7 @@ class IdentityInputFieldBuilder extends StatelessWidget {
       Text(
         isMandatory 
           ? '$_label ($requiredIndicator)' 
-          : _label, style: const TextStyle(
+          : _label, style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: 14,
             fontWeight: FontWeight.w500,
             color: AppColor.colorContentEmail)),
@@ -50,7 +51,7 @@ class IdentityInputFieldBuilder extends StatelessWidget {
         textDirection: DirectionUtils.getDirectionByLanguage(context),
         controller: editingController,
         focusNode: focusNode,
-        textStyle: const TextStyle(color: Colors.black, fontSize: 16),
+        textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(color: Colors.black, fontSize: 16),
         keyboardType: inputType ?? TextInputType.text,
         semanticLabel: 'Identity input field',
         decoration: (IdentityInputDecorationBuilder()

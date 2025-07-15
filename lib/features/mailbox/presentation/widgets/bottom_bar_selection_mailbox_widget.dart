@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -51,7 +52,10 @@ class BottomBarSelectionMailboxWidget extends StatelessWidget {
               backgroundColor: Colors.transparent,
               flexibleText: true,
               tooltipMessage: action.getContextMenuTitle(AppLocalizations.of(context)),
-              textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                fontSize: 12,
+                color: AppColor.colorTextButton,
+              ),
               onTapActionCallback: () => onMailboxActionsClick.call(action, _listSelectionMailbox),
             ));
           })

@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class AttachmentItemComposerWidgetStyle {
@@ -17,19 +18,22 @@ class AttachmentItemComposerWidgetStyle {
   static const EdgeInsetsGeometry deleteIconPadding = EdgeInsetsDirectional.all(3);
   static const EdgeInsetsGeometry progressLoadingPadding = EdgeInsetsDirectional.only(top: 8);
 
-  static const TextStyle labelTextStyle = TextStyle(
+  static TextStyle labelTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 14,
     color: Colors.black,
-    fontWeight: FontWeight.w500
+    fontWeight: FontWeight.w500,
   );
-  static const TextStyle dotsLabelTextStyle = TextStyle(
+  static TextStyle dotsLabelTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 12,
     color: Colors.black,
-    fontWeight: FontWeight.w500
+    fontWeight: FontWeight.w500,
   );
-  static const TextStyle sizeLabelTextStyle = TextStyle(
+  static TextStyle sizeLabelTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 11,
     color: AppColor.colorLabelComposer,
-    fontWeight: FontWeight.w500
+    fontWeight: FontWeight.w500,
   );
 }

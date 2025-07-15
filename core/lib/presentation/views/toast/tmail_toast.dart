@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/toast/toast_position.dart';
 import 'package:flutter/material.dart';
 
@@ -11,11 +12,7 @@ class TMailToast {
     Duration? toastDuration,
     ToastPosition? toastPosition,
     Color? backgroundColor,
-    TextStyle textStyle = const TextStyle(
-      fontSize: 15,
-      color: Colors.white,
-      fontWeight: FontWeight.normal
-    ),
+    TextStyle? textStyle,
     double toastBorderRadius = 10.0,
     Border? border,
     Widget? trailing,
@@ -93,7 +90,7 @@ class ToastView {
             ? Text(
                 text,
                 softWrap: true,
-                style: textStyle ?? const TextStyle(
+                style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontSize: 15,
                   color: Colors.white,
                   fontWeight: FontWeight.normal
@@ -109,7 +106,7 @@ class ToastView {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
                         text,
-                        style: textStyle ?? const TextStyle(
+                        style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                           fontSize: 15,
                           color: Colors.white,
                           fontWeight: FontWeight.normal
@@ -126,7 +123,7 @@ class ToastView {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Text(
                         text,
-                        style: textStyle ?? const TextStyle(
+                        style: textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                           fontSize: 15,
                           color: Colors.white,
                           fontWeight: FontWeight.normal

@@ -44,7 +44,7 @@ mixin BaseEmailItemTile {
               color: AppColor.backgroundCounterMailboxColor),
           child: TextOverflowBuilder(
             email.mailboxContain?.getDisplayName(context) ?? '',
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontFamily: ConstantsUI.fontApp,
               fontSize: 10,
               color: AppColor.emailMailboxContainColor,

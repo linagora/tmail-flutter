@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
@@ -53,7 +54,7 @@ class CalendarDateIconWidget extends StatelessWidget {
             child: Text(
               calendarEvent.monthStartDateAsString,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: CalendarIconWidgetStyles.headerTextSize,
                 fontWeight: FontWeight.w400,
                 color: Colors.white
@@ -64,7 +65,7 @@ class CalendarDateIconWidget extends StatelessWidget {
             padding: const EdgeInsets.all(CalendarIconWidgetStyles.bodyContentPadding),
             child: Text(
               calendarEvent.dayStartDateAsString,
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: CalendarIconWidgetStyles.bodyDayTextSize,
                 fontWeight: FontWeight.w700,
                 color: Colors.black
@@ -79,7 +80,7 @@ class CalendarDateIconWidget extends StatelessWidget {
             padding: const EdgeInsets.all(CalendarIconWidgetStyles.bodyContentPadding),
             child: Text(
               calendarEvent.weekDayStartDateAsString,
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: CalendarIconWidgetStyles.bodyWeekDayTextSize,
                 fontWeight: FontWeight.w400,
                 color: Colors.black

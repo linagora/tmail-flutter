@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/recover_deleted_message_loading_banner_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -42,7 +43,7 @@ class RecoverDeletedMessageLoadingBannerWidget extends StatelessWidget {
           children: [
             Text(
               AppLocalizations.of(context).bannerProgressingRecoveryMessage,
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
                 color: AppColor.primaryColor,

@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_attendance.dart';
@@ -43,7 +44,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
               backgroundColor: _getButtonBackgroundColor(action),
               borderRadius: CalendarEventActionButtonWidgetStyles.borderRadius,
               padding: CalendarEventActionButtonWidgetStyles.buttonPadding,
-              textStyle: TextStyle(
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontWeight: CalendarEventActionButtonWidgetStyles.fontWeight,
                 fontSize: CalendarEventActionButtonWidgetStyles.textSize,
                 color: _getButtonTextColor(action),

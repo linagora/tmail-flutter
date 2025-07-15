@@ -110,7 +110,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             alignment: Alignment.center,
             child: Obx(() => Text(
                 controller.actionType.value.getTitle(context),
-                style: const TextStyle(
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
                     color: Colors.black)))),
@@ -150,7 +150,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           Text(
                             AppLocalizations.of(context).addCondition,
                             maxLines: 1,
-                            style: const TextStyle(
+                            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                               fontWeight: FontWeight.w500,
                               fontSize: 17,
                               color: AppColor.primaryColor
@@ -165,7 +165,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
                     maxLines: 1,
-                    style: const TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                       color: Colors.black)),
@@ -230,7 +230,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
               children: [
                 buildTextButton(
                   AppLocalizations.of(context).cancel,
-                  textStyle: const TextStyle(
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontWeight: FontWeight.w500,
                     fontSize: 17,
                     color: AppColor.colorTextButton),
@@ -271,7 +271,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                 alignment: Alignment.center,
                 child: Obx(() => Text(
                     controller.actionType.value.getTitle(context),
-                    style: const TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                         color: Colors.black)))),
@@ -311,7 +311,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               Text(
                                 AppLocalizations.of(context).addCondition,
                                 maxLines: 1,
-                                style: const TextStyle(
+                                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 17,
                                   color: AppColor.primaryColor
@@ -326,7 +326,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
                           maxLines: 1,
-                          style: const TextStyle(
+                          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                               fontWeight: FontWeight.w500,
                               fontSize: 16,
                               color: Colors.black)),
@@ -390,7 +390,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                   children: [
                     Expanded(child: buildTextButton(
                         AppLocalizations.of(context).cancel,
-                        textStyle: const TextStyle(
+                        textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontWeight: FontWeight.w500,
                             fontSize: 17,
                             color: AppColor.colorTextButton),
@@ -431,7 +431,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                 alignment: Alignment.center,
                 child: Obx(() => Text(
                     controller.actionType.value.getTitle(context),
-                    style: const TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                         color: Colors.black)))),
@@ -481,7 +481,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                               Text(
                                 AppLocalizations.of(context).addCondition,
                                 maxLines: 1,
-                                style: const TextStyle(
+                                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 17,
                                   color: AppColor.primaryColor
@@ -499,7 +499,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
                           maxLines: 1,
-                          style: const TextStyle(
+                          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                               fontWeight: FontWeight.w500,
                               fontSize: 16,
                               color: Colors.black)),
@@ -568,7 +568,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                   children: [
                     Expanded(child: buildTextButton(
                         AppLocalizations.of(context).cancel,
-                        textStyle: const TextStyle(
+                        textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontWeight: FontWeight.w500,
                             fontSize: 17,
                             color: AppColor.colorTextButton),

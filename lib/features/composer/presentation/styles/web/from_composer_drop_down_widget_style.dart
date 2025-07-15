@@ -63,32 +63,32 @@ class FromComposerDropDownWidgetStyle {
     height: 72,
     overlayColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) => Colors.white)
   );
-  static const TextStyle avatarTextStyle = TextStyle(
+  static TextStyle avatarTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: Colors.black,
   );
-  static const TextStyle dropdownItemTitleTextStyle = TextStyle(
+  static TextStyle dropdownItemTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 16,
     fontWeight: FontWeight.w500,
     color: AppColor.colorDropDownItemTitleComposer,
   );
-  static const TextStyle dropdownItemSubTitleTextStyle = TextStyle(
+  static TextStyle dropdownItemSubTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 13,
     fontWeight: FontWeight.w400,
     color: AppColor.colorLabelQuotas
   );
-  static const TextStyle dropdownTitleTextStyle = TextStyle(
+  static TextStyle dropdownTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColor.colorDropDownTitleComposer,
   );
-  static const TextStyle dropdownButtonTitleTextStyle = TextStyle(
+  static TextStyle dropdownButtonTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 16,
     fontWeight: FontWeight.w500,
     color: AppColor.colorCalendarEventUnread
   );
-  static const TextStyle dropdownButtonSubTitleTextStyle = TextStyle(
+  static TextStyle dropdownButtonSubTitleTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 16,
     fontWeight: FontWeight.w500,
     color: AppColor.colorLabelComposer

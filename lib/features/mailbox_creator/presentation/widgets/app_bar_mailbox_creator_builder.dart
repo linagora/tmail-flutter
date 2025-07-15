@@ -50,7 +50,7 @@ class AppBarMailboxCreatorBuilder {
         child: TextButton(
             child: Text(
               AppLocalizations.of(_context).cancel,
-              style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton),
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 17, color: AppColor.colorTextButton),
             ),
             onPressed: () => _cancelActionClick?.call()
         )
@@ -64,7 +64,7 @@ class AppBarMailboxCreatorBuilder {
         child: TextButton(
             child: Text(
               AppLocalizations.of(_context).done,
-              style: TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontSize: 17,
                   color: isValidated
                       ? AppColor.colorTextButton
@@ -84,7 +84,7 @@ class AppBarMailboxCreatorBuilder {
         maxLines: 1,
         softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow,
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: 20,
             color: AppColor.colorNameEmail,
             fontWeight: FontWeight.bold)));

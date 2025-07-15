@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class DropdownButtonFontSizeWidgetStyle {
@@ -14,7 +15,7 @@ class DropdownButtonFontSizeWidgetStyle {
   static const EdgeInsetsGeometry padding = EdgeInsets.all(4);
   static const EdgeInsetsGeometry labelPadding = EdgeInsets.symmetric(horizontal: 16);
 
-  static const TextStyle labelTextStyle = TextStyle(
+  static TextStyle labelTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 16,
     fontWeight: FontWeight.w500,
     color: AppColor.colorLabelRichText

@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,7 +41,7 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
                   horizontal: 24,
                 ),
                 child: Text(AppLocalizations.of(context).headerNameOfRules,
-                    style: const TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: AppColor.colorTextButtonHeaderThread)),

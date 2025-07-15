@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -31,7 +32,7 @@ class RecentItemTileWidget<T> extends StatelessWidget {
           Expanded(
             child: Text(
               _getTitle(item),
-              style: const TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 15,
                 fontWeight: FontWeight.normal,
                 color: Colors.black

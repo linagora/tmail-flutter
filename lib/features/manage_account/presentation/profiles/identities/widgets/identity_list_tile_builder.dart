@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,7 @@ class IdentityListTileBuilder extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 6),
                         child: TextOverflowBuilder(
                           (identity.name ?? ''),
-                          style: const TextStyle(
+                          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
                             color: Colors.black)),
@@ -121,7 +122,7 @@ class IdentityListTileBuilder extends StatelessWidget {
         const SizedBox(width: 4),
         Expanded(child: TextOverflowBuilder(
           (text ?? ''),
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             color: AppColor.colorEmailAddressFull,
             fontWeight: FontWeight.normal,
             fontSize: 13,
@@ -140,7 +141,7 @@ class IdentityListTileBuilder extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             character,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 15,
               fontWeight: FontWeight.normal,
               decoration: TextDecoration.underline,
@@ -148,7 +149,7 @@ class IdentityListTileBuilder extends StatelessWidget {
         const SizedBox(width: 4),
         Expanded(child: TextOverflowBuilder(
           (text ?? ''),
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             color: AppColor.colorEmailAddressFull,
             fontWeight: FontWeight.normal,
             fontSize: 13,
