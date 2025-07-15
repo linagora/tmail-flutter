@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -49,7 +50,7 @@ class RuleFilterButtonField<T> extends StatelessWidget {
         child: Row(children: [
           Expanded(child: Text(
             _getName(context, value),
-            style: TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: 16,
                 fontWeight: FontWeight.normal,
                 color: textColor),

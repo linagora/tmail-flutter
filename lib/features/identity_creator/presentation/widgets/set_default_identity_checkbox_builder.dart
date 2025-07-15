@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/semantics/checkbox_semantics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -53,7 +54,7 @@ class SetDefaultIdentityCheckboxBuilder extends StatelessWidget {
         Flexible(
           child: Text(
             AppLocalizations.of(context).setDefaultIdentity,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontWeight: FontWeight.normal,
               fontSize: 14,
               color: AppColor.colorSettingExplanation,

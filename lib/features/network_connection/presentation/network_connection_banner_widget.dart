@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -26,7 +27,7 @@ class NetworkConnectionBannerWidget extends StatelessWidget {
           Text(
             AppLocalizations.of(context).no_internet_connection,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               color: AppColor.colorNetworkConnectionLabel,
               fontSize: 14,
               fontWeight: FontWeight.w500,

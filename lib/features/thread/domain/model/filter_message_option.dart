@@ -138,14 +138,14 @@ extension FilterMessageOptionExtension on FilterMessageOption {
   TextStyle getTextStyle() {
     switch(this) {
       case FilterMessageOption.all:
-        return const TextStyle(
+        return ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 13,
           fontWeight: FontWeight.normal,
           color: AppColor.colorFilterMessageTitle);
       case FilterMessageOption.unread:
       case FilterMessageOption.attachments:
       case FilterMessageOption.starred:
-        return const TextStyle(
+        return ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 13,
           fontWeight: FontWeight.normal,
           color: AppColor.primaryColor);

@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -37,7 +38,7 @@ class LanguageItemWidget extends StatelessWidget {
               children: [
                 Text(
                   localeCurrent.getLanguageNameByCurrentLocale(context),
-                  style: const TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 17,
                     fontWeight: FontWeight.normal,
                     color: Colors.black
@@ -48,7 +49,7 @@ class LanguageItemWidget extends StatelessWidget {
                 ),
                 Text(
                   ' - ${localeCurrent.getSourceLanguageName()}',
-                  style: const TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 17,
                     fontWeight: FontWeight.w500,
                     color: Colors.black

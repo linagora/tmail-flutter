@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
@@ -295,7 +296,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                 buildIconAvatarText(
                   widget.presentationEmail,
                   iconSize: 32,
-                  textStyle: const TextStyle(
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: Colors.white

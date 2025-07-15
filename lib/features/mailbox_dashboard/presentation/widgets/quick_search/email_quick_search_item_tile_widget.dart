@@ -55,12 +55,12 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
                         child: RichTextBuilder(
                           textOrigin: _getInformationSender(),
                           wordToStyle: searchQuery?.value ?? '',
-                          styleOrigin: const TextStyle(
+                          styleOrigin: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                             color: Colors.black,
                           ),
-                          styleWord: TextStyle(
+                          styleWord: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                             color: Colors.black,
@@ -75,12 +75,12 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
                           wordToStyle: searchQuery?.value ?? '',
                           preMarkedText: _presentationEmail.sanitizedSearchSnippetSubject,
                           ensureHighlightVisible: true,
-                          styleOrigin: const TextStyle(
+                          styleOrigin: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontSize: 13,
                             color: Colors.black,
                             fontWeight: FontWeight.normal
                           ),
-                          styleWord: TextStyle(
+                          styleWord: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontSize: 13,
                             backgroundColor: Colors.amberAccent[200],
                             color: Colors.black,
@@ -98,7 +98,7 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
                         maxLines: 1,
                         overflow: CommonTextStyle.defaultTextOverFlow,
                         softWrap: CommonTextStyle.defaultSoftWrap,
-                        style: const TextStyle(
+                        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                           fontSize: 13,
                           fontWeight: FontWeight.normal,
                           color: Colors.black))
@@ -109,12 +109,12 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
                       wordToStyle: searchQuery?.value ?? '',
                       preMarkedText: _presentationEmail.sanitizedSearchSnippetPreview,
                       ensureHighlightVisible: true,
-                      styleOrigin: const TextStyle(
+                      styleOrigin: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: 13,
                         color: AppColor.colorContentEmail,
                         fontWeight: FontWeight.normal
                       ),
-                      styleWord: TextStyle(
+                      styleWord: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         fontSize: 13,
                         color: AppColor.colorContentEmail,
                         backgroundColor: Colors.amberAccent[200],

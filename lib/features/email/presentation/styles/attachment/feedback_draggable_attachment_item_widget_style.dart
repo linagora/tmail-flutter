@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class FeedbackDraggableAttachmentItemWidgetStyle {
@@ -12,15 +13,17 @@ class FeedbackDraggableAttachmentItemWidgetStyle {
 
   static const EdgeInsetsGeometry padding = EdgeInsets.symmetric(horizontal: 16, vertical: 12);
 
-  static const TextStyle labelTextStyle = TextStyle(
+  static TextStyle labelTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 16,
-    fontWeight: FontWeight.w500
+    fontWeight: FontWeight.w500,
   );
-  static const TextStyle dotsLabelTextStyle = TextStyle(
+  static TextStyle dotsLabelTextStyle =
+      ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 12,
     color: Colors.black,
-    fontWeight: FontWeight.w500
+    fontWeight: FontWeight.w500,
   );
 
   static const List<BoxShadow> shadows = [

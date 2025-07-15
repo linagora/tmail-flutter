@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -46,7 +47,7 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
             ),
           Expanded(child: Text.rich(
             TextSpan(
-              style: TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: CalendarEventActionBannerStyles.titleTextSize,
                 fontWeight: FontWeight.w400,
                 color: calendarEvent.getColorEventActionText(listEmailAddressSender)
@@ -58,7 +59,7 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
                     imagePaths: imagePaths,
                     listEmailAddressSender: listEmailAddressSender
                   ),
-                  style: TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     color: calendarEvent.getColorEventActionText(listEmailAddressSender),
                     fontSize: CalendarEventActionBannerStyles.titleTextSize,
                     fontWeight: FontWeight.w700

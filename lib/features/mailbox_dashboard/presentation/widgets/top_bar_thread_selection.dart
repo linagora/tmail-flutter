@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -43,7 +44,7 @@ class TopBarThreadSelection extends StatelessWidget{
     return Row(children: [
       Text(
         AppLocalizations.of(context).count_email_selected(listEmail.length),
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 15,
           fontWeight: FontWeight.w400,
           color: TopBarThreadSelectionStyle.iconColor,

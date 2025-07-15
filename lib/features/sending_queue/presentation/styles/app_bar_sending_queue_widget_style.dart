@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class AppBarSendingQueueWidgetStyle {
@@ -23,11 +24,11 @@ class AppBarSendingQueueWidgetStyle {
     }
   }
 
-  static const TextStyle countStyle = TextStyle(
+  static TextStyle countStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 17,
     color: AppColor.colorTextButton
   );
-  static const TextStyle labelStyle = TextStyle(
+  static TextStyle labelStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 21,
     color: Colors.black,
     fontWeight: FontWeight.bold

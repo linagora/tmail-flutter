@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -18,7 +19,10 @@ class TryAgainButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TMailButtonWidget.fromText(
       text: AppLocalizations.of(context).tryAgain,
-      textStyle: const TextStyle(fontSize: 16, color: Colors.white),
+      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+        fontSize: 16,
+        color: Colors.white,
+      ),
       backgroundColor: AppColor.primaryColor,
       onTapActionCallback: onRetry,
       borderRadius: 10,

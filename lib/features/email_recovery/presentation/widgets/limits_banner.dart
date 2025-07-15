@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class LimitsBanner extends StatelessWidget {
@@ -20,7 +21,7 @@ class LimitsBanner extends StatelessWidget {
       child: Center(
         child: Text(
           bannerContent,
-          style: const TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: 16,
             color: Colors.black,
             fontWeight: FontWeight.bold,

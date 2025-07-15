@@ -70,7 +70,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
           message: vacationResponse.getNotificationMessage(context),
           child: Text(
             vacationResponse.getNotificationMessage(context),
-            style: TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               color: Colors.black,
               fontSize: 16,
               fontWeight: fontWeight ?? FontWeight.normal,
@@ -83,7 +83,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
       if (actionEndNow != null)
         TMailButtonWidget.fromText(
           text: AppLocalizations.of(context).endNow,
-          textStyle: const TextStyle(
+          textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontWeight: FontWeight.w500,
             fontSize: 16,
             color: AppColor.colorTextButton),
@@ -97,7 +97,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
       if (actionGotoVacationSetting != null)
         TMailButtonWidget.fromText(
           text: AppLocalizations.of(context).vacationSetting,
-          textStyle: const TextStyle(
+          textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontWeight: FontWeight.w500,
             fontSize: 16,
             color: AppColor.colorTextButton),
@@ -121,7 +121,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
           message: vacationResponse.getNotificationMessage(context),
           child: Text(
             vacationResponse.getNotificationMessage(context),
-            style: TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               color: Colors.black,
               fontSize: 16,
               fontWeight: fontWeight ?? FontWeight.normal,
@@ -138,7 +138,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
               Flexible(
                 child: TMailButtonWidget.fromText(
                   text: AppLocalizations.of(context).endNow,
-                  textStyle: const TextStyle(
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                     color: AppColor.colorTextButton),
@@ -155,7 +155,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
               Flexible(
                 child: TMailButtonWidget.fromText(
                   text: AppLocalizations.of(context).vacationSetting,
-                  textStyle: const TextStyle(
+                  textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                     color: AppColor.colorTextButton),

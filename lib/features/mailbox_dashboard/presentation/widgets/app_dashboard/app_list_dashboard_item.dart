@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/slogan_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/mixin/launcher_application_mixin.dart';
@@ -24,7 +25,11 @@ class AppListDashboardItem extends StatelessWidget with LauncherApplicationMixin
       paddingText: const EdgeInsetsDirectional.only(start: 12),
       text: app.appName,
       textAlign: TextAlign.center,
-      textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorNameEmail),
+      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+        fontSize: 17,
+        fontWeight: FontWeight.w500,
+        color: AppColor.colorNameEmail,
+      ),
       logo: app.getIconPath(imagePaths),
       onTapCallback: _handleOpenApp,
       padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 20),

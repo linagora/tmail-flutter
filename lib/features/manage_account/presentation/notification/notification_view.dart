@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -31,7 +32,7 @@ class NotificationView extends GetWidget<NotificationController> {
                   const SizedBox(height: 10),
                   Text(
                     AppLocalizations.of(context).showNotifications,
-                    style: const TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                       fontSize: 17,
                       height: 22 / 17,
                       fontWeight: FontWeight.w500,
@@ -39,7 +40,7 @@ class NotificationView extends GetWidget<NotificationController> {
                   const SizedBox(height: 12),
                   Text(
                     AppLocalizations.of(context).allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone,
-                    style: const TextStyle(
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                       fontSize: 15,
                       height: 20 / 15,
                       color: AppColor.colorSettingExplanation),

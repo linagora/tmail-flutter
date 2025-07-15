@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
@@ -100,7 +101,7 @@ class _MailBoxVisibilityFolderTileBuilderState extends State<MailBoxVisibilityFo
           maxLines: 1,
           softWrap: CommonTextStyle.defaultSoftWrap,
           overflow: CommonTextStyle.defaultTextOverFlow,
-          style: TextStyle(
+          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
             fontSize: widget._mailboxNode.item.isTeamMailboxes ? 16 : 14,
             color: widget._mailboxNode.item.allowedToDisplay
               ? Colors.black
@@ -115,7 +116,7 @@ class _MailBoxVisibilityFolderTileBuilderState extends State<MailBoxVisibilityFo
             maxLines: 1,
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 13,
               color: AppColor.colorEmailAddressFull,
               fontWeight: FontWeight.normal),
@@ -154,7 +155,7 @@ class _MailBoxVisibilityFolderTileBuilderState extends State<MailBoxVisibilityFo
             maxLines: 1,
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,
-            style: const TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: 15,
               color: AppColor.primaryColor,
               fontWeight: FontWeight.normal

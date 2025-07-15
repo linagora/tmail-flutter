@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class FilterMessageButtonStyle {
@@ -18,7 +19,7 @@ class FilterMessageButtonStyle {
   static const EdgeInsetsGeometry buttonMargin = EdgeInsetsDirectional.only(start: 16);
   static const BorderRadius borderRadius = BorderRadius.all(Radius.circular(10));
 
-  static const TextStyle titleStyle = TextStyle(
+  static TextStyle titleStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 13,
     fontWeight: FontWeight.normal,
     color: AppColor.colorFilterMessageTitle);

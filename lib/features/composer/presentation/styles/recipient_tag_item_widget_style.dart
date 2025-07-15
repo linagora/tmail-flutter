@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class RecipientTagItemWidgetStyle {
@@ -12,7 +13,7 @@ class RecipientTagItemWidgetStyle {
   static const EdgeInsetsGeometry webMobileCounterMargin = EdgeInsetsDirectional.only(start: 8);
   static const EdgeInsetsGeometry webCounterMargin = EdgeInsetsDirectional.only(top: 8, start: 8);
 
-  static const TextStyle labelTextStyle = TextStyle(
+  static TextStyle labelTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.black,
     fontSize: 17,
     fontWeight: FontWeight.w400

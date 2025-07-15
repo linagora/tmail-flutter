@@ -28,7 +28,7 @@ class RecentSearchItemTileWidget extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(recentSearch.value,
-                style: const TextStyle(
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 15,
                     fontWeight: FontWeight.normal,
                     color: Colors.black)),

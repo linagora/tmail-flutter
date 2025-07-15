@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,10 @@ class CopySubaddressWidget extends StatelessWidget {
             subaddress,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog),
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+              fontSize: 17.0,
+              color: AppColor.colorMessageDialog,
+            ),
           ),
         ),
         TMailButtonWidget.fromIcon(

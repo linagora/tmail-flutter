@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -35,7 +36,7 @@ class SpamReportBannerLabelWidget extends StatelessWidget {
           Text(
             AppLocalizations.of(context).countNewSpamEmails(countSpamEmailsAsString),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
               fontSize: SpamReportBannerLabelStyles.labelTextSize,
               color: labelColor,
               fontWeight: FontWeight.w500
@@ -46,7 +47,7 @@ class SpamReportBannerLabelWidget extends StatelessWidget {
             child: Text(
               AppLocalizations.of(context).countNewSpamEmails(countSpamEmailsAsString),
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 fontSize: SpamReportBannerLabelStyles.labelTextSize,
                 color: labelColor,
                 fontWeight: FontWeight.w500

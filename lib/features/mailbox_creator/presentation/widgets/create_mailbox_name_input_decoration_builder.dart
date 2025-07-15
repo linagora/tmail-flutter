@@ -22,12 +22,12 @@ class CreateMailboxNameInputDecorationBuilder extends InputDecorationBuilder {
       prefixText: prefixText,
       labelText: labelText,
       floatingLabelBehavior: FloatingLabelBehavior.never,
-      labelStyle: labelStyle ?? const TextStyle(color: AppColor.colorNameEmail, fontSize: 16),
+      labelStyle: labelStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(color: AppColor.colorNameEmail, fontSize: 16),
       hintText: hintText,
-      hintStyle: hintStyle ?? const TextStyle(color: AppColor.colorHintInputCreateMailbox, fontSize: 16),
+      hintStyle: hintStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(color: AppColor.colorHintInputCreateMailbox, fontSize: 16),
       contentPadding: contentPadding ?? const EdgeInsets.all(12),
       errorText: errorText,
-      errorStyle: errorTextStyle ?? const TextStyle(color: AppColor.colorInputBorderErrorVerifyName, fontSize: 13),
+      errorStyle: errorTextStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(color: AppColor.colorInputBorderErrorVerifyName, fontSize: 13),
       filled: true,
       fillColor: errorText?.isNotEmpty == true
           ? AppColor.colorInputBackgroundErrorVerifyName

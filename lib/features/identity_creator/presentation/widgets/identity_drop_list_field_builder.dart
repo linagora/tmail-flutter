@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -32,7 +33,7 @@ class IdentityDropListFieldBuilder extends StatelessWidget {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         _label,
-        style: const TextStyle(
+        style: ThemeUtils.defaultTextStyleInterFont.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.normal,
           color: AppColor.colorContentEmail)),
@@ -40,11 +41,15 @@ class IdentityDropListFieldBuilder extends StatelessWidget {
       DropdownButtonHideUnderline(
         child: DropdownButton2<EmailAddress>(
           isExpanded: true,
-          hint: const Row(
+          hint: Row(
             children: [
               Expanded(child: Text(
                 '',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
                 maxLines: 1,
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 softWrap: CommonTextStyle.defaultSoftWrap,
@@ -55,7 +60,7 @@ class IdentityDropListFieldBuilder extends StatelessWidget {
             value: item,
             child: Text(
               item.emailAddress,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
+              style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.black),
               maxLines: 1,
               overflow: CommonTextStyle.defaultTextOverFlow,
               softWrap: CommonTextStyle.defaultSoftWrap,

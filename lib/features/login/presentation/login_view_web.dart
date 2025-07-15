@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/presentation/views/text/slogan_builder.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class LoginView extends BaseLoginView {
                 padding: const EdgeInsets.only(top: 67),
                 child: Text(
                     AppLocalizations.of(context).signIn,
-                    style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
+                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
                 )
               ),
               Obx(() => LoginMessageWidget(
@@ -106,7 +107,11 @@ class LoginView extends BaseLoginView {
               children: [
                 Text(
                   AppLocalizations.of(context).jmapBasedMailSolution,
-                  style: const TextStyle(fontSize: 36, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    fontSize: 36,
+                    color: AppColor.colorNameEmail,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 24),
@@ -116,7 +121,11 @@ class LoginView extends BaseLoginView {
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).jmapStandard,
-                    textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)
+                    textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: AppColor.colorNameEmail,
+                    ),
                   )
                 ),
                 Padding(
@@ -127,7 +136,11 @@ class LoginView extends BaseLoginView {
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).encryptedMailbox,
-                    textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)
+                    textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: AppColor.colorNameEmail,
+                    ),
                   )
                 ),
                 Padding(
@@ -138,7 +151,11 @@ class LoginView extends BaseLoginView {
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).manageEmailAsATeam,
-                    textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)
+                    textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: AppColor.colorNameEmail,
+                    ),
                   )
                 ),
                 Padding(
@@ -149,7 +166,11 @@ class LoginView extends BaseLoginView {
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).multipleIntegrations,
-                    textStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: AppColor.colorNameEmail)
+                    textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                      color: AppColor.colorNameEmail,
+                    ),
                   )
                 ),
                 Padding(
@@ -196,7 +217,7 @@ class LoginView extends BaseLoginView {
                       padding: const EdgeInsets.only(top: 67),
                       child: Text(
                         AppLocalizations.of(context).signIn,
-                        style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
+                        style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
                       )
                     ),
                     Obx(() => LoginMessageWidget(

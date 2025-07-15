@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class DraggableRecipientTagWidgetStyle {
@@ -13,7 +14,7 @@ class DraggableRecipientTagWidgetStyle {
   static const EdgeInsetsGeometry padding = EdgeInsets.symmetric(horizontal: 6, vertical: 3);
   static const EdgeInsetsGeometry labelPadding = EdgeInsets.symmetric(horizontal: 8);
 
-  static const TextStyle labelTextStyle = TextStyle(
+  static TextStyle labelTextStyle = ThemeUtils.defaultTextStyleInterFont.copyWith(
     color: Colors.white,
     fontSize: 17,
     fontWeight: FontWeight.normal

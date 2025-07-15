@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
@@ -154,13 +155,19 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             focusNode: controller.textInputSearchFocus,
             maxLines: 1,
             textDirection: DirectionUtils.getDirectionByLanguage(context),
-            textStyle: const TextStyle(color: Colors.black, fontSize: 16),
+            textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+              color: Colors.black,
+              fontSize: 16,
+            ),
             keyboardType: TextInputType.text,
             onTextSubmitted: (text) => controller.onTextSearchSubmitted(context, text),
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.all(12),
               hintText: AppLocalizations.of(context).search_emails,
-              hintStyle: const TextStyle(color: AppColor.loginTextFieldHintColor, fontSize: 16),
+              hintStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                color: AppColor.loginTextFieldHintColor,
+                fontSize: 16,
+              ),
               border: InputBorder.none),
           )),
           Obx(() {
@@ -235,7 +242,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               backgroundColor: Colors.transparent,
               margin: const EdgeInsetsDirectional.only(start: 8, top: 6, end: 8),
               borderRadius: 10,
-              textStyle: const TextStyle(
+              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                 color: AppColor.primaryColor,
                 fontSize: 13,
                 fontWeight: FontWeight.w500
@@ -456,7 +463,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             children: [
               Text(
                 AppLocalizations.of(context).showingResultsFor,
-                style: const TextStyle(
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                   fontSize: 13.0,
                   color: AppColor.colorTextButtonHeaderThread,
                   fontWeight: FontWeight.w500
@@ -466,7 +473,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               Expanded(
                 child: Text(
                   '"${controller.currentSearchText.value}"',
-                  style: const TextStyle(
+                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 13.0,
                     color: Colors.black,
                     fontWeight: FontWeight.w500

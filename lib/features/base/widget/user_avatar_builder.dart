@@ -7,7 +7,6 @@ class UserAvatarBuilder extends StatelessWidget {
   final double? size;
   final TextStyle? textStyle;
   final EdgeInsetsGeometry? padding;
-  final TextStyle? textStyle;
   final VoidCallback? onTapAction;
 
   const UserAvatarBuilder({
@@ -16,7 +15,6 @@ class UserAvatarBuilder extends StatelessWidget {
     this.size,
     this.textStyle,
     this.padding,
-    this.textStyle,
     this.onTapAction,
   }) : super(key: key);
 

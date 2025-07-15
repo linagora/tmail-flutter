@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 
@@ -31,17 +32,17 @@ class SendingEmailTileStyle {
     }
   }
 
-  static TextStyle getTitleTextStyle(SendingState state) => TextStyle(
+  static TextStyle getTitleTextStyle(SendingState state) => ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 15,
     color: state.getTitleSendingEmailItemColor(),
     fontWeight: FontWeight.w600
   );
-  static TextStyle getSubTitleTextStyle(SendingState state) => TextStyle(
+  static TextStyle getSubTitleTextStyle(SendingState state) => ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 13,
     color: state.getSubTitleSendingEmailItemColor(),
     fontWeight: FontWeight.normal
   );
-  static TextStyle getTimeCreatedTextStyle(SendingState state) => TextStyle(
+  static TextStyle getTimeCreatedTextStyle(SendingState state) => ThemeUtils.defaultTextStyleInterFont.copyWith(
     fontSize: 13,
     color: state.getTitleSendingEmailItemColor(),
     fontWeight: FontWeight.normal

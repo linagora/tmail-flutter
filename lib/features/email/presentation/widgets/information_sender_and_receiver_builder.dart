@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -82,7 +83,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                           if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
                             TMailButtonWidget.fromText(
                               text: AppLocalizations.of(context).unsubscribe,
-                              textStyle: const TextStyle(
+                              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 14,
                                 color: AppColor.colorTextBody,

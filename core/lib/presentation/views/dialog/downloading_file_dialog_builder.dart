@@ -38,7 +38,7 @@ class DownloadingFileDialogBuilder {
   Widget build() {
     return CupertinoAlertDialog(
       key: _key ?? const Key('DownloadingFileBuilder'),
-      title: Text(_title, style: const TextStyle(fontSize: 17.0, color: Colors.black)),
+      title: Text(_title, style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 17.0, color: Colors.black)),
       content: Padding(
         padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
         child: Center(
@@ -51,7 +51,7 @@ class DownloadingFileDialogBuilder {
               const SizedBox(height: 16),
               Text(
                 _content,
-                style: const TextStyle(fontSize: 13.0, color: Colors.black),
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 13.0, color: Colors.black),
                 softWrap: false,
                 maxLines: 1)
             ],
@@ -63,7 +63,7 @@ class DownloadingFileDialogBuilder {
             padding: const EdgeInsets.only(bottom: kIsWeb ? 16 : 0, top: kIsWeb ? 16 : 0),
             child: TextButton(
               onPressed: () => _onCancelDownloadActionClick?.call(),
-              child: Text(_actionText, style: const TextStyle(fontSize: 17.0, color: AppColor.appColor)),
+              child: Text(_actionText, style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 17.0, color: AppColor.appColor)),
             ))
       ],
     );
