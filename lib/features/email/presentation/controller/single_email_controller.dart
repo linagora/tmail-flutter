@@ -209,7 +209,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   bool get isOnlyEmailInThread =>
       _threadDetailController?.emailIdsPresentation.length == 1;
 
-
   bool get calendarEventProcessing => viewState.value.fold(
     (failure) => false,
     (success) => success is CalendarEventReplying);
