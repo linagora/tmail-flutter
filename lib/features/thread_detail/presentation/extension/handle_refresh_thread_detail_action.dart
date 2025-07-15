@@ -32,6 +32,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
         consumeState(Stream.value(Right(GetThreadByIdSuccess(
           [currentEmailId],
           updateCurrentThreadDetail: true,
+          threadId: mailboxDashBoardController.selectedEmail.value?.threadId,
         ))));
       }
 
@@ -74,6 +75,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
 
     consumeState(Stream.value(Right(GetThreadByIdSuccess(
       afterRefreshedEmailIds,
+      threadId: currentThreadId,
       updateCurrentThreadDetail: true,
     ))));
     consumeState(Stream.value(Right(GetEmailsByIdsSuccess(

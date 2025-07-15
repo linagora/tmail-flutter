@@ -9,7 +9,8 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_d
 
 extension InitializeThreadDetailEmails on ThreadDetailController {
   void initializeThreadDetailEmails(GetThreadByIdSuccess success) {
-    if (success.skipLoadingMetadata) return;
+    final currentThreadId = mailboxDashBoardController.selectedEmail.value?.threadId;
+    if (success.skipLoadingMetadata || currentThreadId != success.threadId) return;
 
     final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
     if (skipLoadThreadMetaData(

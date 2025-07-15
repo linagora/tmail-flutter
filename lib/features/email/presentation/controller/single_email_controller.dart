@@ -206,6 +206,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       : _threadDetailController?.emailIdsPresentation[_currentEmailId];
   }
 
+  bool get isOnlyEmailInThread =>
+      _threadDetailController?.emailIdsPresentation.length == 1;
+
+
   bool get calendarEventProcessing => viewState.value.fold(
     (failure) => false,
     (success) => success is CalendarEventReplying);
@@ -690,6 +694,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         )
       );
     }
+    if (currentEmail?.threadId != null &&
+        currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id &&
+        _threadDetailController?.loadThreadOnThreadChanged == true) {
+      _threadDetailController?.loadThreadOnThreadChanged = false;
+      mailboxDashBoardController.dispatchThreadDetailUIAction(
+        LoadThreadDetailAfterSelectedEmailAction(
+          currentEmail!.threadId!,
+        )
+      );
+    }
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
@@ -763,6 +777,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (currentEmail?.threadId != null &&
         currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id &&
         _threadDetailController?.loadThreadOnThreadChanged == true) {
+      _threadDetailController?.loadThreadOnThreadChanged = false;
       mailboxDashBoardController.dispatchThreadDetailUIAction(
         LoadThreadDetailAfterSelectedEmailAction(
           currentEmail!.threadId!,

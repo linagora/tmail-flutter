@@ -160,7 +160,6 @@ class ThreadDetailController extends BaseController {
         handleEmailMovedAction(action);
       } else if (action is LoadThreadDetailAfterSelectedEmailAction) {
         if (_validateLoadThread(action)) {
-          loadThreadOnThreadChanged = false;
           consumeState(_getEmailIdsByThreadIdInteractor.execute(
             action.threadId,
             session!,

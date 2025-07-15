@@ -251,7 +251,8 @@ class EmailViewAppBarWidget extends StatelessWidget {
         _getMoveEmailButton(appLocalizations),
         _getMarkStarButton(appLocalizations),
         _getDeleteButton(appLocalizations),
-        _getMoreButton(appLocalizations, isScreenWithShortestSide),
+        if (onMoreActionClick != null)
+          _getMoreButton(appLocalizations, isScreenWithShortestSide),
       ];
     }
 
@@ -263,7 +264,8 @@ class EmailViewAppBarWidget extends StatelessWidget {
         _getMarkStarButton(appLocalizations),
         _getDeleteButton(appLocalizations),
       ],
-      _getMoreButton(appLocalizations, isScreenWithShortestSide),
+      if (onMoreActionClick != null)
+        _getMoreButton(appLocalizations, isScreenWithShortestSide),
     ];
   }
 }

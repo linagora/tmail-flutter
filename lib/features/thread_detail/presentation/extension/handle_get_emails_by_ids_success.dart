@@ -37,6 +37,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
           : EmailInThreadStatus.collapsed,
       );
     }
+    threadDetailManager.currentMobilePageViewIndex.refresh();
 
     if (_skipScrollJump(isLoadMore)) return;
     

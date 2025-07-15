@@ -53,7 +53,10 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
 
   void _preloadSelectedEmail(PresentationEmail selectedEmail) {
     consumeState(Stream.fromIterable([
-      Right(PreloadEmailIdsInThreadSuccess([selectedEmail.id!])),
+      Right(PreloadEmailIdsInThreadSuccess(
+        [selectedEmail.id!],
+        threadId: selectedEmail.threadId,
+      )),
       Right(PreloadEmailsByIdsSuccess([selectedEmail])),
     ]));
   }

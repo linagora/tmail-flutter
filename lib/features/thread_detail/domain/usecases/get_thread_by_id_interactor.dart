@@ -38,6 +38,7 @@ class GetThreadByIdInteractor {
 
       yield Right(GetThreadByIdSuccess(
         result,
+        threadId: threadId,
         updateCurrentThreadDetail: updateCurrentThreadDetail,
       ));
     } catch (e) {

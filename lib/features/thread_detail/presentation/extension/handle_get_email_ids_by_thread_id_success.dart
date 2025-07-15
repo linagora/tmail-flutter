@@ -5,7 +5,8 @@ extension HandleGetEmailIdsByThreadIdSuccess on ThreadDetailController {
   void handleGetEmailIdsByThreadIdSuccess(
     GetThreadByIdSuccess success,
   ) {
-    if (success.emailIds.isEmpty) {
+    final currentThreadId = mailboxDashBoardController.selectedEmail.value?.threadId;
+    if (success.emailIds.isEmpty || success.threadId != currentThreadId) {
       return;
     }
 
