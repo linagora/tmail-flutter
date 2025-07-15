@@ -5,17 +5,92 @@
   s[d][e].push({p: "main.dart.js_2", e: "beginPart"});
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
-  var A, B;
+  var A, C,
+  B = {ApplicationVersionWidget: function ApplicationVersionWidget(t0, t1, t2, t3) {
+      var _ = this;
+      _.padding = t0;
+      _.title = t1;
+      _.textStyle = t2;
+      _.key = t3;
+    }, _ApplicationVersionWidgetState: function _ApplicationVersionWidgetState(t0) {
+      var _ = this;
+      _._application_version_widget$_applicationManager = t0;
+      _._framework$_element = _._widget = _._versionStream = null;
+    }, _ApplicationVersionWidgetState_build_closure: function _ApplicationVersionWidgetState_build_closure(t0) {
+      this.$this = t0;
+    }},
+  D;
   A = holdersList[0];
-  B = holdersList[15];
+  C = holdersList[2];
+  B = hunkHelpers.updateHolder(holdersList[9], B);
+  D = holdersList[16];
+  B.ApplicationVersionWidget.prototype = {
+    createState$0() {
+      $.$get$Get();
+      var t1 = $.GetInstance__getInstance;
+      if (t1 == null)
+        t1 = $.GetInstance__getInstance = C.C_GetInstance;
+      return new B._ApplicationVersionWidgetState(t1.find$1$1$tag(0, null, type$.ApplicationManager));
+    }
+  };
+  B._ApplicationVersionWidgetState.prototype = {
+    initState$0() {
+      this.super$State$initState();
+      this._versionStream = this._application_version_widget$_applicationManager.getVersion$0();
+    },
+    build$1(context) {
+      return A.FutureBuilder$(new B._ApplicationVersionWidgetState_build_closure(this), this._versionStream, type$.String);
+    },
+    dispose$0() {
+      this._versionStream = null;
+      this.super$State$dispose();
+    }
+  };
   var typesOffset = hunkHelpers.updateTypes([]);
+  B._ApplicationVersionWidgetState_build_closure.prototype = {
+    call$2(context, snapshot) {
+      var t2, t3, t4, versionLabel, _null = null,
+        t1 = snapshot.data;
+      if (t1 != null) {
+        t2 = this.$this;
+        t3 = t2._widget.title;
+        if (t3 == null)
+          t3 = "v.";
+        t1 = A.S(t1);
+        t4 = t2._widget.textStyle;
+        if (t4 == null) {
+          t4 = A.Theme_of(context).textTheme.bodySmall;
+          t4 = t4 == null ? _null : t4.copyWith$1$color(C.Color_4286680217);
+        }
+        versionLabel = A.Text$(t3 + t1, _null, _null, _null, _null, _null, _null, _null, _null, t4, C.TextAlign_2, _null, _null, _null, _null);
+        t1 = t2._widget.padding;
+        if (t1 != null)
+          return new A.Padding(t1, versionLabel, _null);
+        else
+          return versionLabel;
+      } else
+        return C.SizedBox_0_0_null_null;
+    },
+    $signature: 1885
+  };
+  (function inheritance() {
+    var _inherit = hunkHelpers.inherit;
+    _inherit(B.ApplicationVersionWidget, A.StatefulWidget);
+    _inherit(B._ApplicationVersionWidgetState, A.State0);
+    _inherit(B._ApplicationVersionWidgetState_build_closure, A.Closure2Args);
+  })();
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"ApplicationVersionWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ApplicationVersionWidgetState":{"State0":["ApplicationVersionWidget"]}}'));
+  var type$ = {
+    ApplicationManager: A.findType("ApplicationManager"),
+    String: A.findType("String")
+  };
   (function constants() {
-    B.EdgeInsetsDirectional_24_0_24_16 = new A.EdgeInsetsDirectional(24, 0, 24, 16);
+    D.EdgeInsetsDirectional_24_0_24_16 = new A.EdgeInsetsDirectional(24, 0, 24, 16);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "YnKJrU/CMv3vWIyae+Upp/RRjjg=");
+})($__dart_deferred_initializers__, "EKzchNLSUVdo7LB+cHeKDWNmy9E=");
 ;
