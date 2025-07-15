@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
@@ -34,7 +35,7 @@ class UserInformationWidget extends StatelessWidget {
       decoration: BoxDecoration(border: border),
       child: Row(children: [
         UserAvatarBuilder(
-          username: userName,
+          username: userName.firstLetterToUpperCase,
           size: 51,
           textStyle: ThemeUtils.textStyleInter500().copyWith(
             fontSize: 25.5,
