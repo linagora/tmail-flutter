@@ -87,21 +87,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.iconSize = t2;
       _.key = t3;
     },
-    ApplicationVersionWidget: function ApplicationVersionWidget(t0, t1, t2, t3) {
-      var _ = this;
-      _.padding = t0;
-      _.title = t1;
-      _.textStyle = t2;
-      _.key = t3;
-    },
-    _ApplicationVersionWidgetState: function _ApplicationVersionWidgetState(t0) {
-      var _ = this;
-      _._application_version_widget$_applicationManager = t0;
-      _._framework$_element = _._widget = _._versionStream = null;
-    },
-    _ApplicationVersionWidgetState_build_closure: function _ApplicationVersionWidgetState_build_closure(t0) {
-      this.$this = t0;
-    },
     httpGet(url, headers) {
       var $async$goto = 0,
         $async$completer = B._makeAsyncAwaitCompleter(type$.Uint8List),
@@ -135,7 +120,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   J = holdersList[1];
   B = holdersList[0];
   C = holdersList[2];
-  A = hunkHelpers.updateHolder(holdersList[10], A);
+  A = hunkHelpers.updateHolder(holdersList[11], A);
   D = holdersList[19];
   A.ImageLoaderMixin.prototype = {
     buildImage$2$imagePath$imageSize(imagePath, imageSize) {
@@ -292,28 +277,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, C.Color_0, t1, _null, t2, _null, _null, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null, _null);
     }
   };
-  A.ApplicationVersionWidget.prototype = {
-    createState$0() {
-      $.$get$Get();
-      var t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new A._ApplicationVersionWidgetState(t1.find$1$1$tag(0, null, type$.ApplicationManager));
-    }
-  };
-  A._ApplicationVersionWidgetState.prototype = {
-    initState$0() {
-      this.super$State$initState();
-      this._versionStream = this._application_version_widget$_applicationManager.getVersion$0();
-    },
-    build$1(context) {
-      return B.FutureBuilder$(new A._ApplicationVersionWidgetState_build_closure(this), this._versionStream, type$.String);
-    },
-    dispose$0() {
-      this._versionStream = null;
-      this.super$State$dispose();
-    }
-  };
   var typesOffset = hunkHelpers.updateTypes([]);
   A.HttpRequest_request_closure.prototype = {
     call$1(e) {
@@ -330,13 +293,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         t3.completeError$1(e);
     },
-    $signature: 313
+    $signature: 326
   };
   A.ImageLoaderMixin_buildImage_closure.prototype = {
     call$1(_) {
       return C.CupertinoActivityIndicator_null_true_1_null;
     },
-    $signature: 1802
+    $signature: 1798
   };
   A.ImageLoaderMixin_buildImage_closure0.prototype = {
     call$3(_, child, loadingProgress) {
@@ -346,7 +309,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 1803
+    $signature: 1799
   };
   A.ImageLoaderMixin_buildImage_closure1.prototype = {
     call$3(context, error, stackTrace) {
@@ -355,7 +318,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.imageSize;
       return B.Container$(C.Alignment_0_0, D.Icon_MYE, C.Clip_0, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, t1);
     },
-    $signature: 1804
+    $signature: 1800
   };
   A.NetworkImage__loadAsync_closure.prototype = {
     call$1(e) {
@@ -372,45 +335,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         throw B.wrapException(A.NetworkImageLoadException$($status, this.resolved));
       }
     },
-    $signature: 78
+    $signature: 82
   };
   A.NetworkImage__loadAsync_closure0.prototype = {
     call$1(e) {
       return this.completer.completeError$1(e);
     },
-    $signature: 85
+    $signature: 83
   };
   A.NetworkImage__loadAsync_closure1.prototype = {
     call$2(bytes, total) {
       this.chunkEvents.add$1(0, new A.ImageChunkEvent(bytes, total));
     },
-    $signature: 231
-  };
-  A._ApplicationVersionWidgetState_build_closure.prototype = {
-    call$2(context, snapshot) {
-      var t2, t3, t4, versionLabel, _null = null,
-        t1 = snapshot.data;
-      if (t1 != null) {
-        t2 = this.$this;
-        t3 = t2._widget.title;
-        if (t3 == null)
-          t3 = "v.";
-        t1 = B.S(t1);
-        t4 = t2._widget.textStyle;
-        if (t4 == null) {
-          t4 = B.Theme_of(context).textTheme.bodySmall;
-          t4 = t4 == null ? _null : t4.copyWith$1$color(C.Color_4286680217);
-        }
-        versionLabel = B.Text$(t3 + t1, _null, _null, _null, _null, _null, _null, _null, _null, t4, C.TextAlign_2, _null, _null, _null, _null);
-        t1 = t2._widget.padding;
-        if (t1 != null)
-          return new B.Padding(t1, versionLabel, _null);
-        else
-          return versionLabel;
-      } else
-        return C.SizedBox_0_0_null_null;
-    },
-    $signature: 1805
+    $signature: 259
   };
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
@@ -419,25 +356,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inheritMany(B.Closure, [A.HttpRequest_request_closure, A.ImageLoaderMixin_buildImage_closure, A.ImageLoaderMixin_buildImage_closure0, A.ImageLoaderMixin_buildImage_closure1, A.NetworkImage__loadAsync_closure, A.NetworkImage__loadAsync_closure0]);
     _inheritMany(B.Object, [A.ImageLoaderMixin, A.NetworkImageLoadException, A._ImageChunkEvent_Object_Diagnosticable]);
     _inherit(A.NetworkImage, B.ImageProvider);
-    _inheritMany(B.Closure2Args, [A.NetworkImage__loadAsync_closure1, A._ApplicationVersionWidgetState_build_closure]);
+    _inherit(A.NetworkImage__loadAsync_closure1, B.Closure2Args);
     _inherit(A.ImageChunkEvent, A._ImageChunkEvent_Object_Diagnosticable);
     _inherit(A.SvgNetworkLoader, B.SvgLoader);
     _inherit(A.ApplicationLogoWidthTextWidget, B.StatelessWidget);
-    _inherit(A.ApplicationVersionWidget, B.StatefulWidget);
-    _inherit(A._ApplicationVersionWidgetState, B.State0);
     _mixin(A._ImageChunkEvent_Object_Diagnosticable, B.Diagnosticable);
   })();
-  B._Universe_addRules(init.typeUniverse, JSON.parse('{"NetworkImage":{"ImageProvider":["NetworkImage0"],"ImageProvider.T":"NetworkImage0"},"NetworkImage0":{"ImageProvider":["NetworkImage0"]},"NetworkImageLoadException":{"Exception":[]},"SvgNetworkLoader":{"SvgLoader":["Uint8List"],"BytesLoader":[],"SvgLoader.T":"Uint8List"},"ApplicationLogoWidthTextWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ApplicationVersionWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ApplicationVersionWidgetState":{"State0":["ApplicationVersionWidget"]}}'));
+  B._Universe_addRules(init.typeUniverse, JSON.parse('{"NetworkImage":{"ImageProvider":["NetworkImage0"],"ImageProvider.T":"NetworkImage0"},"NetworkImage0":{"ImageProvider":["NetworkImage0"]},"NetworkImageLoadException":{"Exception":[]},"SvgNetworkLoader":{"SvgLoader":["Uint8List"],"BytesLoader":[],"SvgLoader.T":"Uint8List"},"ApplicationLogoWidthTextWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
     var findType = B.findType;
     return {
-      ApplicationManager: findType("ApplicationManager"),
       Codec: findType("Codec"),
       ImageChunkEvent: findType("ImageChunkEvent"),
       ImagePaths: findType("ImagePaths"),
       NativeByteBuffer: findType("NativeByteBuffer"),
       ProgressEvent: findType("ProgressEvent"),
-      String: findType("String"),
       SynchronousFuture_NetworkImage: findType("SynchronousFuture<NetworkImage>"),
       Uint8List: findType("Uint8List"),
       _AsyncCompleter_HttpRequest: findType("_AsyncCompleter<HttpRequest>"),
@@ -456,5 +389,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "kDjmJerkAchsLti9oS8vybjZTqo=");
+})($__dart_deferred_initializers__, "UCBHyCcz7OWM+L+thzpkvPfaKHs=");
 ;
