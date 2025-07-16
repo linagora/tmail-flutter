@@ -7,11 +7,11 @@ class SessionStorageManager {
 
   final html.Storage sessionStorage = html.window.sessionStorage;
 
-  Future<void> save(String key, String value) async {
-    return sessionStorage.addAll({key: value});
+  void save(String key, String value) {
+    sessionStorage.addAll({key: value});
   }
 
-  Future<String> get(String key) async {
+  String get(String key) {
     final entry = sessionStorage
       .entries
       .firstWhereOrNull((entry) => entry.key == key);
@@ -23,7 +23,7 @@ class SessionStorageManager {
     }
   }
 
-  Future<void> remove(String key) async {
+  void remove(String key) {
     if (sessionStorage.containsKey(key)) {
       sessionStorage.remove(key);
     }
