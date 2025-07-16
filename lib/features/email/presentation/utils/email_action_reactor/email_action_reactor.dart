@@ -599,10 +599,10 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     PresentationEmail email,
     PresentationMailbox? mailboxContain,
   ) {
-    return email.mailboxContain?.isTrash
-      ?? email.mailboxContain?.isSpam
-      ?? mailboxContain?.isTrash
+    return mailboxContain?.isTrash
       ?? mailboxContain?.isSpam
+      ?? email.mailboxContain?.isTrash
+      ?? email.mailboxContain?.isSpam
       ?? false;
   }
 
