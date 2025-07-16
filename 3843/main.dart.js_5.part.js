@@ -9592,11 +9592,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.push(_this._getMoreButton$2(appLocalizations, isScreenWithShortestSide));
         return t1;
       }
-      t1 = A._setArrayType([_this._getReplyButton$1(appLocalizations)], type$.JSArray_Widget);
+      t1 = type$.JSArray_Widget;
+      t2 = A._setArrayType([_this._getReplyButton$1(appLocalizations)], t1);
       if (!isResponsiveMobile)
-        if (_this.onMoreActionClick != null)
-          t1.push(_this._getMoreButton$2(appLocalizations, isScreenWithShortestSide));
-      return t1;
+        t2.push(_this._getMoveEmailButton$1(appLocalizations));
+      if (isResponsiveDesktop)
+        C.JSArray_methods.addAll$1(t2, A._setArrayType([_this._getMarkStarButton$1(appLocalizations), _this._getDeleteButton$1(appLocalizations)], t1));
+      if (_this.onMoreActionClick != null)
+        t2.push(_this._getMoreButton$2(appLocalizations, isScreenWithShortestSide));
+      return t2;
     }
   };
   B.EmailViewBackButton.prototype = {
@@ -20938,5 +20942,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "+22fp0isLrkh4ZbXJrX4ISBPSas=");
+})($__dart_deferred_initializers__, "8QxbNtuACPETsFrJBMOXP/DD6BE=");
 ;
