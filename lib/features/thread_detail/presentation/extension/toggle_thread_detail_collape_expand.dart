@@ -11,6 +11,8 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
     if (emailId == null || expansionStatus == null) return;
 
     if (expansionStatus == EmailInThreadStatus.expanded) {
+      if (emailIdsPresentation.length == 1) return;
+
       emailIdsPresentation[emailId] = presentationEmail.copyWith(
         emailInThreadStatus: EmailInThreadStatus.collapsed,
       );
@@ -18,6 +20,7 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
         CollapseEmailInThreadDetailAction(emailId),
       );
       currentExpandedEmailId.value = null;
+      threadDetailManager.currentMobilePageViewIndex.refresh();
       return;
     }
 
@@ -42,5 +45,6 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
         );
       }
     }
+    threadDetailManager.currentMobilePageViewIndex.refresh();
   }
 }

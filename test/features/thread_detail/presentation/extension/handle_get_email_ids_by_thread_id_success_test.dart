@@ -31,10 +31,14 @@ void main() {
       };
       when(threadDetailController.emailIdsPresentation)
         .thenReturn(initialEmailIdsPresentation.obs);
+      when(threadDetailController.mailboxDashBoardController)
+        .thenReturn(mailboxDashBoardController);
+      when(mailboxDashBoardController.selectedEmail)
+        .thenReturn(Rxn(PresentationEmail(id: EmailId(Id('1')))));
       
       // act
       threadDetailController.handleGetEmailIdsByThreadIdSuccess(
-        GetThreadByIdSuccess([]),
+        GetThreadByIdSuccess([], threadId: null),
       );
       
       // assert
@@ -58,6 +62,10 @@ void main() {
       };
       when(threadDetailController.emailIdsPresentation)
         .thenReturn(initialEmailIdsPresentation.obs);
+      when(threadDetailController.mailboxDashBoardController)
+        .thenReturn(mailboxDashBoardController);
+      when(mailboxDashBoardController.selectedEmail)
+        .thenReturn(Rxn(PresentationEmail(id: EmailId(Id('1')))));
       
       // act
       threadDetailController.handleGetEmailIdsByThreadIdSuccess(
@@ -67,6 +75,7 @@ void main() {
             EmailId(Id('3')),
             EmailId(Id('4')),
           ],
+          threadId: null,
           updateCurrentThreadDetail: true,
         ),
       );
@@ -113,6 +122,7 @@ void main() {
             EmailId(Id('3')),
             EmailId(Id('4')),
           ],
+          threadId: null,
           updateCurrentThreadDetail: false,
         ),
       );
@@ -156,6 +166,7 @@ void main() {
             EmailId(Id('3')),
             EmailId(Id('4')),
           ],
+          threadId: null,
           updateCurrentThreadDetail: false,
         ),
       );

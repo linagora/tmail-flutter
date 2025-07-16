@@ -139,21 +139,24 @@ class ThreadDetailAppBar extends StatelessWidget {
                   ),
                 ],
                 if (!responsiveUtils.isMobile(context)) const Spacer(),
-                ...optionWidgets,
+              ] else const Spacer(),
+              ...optionWidgets,
+              if (lastEmailOfThread != null)
                 TMailButtonWidget.fromIcon(
                   icon: imagePaths.icMoreVertical,
                   iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
                   iconColor: EmailViewAppBarWidgetStyles.iconColor,
                   backgroundColor: Colors.transparent,
                   tooltipMessage: AppLocalizations.of(context).more,
-                  onTapActionCallback: responsiveUtils.isScreenWithShortestSide(context)
+                  onTapActionCallback: responsiveUtils.isScreenWithShortestSide(context) &&
+                      lastEmailOfThread != null
                     ? () => onMoreActionClick?.call(lastEmailOfThread!, null)
                     : null,
-                  onTapActionAtPositionCallback: !responsiveUtils.isScreenWithShortestSide(context)
+                  onTapActionAtPositionCallback: !responsiveUtils.isScreenWithShortestSide(context) &&
+                      lastEmailOfThread != null
                     ? (position) => onMoreActionClick?.call(lastEmailOfThread!, position)
                     : null,
                 ),
-              ] else const Spacer(),
             ],
           ),
         );

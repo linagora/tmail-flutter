@@ -69,7 +69,7 @@ void main() {
 
       // Act
       threadDetailController.initializeThreadDetailEmails(
-        GetThreadByIdSuccess(emailIds),
+        GetThreadByIdSuccess(emailIds, threadId: null),
       );
 
       // Assert
