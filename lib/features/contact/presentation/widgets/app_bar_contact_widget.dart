@@ -53,7 +53,7 @@ class AppBarContactWidget extends StatelessWidget {
               iconSize: 24,
               padding: const EdgeInsets.all(3),
               iconColor: AppColor.colorCloseButton,
-              backgroundColor: AppColor.colorCloseButton.withValues(alpha: 0.12),
+              backgroundColor: AppColor.colorCloseButton.withOpacity(0.12),
               onTapActionCallback: onCloseContactView,
             )
           ),

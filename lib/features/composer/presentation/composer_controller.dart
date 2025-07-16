@@ -1920,9 +1920,7 @@ class ComposerController extends BaseController
 
     if (PlatformInfo.isWeb &&
         !_isEmailBodyLoaded &&
-        !screenDisplayMode.value.isNotContentVisible()) {
-      return true;
-    }
+        !screenDisplayMode.value.isNotContentVisible()) return true;
 
     if (PlatformInfo.isMobile && !_isEmailBodyLoaded) return true;
 

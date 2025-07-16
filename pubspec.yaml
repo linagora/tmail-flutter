@@ -63,7 +63,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: feature/flutter-3.27.4
+      ref: main
 
   jmap_dart_client:
     git:
@@ -136,13 +136,13 @@ dependencies:
 
   http_parser: 4.0.2
 
-  collection: 1.19.0
+  collection: 1.18.0
 
   filesize: 2.0.1
 
   uuid: 3.0.7
 
-  flutter_downloader: 1.12.0
+  flutter_downloader: 1.10.2
 
   external_path: 1.0.3
 
@@ -194,7 +194,7 @@ dependencies:
 
   firebase_messaging: 14.5.0
 
-  flutter_local_notifications: 17.2.2
+  flutter_local_notifications: 17.2.1
 
   fading_edge_scrollview: 4.1.1
 
@@ -222,7 +222,7 @@ dependencies:
 
   flutter_linkify: 6.0.0
 
-  flutter_slidable: 3.1.2
+  flutter_slidable: 3.1.0
 
   url_strategy: 0.2.0
 
@@ -242,7 +242,7 @@ dependencies:
 
   future_loading_dialog: 0.3.0
 
-  file_picker: 10.1.7
+  file_picker: 8.0.5
 
   app_settings: 5.1.1
 
@@ -302,6 +302,13 @@ dependency_overrides:
 
   json_annotation: 4.8.1
 
+  # TODO: Remove and upgrade file_picker after
+  # https://github.com/miguelpruivo/flutter_file_picker/pull/1771 is merged and published
+  file_picker:
+    git:
+      url: https://github.com/linagora/flutter_file_picker.git
+      ref: v0.8.5-twake-mail
+
   # TODO: Due conflict version of hive_ce_generator with other dependencies
   # So we will remove it when found the appropriate version
   hive:
@@ -309,6 +316,15 @@ dependency_overrides:
       url: https://github.com/IO-Design-Team/hive_ce
       ref: 18f92b53295e9eb77ebd4830d905a72cd404a126
       path: overrides/hive
+
+  # TODO: The package publisher fixed the issue with android API 35.
+  # However, they bundled it with the Flutter 3.27.4.
+  # When this app upgrade to Flutter 3.27.4, we will update this package
+  # and remove this override.
+  flutter_downloader:
+    git:
+      url: https://github.com/linagora/flutter_downloader.git
+      ref: fixbug/android-api-35
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

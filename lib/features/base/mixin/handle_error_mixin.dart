@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -56,7 +57,7 @@ mixin HandleSetErrorMixin {
   }
 
   Map<Id, SetError> handleSetResponse(List<SetResponse?> listSetResponse) {
-    final listSetResponseNotNull = listSetResponse.nonNulls.toList();
+    final listSetResponseNotNull = listSetResponse.whereNotNull().toList();
     if (listSetResponseNotNull.isEmpty) {
       return <Id, SetError>{};
     }

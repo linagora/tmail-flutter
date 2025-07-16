@@ -27,7 +27,7 @@ class ContactListActionWidget extends StatelessWidget {
           Flexible(
             child: TMailButtonWidget.fromText(
               text: AppLocalizations.of(context).clearFilter.capitalizeFirstEach,
-              backgroundColor: AppColor.colorContactViewClearFilterButton.withValues(alpha: 0.05),
+              backgroundColor: AppColor.colorContactViewClearFilterButton.withOpacity(0.05),
               borderRadius: 10,
               maxHeight: 44,
               minWidth: 156,

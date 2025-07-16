@@ -1,4 +1,5 @@
 
+import 'package:collection/collection.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
@@ -8,7 +9,7 @@ import 'package:jmap_dart_client/jmap/core/extensions/unsigned_int_extension.dar
 
 extension ListEmailExtension on List<Email> {
 
-  List<EmailId> get listEmailIds => map((email) => email.id).nonNulls.toList();
+  List<EmailId> get listEmailIds => map((email) => email.id).whereNotNull().toList();
 
   Email? findEmailById(EmailId emailId) {
     try {

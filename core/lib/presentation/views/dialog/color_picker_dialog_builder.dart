@@ -87,7 +87,7 @@ class ColorPickerDialogBuilder {
                       colorCodeHasColor: true,
                       shouldUpdate: _shouldUpdate,
                       onColorChanged: (Color color) {
-                        if (AppColor.listColorsPicker.any((element) => element.toInt32 == color.toInt32)) {
+                        if (AppColor.listColorsPicker.any((element) => element.value == color.value)) {
                           _shouldUpdate = true;
                           _currentColor.value = color;
                         } else {

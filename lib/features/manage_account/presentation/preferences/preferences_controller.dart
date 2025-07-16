@@ -93,7 +93,9 @@ class PreferencesController extends BaseController {
           displaySenderPriority: !isEnabled,
         );
         break;
-      }
+      default:
+        break;
+    }
 
     final accountId = _manageAccountDashBoardController.accountId.value;
     if (accountId != null && newSettingOption != null) {

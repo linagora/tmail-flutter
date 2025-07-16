@@ -277,15 +277,7 @@ extension AppColor on Color {
     [Color(0xFF87A6F8), Color(0xFF645FF6)],
   ];
 
-  static int _floatToInt8(double x) {
-    return (x * 255.0).round() & 0xff;
-  }
-
-  int get toInt32 {
-    return _floatToInt8(a) << 24 | _floatToInt8(r) << 16 | _floatToInt8(g) << 8 | _floatToInt8(b) << 0;
-  }
-
-  String toHexTriplet() => '#${(toInt32 & 0xFFFFFF)
+  String toHexTriplet() => '#${(value & 0xFFFFFF)
       .toRadixString(16)
       .padLeft(6, '0')
       .toUpperCase()}';

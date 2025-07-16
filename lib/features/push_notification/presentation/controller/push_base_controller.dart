@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -61,7 +62,7 @@ abstract class PushBaseController {
     final listEmailActions = listTypeName
       .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
       .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground, session: session))
-      .nonNulls
+      .whereNotNull()
       .toList();
 
     log('PushBaseController::mappingTypeStateToAction():listEmailActions: $listEmailActions');
@@ -73,7 +74,7 @@ abstract class PushBaseController {
     final listMailboxActions = listTypeName
       .where((typeName) => typeName == TypeName.mailboxType)
       .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground))
-      .nonNulls
+      .whereNotNull()
       .toList();
 
     log('PushBaseController::mappingTypeStateToAction():listMailboxActions: $listEmailActions');

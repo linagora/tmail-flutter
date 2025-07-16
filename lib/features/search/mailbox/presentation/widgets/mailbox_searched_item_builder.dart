@@ -248,7 +248,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
         child: TMailButtonWidget.fromIcon(
           icon: _imagePaths.icMoreVertical,
           backgroundColor: _popupMenuVisible
-              ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.08)
+              ? Theme.of(context).colorScheme.outline.withOpacity(0.08)
               : Colors.transparent,
           iconSize: 16,
           padding: const EdgeInsetsDirectional.all(2),

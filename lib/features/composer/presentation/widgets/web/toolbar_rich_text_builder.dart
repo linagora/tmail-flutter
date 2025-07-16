@@ -64,7 +64,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                     isSelected: richTextWebController.isMenuHeaderStyleOpen,
                     icon: SvgPicture.asset(
                       RichTextStyleType.headerStyle.getIcon(_imagePaths),
-                      colorFilter: AppColor.colorDefaultRichTextButton.withValues(alpha: opacity).asFilter(),
+                      colorFilter: AppColor.colorDefaultRichTextButton.withOpacity(opacity).asFilter(),
                       fit: BoxFit.fill
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),

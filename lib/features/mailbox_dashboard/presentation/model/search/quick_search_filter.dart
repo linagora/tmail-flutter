@@ -86,7 +86,7 @@ enum QuickSearchFilter {
 
   Color getBackgroundColor({bool isSelected = false}) {
     if (isSelected) {
-      return AppColor.primaryColor.withValues(alpha: 0.06);
+      return AppColor.primaryColor.withOpacity(0.06);
     } else {
       return AppColor.colorSearchFilterButton;
     }
@@ -94,17 +94,17 @@ enum QuickSearchFilter {
 
   Color getMobileBackgroundColor({bool isSelected = false}) {
     if (isSelected) {
-      return AppColor.primaryColor.withValues(alpha: 0.06);
+      return AppColor.primaryColor.withOpacity(0.06);
     } else {
-      return AppColor.colorMobileSearchFilterButton.withValues(alpha: 0.6);
+      return AppColor.colorMobileSearchFilterButton.withOpacity(0.6);
     }
   }
 
   Color getSuggestionBackgroundColor({bool isSelected = false}) {
     if (isSelected) {
-      return AppColor.primaryColor.withValues(alpha: 0.06);
+      return AppColor.primaryColor.withOpacity(0.06);
     } else {
-      return AppColor.colorSuggestionSearchFilterButton.withValues(alpha: 0.6);
+      return AppColor.colorSuggestionSearchFilterButton.withOpacity(0.6);
     }
   }
 

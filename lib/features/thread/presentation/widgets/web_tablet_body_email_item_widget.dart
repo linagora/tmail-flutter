@@ -66,7 +66,7 @@ class _WebTabletBodyEmailItemWidgetState
           EmailActionType.preview,
           widget.presentationEmail,
         ),
-        hoverColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.08),
+        hoverColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
         onHover: (value) {
           setState(() {
             _isHover = value;
@@ -262,7 +262,7 @@ class _WebTabletBodyEmailItemWidgetState
                               ? Theme.of(context)
                                   .colorScheme
                                   .outline
-                                  .withValues(alpha: 0.08)
+                                  .withOpacity(0.08)
                               : Colors.transparent,
                           tooltipMessage: AppLocalizations.of(context).more,
                           onTapActionAtPositionCallback: (position) {

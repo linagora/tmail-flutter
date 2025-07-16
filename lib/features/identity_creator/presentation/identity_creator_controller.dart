@@ -932,7 +932,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
           context,
           originalFile: fileInfo.toPlatformFile(),
           maxWidth: maxWidth.toInt()))
-      ).then((listPlatformFiles) => listPlatformFiles.nonNulls.toList());
+      ).then((listPlatformFiles) => listPlatformFiles.whereNotNull().toList());
 
       if (_isExceedMaxUploadSize(listCompressedImages.totalFilesSize)) {
         if (context.mounted) {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
@@ -280,7 +281,7 @@ class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestio
     }
     return _currentListEmailAddress
       .map((emailAddress) => emailAddress.email)
-      .nonNulls
+      .whereNotNull()
       .contains(inputEmail);
   }
 

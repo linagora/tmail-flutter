@@ -39,24 +39,24 @@ enum SendingEmailActionType {
   Color getButtonIconColor(ButtonState buttonState) {
     switch(this) {
       case SendingEmailActionType.delete:
-        return AppColor.colorDeletePermanentlyButton.withValues(alpha: buttonState.opacity);
+        return AppColor.colorDeletePermanentlyButton.withOpacity(buttonState.opacity);
       case SendingEmailActionType.edit:
       case SendingEmailActionType.resend:
-        return AppColor.primaryColor.withValues(alpha: buttonState.opacity);
+        return AppColor.primaryColor.withOpacity(buttonState.opacity);
       case SendingEmailActionType.create:
-        return Colors.transparent.withValues(alpha: buttonState.opacity);
+        return Colors.transparent.withOpacity(buttonState.opacity);
     }
   }
 
   Color getButtonTitleColor(ButtonState buttonState) {
     switch(this) {
       case SendingEmailActionType.delete:
-        return AppColor.colorDeletePermanentlyButton.withValues(alpha: buttonState.opacity);
+        return AppColor.colorDeletePermanentlyButton.withOpacity(buttonState.opacity);
       case SendingEmailActionType.edit:
       case SendingEmailActionType.resend:
-        return AppColor.primaryColor.withValues(alpha: buttonState.opacity);
+        return AppColor.primaryColor.withOpacity(buttonState.opacity);
       case SendingEmailActionType.create:
-        return Colors.transparent.withValues(alpha: buttonState.opacity);
+        return Colors.transparent.withOpacity(buttonState.opacity);
     }
   }
 }

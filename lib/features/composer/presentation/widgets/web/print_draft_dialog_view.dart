@@ -169,7 +169,7 @@ class _PrintDraftDialogViewState extends State<PrintDraftDialogView> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: LinearProgressIndicator(
-                          color: Colors.white.withValues(alpha: 0.6),
+                          color: Colors.white.withOpacity(0.6),
                           backgroundColor: AppColor.primaryColor,
                           borderRadius: const BorderRadius.all(Radius.circular(12)),
                         ),

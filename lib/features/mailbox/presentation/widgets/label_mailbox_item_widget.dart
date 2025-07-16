@@ -147,7 +147,7 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
                   ? const EdgeInsets.all(3)
                   : TrailingMailboxItemWidgetStyles.menuIconPadding,
               backgroundColor: _morePopupMenuVisible
-                  ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.08)
+                  ? Theme.of(context).colorScheme.outline.withOpacity(0.08)
                   : TrailingMailboxItemWidgetStyles.menuIconBackgroundColor,
               onTapActionAtPositionCallback: (position) {
                   if (!_responsiveUtils.isScreenWithShortestSide(context)) {

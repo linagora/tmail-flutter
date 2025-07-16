@@ -9,7 +9,7 @@ class DropZoneWidgetStyle {
 
   static const List<double> dashSize = [6, 3];
 
-  static Color backgroundColor = AppColor.colorDropZoneBackground.withValues(alpha: 0.7);
+  static Color backgroundColor = AppColor.colorDropZoneBackground.withOpacity(0.7);
   static const Color borderColor = AppColor.colorDropZoneBorder;
 
   static const EdgeInsetsGeometry padding = EdgeInsets.all(20);

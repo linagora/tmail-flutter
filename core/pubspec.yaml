@@ -75,7 +75,7 @@ dependencies:
 
   path_provider: 2.1.5
 
-  collection: 1.19.0
+  collection: 1.18.0
 
   intl: 0.19.0
 
@@ -93,7 +93,7 @@ dependencies:
 
   debounce_throttle: 2.0.0
 
-  win32: 5.9.0
+  win32: 5.5.1
 
   pull_to_refresh: 2.0.0
 
@@ -115,7 +115,6 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
-  device_info_plus_platform_interface: any
 flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

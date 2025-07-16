@@ -78,7 +78,7 @@ class HtmlAnalyzer {
             }
             return null;
           })
-          .nonNulls
+          .whereNotNull()
           .toList();
         log('HtmlAnalyzer::getListEventAction:OPEN_PAAS::listEventAction: $listEventAction');
         return listEventAction;
@@ -98,7 +98,7 @@ class HtmlAnalyzer {
             }
             return null;
           })
-          .nonNulls
+          .whereNotNull()
           .toList();
         log('HtmlAnalyzer::getListEventAction:GOOGLE::listEventAction: $listEventAction');
         return listEventAction;

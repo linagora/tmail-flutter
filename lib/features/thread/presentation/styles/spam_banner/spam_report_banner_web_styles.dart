@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class SpamReportBannerWebStyles {
   static const double borderRadius = 12;
-  static Color backgroundColor = AppColor.colorSpamReportBannerBackground.withValues(alpha: 0.12);
+  static Color backgroundColor = AppColor.colorSpamReportBannerBackground.withOpacity(0.12);
   static const Color strokeBorderColor = AppColor.colorSpamReportBannerStrokeBorder;
 
   static const EdgeInsetsGeometry bannerPadding = EdgeInsetsDirectional.symmetric(

@@ -1,4 +1,5 @@
 
+import 'package:collection/collection.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:model/email/attachment.dart';
@@ -13,12 +14,12 @@ extension ListAttachmentsExtension on List<Attachment> {
 
   Set<Id> get subtypeICSBlobIds => where((attachment) => attachment.type?.subtype == Attachment.eventICSSubtype)
     .map((attachment) => attachment.blobId)
-    .nonNulls
+    .whereNotNull()
     .toSet();
 
   Set<Id> get subtypeCalendarBlobIds => where((attachment) => attachment.type?.subtype == Attachment.eventCalendarSubtype)
     .map((attachment) => attachment.blobId)
-    .nonNulls
+    .whereNotNull()
     .toSet();
 
   Set<EmailBodyPart> toEmailBodyPart({String? charset}) => map((attachment) => attachment.toEmailBodyPart(charset: charset)).toSet();

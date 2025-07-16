@@ -2355,7 +2355,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       );
 
       await Get.generalDialog(
-        barrierColor: Colors.black.withValues(alpha: 0.8),
+        barrierColor: Colors.black.withOpacity(0.8),
         pageBuilder: (_, __, ___) {
           return PointerInterceptor(
             child: PDFViewer(

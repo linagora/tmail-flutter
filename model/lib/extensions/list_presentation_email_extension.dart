@@ -1,4 +1,5 @@
 
+import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -19,7 +20,7 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
     return where((email) => email.selectMode == SelectMode.ACTIVE).toList();
   }
 
-  List<EmailId> get listEmailIds => map((email) => email.id).nonNulls.toList();
+  List<EmailId> get listEmailIds => map((email) => email.id).whereNotNull().toList();
 
   Map<MailboxId, List<EmailId>> get emailIdsByMailboxId {
     final Map<MailboxId, List<EmailId>> result = {};

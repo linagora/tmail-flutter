@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -52,7 +53,7 @@ class EmailUtils {
     final allMatchesMailtoLinks = regExpMailtoLinks.allMatches(listUnsubscribe);
     final listMailtoLinks = allMatchesMailtoLinks
       .map((match) => match.group(0))
-      .nonNulls
+      .whereNotNull()
       .toList();
     log('EmailUtils::parsingUnsubscribe:listMailtoLinks: $listMailtoLinks');
 
@@ -60,7 +61,7 @@ class EmailUtils {
     final allMatchesHttpLinks = regExpHttpLinks.allMatches(listUnsubscribe);
     final listHttpLinks = allMatchesHttpLinks
       .map((match) => match.group(0))
-      .nonNulls
+      .whereNotNull()
       .toList();
     log('EmailUtils::parsingUnsubscribe:listHttpLinks: $listHttpLinks');
 

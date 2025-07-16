@@ -49,7 +49,7 @@ class UploadFileStateList {
       return false;
     }
     return _uploadingStateFiles
-        .nonNulls
+        .whereNotNull()
         .every((file) => file.uploadStatus == UploadFileStatus.succeed);
   }
 
