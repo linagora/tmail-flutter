@@ -441,6 +441,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               maxHtmlContentHeight: ConstantsUI.htmlContentMaxHeight,
                               onMailtoDelegateAction: controller.openMailToLink,
                               onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
+                              onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                               keepAlive: isInsideThreadDetailView,
                               enableQuoteToggle: isInsideThreadDetailView,
                             );
@@ -481,6 +482,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                       onMailtoDelegateAction: controller.openMailToLink,
                       keepAlive: isInsideThreadDetailView,
                       enableQuoteToggle: isInsideThreadDetailView,
+                      onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                     );
                   })
                 );

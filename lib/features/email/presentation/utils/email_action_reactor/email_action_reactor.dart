@@ -545,7 +545,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
           : EmailActionType.markAsStarred,
       if (additionalActions.contains(EmailActionType.moveToTrash) &&
           additionalActions.contains(EmailActionType.deletePermanently))
-        _canDeletePermanently(presentationEmail)
+        _canDeletePermanently(presentationEmail, mailboxContain)
           ? EmailActionType.deletePermanently
           : EmailActionType.moveToTrash,
       if (emailIsRead)
@@ -595,9 +595,14 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     }
   }
 
-  bool _canDeletePermanently(PresentationEmail email) {
+  bool _canDeletePermanently(
+    PresentationEmail email,
+    PresentationMailbox? mailboxContain,
+  ) {
     return email.mailboxContain?.isTrash
       ?? email.mailboxContain?.isSpam
+      ?? mailboxContain?.isTrash
+      ?? mailboxContain?.isSpam
       ?? false;
   }
 

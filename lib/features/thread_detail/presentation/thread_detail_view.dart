@@ -28,7 +28,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
   
   @override
   Widget build(BuildContext context) {
-    return SelectionArea(child: SafeArea(
+    final child = SelectionArea(child: SafeArea(
       child: Column(
         children: [
           Obx(() {
@@ -143,30 +143,18 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             );
           }),
           Obx(() {
-            if (showLoadingView(controller.viewState.value)) {
-              return _roundBottomPlaceHolder(
-                isDesktop: controller.responsiveUtils.isDesktop(context),
-              );
-            }
-
             final expandedEmailId = controller.currentExpandedEmailId.value;
             if (expandedEmailId == null) {
-              return _roundBottomPlaceHolder(
-                isDesktop: controller.responsiveUtils.isDesktop(context),
-              );
+              return const SizedBox.shrink();
             }
             final expandedPresentationEmail = controller.emailIdsPresentation[expandedEmailId];
             if (expandedPresentationEmail == null) {
-              return _roundBottomPlaceHolder(
-                isDesktop: controller.responsiveUtils.isDesktop(context),
-              );
+              return const SizedBox.shrink();
             }
 
             final currentEmailLoaded = controller.currentEmailLoaded.value;
             if (currentEmailLoaded == null) {
-              return _roundBottomPlaceHolder(
-                isDesktop: controller.responsiveUtils.isDesktop(context),
-              );
+              return const SizedBox.shrink();
             }
 
             return Padding(
@@ -208,6 +196,11 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
         ],
       ),
     ));
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+      child: child,
+    );
   }
 
   EdgeInsetsGeometry _padding(BuildContext context) {
@@ -223,21 +216,6 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     }
 
     return controller.mailboxDashBoardController.selectedMailbox.value;
-  }
-
-  Widget _roundBottomPlaceHolder({required bool isDesktop}) {
-    return Container(
-      height: 40,
-      margin: isDesktop
-        ? const EdgeInsetsDirectional.only(end: 16)
-        : EdgeInsets.zero,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(20),
-        ),
-      )
-    );
   }
 
   bool showLoadingView(Either<Failure, Success> viewState) {

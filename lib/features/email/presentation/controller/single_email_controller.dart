@@ -129,6 +129,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_page_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/update_cached_list_email_loaded.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -2417,5 +2418,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         SmartDialog.dismiss();
       }
     );
+  }
+
+  void onScrollHorizontalEnd(bool isLeftDirection) {
+    if (isLeftDirection) {
+      _threadDetailController?.onPreviousMobile();
+    } else {
+      _threadDetailController?.onNextMobile();
+    }
   }
 }

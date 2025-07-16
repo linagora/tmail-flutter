@@ -213,6 +213,7 @@ class ThreadDetailController extends BaseController {
     currentExpandedEmailId.value = null;
     currentEmailLoaded.value = null;
     cachedEmailLoaded.clear();
+    _threadGetDebouncer.value = null;
   }
 
   @override
