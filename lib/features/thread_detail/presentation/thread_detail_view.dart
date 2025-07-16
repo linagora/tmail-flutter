@@ -144,7 +144,9 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           }),
           Obx(() {
             if (showLoadingView(controller.viewState.value)) {
-              return const SizedBox.shrink();
+              return _roundBottomPlaceHolder(
+                isDesktop: controller.responsiveUtils.isDesktop(context),
+              );
             }
 
             final expandedEmailId = controller.currentExpandedEmailId.value;

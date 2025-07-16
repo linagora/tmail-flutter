@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/platform_info.dart';
@@ -13,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dash
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_detail_status_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_detail_status_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_manager.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/refresh_thread_detail_on_setting_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_setting_status.dart';
 
@@ -70,6 +70,15 @@ class ThreadDetailManager extends BaseController {
       );
     });
     ever(
+      currentDisplayedEmails,
+      (emails) {
+        if (mailboxDashBoardController.dashboardRoute.value != DashboardRoutes.threadDetailed) {
+          return;
+        }
+        initializeThreadDetailManager(emails);
+      },
+    );
+    ever(
       mailboxDashBoardController.dashboardRoute,
       (route) {
         final selectedEmail = mailboxDashBoardController.selectedEmail.value;
@@ -81,27 +90,7 @@ class ThreadDetailManager extends BaseController {
           return;
         }
 
-        availableThreadIds.value = currentDisplayedEmails
-            .map((presentationEmail) => presentationEmail.threadId)
-            .toSet()
-            .whereNotNull()
-            .toList();
-
-        if (isThreadDetailEnabled && selectedEmail.threadId != null) {
-          final currentThreadIndex = availableThreadIds.indexOf(
-            selectedEmail.threadId!,
-          );
-          currentMobilePageViewIndex.value = currentThreadIndex;
-        } else if (selectedEmail.id != null) {
-          final currentEmailIndex = currentDisplayedEmails.indexOf(
-            selectedEmail,
-          );
-          currentMobilePageViewIndex.value = currentEmailIndex;
-        }
-
-        pageController ??= PageController(
-          initialPage: currentMobilePageViewIndex.value,
-        );
+        initializeThreadDetailManager(currentDisplayedEmails);
       },
     );
   }

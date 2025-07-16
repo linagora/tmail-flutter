@@ -1,3 +1,4 @@
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -85,6 +86,23 @@ class ThreadDetailController extends BaseController {
     IndividualHeaderIdentifier.listUnsubscribeHeader.value,
   });
   final cachedEmailLoaded = <EmailId, EmailLoaded>{};
+  late final _threadGetDebouncer = Debouncer<ThreadId?>(
+    const Duration(milliseconds: 500),
+    initialValue: null,
+    checkEquality: true,
+    onChanged: (threadId) {
+      if (_validateLoadThread(threadId)) {
+        consumeState(_getEmailIdsByThreadIdInteractor.execute(
+          threadId!,
+          session!,
+          accountId!,
+          sentMailboxId!,
+          ownEmailAddress!,
+          selectedEmailId: mailboxDashBoardController.selectedEmail.value?.id,
+        ));
+      }
+    },
+  );
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final searchEmailController = Get.find<SearchEmailController>();
@@ -159,16 +177,7 @@ class ThreadDetailController extends BaseController {
       } else if (action is EmailMovedAction) {
         handleEmailMovedAction(action);
       } else if (action is LoadThreadDetailAfterSelectedEmailAction) {
-        if (_validateLoadThread(action)) {
-          consumeState(_getEmailIdsByThreadIdInteractor.execute(
-            action.threadId,
-            session!,
-            accountId!,
-            sentMailboxId!,
-            ownEmailAddress!,
-            selectedEmailId: mailboxDashBoardController.selectedEmail.value?.id,
-          ));
-        }
+        _threadGetDebouncer.value = action.threadId;
       }
       // Reset [threadDetailUIAction] to original value
       mailboxDashBoardController.dispatchThreadDetailUIAction(
@@ -186,9 +195,9 @@ class ThreadDetailController extends BaseController {
     });
   }
 
-  bool _validateLoadThread(LoadThreadDetailAfterSelectedEmailAction action) {
+  bool _validateLoadThread(ThreadId? threadId) {
     return mailboxDashBoardController.selectedEmail.value?.threadId != null &&
-        action.threadId == mailboxDashBoardController.selectedEmail.value?.threadId &&
+        threadId == mailboxDashBoardController.selectedEmail.value?.threadId &&
         session != null &&
         accountId != null &&
         sentMailboxId != null &&
