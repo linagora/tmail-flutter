@@ -85,7 +85,7 @@ void main() {
       expect(
         streamsConsumed,
         emitsInOrder([
-          Right(PreloadEmailIdsInThreadSuccess([selectedEmail.id!])),
+          Right(PreloadEmailIdsInThreadSuccess([selectedEmail.id!], threadId: ThreadId(Id('1')))),
           Right(PreloadEmailsByIdsSuccess([selectedEmail])),
         ]),
       );

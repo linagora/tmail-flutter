@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_detail_status_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
@@ -31,8 +32,10 @@ class ThreadDetailBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.put(ThreadDetailController(
+    Get.put(ThreadDetailManager(
       Get.find<GetThreadDetailStatusInteractor>(),
+    ));
+    Get.put(ThreadDetailController(
       Get.find<GetThreadByIdInteractor>(),
       Get.find<GetEmailsByIdsInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
