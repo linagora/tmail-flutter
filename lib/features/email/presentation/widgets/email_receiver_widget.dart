@@ -54,9 +54,9 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     if (PlatformInfo.isWeb) {
       if (_isDisplayAll) {
         return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
+            Flexible(
               child: Container(
                 constraints: BoxConstraints(maxHeight: _maxHeight),
                 child: ListView(
@@ -103,7 +103,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth: _getMaxWidth(context),
-                maxHeight: 34,
+                maxHeight: _responsiveUtils.isMobile(context) ? 22 : 28,
               ),
               child: ListView(
                 scrollDirection: Axis.horizontal,
@@ -147,9 +147,9 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     } else {
       if (_isDisplayAll) {
         return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
+              Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -189,6 +189,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
       } else {
         return Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               height: 40,
@@ -224,6 +225,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
               TMailButtonWidget.fromIcon(
                 icon: _imagePaths.icChevronDown,
                 backgroundColor: Colors.transparent,
+                padding: const EdgeInsets.all(3),
                 onTapActionCallback: () => setState(() => _isDisplayAll = true),
               )
           ]
@@ -238,8 +240,19 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         text: index == listEmailAddress.length - 1
           ? emailAddress.asString()
           : '${emailAddress.asString()},',
-        textStyle: ThemeUtils.textStyleBodyBody1(color: AppColor.steelGray400),
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
+        textStyle: ThemeUtils.textStyleHeadingHeadingSmall(
+          color: _responsiveUtils.isMobile(context) ? AppColor.gray6D7885 :  Colors.black,
+          fontWeight: FontWeight.w400,
+        ).copyWith(
+          fontSize: _responsiveUtils.isMobile(context) ? 14 : 17,
+          height: 1,
+          letterSpacing: _responsiveUtils.isMobile(context) ? -0.14 : -0.17,
+        ),
+        padding: EdgeInsetsDirectional.symmetric(
+          vertical: _responsiveUtils.isMobile(context) ? 2.5 : 3.5,
+          horizontal: 8,
+        ),
+        margin: EdgeInsetsDirectional.only(top: _responsiveUtils.isMobile(context) ? 1.5 : 2),
         backgroundColor: Colors.transparent,
         onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
         onLongPressActionCallback: () => AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress),
@@ -256,7 +269,10 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PrefixRecipientWidget(prefixEmailAddress: prefixEmailAddress),
+        PrefixRecipientWidget(
+          prefixEmailAddress: prefixEmailAddress,
+          responsiveUtils: _responsiveUtils,
+        ),
         Expanded(
           child: Wrap(
             children: _buildRecipientsTag(listEmailAddress: listEmailAddress)
@@ -272,8 +288,13 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     required List<EmailAddress> listEmailAddress,
   }) {
     return [
-      PrefixRecipientWidget(prefixEmailAddress: prefixEmailAddress),
-      ..._buildRecipientsTag(listEmailAddress: listEmailAddress)
+      PrefixRecipientWidget(
+        prefixEmailAddress: prefixEmailAddress,
+        responsiveUtils: _responsiveUtils,
+      ),
+      ..._buildRecipientsTag(listEmailAddress: listEmailAddress).map(
+        (child) => Align(alignment: AlignmentDirectional.topStart, child: child),
+      ),
     ];
   }
 

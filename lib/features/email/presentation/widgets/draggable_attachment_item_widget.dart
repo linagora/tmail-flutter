@@ -14,6 +14,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
   final OnDragAttachmentEnd? onDragEnd;
   final OnDownloadAttachmentFileAction? downloadAttachmentAction;
   final OnViewAttachmentFileAction? viewAttachmentAction;
+  final String? singleEmailControllerTag;
 
   const DraggableAttachmentItemWidget({
     Key? key,
@@ -22,6 +23,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
     this.onDragEnd,
     this.downloadAttachmentAction,
     this.viewAttachmentAction,
+    this.singleEmailControllerTag,
   }) : super(key: key);
 
   @override
@@ -35,6 +37,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
         attachment: attachment,
         downloadAttachmentAction: downloadAttachmentAction,
         viewAttachmentAction: viewAttachmentAction,
+        singleEmailControllerTag: singleEmailControllerTag,
       ),
     );
   }

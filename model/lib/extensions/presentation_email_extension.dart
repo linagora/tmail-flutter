@@ -111,6 +111,9 @@ extension PresentationEmailExtension on PresentationEmail {
       xPriorityHeader: xPriorityHeader,
       importanceHeader: importanceHeader,
       priorityHeader: priorityHeader,
+      listPostHeader: listPostHeader,
+      listUnsubscribeHeader: listUnsubscribeHeader,
+      threadId: threadId,
     );
   }
 

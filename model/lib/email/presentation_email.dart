@@ -13,9 +13,11 @@ import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.da
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/mail_priority_header.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
+import 'package:model/extensions/list_email_header_extension.dart';
 import 'package:model/extensions/media_type_nullable_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
@@ -38,6 +40,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   final Set<EmailAddress>? bcc;
   final Set<EmailAddress>? replyTo;
   final Map<MailboxId, bool>? mailboxIds;
+  final ThreadId? threadId;
   final SelectMode selectMode;
   final Uri? routeWeb;
   final PresentationMailbox? mailboxContain;
@@ -48,6 +51,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   final Map<IndividualHeaderIdentifier, String?>? xPriorityHeader;
   final Map<IndividualHeaderIdentifier, String?>? importanceHeader;
   final Map<IndividualHeaderIdentifier, String?>? priorityHeader;
+  final Map<IndividualHeaderIdentifier, String?>? listPostHeader;
+  final Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader;
+  final EmailInThreadStatus? emailInThreadStatus;
 
   PresentationEmail({
     this.id,
@@ -65,6 +71,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     this.bcc,
     this.replyTo,
     this.mailboxIds,
+    this.threadId,
     this.selectMode = SelectMode.INACTIVE,
     this.routeWeb,
     this.mailboxContain,
@@ -75,6 +82,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     this.xPriorityHeader,
     this.importanceHeader,
     this.priorityHeader,
+    this.listPostHeader,
+    this.listUnsubscribeHeader,
+    this.emailInThreadStatus,
   });
 
   String getSenderName() {
@@ -136,6 +146,12 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
 
   bool get hasCalendarEvent => headerCalendarEvent?[IndividualHeaderIdentifier.headerCalendarEvent]?.isNotEmpty == true;
 
+  String? get listPost => emailHeader?.toSet().listPost?.trim()
+    ?? listPostHeader?[IndividualHeaderIdentifier.listPostHeader]?.trim();
+
+  String? get listUnsubscribe => emailHeader?.toSet().listUnsubscribe?.trim()
+    ?? listUnsubscribeHeader?[IndividualHeaderIdentifier.listUnsubscribeHeader]?.trim();
+
   bool get isMarkAsImportant {
     final xPriority = xPriorityHeader?[IndividualHeaderIdentifier.xPriorityHeader]
       ?.trim()
@@ -183,6 +199,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     bcc,
     replyTo,
     mailboxIds,
+    threadId,
     selectMode,
     routeWeb,
     mailboxContain,
@@ -195,6 +212,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     xPriorityHeader,
     importanceHeader,
     priorityHeader,
+    listPostHeader,
+    listUnsubscribeHeader,
+    emailInThreadStatus,
   ];
 
   PresentationEmail copyWith({
@@ -213,6 +233,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     Set<EmailAddress>? bcc,
     Set<EmailAddress>? replyTo,
     Map<MailboxId, bool>? mailboxIds,
+    ThreadId? threadId,
     SelectMode? selectMode,
     Uri? routeWeb,
     PresentationMailbox? mailboxContain,
@@ -223,6 +244,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     Map<IndividualHeaderIdentifier, String?>? xPriorityHeader,
     Map<IndividualHeaderIdentifier, String?>? importanceHeader,
     Map<IndividualHeaderIdentifier, String?>? priorityHeader,
+    Map<IndividualHeaderIdentifier, String?>? listPostHeader,
+    Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader,
+    EmailInThreadStatus? emailInThreadStatus,
   }) {
     return PresentationEmail(
       id: id ?? this.id,
@@ -240,6 +264,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       bcc: bcc ?? this.bcc,
       replyTo: replyTo ?? this.replyTo,
       mailboxIds: mailboxIds ?? this.mailboxIds,
+      threadId: threadId ?? this.threadId,
       selectMode: selectMode ?? this.selectMode,
       routeWeb: routeWeb ?? this.routeWeb,
       mailboxContain: mailboxContain ?? this.mailboxContain,
@@ -250,6 +275,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       xPriorityHeader: xPriorityHeader ?? this.xPriorityHeader,
       importanceHeader: importanceHeader ?? this.importanceHeader,
       priorityHeader: priorityHeader ?? this.priorityHeader,
+      listPostHeader: listPostHeader ?? this.listPostHeader,
+      listUnsubscribeHeader: listUnsubscribeHeader ?? this.listUnsubscribeHeader,
+      emailInThreadStatus: emailInThreadStatus ?? this.emailInThreadStatus,
     );
   }
 }

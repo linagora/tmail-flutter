@@ -33,7 +33,9 @@ extension EmailExtension on Email {
 
   bool get withAttachments => hasAttachment == true;
 
-  String get listUnsubscribe => headers.listUnsubscribe;
+  String get listUnsubscribe => headers.listUnsubscribe
+    ?? listUnsubscribeHeader?[IndividualHeaderIdentifier.listUnsubscribeHeader]
+    ?? '';
 
   bool get hasRequestReadReceipt => headers.readReceiptHasBeenRequested ||
       headerMdn?.containsKey(IndividualHeaderIdentifier.headerMdn) == true;
@@ -42,7 +44,9 @@ extension EmailExtension on Email {
 
   String get sMimeStatusHeaderParsed => sMimeStatusHeader?[IndividualHeaderIdentifier.sMimeStatusHeader]?.trim() ?? '';
 
-  String get listPost => headers.listPost.trim();
+  String get listPost => headers.listPost?.trim()
+    ?? listPostHeader?[IndividualHeaderIdentifier.listPostHeader]?.trim()
+    ?? '';
 
   IdentityId? get identityIdFromHeader {
     final rawIdentityId = identityHeader?[IndividualHeaderIdentifier.identityHeader];
@@ -116,6 +120,7 @@ extension EmailExtension on Email {
       bcc: bcc,
       replyTo: replyTo,
       mailboxIds: mailboxIds,
+      threadId: threadId,
       selectMode: selectMode,
       emailHeader: headers?.toList(),
       bodyValues: bodyValues,
@@ -124,6 +129,8 @@ extension EmailExtension on Email {
       xPriorityHeader: xPriorityHeader,
       importanceHeader: importanceHeader,
       priorityHeader: priorityHeader,
+      listPostHeader: listPostHeader,
+      listUnsubscribeHeader: listUnsubscribeHeader,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
@@ -146,6 +153,7 @@ extension EmailExtension on Email {
       bcc: updatedProperties.contain(EmailProperty.bcc) ? newEmail.bcc : bcc,
       replyTo: updatedProperties.contain(EmailProperty.replyTo) ? newEmail.replyTo : replyTo,
       mailboxIds: updatedProperties.contain(EmailProperty.mailboxIds) ? newEmail.mailboxIds : mailboxIds,
+      threadId: updatedProperties.contain(EmailProperty.threadId) ? newEmail.threadId : threadId,
       headerCalendarEvent: updatedProperties.contain(IndividualHeaderIdentifier.headerCalendarEvent.value) ? newEmail.headerCalendarEvent : headerCalendarEvent,
       xPriorityHeader: updatedProperties.contain(IndividualHeaderIdentifier.xPriorityHeader.value)
         ? newEmail.xPriorityHeader
@@ -156,6 +164,12 @@ extension EmailExtension on Email {
       priorityHeader: updatedProperties.contain(IndividualHeaderIdentifier.priorityHeader.value)
         ? newEmail.priorityHeader
         : priorityHeader,
+      listPostHeader: updatedProperties.contain(IndividualHeaderIdentifier.listPostHeader.value)
+        ? newEmail.listPostHeader
+        : listPostHeader,
+      listUnsubscribeHeader: updatedProperties.contain(IndividualHeaderIdentifier.listUnsubscribeHeader.value)
+        ? newEmail.listUnsubscribeHeader
+        : listUnsubscribeHeader,
     );
   }
 
@@ -244,6 +258,8 @@ extension EmailExtension on Email {
     Map<IndividualHeaderIdentifier, String?>? xPriorityHeader,
     Map<IndividualHeaderIdentifier, String?>? importanceHeader,
     Map<IndividualHeaderIdentifier, String?>? priorityHeader,
+    Map<IndividualHeaderIdentifier, String?>? listPostHeader,
+    Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader,
   }) {
     return Email(
       id: id ?? this.id,
@@ -281,6 +297,8 @@ extension EmailExtension on Email {
       xPriorityHeader: xPriorityHeader ?? this.xPriorityHeader,
       importanceHeader: importanceHeader ?? this.importanceHeader,
       priorityHeader: priorityHeader ?? this.priorityHeader,
+      listPostHeader: listPostHeader ?? this.listPostHeader,
+      listUnsubscribeHeader: listUnsubscribeHeader ?? this.listUnsubscribeHeader,
     );
   }
 }

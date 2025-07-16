@@ -39,7 +39,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_i
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
@@ -81,7 +80,6 @@ const fallbackGenerators = {
   MockSpec<DownloadAttachmentsInteractor>(),
   MockSpec<DeviceManager>(),
   MockSpec<ExportAttachmentInteractor>(),
-  MockSpec<MoveToMailboxInteractor>(),
   MockSpec<MarkAsStarEmailInteractor>(),
   MockSpec<DownloadAttachmentForWebInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
@@ -125,7 +123,6 @@ void main() {
   final downloadAttachmentsInteractor = MockDownloadAttachmentsInteractor();
   final deviceManager = MockDeviceManager();
   final exportAttachmentInteractor = MockExportAttachmentInteractor();
-  final moveToMailboxInteractor = MockMoveToMailboxInteractor();
   final markAsStarEmailInteractor = MockMarkAsStarEmailInteractor();
   final downloadAttachmentForWebInteractor =
       MockDownloadAttachmentForWebInteractor();
@@ -204,7 +201,6 @@ void main() {
       downloadAttachmentsInteractor,
       deviceManager,
       exportAttachmentInteractor,
-      moveToMailboxInteractor,
       markAsStarEmailInteractor,
       downloadAttachmentForWebInteractor,
       getAllIdentitiesInteractor,
@@ -239,14 +235,14 @@ void main() {
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
-        singleEmailController.onInit();
         Get.put<AcceptCalendarEventInteractor>(acceptCalendarEventInteractor);
-          mailboxDashboardController.accountId.refresh();
-          singleEmailController.handleSuccessViewState(
-            ParseCalendarEventSuccess([
-              BlobCalendarEvent(
-                blobId: blobId,
-                calendarEventList: [calendarEvent])]));
+        singleEmailController.onInit();
+        mailboxDashboardController.accountId.refresh();
+        singleEmailController.handleSuccessViewState(
+          ParseCalendarEventSuccess([
+            BlobCalendarEvent(
+              blobId: blobId,
+              calendarEventList: [calendarEvent])]));
 
         // act
         singleEmailController.onCalendarEventReplyAction(EventActionType.yes, emailId);
@@ -267,8 +263,8 @@ void main() {
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
-        singleEmailController.onInit();
         Get.put<MaybeCalendarEventInteractor>(maybeCalendarEventInteractor);
+        singleEmailController.onInit();
         mailboxDashboardController.accountId.refresh();
         singleEmailController.handleSuccessViewState(
           ParseCalendarEventSuccess([
@@ -295,8 +291,8 @@ void main() {
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
-        singleEmailController.onInit();
         Get.put<RejectCalendarEventInteractor>(rejectCalendarEventInteractor);
+        singleEmailController.onInit();
         mailboxDashboardController.accountId.refresh();
         singleEmailController.handleSuccessViewState(
           ParseCalendarEventSuccess([

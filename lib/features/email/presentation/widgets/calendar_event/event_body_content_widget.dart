@@ -1,3 +1,4 @@
+import 'dart:math';
 
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/event_description_detail_widget_styles.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -17,12 +19,16 @@ class EventBodyContentWidget extends StatelessWidget {
   final String content;
   final bool? isDraggableAppActive;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
+  final ScrollController? scrollController;
+  final bool isInsideThreadDetailView;
 
   const EventBodyContentWidget({
     super.key,
     required this.content,
     this.isDraggableAppActive,
     this.onMailtoDelegateAction,
+    this.scrollController,
+    this.isInsideThreadDetailView = false,
   });
 
   @override
@@ -45,17 +51,25 @@ class EventBodyContentWidget extends StatelessWidget {
         children: [
           if (PlatformInfo.isWeb)
             Container(
-              constraints: const BoxConstraints(maxHeight: EventDescriptionDetailWidgetStyles.maxHeight),
+              constraints: isInsideThreadDetailView
+                  ? null
+                  : const BoxConstraints(
+                      maxHeight: EventDescriptionDetailWidgetStyles.maxHeight,
+                    ),
               padding: const EdgeInsetsDirectional.only(end: EventDescriptionDetailWidgetStyles.webContentPadding),
               child: LayoutBuilder(builder: (context, constraints) {
                 return Stack(
                   children: [
                     HtmlContentViewerOnWeb(
                       widthContent: constraints.maxWidth,
-                      heightContent: constraints.maxHeight,
+                      heightContent: min(
+                        constraints.maxHeight,
+                        EmailViewStyles.initialHtmlViewHeight,
+                      ),
                       contentHtml: content,
                       mailtoDelegate: onMailtoDelegateAction,
                       direction: AppUtils.getCurrentDirection(context),
+                      scrollController: scrollController,
                     ),
                     if (isDraggableAppActive == true)
                       PointerInterceptor(

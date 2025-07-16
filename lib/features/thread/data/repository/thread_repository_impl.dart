@@ -273,7 +273,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
   ) async* {
     log('ThreadRepositoryImpl::refreshChanges(): $currentState');
-    await _synchronizeCacheWithChanges(
+    final emailChangeResponse = await _synchronizeCacheWithChanges(
       session,
       accountId,
       currentState,
@@ -305,9 +305,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
         propertiesCreated: propertiesCreated,
       );
 
-      yield networkEmailResponse;
+      yield networkEmailResponse.copyWith(emailChangeResponse: emailChangeResponse);
     } else {
-      yield newEmailResponse;
+      yield newEmailResponse.copyWith(emailChangeResponse: emailChangeResponse);
     }
   }
 
@@ -396,7 +396,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     return listEmailIdDeleted;
   }
 
-  Future<void> _synchronizeCacheWithChanges(
+  Future<EmailChangeResponse?> _synchronizeCacheWithChanges(
     Session session,
     AccountId accountId,
     jmap.State currentState,
@@ -452,6 +452,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
         await _updateState(accountId, session.username, emailChangeResponse.newStateEmail!);
       }
     }
+
+    return emailChangeResponse;
   }
 
   @override

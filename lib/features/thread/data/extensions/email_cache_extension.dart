@@ -32,6 +32,7 @@ extension EmailCacheExtension on EmailCache {
       mailboxIds: mailboxIds != null
         ? Map.fromIterables(mailboxIds!.keys.map((value) => MailboxId(Id(value))), mailboxIds!.values)
         : null,
+      threadId: threadId == null ? null : ThreadId(Id(threadId!)),
       headerCalendarEvent: headerCalendarEvent != null
         ? Map.fromIterables(headerCalendarEvent!.keys.map((value) => IndividualHeaderIdentifier(value)), headerCalendarEvent!.values)
         : null,
