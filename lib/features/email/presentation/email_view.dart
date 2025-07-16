@@ -214,7 +214,7 @@ class EmailView extends GetWidget<SingleEmailController> {
       );
     }
 
-    if (controller.currentEmail == null || !isInsideThreadDetailView) {
+    if (controller.currentEmail == null || isFirstEmailInThreadDetail) {
       return const BoxDecoration(color: Colors.white);
     }
 
@@ -278,35 +278,38 @@ class EmailView extends GetWidget<SingleEmailController> {
           onEmailActionClick: (presentationEmail, actionType) => controller.handleEmailAction(context, presentationEmail, actionType),
           isInsideThreadDetailView: isInsideThreadDetailView,
           emailLoaded: controller.currentEmailLoaded.value,
-          onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
-            mailboxContain: controller.getMailboxContain(presentationEmail),
-            presentationEmail: presentationEmail,
-            position: position,
-            responsiveUtils: controller.responsiveUtils,
-            imagePaths: controller.imagePaths,
-            username: controller.session?.username,
-            handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
-            additionalActions: [
-              EmailActionType.forward,
-              EmailActionType.replyAll,
-              EmailActionType.replyToList,
-              EmailActionType.printAll,
-              if (controller.responsiveUtils.isMobile(context))
-                EmailActionType.moveToMailbox,
-              if (!controller.responsiveUtils.isDesktop(context)) ...[
-                EmailActionType.markAsStarred,
-                EmailActionType.unMarkAsStarred,
-                EmailActionType.moveToTrash,
-                EmailActionType.deletePermanently,
-              ],
-            ],
-            emailIsRead: presentationEmail.hasRead,
-          ),
+          onMoreActionClick: controller.isOnlyEmailInThread
+            ? null
+            : (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
+                mailboxContain: controller.getMailboxContain(presentationEmail),
+                presentationEmail: presentationEmail,
+                position: position,
+                responsiveUtils: controller.responsiveUtils,
+                imagePaths: controller.imagePaths,
+                username: controller.session?.username,
+                handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
+                additionalActions: [
+                  EmailActionType.forward,
+                  EmailActionType.replyAll,
+                  EmailActionType.replyToList,
+                  EmailActionType.printAll,
+                  if (controller.responsiveUtils.isMobile(context))
+                    EmailActionType.moveToMailbox,
+                  if (!controller.responsiveUtils.isDesktop(context)) ...[
+                    EmailActionType.markAsStarred,
+                    EmailActionType.unMarkAsStarred,
+                    EmailActionType.moveToTrash,
+                    EmailActionType.deletePermanently,
+                  ],
+                ],
+                emailIsRead: presentationEmail.hasRead,
+              ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,
           mailboxContain: presentationEmail.findMailboxContain(
             controller.mailboxDashBoardController.mapMailboxById,
           ),
+          isOnlyEmailInThread: controller.isOnlyEmailInThread,
         )),
         Obx(() => MailUnsubscribedBanner(
           presentationEmail: controller.currentEmail,
@@ -449,6 +452,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               maxHtmlContentHeight: ConstantsUI.htmlContentMaxHeight,
                               onMailtoDelegateAction: controller.openMailToLink,
                               onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
+                              onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                               keepAlive: isInsideThreadDetailView,
                               enableQuoteToggle: isInsideThreadDetailView,
                             );
@@ -489,6 +493,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                       onMailtoDelegateAction: controller.openMailToLink,
                       keepAlive: isInsideThreadDetailView,
                       enableQuoteToggle: isInsideThreadDetailView,
+                      onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                     );
                   })
                 );

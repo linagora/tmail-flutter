@@ -127,6 +127,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_page_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/update_cached_list_email_loaded.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -203,6 +204,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       ? null
       : _threadDetailController?.emailIdsPresentation[_currentEmailId];
   }
+
+  bool get isOnlyEmailInThread =>
+      _threadDetailController?.emailIdsPresentation.length == 1;
 
   bool get calendarEventProcessing => viewState.value.fold(
     (failure) => false,
@@ -680,14 +684,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailUnsubscribe.value = null;
       }
     }
-    if (currentEmail?.threadId != null &&
-        currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id) {
-      mailboxDashBoardController.dispatchThreadDetailUIAction(
-        LoadThreadDetailAfterSelectedEmailAction(
-          currentEmail!.threadId!,
-        )
-      );
-    }
+    _loadThreadOnGetEmailContentSuccess();
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
@@ -758,9 +755,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if ((_threadDetailController?.emailIdsPresentation.keys.length ?? 0) > 1 == true) {
       _jumpScrollViewToTopOfEmail();
     }
+    _loadThreadOnGetEmailContentSuccess();
+  }
+
+  void _loadThreadOnGetEmailContentSuccess() {
     if (currentEmail?.threadId != null &&
         currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id &&
-        success is! GetEmailContentFromThreadCacheSuccess) {
+        _threadDetailController?.loadThreadOnThreadChanged == true) {
+      _threadDetailController?.loadThreadOnThreadChanged = false;
       mailboxDashBoardController.dispatchThreadDetailUIAction(
         LoadThreadDetailAfterSelectedEmailAction(
           currentEmail!.threadId!,
@@ -2390,5 +2392,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         SmartDialog.dismiss();
       }
     );
+  }
+
+  void onScrollHorizontalEnd(bool isLeftDirection) {
+    if (isLeftDirection) {
+      _threadDetailController?.onPreviousMobile();
+    } else {
+      _threadDetailController?.onNextMobile();
+    }
   }
 }
