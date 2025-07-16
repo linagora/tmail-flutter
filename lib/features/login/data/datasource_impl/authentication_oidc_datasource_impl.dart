@@ -140,8 +140,8 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
 
   @override
   Future<String> getAuthenticationInfo() {
-    return Future.sync(() async {
-      return await _sessionStorageManager.get(
+    return Future.sync(() {
+      return _sessionStorageManager.get(
         OIDCConstant.authResponseKey,
       );
     }).catchError(_cacheExceptionThrower.throwException);
@@ -156,8 +156,8 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
 
   @override
   Future<void> removeAuthDestinationUrl() {
-    return Future.sync(() async {
-      return await _sessionStorageManager.remove(
+    return Future.sync(() {
+      return _sessionStorageManager.remove(
         LoginConstants.AUTH_DESTINATION_KEY,
       );
     }).catchError(_cacheExceptionThrower.throwException);
