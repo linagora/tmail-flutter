@@ -5,7 +5,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -42,6 +41,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   final OnTapAvatarActionClick? onTapAvatarActionClick;
   final PresentationMailbox? mailboxContain;
   final bool showUnreadVisualization;
+  final bool isOnlyEmailInThread;
 
   const InformationSenderAndReceiverBuilder({
     Key? key,
@@ -61,6 +61,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     this.onTapAvatarActionClick,
     this.mailboxContain,
     this.showUnreadVisualization = false,
+    this.isOnlyEmailInThread = false,
   }) : super(key: key);
 
   @override
@@ -164,9 +165,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         SizedBox(
                           height: IconUtils.defaultIconSize,
                           child: OverflowBox(
-                            maxHeight: PlatformInfo.isIOS
-                              ? EmailViewAppBarWidgetStyles.heightIOS(context, responsiveUtils)
-                              : EmailViewAppBarWidgetStyles.height,
+                            maxHeight: EmailViewAppBarWidgetStyles.height,
                             fit: OverflowBoxFit.deferToChild,
                             child: EmailViewAppBarWidget(
                               key: const Key('email_view_app_bar_widget'),
@@ -183,6 +182,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                               iconPadding: const EdgeInsets.all(8),
                               iconMargin: EdgeInsets.zero,
                               padding: EdgeInsets.zero,
+                              isOnlyEmailInThread: isOnlyEmailInThread,
                             ),
                           ),
                         ),
