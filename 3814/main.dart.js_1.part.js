@@ -5,10 +5,10 @@
   s[d][e].push({p: "main.dart.js_1", e: "beginPart"});
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
-  var J, A, C,
-  B = {
+  var J, A, B,
+  C = {
     SloganBuilder$(arrangedByHorizontal, logo, paddingText, sizeLogo, text, textStyle) {
-      return new B.SloganBuilder(true, text, textStyle, logo, sizeLogo, paddingText, null);
+      return new C.SloganBuilder(true, text, textStyle, logo, sizeLogo, paddingText, null);
     },
     SloganBuilder: function SloganBuilder(t0, t1, t2, t3, t4, t5, t6) {
       var _ = this;
@@ -106,7 +106,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.context = t1;
     },
     LoginView$() {
-      return new B.LoginView(null);
+      return new C.LoginView(null);
     },
     LoginView: function LoginView(t0) {
       this.key = t0;
@@ -148,7 +148,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.fillColor = _.errorTextStyle = _.errorText = _.errorBorder = _.enabledBorder = _.contentPadding = _.hintStyle = _.hintText = _.labelText = _.prefixText = null;
     },
     LoginMessageWidget$(formType, viewState) {
-      return new B.LoginMessageWidget(formType, viewState, A.getBinding(null, type$.ToastManager), null);
+      return new C.LoginMessageWidget(formType, viewState, A.getBinding(null, type$.ToastManager), null);
     },
     LoginMessageWidget: function LoginMessageWidget(t0, t1, t2, t3) {
       var _ = this;
@@ -209,63 +209,63 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     }
   },
-  D, G, E, F;
+  D, G, F, E;
   J = holdersList[1];
   A = holdersList[0];
-  C = holdersList[2];
-  B = hunkHelpers.updateHolder(holdersList[3], B);
-  D = holdersList[14];
-  G = holdersList[15];
-  E = holdersList[10];
+  B = holdersList[2];
+  C = hunkHelpers.updateHolder(holdersList[3], C);
+  D = holdersList[15];
+  G = holdersList[9];
   F = holdersList[16];
-  B.SloganBuilder.prototype = {
+  E = holdersList[11];
+  C.SloganBuilder.prototype = {
     build$1(context) {
       var _this = this, _null = null,
         t1 = A.BorderRadius$all(new A.Radius(8, 8)),
         t2 = A._setArrayType([], type$.JSArray_Widget);
       t2.push(_this.buildImage$2$imagePath$imageSize(_this.logo, _this.sizeLogo));
       t2.push(new A.Padding(_this.paddingText, A.Text$(_this.text, _null, _null, _null, _null, _null, _null, _null, _null, _this.textStyle, _null, _null, _null, _null, _null), _null));
-      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, t1, true, new A.Padding(C.EdgeInsets_0_0_0_0, A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, 8, _null, _null, _null), C.Clip_0, _null, 0, _null, _null, _null, _null, _null, C.MaterialType_4);
+      return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, t1, true, new A.Padding(B.EdgeInsets_0_0_0_0, A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, 8, _null, _null, _null), B.Clip_0, _null, 0, _null, _null, _null, _null, _null, B.MaterialType_4);
     }
   };
-  B._SloganBuilder_StatelessWidget_ImageLoaderMixin.prototype = {};
-  B._AutofillScopeTextInputConfiguration.prototype = {
+  C._SloganBuilder_StatelessWidget_ImageLoaderMixin.prototype = {};
+  C._AutofillScopeTextInputConfiguration.prototype = {
     toJson$0() {
       var result = this.super$TextInputConfiguration$toJson(),
         t1 = this.allConfigurations;
-      t1 = A.MappedIterable_MappedIterable(t1, new B._AutofillScopeTextInputConfiguration_toJson_closure(), t1.$ti._eval$1("Iterable.E"), type$.Map_String_dynamic);
+      t1 = A.MappedIterable_MappedIterable(t1, new C._AutofillScopeTextInputConfiguration_toJson_closure(), t1.$ti._eval$1("Iterable.E"), type$.Map_String_dynamic);
       result.$indexSet(0, "fields", A.List_List$of(t1, false, A._instanceType(t1)._eval$1("Iterable.E")));
       return result;
     }
   };
-  B.AutofillScopeMixin.prototype = {
+  C.AutofillScopeMixin.prototype = {
     attach$2(trigger, configuration) {
       var t1 = this.get$autofillClients(),
         connection = A.TextInputConnection$_(trigger);
-      $.$get$TextInput__instance()._attach$2(connection, new B._AutofillScopeTextInputConfiguration(new A.MappedIterable(t1, new B.AutofillScopeMixin_attach_closure(), t1.$ti._eval$1("MappedIterable<1,TextInputConfiguration>")), configuration.viewId, configuration.inputType, false, configuration.obscureText, configuration.autocorrect, configuration.autofillConfiguration, configuration.smartDashesType, configuration.smartQuotesType, true, true, configuration.actionLabel, configuration.inputAction, configuration.textCapitalization, configuration.keyboardAppearance, true, C.List_empty, false));
+      $.$get$TextInput__instance()._attach$2(connection, new C._AutofillScopeTextInputConfiguration(new A.MappedIterable(t1, new C.AutofillScopeMixin_attach_closure(), t1.$ti._eval$1("MappedIterable<1,TextInputConfiguration>")), configuration.viewId, configuration.inputType, false, configuration.obscureText, configuration.autocorrect, configuration.autofillConfiguration, configuration.smartDashesType, configuration.smartQuotesType, true, true, configuration.actionLabel, configuration.inputAction, configuration.textCapitalization, configuration.keyboardAppearance, true, B.List_empty, false));
       return connection;
     }
   };
-  B.AutofillContextAction.prototype = {
+  C.AutofillContextAction.prototype = {
     _enumToString$0() {
       return "AutofillContextAction." + this._name;
     }
   };
-  B.AutofillGroup.prototype = {
+  C.AutofillGroup.prototype = {
     createState$0() {
-      return new B.AutofillGroupState(A.LinkedHashMap_LinkedHashMap$_empty(type$.String, type$.AutofillClient));
+      return new C.AutofillGroupState(A.LinkedHashMap_LinkedHashMap$_empty(type$.String, type$.AutofillClient));
     }
   };
-  B.AutofillGroupState.prototype = {
+  C.AutofillGroupState.prototype = {
     getAutofillClient$1(autofillId) {
       return this._clients.$index(0, autofillId);
     },
     get$autofillClients() {
       var t1 = this._clients.get$values(0);
-      return new A.WhereIterable(t1, new B.AutofillGroupState_autofillClients_closure(), A._instanceType(t1)._eval$1("WhereIterable<Iterable.E>"));
+      return new A.WhereIterable(t1, new C.AutofillGroupState_autofillClients_closure(), A._instanceType(t1)._eval$1("WhereIterable<Iterable.E>"));
     },
     register$1(_, client) {
-      this._clients.putIfAbsent$2(0, client.get$autofillId(), new B.AutofillGroupState_register_closure(client));
+      this._clients.putIfAbsent$2(0, client.get$autofillId(), new C.AutofillGroupState_register_closure(client));
     },
     unregister$1(_, autofillId) {
       this._clients.remove$1(0, autofillId);
@@ -277,7 +277,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._isTopmostAutofillGroup = A.AutofillGroup_maybeOf(t1) == null;
     },
     build$1(context) {
-      return new B._AutofillScope(this, this._widget.child, null);
+      return new C._AutofillScope(this, this._widget.child, null);
     },
     dispose$0() {
       this.super$State$dispose();
@@ -286,23 +286,23 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._widget.toString;
       switch (0) {
         case 0:
-          B.TextInput_finishAutofillContext(true);
+          C.TextInput_finishAutofillContext(true);
           break;
       }
     }
   };
-  B._AutofillScope.prototype = {
+  C._AutofillScope.prototype = {
     updateShouldNotify$1(old) {
       return this._scope !== old._scope;
     }
   };
-  B._AutofillGroupState_State_AutofillScopeMixin.prototype = {};
-  B.WidgetOrderTraversalPolicy.prototype = {
+  C._AutofillGroupState_State_AutofillScopeMixin.prototype = {};
+  C.WidgetOrderTraversalPolicy.prototype = {
     sortDescendants$2(descendants, currentNode) {
       return descendants;
     }
   };
-  B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin.prototype = {
+  C._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin.prototype = {
     invalidateScopeData$1(node) {
       this.super$FocusTraversalPolicy$invalidateScopeData(node);
       this.DirectionalFocusTraversalPolicyMixin__policyData.remove$1(0, node);
@@ -315,32 +315,32 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = t1.history;
         if (!!t1.fixed$length)
           A.throwExpression(A.UnsupportedError$("removeWhere"));
-        C.JSArray_methods._removeWhere$2(t1, new B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure(node), true);
+        B.JSArray_methods._removeWhere$2(t1, new C._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure(node), true);
       }
     }
   };
-  B.RecentItemTileWidget.prototype = {
+  C.RecentItemTileWidget.prototype = {
     build$1(context) {
       var _null = null;
-      return new A.Padding(C.EdgeInsets_12_12_12_12, A.Row$(A._setArrayType([A.SvgPicture$asset("assets/images/ic_clock_sb.svg", C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null, _null), C.SizedBox_8_null_null_null, A.Expanded$(A.Text$(this._getTitle$1(this.item), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null);
+      return new A.Padding(B.EdgeInsets_12_12_12_12, A.Row$(A._setArrayType([A.SvgPicture$asset("assets/images/ic_clock_sb.svg", B.Alignment_0_0, _null, B.BoxFit_1, _null, _null, _null, _null), B.SizedBox_8_null_null_null, A.Expanded$(A.Text$(this._getTitle$1(this.item), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 15, B.FontWeight_3_400), _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null);
     },
     _getTitle$1(item) {
       return item.username;
     }
   };
-  B.BaseLoginView.prototype = {
+  C.BaseLoginView.prototype = {
     buildLoginButton$1(context) {
       var t2, _this = this, _null = null,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).toString;
-      t1 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data;
-      t2 = A.ElevatedButton_styleFrom(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, C.Color_4294967295, _null, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_UKi0), _null, _null, _null, _null);
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-      return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6nc4, _null, _null, _null, _null, _null), _null, _null, C.IconAlignment_0, D.ValueKey_loginSubmitForm, _null, _null, _null, new B.BaseLoginView_buildLoginButton_closure(_this, context), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, G.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t1.size._dx);
+      t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
+      t2 = A.ElevatedButton_styleFrom(_null, _null, B.Color_4278221567, _null, _null, _null, _null, _null, _null, B.Color_4294967295, _null, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), D.BorderSide_UKi0), _null, _null, _null, _null);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$2$color$fontSize(B.Color_4294967295, 16), _null, _null, _null, _null, _null), _null, _null, B.IconAlignment_0, D.ValueKey_loginSubmitForm, _null, _null, _null, new C.BaseLoginView_buildLoginButton_closure(_this, context), _null, t2), B.Clip_0, _null, _null, _null, _null, 48, _null, F.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t1.size._dx);
     },
     buildInputCredentialForm$1(context) {
-      return new B.AutofillGroup(new A.Padding(C.EdgeInsetsDirectional_24_0_24_0, A.FocusTraversalGroup$(A.Column$(A._setArrayType([this.buildUserNameInput$1(context), C.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new B.WidgetOrderTraversalPolicy(A.LinkedHashMap_LinkedHashMap$_empty(type$.FocusScopeNode, type$._DirectionalPolicyData), A.focus_traversal_FocusTraversalPolicy_defaultTraversalRequestFocusCallback$closure())), null), D.ValueKey_credential_input_form);
+      return new C.AutofillGroup(new A.Padding(B.EdgeInsetsDirectional_24_0_24_0, A.FocusTraversalGroup$(A.Column$(A._setArrayType([this.buildUserNameInput$1(context), B.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), new C.WidgetOrderTraversalPolicy(A.LinkedHashMap_LinkedHashMap$_empty(type$.FocusScopeNode, type$._DirectionalPolicyData), A.focus_traversal_FocusTraversalPolicy_defaultTraversalRequestFocusCallback$closure())), null), D.ValueKey_credential_input_form);
     },
     buildUserNameInput$1(context) {
       var t2, t3, t4, t5, t6, t7, _this = this, _null = null, _s5_ = "email",
@@ -353,17 +353,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = t2._as(t1.get(_this)).get$onUsernameChange();
       A.Expando__checkType(_this);
       t5 = t2._as(t1.get(_this)).userNameFocusNode;
-      t6 = new B.LoginInputDecorationBuilder();
+      t6 = new C.LoginInputDecorationBuilder();
       t7 = type$.AppLocalizations;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t7).toString;
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t7).toString;
       t6.labelText = A.Intl__message(_s5_, _null, _s5_, _null, _null);
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t7).toString;
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t7).toString;
       t6.hintText = A.Intl__message(_s5_, _null, _s5_, _null, _null);
       t6 = t6.build$0();
       A.Expando__checkType(_this);
       t7 = t2._as(t1.get(_this)).get$getAllRecentLoginUsernameAction();
       A.Expando__checkType(_this);
-      return A.TypeAheadFormFieldBuilder$(false, D.List_email, t3, C.Duration_300000, t6, t5, true, true, true, new B.BaseLoginView_buildUserNameInput_closure(), D.ValueKey_login_username_input, C.TextInputType_5_null_null, new B.BaseLoginView_buildUserNameInput_closure0(), t2._as(t1.get(_this)).get$selectUsernameFromSuggestion(), t4, t7, C.TextInputAction_6, type$.RecentLoginUsername);
+      return A.TypeAheadFormFieldBuilder$(false, D.List_email, t3, B.Duration_300000, t6, t5, true, true, true, new C.BaseLoginView_buildUserNameInput_closure(), D.ValueKey_login_username_input, B.TextInputType_5_null_null, new C.BaseLoginView_buildUserNameInput_closure0(), t2._as(t1.get(_this)).get$selectUsernameFromSuggestion(), t4, t7, B.TextInputAction_6, type$.RecentLoginUsername);
     },
     buildPasswordInput$1(context) {
       var t2, t3, t4, t5, _this = this,
@@ -373,120 +373,122 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1._jsWeakMap;
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
       t3 = t2._as(t1.get(_this)).passwordInputController;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       t4 = A.Intl__message(_s8_, null, _s8_, null, null);
       A.Expando__checkType(_this);
       t5 = t2._as(t1.get(_this)).passFocusNode;
       A.Expando__checkType(_this);
-      return new B.LoginTextInputBuilder(t4, C.TextInputAction_2, t3, t5, D.List_password, t2._as(t1.get(_this)).get$onPasswordChange(), new B.BaseLoginView_buildPasswordInput_closure(_this, context), D.ValueKey_login_password_input);
+      return new C.LoginTextInputBuilder(t4, B.TextInputAction_2, t3, t5, D.List_password, t2._as(t1.get(_this)).get$onPasswordChange(), new C.BaseLoginView_buildPasswordInput_closure(_this, context), D.ValueKey_login_password_input);
     }
   };
-  B.LoginView.prototype = {
+  C.LoginView.prototype = {
     build$1(context) {
       var t2, _this = this, _null = null,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       t1 = A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).responsiveUtils;
       t2 = _this._buildMobileForm$1(context);
-      return A.Scaffold$(_null, C.Color_4294967295, A.Center$(A.SingleChildScrollView$(A.ResponsiveWidget$(_this._buildWebForm$1(context), _null, _null, t2, t1, _null, _null), _null, _null, _null, _null, _null, C.Axis_1), _null, _null), _null, _null, true, _null, _null, _null, _null);
+      return A.Scaffold$(_null, B.Color_4294967295, A.Center$(A.SingleChildScrollView$(A.ResponsiveWidget$(_this._buildWebForm$1(context), _null, _null, t2, t1, _null, _null), _null, _null, _null, _null, _null, B.Axis_1), _null, _null), _null, _null, true, _null, _null, _null, _null);
     },
     _buildMobileForm$1(context) {
       var t2, t3, _this = this, _null = null,
         t1 = E.ApplicationLogoWidthTextWidget$(_null, _null);
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       t2 = type$.JSArray_Widget;
-      t1 = A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_67_0_0, t1, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_69t26, _null, _null, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildMobileForm_closure(_this), _null), new A.Obx(new B.LoginView__buildMobileForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_HfL, F.ApplicationVersionWidget_Rm0], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
+      t1 = A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_67_0_0, t1, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 32, B.FontWeight_8_900), _null, _null, _null, _null, _null), _null), new A.Obx(new C.LoginView__buildMobileForm_closure(_this), _null), new A.Obx(new C.LoginView__buildMobileForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_HfL, D.ApplicationVersionWidget_Rm0], t2), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
       t3 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(_this)).toString;
-      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_oA88, t1, _null), A.Positioned$fill(24, new A.Align(C.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, _null, 97), _null))], t2), _null);
+      return new A.Stack(B.AlignmentDirectional_m1_m1, _null, B.StackFit_0, B.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_oA87, t1, _null), A.Positioned$fill(24, new A.Align(B.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", B.Alignment_0_0, _null, B.BoxFit_0, 44, _null, _null, 97), _null))], t2), _null);
     },
     _buildWebForm$1(context) {
       var t2, t3, t4, t5, t6, t7, t8, t9, _this = this, _null = null,
         t1 = type$.AppLocalizations;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-      t2 = A.Text$(A.Intl__message("JMAP-based\ncollaborative team mail solution", _null, "jmapBasedMailSolution", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_69t24, _null, _null, _null, _null, _null);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
+      t2 = A.Text$(A.Intl__message("JMAP-based\ncollaborative team mail solution", _null, "jmapBasedMailSolution", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 36, B.FontWeight_8_900), _null, _null, _null, _null, _null);
       t3 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       t3 = t3._jsWeakMap;
       t4 = A._instanceType(_this)._eval$1("GetWidget.S");
       t4._as(t3.get(_this)).toString;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-      t5 = B.SloganBuilder$(true, "assets/images/ic_jmap_standard.svg", C.EdgeInsets_12_0_0_0, 48, A.Intl__message("JMAP standard", _null, "jmapStandard", _null, _null), D.TextStyle_69t25);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
+      t5 = C.SloganBuilder$(true, "assets/images/ic_jmap_standard.svg", B.EdgeInsets_12_0_0_0, 48, A.Intl__message("JMAP standard", _null, "jmapStandard", _null, _null), B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 24, B.FontWeight_3_400));
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-      t6 = B.SloganBuilder$(true, "assets/images/ic_encrypted.svg", C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Encrypted mailbox", _null, "encryptedMailbox", _null, _null), D.TextStyle_69t25);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
+      t6 = C.SloganBuilder$(true, "assets/images/ic_encrypted.svg", B.EdgeInsets_12_0_0_0, 48, A.Intl__message("Encrypted mailbox", _null, "encryptedMailbox", _null, _null), B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 24, B.FontWeight_3_400));
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-      t7 = B.SloganBuilder$(true, "assets/images/ic_team.svg", C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Manage email as a team", _null, "manageEmailAsATeam", _null, _null), D.TextStyle_69t25);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
+      t7 = C.SloganBuilder$(true, "assets/images/ic_team.svg", B.EdgeInsets_12_0_0_0, 48, A.Intl__message("Manage email as a team", _null, "manageEmailAsATeam", _null, _null), B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 24, B.FontWeight_3_400));
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-      t8 = B.SloganBuilder$(true, "assets/images/ic_integration.svg", C.EdgeInsets_12_0_0_0, 48, A.Intl__message("Multiple integrations", _null, "multipleIntegrations", _null, _null), D.TextStyle_69t25);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
+      t8 = C.SloganBuilder$(true, "assets/images/ic_integration.svg", B.EdgeInsets_12_0_0_0, 48, A.Intl__message("Multiple integrations", _null, "multipleIntegrations", _null, _null), B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 24, B.FontWeight_3_400));
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
       t9 = type$.JSArray_Widget;
-      t8 = A.Column$(A._setArrayType([t2, new A.Padding(D.EdgeInsets_0_24_0_0, t5, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t6, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t7, _null), new A.Padding(C.EdgeInsets_0_16_0_0, t8, _null), new A.Padding(D.EdgeInsets_0_44_0_0, A.SvgPicture$asset("assets/images/ic_login_graphic.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null, _null), _null)], t9), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, C.VerticalDirection_1);
+      t8 = A.Column$(A._setArrayType([t2, new A.Padding(D.EdgeInsets_0_24_0_0, t5, _null), new A.Padding(B.EdgeInsets_0_16_0_0, t6, _null), new A.Padding(B.EdgeInsets_0_16_0_0, t7, _null), new A.Padding(B.EdgeInsets_0_16_0_0, t8, _null), new A.Padding(D.EdgeInsets_0_44_0_0, A.SvgPicture$asset("assets/images/ic_login_graphic.svg", B.Alignment_0_0, _null, B.BoxFit_0, _null, _null, _null, _null), _null)], t9), B.CrossAxisAlignment_0, B.MainAxisAlignment_2, B.MainAxisSize_1, B.VerticalDirection_1);
       t7 = E.ApplicationLogoWidthTextWidget$(_null, _null);
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-      t7 = A.Container$(_null, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_66_0_0, t7, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_69t26, _null, _null, _null, _null, _null), _null), new A.Obx(new B.LoginView__buildWebForm_closure(_this), _null), new A.Obx(new B.LoginView__buildWebForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_HfL, F.ApplicationVersionWidget_Rm0], t9), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_OJ5, _null, 684, _null, _null, D.EdgeInsets_31_0_31_0, _null, _null, 458);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
+      t7 = A.Container$(_null, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_66_0_0, t7, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 32, B.FontWeight_8_900), _null, _null, _null, _null, _null), _null), new A.Obx(new C.LoginView__buildWebForm_closure(_this), _null), new A.Obx(new C.LoginView__buildWebForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_HfL, D.ApplicationVersionWidget_Rm0], t9), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_2, _null, _null, D.ShapeDecoration_OJ5, _null, 684, _null, _null, D.EdgeInsets_31_0_31_0, _null, _null, 458);
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
-      return new A.Padding(D.EdgeInsets_0_60_0_60, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsets_0_0_86_0, t8, _null), A.Column$(A._setArrayType([t7, new A.Padding(D.EdgeInsets_0_44_0_10, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, _null, 97), _null)], t9), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1)], t9), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
+      return new A.Padding(D.EdgeInsets_0_60_0_60, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsets_0_0_86_0, t8, _null), A.Column$(A._setArrayType([t7, new A.Padding(D.EdgeInsets_0_44_0_10, A.SvgPicture$asset("assets/images/power_by_linagora.svg", B.Alignment_0_0, _null, B.BoxFit_0, 44, _null, _null, 97), _null)], t9), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1)], t9), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_2, B.MainAxisSize_1, _null), _null);
     },
     _buildLoadingProgress$1(context) {
-      return new A.Obx(new B.LoginView__buildLoadingProgress_closure(this, context), null);
+      return new A.Obx(new C.LoginView__buildLoadingProgress_closure(this, context), null);
     }
   };
-  B.PrivacyLinkWidget.prototype = {
+  C.PrivacyLinkWidget.prototype = {
     build$1(context) {
-      var t2, t3, _null = null,
+      var t2, t3, t4, _null = null,
         t1 = type$.AppLocalizations;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-      t2 = A.Text$(A.Intl__message("By continuing, you're agreeing to our", _null, "byContinuingYouAreAgreeingToOur", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_8aB3, _null, _null, _null, _null, _null);
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
+      t2 = A.Text$(A.Intl__message("By continuing, you're agreeing to our", _null, "byContinuingYouAreAgreeingToOur", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4286680217, 14, B.FontWeight_3_400), _null, _null, _null, _null, _null);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
       t1 = A.Intl__message("Privacy policy", _null, "privacyPolicy", _null, _null);
-      t3 = A.TapGestureRecognizer$(_null, _null);
-      t3.onTap = new B.PrivacyLinkWidget_build_closure(this);
-      return A.Column$(A._setArrayType([t2, A.RichText$(_null, _null, _null, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(_null, _null, _null, _null, _null, t3, _null, _null, F.TextStyle_OkG3, t1), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1);
+      t3 = B.TextStyle_cJC.copyWith$2$color$fontSize(B.Color_4278221567, 14);
+      t4 = A.TapGestureRecognizer$(_null, _null);
+      t4.onTap = new C.PrivacyLinkWidget_build_closure(this);
+      return A.Column$(A._setArrayType([t2, A.RichText$(_null, _null, _null, B.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(_null, _null, _null, _null, _null, t4, _null, _null, t3, t1), B.TextAlign_4, _null, _null, B._LinearTextScaler_1, B.TextWidthBasis_0)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
     }
   };
-  B.LoginInputDecorationBuilder.prototype = {
+  C.LoginInputDecorationBuilder.prototype = {
     build$0() {
-      var t2, t3, t4, t5, t6, _this = this, _null = null,
+      var t2, t3, t4, t5, t6, t7, _this = this, _null = null,
         t1 = _this.enabledBorder;
       if (t1 == null)
         t1 = D.OutlineInputBorder_AuK;
       t2 = _this.prefixText;
       t3 = _this.labelText;
-      t4 = _this.hintText;
-      t5 = _this.hintStyle;
-      if (t5 == null)
-        t5 = D.TextStyle_QBc;
-      t6 = _this.contentPadding;
-      return A.InputDecoration$(_null, _null, _null, t6 == null ? D.EdgeInsetsDirectional_25_15_25_15 : t6, _null, _null, _null, _null, true, t1, _null, C.OutlineInputBorder_en2, _null, _null, _null, C.Color_4294112245, true, _null, C.FloatingLabelBehavior_0, _null, _null, D.OutlineInputBorder_ieL1, _null, _null, _null, _null, _null, _null, _null, t5, t4, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_2bL0, t3, _null, _null, _null, _null, _null, t2, _null, _null, _null, _null, _null, _null, _null);
+      t4 = B.TextStyle_cJC.copyWith$2$color$fontSize(B.Color_4286482075, 16);
+      t5 = _this.hintText;
+      t6 = _this.hintStyle;
+      if (t6 == null)
+        t6 = B.TextStyle_cJC.copyWith$2$color$fontSize(B.Color_4285887861, 16);
+      t7 = _this.contentPadding;
+      return A.InputDecoration$(_null, _null, _null, t7 == null ? D.EdgeInsetsDirectional_25_15_25_15 : t7, _null, _null, _null, _null, true, t1, _null, B.OutlineInputBorder_en2, _null, _null, _null, B.Color_4294112245, true, _null, B.FloatingLabelBehavior_0, _null, _null, D.OutlineInputBorder_ieL1, _null, _null, _null, _null, _null, _null, _null, t6, t5, _null, _null, _null, _null, _null, _null, _null, t4, t3, _null, _null, _null, _null, _null, t2, _null, _null, _null, _null, _null, _null, _null);
     }
   };
-  B.LoginMessageWidget.prototype = {
+  C.LoginMessageWidget.prototype = {
     build$1(context) {
       var _null = null,
         t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data.size._dx < 600 ? 280 : 320,
         t2 = this.viewState;
-      return new A.Padding(D.EdgeInsetsDirectional_58_11_58_36, new A.SizedBox(t1, _null, A.Text$(t2.fold$2(0, new B.LoginMessageWidget_build_closure(this, context), new B.LoginMessageWidget_build_closure0(this, context)), _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, t2.fold$2(0, new B.LoginMessageWidget_build_closure1(), new B.LoginMessageWidget_build_closure2()), _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null, _null, _null), _null), _null);
+      return new A.Padding(D.EdgeInsetsDirectional_58_11_58_36, new A.SizedBox(t1, _null, A.Text$(t2.fold$2(0, new C.LoginMessageWidget_build_closure(this, context), new C.LoginMessageWidget_build_closure0(this, context)), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(t2.fold$2(0, new C.LoginMessageWidget_build_closure1(), new C.LoginMessageWidget_build_closure2()), 15, B.FontWeight_3_400), B.TextAlign_2, _null, _null, _null, _null), _null), _null);
     }
   };
-  B.LoginTextInputBuilder.prototype = {
+  C.LoginTextInputBuilder.prototype = {
     createState$0() {
       $.$get$Get();
       var t1 = $.GetInstance__getInstance;
       if (t1 == null)
-        t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B._LoginTextInputBuilderState(t1.find$1$1$tag(0, null, type$.ImagePaths));
+        t1 = $.GetInstance__getInstance = B.C_GetInstance;
+      return new C._LoginTextInputBuilderState(t1.find$1$1$tag(0, null, type$.ImagePaths));
     }
   };
-  B._LoginTextInputBuilderState.prototype = {
+  C._LoginTextInputBuilderState.prototype = {
     initState$0() {
       var t1, _this = this;
       _this.super$State$initState();
@@ -496,74 +498,77 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this.___LoginTextInputBuilderState__controller_A = t1.controller;
     },
     build$1(context) {
-      var t5, t6, t7, t8, t9, _this = this, _null = null,
+      var t5, t6, t7, t8, t9, t10, _this = this, _null = null,
         t1 = _this._widget,
         t2 = t1.onSubmitted,
         t3 = t1.onTextChange,
         t4 = _this.___LoginTextInputBuilderState__obscureText_A;
       t4 === $ && A.throwUnnamedLateFieldNI();
       t5 = t1.textInputAction;
-      t6 = t1.autofillHints;
-      t7 = _this.___LoginTextInputBuilderState__controller_A;
-      t7 === $ && A.throwUnnamedLateFieldNI();
-      t8 = t1.focusNode;
-      t9 = new B.LoginInputDecorationBuilder();
-      t9.hintText = t1.hintText;
-      t9.contentPadding = D.EdgeInsetsDirectional_25_15_40_15;
-      t9.hintStyle = C.TextStyle_8aB4;
-      t9.errorTextStyle = D.TextStyle_8eb1;
-      t9.enabledBorder = D.OutlineInputBorder_AuK;
-      t9.errorBorder = C.OutlineInputBorder_en2;
-      t5 = A._setArrayType([A.TextFormFieldBuilder$(false, t6, t7, t9.build$0(), t8, _null, t4, t3, t2, t5, C.TextStyle_8aB4)], type$.JSArray_Widget);
+      t1 = t1.autofillHints;
+      t6 = _this.___LoginTextInputBuilderState__controller_A;
+      t6 === $ && A.throwUnnamedLateFieldNI();
+      t7 = B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4286680217, 16, B.FontWeight_3_400);
+      t8 = _this._widget;
+      t9 = t8.focusNode;
+      t10 = new C.LoginInputDecorationBuilder();
+      t10.hintText = t8.hintText;
+      t10.contentPadding = D.EdgeInsetsDirectional_25_15_40_15;
+      t10.hintStyle = B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4286680217, 16, B.FontWeight_3_400);
+      B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4286680217, 16, B.FontWeight_3_400);
+      t10.errorTextStyle = B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_4293281350, 13, B.FontWeight_3_400);
+      t10.enabledBorder = D.OutlineInputBorder_AuK;
+      t10.errorBorder = B.OutlineInputBorder_en2;
+      t7 = A._setArrayType([A.TextFormFieldBuilder$(false, t1, t6, t10.build$0(), t9, _null, t4, t3, t2, t5, t7)], type$.JSArray_Widget);
       _this._widget.toString;
       t1 = _this.___LoginTextInputBuilderState__obscureText_A ? "assets/images/ic_eye.svg" : "assets/images/ic_eye_off.svg";
-      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, _null, t1, _null, 18, _null, C.EdgeInsetsDirectional_0_0_4_0, 1 / 0, _null, new B._LoginTextInputBuilderState_build_closure(_this), _null, _null, _null));
-      return new A.Stack(C.AlignmentDirectional_1_0, _null, C.StackFit_0, C.Clip_1, t5, _null);
+      t7.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, t1, _null, 18, _null, B.EdgeInsetsDirectional_0_0_4_0, 1 / 0, _null, new C._LoginTextInputBuilderState_build_closure(_this), _null, _null, _null));
+      return new A.Stack(B.AlignmentDirectional_1_0, _null, B.StackFit_0, B.Clip_1, t7, _null);
     },
     dispose$0() {
       this._widget.toString;
       this.super$State$dispose();
     }
   };
-  B.TryAgainButton.prototype = {
+  C.TryAgainButton.prototype = {
     build$1(context) {
       var _null = null;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-      return A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_4278221567, 10, _null, G.EdgeInsetsDirectional_24_0_24_16, 1 / 0, _null, 1 / 0, 0, _null, this.onRetry, C.EdgeInsets_0_12_0_12, A.Intl__message("Try again", _null, "tryAgain", _null, _null), C.TextAlign_2, D.TextStyle_6nc4, _null, A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      return A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_4278221567, 10, _null, F.EdgeInsetsDirectional_24_0_24_16, 1 / 0, _null, 1 / 0, 0, _null, this.onRetry, B.EdgeInsets_0_12_0_12, A.Intl__message("Try again", _null, "tryAgain", _null, _null), B.TextAlign_2, B.TextStyle_cJC.copyWith$2$color$fontSize(B.Color_4294967295, 16), _null, A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["LoginMessageWidget()", "RecentItemTileWidget<RecentLoginUsername>(BuildContext,RecentLoginUsername)"]);
-  B._AutofillScopeTextInputConfiguration_toJson_closure.prototype = {
+  C._AutofillScopeTextInputConfiguration_toJson_closure.prototype = {
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1880
+    $signature: 1864
   };
-  B.AutofillScopeMixin_attach_closure.prototype = {
+  C.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1881
+    $signature: 1865
   };
-  B.AutofillGroupState_autofillClients_closure.prototype = {
+  C.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1882
+    $signature: 1866
   };
-  B.AutofillGroupState_register_closure.prototype = {
+  C.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1883
+    $signature: 1867
   };
-  B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure.prototype = {
+  C._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure.prototype = {
     call$1(entry) {
       return entry.node === this.node;
     },
-    $signature: 495
+    $signature: 491
   };
-  B.BaseLoginView_buildLoginButton_closure.prototype = {
+  C.BaseLoginView_buildLoginButton_closure.prototype = {
     call$0() {
       var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
@@ -572,24 +577,24 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
-  B.BaseLoginView_buildUserNameInput_closure.prototype = {
+  C.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(_, loginUsername) {
       var t1;
       $.$get$Get();
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
-        t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.RecentItemTileWidget(loginUsername, t1.find$1$1$tag(0, null, type$.ImagePaths), null, type$.RecentItemTileWidget_RecentLoginUsername);
+        t1 = $.GetInstance__getInstance = B.C_GetInstance;
+      return new C.RecentItemTileWidget(loginUsername, t1.find$1$1$tag(0, null, type$.ImagePaths), null, type$.RecentItemTileWidget_RecentLoginUsername);
     },
     $signature: typesOffset + 1
   };
-  B.BaseLoginView_buildUserNameInput_closure0.prototype = {
+  C.BaseLoginView_buildUserNameInput_closure0.prototype = {
     call$1(context) {
-      return C.SizedBox_null_null_null_null;
+      return B.SizedBox_null_null_null_null;
     },
-    $signature: 553
+    $signature: 552
   };
-  B.BaseLoginView_buildPasswordInput_closure.prototype = {
+  C.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
       var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
@@ -598,7 +603,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 10
   };
-  B.LoginView__buildMobileForm_closure.prototype = {
+  C.LoginView__buildMobileForm_closure.prototype = {
     call$0() {
       var t3, t4,
         t1 = this.$this,
@@ -608,11 +613,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).loginFormType.get$value(0);
       A.Expando__checkType(t1);
-      return B.LoginMessageWidget$(t4, t3._as(t2.get(t1)).viewState.get$value(0));
+      return C.LoginMessageWidget$(t4, t3._as(t2.get(t1)).viewState.get$value(0));
     },
     $signature: typesOffset + 0
   };
-  B.LoginView__buildMobileForm_closure0.prototype = {
+  C.LoginView__buildMobileForm_closure0.prototype = {
     call$0() {
       var t3, t4,
         t1 = this.$this,
@@ -621,20 +626,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       switch (t3._as(t2.get(t1)).loginFormType.get$value(0)) {
-        case C.LoginFormType_3:
+        case B.LoginFormType_3:
           return t1.buildInputCredentialForm$1(this.context);
-        case C.LoginFormType_1:
+        case B.LoginFormType_1:
           A.Expando__checkType(t1);
           t4 = t3._as(t2.get(t1)).get$retryCheckOidc();
           A.Expando__checkType(t1);
-          return new B.TryAgainButton(t4, t3._as(t2.get(t1)).responsiveUtils, null);
+          return new C.TryAgainButton(t4, t3._as(t2.get(t1)).responsiveUtils, null);
         default:
-          return C.SizedBox_0_0_null_null;
+          return B.SizedBox_0_0_null_null;
       }
     },
     $signature: 4
   };
-  B.LoginView__buildWebForm_closure.prototype = {
+  C.LoginView__buildWebForm_closure.prototype = {
     call$0() {
       var t3, t4,
         t1 = this.$this,
@@ -644,11 +649,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).loginFormType.get$value(0);
       A.Expando__checkType(t1);
-      return B.LoginMessageWidget$(t4, t3._as(t2.get(t1)).viewState.get$value(0));
+      return C.LoginMessageWidget$(t4, t3._as(t2.get(t1)).viewState.get$value(0));
     },
     $signature: typesOffset + 0
   };
-  B.LoginView__buildWebForm_closure0.prototype = {
+  C.LoginView__buildWebForm_closure0.prototype = {
     call$0() {
       var t3, t4,
         t1 = this.$this,
@@ -657,45 +662,45 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       switch (t3._as(t2.get(t1)).loginFormType.get$value(0)) {
-        case C.LoginFormType_3:
+        case B.LoginFormType_3:
           return t1.buildInputCredentialForm$1(this.context);
-        case C.LoginFormType_1:
+        case B.LoginFormType_1:
           A.Expando__checkType(t1);
           t4 = t3._as(t2.get(t1)).get$retryCheckOidc();
           A.Expando__checkType(t1);
-          return new B.TryAgainButton(t4, t3._as(t2.get(t1)).responsiveUtils, null);
+          return new C.TryAgainButton(t4, t3._as(t2.get(t1)).responsiveUtils, null);
         default:
-          return C.SizedBox_0_0_null_null;
+          return B.SizedBox_0_0_null_null;
       }
     },
     $signature: 4
   };
-  B.LoginView__buildLoadingProgress_closure.prototype = {
+  C.LoginView__buildLoadingProgress_closure.prototype = {
     call$0() {
       var t3,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t3 = this.context;
-      return J.fold$2$ax(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).viewState.get$value(0), new B.LoginView__buildLoadingProgress__closure(t1, t3), new B.LoginView__buildLoadingProgress__closure0(t1, t3));
+      return J.fold$2$ax(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).viewState.get$value(0), new C.LoginView__buildLoadingProgress__closure(t1, t3), new C.LoginView__buildLoadingProgress__closure0(t1, t3));
     },
     $signature: 4
   };
-  B.LoginView__buildLoadingProgress__closure.prototype = {
+  C.LoginView__buildLoadingProgress__closure.prototype = {
     call$1(failure) {
       var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       switch (A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loginFormType.get$value(0)) {
-        case C.LoginFormType_3:
+        case B.LoginFormType_3:
           return t1.buildLoginButton$1(this.context);
         default:
-          return C.SizedBox_0_0_null_null;
+          return B.SizedBox_0_0_null_null;
       }
     },
     $signature: 92
   };
-  B.LoginView__buildLoadingProgress__closure0.prototype = {
+  C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
       var t1, t2;
       if (success instanceof A.LoadingState)
@@ -705,93 +710,93 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = $.$get$GetWidget__cache();
         A.Expando__checkType(t1);
         switch (A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loginFormType.get$value(0)) {
-          case C.LoginFormType_3:
+          case B.LoginFormType_3:
             return t1.buildLoginButton$1(this.context);
           default:
-            return C.SizedBox_0_0_null_null;
+            return B.SizedBox_0_0_null_null;
         }
       }
     },
-    $signature: 53
+    $signature: 51
   };
-  B.PrivacyLinkWidget_build_closure.prototype = {
+  C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
       return A.AppUtils_launchLink("https://github.com/linagora/tmail-flutter/blob/master/privacy.md");
     },
     $signature: 0
   };
-  B.LoginMessageWidget_build_closure.prototype = {
+  C.LoginMessageWidget_build_closure.prototype = {
     call$1(failure) {
       var _this = this, _null = null,
         _s40_ = "Unknown error occurred, please try again",
         _s12_ = "unknownError",
         t1 = failure instanceof A.FeatureFailure;
       if (t1 && failure.exception instanceof A.NoNetworkError) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("You are offline. It looks like you are not connected.", _null, "youAreOffline", _null, _null);
       }
       if (failure instanceof A.GetOIDCConfigurationFailure) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("Can not verify SSO configuration, please check with your system administrator", _null, "canNotVerifySSOConfiguration", _null, _null);
       } else if (failure instanceof A.GetTokenOIDCFailure && failure.exception instanceof A.NoSuitableBrowserForOIDCException) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("No suitable browser for OIDC, please check with your system administrator", _null, "noSuitableBrowserForOIDC", _null, _null);
       } else if (t1) {
         t1 = _this.$this._toastManager;
         t1 = t1 == null ? _null : t1.getMessageByException$3$useDefaultMessage(_this.context, failure.exception, true);
         if (t1 == null) {
-          A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+          A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
           t1 = A.Intl__message(_s40_, _null, _s12_, _null, _null);
         }
         return t1;
       } else {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message(_s40_, _null, _s12_, _null, _null);
       }
     },
-    $signature: 1884
+    $signature: 1868
   };
-  B.LoginMessageWidget_build_closure0.prototype = {
+  C.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
       var _this = this, _null = null,
         t1 = _this.$this.formType;
-      if (t1 === C.LoginFormType_3) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      if (t1 === B.LoginFormType_3) {
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("Enter your credentials to sign in", _null, "loginInputCredentialMessage", _null, _null);
-      } else if (t1 === C.LoginFormType_5) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      } else if (t1 === B.LoginFormType_5) {
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("To login and access your message please enter your email", _null, "dnsLookupLoginMessage", _null, _null);
-      } else if (t1 === C.LoginFormType_4) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      } else if (t1 === B.LoginFormType_4) {
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("Enter your password to sign in", _null, "enterYourPasswordToSignIn", _null, _null);
-      } else if (t1 === C.LoginFormType_2) {
-        A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      } else if (t1 === B.LoginFormType_2) {
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("To login and access your message please connect to your JMAP server", _null, "loginInputUrlMessage", _null, _null);
       } else
         return "";
     },
-    $signature: 1885
+    $signature: 1869
   };
-  B.LoginMessageWidget_build_closure1.prototype = {
+  C.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
-      return C.Color_4293281350;
+      return B.Color_4293281350;
     },
-    $signature: 1886
+    $signature: 1870
   };
-  B.LoginMessageWidget_build_closure2.prototype = {
+  C.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
-      return C.Color_4278190080;
+      return B.Color_4278190080;
     },
-    $signature: 1887
+    $signature: 1871
   };
-  B._LoginTextInputBuilderState_build_closure.prototype = {
+  C._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
       var t1 = this.$this;
-      t1.setState$1(new B._LoginTextInputBuilderState_build__closure(t1));
+      t1.setState$1(new C._LoginTextInputBuilderState_build__closure(t1));
     },
     $signature: 0
   };
-  B._LoginTextInputBuilderState_build__closure.prototype = {
+  C._LoginTextInputBuilderState_build__closure.prototype = {
     call$0() {
       var t1 = this.$this,
         t2 = t1.___LoginTextInputBuilderState__obscureText_A;
@@ -805,26 +810,26 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _mixinHard = hunkHelpers.mixinHard,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
-    _inheritMany(A.StatelessWidget, [B._SloganBuilder_StatelessWidget_ImageLoaderMixin, B.RecentItemTileWidget, B.PrivacyLinkWidget, B.LoginMessageWidget, B.TryAgainButton]);
-    _inherit(B.SloganBuilder, B._SloganBuilder_StatelessWidget_ImageLoaderMixin);
-    _inherit(B._AutofillScopeTextInputConfiguration, A.TextInputConfiguration);
-    _inheritMany(A.Closure, [B._AutofillScopeTextInputConfiguration_toJson_closure, B.AutofillScopeMixin_attach_closure, B.AutofillGroupState_autofillClients_closure, B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure, B.BaseLoginView_buildUserNameInput_closure0, B.BaseLoginView_buildPasswordInput_closure, B.LoginView__buildLoadingProgress__closure, B.LoginView__buildLoadingProgress__closure0, B.LoginMessageWidget_build_closure, B.LoginMessageWidget_build_closure0, B.LoginMessageWidget_build_closure1, B.LoginMessageWidget_build_closure2]);
-    _inherit(B.AutofillScopeMixin, A.Object);
-    _inherit(B.AutofillContextAction, A._Enum);
-    _inheritMany(A.StatefulWidget, [B.AutofillGroup, B.LoginTextInputBuilder]);
-    _inheritMany(A.State0, [B._AutofillGroupState_State_AutofillScopeMixin, B._LoginTextInputBuilderState]);
-    _inherit(B.AutofillGroupState, B._AutofillGroupState_State_AutofillScopeMixin);
-    _inheritMany(A.Closure0Args, [B.AutofillGroupState_register_closure, B.BaseLoginView_buildLoginButton_closure, B.LoginView__buildMobileForm_closure, B.LoginView__buildMobileForm_closure0, B.LoginView__buildWebForm_closure, B.LoginView__buildWebForm_closure0, B.LoginView__buildLoadingProgress_closure, B.PrivacyLinkWidget_build_closure, B._LoginTextInputBuilderState_build_closure, B._LoginTextInputBuilderState_build__closure]);
-    _inherit(B._AutofillScope, A.InheritedWidget);
-    _inherit(B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin, A.FocusTraversalPolicy);
-    _inherit(B.WidgetOrderTraversalPolicy, B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin);
-    _inherit(B.BaseLoginView, A.GetWidget);
-    _inherit(B.BaseLoginView_buildUserNameInput_closure, A.Closure2Args);
-    _inherit(B.LoginView, B.BaseLoginView);
-    _inherit(B.LoginInputDecorationBuilder, A.InputDecorationBuilder);
-    _mixin(B._SloganBuilder_StatelessWidget_ImageLoaderMixin, E.ImageLoaderMixin);
-    _mixin(B._AutofillGroupState_State_AutofillScopeMixin, B.AutofillScopeMixin);
-    _mixinHard(B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin, A.DirectionalFocusTraversalPolicyMixin);
+    _inheritMany(A.StatelessWidget, [C._SloganBuilder_StatelessWidget_ImageLoaderMixin, C.RecentItemTileWidget, C.PrivacyLinkWidget, C.LoginMessageWidget, C.TryAgainButton]);
+    _inherit(C.SloganBuilder, C._SloganBuilder_StatelessWidget_ImageLoaderMixin);
+    _inherit(C._AutofillScopeTextInputConfiguration, A.TextInputConfiguration);
+    _inheritMany(A.Closure, [C._AutofillScopeTextInputConfiguration_toJson_closure, C.AutofillScopeMixin_attach_closure, C.AutofillGroupState_autofillClients_closure, C._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure, C.BaseLoginView_buildUserNameInput_closure0, C.BaseLoginView_buildPasswordInput_closure, C.LoginView__buildLoadingProgress__closure, C.LoginView__buildLoadingProgress__closure0, C.LoginMessageWidget_build_closure, C.LoginMessageWidget_build_closure0, C.LoginMessageWidget_build_closure1, C.LoginMessageWidget_build_closure2]);
+    _inherit(C.AutofillScopeMixin, A.Object);
+    _inherit(C.AutofillContextAction, A._Enum);
+    _inheritMany(A.StatefulWidget, [C.AutofillGroup, C.LoginTextInputBuilder]);
+    _inheritMany(A.State0, [C._AutofillGroupState_State_AutofillScopeMixin, C._LoginTextInputBuilderState]);
+    _inherit(C.AutofillGroupState, C._AutofillGroupState_State_AutofillScopeMixin);
+    _inheritMany(A.Closure0Args, [C.AutofillGroupState_register_closure, C.BaseLoginView_buildLoginButton_closure, C.LoginView__buildMobileForm_closure, C.LoginView__buildMobileForm_closure0, C.LoginView__buildWebForm_closure, C.LoginView__buildWebForm_closure0, C.LoginView__buildLoadingProgress_closure, C.PrivacyLinkWidget_build_closure, C._LoginTextInputBuilderState_build_closure, C._LoginTextInputBuilderState_build__closure]);
+    _inherit(C._AutofillScope, A.InheritedWidget);
+    _inherit(C._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin, A.FocusTraversalPolicy);
+    _inherit(C.WidgetOrderTraversalPolicy, C._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin);
+    _inherit(C.BaseLoginView, A.GetWidget);
+    _inherit(C.BaseLoginView_buildUserNameInput_closure, A.Closure2Args);
+    _inherit(C.LoginView, C.BaseLoginView);
+    _inherit(C.LoginInputDecorationBuilder, A.InputDecorationBuilder);
+    _mixin(C._SloganBuilder_StatelessWidget_ImageLoaderMixin, E.ImageLoaderMixin);
+    _mixin(C._AutofillGroupState_State_AutofillScopeMixin, C.AutofillScopeMixin);
+    _mixinHard(C._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin, A.DirectionalFocusTraversalPolicyMixin);
   })();
   A._Universe_addRules(init.typeUniverse, JSON.parse('{"SloganBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AutofillScopeTextInputConfiguration":{"TextInputConfiguration":[]},"AutofillGroup":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"AutofillGroupState":{"State0":["AutofillGroup"]},"_AutofillScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BaseLoginView":{"GetWidget":["LoginController"],"Widget":[],"DiagnosticableTree":[]},"LoginView":{"GetWidget":["LoginController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LoginController"},"PrivacyLinkWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LoginMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LoginTextInputBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_LoginTextInputBuilderState":{"State0":["LoginTextInputBuilder"]},"TryAgainButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
@@ -849,8 +854,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
   (function constants() {
     var makeConstList = hunkHelpers.makeConstList;
-    D.AutofillContextAction_0 = new B.AutofillContextAction(0, "commit");
-    D.BoxConstraints_oA88 = new A.BoxConstraints(200, 720, 720, 1 / 0);
+    D.ApplicationVersionWidget_Rm0 = new G.ApplicationVersionWidget(B.EdgeInsets_0_8_0_0, null, null, null);
+    D.AutofillContextAction_0 = new C.AutofillContextAction(0, "commit");
+    D.BorderSide_UKi0 = new A.BorderSide(B.Color_4278221567, 0, B.BorderStyle_1, -1);
+    D.BoxConstraints_oA87 = new A.BoxConstraints(200, 720, 720, 1 / 0);
     D.EdgeInsetsDirectional_25_15_25_15 = new A.EdgeInsetsDirectional(25, 15, 25, 15);
     D.EdgeInsetsDirectional_25_15_40_15 = new A.EdgeInsetsDirectional(25, 15, 40, 15);
     D.EdgeInsetsDirectional_58_11_58_36 = new A.EdgeInsetsDirectional(58, 11, 58, 36);
@@ -864,27 +871,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_31_0_31_0 = new A.EdgeInsets(31, 0, 31, 0);
     D.List_email = A._setArrayType(makeConstList(["email"]), type$.JSArray_String);
     D.List_password = A._setArrayType(makeConstList(["password"]), type$.JSArray_String);
-    D.BorderSide_Fkb = new A.BorderSide(C.Color_4294112245, 1, C.BorderStyle_1, -1);
-    D.OutlineInputBorder_AuK = new A.OutlineInputBorder(4, C.BorderRadius_ww89, D.BorderSide_Fkb);
-    D.BorderSide_UKi1 = new A.BorderSide(C.Color_4278221567, 2, C.BorderStyle_1, -1);
-    D.OutlineInputBorder_ieL1 = new A.OutlineInputBorder(4, C.BorderRadius_ww89, D.BorderSide_UKi1);
-    D.PrivacyLinkWidget_null = new B.PrivacyLinkWidget(null);
-    D.Padding_HfL = new A.Padding(C.EdgeInsets_0_16_0_0, D.PrivacyLinkWidget_null, null);
+    D.BorderSide_Fkb = new A.BorderSide(B.Color_4294112245, 1, B.BorderStyle_1, -1);
+    D.OutlineInputBorder_AuK = new A.OutlineInputBorder(4, B.BorderRadius_ww810, D.BorderSide_Fkb);
+    D.BorderSide_UKi1 = new A.BorderSide(B.Color_4278221567, 2, B.BorderStyle_1, -1);
+    D.OutlineInputBorder_ieL1 = new A.OutlineInputBorder(4, B.BorderRadius_ww810, D.BorderSide_UKi1);
+    D.PrivacyLinkWidget_null = new C.PrivacyLinkWidget(null);
+    D.Padding_HfL = new A.Padding(B.EdgeInsets_0_16_0_0, D.PrivacyLinkWidget_null, null);
     D.Color_1035779260 = new A.Color(1035779260);
-    D.BoxShadow_c9P = new A.BoxShadow(2, C.BlurStyle_0, D.Color_1035779260, C.Offset_0_2, 40);
+    D.BoxShadow_c9P = new A.BoxShadow(2, B.BlurStyle_0, D.Color_1035779260, B.Offset_0_2, 40);
     D.List_1WK = A._setArrayType(makeConstList([D.BoxShadow_c9P]), A.findType("JSArray<BoxShadow>"));
-    D.RoundedRectangleBorder_NYu17 = new A.RoundedRectangleBorder(C.BorderRadius_ww818, C.BorderSide_Q1M);
-    D.ShapeDecoration_OJ5 = new A.ShapeDecoration(C.Color_4294967295, null, null, D.List_1WK, D.RoundedRectangleBorder_NYu17);
+    D.RoundedRectangleBorder_NYu16 = new A.RoundedRectangleBorder(B.BorderRadius_ww818, B.BorderSide_Q1M);
+    D.ShapeDecoration_OJ5 = new A.ShapeDecoration(B.Color_4294967295, null, null, D.List_1WK, D.RoundedRectangleBorder_NYu16);
     D.ValueKey_login_loading_icon = new A.ValueKey("login_loading_icon", type$.ValueKey_String);
-    D.SizedBox_gg9 = new A.SizedBox(40, 40, C.CircularProgressIndicator_86y, D.ValueKey_login_loading_icon);
+    D.SizedBox_gg9 = new A.SizedBox(40, 40, B.CircularProgressIndicator_86y, D.ValueKey_login_loading_icon);
     D.SizedBox_null_40_null_null = new A.SizedBox(null, 40, null, null);
-    D.TextStyle_2bL0 = new A.TextStyle(true, C.Color_4286482075, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_69t25 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 24, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_69t26 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 32, C.FontWeight_8_900, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_69t24 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 36, C.FontWeight_8_900, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_6nc4 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_8eb1 = new A.TextStyle(true, C.Color_4293281350, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_QBc = new A.TextStyle(true, C.Color_4285887861, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.ValueKey_credential_input_form = new A.ValueKey("credential_input_form", type$.ValueKey_String);
     D.ValueKey_loginSubmitForm = new A.ValueKey("loginSubmitForm", type$.ValueKey_String);
     D.ValueKey_login_password_input = new A.ValueKey("login_password_input", type$.ValueKey_String);
@@ -895,5 +895,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "+O4NCU9Z85rmnpTIhn7T1pPiU9c=");
+})($__dart_deferred_initializers__, "6Wm9OY5/gT79Eo6KunqFmDdrPAY=");
 ;
