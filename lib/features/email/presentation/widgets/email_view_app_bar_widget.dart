@@ -34,6 +34,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
   final EdgeInsetsGeometry? iconPadding;
   final EdgeInsetsGeometry? iconMargin;
   final EdgeInsetsGeometry? padding;
+  final bool isOnlyEmailInThread;
 
   EmailViewAppBarWidget({
     Key? key,
@@ -51,6 +52,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     this.iconPadding,
     this.iconMargin,
     this.padding,
+    this.isOnlyEmailInThread = false,
   }) : super(key: key);
 
   @override
@@ -257,7 +259,8 @@ class EmailViewAppBarWidget extends StatelessWidget {
     }
 
     return [
-      _getReplyButton(appLocalizations),
+      if (!isOnlyEmailInThread)
+        _getReplyButton(appLocalizations),
       if (!isResponsiveMobile)
         _getMoveEmailButton(appLocalizations),
       if (isResponsiveDesktop) ...[

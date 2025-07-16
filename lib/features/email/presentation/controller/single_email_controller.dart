@@ -686,14 +686,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailUnsubscribe.value = null;
       }
     }
-    if (currentEmail?.threadId != null &&
-        currentEmail?.id == mailboxDashBoardController.selectedEmail.value?.id) {
-      mailboxDashBoardController.dispatchThreadDetailUIAction(
-        LoadThreadDetailAfterSelectedEmailAction(
-          currentEmail!.threadId!,
-        )
-      );
-    }
     _loadThreadOnGetEmailContentSuccess();
   }
 

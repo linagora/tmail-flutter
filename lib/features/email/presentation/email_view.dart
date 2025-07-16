@@ -214,7 +214,7 @@ class EmailView extends GetWidget<SingleEmailController> {
       );
     }
 
-    if (controller.currentEmail == null || !isInsideThreadDetailView) {
+    if (controller.currentEmail == null || isFirstEmailInThreadDetail) {
       return const BoxDecoration(color: Colors.white);
     }
 
@@ -309,6 +309,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           mailboxContain: presentationEmail.findMailboxContain(
             controller.mailboxDashBoardController.mapMailboxById,
           ),
+          isOnlyEmailInThread: controller.isOnlyEmailInThread,
         )),
         Obx(() => MailUnsubscribedBanner(
           presentationEmail: controller.currentEmail,
