@@ -137,6 +137,16 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                 backgroundColor: Colors.transparent,
                                 onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
                               ),
+                            if (_showAttachmentIcon() && !responsiveUtils.isMobile(context))
+                              Padding(
+                                padding: const EdgeInsetsDirectional.only(start: 16),
+                                child: SvgPicture.asset(
+                                  imagePaths.icAttachment,
+                                  colorFilter: AppColor.colorAttachmentIcon.asFilter(),
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
                             if (isInsideThreadDetailView && !responsiveUtils.isMobile(context))
                               ReceivedTimeBuilder(
                                 emailSelected: emailSelected,
@@ -191,9 +201,23 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                     ],
                   ),
                   if (responsiveUtils.isMobile(context) && isInsideThreadDetailView)
-                    ReceivedTimeBuilder(
-                      emailSelected: emailSelected,
-                      padding: const EdgeInsetsDirectional.symmetric(vertical: 5),
+                    Row(
+                      children: [
+                        if (_showAttachmentIcon())
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(end: 8),
+                            child: SvgPicture.asset(
+                              imagePaths.icAttachment,
+                              colorFilter: AppColor.colorAttachmentIcon.asFilter(),
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                        ReceivedTimeBuilder(
+                          emailSelected: emailSelected,
+                          padding: const EdgeInsetsDirectional.symmetric(vertical: 5),
+                        ),
+                      ],
                     ),
                   if (emailSelected.countRecipients > 0 && showRecipients)
                     EmailReceiverWidget(
@@ -214,5 +238,11 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   bool _showSenderEmail(bool isResponsiveMobile) {
     return emailSelected.emailInThreadStatus == EmailInThreadStatus.expanded &&
       !isResponsiveMobile;
+  }
+
+  bool _showAttachmentIcon() {
+    return isInsideThreadDetailView &&
+      emailSelected.hasAttachment == true &&
+      emailSelected.emailInThreadStatus == EmailInThreadStatus.collapsed;
   }
 }
