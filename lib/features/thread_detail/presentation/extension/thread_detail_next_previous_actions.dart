@@ -16,7 +16,9 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
     final currentIndex = isThreadDetailEnabled
         ? availableThreadIds.indexOf(currentThreadId!)
         : currentDisplayedEmails
-            .indexOf(mailboxDashBoardController.selectedEmail.value!);
+            .map((email) => email.id)
+            .toList()
+            .indexOf(mailboxDashBoardController.selectedEmail.value?.id);
     _navigate(currentIndex + 1, isThreadDetailEnabled);
   }
 
