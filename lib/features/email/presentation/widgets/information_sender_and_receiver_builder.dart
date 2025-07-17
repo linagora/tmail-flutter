@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -108,6 +109,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                 child: EmailSenderBuilder(
                                   emailAddress: emailSelected.from!.first,
                                   openEmailAddressDetailAction: openEmailAddressDetailAction,
+                                  showSenderEmail: _showSenderEmail(responsiveUtils.isMobile(context)),
                                 ),
                               ),
                             if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
@@ -207,5 +209,10 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
         ]
       ),
     );
+  }
+
+  bool _showSenderEmail(bool isResponsiveMobile) {
+    return emailSelected.emailInThreadStatus == EmailInThreadStatus.expanded &&
+      !isResponsiveMobile;
   }
 }
