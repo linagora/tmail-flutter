@@ -89,7 +89,14 @@ dependencies:
 
   fk_user_agent: 2.1.0
 
-  flutter_charset_detector: 3.0.0
+  # flutter_charset_detector: 3.0.0
+  # TODO: Disable charset detector on IOS/MACOS to wait for migration status to complete.
+  # https://gitlab.freedesktop.org/uchardet/uchardet.git
+  flutter_charset_detector:
+    git:
+      url: https://github.com/dab246/flutter_charset_detector.git
+      ref: main
+      path: flutter_charset_detector
 
   debounce_throttle: 2.0.0
 
