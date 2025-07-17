@@ -13,6 +13,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
@@ -71,6 +72,8 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                       EmailActionType.moveToMailbox,
                     ],
                     emailIsRead: presentationEmail.hasRead,
+                    openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
+                    openPopupMenu: controller.mailboxDashBoardController.openPopupMenu,
                   ),
               optionWidgets: [
                 if (controller.previousAvailable)

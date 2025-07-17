@@ -18,7 +18,6 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -39,9 +38,8 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
@@ -56,11 +54,11 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -77,7 +75,20 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:uuid/uuid.dart';
 
-class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMixin {
+typedef OpenBottomSheetContextMenuAction = Future<void> Function({
+  required BuildContext context,
+  required List<ContextMenuItemAction> itemActions,
+  required OnContextMenuActionClick onContextMenuActionClick,
+  Key? key,
+});
+
+typedef OpenPopUpContextMenuAction = Future<void> Function(
+  BuildContext context,
+  RelativeRect position,
+  List<PopupMenuEntry> popupMenuItems,
+);
+
+class EmailActionReactor with MessageDialogActionMixin {
   const EmailActionReactor(
     this._markAsEmailReadInteractor,
     this._markAsStarEmailInteractor,
@@ -523,6 +534,8 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     ) handleEmailAction,
     required List<EmailActionType> additionalActions,
     required bool emailIsRead,
+    required OpenBottomSheetContextMenuAction openBottomSheetContextMenu,
+    required OpenPopUpContextMenuAction openPopupMenu,
   }) {
     if (currentContext == null) return;
 
@@ -572,19 +585,23 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     ];
 
     if (position == null) {
-      openContextMenuAction(
-        currentContext!,
-        _emailActionMoreActionTile(
-          currentContext!,
-          presentationEmail,
-          moreActions,
-          responsiveUtils,
-          imagePaths,
-          handleEmailAction: handleEmailAction,
-        )
+      openBottomSheetContextMenu(
+        context: currentContext!,
+        itemActions: moreActions
+            .map(
+              (action) => ContextItemEmailAction(
+                action,
+                AppLocalizations.of(currentContext!),
+                imagePaths,
+              ),
+            )
+            .toList(),
+        onContextMenuActionClick: (action) {
+          handleEmailAction(presentationEmail, action.action);
+        },
       );
     } else {
-      openPopupMenuAction(
+      openPopupMenu(
         currentContext!,
         position,
         _popupMenuEmailActionTile(
@@ -607,43 +624,6 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
       ?? email.mailboxContain?.isTrash
       ?? email.mailboxContain?.isSpam
       ?? false;
-  }
-
-  List<Widget> _emailActionMoreActionTile(
-    BuildContext context,
-    PresentationEmail presentationEmail,
-    List<EmailActionType> actionTypes,
-    ResponsiveUtils responsiveUtils,
-    ImagePaths imagePaths, {
-    required void Function(
-      PresentationEmail presentationEmail,
-      EmailActionType action,
-    ) handleEmailAction
-  }) {
-    return actionTypes.map((action) {
-      return (EmailActionCupertinoActionSheetActionBuilder(
-        Key('${action.name}_action'),
-        SvgPicture.asset(
-          action.getIcon(imagePaths),
-          width: 24,
-          height: 24,
-          fit: BoxFit.fill,
-          colorFilter: AppColor.colorTextButton.asFilter()
-        ),
-        action.getTitle(AppLocalizations.of(context)),
-        presentationEmail,
-        iconLeftPadding: responsiveUtils.isScreenWithShortestSide(context)
-          ? const EdgeInsetsDirectional.only(start: 12, end: 16)
-          : const EdgeInsetsDirectional.only(end: 12),
-        iconRightPadding: responsiveUtils.isScreenWithShortestSide(context)
-          ? const EdgeInsetsDirectional.only(end: 12)
-          : EdgeInsets.zero
-      )
-      ..onActionClick((presentationEmail) {
-        popBack();
-        handleEmailAction(presentationEmail, action);
-      })).build();
-    }).toList();
   }
 
   List<PopupMenuEntry> _popupMenuEmailActionTile(
