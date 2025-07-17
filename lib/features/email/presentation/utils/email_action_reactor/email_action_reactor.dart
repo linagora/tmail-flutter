@@ -75,6 +75,19 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:uuid/uuid.dart';
 
+typedef OpenBottomSheetContextMenuAction = Future<void> Function({
+  required BuildContext context,
+  required List<ContextMenuItemAction> itemActions,
+  required OnContextMenuActionClick onContextMenuActionClick,
+  Key? key,
+});
+
+typedef OpenPopUpContextMenuAction = Future<void> Function(
+  BuildContext context,
+  RelativeRect position,
+  List<PopupMenuEntry> popupMenuItems,
+);
+
 class EmailActionReactor with MessageDialogActionMixin {
   const EmailActionReactor(
     this._markAsEmailReadInteractor,
@@ -521,17 +534,8 @@ class EmailActionReactor with MessageDialogActionMixin {
     ) handleEmailAction,
     required List<EmailActionType> additionalActions,
     required bool emailIsRead,
-    required Future<void> Function({
-      required BuildContext context,
-      required List<ContextMenuItemAction> itemActions,
-      required OnContextMenuActionClick onContextMenuActionClick,
-      Key? key,
-    }) openBottomSheetContextMenu,
-    required Future<void> Function(
-      BuildContext context,
-      RelativeRect position,
-      List<PopupMenuEntry> popupMenuItems,
-    ) openPopupMenu,
+    required OpenBottomSheetContextMenuAction openBottomSheetContextMenu,
+    required OpenPopUpContextMenuAction openPopupMenu,
   }) {
     if (currentContext == null) return;
 
