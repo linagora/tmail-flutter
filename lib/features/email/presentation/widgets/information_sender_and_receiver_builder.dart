@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -108,6 +109,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                 child: EmailSenderBuilder(
                                   emailAddress: emailSelected.from!.first,
                                   openEmailAddressDetailAction: openEmailAddressDetailAction,
+                                  showSenderEmail: _showSenderEmail(responsiveUtils.isMobile(context)),
                                 ),
                               ),
                             if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
@@ -135,10 +137,21 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                 backgroundColor: Colors.transparent,
                                 onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
                               ),
+                            if (_showAttachmentIcon() && !responsiveUtils.isMobile(context))
+                              Padding(
+                                padding: const EdgeInsetsDirectional.only(start: 16),
+                                child: SvgPicture.asset(
+                                  imagePaths.icAttachment,
+                                  colorFilter: AppColor.colorAttachmentIcon.asFilter(),
+                                  width: 20,
+                                  height: 20,
+                                ),
+                              ),
                             if (isInsideThreadDetailView && !responsiveUtils.isMobile(context))
                               ReceivedTimeBuilder(
                                 emailSelected: emailSelected,
-                                padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
+                                padding: const EdgeInsetsDirectional.only(start: 8, top: 2),
+                                showDaysAgo: _showDaysAgo(responsiveUtils.isMobile(context)),
                               ),
                             if (showUnreadVisualization &&
                                 !emailSelected.hasRead &&
@@ -160,6 +173,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ReceivedTimeBuilder(
                           emailSelected: emailSelected,
                           padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
+                          showDaysAgo: _showDaysAgo(responsiveUtils.isMobile(context)),
                         ),
                       if (isInsideThreadDetailView)
                         SizedBox(
@@ -189,9 +203,24 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                     ],
                   ),
                   if (responsiveUtils.isMobile(context) && isInsideThreadDetailView)
-                    ReceivedTimeBuilder(
-                      emailSelected: emailSelected,
-                      padding: const EdgeInsetsDirectional.symmetric(vertical: 5),
+                    Row(
+                      children: [
+                        if (_showAttachmentIcon())
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(end: 8),
+                            child: SvgPicture.asset(
+                              imagePaths.icAttachment,
+                              colorFilter: AppColor.colorAttachmentIcon.asFilter(),
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                        ReceivedTimeBuilder(
+                          emailSelected: emailSelected,
+                          padding: const EdgeInsetsDirectional.symmetric(vertical: 5),
+                          showDaysAgo: _showDaysAgo(responsiveUtils.isMobile(context)),
+                        ),
+                      ],
                     ),
                   if (emailSelected.countRecipients > 0 && showRecipients)
                     EmailReceiverWidget(
@@ -207,5 +236,22 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
         ]
       ),
     );
+  }
+
+  bool _showSenderEmail(bool isResponsiveMobile) {
+    return emailSelected.emailInThreadStatus == EmailInThreadStatus.expanded &&
+      !isResponsiveMobile;
+  }
+
+  bool _showAttachmentIcon() {
+    return isInsideThreadDetailView &&
+      emailSelected.hasAttachment == true &&
+      emailSelected.emailInThreadStatus == EmailInThreadStatus.collapsed;
+  }
+
+  bool _showDaysAgo(bool isResponsiveMobile) {
+    return isInsideThreadDetailView &&
+      emailSelected.emailInThreadStatus == EmailInThreadStatus.collapsed &&
+      !isResponsiveMobile;
   }
 }
