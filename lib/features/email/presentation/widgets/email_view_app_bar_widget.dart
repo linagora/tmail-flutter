@@ -5,6 +5,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -256,6 +257,10 @@ class EmailViewAppBarWidget extends StatelessWidget {
         if (onMoreActionClick != null)
           _getMoreButton(appLocalizations, isScreenWithShortestSide),
       ];
+    }
+
+    if (presentationEmail.emailInThreadStatus == EmailInThreadStatus.collapsed) {
+      return [_getReplyButton(appLocalizations)];
     }
 
     return [
