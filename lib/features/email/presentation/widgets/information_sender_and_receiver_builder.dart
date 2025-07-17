@@ -150,7 +150,8 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                             if (isInsideThreadDetailView && !responsiveUtils.isMobile(context))
                               ReceivedTimeBuilder(
                                 emailSelected: emailSelected,
-                                padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
+                                padding: const EdgeInsetsDirectional.only(start: 8, top: 2),
+                                showDaysAgo: _showDaysAgo(responsiveUtils.isMobile(context)),
                               ),
                             if (showUnreadVisualization &&
                                 !emailSelected.hasRead &&
@@ -172,6 +173,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ReceivedTimeBuilder(
                           emailSelected: emailSelected,
                           padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
+                          showDaysAgo: _showDaysAgo(responsiveUtils.isMobile(context)),
                         ),
                       if (isInsideThreadDetailView)
                         SizedBox(
@@ -216,6 +218,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ReceivedTimeBuilder(
                           emailSelected: emailSelected,
                           padding: const EdgeInsetsDirectional.symmetric(vertical: 5),
+                          showDaysAgo: _showDaysAgo(responsiveUtils.isMobile(context)),
                         ),
                       ],
                     ),
@@ -244,5 +247,11 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     return isInsideThreadDetailView &&
       emailSelected.hasAttachment == true &&
       emailSelected.emailInThreadStatus == EmailInThreadStatus.collapsed;
+  }
+
+  bool _showDaysAgo(bool isResponsiveMobile) {
+    return isInsideThreadDetailView &&
+      emailSelected.emailInThreadStatus == EmailInThreadStatus.collapsed &&
+      !isResponsiveMobile;
   }
 }
