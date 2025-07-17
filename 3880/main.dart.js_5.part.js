@@ -13777,7 +13777,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._isHide = A.clampDouble(1 / 0, cons.minHeight, cons.maxHeight) === 0;
       return A.GestureDetector$(C.HitTestBehavior_1, t1.buildContent$2(context, t1.get$mode(0)), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.LoadIndicatorState_build__closure(t1), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_7BT);
     },
-    $signature: 232
+    $signature: 255
   };
   B.LoadIndicatorState_build__closure.prototype = {
     call$0() {
@@ -14102,7 +14102,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2 == null ? null : t2.username;
       return t4.handleMoreEmailAction$9$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(A._setArrayType([], type$.JSArray_EmailActionType), presentationEmail.get$hasRead(), new B.EmailView_build____closure(t1, this.context), t7, t5, position, presentationEmail, t6, t2);
     },
-    $signature: 302
+    $signature: 303
   };
   B.EmailView_build____closure.prototype = {
     call$2(email, action) {
@@ -14295,7 +14295,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         C.JSArray_methods.addAll$1(t11, A._setArrayType([C.EmailActionType_7, C.EmailActionType_8, C.EmailActionType_18, C.EmailActionType_19], t10));
       return t4.handleMoreEmailAction$9$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t11, presentationEmail.get$hasRead(), new B.EmailView__buildEmailMessage___closure0(t1, t9), t7, t5, position, presentationEmail, t6, t8);
     },
-    $signature: 302
+    $signature: 303
   };
   B.EmailView__buildEmailMessage___closure0.prototype = {
     call$2(email, action) {
@@ -14948,7 +14948,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(_, __) {
       this.$this.onBackAction.call$0();
     },
-    $signature: 279
+    $signature: 280
   };
   B.EmailViewAppBarWidget__getReplyButton_closure.prototype = {
     call$0() {
@@ -17026,7 +17026,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return A.RecipientSuggestionItemWidget$(suggestionEmailAddress.emailAddress, highlight, t1._text_field_autocomplete_email_address_web$_imagePaths, new B._TextFieldAutocompleteEmailAddressWebState_build_____closure0(t1, this.setState, tagEditorState), suggestionEmailAddress.state, suggestionValid);
     },
-    $signature: 384
+    $signature: 376
   };
   B._TextFieldAutocompleteEmailAddressWebState_build_____closure0.prototype = {
     call$1(emailAddress) {
@@ -17572,7 +17572,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(_, __) {
       return;
     },
-    $signature: 279
+    $signature: 280
   };
   B.SearchEmailView_build_closure0.prototype = {
     call$0() {
@@ -19748,7 +19748,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         C.JSArray_methods.addAll$1(t7, A._setArrayType([C.EmailActionType_7, C.EmailActionType_8, C.EmailActionType_18, C.EmailActionType_19], t6));
       return t2.handleMoreEmailAction$9$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t7, presentationEmail.get$hasRead(), t5, t1.imagePaths, t4, position, presentationEmail, t1.responsiveUtils, t3);
     },
-    $signature: 302
+    $signature: 303
   };
   B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure2.prototype = {
     call$2(_, emailAddress) {
@@ -20025,7 +20025,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1;
     },
-    $signature: 302
+    $signature: 303
   };
   B.ThreadDetailView_build_closure0.prototype = {
     call$0() {
@@ -20244,7 +20244,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(_, __) {
       this.$this.closeThreadDetailAction.call$1(this.context);
     },
-    $signature: 279
+    $signature: 280
   };
   B._ThreadDetailLoadMoreCircleState_build_closure0.prototype = {
     call$1(value) {
@@ -20926,5 +20926,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "dkdUz5JZdZZsSEBCAK2mDEounJw=");
+})($__dart_deferred_initializers__, "sHII1imM7uKZmRDHkKOxirIQmuw=");
 ;
