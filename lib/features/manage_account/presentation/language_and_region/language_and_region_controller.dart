@@ -38,9 +38,10 @@ class LanguageAndRegionController extends BaseController {
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is SaveLanguageSuccess) {
-      LocalizationService.changeLocale(success.localeStored.languageCode);
+      LocalizationService.changeLocale(success.localeStored);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
