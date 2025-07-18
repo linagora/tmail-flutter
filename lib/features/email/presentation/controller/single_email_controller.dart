@@ -2133,7 +2133,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         {_displayingEventBlobId!},
         emailId,
         session!.getLanguageForCalendarEvent(
-          LocalizationService.getLocaleFromLanguage(),
+          LocalizationService.getInitialLocale(),
           accountId!,
         ),
       ));
@@ -2154,7 +2154,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         {_displayingEventBlobId!},
         emailId,
         session!.getLanguageForCalendarEvent(
-          LocalizationService.getLocaleFromLanguage(),
+          LocalizationService.getInitialLocale(),
           accountId!,
         ),
       ));
@@ -2175,7 +2175,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         {_displayingEventBlobId!},
         emailId,
         session!.getLanguageForCalendarEvent(
-          LocalizationService.getLocaleFromLanguage(),
+          LocalizationService.getInitialLocale(),
           accountId!,
         ),
       ));
