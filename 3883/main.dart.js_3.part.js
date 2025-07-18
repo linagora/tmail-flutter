@@ -293,7 +293,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         t3.completeError$1(e);
     },
-    $signature: 309
+    $signature: 391
   };
   A.ImageLoaderMixin_buildImage_closure.prototype = {
     call$1(_) {
@@ -335,19 +335,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         throw B.wrapException(A.NetworkImageLoadException$($status, this.resolved));
       }
     },
-    $signature: 80
+    $signature: 88
   };
   A.NetworkImage__loadAsync_closure0.prototype = {
     call$1(e) {
       return this.completer.completeError$1(e);
     },
-    $signature: 86
+    $signature: 82
   };
   A.NetworkImage__loadAsync_closure1.prototype = {
     call$2(bytes, total) {
       this.chunkEvents.add$1(0, new A.ImageChunkEvent(bytes, total));
     },
-    $signature: 277
+    $signature: 253
   };
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
@@ -388,5 +388,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "KUh1P/aWCWXqb4/exCh7NpdWjzE=");
+})($__dart_deferred_initializers__, "5Wx8TONPFsOgA6WGUwlIh3/WUgw=");
 ;
