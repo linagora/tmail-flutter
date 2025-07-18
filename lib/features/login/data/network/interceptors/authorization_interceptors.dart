@@ -14,6 +14,7 @@ import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -152,7 +153,14 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       }
     } catch (e) {
       logError('AuthorizationInterceptors::onError:Exception: $e');
-      return super.onError(err.copyWith(error: e), handler);
+      if (e is ServerError || e is TemporarilyUnavailable) {
+        return super.onError(
+          DioError(requestOptions: err.requestOptions, error: e),
+          handler,
+        );
+      } else {
+        return super.onError(err.copyWith(error: e), handler);
+      }
     }
   }
 
