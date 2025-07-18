@@ -1,3 +1,7 @@
+## [0.16.3-patch1] - 2025-07-18
+### Fixed
+- Fix browser locale language to apply in language order: Server -> Browser -> Default
+
 ## [0.16.3] - 2025-06-20
 ### Added
 - Translation
