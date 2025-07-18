@@ -31,8 +31,8 @@ extension EmailExtension on Email {
       importanceHeader: importanceHeader?.toMapString(),
       priorityHeader: priorityHeader?.toMapString(),
       unsubscribeHeader: listUnsubscribeHeader?.toMapString(),
-      messageId: messageId?.ids,
-      references: references?.ids,
+      messageId: messageId?.ids.toList(),
+      references: references?.ids.toList(),
     );
   }
 
