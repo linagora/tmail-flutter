@@ -9648,17 +9648,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       if (_this.presentationEmail.emailInThreadStatus === C.EmailInThreadStatus_0)
         return A._setArrayType([_this._getReplyButton$1(appLocalizations)], type$.JSArray_Widget);
-      t1 = type$.JSArray_Widget;
-      t2 = A._setArrayType([], t1);
+      t1 = A._setArrayType([_this._getReplyButton$1(appLocalizations)], type$.JSArray_Widget);
+      t2 = !isResponsiveMobile;
+      if (t2)
+        t1.push(_this._getMoveEmailButton$1(appLocalizations));
+      t1.push(_this._getMarkStarButton$1(appLocalizations));
+      if (t2)
+        t1.push(_this._getDeleteButton$1(appLocalizations));
       if (!_this.isOnlyEmailInThread)
-        t2.push(_this._getReplyButton$1(appLocalizations));
-      if (!isResponsiveMobile)
-        t2.push(_this._getMoveEmailButton$1(appLocalizations));
-      if (isResponsiveDesktop)
-        C.JSArray_methods.addAll$1(t2, A._setArrayType([_this._getMarkStarButton$1(appLocalizations), _this._getDeleteButton$1(appLocalizations)], t1));
-      if (_this.onMoreActionClick != null)
-        t2.push(_this._getMoreButton$2(appLocalizations, isScreenWithShortestSide));
-      return t2;
+        t1.push(_this._getMoreButton$2(appLocalizations, isScreenWithShortestSide));
+      return t1;
     }
   };
   B.EmailViewBackButton.prototype = {
@@ -21039,5 +21038,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "aS/e8sNQEps5ehPGjOf86RhrRrM=");
+})($__dart_deferred_initializers__, "M7c36LatlgLDL70QRKB32c2FFNM=");
 ;
