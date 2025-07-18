@@ -69,6 +69,15 @@ class EmailCache extends HiveObject with EquatableMixin {
   @HiveField(19)
   String? threadId;
 
+  @HiveField(20)
+  Map<String, String?>? unsubscribeHeader;
+
+  @HiveField(21)
+  final List<String>? messageId;
+
+  @HiveField(22)
+  final List<String>? references;
+
   EmailCache(
     this.id,
     {
@@ -91,6 +100,9 @@ class EmailCache extends HiveObject with EquatableMixin {
       this.importanceHeader,
       this.priorityHeader,
       this.threadId,
+      this.unsubscribeHeader,
+      this.messageId,
+      this.references,
     }
   );
 
@@ -116,5 +128,8 @@ class EmailCache extends HiveObject with EquatableMixin {
     importanceHeader,
     priorityHeader,
     threadId,
+    unsubscribeHeader,
+    messageId,
+    references,
   ];
 }

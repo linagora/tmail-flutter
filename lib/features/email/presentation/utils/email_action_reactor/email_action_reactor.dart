@@ -597,6 +597,7 @@ class EmailActionReactor with MessageDialogActionMixin {
             )
             .toList(),
         onContextMenuActionClick: (action) {
+          popBack();
           handleEmailAction(presentationEmail, action.action);
         },
       );

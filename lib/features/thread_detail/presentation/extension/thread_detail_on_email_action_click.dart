@@ -5,7 +5,6 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
-import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -308,9 +307,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
             content: emailLoaded?.htmlContent,
             inlineImages: emailLoaded?.inlineImages,
             mailboxRole: presentationEmail.mailboxContain?.role,
-            messageId: emailLoaded?.emailCurrent?.messageId,
-            references: emailLoaded?.emailCurrent?.references,
-            listPost: emailLoaded?.emailCurrent?.listPost,
+            messageId: presentationEmail.messageId,
+            references: presentationEmail.references,
+            listPost: presentationEmail.listPost,
           )
         );
       },
@@ -328,9 +327,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
             content: emailLoaded?.htmlContent,
             inlineImages: emailLoaded?.inlineImages,
             mailboxRole: presentationEmail.mailboxContain?.role,
-            messageId: emailLoaded?.emailCurrent?.messageId,
-            references: emailLoaded?.emailCurrent?.references,
-            listPost: emailLoaded?.emailCurrent?.listPost,
+            messageId: presentationEmail.messageId,
+            references: presentationEmail.references,
+            listPost: presentationEmail.listPost,
           )
         );
       },
@@ -347,9 +346,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
             content: emailLoaded?.htmlContent,
             inlineImages: emailLoaded?.inlineImages,
             mailboxRole: presentationEmail.mailboxContain?.role,
-            messageId: emailLoaded?.emailCurrent?.messageId,
-            references: emailLoaded?.emailCurrent?.references,
-            listPost: emailLoaded?.emailCurrent?.listPost,
+            messageId: presentationEmail.messageId,
+            references: presentationEmail.references,
+            listPost: presentationEmail.listPost,
           )
         );
       },
@@ -366,8 +365,8 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
             content: emailLoaded?.htmlContent,
             attachments: emailLoaded?.attachments,
             inlineImages: emailLoaded?.inlineImages,
-            messageId: emailLoaded?.emailCurrent?.messageId,
-            references: emailLoaded?.emailCurrent?.references,
+            messageId: presentationEmail.messageId,
+            references: presentationEmail.references,
           )
         );
       },

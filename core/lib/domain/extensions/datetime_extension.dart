@@ -50,7 +50,11 @@ extension DateTimeNullableExtension on DateTime? {
   }
 
   String toPatternForEmailView() {
-    return 'dd MMM yyyy, HH:mm a';
+    if (this?.isThisYear() == true) {
+      return 'dd MMM, HH:mm a';
+    } else {
+      return 'dd MMM yyyy, HH:mm a';
+    }
   }
 
   String toPatternForPrinting(String locale) {
