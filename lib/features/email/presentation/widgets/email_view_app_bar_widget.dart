@@ -264,15 +264,13 @@ class EmailViewAppBarWidget extends StatelessWidget {
     }
 
     return [
-      if (!isOnlyEmailInThread)
         _getReplyButton(appLocalizations),
       if (!isResponsiveMobile)
         _getMoveEmailButton(appLocalizations),
-      if (isResponsiveDesktop) ...[
-        _getMarkStarButton(appLocalizations),
+      _getMarkStarButton(appLocalizations),
+      if (!isResponsiveMobile)
         _getDeleteButton(appLocalizations),
-      ],
-      if (onMoreActionClick != null)
+      if (!isOnlyEmailInThread)
         _getMoreButton(appLocalizations, isScreenWithShortestSide),
     ];
   }
