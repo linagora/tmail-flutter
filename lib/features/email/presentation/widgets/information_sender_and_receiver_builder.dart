@@ -151,7 +151,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                               ReceivedTimeBuilder(
                                 emailSelected: emailSelected,
                                 padding: const EdgeInsetsDirectional.only(start: 8, top: 2),
-                                showDaysAgo: _showDaysAgo(responsiveUtils.isMobile(context)),
+                                showDaysAgo: _showDaysAgo(responsiveUtils.isDesktop(context)),
                               ),
                             if (showUnreadVisualization &&
                                 !emailSelected.hasRead &&
@@ -173,7 +173,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ReceivedTimeBuilder(
                           emailSelected: emailSelected,
                           padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
-                          showDaysAgo: _showDaysAgo(responsiveUtils.isMobile(context)),
+                          showDaysAgo: _showDaysAgo(responsiveUtils.isDesktop(context)),
                         ),
                       if (isInsideThreadDetailView)
                         SizedBox(
@@ -218,7 +218,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ReceivedTimeBuilder(
                           emailSelected: emailSelected,
                           padding: const EdgeInsetsDirectional.symmetric(vertical: 5),
-                          showDaysAgo: _showDaysAgo(responsiveUtils.isMobile(context)),
+                          showDaysAgo: _showDaysAgo(responsiveUtils.isDesktop(context)),
                         ),
                       ],
                     ),
@@ -249,7 +249,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
       emailSelected.emailInThreadStatus == EmailInThreadStatus.collapsed;
   }
 
-  bool _showDaysAgo(bool isResponsiveMobile) {
-    return isInsideThreadDetailView && !isResponsiveMobile;
+  bool _showDaysAgo(bool isResponsiveDesktop) {
+    return isInsideThreadDetailView && isResponsiveDesktop;
   }
 }
