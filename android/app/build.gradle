@@ -34,7 +34,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -43,7 +43,7 @@ android {
     defaultConfig {
         applicationId "com.linagora.android.teammail"
         minSdkVersion flutterMinSdkVersion.toInteger()
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         // The number of method references in a .dex file cannot exceed 64K
@@ -85,6 +85,7 @@ android {
         execution "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
+    namespace "com.linagora.android.tmail"
 }
 
 flutter {
@@ -92,7 +93,7 @@ flutter {
 }
 
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
     implementation 'androidx.work:work-runtime-ktx:2.7.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.window:window:1.0.0'

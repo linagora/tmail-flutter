@@ -55,19 +55,19 @@ PODS:
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
     - Flutter
-  - Firebase/CoreOnly (10.3.0):
-    - FirebaseCore (= 10.3.0)
-  - Firebase/Messaging (10.3.0):
+  - Firebase/CoreOnly (10.7.0):
+    - FirebaseCore (= 10.7.0)
+  - Firebase/Messaging (10.7.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 10.3.0)
-  - firebase_core (2.7.0):
-    - Firebase/CoreOnly (= 10.3.0)
+    - FirebaseMessaging (~> 10.7.0)
+  - firebase_core (2.11.0):
+    - Firebase/CoreOnly (= 10.7.0)
     - Flutter
-  - firebase_messaging (14.2.5):
-    - Firebase/Messaging (= 10.3.0)
+  - firebase_messaging (14.5.0):
+    - Firebase/Messaging (= 10.7.0)
     - firebase_core
     - Flutter
-  - FirebaseCore (10.3.0):
+  - FirebaseCore (10.7.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/Logger (~> 7.8)
@@ -78,7 +78,7 @@ PODS:
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
     - PromisesObjC (~> 2.1)
-  - FirebaseMessaging (10.3.0):
+  - FirebaseMessaging (10.7.0):
     - FirebaseCore (~> 10.0)
     - FirebaseInstallations (~> 10.0)
     - GoogleDataTransport (~> 9.2)
@@ -93,6 +93,10 @@ PODS:
   - flutter_appauth (0.0.1):
     - AppAuth (= 1.7.4)
     - Flutter
+  - flutter_charset_detector_darwin (0.0.1):
+    - Flutter
+    - FlutterMacOS
+    - UniversalDetector2 (= 2.0.1)
   - flutter_downloader (0.0.1):
     - Flutter
   - flutter_file_dialog (0.0.1):
@@ -198,9 +202,9 @@ PODS:
   - ReachabilitySwift (5.2.4)
   - receive_sharing_intent (1.8.1):
     - Flutter
-  - SDWebImage (5.21.0):
-    - SDWebImage/Core (= 5.21.0)
-  - SDWebImage/Core (5.21.0)
+  - SDWebImage (5.21.1):
+    - SDWebImage/Core (= 5.21.1)
+  - SDWebImage/Core (5.21.1)
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
@@ -210,6 +214,7 @@ PODS:
     - Flutter
     - FlutterMacOS
   - SwiftyGif (5.4.5)
+  - UniversalDetector2 (2.0.1)
   - url_launcher_ios (0.0.1):
     - Flutter
   - workmanager (0.0.1):
@@ -229,6 +234,7 @@ DEPENDENCIES:
   - fk_user_agent (from `.symlinks/plugins/fk_user_agent/ios`)
   - Flutter (from `Flutter`)
   - flutter_appauth (from `.symlinks/plugins/flutter_appauth/ios`)
+  - flutter_charset_detector_darwin (from `.symlinks/plugins/flutter_charset_detector_darwin/darwin`)
   - flutter_downloader (from `.symlinks/plugins/flutter_downloader/ios`)
   - flutter_file_dialog (from `.symlinks/plugins/flutter_file_dialog/ios`)
   - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
@@ -276,6 +282,7 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageWebPCoder
     - SwiftyGif
+    - UniversalDetector2
 
 EXTERNAL SOURCES:
   app_links:
@@ -304,6 +311,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_appauth:
     :path: ".symlinks/plugins/flutter_appauth/ios"
+  flutter_charset_detector_darwin:
+    :path: ".symlinks/plugins/flutter_charset_detector_darwin/darwin"
   flutter_downloader:
     :path: ".symlinks/plugins/flutter_downloader/ios"
   flutter_file_dialog:
@@ -357,23 +366,24 @@ SPEC CHECKSUMS:
   AppAuth: 182c5b88630569df5acb672720534756c29b3358
   better_open_file: 03cf320415d4d3f46b6e00adc4a567d76c1a399d
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
+  connectivity_plus: 07c49e96d7fc92bc9920617b83238c4d178b446a
   contacts_service: 849e1f84281804c8bfbec1b4c3eedcb23c5d3eca
   device_info_plus: 7545d84d8d1b896cb16a4ff98c19f07ec4b298ea
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   external_app_launcher: ad55ac844aa21f2d2197d7cec58ff0d0dc40bbc0
   file_picker: 09aa5ec1ab24135ccd7a1621c46c84134bfd6655
-  Firebase: f92fc551ead69c94168d36c2b26188263860acd9
-  firebase_core: 128d8c43c3a453a4a67463314fc3761bedff860b
-  firebase_messaging: 8ac28baba96e69a58ad26b4bb5f9ee67c3e5efe2
-  FirebaseCore: 988754646ab3bd4bdcb740f1bfe26b9f6c0d5f2a
+  Firebase: 0219acf760880eeec8ce479895bd7767466d9f81
+  firebase_core: dee76ded6c693fdb38b8ea39aef7129e32e587a3
+  firebase_messaging: 67fbcdaf6a7c81849590e542eff2409dc49d9fa5
+  FirebaseCore: e317665b9d744727a97e623edbbed009320afdd7
   FirebaseCoreInternal: df84dd300b561c27d5571684f389bf60b0a5c934
   FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
-  FirebaseMessaging: e345b219fd15d325f0cf2fef28cb8ce00d851b3f
+  FirebaseMessaging: ac9062bcc35ed56e15a0241d8fd317022499baf8
   fk_user_agent: 1f47ec39291e8372b1d692b50084b0d54103c545
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_appauth: 1ce438877bc111c5d8f42da47729909290624886
+  flutter_charset_detector_darwin: fb3692d6d72cb6afcce7b0dd1a9516be6e78556e
   flutter_downloader: b7301ae057deadd4b1650dc7c05375f10ff12c39
   flutter_file_dialog: 4c014a45b105709a27391e266c277d7e588e9299
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
@@ -387,11 +397,11 @@ SPEC CHECKSUMS:
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: e047b1d2e6239b787cc5e9755b988869cf190494
-  lottie_native: c2e590a297861fc32a0188cf8dab39aa97f86d81
+  lottie_native: 96739b7fc232c7f440cbf5c2649100c51f117213
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
-  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
+  package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   patrol: 0564cee315ff6c86fb802b3647db05cc2d3d0624
   pdfrx: 07fc287c47ea8d027c4ed56457f8a1aa74d73594
@@ -402,11 +412,12 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   receive_sharing_intent: 79c848f5b045674ad60b9fea3bafea59962ad2c1
-  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
+  SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
+  UniversalDetector2: 7c9ffd935cf050eeb19edf7e90f6febe3743a1af
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   workmanager: 0afdcf5628bbde6924c21af7836fed07b42e30e6
 

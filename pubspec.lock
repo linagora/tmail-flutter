@@ -13,10 +13,10 @@ packages:
     dependency: transitive
     description:
       name: _flutterfire_internals
-      sha256: "64fcb0dbca4386356386c085142fa6e79c00a3326ceaa778a2d25f5d9ba61441"
+      sha256: "867b77e2367bc502dcd4d5a66302615409f04eb20ed82ba1c0ba073f9107e018"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.16"
+    version: "1.2.0"
   analyzer:
     dependency: transitive
     description:
@@ -269,10 +269,10 @@ packages:
     dependency: "direct main"
     description:
       name: connectivity_plus
-      sha256: "8875e8ed511a49f030e313656154e4bbbcef18d68dfd32eb853fac10bce48e96"
+      sha256: "45262924896ff72a8cd92b722bb7e3d5020f9e0724531a3e10e22ddae2005991"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.3"
+    version: "4.0.0"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -613,10 +613,10 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_core
-      sha256: fe30ac230f12f8836bb97e6e09197340d3c584526825b1746ea362a82e1e43f7
+      sha256: dcf54c170c5371ad0e79229d0fb372c58262ae0968b7de222bf28e51dd236be0
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.0"
+    version: "2.11.0"
   firebase_core_platform_interface:
     dependency: "direct overridden"
     description:
@@ -637,26 +637,26 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_messaging
-      sha256: "95f7565b8e992d2188cdd8dc5612330f7c309485fe425d3f9844f18e90741e3e"
+      sha256: "88a4bf569899344d863db26a73092681b590274f570f0a431051b92c4dd9bee3"
       url: "https://pub.dev"
     source: hosted
-    version: "14.2.5"
+    version: "14.5.0"
   firebase_messaging_platform_interface:
     dependency: transitive
     description:
       name: firebase_messaging_platform_interface
-      sha256: c5e79e15d1018cafffea1a6e45249db0d6bc42dbe35178634c77488179880e79
+      sha256: "482fa6998f6cb10b30324ca8bfa0e2fcc0defed9484ccccce118b1b347e39a24"
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.14"
+    version: "4.4.0"
   firebase_messaging_web:
     dependency: transitive
     description:
       name: firebase_messaging_web
-      sha256: cd0cfcab7a63282049dec95a9955e7a487b5e580162310d12a82a10c0c32c546
+      sha256: "61f7d323085704fbcc7b056a49d75211b2eb698610b878fec6cda18dd04d754f"
       url: "https://pub.dev"
     source: hosted
-    version: "3.2.15"
+    version: "3.4.0"
   fixnum:
     dependency: transitive
     description:
@@ -722,20 +722,27 @@ packages:
   flutter_charset_detector:
     dependency: transitive
     description:
-      path: flutter_charset_detector
-      ref: main
-      resolved-ref: "36c3ffeea65f7b362c1e47e608802f0ca941f4d4"
-      url: "https://github.com/dab246/flutter_charset_detector.git"
-    source: git
-    version: "5.0.0"
+      name: flutter_charset_detector
+      sha256: "5d4796d43dac2f37e14149b0f0c676fa08e8eb1ada8e99342a838d971d2fb9b1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   flutter_charset_detector_android:
     dependency: transitive
     description:
       name: flutter_charset_detector_android
-      sha256: "443145e8fc8515b3b32aee375691e40dd59197a86a2ae153166bc88c8200d83b"
+      sha256: bee057133d5f134fe211523a27200dd22c782b93777f43359a571bd2c77da2cc
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "2.1.1"
+  flutter_charset_detector_darwin:
+    dependency: transitive
+    description:
+      name: flutter_charset_detector_darwin
+      sha256: "65d91133ea8ef06a440941b1126702b4735a8bd487430b41760e706a0b6b26d4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   flutter_charset_detector_platform_interface:
     dependency: transitive
     description:
@@ -748,10 +755,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_charset_detector_web
-      sha256: e3ac65f94b12f4887937b21a19365d7927db816840cb93274e3861241cb0e9f2
+      sha256: d8495115abada771c75f9395aae3e5809ffd506e8fc8f62b403ae11fc29e1d2b
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "1.0.2"
   flutter_colorpicker:
     dependency: transitive
     description:
@@ -780,10 +787,11 @@ packages:
   flutter_downloader:
     dependency: "direct main"
     description:
-      name: flutter_downloader
-      sha256: "6f2836668f33d0cd3ed275c3198d30967c42af53fa9b18c6b0edbf5fc12b599a"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "fixbug/android-api-35"
+      resolved-ref: "777e59823b7383ebb1acf3e777a14ce037ee9eb6"
+      url: "https://github.com/linagora/flutter_downloader.git"
+    source: git
     version: "1.10.2"
   flutter_file_dialog:
     dependency: "direct main"
@@ -1534,18 +1542,18 @@ packages:
     dependency: transitive
     description:
       name: package_info_plus
-      sha256: "7e76fad405b3e4016cd39d08f455a4eb5199723cf594cd1b8916d47140d93017"
+      sha256: a75164ade98cb7d24cfd0a13c6408927c6b217fa60dee5a7ff5c116a58f28918
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.0"
+    version: "8.0.2"
   package_info_plus_platform_interface:
     dependency: transitive
     description:
       name: package_info_plus_platform_interface
-      sha256: "9bc8ba46813a4cc42c66ab781470711781940780fd8beddd0c3da62506d3a6c6"
+      sha256: "6c935fb612dff8e3cc9632c2b301720c77450a126114126ffaafe28d2e87956c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "3.2.0"
   path:
     dependency: transitive
     description:
