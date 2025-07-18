@@ -52,6 +52,11 @@ extension EmailCacheExtension on EmailCache {
             priorityHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
             priorityHeader!.values)
         : null,
+      listUnsubscribeHeader: unsubscribeHeader != null
+        ? Map.fromIterables(
+            unsubscribeHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
+            unsubscribeHeader!.values)
+        : null,
     );
   }
 

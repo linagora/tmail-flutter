@@ -30,6 +30,7 @@ extension EmailExtension on Email {
       xPriorityHeader: xPriorityHeader?.toMapString(),
       importanceHeader: importanceHeader?.toMapString(),
       priorityHeader: priorityHeader?.toMapString(),
+      unsubscribeHeader: listUnsubscribeHeader?.toMapString(),
     );
   }
 
