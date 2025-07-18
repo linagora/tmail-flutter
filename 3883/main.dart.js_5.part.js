@@ -8979,6 +8979,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         t2.push(C.SizedBox_null_16_null_null);
       t2.push(new A.Obx(new B.EmailView__buildEmailMessage_closure(_this, presentationEmail, maxBodyHeight, context), _null));
+      t2.push(C.SizedBox_null_24_null_null);
       t2.push(new A.Obx(new B.EmailView__buildEmailMessage_closure0(_this), _null));
       t2.push(new A.Obx(new B.EmailView__buildEmailMessage_closure1(_this, context), _null));
       t2.push(new A.Obx(new B.EmailView__buildEmailMessage_closure2(_this), _null));
@@ -21038,5 +21039,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "xWuVU5mRHASEgiAl76YCCF7rhtE=");
+})($__dart_deferred_initializers__, "aS/e8sNQEps5ehPGjOf86RhrRrM=");
 ;
