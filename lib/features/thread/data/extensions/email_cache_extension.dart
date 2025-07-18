@@ -57,6 +57,8 @@ extension EmailCacheExtension on EmailCache {
             unsubscribeHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
             unsubscribeHeader!.values)
         : null,
+      messageId: messageId != null ? MessageIdsHeaderValue(messageId!) : null,
+      references: references != null ? MessageIdsHeaderValue(references!) : null,
     );
   }
 

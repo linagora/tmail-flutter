@@ -54,6 +54,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   final Map<IndividualHeaderIdentifier, String?>? listPostHeader;
   final Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader;
   final EmailInThreadStatus? emailInThreadStatus;
+  final MessageIdsHeaderValue? messageId;
+  final MessageIdsHeaderValue? references;
 
   PresentationEmail({
     this.id,
@@ -85,6 +87,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     this.listPostHeader,
     this.listUnsubscribeHeader,
     this.emailInThreadStatus,
+    this.messageId,
+    this.references,
   });
 
   String getSenderName() {
@@ -215,6 +219,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     listPostHeader,
     listUnsubscribeHeader,
     emailInThreadStatus,
+    messageId,
+    references,
   ];
 
   PresentationEmail copyWith({
@@ -247,6 +253,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     Map<IndividualHeaderIdentifier, String?>? listPostHeader,
     Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader,
     EmailInThreadStatus? emailInThreadStatus,
+    MessageIdsHeaderValue? messageId,
+    MessageIdsHeaderValue? references,
   }) {
     return PresentationEmail(
       id: id ?? this.id,
@@ -278,6 +286,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       listPostHeader: listPostHeader ?? this.listPostHeader,
       listUnsubscribeHeader: listUnsubscribeHeader ?? this.listUnsubscribeHeader,
       emailInThreadStatus: emailInThreadStatus ?? this.emailInThreadStatus,
+      messageId: messageId ?? this.messageId,
+      references: references ?? this.references,
     );
   }
 }
