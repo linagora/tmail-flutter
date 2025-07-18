@@ -87,7 +87,7 @@ class _TMailAppState extends State<TMailApp> {
         }
         return supportedLocales.first;
       },
-      locale: LocalizationService.getLocaleFromLanguage(),
+      locale: LocalizationService.getInitialLocale(),
       fallbackLocale: LocalizationService.fallbackLocale,
       translations: LocalizationService(),
       onGenerateTitle: (context) {

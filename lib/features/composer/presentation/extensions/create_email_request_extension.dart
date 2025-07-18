@@ -158,7 +158,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
             IndividualHeaderIdentifier.acceptLanguageHeader: LocalizationService.supportedLocalesToLanguageTags()
           },
           contentLanguageHeader: {
-            IndividualHeaderIdentifier.contentLanguageHeader: LocalizationService.getLocaleFromLanguage().toLanguageTag()
+            IndividualHeaderIdentifier.contentLanguageHeader: LocalizationService.getInitialLocale().toLanguageTag()
           },
         )
       },
