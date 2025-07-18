@@ -32,6 +32,7 @@ class IdentityInputDecorationBuilder extends InputDecorationBuilder {
       filled: true,
       fillColor: errorText?.isNotEmpty == true
           ? AppColor.colorInputBackgroundErrorVerifyName
-          : AppColor.colorInputBackgroundCreateMailbox);
+          : Colors.white,
+    );
   }
 }
