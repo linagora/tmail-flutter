@@ -4837,4 +4837,13 @@ class AppLocalizations {
       name: 'view',
     );
   }
+
+  String daysAgo(int days) {
+    return Intl.plural(
+      days,
+      zero: '',
+      one: ' (1 day ago)',
+      other: ' ($days days ago)',
+    );
+  }
 }

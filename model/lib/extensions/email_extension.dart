@@ -131,6 +131,8 @@ extension EmailExtension on Email {
       priorityHeader: priorityHeader,
       listPostHeader: listPostHeader,
       listUnsubscribeHeader: listUnsubscribeHeader,
+      messageId: messageId,
+      references: references,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
@@ -170,6 +172,8 @@ extension EmailExtension on Email {
       listUnsubscribeHeader: updatedProperties.contain(IndividualHeaderIdentifier.listUnsubscribeHeader.value)
         ? newEmail.listUnsubscribeHeader
         : listUnsubscribeHeader,
+      messageId: updatedProperties.contain(EmailProperty.messageId) ? newEmail.messageId : messageId,
+      references: updatedProperties.contain(EmailProperty.references) ? newEmail.references : references,
     );
   }
 

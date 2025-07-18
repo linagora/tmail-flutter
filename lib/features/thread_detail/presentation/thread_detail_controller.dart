@@ -84,12 +84,14 @@ class ThreadDetailController extends BaseController {
   final additionalProperties = Properties({
     IndividualHeaderIdentifier.listPostHeader.value,
     IndividualHeaderIdentifier.listUnsubscribeHeader.value,
+    EmailProperty.references,
+    EmailProperty.messageId,
   });
   final cachedEmailLoaded = <EmailId, EmailLoaded>{};
   late final _threadGetDebouncer = Debouncer<ThreadId?>(
     const Duration(milliseconds: 500),
     initialValue: null,
-    checkEquality: true,
+    checkEquality: false,
     onChanged: (threadId) {
       if (_validateLoadThread(threadId)) {
         consumeState(_getEmailIdsByThreadIdInteractor.execute(

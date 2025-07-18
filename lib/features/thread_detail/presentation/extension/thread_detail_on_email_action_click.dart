@@ -5,12 +5,12 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
-import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -143,6 +143,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       moveActionRequest.moveRequest,
       moveActionRequest.emailIdsWithReadStatus,
     );
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
   }
 
   void _trashEmail(PresentationEmail presentationEmail) {
@@ -162,6 +163,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       moveActionRequest.moveRequest,
       moveActionRequest.emailIdsWithReadStatus,
     );
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
   }
 
   void _markEmailSpam(PresentationEmail presentationEmail) {
@@ -181,6 +183,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       moveActionRequest.moveRequest,
       moveActionRequest.emailIdsWithReadStatus,
     );
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
   }
 
   void _unSpamEmail(PresentationEmail presentationEmail) {
@@ -200,6 +203,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       moveActionRequest.moveRequest,
       moveActionRequest.emailIdsWithReadStatus,
     );
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
   }
 
   void _deleteEmailPermanently(PresentationEmail email) {
@@ -212,6 +216,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,
     );
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
   }
 
   void _quickCreateRule(PresentationEmail presentationEmail) {
@@ -302,9 +307,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
             content: emailLoaded?.htmlContent,
             inlineImages: emailLoaded?.inlineImages,
             mailboxRole: presentationEmail.mailboxContain?.role,
-            messageId: emailLoaded?.emailCurrent?.messageId,
-            references: emailLoaded?.emailCurrent?.references,
-            listPost: emailLoaded?.emailCurrent?.listPost,
+            messageId: presentationEmail.messageId,
+            references: presentationEmail.references,
+            listPost: presentationEmail.listPost,
           )
         );
       },
@@ -322,9 +327,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
             content: emailLoaded?.htmlContent,
             inlineImages: emailLoaded?.inlineImages,
             mailboxRole: presentationEmail.mailboxContain?.role,
-            messageId: emailLoaded?.emailCurrent?.messageId,
-            references: emailLoaded?.emailCurrent?.references,
-            listPost: emailLoaded?.emailCurrent?.listPost,
+            messageId: presentationEmail.messageId,
+            references: presentationEmail.references,
+            listPost: presentationEmail.listPost,
           )
         );
       },
@@ -341,9 +346,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
             content: emailLoaded?.htmlContent,
             inlineImages: emailLoaded?.inlineImages,
             mailboxRole: presentationEmail.mailboxContain?.role,
-            messageId: emailLoaded?.emailCurrent?.messageId,
-            references: emailLoaded?.emailCurrent?.references,
-            listPost: emailLoaded?.emailCurrent?.listPost,
+            messageId: presentationEmail.messageId,
+            references: presentationEmail.references,
+            listPost: presentationEmail.listPost,
           )
         );
       },
@@ -360,8 +365,8 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
             content: emailLoaded?.htmlContent,
             attachments: emailLoaded?.attachments,
             inlineImages: emailLoaded?.inlineImages,
-            messageId: emailLoaded?.emailCurrent?.messageId,
-            references: emailLoaded?.emailCurrent?.references,
+            messageId: presentationEmail.messageId,
+            references: presentationEmail.references,
           )
         );
       },

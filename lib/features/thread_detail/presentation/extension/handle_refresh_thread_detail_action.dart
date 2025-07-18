@@ -6,6 +6,7 @@ import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -45,7 +46,10 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
       action.emailChangeResponse.destroyed ?? const []);
 
     final emailsCreated = action.emailChangeResponse.created
-      ?.where((email) => email.threadId == currentThreadId)
+      ?.where((email) => validateNewCreatedEmailForCurrentThread(
+        email,
+        currentThreadId,
+      ))
       .map((email) => email.toPresentationEmail().copyWith(
         emailInThreadStatus: EmailInThreadStatus.collapsed,
       ))
@@ -94,5 +98,17 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
         ),
       );
     }
+  }
+
+  bool validateNewCreatedEmailForCurrentThread(
+    Email email,
+    ThreadId currentThreadId,
+  ) {
+    return email.threadId == currentThreadId &&
+        sentMailboxId != null &&
+        !email.inSentMailbox(sentMailboxId!) &&
+        ownEmailAddress != null &&
+        !email.fromMe(ownEmailAddress!) &&
+        !email.recipientsHasMe(ownEmailAddress!);
   }
 }

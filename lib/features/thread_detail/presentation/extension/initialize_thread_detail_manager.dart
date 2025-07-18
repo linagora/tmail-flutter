@@ -21,9 +21,10 @@ extension InitializeThreadDetailManager on ThreadDetailManager {
       );
       currentMobilePageViewIndex.value = currentThreadIndex;
     } else if (selectedEmail?.id != null) {
-      final currentEmailIndex = currentDisplayedEmails.indexOf(
-        selectedEmail!,
-      );
+      final currentEmailIndex = currentDisplayedEmails
+        .map((email) => email.id)
+        .toList()
+        .indexOf(selectedEmail?.id);
       currentMobilePageViewIndex.value = currentEmailIndex;
     }
 

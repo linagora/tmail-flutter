@@ -114,6 +114,8 @@ extension PresentationEmailExtension on PresentationEmail {
       listPostHeader: listPostHeader,
       listUnsubscribeHeader: listUnsubscribeHeader,
       threadId: threadId,
+      messageId: messageId,
+      references: references,
     );
   }
 
