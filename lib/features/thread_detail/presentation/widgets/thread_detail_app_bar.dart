@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app_bar_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class ThreadDetailAppBar extends StatelessWidget {
   const ThreadDetailAppBar({
@@ -140,7 +141,10 @@ class ThreadDetailAppBar extends StatelessWidget {
                 ],
                 if (!responsiveUtils.isMobile(context)) const Spacer(),
               ] else const Spacer(),
-              ...optionWidgets,
+              if (AppUtils.getCurrentDirection(context) == TextDirection.rtl)
+                ...optionWidgets.reversed
+              else
+                ...optionWidgets,
               if (lastEmailOfThread != null)
                 TMailButtonWidget.fromIcon(
                   icon: imagePaths.icMoreVertical,

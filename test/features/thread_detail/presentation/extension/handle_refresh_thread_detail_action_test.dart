@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
@@ -92,6 +93,10 @@ void main() {
         }));
         when(threadDetailController.isThreadDetailEnabled).thenReturn(true);
         when(threadDetailController.currentExpandedEmailId).thenReturn(Rxn());
+        when(threadDetailController.sentMailboxId)
+            .thenReturn(MailboxId(Id('sent-mailbox-id')));
+        when(threadDetailController.ownEmailAddress)
+            .thenReturn('9jEYK@example.com');
 
         // act
         threadDetailController.handleRefreshThreadDetailAction(

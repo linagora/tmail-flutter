@@ -53,6 +53,8 @@ class ReceivedTimeBuilder extends StatelessWidget {
     if (from.isAfter(to)) return '';
 
     final days = to.difference(from).inDays;
+    if (days >=7) return '';
+    
     return appLocalizations.daysAgo(days);
   }
 }

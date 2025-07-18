@@ -70,15 +70,6 @@ class ThreadDetailManager extends BaseController {
       );
     });
     ever(
-      currentDisplayedEmails,
-      (emails) {
-        if (mailboxDashBoardController.dashboardRoute.value != DashboardRoutes.threadDetailed) {
-          return;
-        }
-        initializeThreadDetailManager(emails);
-      },
-    );
-    ever(
       mailboxDashBoardController.dashboardRoute,
       (route) {
         final selectedEmail = mailboxDashBoardController.selectedEmail.value;

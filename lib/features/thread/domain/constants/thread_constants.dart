@@ -26,6 +26,7 @@ class ThreadConstants {
     IndividualHeaderIdentifier.xPriorityHeader.value,
     IndividualHeaderIdentifier.importanceHeader.value,
     IndividualHeaderIdentifier.priorityHeader.value,
+    IndividualHeaderIdentifier.listUnsubscribeHeader.value,
   });
   static final propertiesUpdatedDefault = propertiesDefault;
 

@@ -7,8 +7,8 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 extension ThreadDetailNextPreviousActions on ThreadDetailManager {
   bool get nextAvailable => isThreadDetailEnabled
-      ? currentThreadId != availableThreadIds.lastOrNull
-      : currentEmailId != currentDisplayedEmails.lastOrNull?.id;
+      ? currentThreadId != availableThreadIds.lastOrNull && availableThreadIds.contains(currentThreadId)
+      : currentEmailId != currentDisplayedEmails.lastOrNull?.id && currentDisplayedEmails.map((email) => email.id).contains(currentEmailId);
 
   void onNext() {
     if (!nextAvailable) return;
@@ -23,8 +23,8 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
   }
 
   bool get previousAvailable => isThreadDetailEnabled
-      ? currentThreadId != availableThreadIds.firstOrNull
-      : currentEmailId != currentDisplayedEmails.firstOrNull?.id;
+      ? currentThreadId != availableThreadIds.firstOrNull && availableThreadIds.contains(currentThreadId)
+      : currentEmailId != currentDisplayedEmails.firstOrNull?.id && currentDisplayedEmails.map((email) => email.id).contains(currentEmailId);
       
   void onPrevious() {
     if (!previousAvailable) return;
@@ -32,7 +32,9 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
     final currentIndex = isThreadDetailEnabled
         ? availableThreadIds.indexOf(currentThreadId!)
         : currentDisplayedEmails
-            .indexOf(mailboxDashBoardController.selectedEmail.value!);
+            .map((email) => email.id)
+            .toList()
+            .indexOf(mailboxDashBoardController.selectedEmail.value?.id);
     _navigate(currentIndex - 1, isThreadDetailEnabled);
   }
 
