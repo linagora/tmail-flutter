@@ -250,8 +250,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   }
 
   bool _showDaysAgo(bool isResponsiveMobile) {
-    return isInsideThreadDetailView &&
-      emailSelected.emailInThreadStatus == EmailInThreadStatus.collapsed &&
-      !isResponsiveMobile;
+    return isInsideThreadDetailView && !isResponsiveMobile;
   }
 }
