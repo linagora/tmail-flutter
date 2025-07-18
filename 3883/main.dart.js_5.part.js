@@ -9648,16 +9648,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       if (_this.presentationEmail.emailInThreadStatus === C.EmailInThreadStatus_0)
         return A._setArrayType([_this._getReplyButton$1(appLocalizations)], type$.JSArray_Widget);
-      t1 = A._setArrayType([_this._getReplyButton$1(appLocalizations)], type$.JSArray_Widget);
-      t2 = !isResponsiveMobile;
-      if (t2)
-        t1.push(_this._getMoveEmailButton$1(appLocalizations));
-      t1.push(_this._getMarkStarButton$1(appLocalizations));
-      if (t2)
-        t1.push(_this._getDeleteButton$1(appLocalizations));
+      t1 = type$.JSArray_Widget;
+      t2 = A._setArrayType([_this._getReplyButton$1(appLocalizations)], t1);
+      if (isResponsiveDesktop)
+        C.JSArray_methods.addAll$1(t2, A._setArrayType([_this._getMoveEmailButton$1(appLocalizations), _this._getMarkStarButton$1(appLocalizations), _this._getDeleteButton$1(appLocalizations)], t1));
       if (!_this.isOnlyEmailInThread)
-        t1.push(_this._getMoreButton$2(appLocalizations, isScreenWithShortestSide));
-      return t1;
+        t2.push(_this._getMoreButton$2(appLocalizations, isScreenWithShortestSide));
+      return t2;
     }
   };
   B.EmailViewBackButton.prototype = {
@@ -15175,8 +15172,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3.push(new A.Padding(C.EdgeInsetsDirectional_16_0_0_0, A.SvgPicture$asset(_s31_, C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4289640386), C.BoxFit_1, 20, _null, _null, 20), _null));
       t6 = t1.isInsideThreadDetailView;
       if (t6 && !(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600)) {
-        t7 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data;
-        t3.push(new B.ReceivedTimeBuilder(t5, D.EdgeInsetsDirectional_8_2_0_0, t6 && !(t7.size._dx < 600), _null));
+        t7 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200;
+        t3.push(new B.ReceivedTimeBuilder(t5, D.EdgeInsetsDirectional_8_2_0_0, t6 && t7, _null));
       }
       if (t4 && !t5.get$hasRead() && !(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600))
         t3.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, _null, _s34_, _null, 9, _null, C.EdgeInsetsDirectional_8_0_0_0, 1 / 0, _null, new B.InformationSenderAndReceiverBuilder_build__closure1(t1), _null, _null, _null));
@@ -15193,8 +15190,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A._setArrayType([], t2);
         if (t1._showAttachmentIcon$0())
           t2.push(new A.Padding(C.EdgeInsetsDirectional_0_0_8_0, A.SvgPicture$asset(_s31_, C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4289640386), C.BoxFit_1, 20, _null, _null, 20), _null));
-        t4 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t4).data;
-        t2.push(new B.ReceivedTimeBuilder(t5, D.EdgeInsetsDirectional_0_5_0_5, t6 && !(t4.size._dx < 600), _null));
+        t4 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t4).data.size._dx >= 1200;
+        t2.push(new B.ReceivedTimeBuilder(t5, D.EdgeInsetsDirectional_0_5_0_5, t6 && t4, _null));
         t3.push(A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null));
       }
       if (B.PresentationEmailExtension_get_countRecipients(t5) > 0 && t1.showRecipients)
@@ -21038,5 +21035,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "OO7xoBup4g2/5DHGwxI9y80wIRI=");
+})($__dart_deferred_initializers__, "MWbE1NcKhXUwhSHXqqo8UK1LboE=");
 ;
