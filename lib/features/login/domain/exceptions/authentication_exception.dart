@@ -25,8 +25,6 @@ class InvalidBaseUrl extends AuthenticationException {
   InvalidBaseUrl() : super(AuthenticationException.invalidBaseUrl);
 }
 
-class NotFoundAccessTokenException implements Exception {}
-
 class AccessTokenInvalidException implements Exception {}
 
 class DownloadAttachmentHasTokenExpiredException implements Exception {

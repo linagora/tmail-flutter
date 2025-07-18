@@ -1,4 +1,3 @@
-
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/token_id.dart';
