@@ -91,7 +91,7 @@ class ThreadDetailController extends BaseController {
   late final _threadGetDebouncer = Debouncer<ThreadId?>(
     const Duration(milliseconds: 500),
     initialValue: null,
-    checkEquality: true,
+    checkEquality: false,
     onChanged: (threadId) {
       if (_validateLoadThread(threadId)) {
         consumeState(_getEmailIdsByThreadIdInteractor.execute(
