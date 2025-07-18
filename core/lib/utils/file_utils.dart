@@ -9,7 +9,7 @@ import 'package:flutter_charset_detector/flutter_charset_detector.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileUtils {
-  static const String DEFAULT_CHARSET = 'uft-8';
+  static const String DEFAULT_CHARSET = 'utf-8';
   static const String TEXT_PLAIN_MIME_TYPE = 'text/plain';
 
   Future<String> _getInternalStorageDirPath({
@@ -140,7 +140,6 @@ class FileUtils {
 
   Future<String> getCharsetFromBytes(Uint8List bytes) async {
     try {
-      if (PlatformInfo.isIOS || PlatformInfo.isMacOS) return DEFAULT_CHARSET;
       final decodedResult = await CharsetDetector.autoDecode(bytes);
       log('FileUtils::getCharsetFromBytes: FILE_CHARSET = ${decodedResult.charset}');
       return decodedResult.charset;
