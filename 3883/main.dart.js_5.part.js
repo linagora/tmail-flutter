@@ -19974,56 +19974,35 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadDetailOnEmailActionClick__replyEmail_closure.prototype = {
     call$2(presentationEmail, emailLoaded) {
-      var t5, t6, _null = null,
+      var t3,
         t1 = emailLoaded == null,
-        t2 = t1 ? _null : emailLoaded.htmlContent,
-        t3 = t1 ? _null : emailLoaded.inlineImages,
-        t4 = presentationEmail.mailboxContain;
-      t4 = t4 == null ? _null : t4.role;
-      if (t1)
-        t5 = _null;
-      else {
-        t5 = emailLoaded.emailCurrent;
-        t5 = t5 == null ? _null : t5.messageId;
-      }
-      if (t1)
-        t6 = _null;
-      else {
-        t6 = emailLoaded.emailCurrent;
-        t6 = t6 == null ? _null : t6.references;
-      }
-      if (t1)
-        t1 = _null;
-      else {
-        t1 = emailLoaded.emailCurrent;
-        t1 = t1 == null ? _null : A.EmailExtension_get_listPost(t1);
-      }
-      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyEmail(t2, t3, t1, t4, t5, presentationEmail, t6));
+        t2 = t1 ? null : emailLoaded.htmlContent;
+      t1 = t1 ? null : emailLoaded.inlineImages;
+      t3 = presentationEmail.mailboxContain;
+      t3 = t3 == null ? null : t3.role;
+      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyEmail(t2, t1, presentationEmail.get$listPost(), t3, presentationEmail.messageId, presentationEmail, presentationEmail.references));
     },
     $signature: 216
   };
   B.ThreadDetailOnEmailActionClick__replyAll_closure.prototype = {
     call$2(presentationEmail, emailLoaded) {
-      var _null = null,
-        t1 = presentationEmail.mailboxContain;
-      t1 = t1 == null ? _null : t1.role;
-      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyAllEmail(_null, _null, _null, t1, _null, presentationEmail, _null));
+      var t1 = presentationEmail.mailboxContain;
+      t1 = t1 == null ? null : t1.role;
+      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyAllEmail(null, null, presentationEmail.get$listPost(), t1, presentationEmail.messageId, presentationEmail, presentationEmail.references));
     },
     $signature: 216
   };
   B.ThreadDetailOnEmailActionClick__replyToList_closure.prototype = {
     call$2(presentationEmail, emailLoaded) {
-      var _null = null,
-        t1 = presentationEmail.mailboxContain;
-      t1 = t1 == null ? _null : t1.role;
-      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyToListEmail(_null, _null, _null, t1, _null, presentationEmail, _null));
+      var t1 = presentationEmail.mailboxContain;
+      t1 = t1 == null ? null : t1.role;
+      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyToListEmail(null, null, presentationEmail.get$listPost(), t1, presentationEmail.messageId, presentationEmail, presentationEmail.references));
     },
     $signature: 216
   };
   B.ThreadDetailOnEmailActionClick__forward_closure.prototype = {
     call$2(presentationEmail, emailLoaded) {
-      var _null = null;
-      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$forwardEmail(_null, _null, _null, _null, presentationEmail, _null));
+      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$forwardEmail(null, null, null, presentationEmail.messageId, presentationEmail, presentationEmail.references));
     },
     $signature: 216
   };
@@ -21050,5 +21029,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "RK3lq3yniV0LSBh93D4xViEndDI=");
+})($__dart_deferred_initializers__, "ZGTnNL2DyQGsutMVmY3bpxnDh6Y=");
 ;
