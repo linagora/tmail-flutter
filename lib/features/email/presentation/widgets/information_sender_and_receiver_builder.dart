@@ -68,7 +68,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 4),
       child: Row(
         crossAxisAlignment: emailSelected.countRecipients > 0 && (showRecipients || responsiveUtils.isMobile(context))
           ? CrossAxisAlignment.start
