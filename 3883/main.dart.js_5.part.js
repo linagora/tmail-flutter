@@ -4241,12 +4241,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     ThreadDetailNextPreviousActions_get_nextAvailable(_this) {
       var t1, t2;
-      if (_this.threadDetailSettingStatus.get$value(0) === C.ThreadDetailSettingStatus_1)
-        t1 = !J.$eq$(_this.get$currentThreadId(), B.IterableExtension_get_lastOrNull(_this.availableThreadIds));
-      else {
+      if (_this.threadDetailSettingStatus.get$value(0) === C.ThreadDetailSettingStatus_1) {
+        t1 = _this.availableThreadIds;
+        t1 = !J.$eq$(_this.get$currentThreadId(), B.IterableExtension_get_lastOrNull(t1)) && t1.contains$1(t1, _this.get$currentThreadId());
+      } else {
         t1 = _this.get$currentEmailId();
         t2 = B.IterableExtension_get_lastOrNull(_this.get$currentDisplayedEmails());
-        t1 = !J.$eq$(t1, t2 == null ? null : t2.id);
+        if (!J.$eq$(t1, t2 == null ? null : t2.id)) {
+          t1 = _this.get$currentDisplayedEmails();
+          t1 = t1.contains$1(t1, _this.get$currentEmailId());
+        } else
+          t1 = false;
       }
       return t1;
     },
@@ -4275,12 +4280,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     ThreadDetailNextPreviousActions_get_previousAvailable(_this) {
       var t1, t2;
-      if (_this.threadDetailSettingStatus.get$value(0) === C.ThreadDetailSettingStatus_1)
-        t1 = !J.$eq$(_this.get$currentThreadId(), A.IterableExtension_get_firstOrNull(_this.availableThreadIds));
-      else {
+      if (_this.threadDetailSettingStatus.get$value(0) === C.ThreadDetailSettingStatus_1) {
+        t1 = _this.availableThreadIds;
+        t1 = !J.$eq$(_this.get$currentThreadId(), A.IterableExtension_get_firstOrNull(t1)) && t1.contains$1(t1, _this.get$currentThreadId());
+      } else {
         t1 = _this.get$currentEmailId();
         t2 = A.IterableExtension_get_firstOrNull(_this.get$currentDisplayedEmails());
-        t1 = !J.$eq$(t1, t2 == null ? null : t2.id);
+        if (!J.$eq$(t1, t2 == null ? null : t2.id)) {
+          t1 = _this.get$currentDisplayedEmails();
+          t1 = t1.contains$1(t1, _this.get$currentEmailId());
+        } else
+          t1 = false;
       }
       return t1;
     },
@@ -21035,5 +21045,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "MWbE1NcKhXUwhSHXqqo8UK1LboE=");
+})($__dart_deferred_initializers__, "0OFX5Z/dtbPoHysdbJn3zMiQSQE=");
 ;
