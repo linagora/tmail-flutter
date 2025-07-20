@@ -71,7 +71,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -490,8 +490,8 @@ void main() {
       when(context.mounted).thenReturn(true);
 
       // expect query in advanced filter controller update as expected
-      advancedFilterController.updateListEmailAddress(AdvancedSearchFilterField.from, [fromEmailAddress]);
-      advancedFilterController.updateListEmailAddress(AdvancedSearchFilterField.to, [toEmailAddress]);
+      advancedFilterController.updateListEmailAddress(FilterField.from, [fromEmailAddress]);
+      advancedFilterController.updateListEmailAddress(FilterField.to, [toEmailAddress]);
       advancedFilterController.subjectFilterInputController.text = emailSubject;
       advancedFilterController.hasKeyWordFilterInputController.text = emailContainsWord;
       advancedFilterController.notKeyWordFilterInputController.text = emailNotContainsWord;

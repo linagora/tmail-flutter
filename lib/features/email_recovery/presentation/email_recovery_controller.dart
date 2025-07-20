@@ -13,6 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/date_range_picker_mixin.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
@@ -20,10 +21,10 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomp
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/controller/input_field_focus_manager.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/extension/handle_auto_create_email_address_tag_extension.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
-import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_field.dart';
-import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_time_type.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/session_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -33,8 +34,8 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   GetDeviceContactSuggestionsInteractor? _getDeviceContactSuggestionsInteractor;
 
-  final deletionDateFieldSelected = EmailRecoveryTimeType.last7Days.obs;
-  final receptionDateFieldSelected = EmailRecoveryTimeType.allTime.obs;
+  final deletionDateFieldSelected = EmailReceiveTimeType.last7Days.obs;
+  final receptionDateFieldSelected = EmailReceiveTimeType.allTime.obs;
   final startDeletionDate = Rxn<DateTime>();
   final endDeletionDate = Rxn<DateTime>();
   final startReceptionDate = Rxn<DateTime>();
@@ -47,6 +48,8 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
 
   List<EmailAddress> listRecipients = <EmailAddress>[];
   List<EmailAddress> listSenders = <EmailAddress>[];
+  List<EmailReceiveTimeType> deletionDateTimeTypes = <EmailReceiveTimeType>[];
+  List<EmailReceiveTimeType> receptionDateTimeTypes = <EmailReceiveTimeType>[];
 
   TextEditingController subjectFieldInputController = TextEditingController();
   TextEditingController recipientsFieldInputController = TextEditingController();
@@ -59,8 +62,7 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
   EmailRecoveryArguments? arguments;
   AccountId? _accountId;
   Session? _session;
-
-  EmailRecoveryController();
+  int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
 
   @override
   void onInit() {
@@ -76,6 +78,8 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     if (arguments != null) {
       _accountId = arguments!.accountId;
       _session = arguments!.session;
+      _setUpTimeTypesForFields(arguments!.session);
+      _setUpMinInputLengthAutocomplete();
     }
     if (PlatformInfo.isMobile) {
       Future.delayed(
@@ -87,13 +91,29 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     super.onReady();
   }
 
-  int get minInputLengthAutocomplete {
+  void _setUpTimeTypesForFields(Session session) {
+    deletionDateTimeTypes = FilterField
+        .deletionDate
+        .getSupportedTimeTypes(session.getRestorationHorizonAsDateTime());
+
+    receptionDateTimeTypes = FilterField
+        .receptionDate
+        .getSupportedTimeTypes(session.getRestorationHorizonAsDateTime());
+
+    deletionDateFieldSelected.value = deletionDateTimeTypes.firstOrNull
+        ?? EmailReceiveTimeType.last7Days;
+    deletionDateFieldSelected.value = deletionDateTimeTypes.firstOrNull
+        ?? EmailReceiveTimeType.allTime;
+  }
+
+  void _setUpMinInputLengthAutocomplete() {
     if (_session == null || _accountId == null) {
-      return AppConfig.defaultMinInputLengthAutocomplete;
+      minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
     }
-    return getMinInputLengthAutocomplete(
+    minInputLengthAutocomplete = getMinInputLengthAutocomplete(
       session: _session!,
-      accountId: _accountId!);
+      accountId: _accountId!,
+    );
   }
 
   void _checkContactPermission() async {
@@ -128,6 +148,9 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
       recipientsExpandMode.value = ExpandMode.EXPAND;
       senderExpandMode.value = ExpandMode.COLLAPSE;
       _closeSuggestionBox();
+    } else {
+      recipientsExpandMode.value = ExpandMode.COLLAPSE;
+      autoCreateTagForFilterField(FilterField.recipients);
     }
   }
 
@@ -136,6 +159,9 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
       senderExpandMode.value = ExpandMode.EXPAND;
       recipientsExpandMode.value = ExpandMode.COLLAPSE;
       _closeSuggestionBox();
+    } else {
+      senderExpandMode.value = ExpandMode.COLLAPSE;
+      autoCreateTagForFilterField(FilterField.sender);
     }
   }
 
@@ -156,8 +182,8 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
       endDeletionDate.value,
       onCallbackAction: (startDate, endDate) {
         _updateDateRangeTime(
-          EmailRecoveryField.deletionDate,
-          EmailRecoveryTimeType.customRange,
+          FilterField.deletionDate,
+          EmailReceiveTimeType.customRange,
           startDate: startDate,
           endDate: endDate,
         );
@@ -172,8 +198,8 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
       endReceptionDate.value,
       onCallbackAction: (startDate, endDate) {
         _updateDateRangeTime(
-          EmailRecoveryField.receptionDate,
-          EmailRecoveryTimeType.customRange,
+          FilterField.receptionDate,
+          EmailReceiveTimeType.customRange,
           startDate: startDate,
           endDate: endDate,
         );
@@ -182,14 +208,14 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
   }
 
   void _updateDateRangeTime(
-    EmailRecoveryField field,
-    EmailRecoveryTimeType recoveryTimeType,
+    FilterField field,
+      EmailReceiveTimeType recoveryTimeType,
     {
       DateTime? startDate,
       DateTime? endDate,
     }
   ) {
-    if (field == EmailRecoveryField.deletionDate) {
+    if (field == FilterField.deletionDate) {
       deletionDateFieldSelected.value = recoveryTimeType;
       startDeletionDate.value = startDate;
       endDeletionDate.value = endDate;
@@ -200,12 +226,12 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     }
   }
 
-  void onDeletionDateTypeSelected(BuildContext context, EmailRecoveryTimeType type) {
-    if (type == EmailRecoveryTimeType.customRange) {
+  void onDeletionDateTypeSelected(BuildContext context, EmailReceiveTimeType type) {
+    if (type == EmailReceiveTimeType.customRange) {
       onSelectDeletionDateRange(context);
     } else {
       _updateDateRangeTime(
-        EmailRecoveryField.deletionDate,
+        FilterField.deletionDate,
         type,
         startDate: type.toLatestUTCDate()?.value,
         endDate: DateTime.now(),
@@ -213,12 +239,12 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     }
   }
 
-  void onReceptionDateTypeSelected(BuildContext context, EmailRecoveryTimeType type) {
-    if (type == EmailRecoveryTimeType.customRange) {
+  void onReceptionDateTypeSelected(BuildContext context, EmailReceiveTimeType type) {
+    if (type == EmailReceiveTimeType.customRange) {
       onSelectReceptionDateRange(context);
     } else {
       _updateDateRangeTime(
-        EmailRecoveryField.receptionDate,
+        FilterField.receptionDate,
         type,
       );
     }
@@ -278,12 +304,12 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     }
   }
 
-  void showFullEmailAddress(EmailRecoveryField field) {
+  void showFullEmailAddress(FilterField field) {
     switch (field) {
-      case EmailRecoveryField.recipients:
+      case FilterField.recipients:
         recipientsExpandMode.value = ExpandMode.EXPAND;
         break;
-      case EmailRecoveryField.sender:
+      case FilterField.sender:
         senderExpandMode.value = ExpandMode.EXPAND;
         break;
       default:
@@ -292,15 +318,15 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
   }
 
   void updateListEmailAddress(
-    EmailRecoveryField field,
+    FilterField field,
     List<EmailAddress> listEmailAddress,
   ) {
     switch (field) {
-      case EmailRecoveryField.recipients:
+      case FilterField.recipients:
         listRecipients = List.from(listEmailAddress);
         log('EmailRecoveryController::updateListEmailAddress(): listRecipients: ${listRecipients.first}');
         break;
-      case EmailRecoveryField.sender:
+      case FilterField.sender:
         listSenders = List.from(listEmailAddress);
         log('EmailRecoveryController::updateListEmailAddress(): listSenders: ${listSenders.first}');
         break;
@@ -316,7 +342,7 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     UTCDate? deletedAfter;
     UTCDate? receivedBefore;
     UTCDate? receivedAfter;
-    if (deletionDateFieldSelected.value == EmailRecoveryTimeType.customRange) {
+    if (deletionDateFieldSelected.value == EmailReceiveTimeType.customRange) {
       deletedBefore = endDeletionDate.value?.toUTCDate();
       deletedAfter = startDeletionDate.value?.toUTCDate();
       receivedBefore = endReceptionDate.value?.toUTCDate();
@@ -358,7 +384,7 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
   DateTime getRestorationHorizonAsDateTime() => arguments!.session.getRestorationHorizonAsDateTime();
 
   @override
-  void dispose() {
+  void onClose() {
     focusManager.subjectFieldFocusNode.removeListener(_onSubjectFieldFocusChanged);
     focusManager.recipientsFieldFocusNode.removeListener(_onRecipientsFieldFocusChanged);
     focusManager.senderFieldFocusNode.removeListener(_onSenderFieldFocusChanged);
@@ -366,6 +392,10 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     recipientsFieldInputController.dispose();
     senderFieldInputController.dispose();
     focusManager.dispose();
-    super.dispose();
+    listSenders.clear();
+    listRecipients.clear();
+    deletionDateTimeTypes.clear();
+    receptionDateTimeTypes.clear();
+    super.onClose();
   }
 }
