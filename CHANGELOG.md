@@ -1,3 +1,39 @@
+## [0.17.0] - 2025-07-20
+### Added
+- TF-3881 Thread Detail improvements and fixes.
+- TF-3878 Thread Detail content and setting fixes.
+- TF-3699 Thread Detail next/previous actions.
+- TF-3731 Thread Detail email cache optimization.
+- TF-3837 Thread Detail offline view adjustment.
+- TF-3804 Thread Detail parallel email loading.
+- TF-3844 Thread Detail context menu style fix.
+- TF-3845 Thread Detail blue bar scroll fix.
+- TF-3775 Thread Detail UI and functionality improvements.
+- TF-3720 Thread Detail email display refinements.
+- TF-3698 Thread Detail refactoring and real-time updates.
+- TF-3769 Thread Detail comprehensive UI/UX and performance enhancements.
+- TF-3697 Open specific thread detail email.
+- TF-3724 Thread Detail UI and action optimizations.
+- TF-3715 Thread Detail extensive bug fixes and action refinements.
+- TF-3644 Thread Detail scroll handling.
+- TF-3643 Thread Detail extensive UI/UX, performance, and data handling improvements.
+
+### Fixed
+- TF-3835 Android font selection fix.
+- HOTFIX Integration tests and Patrol version updates.
+- Spam banner/alert UI updates.
+- TF-3847 Stalwart server avatar fix.
+- Profile and Language settings UI/UX improvements.
+- Font rendering consistency.
+- Advanced search tag handling fix.
+- Preferences and Settings UI redesign.
+- Modal and dialog UI updates.
+- TF-3846 Notion email mobile view fix.
+- Custom font loading optimization.
+- TF-3826 Webfinger and network error handling for login.
+- #3885 Fix language default 
+- Android API 35 support
+
 ## [0.16.4] - 2025-07-01
 ### Fixed
 - Changing from Hive to HiveCE for fixing synchronizing issues when multiple isolate access to db
