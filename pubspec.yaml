@@ -298,7 +298,7 @@ dev_dependencies:
   plugin_platform_interface: 2.1.8
 
 dependency_overrides:
-  firebase_core_platform_interface: 4.6.0
+  firebase_core_platform_interface: 4.8.0
 
   json_annotation: 4.8.1
 
