@@ -1,3 +1,9 @@
+## [0.17.0] - 2025-07-21
+### Fixed
+- Blank email in thread detail after open email from notification
+- Content spacing between email in thread detail
+- Temporary disable Toggle quote in iOS (due to platform issue: click link in web view)
+
 ## [0.17.0] - 2025-07-20
 ### Added
 - TF-3881 Thread Detail improvements and fixes.
