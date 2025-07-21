@@ -316,7 +316,8 @@ class EmailView extends GetWidget<SingleEmailController> {
           ),
           isOnlyEmailInThread: controller.isOnlyEmailInThread,
         )),
-        const SizedBox(height: 24),
+        if (!controller.responsiveUtils.isMobile(context))
+         const SizedBox(height: 24),
         Obx(() => MailUnsubscribedBanner(
           presentationEmail: controller.currentEmail,
           emailUnsubscribe: controller.emailUnsubscribe.value
