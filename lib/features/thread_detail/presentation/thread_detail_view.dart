@@ -98,9 +98,25 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             );
           }),
           Obx(() {
+            final nonPageViewThread = Expanded(
+              child: Container(
+                color: Colors.white,
+                padding: _padding(context),
+                child: SingleChildScrollView(
+                  controller: controller.scrollController,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: controller.getThreadDetailEmailViews()
+                  ),
+                ),
+              ),
+            );
+
             if (PlatformInfo.isMobile) {
               final manager = controller.threadDetailManager;
               final currentIndex = manager.currentMobilePageViewIndex.value;
+
+              if (currentIndex == -1) return nonPageViewThread;
 
               return Expanded(
                 child: PageView.builder(
@@ -125,25 +141,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               );
             }
 
-            return Expanded(
-              child: Padding(
-                padding: _padding(context),
-                child: Stack(
-                  children: [
-                    const Positioned.fill(
-                      child: ColoredBox(color: Colors.white),
-                    ),
-                    SingleChildScrollView(
-                      controller: controller.scrollController,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: controller.getThreadDetailEmailViews()
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return nonPageViewThread;
           }),
           Obx(() {
             final expandedEmailId = controller.currentExpandedEmailId.value;
