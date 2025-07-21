@@ -15154,7 +15154,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.InformationSenderAndReceiverBuilder_build_closure.prototype = {
     call$2(context, constraints) {
-      var t5, t6, t7, _null = null,
+      var t5, t6, t7, t8, _null = null,
         _s34_ = "assets/images/ic_unread_status.svg",
         _s31_ = "assets/images/ic_attachment.svg",
         t1 = this.$this,
@@ -15166,10 +15166,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = t1.emailSelected;
       t6 = t5.from;
       if ((t6 == null ? _null : t6._collection$_length !== 0) === true) {
-        t6 = t6.get$first(0);
-        t7 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data;
-        t7 = t5.emailInThreadStatus === C.EmailInThreadStatus_1 && !(t7.size._dx < 600);
-        t3.push(new A.Flexible(1, C.FlexFit_1, new B.EmailSenderBuilder(t6, t1.openEmailAddressDetailAction, t7, _null), _null));
+        t7 = t6.get$first(0);
+        t8 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data;
+        t6 = t6.get$first(0).name;
+        if ((t6 == null ? "" : t6).length !== 0)
+          t6 = t5.emailInThreadStatus === C.EmailInThreadStatus_1 && !(t8.size._dx < 600);
+        else
+          t6 = true;
+        t3.push(new A.Flexible(1, C.FlexFit_1, new B.EmailSenderBuilder(t7, t1.openEmailAddressDetailAction, t6, _null), _null));
       }
       t6 = t1.sMimeStatus;
       if (t6 != null && t6 !== C.SMimeSignatureStatus_2) {
@@ -21071,5 +21075,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "iwe8uyD3IJ5pvzxzBqO5/xtBK/c=");
+})($__dart_deferred_initializers__, "ojaGzZOGcvRtqtdlOI7uBagf9k8=");
 ;
