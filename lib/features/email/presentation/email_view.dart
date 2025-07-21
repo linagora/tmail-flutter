@@ -459,7 +459,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                               onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                               onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                               keepAlive: isInsideThreadDetailView,
-                              enableQuoteToggle: isInsideThreadDetailView,
+                              // TODO: Change this to [enableQuoteToggle: isInsideThreadDetailView,] when upgrade to Flutter 3.27.4
+                              enableQuoteToggle: false,
                             );
                           }),
                         ),
