@@ -8,9 +8,11 @@ import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/email_avatar_builder.dart';
@@ -109,7 +111,10 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                 child: EmailSenderBuilder(
                                   emailAddress: emailSelected.from!.first,
                                   openEmailAddressDetailAction: openEmailAddressDetailAction,
-                                  showSenderEmail: _showSenderEmail(responsiveUtils.isMobile(context)),
+                                  showSenderEmail: _showSenderEmail(
+                                    responsiveUtils.isMobile(context),
+                                    senderEmail: emailSelected.from!.first,
+                                  ),
                                 ),
                               ),
                             if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
@@ -238,9 +243,13 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     );
   }
 
-  bool _showSenderEmail(bool isResponsiveMobile) {
-    return emailSelected.emailInThreadStatus == EmailInThreadStatus.expanded &&
-      !isResponsiveMobile;
+  bool _showSenderEmail(
+    bool isResponsiveMobile, {
+    required EmailAddress senderEmail,
+  }) {
+    return senderEmail.displayName.isEmpty ||
+        (emailSelected.emailInThreadStatus == EmailInThreadStatus.expanded &&
+            !isResponsiveMobile);
   }
 
   bool _showAttachmentIcon() {
