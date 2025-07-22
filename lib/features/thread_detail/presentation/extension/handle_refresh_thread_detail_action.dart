@@ -107,8 +107,8 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
     return email.threadId == currentThreadId &&
         sentMailboxId != null &&
         !email.inSentMailbox(sentMailboxId!) &&
-        ownEmailAddress != null &&
-        !email.fromMe(ownEmailAddress!) &&
-        !email.recipientsHasMe(ownEmailAddress!);
+        ownEmailAddress.isNotEmpty &&
+        !email.fromMe(ownEmailAddress) &&
+        !email.recipientsHasMe(ownEmailAddress);
   }
 }

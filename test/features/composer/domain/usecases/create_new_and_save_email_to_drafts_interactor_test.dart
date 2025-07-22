@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
@@ -41,6 +42,9 @@ void main() {
         session: SessionFixtures.aliceSession,
         accountId: AccountFixtures.aliceAccountId,
         emailActionType: EmailActionType.editDraft,
+        ownEmailAddress: SessionFixtures
+          .aliceSession
+          .getOwnEmailAddressOrEmpty(),
         subject: 'subject',
         emailContent: 'emailContent',
         draftsEmailId: EmailId(Id('some-id'))
@@ -81,6 +85,9 @@ void main() {
         session: SessionFixtures.aliceSession,
         accountId: AccountFixtures.aliceAccountId,
         emailActionType: EmailActionType.editDraft,
+        ownEmailAddress: SessionFixtures
+          .aliceSession
+          .getOwnEmailAddressOrEmpty(),
         subject: 'subject',
         emailContent: 'emailContent',
       );

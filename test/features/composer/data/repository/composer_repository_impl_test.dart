@@ -61,6 +61,7 @@ void main() {
       when(mockCreateEmailRequest.session).thenReturn(mockSession);
       when(mockCreateEmailRequest.identity).thenReturn(mockIdentity);
       when(mockCreateEmailRequest.replyToRecipients).thenReturn({});
+      when(mockCreateEmailRequest.ownEmailAddress).thenReturn('test@example.com');
 
       repository = ComposerRepositoryImpl(
         mockAttachmentUploadDataSource,

@@ -71,7 +71,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
             position: position,
             responsiveUtils: responsiveUtils,
             imagePaths: imagePaths,
-            username: session?.username,
+            ownEmailAddress: ownEmailAddress,
             handleEmailAction: threadDetailOnEmailActionClick,
             additionalActions: [
               EmailActionType.forward,
