@@ -162,13 +162,13 @@
       "emailAddress": {}
     }
   },
-  "prefix_reply_email": "Re :",
+  "prefix_reply_email": "Re:",
   "@prefix_reply_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_forward_email": "Tr :",
+  "prefix_forward_email": "Tr:",
   "@prefix_forward_email": {
     "type": "text",
     "placeholders_order": [],
