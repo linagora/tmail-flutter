@@ -1497,28 +1497,36 @@ class ComposerController extends BaseController
     } else {
       switch(prefixEmailAddress) {
         case PrefixEmailAddress.to:
-          toAddressExpandMode.value = ExpandMode.COLLAPSE;
+          if (mailboxDashBoardController.isPopupMenuOpened.isFalse) {
+            toAddressExpandMode.value = ExpandMode.COLLAPSE;
+          }
           final inputToEmail = toEmailAddressController.text;
           if (inputToEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.to, inputToEmail);
           }
           break;
         case PrefixEmailAddress.cc:
-          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          if (mailboxDashBoardController.isPopupMenuOpened.isFalse) {
+            ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          }
           final inputCcEmail = ccEmailAddressController.text;
           if (inputCcEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.cc, inputCcEmail);
           }
           break;
         case PrefixEmailAddress.bcc:
-          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          if (mailboxDashBoardController.isPopupMenuOpened.isFalse) {
+            bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          }
           final inputBccEmail = bccEmailAddressController.text;
           if (inputBccEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.bcc, inputBccEmail);
           }
           break;
         case PrefixEmailAddress.replyTo:
-          replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
+          if (mailboxDashBoardController.isPopupMenuOpened.isFalse) {
+            replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
+          }
           final inputReplyToEmail = replyToEmailAddressController.text;
           if (inputReplyToEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.replyTo, inputReplyToEmail);
@@ -1782,6 +1790,9 @@ class ComposerController extends BaseController
     richTextWebController?.closeAllMenuPopup();
     if (menuMoreOptionController?.menuIsShowing == true) {
       menuMoreOptionController?.hideMenu();
+    }
+    if (mailboxDashBoardController.isPopupMenuOpened.isTrue) {
+      popBack();
     }
   }
 
