@@ -41,7 +41,7 @@ typedef OnEditRecipientAction = void Function(
   BuildContext context,
   PrefixEmailAddress prefix,
   EmailAddress emailAddress,
-  RelativeRect position,
+  RelativeRect? position,
 );
 
 class RecipientComposerWidget extends StatefulWidget {

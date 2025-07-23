@@ -7,17 +7,20 @@ import 'package:universal_html/html.dart' as html;
 
 typedef OnRightMouseClickAction = void Function(RelativeRect position);
 typedef OnDoubleClickAction = void Function(RelativeRect position);
+typedef OnLongPressAction = void Function();
 
 class SmartInteractionWidget extends StatefulWidget {
   final Widget child;
   final OnRightMouseClickAction onRightMouseClickAction;
   final OnDoubleClickAction onDoubleClickAction;
+  final OnLongPressAction onLongPressAction;
 
   const SmartInteractionWidget({
     super.key,
     required this.child,
     required this.onRightMouseClickAction,
     required this.onDoubleClickAction,
+    required this.onLongPressAction,
   });
 
   @override
@@ -25,8 +28,8 @@ class SmartInteractionWidget extends StatefulWidget {
 }
 
 class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
-  final GlobalKey _childKey = GlobalKey();
 
+  GlobalKey? _childKey;
   Offset? _lastPointerEventOffset;
   StreamSubscription<html.MouseEvent>? _contextMenuSubscription;
 
@@ -34,6 +37,7 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
   void initState() {
     super.initState();
     if (PlatformInfo.isWeb) {
+      _childKey = GlobalKey();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _addWebContextMenuListener();
       });
@@ -47,7 +51,7 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
 
   void _onContextMenuListener(html.MouseEvent event) {
     final renderBox =
-        _childKey.currentContext?.findRenderObject() as RenderBox?;
+        _childKey?.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
     final localPosition = Offset(
@@ -79,7 +83,7 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
     Offset offset,
   ) {
     final widgetBox =
-        _childKey.currentContext?.findRenderObject() as RenderBox?;
+        _childKey?.currentContext?.findRenderObject() as RenderBox?;
     final overlayBox =
         Overlay.maybeOf(context)?.context.findRenderObject() as RenderBox?;
 
@@ -118,6 +122,8 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
     }
   }
 
+  void _handleLongPress() => widget.onLongPressAction();
+
   @override
   Widget build(BuildContext context) {
     if (PlatformInfo.isWeb) {
@@ -135,14 +141,17 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
         ),
       );
     } else {
-      return widget.child;
+      return GestureDetector(
+        onLongPress: _handleLongPress,
+        child: widget.child,
+      );
     }
   }
 
   @override
   void dispose() {
-    _lastPointerEventOffset = null;
     if (PlatformInfo.isWeb) {
+      _lastPointerEventOffset = null;
       _contextMenuSubscription?.cancel();
     }
     super.dispose();

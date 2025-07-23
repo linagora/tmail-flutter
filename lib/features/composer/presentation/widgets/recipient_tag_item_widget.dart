@@ -56,40 +56,51 @@ class RecipientTagItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget tagWidget = Chip(
-      labelPadding: EdgeInsetsDirectional.symmetric(
-        horizontal: 4,
-        vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
+    Widget tagWidget = SmartInteractionWidget(
+      onRightMouseClickAction: (position) => _onEditRecipientAction(
+        context,
+        position: position,
       ),
-      padding: EdgeInsets.zero,
-      label: Text(
-        key: Key('label_recipient_tag_item_${prefix.name}_$index'),
-        currentEmailAddress.asString(),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        softWrap: true,
+      onDoubleClickAction: (position) => _onEditRecipientAction(
+        context,
+        position: position,
       ),
-      deleteIcon: SvgPicture.asset(
-        imagePaths.icClose,
-        key: Key('delete_icon_recipient_tag_item_${prefix.name}_$index'),
-        fit: BoxFit.fill
+      onLongPressAction: () => _onEditRecipientAction(context),
+      child: Chip(
+        labelPadding: EdgeInsetsDirectional.symmetric(
+          horizontal: 4,
+          vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
+        ),
+        padding: EdgeInsets.zero,
+        label: Text(
+          key: Key('label_recipient_tag_item_${prefix.name}_$index'),
+          currentEmailAddress.asString(),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          softWrap: true,
+        ),
+        deleteIcon: SvgPicture.asset(
+          imagePaths.icClose,
+          key: Key('delete_icon_recipient_tag_item_${prefix.name}_$index'),
+          fit: BoxFit.fill
+        ),
+        labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
+        backgroundColor: _getTagBackgroundColor(),
+        side: _getTagBorderSide(),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
+        ),
+        avatar: currentEmailAddress.displayName.isNotEmpty
+          ? GradientCircleAvatarIcon(
+              key: Key('avatar_icon_recipient_tag_item_${prefix.name}_$index'),
+              colors: currentEmailAddress.avatarColors,
+              label: currentEmailAddress.displayName.firstLetterToUpperCase,
+              labelFontSize: RecipientTagItemWidgetStyle.avatarLabelFontSize,
+              iconSize: RecipientTagItemWidgetStyle.avatarIconSize,
+            )
+          : null,
+        onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
       ),
-      labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
-      backgroundColor: _getTagBackgroundColor(),
-      side: _getTagBorderSide(),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
-      ),
-      avatar: currentEmailAddress.displayName.isNotEmpty
-        ? GradientCircleAvatarIcon(
-            key: Key('avatar_icon_recipient_tag_item_${prefix.name}_$index'),
-            colors: currentEmailAddress.avatarColors,
-            label: currentEmailAddress.displayName.firstLetterToUpperCase,
-            labelFontSize: RecipientTagItemWidgetStyle.avatarLabelFontSize,
-            iconSize: RecipientTagItemWidgetStyle.avatarIconSize,
-          )
-        : null,
-      onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
     );
 
     if (PlatformInfo.isWeb || isTestingForWeb) {
@@ -103,17 +114,7 @@ class RecipientTagItemWidget extends StatelessWidget {
         childWhenDragging: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
         child: MouseRegion(
           cursor: SystemMouseCursors.grab,
-          child: SmartInteractionWidget(
-            onRightMouseClickAction: (position) => _onEditRecipientAction(
-              context,
-              position,
-            ),
-            onDoubleClickAction: (position) => _onEditRecipientAction(
-              context,
-              position,
-            ),
-            child: tagWidget,
-          ),
+          child: tagWidget,
         ),
       );
     }
@@ -185,7 +186,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     }
   }
 
-  void _onEditRecipientAction(BuildContext context, RelativeRect position) {
+  void _onEditRecipientAction(BuildContext context, {RelativeRect? position}) {
     onEditRecipientAction?.call(
       context,
       prefix,

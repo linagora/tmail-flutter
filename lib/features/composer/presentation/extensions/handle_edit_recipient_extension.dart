@@ -1,14 +1,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/context_item_email_address_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/popup_menu_item_email_address_action_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -17,31 +20,63 @@ extension HandleEditRecipientExtension on ComposerController {
     BuildContext context,
     PrefixEmailAddress prefix,
     EmailAddress emailAddress,
-    RelativeRect position,
+    RelativeRect? position,
   ) {
-    final popupMenuItems = EmailAddressActionType.values.map((type) {
-      return PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupMenuItemActionWidget(
-          menuAction: PopupMenuItemEmailAddressActionType(
-            type,
-            AppLocalizations.of(context),
-            imagePaths,
-          ),
-          menuActionClick: (menuAction) {
-            popBack();
-            _handleEmailAddressActionTypeClick(
-              context,
-              menuAction.action,
-              prefix,
-              emailAddress,
-            );
-          },
-        ),
-      );
-    }).toList();
+    if (position == null) {
+      clearFocus(context);
 
-    openPopupMenuAction(context, position, popupMenuItems);
+      final contextMenuActions = EmailAddressActionType.values
+        .map((action) => ContextItemEmailAddressActionType(
+          action,
+          AppLocalizations.of(context),
+          imagePaths
+        ))
+        .toList();
+
+      openBottomSheetContextMenuAction(
+        context: context,
+        itemActions: contextMenuActions,
+        onContextMenuActionClick: (menuAction) {
+          popBack();
+          _handleEmailAddressActionTypeClick(
+            context,
+            menuAction.action,
+            prefix,
+            emailAddress,
+          );
+        },
+      );
+    } else {
+      if (mailboxDashBoardController.isPopupMenuOpened.isTrue) return;
+
+      final popupMenuItems = EmailAddressActionType.values.map((type) {
+        return PopupMenuItem(
+          padding: EdgeInsets.zero,
+          child: PopupMenuItemActionWidget(
+            menuAction: PopupMenuItemEmailAddressActionType(
+              type,
+              AppLocalizations.of(context),
+              imagePaths,
+            ),
+            menuActionClick: (menuAction) {
+              popBack();
+              _handleEmailAddressActionTypeClick(
+                context,
+                menuAction.action,
+                prefix,
+                emailAddress,
+              );
+            },
+          ),
+        );
+      }).toList();
+
+      mailboxDashBoardController.openPopupMenu(
+        context,
+        position,
+        popupMenuItems,
+      );
+    }
   }
 
   void _handleEmailAddressActionTypeClick(
@@ -120,6 +155,22 @@ extension HandleEditRecipientExtension on ComposerController {
           composing: TextRange.empty,
         );
         bccAddressFocusNode?.requestFocus();
+        break;
+      case PrefixEmailAddress.replyTo:
+        listReplyToEmailAddress.remove(emailAddress);
+        replyToAddressExpandMode.value = ExpandMode.EXPAND;
+        replyToAddressExpandMode.refresh();
+
+        replyToEmailAddressController.text = emailAddress.emailAddress;
+        replyToEmailAddressController.value = replyToEmailAddressController.value.copyWith(
+          text: emailAddress.emailAddress,
+          selection: TextSelection(
+            baseOffset: emailAddress.emailAddress.length,
+            extentOffset: emailAddress.emailAddress.length,
+          ),
+          composing: TextRange.empty,
+        );
+        replyToAddressFocusNode?.requestFocus();
         break;
       default:
         break;
