@@ -101,6 +101,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             final nonPageViewThread = Expanded(
               child: Container(
                 color: Colors.white,
+                margin: const EdgeInsetsDirectional.only(end: 16),
                 padding: _padding(context),
                 child: SingleChildScrollView(
                   controller: controller.scrollController,
