@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-07-08T10:52:37.280039",
+  "@@last_modified": "2025-07-23T15:51:45.812311",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4591,5 +4591,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "daysAgo": "{days,plural, =0{}=1{ (1 day ago)}other{ ({days} days ago)}}",
+  "@daysAgo": {
+    "type": "text",
+    "placeholders_order": [
+      "days"
+    ],
+    "placeholders": {
+      "days": {}
+    }
   }
 }

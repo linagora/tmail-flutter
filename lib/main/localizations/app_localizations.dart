@@ -4844,6 +4844,8 @@ class AppLocalizations {
       zero: '',
       one: ' (1 day ago)',
       other: ' ($days days ago)',
+      name: 'daysAgo',
+      args: [days],
     );
   }
 }
