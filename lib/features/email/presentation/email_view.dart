@@ -446,10 +446,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     .disableAttachmentDraggableApp();
               },
               downloadAttachmentAction: (attachment) =>
-                  controller.handleDownloadAttachmentAction(
-                    context,
-                    attachment,
-                  ),
+                  controller.handleDownloadAttachmentAction(attachment),
               viewAttachmentAction: (attachment) =>
                   controller.handleViewAttachmentAction(
                     context,
@@ -463,7 +460,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                   controller.downloadAllButtonIsEnabled(),
               onTapDownloadAllButton: () =>
                   controller.handleDownloadAllAttachmentsAction(
-                context,
                 'TwakeMail-${DateTime.now()}',
               ),
               singleEmailControllerTag: tag,
