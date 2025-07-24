@@ -3626,7 +3626,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = B.SizedBox_null_null_null_null;
       return t1;
     },
-    $signature: 84
+    $signature: 94
   };
   C.ForwardView__buildLoadingView_closure.prototype = {
     call$0() {
@@ -3688,7 +3688,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure1(t1, focused));
     },
-    $signature: 86
+    $signature: 85
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure1.prototype = {
     call$0() {
@@ -5096,7 +5096,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return new A.Padding(C.SettingsUtils_getSettingProgressBarPadding(this.context, t3._as(t2.get(t1)).responsiveUtils), B.Center_cwU, null);
     },
-    $signature: 84
+    $signature: 94
   };
   C.PreferencesView_build_closure.prototype = {
     call$0() {
@@ -6091,5 +6091,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "axxJKudizM1mSsoGqK+D3bwYsDc=");
+})($__dart_deferred_initializers__, "t6KtQDTa7hz1N7G0v8aUxsdVlhA=");
 ;
