@@ -5,12 +5,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide OverlayEntry;
 import 'package:universal_html/html.dart' as html;
 
-typedef OnRightMouseClickAction = void Function(RelativeRect position);
-typedef OnDoubleClickAction = void Function(RelativeRect position);
+typedef OnRightMouseClickAction = void Function({RelativeRect? position});
+typedef OnDoubleClickAction = void Function({RelativeRect? position});
 typedef OnLongPressAction = void Function();
 
 class SmartInteractionWidget extends StatefulWidget {
   final Widget child;
+  final bool usePosition;
   final OnRightMouseClickAction onRightMouseClickAction;
   final OnDoubleClickAction onDoubleClickAction;
   final OnLongPressAction onLongPressAction;
@@ -21,6 +22,7 @@ class SmartInteractionWidget extends StatefulWidget {
     required this.onRightMouseClickAction,
     required this.onDoubleClickAction,
     required this.onLongPressAction,
+    this.usePosition = false,
   });
 
   @override
@@ -73,8 +75,12 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
 
       if (!mounted) return;
 
-      final relativeRect = _getRelativeRectFromOffset(context, localPosition);
-      widget.onRightMouseClickAction(relativeRect);
+      if (widget.usePosition) {
+        final relativeRect = _getRelativeRectFromOffset(context, localPosition);
+        widget.onRightMouseClickAction(position: relativeRect);
+      } else {
+        widget.onRightMouseClickAction();
+      }
     }
   }
 
@@ -113,12 +119,14 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
   }
 
   void _handleDoubleTap() {
-    if (_lastPointerEventOffset != null) {
+    if (widget.usePosition && _lastPointerEventOffset != null) {
       final relativeRect = _getRelativeRectFromOffset(
         context,
         _lastPointerEventOffset!,
       );
-      widget.onDoubleClickAction(relativeRect);
+      widget.onDoubleClickAction(position: relativeRect);
+    } else {
+      widget.onDoubleClickAction();
     }
   }
 
@@ -127,19 +135,28 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
   @override
   Widget build(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      return Listener(
-        key: _childKey,
-        onPointerDown: (event) {
-          if (event.kind == PointerDeviceKind.mouse ||
-              event.kind == PointerDeviceKind.touch) {
-            _lastPointerEventOffset = event.position;
-          }
-        },
-        child: GestureDetector(
+      if (widget.usePosition) {
+        return Listener(
+          key: _childKey,
+          onPointerDown: (event) {
+            if (event.kind == PointerDeviceKind.mouse ||
+                event.kind == PointerDeviceKind.touch) {
+              _lastPointerEventOffset = event.position;
+            }
+          },
+          child: GestureDetector(
+            onDoubleTap: _handleDoubleTap,
+            child: widget.child,
+          ),
+        );
+      } else {
+        return GestureDetector(
+          key: _childKey,
+          behavior: HitTestBehavior.opaque,
           onDoubleTap: _handleDoubleTap,
           child: widget.child,
-        ),
-      );
+        );
+      }
     } else {
       return GestureDetector(
         onLongPress: _handleLongPress,

@@ -1497,36 +1497,28 @@ class ComposerController extends BaseController
     } else {
       switch(prefixEmailAddress) {
         case PrefixEmailAddress.to:
-          if (mailboxDashBoardController.isPopupMenuOpened.isFalse) {
-            toAddressExpandMode.value = ExpandMode.COLLAPSE;
-          }
+          toAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputToEmail = toEmailAddressController.text;
           if (inputToEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.to, inputToEmail);
           }
           break;
         case PrefixEmailAddress.cc:
-          if (mailboxDashBoardController.isPopupMenuOpened.isFalse) {
-            ccAddressExpandMode.value = ExpandMode.COLLAPSE;
-          }
+          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputCcEmail = ccEmailAddressController.text;
           if (inputCcEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.cc, inputCcEmail);
           }
           break;
         case PrefixEmailAddress.bcc:
-          if (mailboxDashBoardController.isPopupMenuOpened.isFalse) {
-            bccAddressExpandMode.value = ExpandMode.COLLAPSE;
-          }
+          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputBccEmail = bccEmailAddressController.text;
           if (inputBccEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.bcc, inputBccEmail);
           }
           break;
         case PrefixEmailAddress.replyTo:
-          if (mailboxDashBoardController.isPopupMenuOpened.isFalse) {
-            replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
-          }
+          replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputReplyToEmail = replyToEmailAddressController.text;
           if (inputReplyToEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.replyTo, inputReplyToEmail);

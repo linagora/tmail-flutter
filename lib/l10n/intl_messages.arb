@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-07-23T15:51:45.812311",
+  "@@last_modified": "2025-07-24T16:57:08.573149",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4610,6 +4610,18 @@
   },
   "modifyEmailAddress": "Modify email address",
   "@modifyEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editEmail": "Edit email",
+  "@editEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createARule": "Create a rule",
+  "@createARule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -10,9 +10,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
-import 'package:tmail_ui_user/features/base/widget/smart_interaction_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/card_with_smart_interaction_overlay_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_tag_item_widget_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/view/edit_recipients_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/draggable_recipient_tag_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
@@ -56,16 +58,30 @@ class RecipientTagItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget tagWidget = SmartInteractionWidget(
-      onRightMouseClickAction: (position) => _onEditRecipientAction(
-        context,
-        position: position,
+    Widget tagWidget = CardWithSmartInteractionOverlayView(
+      menuBuilder: (onClose) => EditRecipientsView(
+        emailAddress: currentEmailAddress,
+        imagePaths: imagePaths,
+        onCopyAction: () => _onEditRecipientAction(
+          context,
+          EmailAddressActionType.copy,
+        ),
+        onEditAction: () {
+          onClose();
+          _onEditRecipientAction(
+            context,
+            EmailAddressActionType.modify,
+          );
+        },
+        onCreateRuleAction: () {
+          onClose();
+          _onEditRecipientAction(
+            context,
+            EmailAddressActionType.createRule,
+          );
+        },
+        onCloseAction: onClose,
       ),
-      onDoubleClickAction: (position) => _onEditRecipientAction(
-        context,
-        position: position,
-      ),
-      onLongPressAction: () => _onEditRecipientAction(context),
       child: Chip(
         labelPadding: EdgeInsetsDirectional.symmetric(
           horizontal: 4,
@@ -186,12 +202,15 @@ class RecipientTagItemWidget extends StatelessWidget {
     }
   }
 
-  void _onEditRecipientAction(BuildContext context, {RelativeRect? position}) {
+  void _onEditRecipientAction(
+    BuildContext context,
+    EmailAddressActionType emailAddressActionType,
+  ) {
     onEditRecipientAction?.call(
       context,
       prefix,
       currentEmailAddress,
-      position,
+      emailAddressActionType,
     );
   }
 }

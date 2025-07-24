@@ -75,7 +75,9 @@ class ThemeUtils {
       headlineSmall: TextStyle(
         fontFamily: ConstantsUI.fontApp,
         fontWeight: FontWeight.w600,
-        letterSpacing: 0.4,
+        fontSize: 24,
+        height: 32 / 24,
+        letterSpacing: 0.0,
       ),
       headlineLarge: TextStyle(
         fontFamily: ConstantsUI.fontApp,

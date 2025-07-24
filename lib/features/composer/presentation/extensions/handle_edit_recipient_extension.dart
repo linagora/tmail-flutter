@@ -1,17 +1,15 @@
 
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/context_item_email_address_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/popup_menu_item_email_address_action_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -20,9 +18,9 @@ extension HandleEditRecipientExtension on ComposerController {
     BuildContext context,
     PrefixEmailAddress prefix,
     EmailAddress emailAddress,
-    RelativeRect? position,
+    EmailAddressActionType emailAddressActionType,
   ) {
-    if (position == null) {
+    if (PlatformInfo.isMobile) {
       clearFocus(context);
 
       final contextMenuActions = EmailAddressActionType.values
@@ -47,34 +45,11 @@ extension HandleEditRecipientExtension on ComposerController {
         },
       );
     } else {
-      if (mailboxDashBoardController.isPopupMenuOpened.isTrue) return;
-
-      final popupMenuItems = EmailAddressActionType.values.map((type) {
-        return PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: PopupMenuItemActionWidget(
-            menuAction: PopupMenuItemEmailAddressActionType(
-              type,
-              AppLocalizations.of(context),
-              imagePaths,
-            ),
-            menuActionClick: (menuAction) {
-              popBack();
-              _handleEmailAddressActionTypeClick(
-                context,
-                menuAction.action,
-                prefix,
-                emailAddress,
-              );
-            },
-          ),
-        );
-      }).toList();
-
-      mailboxDashBoardController.openPopupMenu(
+      _handleEmailAddressActionTypeClick(
         context,
-        position,
-        popupMenuItems,
+        emailAddressActionType,
+        prefix,
+        emailAddress,
       );
     }
   }
@@ -91,6 +66,9 @@ extension HandleEditRecipientExtension on ComposerController {
         break;
       case EmailAddressActionType.modify:
         _modifyEmailAddress(prefix, emailAddress);
+        break;
+      case EmailAddressActionType.createRule:
+        _createRuleFromEmailAddress(emailAddress);
         break;
     }
   }
@@ -175,5 +153,11 @@ extension HandleEditRecipientExtension on ComposerController {
       default:
         break;
     }
+  }
+
+  Future<void> _createRuleFromEmailAddress(EmailAddress emailAddress) async {
+    await mailboxDashBoardController.openCreateEmailRuleView(
+      emailAddress: emailAddress,
+    );
   }
 }

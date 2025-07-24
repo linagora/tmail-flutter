@@ -20,6 +20,7 @@ import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_composer_widget_style.dart';
@@ -41,7 +42,7 @@ typedef OnEditRecipientAction = void Function(
   BuildContext context,
   PrefixEmailAddress prefix,
   EmailAddress emailAddress,
-  RelativeRect? position,
+  EmailAddressActionType emailAddressActionType,
 );
 
 class RecipientComposerWidget extends StatefulWidget {

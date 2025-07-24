@@ -82,7 +82,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_ma
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_filter_for_folder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
@@ -1275,7 +1275,9 @@ class MailboxController extends BaseMailboxController
         goToCreateNewMailboxView(context, parentMailbox: mailbox);
         break;
       case MailboxActions.createFilter:
-        mailboxDashBoardController.openCreateEmailRuleView(mailbox);
+        mailboxDashBoardController.openCreateEmailRuleView(
+          presentationMailbox: mailbox,
+        );
         break;
       case MailboxActions.recoverDeletedMessages:
         mailboxDashBoardController.gotoEmailRecovery();
