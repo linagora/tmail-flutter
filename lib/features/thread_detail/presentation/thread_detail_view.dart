@@ -29,178 +29,184 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
   
   @override
   Widget build(BuildContext context) {
-    final child = SelectionArea(child: SafeArea(
-      child: Column(
-        children: [
-          Obx(() {
-            final isLoading = showLoadingView(controller.viewState.value);
+    Widget bodyWidget = Column(
+      children: [
+        Obx(() {
+          final isLoading = showLoadingView(controller.viewState.value);
 
-            return ThreadDetailAppBar(
-              responsiveUtils: controller.responsiveUtils,
-              imagePaths: controller.imagePaths,
-              isSearchRunning: controller.isSearchRunning,
-              closeThreadDetailAction: controller.closeThreadDetailAction,
-              lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
-              ownUserName: controller.session?.getOwnEmailAddress() ?? '',
-              mailboxContain: _getMailboxContain(),
-              onEmailActionClick: isLoading
+          return ThreadDetailAppBar(
+            responsiveUtils: controller.responsiveUtils,
+            imagePaths: controller.imagePaths,
+            isSearchRunning: controller.isSearchRunning,
+            closeThreadDetailAction: controller.closeThreadDetailAction,
+            lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
+            ownUserName: controller.session?.getOwnEmailAddress() ?? '',
+            mailboxContain: _getMailboxContain(),
+            onEmailActionClick: isLoading
                 ? null
                 : controller.threadDetailOnEmailActionClick,
-              onMoreActionClick: (presentationEmail, position) => isLoading
+            onMoreActionClick: (presentationEmail, position) => isLoading
                 ? null
                 : controller.emailActionReactor.handleMoreEmailAction(
-                    mailboxContain: controller.getThreadDetailEmailMailboxContains(
-                      presentationEmail,
-                    ),
-                    presentationEmail: presentationEmail,
-                    position: position,
-                    responsiveUtils: controller.responsiveUtils,
-                    imagePaths: controller.imagePaths,
-                    username: controller.session?.username,
-                    handleEmailAction: controller.threadDetailOnEmailActionClick,
-                    additionalActions: [
-                      if (controller.responsiveUtils.isMobile(context)) ...[
-                        EmailActionType.forward,
-                        EmailActionType.replyAll,
-                        EmailActionType.replyToList,
-                      ],
-                      EmailActionType.markAsStarred,
-                      EmailActionType.unMarkAsStarred,
-                      EmailActionType.moveToTrash,
-                      EmailActionType.deletePermanently,
-                      EmailActionType.printAll,
-                      EmailActionType.moveToMailbox,
-                    ],
-                    emailIsRead: presentationEmail.hasRead,
-                    openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
-                    openPopupMenu: controller.mailboxDashBoardController.openPopupMenu,
-                  ),
-              optionWidgets: [
-                if (controller.previousAvailable)
-                  TMailButtonWidget.fromIcon(
-                    icon: controller.imagePaths.icNewer,
-                    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                    iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                    tooltipMessage: AppLocalizations.of(context).newer,
-                    backgroundColor: Colors.transparent,
-                    onTapActionCallback: controller.onPrevious,
-                  ),
-                if (controller.nextAvailable)
-                  TMailButtonWidget.fromIcon(
-                    icon: controller.imagePaths.icOlder,
-                    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                    iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                    tooltipMessage: AppLocalizations.of(context).older,
-                    backgroundColor: Colors.transparent,
-                    onTapActionCallback: controller.onNext,
-                  ),
+              mailboxContain: controller.getThreadDetailEmailMailboxContains(
+                presentationEmail,
+              ),
+              presentationEmail: presentationEmail,
+              position: position,
+              responsiveUtils: controller.responsiveUtils,
+              imagePaths: controller.imagePaths,
+              username: controller.session?.username,
+              handleEmailAction: controller.threadDetailOnEmailActionClick,
+              additionalActions: [
+                if (controller.responsiveUtils.isMobile(context)) ...[
+                  EmailActionType.forward,
+                  EmailActionType.replyAll,
+                  EmailActionType.replyToList,
+                ],
+                EmailActionType.markAsStarred,
+                EmailActionType.unMarkAsStarred,
+                EmailActionType.moveToTrash,
+                EmailActionType.deletePermanently,
+                EmailActionType.printAll,
+                EmailActionType.moveToMailbox,
               ],
-            );
-          }),
-          Obx(() {
-            final nonPageViewThread = Expanded(
-              child: Container(
-                color: Colors.white,
-                padding: _padding(context),
-                child: SingleChildScrollView(
-                  controller: controller.scrollController,
-                  child: Column(
+              emailIsRead: presentationEmail.hasRead,
+              openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
+              openPopupMenu: controller.mailboxDashBoardController.openPopupMenu,
+            ),
+            optionWidgets: [
+              if (controller.previousAvailable)
+                TMailButtonWidget.fromIcon(
+                  icon: controller.imagePaths.icNewer,
+                  iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                  tooltipMessage: AppLocalizations.of(context).newer,
+                  backgroundColor: Colors.transparent,
+                  onTapActionCallback: controller.onPrevious,
+                ),
+              if (controller.nextAvailable)
+                TMailButtonWidget.fromIcon(
+                  icon: controller.imagePaths.icOlder,
+                  iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                  tooltipMessage: AppLocalizations.of(context).older,
+                  backgroundColor: Colors.transparent,
+                  onTapActionCallback: controller.onNext,
+                ),
+            ],
+          );
+        }),
+        Obx(() {
+          final nonPageViewThread = Expanded(
+            child: Container(
+              color: Colors.white,
+              padding: _padding(context),
+              child: SingleChildScrollView(
+                controller: controller.scrollController,
+                child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: controller.getThreadDetailEmailViews()
-                  ),
                 ),
               ),
-            );
+            ),
+          );
 
-            if (PlatformInfo.isMobile) {
-              final manager = controller.threadDetailManager;
-              final currentIndex = manager.currentMobilePageViewIndex.value;
+          if (PlatformInfo.isMobile) {
+            final manager = controller.threadDetailManager;
+            final currentIndex = manager.currentMobilePageViewIndex.value;
 
-              if (currentIndex == -1) return nonPageViewThread;
+            if (currentIndex == -1) return nonPageViewThread;
 
-              return Expanded(
-                child: PageView.builder(
-                  controller: manager.pageController,
-                  itemCount: manager.isThreadDetailEnabled
+            return Expanded(
+              child: PageView.builder(
+                controller: manager.pageController,
+                itemCount: manager.isThreadDetailEnabled
                     ? manager.availableThreadIds.length
                     : manager.currentDisplayedEmails.length,
-                  itemBuilder: (context, index) {
-                    if (index != currentIndex) {
-                      return const SizedBox.shrink();
-                    }
-                
-                    return SingleChildScrollView(
-                      child: Column(
+                itemBuilder: (context, index) {
+                  if (index != currentIndex) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return SingleChildScrollView(
+                    child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: controller.getThreadDetailEmailViews()
-                      ),
-                    );
-                  },
-                  onPageChanged: controller.onThreadPageChanged,
-                ),
-              );
-            }
-
-            return nonPageViewThread;
-          }),
-          Obx(() {
-            final expandedEmailId = controller.currentExpandedEmailId.value;
-            if (expandedEmailId == null) {
-              return const SizedBox.shrink();
-            }
-            final expandedPresentationEmail = controller.emailIdsPresentation[expandedEmailId];
-            if (expandedPresentationEmail == null) {
-              return const SizedBox.shrink();
-            }
-
-            final currentEmailLoaded = controller.currentEmailLoaded.value;
-            if (currentEmailLoaded == null) {
-              return const SizedBox.shrink();
-            }
-
-            return Padding(
-              padding: controller.responsiveUtils.isDesktop(context)
-                ? const EdgeInsetsDirectional.only(end: 16)
-                : EdgeInsets.zero,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(20),
-                ),
-                child: EmailViewBottomBarWidget(
-                  key: const Key('email_view_button_bar'),
-                  imagePaths: controller.imagePaths,
-                  responsiveUtils: controller.responsiveUtils,
-                  emailLoaded: currentEmailLoaded,
-                  presentationEmail: expandedPresentationEmail,
-                  userName: controller.session?.getOwnEmailAddress() ?? '',
-                  emailActionCallback: (action, email) {
-                    controller.mailboxDashBoardController
-                      ..dispatchEmailUIAction(PerformEmailActionInThreadDetailAction(
-                        emailActionType: action,
-                        presentationEmail: email,
-                      ))
-                      ..dispatchEmailUIAction(EmailUIAction());
-                  },
-                  bottomBarDecoration: const BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      top: BorderSide(color: AppColor.colorDividerEmailView),
                     ),
-                  ),
-                  padding: EdgeInsets.zero,
-                ),
+                  );
+                },
+                onPageChanged: controller.onThreadPageChanged,
               ),
             );
-          }),
-          if (controller.responsiveUtils.isDesktop(context))
-            const SizedBox(height: 16),
-        ],
-      ),
-    ));
+          }
+
+          return nonPageViewThread;
+        }),
+        Obx(() {
+          final expandedEmailId = controller.currentExpandedEmailId.value;
+          if (expandedEmailId == null) {
+            return const SizedBox.shrink();
+          }
+          final expandedPresentationEmail = controller.emailIdsPresentation[expandedEmailId];
+          if (expandedPresentationEmail == null) {
+            return const SizedBox.shrink();
+          }
+
+          final currentEmailLoaded = controller.currentEmailLoaded.value;
+          if (currentEmailLoaded == null) {
+            return const SizedBox.shrink();
+          }
+
+          return Padding(
+            padding: controller.responsiveUtils.isDesktop(context)
+                ? const EdgeInsetsDirectional.only(end: 16)
+                : EdgeInsets.zero,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(20),
+              ),
+              child: EmailViewBottomBarWidget(
+                key: const Key('email_view_button_bar'),
+                imagePaths: controller.imagePaths,
+                responsiveUtils: controller.responsiveUtils,
+                emailLoaded: currentEmailLoaded,
+                presentationEmail: expandedPresentationEmail,
+                userName: controller.session?.getOwnEmailAddress() ?? '',
+                emailActionCallback: (action, email) {
+                  controller.mailboxDashBoardController
+                    ..dispatchEmailUIAction(PerformEmailActionInThreadDetailAction(
+                      emailActionType: action,
+                      presentationEmail: email,
+                    ))
+                    ..dispatchEmailUIAction(EmailUIAction());
+                },
+                bottomBarDecoration: const BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    top: BorderSide(color: AppColor.colorDividerEmailView),
+                  ),
+                ),
+                padding: EdgeInsets.zero,
+              ),
+            ),
+          );
+        }),
+        if (controller.responsiveUtils.isDesktop(context))
+          const SizedBox(height: 16),
+      ],
+    );
+
+    if (PlatformInfo.isMobile) {
+      bodyWidget = SafeArea(child: bodyWidget);
+    }
+
+    if (PlatformInfo.isWeb) {
+      bodyWidget = SelectionArea(child: bodyWidget);
+    }
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
-      child: child,
+      child: bodyWidget,
     );
   }
 
