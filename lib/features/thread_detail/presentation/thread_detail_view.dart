@@ -97,17 +97,23 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           );
         }),
         Obx(() {
+          final threadChildren = controller.getThreadDetailEmailViews();
+
+          late Widget threadBody;
+
+          if (threadChildren.length == 1) {
+            threadBody = threadChildren.first;
+          } else {
+            threadBody = Column(
+              mainAxisSize: MainAxisSize.min,
+              children: threadChildren,
+            );
+          }
+
           final nonPageViewThread = Expanded(
-            child: Container(
-              color: Colors.white,
-              padding: _padding(context),
-              child: SingleChildScrollView(
-                controller: controller.scrollController,
-                child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: controller.getThreadDetailEmailViews()
-                ),
-              ),
+            child: SingleChildScrollView(
+              controller: controller.scrollController,
+              child: threadBody,
             ),
           );
 
@@ -127,13 +133,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                   if (index != currentIndex) {
                     return const SizedBox.shrink();
                   }
-
-                  return SingleChildScrollView(
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: controller.getThreadDetailEmailViews()
-                    ),
-                  );
+                  return SingleChildScrollView(child: threadBody);
                 },
                 onPageChanged: controller.onThreadPageChanged,
               ),
@@ -157,42 +157,30 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             return const SizedBox.shrink();
           }
 
-          return Padding(
-            padding: controller.responsiveUtils.isDesktop(context)
-                ? const EdgeInsetsDirectional.only(end: 16)
-                : EdgeInsets.zero,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(20),
-              ),
-              child: EmailViewBottomBarWidget(
-                key: const Key('email_view_button_bar'),
-                imagePaths: controller.imagePaths,
-                responsiveUtils: controller.responsiveUtils,
-                emailLoaded: currentEmailLoaded,
-                presentationEmail: expandedPresentationEmail,
-                userName: controller.session?.getOwnEmailAddress() ?? '',
-                emailActionCallback: (action, email) {
-                  controller.mailboxDashBoardController
-                    ..dispatchEmailUIAction(PerformEmailActionInThreadDetailAction(
-                      emailActionType: action,
-                      presentationEmail: email,
-                    ))
-                    ..dispatchEmailUIAction(EmailUIAction());
-                },
-                bottomBarDecoration: const BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    top: BorderSide(color: AppColor.colorDividerEmailView),
-                  ),
-                ),
-                padding: EdgeInsets.zero,
+          return EmailViewBottomBarWidget(
+            key: const Key('email_view_button_bar'),
+            imagePaths: controller.imagePaths,
+            responsiveUtils: controller.responsiveUtils,
+            emailLoaded: currentEmailLoaded,
+            presentationEmail: expandedPresentationEmail,
+            userName: controller.session?.getOwnEmailAddress() ?? '',
+            emailActionCallback: (action, email) {
+              controller.mailboxDashBoardController
+                ..dispatchEmailUIAction(PerformEmailActionInThreadDetailAction(
+                  emailActionType: action,
+                  presentationEmail: email,
+                ))
+                ..dispatchEmailUIAction(EmailUIAction());
+            },
+            bottomBarDecoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(color: AppColor.colorDividerEmailView),
               ),
             ),
+            padding: EdgeInsets.zero,
           );
         }),
-        if (controller.responsiveUtils.isDesktop(context))
-          const SizedBox(height: 16),
       ],
     );
 
@@ -204,17 +192,19 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
       bodyWidget = SelectionArea(child: bodyWidget);
     }
 
-    return ClipRRect(
-      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
-      child: bodyWidget,
-    );
-  }
-
-  EdgeInsetsGeometry _padding(BuildContext context) {
     if (controller.responsiveUtils.isDesktop(context)) {
-      return const EdgeInsetsDirectional.only(end: 16);
+      return Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          color: Colors.white,
+        ),
+        margin: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
+        clipBehavior: Clip.antiAlias,
+        child: bodyWidget,
+      );
+    } else {
+      return ColoredBox(color: Colors.white, child: bodyWidget);
     }
-    return EdgeInsets.zero;
   }
 
   PresentationMailbox? _getMailboxContain() {

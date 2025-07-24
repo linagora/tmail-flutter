@@ -71,18 +71,12 @@ class ThreadDetailAppBar extends StatelessWidget {
           padding: PlatformInfo.isIOS
             ? EmailViewAppBarWidgetStyles.paddingIOS(context, responsiveUtils)
             : EmailViewAppBarWidgetStyles.padding,
-          margin: !PlatformInfo.isMobile && responsiveUtils.isDesktop(context)
-            ? const EdgeInsetsDirectional.only(end: 16)
-            : EdgeInsets.zero,
           decoration: const BoxDecoration(
             border: Border(
               bottom: BorderSide(
                 color: EmailViewAppBarWidgetStyles.bottomBorderColor,
                 width: EmailViewAppBarWidgetStyles.bottomBorderWidth,
               ),
-            ),
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(EmailViewAppBarWidgetStyles.radius),
             ),
             color: EmailViewAppBarWidgetStyles.backgroundColor,
           ),

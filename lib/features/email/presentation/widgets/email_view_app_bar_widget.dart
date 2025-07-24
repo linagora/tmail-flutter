@@ -73,10 +73,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
               width: EmailViewAppBarWidgetStyles.bottomBorderWidth,
             )
           ),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(EmailViewAppBarWidgetStyles.radius),
-            topRight: Radius.circular(EmailViewAppBarWidgetStyles.radius),
-          ),
           color: EmailViewAppBarWidgetStyles.backgroundColor,
         ),
         child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
