@@ -63,149 +63,147 @@ class EmailView extends GetWidget<SingleEmailController> {
 
   @override
   Widget build(BuildContext context) {
-    return SelectionArea(
-      child: ColoredBox(
-        color: controller.responsiveUtils.isWebDesktop(context)
-          ? AppColor.colorBgDesktop
-          : Colors.white,
-        child: SafeArea(
-          right: controller.responsiveUtils.isLandscapeMobile(context),
-          left: controller.responsiveUtils.isLandscapeMobile(context),
-          bottom: !PlatformInfo.isIOS,
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: _getDecorationEmailView(context),
-            margin: _getMarginEmailView(context),
-            child: Obx(() {
-              final currentEmailListener = Rxn(controller.currentEmail);
-              final currentEmail = currentEmailListener.value;
-              if (currentEmail != null) {
-                return Column(children: [
-                  if (!isInsideThreadDetailView)
-                    Obx(() => EmailViewAppBarWidget(
-                      key: const Key('email_view_app_bar_widget'),
-                      presentationEmail: currentEmail,
-                      mailboxContain: _getMailboxContain(currentEmail),
-                      isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
-                      onBackAction: () => controller.closeEmailView(context: context),
-                      onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
-                      onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
-                        mailboxContain: controller.getMailboxContain(presentationEmail),
-                        presentationEmail: presentationEmail,
-                        position: position,
-                        responsiveUtils: controller.responsiveUtils,
-                        imagePaths: controller.imagePaths,
-                        username: controller.session?.username,
-                        handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
-                        additionalActions: [],
-                        emailIsRead: presentationEmail.hasRead,
-                        openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
-                        openPopupMenu: controller.mailboxDashBoardController.openPopupMenu,
-                      ),
-                      supportBackAction: !isInsideThreadDetailView,
-                      appBarDecoration: isInsideThreadDetailView
-                        ? const BoxDecoration(border: Border(bottom: BorderSide(
-                            color: AppColor.colorDividerEmailView,
-                          )))
-                        : null,
-                      emailLoaded: controller.currentEmailLoaded.value,
-                      isInsideThreadDetailView: isInsideThreadDetailView,
-                    )),
-                  Obx(() {
-                    final vacation = controller.mailboxDashBoardController.vacationResponse.value;
-                    if (vacation?.vacationResponderIsValid == true &&
-                        (
-                          controller.responsiveUtils.isMobile(context) ||
-                          controller.responsiveUtils.isTablet(context) ||
-                          controller.responsiveUtils.isLandscapeMobile(context)
+    return ColoredBox(
+      color: controller.responsiveUtils.isWebDesktop(context)
+        ? AppColor.colorBgDesktop
+        : Colors.white,
+      child: SafeArea(
+        right: controller.responsiveUtils.isLandscapeMobile(context),
+        left: controller.responsiveUtils.isLandscapeMobile(context),
+        bottom: !PlatformInfo.isIOS,
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: _getDecorationEmailView(context),
+          margin: _getMarginEmailView(context),
+          child: Obx(() {
+            final currentEmailListener = Rxn(controller.currentEmail);
+            final currentEmail = currentEmailListener.value;
+            if (currentEmail != null) {
+              return Column(children: [
+                if (!isInsideThreadDetailView)
+                  Obx(() => EmailViewAppBarWidget(
+                    key: const Key('email_view_app_bar_widget'),
+                    presentationEmail: currentEmail,
+                    mailboxContain: _getMailboxContain(currentEmail),
+                    isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
+                    onBackAction: () => controller.closeEmailView(context: context),
+                    onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
+                    onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
+                      mailboxContain: controller.getMailboxContain(presentationEmail),
+                      presentationEmail: presentationEmail,
+                      position: position,
+                      responsiveUtils: controller.responsiveUtils,
+                      imagePaths: controller.imagePaths,
+                      username: controller.session?.username,
+                      handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
+                      additionalActions: [],
+                      emailIsRead: presentationEmail.hasRead,
+                      openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
+                      openPopupMenu: controller.mailboxDashBoardController.openPopupMenu,
+                    ),
+                    supportBackAction: !isInsideThreadDetailView,
+                    appBarDecoration: isInsideThreadDetailView
+                      ? const BoxDecoration(border: Border(bottom: BorderSide(
+                          color: AppColor.colorDividerEmailView,
+                        )))
+                      : null,
+                    emailLoaded: controller.currentEmailLoaded.value,
+                    isInsideThreadDetailView: isInsideThreadDetailView,
+                  )),
+                Obx(() {
+                  final vacation = controller.mailboxDashBoardController.vacationResponse.value;
+                  if (vacation?.vacationResponderIsValid == true &&
+                      (
+                        controller.responsiveUtils.isMobile(context) ||
+                        controller.responsiveUtils.isTablet(context) ||
+                        controller.responsiveUtils.isLandscapeMobile(context)
+                      )
+                  ) {
+                    return VacationNotificationMessageWidget(
+                      margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
+                      vacationResponse: vacation!,
+                      actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
+                      actionEndNow: controller.mailboxDashBoardController.disableVacationResponder
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
+                OptionalExpanded(
+                  expandedEnabled: !isInsideThreadDetailView,
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    if (PlatformInfo.isMobile) {
+                      return OptionalScroll(
+                        scrollEnabled: !isInsideThreadDetailView,
+                        child: Container(
+                          width: double.infinity,
+                          alignment: Alignment.center,
+                          color: Colors.white,
+                          child: Obx(() => _buildEmailMessage(
+                            context: context,
+                            presentationEmail: currentEmail,
+                            calendarEvent: controller.calendarEvent,
+                            maxBodyHeight: constraints.maxHeight
+                          ))
                         )
-                    ) {
-                      return VacationNotificationMessageWidget(
-                        margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
-                        vacationResponse: vacation!,
-                        actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
-                        actionEndNow: controller.mailboxDashBoardController.disableVacationResponder
                       );
                     } else {
-                      return const SizedBox.shrink();
-                    }
-                  }),
-                  OptionalExpanded(
-                    expandedEnabled: !isInsideThreadDetailView,
-                    child: LayoutBuilder(builder: (context, constraints) {
-                      if (PlatformInfo.isMobile) {
-                        return OptionalScroll(
-                          scrollEnabled: !isInsideThreadDetailView,
-                          child: Container(
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            color: Colors.white,
-                            child: Obx(() => _buildEmailMessage(
-                              context: context,
-                              presentationEmail: currentEmail,
-                              calendarEvent: controller.calendarEvent,
-                              maxBodyHeight: constraints.maxHeight
-                            ))
-                          )
-                        );
-                      } else {
-                        return Obx(() {
-                          final calendarEvent = controller.calendarEvent;
-                          if (currentEmail.hasCalendarEvent && calendarEvent != null) {
-                            return Padding(
-                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
-                              child: OptionalScroll(
-                                scrollEnabled: !isInsideThreadDetailView,
-                                child: Container(
-                                  width: double.infinity,
-                                  alignment: Alignment.center,
-                                  color: Colors.white,
-                                  child: _buildEmailMessage(
-                                    context: context,
-                                    presentationEmail: currentEmail,
-                                    calendarEvent: calendarEvent,
-                                    emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
-                                    maxBodyHeight: constraints.maxHeight
-                                  )
+                      return Obx(() {
+                        final calendarEvent = controller.calendarEvent;
+                        if (currentEmail.hasCalendarEvent && calendarEvent != null) {
+                          return Padding(
+                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
+                            child: OptionalScroll(
+                              scrollEnabled: !isInsideThreadDetailView,
+                              child: Container(
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                color: Colors.white,
+                                child: _buildEmailMessage(
+                                  context: context,
+                                  presentationEmail: currentEmail,
+                                  calendarEvent: calendarEvent,
+                                  emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
+                                  maxBodyHeight: constraints.maxHeight
                                 )
-                              ),
-                            );
-                          } else {
-                            return _buildEmailMessage(
-                              context: context,
-                              presentationEmail: currentEmail,
-                              maxBodyHeight: constraints.maxHeight
-                            );
-                          }
-                        });
-                      }
-                    }),
-                  ),
-                  Obx(() {
-                    final emailLoaded = controller.currentEmailLoaded.value;
-
-                    if (emailLoaded == null || isInsideThreadDetailView) {
-                      return const SizedBox.shrink();
+                              )
+                            ),
+                          );
+                        } else {
+                          return _buildEmailMessage(
+                            context: context,
+                            presentationEmail: currentEmail,
+                            maxBodyHeight: constraints.maxHeight
+                          );
+                        }
+                      });
                     }
-
-                    return EmailViewBottomBarWidget(
-                      key: const Key('email_view_button_bar'),
-                      imagePaths: controller.imagePaths,
-                      responsiveUtils: controller.responsiveUtils,
-                      emailLoaded: emailLoaded,
-                      presentationEmail: currentEmail,
-                      userName: controller.getOwnEmailAddress(),
-                      emailActionCallback: controller.pressEmailAction,
-                    );
                   }),
-                ]);
-              } else {
-                return const EmailViewEmptyWidget();
-              }
-            })
-          )
+                ),
+                Obx(() {
+                  final emailLoaded = controller.currentEmailLoaded.value;
+
+                  if (emailLoaded == null || isInsideThreadDetailView) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return EmailViewBottomBarWidget(
+                    key: const Key('email_view_button_bar'),
+                    imagePaths: controller.imagePaths,
+                    responsiveUtils: controller.responsiveUtils,
+                    emailLoaded: emailLoaded,
+                    presentationEmail: currentEmail,
+                    userName: controller.getOwnEmailAddress(),
+                    emailActionCallback: controller.pressEmailAction,
+                  );
+                }),
+              ]);
+            } else {
+              return const EmailViewEmptyWidget();
+            }
+          })
         )
-      ),
+      )
     );
   }
 
