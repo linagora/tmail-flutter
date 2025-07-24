@@ -1,4 +1,10 @@
-## [0.17.0] - 2025-07-21
+## [0.17.2] - 2025-07-24
+### Fixed
+- Safari long email content be clipped
+- Safari drag n drop image be placed under signature
+- Remove space in Re/Fwd and `:` in French
+
+## [0.17.1] - 2025-07-21
 ### Fixed
 - Blank email in thread detail after open email from notification
 - Content spacing between email in thread detail
