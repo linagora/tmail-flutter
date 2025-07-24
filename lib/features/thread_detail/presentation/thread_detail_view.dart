@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
@@ -23,6 +24,8 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thre
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_app_bar.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+import '../../manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 
 class ThreadDetailView extends GetWidget<ThreadDetailController> {
   const ThreadDetailView({super.key});
@@ -95,6 +98,33 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                 ),
             ],
           );
+        }),
+        Obx(() {
+          final vacation = controller.mailboxDashBoardController.vacationResponse.value;
+
+          bool isPlatformSupportVacationVisible =
+              controller.responsiveUtils.isMobile(context) ||
+                  controller.responsiveUtils.isTablet(context) ||
+                  controller.responsiveUtils.isLandscapeMobile(context);
+
+          bool isVacationBannerVisible =
+              vacation?.vacationResponderIsValid == true &&
+                  isPlatformSupportVacationVisible;
+
+          if (isVacationBannerVisible) {
+            return VacationNotificationMessageWidget(
+              margin: const EdgeInsetsDirectional.only(
+                start: 12,
+                end: 12,
+                top: 8,
+              ),
+              vacationResponse: vacation!,
+              actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
+              actionEndNow: controller.mailboxDashBoardController.disableVacationResponder,
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
         }),
         Obx(() {
           final threadChildren = controller.getThreadDetailEmailViews();

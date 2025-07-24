@@ -110,33 +110,34 @@ class EmailView extends GetWidget<SingleEmailController> {
                     isInsideThreadDetailView: isInsideThreadDetailView,
                   ),
                 ),
-              Obx(() {
-                final vacation = controller.mailboxDashBoardController.vacationResponse.value;
+              if (!isInsideThreadDetailView)
+                Obx(() {
+                  final vacation = controller.mailboxDashBoardController.vacationResponse.value;
 
-                bool isPlatformSupportVacationVisible =
-                    controller.responsiveUtils.isMobile(context) ||
-                        controller.responsiveUtils.isTablet(context) ||
-                        controller.responsiveUtils.isLandscapeMobile(context);
+                  bool isPlatformSupportVacationVisible =
+                      controller.responsiveUtils.isMobile(context) ||
+                          controller.responsiveUtils.isTablet(context) ||
+                          controller.responsiveUtils.isLandscapeMobile(context);
 
-                bool isVacationBannerVisible =
-                    vacation?.vacationResponderIsValid == true &&
-                        isPlatformSupportVacationVisible;
+                  bool isVacationBannerVisible =
+                      vacation?.vacationResponderIsValid == true &&
+                          isPlatformSupportVacationVisible;
 
-                if (isVacationBannerVisible) {
-                  return VacationNotificationMessageWidget(
-                    margin: const EdgeInsetsDirectional.only(
-                      start: 12,
-                      end: 12,
-                      top: 8,
-                    ),
-                    vacationResponse: vacation!,
-                    actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
-                    actionEndNow: controller.mailboxDashBoardController.disableVacationResponder,
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
-              }),
+                  if (isVacationBannerVisible) {
+                    return VacationNotificationMessageWidget(
+                      margin: const EdgeInsetsDirectional.only(
+                        start: 12,
+                        end: 12,
+                        top: 8,
+                      ),
+                      vacationResponse: vacation!,
+                      actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
+                      actionEndNow: controller.mailboxDashBoardController.disableVacationResponder,
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
               OptionalExpanded(
                 expandedEnabled: !isInsideThreadDetailView,
                 child: LayoutBuilder(builder: (context, constraints) {
