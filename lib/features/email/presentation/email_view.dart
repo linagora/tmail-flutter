@@ -218,16 +218,11 @@ class EmailView extends GetWidget<SingleEmailController> {
     );
 
     if (PlatformInfo.isMobile) {
-      return ColoredBox(
-        color: controller.responsiveUtils.isWebDesktop(context)
-          ? AppColor.colorBgDesktop
-          : Colors.white,
-        child: SafeArea(
-          right: controller.responsiveUtils.isLandscapeMobile(context),
-          left: controller.responsiveUtils.isLandscapeMobile(context),
-          bottom: !PlatformInfo.isIOS,
-          child: bodyWidget,
-        ),
+      return SafeArea(
+        right: controller.responsiveUtils.isLandscapeMobile(context),
+        left: controller.responsiveUtils.isLandscapeMobile(context),
+        bottom: !PlatformInfo.isIOS,
+        child: bodyWidget,
       );
     } else {
       return bodyWidget;
@@ -235,14 +230,9 @@ class EmailView extends GetWidget<SingleEmailController> {
   }
 
   BoxDecoration _getDecorationEmailView(BuildContext context) {
-    if (controller.responsiveUtils.isWebDesktop(context) && !isInsideThreadDetailView) {
-      return const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(20)),
-        color: Colors.white,
-      );
-    }
-
-    if (controller.currentEmail == null || isFirstEmailInThreadDetail) {
+    if ((controller.responsiveUtils.isWebDesktop(context) && !isInsideThreadDetailView) ||
+        controller.currentEmail == null ||
+        isFirstEmailInThreadDetail) {
       return const BoxDecoration(color: Colors.white);
     }
 
