@@ -4862,4 +4862,18 @@ class AppLocalizations {
       name: 'modifyEmailAddress',
     );
   }
+
+  String get editEmail {
+    return Intl.message(
+      'Edit email',
+      name: 'editEmail',
+    );
+  }
+
+  String get createARule {
+    return Intl.message(
+      'Create a rule',
+      name: 'createARule',
+    );
+  }
 }
