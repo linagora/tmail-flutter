@@ -6,6 +6,8 @@ import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/account_menu_item_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -140,11 +142,11 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                  top: 4,
                ),
                onSelectAccountMenuItemAction: (_) {
-                 controller.dashBoardController.logout(
-                   context,
-                   controller.dashBoardController.sessionCurrent,
-                   controller.dashBoardController.accountId.value,
-                 );
+                 controller.dashBoardController
+                   .handleProfileSettingActionTypeClick(
+                     context: context,
+                     actionType: ProfileSettingActionType.signOut,
+                   );
                }
              ),
            ]

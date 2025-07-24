@@ -61,6 +61,7 @@ mixin ScenarioUtilsMixin {
           session: mailboxDashBoardController.sessionCurrent!,
           accountId: mailboxDashBoardController.accountId.value!,
           emailActionType: EmailActionType.compose,
+          ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
           subject: provisioningEmail.subject,
           emailContent: provisioningEmail.content,
           toRecipients: {EmailAddress(null, provisioningEmail.toEmail)},
