@@ -4856,13 +4856,6 @@ class AppLocalizations {
     );
   }
 
-  String get modifyEmailAddress {
-    return Intl.message(
-      'Modify email address',
-      name: 'modifyEmailAddress',
-    );
-  }
-
   String get editEmail {
     return Intl.message(
       'Edit email',

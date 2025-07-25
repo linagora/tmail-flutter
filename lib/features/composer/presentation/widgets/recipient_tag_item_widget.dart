@@ -36,6 +36,8 @@ class RecipientTagItemWidget extends StatelessWidget {
   final OnEditRecipientAction? onEditRecipientAction;
   final bool isTestingForWeb;
   final String? composerId;
+  final bool isMobile;
+  final VoidCallback? onClearFocusAction;
 
   const RecipientTagItemWidget({
     super.key,
@@ -49,28 +51,39 @@ class RecipientTagItemWidget extends StatelessWidget {
     this.isCollapsed = false,
     this.isLatestTagFocused = false,
     this.isLatestEmail = false,
+    this.isMobile = false,
     this.onShowFullAction,
     this.onDeleteTagAction,
     this.onEditRecipientAction,
     this.maxWidth,
     this.composerId,
+    this.onClearFocusAction,
   });
 
   @override
   Widget build(BuildContext context) {
+    final overlayWidth = isMobile ? 227.0 : 361.0;
     Widget tagWidget = CardWithSmartInteractionOverlayView(
+      overlayWidth: overlayWidth,
       menuBuilder: (onClose) => EditRecipientsView(
         emailAddress: currentEmailAddress,
         imagePaths: imagePaths,
-        onCopyAction: () => _onEditRecipientAction(
-          context,
-          EmailAddressActionType.copy,
-        ),
+        isMobile: isMobile,
+        width: overlayWidth,
+        onCopyAction: () {
+          if (isMobile) {
+            onClose();
+          }
+          _onEditRecipientAction(
+            context,
+            EmailAddressActionType.copy,
+          );
+        },
         onEditAction: () {
           onClose();
           _onEditRecipientAction(
             context,
-            EmailAddressActionType.modify,
+            EmailAddressActionType.edit,
           );
         },
         onCreateRuleAction: () {
@@ -82,6 +95,7 @@ class RecipientTagItemWidget extends StatelessWidget {
         },
         onCloseAction: onClose,
       ),
+      onClearFocusAction: onClearFocusAction,
       child: Chip(
         labelPadding: EdgeInsetsDirectional.symmetric(
           horizontal: 4,

@@ -4,15 +4,15 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum EmailAddressActionType {
   copy,
-  modify,
+  edit,
   createRule;
 
   String getContextMenuTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case EmailAddressActionType.copy:
         return appLocalizations.copy;
-      case EmailAddressActionType.modify:
-        return appLocalizations.modifyEmailAddress;
+      case EmailAddressActionType.edit:
+        return appLocalizations.edit;
       case EmailAddressActionType.createRule:
         return appLocalizations.createARule;
     }
@@ -22,7 +22,7 @@ enum EmailAddressActionType {
     switch(this) {
       case EmailAddressActionType.copy:
         return imagePaths.icCopy;
-      case EmailAddressActionType.modify:
+      case EmailAddressActionType.edit:
         return imagePaths.icEditRule;
       case EmailAddressActionType.createRule:
         return imagePaths.icQuickCreatingRule;

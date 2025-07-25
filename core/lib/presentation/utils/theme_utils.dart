@@ -102,6 +102,8 @@ class ThemeUtils {
         fontFamily: ConstantsUI.fontApp,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.1,
+        fontSize: 14,
+        height: 20 / 14,
       ),
     );
   }

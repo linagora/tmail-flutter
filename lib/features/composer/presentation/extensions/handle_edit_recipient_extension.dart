@@ -7,11 +7,9 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/context_item_email_address_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleEditRecipientExtension on ComposerController {
   void onEditRecipient(
@@ -20,38 +18,12 @@ extension HandleEditRecipientExtension on ComposerController {
     EmailAddress emailAddress,
     EmailAddressActionType emailAddressActionType,
   ) {
-    if (PlatformInfo.isMobile) {
-      clearFocus(context);
-
-      final contextMenuActions = EmailAddressActionType.values
-        .map((action) => ContextItemEmailAddressActionType(
-          action,
-          AppLocalizations.of(context),
-          imagePaths
-        ))
-        .toList();
-
-      openBottomSheetContextMenuAction(
-        context: context,
-        itemActions: contextMenuActions,
-        onContextMenuActionClick: (menuAction) {
-          popBack();
-          _handleEmailAddressActionTypeClick(
-            context,
-            menuAction.action,
-            prefix,
-            emailAddress,
-          );
-        },
-      );
-    } else {
-      _handleEmailAddressActionTypeClick(
-        context,
-        emailAddressActionType,
-        prefix,
-        emailAddress,
-      );
-    }
+    _handleEmailAddressActionTypeClick(
+      context,
+      emailAddressActionType,
+      prefix,
+      emailAddress,
+    );
   }
 
   void _handleEmailAddressActionTypeClick(
@@ -64,7 +36,7 @@ extension HandleEditRecipientExtension on ComposerController {
       case EmailAddressActionType.copy:
         _copyEmailAddress(context, emailAddress);
         break;
-      case EmailAddressActionType.modify:
+      case EmailAddressActionType.edit:
         _modifyEmailAddress(prefix, emailAddress);
         break;
       case EmailAddressActionType.createRule:
@@ -150,5 +122,11 @@ extension HandleEditRecipientExtension on ComposerController {
     await mailboxDashBoardController.openCreateEmailRuleView(
       emailAddress: emailAddress,
     );
+  }
+
+  void onClearFocusAction() {
+    if (PlatformInfo.isMobile) {
+      htmlEditorApi?.unfocus();
+    }
   }
 }
