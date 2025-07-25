@@ -242,15 +242,22 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return null;
   }
 
-  Future<TokenOIDC> _invokeRefreshTokenFromServer() {
-    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:');
-    return _authenticationClient.refreshingTokensOIDC(
-      _configOIDC!.clientId,
-      _configOIDC!.redirectUrl,
-      _configOIDC!.discoveryUrl,
-      _configOIDC!.scopes,
-      _token!.refreshToken
-    );
+  Future<TokenOIDC> _invokeRefreshTokenFromServer() async {
+    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer: Start at ${DateTime.now()}');
+    try {
+      final newToken = await _authenticationClient.refreshingTokensOIDC(
+        _configOIDC!.clientId,
+        _configOIDC!.redirectUrl,
+        _configOIDC!.discoveryUrl,
+        _configOIDC!.scopes,
+        _token!.refreshToken,
+      );
+      log('AuthorizationInterceptors::_invokeRefreshTokenFromServer: Success at ${DateTime.now()} | NewToken = ${newToken.token}');
+      return newToken;
+    } catch (e) {
+      logError('AuthorizationInterceptors::_invokeRefreshTokenFromServer: Failed at ${DateTime.now()} | Error: $e');
+      rethrow;
+    }
   }
 
   Future<TokenOIDC> _getNewTokenForIOSPlatform() async {
