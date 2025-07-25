@@ -90,69 +90,60 @@ extension HandleEditRecipientExtension on ComposerController {
         listToEmailAddress.remove(emailAddress);
         toAddressExpandMode.value = ExpandMode.EXPAND;
         toAddressExpandMode.refresh();
-
-        toEmailAddressController.text = emailAddress.emailAddress;
-        toEmailAddressController.value = toEmailAddressController.value.copyWith(
+        _setTextAndFocus(
+          controller: toEmailAddressController,
+          focusNode: toAddressFocusNode,
           text: emailAddress.emailAddress,
-          selection: TextSelection(
-            baseOffset: emailAddress.emailAddress.length,
-            extentOffset: emailAddress.emailAddress.length,
-          ),
-          composing: TextRange.empty,
         );
-        toAddressFocusNode?.requestFocus();
         break;
       case PrefixEmailAddress.cc:
         listCcEmailAddress.remove(emailAddress);
         ccAddressExpandMode.value = ExpandMode.EXPAND;
         ccAddressExpandMode.refresh();
-
-        ccEmailAddressController.text = emailAddress.emailAddress;
-        ccEmailAddressController.value = ccEmailAddressController.value.copyWith(
+        _setTextAndFocus(
+          controller: ccEmailAddressController,
+          focusNode: ccAddressFocusNode,
           text: emailAddress.emailAddress,
-          selection: TextSelection(
-            baseOffset: emailAddress.emailAddress.length,
-            extentOffset: emailAddress.emailAddress.length,
-          ),
-          composing: TextRange.empty,
         );
-        ccAddressFocusNode?.requestFocus();
         break;
       case PrefixEmailAddress.bcc:
         listBccEmailAddress.remove(emailAddress);
         bccAddressExpandMode.value = ExpandMode.EXPAND;
         bccAddressExpandMode.refresh();
-
-        bccEmailAddressController.text = emailAddress.emailAddress;
-        bccEmailAddressController.value = bccEmailAddressController.value.copyWith(
+        _setTextAndFocus(
+          controller: bccEmailAddressController,
+          focusNode: bccAddressFocusNode,
           text: emailAddress.emailAddress,
-          selection: TextSelection(
-            baseOffset: emailAddress.emailAddress.length,
-            extentOffset: emailAddress.emailAddress.length,
-          ),
-          composing: TextRange.empty,
         );
-        bccAddressFocusNode?.requestFocus();
         break;
       case PrefixEmailAddress.replyTo:
         listReplyToEmailAddress.remove(emailAddress);
         replyToAddressExpandMode.value = ExpandMode.EXPAND;
         replyToAddressExpandMode.refresh();
-
-        replyToEmailAddressController.text = emailAddress.emailAddress;
-        replyToEmailAddressController.value = replyToEmailAddressController.value.copyWith(
+        _setTextAndFocus(
+          controller: replyToEmailAddressController,
+          focusNode: replyToAddressFocusNode,
           text: emailAddress.emailAddress,
-          selection: TextSelection(
-            baseOffset: emailAddress.emailAddress.length,
-            extentOffset: emailAddress.emailAddress.length,
-          ),
-          composing: TextRange.empty,
         );
-        replyToAddressFocusNode?.requestFocus();
         break;
       default:
         break;
     }
+  }
+
+  void _setTextAndFocus({
+    required TextEditingController controller,
+    required FocusNode? focusNode,
+    required String text,
+  }) {
+    controller.text = text;
+    controller.selection = const TextSelection.collapsed(offset: -1);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      focusNode?.requestFocus();
+      Future.delayed(const Duration(milliseconds: 150), () {
+        controller.selection = TextSelection.collapsed(offset: text.length);
+      },);
+    });
   }
 
   Future<void> _createRuleFromEmailAddress(EmailAddress emailAddress) async {
