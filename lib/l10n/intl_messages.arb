@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-07-24T16:57:08.573149",
+  "@@last_modified": "2025-07-25T12:21:42.514040",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4604,12 +4604,6 @@
   },
   "copy": "Copy",
   "@copy": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "modifyEmailAddress": "Modify email address",
-  "@modifyEmailAddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -12,6 +12,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -77,6 +78,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final bool isTestingForWeb;
   final int minInputLengthAutocomplete;
   final String? composerId;
+  final VoidCallback? onClearFocusAction;
 
   const RecipientComposerWidget({
     super.key,
@@ -110,6 +112,7 @@ class RecipientComposerWidget extends StatefulWidget {
     this.onEnableAllRecipientsInputAction,
     this.focusNodeKeyboard,
     this.onEditRecipientAction,
+    this.onClearFocusAction,
   });
 
   @override
@@ -117,6 +120,8 @@ class RecipientComposerWidget extends StatefulWidget {
 }
 
 class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
+
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   Timer? _gapBetweenTagChangedAndFindSuggestion;
   bool _lastTagFocused = false;
@@ -224,9 +229,11 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               isCollapsed: _isCollapse,
                               isLatestTagFocused: _lastTagFocused,
                               maxWidth: widget.maxWidth,
+                              isMobile: _responsiveUtils.isMobile(context),
                               onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
                               onShowFullAction: widget.onShowFullListEmailAddressAction,
                               onEditRecipientAction: widget.onEditRecipientAction,
+                              onClearFocusAction: widget.onClearFocusAction,
                             );
                           },
                           onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),
@@ -317,9 +324,11 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           isCollapsed: _isCollapse,
                           isLatestTagFocused: _lastTagFocused,
                           maxWidth: widget.maxWidth,
+                          isMobile: _responsiveUtils.isMobile(context),
                           onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
                           onShowFullAction: widget.onShowFullListEmailAddressAction,
                           onEditRecipientAction: widget.onEditRecipientAction,
+                          onClearFocusAction: widget.onClearFocusAction,
                         );
                       },
                       onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),

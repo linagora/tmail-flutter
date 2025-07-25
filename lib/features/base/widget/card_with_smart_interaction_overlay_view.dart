@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/smart_interaction_widget.dart';
@@ -6,12 +7,14 @@ class CardWithSmartInteractionOverlayView extends StatefulWidget {
   final Widget child;
   final double overlayWidth;
   final Widget Function(VoidCallback onClose) menuBuilder;
+  final VoidCallback? onClearFocusAction;
 
   const CardWithSmartInteractionOverlayView({
     super.key,
     required this.child,
     required this.menuBuilder,
     this.overlayWidth = 361,
+    this.onClearFocusAction,
   });
 
   @override
@@ -52,7 +55,10 @@ class _CardWithSmartInteractionOverlayViewState
             width: widget.overlayWidth,
             child: CompositedTransformFollower(
               link: _layerLink,
-              offset: const Offset(0, 40),
+              offset: Offset(
+                0,
+                PlatformInfo.isWeb ? 40 : 50,
+              ),
               showWhenUnlinked: false,
               child: FadeTransition(
                 opacity: CurvedAnimation(
@@ -112,6 +118,8 @@ class _CardWithSmartInteractionOverlayViewState
   }
 
   void _togglePopup() {
+    widget.onClearFocusAction?.call();
+    
     if (_overlayEntry == null) {
       _showPopup();
     } else {

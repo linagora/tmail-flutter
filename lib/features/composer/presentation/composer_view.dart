@@ -142,6 +142,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                             onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
                             onEditRecipientAction: controller.onEditRecipient,
+                            onClearFocusAction: controller.onClearFocusAction,
                           )),
                           Obx(() {
                             if (controller.ccRecipientState.value == PrefixRecipientState.enabled) {
@@ -166,6 +167,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                 onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                                 onEditRecipientAction: controller.onEditRecipient,
+                                onClearFocusAction: controller.onClearFocusAction,
                               );
                             } else {
                               return const SizedBox.shrink();
@@ -194,6 +196,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                 onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                                 onEditRecipientAction: controller.onEditRecipient,
+                                onClearFocusAction: controller.onClearFocusAction,
                               );
                             } else {
                               return const SizedBox.shrink();
@@ -222,6 +225,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                                 onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
                                 onEditRecipientAction: controller.onEditRecipient,
+                                onClearFocusAction: controller.onClearFocusAction,
                               );
                             } else {
                               return const SizedBox.shrink();
@@ -346,6 +350,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                             onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
                             onEditRecipientAction: controller.onEditRecipient,
+                            onClearFocusAction: controller.onClearFocusAction,
                           ),
                           if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                             RecipientComposerWidget(
@@ -369,6 +374,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                               onEditRecipientAction: controller.onEditRecipient,
+                              onClearFocusAction: controller.onClearFocusAction,
                             ),
                           if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                             RecipientComposerWidget(
@@ -392,6 +398,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                               onEditRecipientAction: controller.onEditRecipient,
+                              onClearFocusAction: controller.onClearFocusAction,
                             ),
                           if (controller.replyToRecipientState.value == PrefixRecipientState.enabled)
                             RecipientComposerWidget(
@@ -414,6 +421,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                               onEditRecipientAction: controller.onEditRecipient,
+                              onClearFocusAction: controller.onClearFocusAction,
                             ),
                         ],
                       )),
