@@ -11,6 +11,7 @@ class EmailAddressWithCopyWidget extends StatelessWidget {
   final OnCopyButtonAction onCopyButtonAction;
   final TextStyle? textStyle;
   final Color? copyIconColor;
+  final EdgeInsetsGeometry? copyIconMargin;
 
   const EmailAddressWithCopyWidget({
     super.key,
@@ -19,6 +20,7 @@ class EmailAddressWithCopyWidget extends StatelessWidget {
     required this.onCopyButtonAction,
     this.textStyle,
     this.copyIconColor,
+    this.copyIconMargin,
   });
 
   @override
@@ -41,6 +43,7 @@ class EmailAddressWithCopyWidget extends StatelessWidget {
             iconColor: copyIconColor ??
                 AppColor.textSecondary.withOpacity(0.48),
             padding: const EdgeInsets.all(5),
+            margin: copyIconMargin,
             onTapActionCallback: onCopyButtonAction,
           ),
       ],

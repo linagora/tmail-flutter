@@ -57,9 +57,9 @@ class EditRecipientsView extends StatelessWidget {
             Padding(
               padding: const EdgeInsetsDirectional.only(
                 start: 16,
-                end: 24,
-                top: 16,
-                bottom: 16,
+                end: 16,
+                top: 21,
+                bottom: 21,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -68,14 +68,14 @@ class EditRecipientsView extends StatelessWidget {
                     children: [
                       UserAvatarBuilder(
                         username: emailAddress.asString().firstLetterToUpperCase,
-                        size: 67,
-                        textStyle: ThemeUtils.textStyleInter500().copyWith(
-                          fontSize: 33.5,
-                          height: 50.25 / 33.5,
-                          letterSpacing: 0.31,
-                          color: AppColor.secondaryContrastText,
+                        size: 42,
+                        textStyle: ThemeUtils.textStyleInter600().copyWith(
+                          fontSize: 16,
+                          height: 22 / 16,
+                          letterSpacing: -0.41,
+                          color: Colors.white,
                         ),
-                        padding: const EdgeInsetsDirectional.only(end: 21),
+                        padding: const EdgeInsetsDirectional.only(end: 16),
                       ),
                       Expanded(
                         child: Column(
@@ -84,10 +84,10 @@ class EditRecipientsView extends StatelessWidget {
                           children: [
                             if (emailAddress.displayName.isNotEmpty)
                               Padding(
-                                padding: const EdgeInsetsDirectional.only(end: 12),
+                                padding: const EdgeInsetsDirectional.only(end: 24),
                                 child: Text(
                                   emailAddress.displayName,
-                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     color: AppColor.textPrimary,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -97,6 +97,13 @@ class EditRecipientsView extends StatelessWidget {
                             EmailAddressWithCopyWidget(
                               label: emailAddress.emailAddress,
                               copyLabelIcon: imagePaths.icCopy,
+                              textStyle: ThemeUtils.textStyleBodyBody2(
+                                color: AppColor.steelGray400,
+                              ),
+                              copyIconMargin: const EdgeInsetsDirectional.only(
+                                start: 7,
+                              ),
+                              copyIconColor: AppColor.steelGray400,
                               onCopyButtonAction: onCopyAction,
                             ),
                           ],
@@ -104,13 +111,14 @@ class EditRecipientsView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 13),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 48,
+                      Flexible(
+                        child: Container(
+                          constraints: const BoxConstraints(minWidth: 127),
+                          margin: const EdgeInsetsDirectional.only(end: 8),
+                          height: 36,
                           child: ConfirmDialogButton(
                             label: AppLocalizations.of(context).editEmail,
                             backgroundColor: AppColor.primaryMain,
@@ -119,11 +127,10 @@ class EditRecipientsView extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 48,
+                      Flexible(
+                        child: Container(
+                          constraints: const BoxConstraints(minWidth: 134),
+                          height: 36,
                           child: ConfirmDialogButton(
                             label: AppLocalizations.of(context).createARule,
                             backgroundColor: Colors.white,
