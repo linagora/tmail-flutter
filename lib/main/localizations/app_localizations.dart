@@ -4848,4 +4848,25 @@ class AppLocalizations {
       args: [days],
     );
   }
+
+  String get copy {
+    return Intl.message(
+      'Copy',
+      name: 'copy',
+    );
+  }
+
+  String get editEmail {
+    return Intl.message(
+      'Edit email',
+      name: 'editEmail',
+    );
+  }
+
+  String get createARule {
+    return Intl.message(
+      'Create a rule',
+      name: 'createARule',
+    );
+  }
 }

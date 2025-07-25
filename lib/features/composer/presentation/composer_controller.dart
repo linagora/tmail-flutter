@@ -1783,6 +1783,9 @@ class ComposerController extends BaseController
     if (menuMoreOptionController?.menuIsShowing == true) {
       menuMoreOptionController?.hideMenu();
     }
+    if (mailboxDashBoardController.isPopupMenuOpened.isTrue) {
+      popBack();
+    }
   }
 
   void handleOnMouseDownHtmlEditorWeb() {

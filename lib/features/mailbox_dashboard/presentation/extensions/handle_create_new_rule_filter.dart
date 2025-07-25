@@ -2,6 +2,7 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -14,11 +15,12 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-extension HandleCreateFilterForFolder on MailboxDashBoardController {
+extension HandleCreateNewRuleFilter on MailboxDashBoardController {
 
-  Future<void> openCreateEmailRuleView(
-    PresentationMailbox presentationMailbox,
-  ) async {
+  Future<void> openCreateEmailRuleView({
+    PresentationMailbox? presentationMailbox,
+    EmailAddress? emailAddress,
+  }) async {
     final accountId = this.accountId.value;
     final session = sessionCurrent;
 
@@ -38,6 +40,7 @@ extension HandleCreateFilterForFolder on MailboxDashBoardController {
       accountId,
       session,
       mailboxDestination: presentationMailbox,
+      emailAddress: emailAddress,
     );
 
     final newRuleFilterRequest = PlatformInfo.isWeb

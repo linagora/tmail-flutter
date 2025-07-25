@@ -1,7 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -50,7 +49,6 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
             child: Padding(
               padding: RecipientSuggestionItemWidgetStyle.labelPadding,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AvatarSuggestionItemWidget(emailAddress: emailAddress),
                   const SizedBox(width: 8),
@@ -58,18 +56,22 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         RichTextWidget(
                           textOrigin: emailAddress.asString(),
                           wordSearched: suggestionValid ?? '',
                           overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                         if (emailAddress.displayName.isNotEmpty)
-                          RichTextBuilder(
+                          RichTextWidget(
                             textOrigin: emailAddress.emailAddress,
-                            wordToStyle: suggestionValid ?? '',
-                            styleOrigin: RecipientSuggestionItemWidgetStyle.labelTextStyle,
-                            styleWord: RecipientSuggestionItemWidgetStyle.labelHighlightTextStyle,
+                            wordSearched: suggestionValid ?? '',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            styleTextOrigin: RecipientSuggestionItemWidgetStyle.labelTextStyle,
+                            styleWordSearched: RecipientSuggestionItemWidgetStyle.labelHighlightTextStyle,
                           ),
                       ],
                     ),
@@ -98,7 +100,6 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
             child: Padding(
               padding: RecipientSuggestionItemWidgetStyle.labelPadding,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AvatarSuggestionItemWidget(emailAddress: emailAddress),
                   const SizedBox(width: 8),
@@ -106,18 +107,22 @@ class RecipientSuggestionItemWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         RichTextWidget(
                           textOrigin: emailAddress.asString(),
                           wordSearched: suggestionValid ?? '',
                           overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                         if (emailAddress.displayName.isNotEmpty)
-                          RichTextBuilder(
+                          RichTextWidget(
                             textOrigin: emailAddress.emailAddress,
-                            wordToStyle: suggestionValid ?? '',
-                            styleOrigin: RecipientSuggestionItemWidgetStyle.labelTextStyle,
-                            styleWord: RecipientSuggestionItemWidgetStyle.labelHighlightTextStyle,
+                            wordSearched: suggestionValid ?? '',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            styleTextOrigin: RecipientSuggestionItemWidgetStyle.labelTextStyle,
+                            styleWordSearched: RecipientSuggestionItemWidgetStyle.labelHighlightTextStyle,
                           ),
                       ],
                     ),

@@ -111,7 +111,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_clear_mailbox_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_filter_for_folder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_save_email_as_draft_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/initialize_app_language.dart';

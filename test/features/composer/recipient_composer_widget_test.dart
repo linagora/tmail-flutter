@@ -1,4 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,10 @@ void main() {
     final imagePaths = ImagePaths();
     final keyEmailTagEditor = GlobalKey<TagsEditorState>();
     const prefix = PrefixEmailAddress.to;
+
+    setUpAll(() {
+      Get.put(ResponsiveUtils());
+    });
 
     Widget makeTestableWidget({required Widget child}) {
       return GetMaterialApp(
