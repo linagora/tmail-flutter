@@ -82,8 +82,8 @@ dependencies:
 
   flutter_appauth_web:
     git:
-      url: https://github.com/CarlosPacheco/flutter_appauth_web.git
-      ref: main
+      url: https://github.com/linagora/flutter_appauth_web.git
+      ref: upgrade-flutter-appauth
 
   flutter_date_range_picker:
     git:
@@ -172,7 +172,7 @@ dependencies:
 
   better_open_file: 3.6.4
 
-  flutter_appauth: 6.0.6
+  flutter_appauth: 9.0.1
 
   percent_indicator: 4.2.2
 
@@ -206,7 +206,7 @@ dependencies:
 
   debounce_throttle: 2.0.0
 
-  flutter_appauth_platform_interface: 6.0.0
+  flutter_appauth_platform_interface: 9.0.0
 
   intl: 0.19.0
 
