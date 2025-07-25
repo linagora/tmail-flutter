@@ -39,7 +39,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     Key? key,
     required this.contentHtml,
     required this.widthContent,
-    required this.heightContent,
+    this.heightContent = 200,
     this.allowResizeToDocumentSize = true,
     this.useDefaultFont = false,
     this.mailtoDelegate,
@@ -119,6 +119,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
   bool _isScrollChangedEventTriggered(String? type) {
     return widget.scrollController != null &&
+        widget.scrollController?.hasClients == true &&
         type?.contains('toDart: $onScrollChangedEvent') == true;
   }
 
@@ -144,7 +145,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   void _handleContentHeightEvent(dynamic height) {
     final docHeight = height ?? _actualHeight;
     if (docHeight != null && mounted) {
-      final scrollHeightWithBuffer = docHeight + 30.0;
+      final scrollHeightWithBuffer = docHeight + 24.0;
       if (scrollHeightWithBuffer > minHeight) {
         setState(() {
           _actualHeight = scrollHeightWithBuffer;

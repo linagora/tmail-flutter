@@ -190,6 +190,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final attendanceStatus = Rxn<AttendanceStatus>();
   final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
 
+  final ScrollController emailScrollController = ScrollController();
+
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
   final obxListeners = <Worker>[];
@@ -263,6 +265,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _threadDetailController = null;
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
+    emailScrollController.dispose();
     super.onClose();
   }
 
@@ -317,7 +320,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mailToClicked: openMailToLink,
         downloadAttachmentClicked: () {
           if (currentContext == null || attachments.isEmpty) return;
-          handleDownloadAttachmentAction(currentContext!, success.attachment);
+          handleDownloadAttachmentAction(success.attachment);
         },
         responsiveUtils: responsiveUtils,
       ));
@@ -511,11 +514,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               );
 
               if (currentOverlayContext != null && currentContext != null) {
-                appToast.showToastMessage(
+                appToast.showToastSuccessMessage(
                   currentOverlayContext!,
-                  AppLocalizations.of(currentContext!).your_download_has_started,
-                  leadingSVGIconColor: AppColor.primaryColor,
-                  leadingSVGIcon: imagePaths.icDownload);
+                  AppLocalizations.of(currentContext!).creatingAnArchiveForDownloading,
+                  leadingSVGIconColor: Colors.white,
+                  leadingSVGIcon: imagePaths.icDownloadAll,
+                );
               }
             } else if (success is DownloadingAllAttachmentsForWeb) {
               final percent = success.progress.round();
@@ -900,36 +904,53 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void exportAttachment(BuildContext context, Attachment attachment) {
+  void exportAttachment(Attachment attachment) {
     final cancelToken = CancelToken();
-    _showDownloadingFileDialog(context, attachment.name ?? '', cancelToken: cancelToken);
+    _showDownloadingFileDialog(attachment.name ?? '', cancelToken: cancelToken);
     _exportAttachmentAction(attachment, cancelToken);
   }
 
-  void _showDownloadingFileDialog(BuildContext context, String attachmentName, {CancelToken? cancelToken}) {
+  void _showDownloadingFileDialog(String attachmentName, {CancelToken? cancelToken}) {
     if (cancelToken != null) {
-      showCupertinoDialog(
-          context: context,
-          builder: (_) =>
-              PointerInterceptor(child: (DownloadingFileDialogBuilder()
+      Get.dialog(
+        PointerInterceptor(
+          child: Builder(
+            builder: (context) {
+              final appLocalizations = AppLocalizations.of(context);
+              return (DownloadingFileDialogBuilder()
                     ..key(const Key('downloading_file_dialog'))
-                    ..title(AppLocalizations.of(context).preparing_to_export)
-                    ..content(AppLocalizations.of(context).downloading_file(attachmentName))
-                    ..actionText(AppLocalizations.of(context).cancel)
+                    ..title(appLocalizations.preparing_to_export)
+                    ..content(appLocalizations.downloading_file(attachmentName))
+                    ..actionText(appLocalizations.cancel)
                     ..addCancelDownloadActionClick(() {
-                      cancelToken.cancel([AppLocalizations.of(context).user_cancel_download_file]);
+                      cancelToken.cancel([
+                        appLocalizations.user_cancel_download_file,
+                      ]);
                       popBack();
                     }))
-                .build()));
+                  .build();
+            },
+          ),
+        ),
+        barrierDismissible: false,
+      );
     } else {
-      showCupertinoDialog(
-          context: context,
-          builder: (_) =>
-              PointerInterceptor(child: (DownloadingFileDialogBuilder()
-                  ..key(const Key('downloading_file_for_web_dialog'))
-                  ..title(AppLocalizations.of(context).preparing_to_save)
-                  ..content(AppLocalizations.of(context).downloading_file(attachmentName)))
-                .build()));
+      Get.dialog(
+        PointerInterceptor(
+          child: Builder(
+            builder: (context) {
+              final appLocalizations = AppLocalizations.of(context);
+              return (DownloadingFileDialogBuilder()
+                    ..key(const Key('downloading_file_for_web_dialog'))
+                    ..title(appLocalizations.preparing_to_save)
+                    ..content(
+                      appLocalizations.downloading_file(attachmentName),
+                    ))
+                  .build();
+            },
+          ),
+        ),
+      );
     }
   }
 
@@ -952,9 +973,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void exportAllAttachments(BuildContext context, String outputFileName) {
+  void exportAllAttachments(String outputFileName) {
     final cancelToken = CancelToken();
-    _showDownloadingFileDialog(context, outputFileName, cancelToken: cancelToken);
+    _showDownloadingFileDialog(outputFileName, cancelToken: cancelToken);
     _exportAllAttachmentsAction(outputFileName, cancelToken);
   }
 
@@ -1160,9 +1181,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             onClose: () => Navigator.maybePop(context),
             onDownload: currentContext == null
               ? null
-              : () => handleDownloadAttachmentAction(
-                  currentContext!,
-                  success.attachment),
+              : () => handleDownloadAttachmentAction(success.attachment),
           ),
         )),
         barrierDismissible: false,
@@ -1182,9 +1201,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             onClose: () => Navigator.maybePop(context),
             onDownload: currentContext == null
               ? null
-              : () => handleDownloadAttachmentAction(
-                  currentContext!,
-                  success.attachment),
+              : () => handleDownloadAttachmentAction(success.attachment),
           ),
         )),
         barrierDismissible: false,
@@ -1752,7 +1769,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (responsiveUtils.isMobile(context)) {
       (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController, tag)
         ..onCloseButtonAction(() => popBack())
-        ..onDownloadAttachmentFileAction((attachment) => handleDownloadAttachmentAction(context, attachment))
+        ..onDownloadAttachmentFileAction((attachment) => handleDownloadAttachmentAction(attachment))
         ..onViewAttachmentFileAction((attachment) => handleViewAttachmentAction(context, attachment))
         ..onDownloadAllButtonAction(isDownloadAllSupported()
           ? () => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}')
@@ -1769,7 +1786,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             scrollController: _attachmentListScrollController,
             backgroundColor: Colors.black.withAlpha(24),
             onCloseButtonAction: () => popBack(),
-            onDownloadAttachmentFileAction: (attachment) => handleDownloadAttachmentAction(context, attachment),
+            onDownloadAttachmentFileAction: (attachment) => handleDownloadAttachmentAction(attachment),
             onViewAttachmentFileAction: (attachment) => handleViewAttachmentAction(context, attachment),
             onDownloadAllButtonAction: isDownloadAllSupported()
               ? () => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}')
@@ -2010,27 +2027,23 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void handleDownloadAttachmentAction(
-    BuildContext context,
     Attachment attachment,
     {bool previewerSupported = false}
   ) {
     if (PlatformInfo.isWeb) {
       downloadAttachmentForWeb(attachment, previewerSupported: previewerSupported);
     } else if (PlatformInfo.isMobile) {
-      exportAttachment(context, attachment);
+      exportAttachment(attachment);
     } else {
       log('EmailView::handleDownloadAttachmentAction: THE PLATFORM IS SUPPORTED');
     }
   }
 
-  void handleDownloadAllAttachmentsAction(
-    BuildContext context,
-    String outputFileName,
-  ) {
+  void handleDownloadAllAttachmentsAction(String outputFileName) {
     if (PlatformInfo.isWeb) {
       downloadAllAttachmentsForWeb(outputFileName);
     } else if (PlatformInfo.isMobile) {
-      exportAllAttachments(context, outputFileName);
+      exportAllAttachments(outputFileName);
     } else {
       log('EmailView::handleDownloadAllAttachmentsAction: THE PLATFORM IS SUPPORTED');
     }
@@ -2063,7 +2076,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       ));
     } else {
       handleDownloadAttachmentAction(
-        context,
         attachment,
         previewerSupported: attachmentPreviewSupported(attachment),
       );
@@ -2269,7 +2281,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             onMailtoDelegateAction: openMailToLink,
             onPreviewEMLDelegateAction: (uri) => _openEMLPreviewer(context, uri),
             onDownloadAttachmentDelegateAction: (uri) =>
-                _downloadAttachmentInEMLPreview(context, uri),
+                _downloadAttachmentInEMLPreview(uri),
           ),
         );
       },
@@ -2284,7 +2296,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         onMailtoDelegateAction: openMailToLink,
         onPreviewEMLDelegateAction: (uri) => _openEMLPreviewer(context, uri),
         onDownloadAttachmentDelegateAction: (uri) =>
-            _downloadAttachmentInEMLPreview(context, uri),
+            _downloadAttachmentInEMLPreview(uri),
       ),
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
@@ -2301,14 +2313,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     previewEMLFileAction(Id(blobId), AppLocalizations.of(context));
   }
 
-  Future<void> _downloadAttachmentInEMLPreview(BuildContext context, Uri? uri) async {
+  Future<void> _downloadAttachmentInEMLPreview(Uri? uri) async {
     log('SingleEmailController::_downloadAttachmentInEMLPreview:uri = $uri');
     if (uri == null) return;
 
     final attachment = EmailUtils.parsingAttachmentByUri(uri);
     if (attachment == null) return;
 
-    handleDownloadAttachmentAction(context, attachment);
+    handleDownloadAttachmentAction(attachment);
   }
 
   void handleMailToAttendees(CalendarOrganizer? organizer, List<CalendarAttendee>? attendees) {

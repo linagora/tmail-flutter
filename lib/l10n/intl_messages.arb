@@ -378,7 +378,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} Attachments ({totalSize}):",
+  "titleHeaderAttachment": "{count} Attachments ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
@@ -4601,5 +4601,17 @@
     "placeholders": {
       "days": {}
     }
+  },
+  "archiveAndDownload": "Archive and download",
+  "@archiveAndDownload": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "creatingAnArchiveForDownloading": "Creating an archive for downloading",
+  "@creatingAnArchiveForDownloading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

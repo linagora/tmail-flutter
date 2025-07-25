@@ -14,7 +14,6 @@ class SanitizeUrl {
 
   String process(String inputText) {
     try {
-      log('SanitizeUrl::process:inputText = $inputText');
       var originalUrl = Uri.decodeFull(inputText);
       if (GetUtils.isURL(originalUrl)) {
         originalUrl = !originalUrl.startsWith(_protocolIdentifierRegex)

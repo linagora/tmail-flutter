@@ -793,7 +793,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} المرفقات ({totalSize}):",
+  "titleHeaderAttachment": "{count} المرفقات ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
