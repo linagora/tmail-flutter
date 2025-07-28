@@ -4718,5 +4718,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "editLocalCopyInForwardFailed": "",
+  "@editLocalCopyInForwardFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
