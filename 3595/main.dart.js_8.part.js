@@ -7,10 +7,10 @@
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var J, A, C,
   B = {
-    HtmlContentViewerOnWeb$(allowResizeToDocumentSize, contentHtml, contentPadding, direction, heightContent, mailtoDelegate, onClickHyperLinkAction, useDefaultFont, widthContent) {
-      return new B.HtmlContentViewerOnWeb(contentHtml, widthContent, heightContent, direction, contentPadding, useDefaultFont, mailtoDelegate, onClickHyperLinkAction, allowResizeToDocumentSize, null);
+    HtmlContentViewerOnWeb$(allowResizeToDocumentSize, contentHtml, contentPadding, direction, enableQuoteToggle, heightContent, key, mailtoDelegate, onClickHyperLinkAction, scrollController, useDefaultFont, widthContent) {
+      return new B.HtmlContentViewerOnWeb(contentHtml, widthContent, heightContent, direction, contentPadding, useDefaultFont, mailtoDelegate, onClickHyperLinkAction, allowResizeToDocumentSize, scrollController, enableQuoteToggle, key);
     },
-    HtmlContentViewerOnWeb: function HtmlContentViewerOnWeb(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {
+    HtmlContentViewerOnWeb: function HtmlContentViewerOnWeb(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) {
       var _ = this;
       _.contentHtml = t0;
       _.widthContent = t1;
@@ -21,7 +21,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.mailtoDelegate = t6;
       _.onClickHyperLinkAction = t7;
       _.allowResizeToDocumentSize = t8;
-      _.key = t9;
+      _.scrollController = t9;
+      _.enableQuoteToggle = t10;
+      _.key = t11;
     },
     _HtmlContentViewerOnWebState: function _HtmlContentViewerOnWebState() {
       var _ = this;
@@ -29,21 +31,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._html_content_viewer_on_web_widget$_htmlData = _._webInit = null;
       _._html_content_viewer_on_web_widget$_isLoading = true;
       _.minHeight = 100;
-      _.___HtmlContentViewerOnWebState_sizeListener_F = $;
+      _.___HtmlContentViewerOnWebState__onMessageSubscription_F = $;
       _._html_content_viewer_on_web_widget$_iframeLoaded = false;
       _._framework$_element = _._widget = null;
     },
-    _HtmlContentViewerOnWebState_initState_closure: function _HtmlContentViewerOnWebState_initState_closure(t0) {
-      this.$this = t0;
-    },
-    _HtmlContentViewerOnWebState_initState__closure: function _HtmlContentViewerOnWebState_initState__closure(t0, t1) {
+    _HtmlContentViewerOnWebState__handleContentHeightEvent_closure: function _HtmlContentViewerOnWebState__handleContentHeightEvent_closure(t0, t1) {
       this.$this = t0;
       this.scrollHeightWithBuffer = t1;
     },
-    _HtmlContentViewerOnWebState_initState__closure0: function _HtmlContentViewerOnWebState_initState__closure0(t0) {
+    _HtmlContentViewerOnWebState__handleContentHeightEvent_closure0: function _HtmlContentViewerOnWebState__handleContentHeightEvent_closure0(t0) {
       this.$this = t0;
     },
-    _HtmlContentViewerOnWebState_initState__closure1: function _HtmlContentViewerOnWebState_initState__closure1(t0, t1) {
+    _HtmlContentViewerOnWebState__handleContentWidthEvent_closure: function _HtmlContentViewerOnWebState__handleContentWidthEvent_closure(t0, t1) {
       this.$this = t0;
       this.docWidth = t1;
     },
@@ -58,6 +57,38 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _HtmlContentViewerOnWebState_build__closure: function _HtmlContentViewerOnWebState_build__closure(t0) {
       this.$this = t0;
+    },
+    HtmlUtils_addQuoteToggle(htmlString) {
+      var exception, containerDom, t1, t2, blockquotes, currentSearchLevel, lastBlockquote, buttonElement,
+        _s9_ = "text/html";
+      if (!(C.JSString_methods.contains$1(htmlString, A.RegExp_RegExp("<[a-zA-Z][^>]*>", true, false, false)) && C.JSString_methods.contains$1(htmlString, A.RegExp_RegExp("</[a-zA-Z][^>]*>", true, false, false))))
+        return htmlString;
+      try {
+        new DOMParser().parseFromString(htmlString, _s9_).toString;
+      } catch (exception) {
+        return htmlString;
+      }
+      containerDom = new DOMParser().parseFromString('<div class="quote-toggle-container" >' + htmlString + "</div>", _s9_);
+      t1 = containerDom.querySelectorAll(".quote-toggle-container > blockquote");
+      t1.toString;
+      t2 = type$._FrozenElementList_Element;
+      blockquotes = new A._FrozenElementList(t1, t2);
+      for (currentSearchLevel = 1; blockquotes.get$length(0) === 0;) {
+        if (currentSearchLevel >= 3)
+          return htmlString;
+        t1 = containerDom.querySelectorAll(".quote-toggle-container" + C.JSString_methods.$mul(" > div", currentSearchLevel) + " > blockquote");
+        t1.toString;
+        blockquotes = new A._FrozenElementList(t1, t2);
+        ++currentSearchLevel;
+      }
+      lastBlockquote = blockquotes.$ti._precomputed1._as(C.NodeList_methods.get$last(blockquotes._nodeList));
+      buttonElement = new DOMParser().parseFromString('      <button class="quote-toggle-button collapsed" title="Show trimmed content">\n          <span class="dot"></span>\n          <span class="dot"></span>\n          <span class="dot"></span>\n      </button>', _s9_).querySelector(".quote-toggle-button");
+      t1 = lastBlockquote.parentNode;
+      if (t1 != null && buttonElement != null)
+        t1.insertBefore(buttonElement, lastBlockquote).toString;
+      t1 = containerDom.documentElement;
+      t1 = t1 == null ? null : J.get$outerHtml$x(t1);
+      return t1 == null ? htmlString : t1;
     }
   },
   D;
@@ -65,7 +96,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A = holdersList[0];
   C = holdersList[2];
   B = hunkHelpers.updateHolder(holdersList[12], B);
-  D = holdersList[21];
+  D = holdersList[22];
   B.HtmlContentViewerOnWeb.prototype = {
     createState$0() {
       return new B._HtmlContentViewerOnWebState();
@@ -82,9 +113,112 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this._html_content_viewer_on_web_widget$_setUpWeb$0();
       t1 = window;
       t1.toString;
-      t1 = A._EventStreamSubscription$(t1, "message", new B._HtmlContentViewerOnWebState_initState_closure(_this), false, type$.MessageEvent);
-      _this.___HtmlContentViewerOnWebState_sizeListener_F !== $ && A.throwUnnamedLateFieldAI();
-      _this.___HtmlContentViewerOnWebState_sizeListener_F = t1;
+      t1 = A._EventStreamSubscription$(t1, "message", _this.get$_handleMessageEvent(), false, type$.MessageEvent);
+      _this.___HtmlContentViewerOnWebState__onMessageSubscription_F !== $ && A.throwUnnamedLateFieldAI();
+      _this.___HtmlContentViewerOnWebState__onMessageSubscription_F = t1;
+    },
+    _handleMessageEvent$1($event) {
+      var data, viewId, type, e, t1, t2, deltaY, t3, newOffset, exception, _this = this, _null = null;
+      try {
+        data = C.C_JsonCodec.decode$1(0, new A._AcceptStructuredCloneDart2Js([], []).convertNativeToDart_AcceptStructuredClone$2$mustCopy($event.data, true));
+        viewId = J.$index$asx(data, "view");
+        t1 = _this.___HtmlContentViewerOnWebState__createdViewId_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        if (!J.$eq$(viewId, t1))
+          return;
+        type = J.$index$asx(data, "type");
+        t1 = type;
+        t2 = _this._widget.scrollController;
+        if (t2 != null)
+          t1 = (t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: onScrollChanged")) === true;
+        else
+          t1 = false;
+        if (t1) {
+          t2.toString;
+          deltaY = J.$index$asx(data, "deltaY");
+          if (deltaY == null)
+            deltaY = 0;
+          t1 = t2._positions;
+          t3 = C.JSArray_methods.get$single(t1)._pixels;
+          t3.toString;
+          newOffset = t3 + deltaY;
+          A.log("_HtmlContentViewerOnWebState::_handleIframeOnScrollChangedListener:deltaY = " + A.S(deltaY) + " | newOffset = " + A.S(newOffset), C.Level_3);
+          if (newOffset < C.JSArray_methods.get$single(t1).get$minScrollExtent())
+            t2.jumpTo$1(C.JSArray_methods.get$single(t1).get$minScrollExtent());
+          else if (newOffset > C.JSArray_methods.get$single(t1).get$maxScrollExtent())
+            t2.jumpTo$1(C.JSArray_methods.get$single(t1).get$maxScrollExtent());
+          else
+            t2.jumpTo$1(newOffset);
+          return;
+        }
+        if (J.$eq$(J.$index$asx(data, "message"), "iframeHasBeenLoaded"))
+          _this._html_content_viewer_on_web_widget$_iframeLoaded = true;
+        if (!_this._html_content_viewer_on_web_widget$_iframeLoaded)
+          return;
+        t1 = type;
+        if ((t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: htmlHeight")) === true)
+          _this._handleContentHeightEvent$1(J.$index$asx(data, "height"));
+        else {
+          t1 = type;
+          t1 = (t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: htmlWidth")) === true;
+          if (t1)
+            _this._widget.toString;
+          if (t1)
+            _this._handleContentWidthEvent$1(J.$index$asx(data, "width"));
+          else {
+            t1 = type;
+            if ((t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: OpenLink")) === true) {
+              t1 = J.$index$asx(data, "url");
+              if (t1 != null && _this._framework$_element != null && typeof t1 == "string" && C.JSString_methods.startsWith$1(t1, "mailto:")) {
+                t2 = _this._widget.mailtoDelegate;
+                if (t2 != null)
+                  t2.call$1(A.Uri_tryParse(t1));
+              }
+            } else {
+              t1 = type;
+              if ((t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: onClickHyperLink")) === true) {
+                t1 = J.$index$asx(data, "url");
+                if (t1 != null && _this._framework$_element != null && typeof t1 == "string") {
+                  t2 = _this._widget.onClickHyperLinkAction;
+                  if (t2 != null)
+                    t2.call$1(A.Uri_tryParse(t1));
+                }
+              }
+            }
+          }
+        }
+      } catch (exception) {
+        e = A.unwrapException(exception);
+        A.log("_HtmlContentViewerOnWebState::_handleMessageEvent:Exception = " + A.S(e), C.Level_1);
+      }
+    },
+    _handleContentHeightEvent$1(height) {
+      var t1, docHeight, scrollHeightWithBuffer, _this = this;
+      if (height == null) {
+        t1 = _this.___HtmlContentViewerOnWebState__actualHeight_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        docHeight = t1;
+      } else
+        docHeight = height;
+      t1 = _this._framework$_element;
+      if (t1 != null) {
+        scrollHeightWithBuffer = J.$add$ansx(docHeight, 30);
+        if (J.$gt$n(scrollHeightWithBuffer, _this.minHeight))
+          _this.setState$1(new B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure(_this, scrollHeightWithBuffer));
+      }
+      if (_this._framework$_element != null && _this._html_content_viewer_on_web_widget$_isLoading)
+        _this.setState$1(new B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure0(_this));
+    },
+    _handleContentWidthEvent$1(width) {
+      var t1, docWidth, _this = this;
+      if (width == null) {
+        t1 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        docWidth = t1;
+      } else
+        docWidth = width;
+      if (_this._framework$_element != null && J.$gt$n(docWidth, 300) && _this._widget.allowResizeToDocumentSize)
+        _this.setState$1(new B._HtmlContentViewerOnWebState__handleContentWidthEvent_closure(_this, docWidth));
     },
     didUpdateWidget$1(oldWidget) {
       var t1, t2, _this = this;
@@ -113,7 +247,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return C.Base64Codec_Base64Encoder_true.get$encoder().convert$1(values);
     },
     _html_content_viewer_on_web_widget$_setUpWeb$0() {
-      var t4, t5, t6, t7, t8, t9, t10, t11, _this = this,
+      var t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, _this = this,
         t1 = _this._widget,
         t2 = t1.contentHtml,
         t3 = _this.___HtmlContentViewerOnWebState__createdViewId_A;
@@ -124,16 +258,23 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = t6 ? '                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ' : "";
       t6 = t6 ? "                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                " : "";
       t4 = t4 ? "                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                " : "";
-      t8 = _this.minHeight;
-      t9 = t1.direction;
-      t10 = t1.contentPadding;
-      t1 = t1.useDefaultFont;
-      t1;
-      t11 = "";
-      t1 = t1 ? "          body {\n            font-family: 'Inter', sans-serif;\n            font-weight: 500;\n            font-size: 16px;\n            line-height: 24px;\n          }\n        " : "";
-      t9 = t9 === C.TextDirection_0 ? 'dir="rtl"' : "";
-      t10 = t10 != null ? "margin: " + A.S(t10) + ";" : "";
-      _this._html_content_viewer_on_web_widget$_htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      ' + t11 + "\n      <style>\n        " + t1 + "\n        .tmail-content {\n          min-height: " + A.S(t8) + "px;\n          min-width: 300px;\n          overflow: auto;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n            .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  \n      </style>\n      </head>\n      <body " + t9 + ' style = "overflow-x: hidden; ' + t10 + '";>\n      <div class="tmail-content">' + t2 + "</div>\n      " + ("      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('pagehide', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\"" + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n        \n        ' + t5 + "\n        \n        \n        \n        " + t7 + '\n        \n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getWidth"}), "*");\n          \n          ' + t6 + "\n          \n          " + t4 + "\n        }\n      </script>\n          <script type=\"text/javascript\">\n        document.addEventListener('wheel', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener('keydown', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case '=':\n              case '-':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script>\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ") + "\n      </body>\n      </html> \n    ";
+      t8 = t1.scrollController != null ? '          window.addEventListener(\'wheel\', function (event) {\n            const deltaY = event.deltaY;\n            window.parent.postMessage(JSON.stringify({\n              "view": "' + t3 + '",\n              "type": "toDart: onScrollChanged",\n              "deltaY": deltaY\n            }), "*");\n          });\n        ' : "";
+      t1 = t1.enableQuoteToggle ? B.HtmlUtils_addQuoteToggle(t2) : t2;
+      t2 = _this.minHeight;
+      t9 = _this._widget;
+      t10 = t9.enableQuoteToggle;
+      t11 = t10 ? "    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        gap: 2px;\n        background-color: #e8eaed;\n        padding: 4px 8px;\n        margin: 8px 0;\n        border-radius: 9999px;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 4px;\n        height: 4px;\n        background-color: #4b5563;\n        border-radius: 9999px;\n      }\n    </style>" : "";
+      t12 = t9.widthContent;
+      t10 = t10 ? "    <script>\n      document.addEventListener('DOMContentLoaded', function() {\n        const buttons = document.querySelectorAll('.quote-toggle-button');\n        buttons.forEach(button => {\n          button.onclick = function() {\n            const blockquote = this.nextElementSibling;\n            if (blockquote && blockquote.tagName === 'BLOCKQUOTE') {\n              this.classList.toggle('collapsed');\n              if (this.classList.contains('collapsed')) {\n                this.title = 'Show trimmed content';\n              } else {\n                this.title = 'Hide expanded content';\n              }\n            }\n          };\n        });\n      });\n    </script>" : "";
+      t13 = t9.direction;
+      t14 = t9.contentPadding;
+      t9 = t9.useDefaultFont;
+      t9;
+      t15 = "";
+      t9 = t9 ? "          body {\n            font-family: 'Inter', sans-serif;\n            font-weight: 500;\n            font-size: 16px;\n            line-height: 24px;\n          }\n        " : "";
+      t13 = t13 === C.TextDirection_0 ? 'dir="rtl"' : "";
+      t14 = t14 != null ? "margin: " + A.S(t14) + ";" : "";
+      _this._html_content_viewer_on_web_widget$_htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      ' + t15 + "\n      <style>\n        " + t9 + "\n        .tmail-content {\n          min-height: " + A.S(t2) + "px;\n          min-width: 300px;\n          overflow: auto;\n          overflow-wrap: break-word;\n          word-break: break-word;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n        \n        pre {\n          white-space: pre-wrap;\n        }\n        \n        table {\n          white-space: normal !important;\n        }\n        \n        " + ("    .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  " + t11) + "\n      </style>\n      </head>\n      <body " + t13 + ' style = "overflow-x: hidden; ' + t14 + '";>\n      <div class="tmail-content">' + t1 + "</div>\n      " + ("      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('pagehide', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\"" + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n\n        const resizeObserver = new ResizeObserver((entries) => {\n          var height = document.body.scrollHeight;\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n        });\n        \n        ' + t5 + "\n        \n        \n        \n        " + t7 + '\n        \n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getWidth"}), "*");\n          \n          ' + t6 + "\n          \n          " + t4 + "\n          \n          resizeObserver.observe(document.body);\n        }\n        \n        " + t8 + "\n      </script>\n          <script type=\"text/javascript\">\n        document.addEventListener('wheel', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener('keydown', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case '=':\n              case '-':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script>\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  " + ('      <script type="text/javascript">\n        const displayWidth = ' + A.S(t12) + ";\n    \n        const sizeUnits = ['px', 'in', 'cm', 'mm', 'pt', 'pc'];\n    \n        function convertToPx(value, unit) {\n          switch (unit.toLowerCase()) {\n            case 'px': return value;\n            case 'in': return value * 96;\n            case 'cm': return value * 37.8;\n            case 'mm': return value * 3.78;\n            case 'pt': return value * (96 / 72);\n            case 'pc': return value * (96 / 6);\n            default: return value;\n          }\n        }\n    \n        function removeWidthHeightFromStyle(style) {\n          // Remove width and height properties from style string\n          style = style.replace(/width\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');\n          style = style.replace(/height\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');\n          style = style.trim();\n          if (style.length && !style.endsWith(';')) {\n            style += ';';\n          }\n          return style;\n        }\n    \n        function extractWidthHeightFromStyle(style) {\n          // Extract width and height values with units from style string\n          const result = {};\n          const widthMatch = style.match(/width\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);\n          const heightMatch = style.match(/height\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);\n    \n          if (widthMatch) {\n            const value = parseFloat(widthMatch[1]);\n            const unit = widthMatch[2];\n            if (!isNaN(value) && unit) {\n              result['width'] = { value, unit };\n            }\n          }\n    \n          if (heightMatch) {\n            const value = parseFloat(heightMatch[1]);\n            const unit = heightMatch[2];\n            if (!isNaN(value) && unit) {\n              result['height'] = { value, unit };\n            }\n          }\n    \n          return result;\n        }\n    \n        function normalizeStyleAttribute(attrs) {\n          // Normalize style attribute to ensure proper responsive behavior\n          let style = attrs['style'];\n          \n          if (!style) {\n            attrs['style'] = 'max-width:100%;height:auto;display:inline;';\n            return;\n          }\n    \n          style = style.trim();\n          const dimensions = extractWidthHeightFromStyle(style);\n          const hasWidth = dimensions.hasOwnProperty('width');\n    \n          if (hasWidth) {\n            const widthData = dimensions['width'];\n            const widthPx = convertToPx(widthData.value, widthData.unit);\n    \n            if (displayWidth !== undefined &&\n                widthPx > displayWidth &&\n                sizeUnits.includes(widthData.unit)) {\n              style = removeWidthHeightFromStyle(style).trim();\n            }\n          }\n    \n          // Ensure proper style string formatting\n          if (style.length && !style.endsWith(';')) {\n            style += ';';\n          }\n    \n          // Add responsive defaults if missing\n          if (!style.includes('max-width')) {\n            style += 'max-width:100%;';\n          }\n    \n          if (!style.includes('height')) {\n            style += 'height:auto;';\n          }\n    \n          if (!style.includes('display')) {\n            style += 'display:inline;';\n          }\n    \n          attrs['style'] = style;\n        }\n    \n        function normalizeWidthHeightAttribute(attrs) {\n          // Normalize width/height attributes and remove if necessary\n          const widthStr = attrs['width'];\n          const heightStr = attrs['height'];\n    \n          // Remove attribute if value is null or undefined\n          if (widthStr === null || widthStr === undefined) {\n            delete attrs['width'];\n          } else if (displayWidth !== undefined) {\n            const widthValue = parseFloat(widthStr);\n            if (!isNaN(widthValue)) {\n              if (widthValue > displayWidth) {\n                delete attrs['width'];\n                delete attrs['height'];\n              }\n            }\n          }\n    \n          // Remove height attribute if value is null or undefined\n          if (heightStr === null || heightStr === undefined) {\n            delete attrs['height'];\n          }\n        }\n    \n        function normalizeImageSize(attrs) {\n          // Apply both style and attribute normalization\n          normalizeWidthHeightAttribute(attrs);\n          normalizeStyleAttribute(attrs);\n        }\n    \n        function applyImageNormalization() {\n          // Process all images on the page\n          document.querySelectorAll('img').forEach(img => {\n            const attrs = {\n              style: img.getAttribute('style'),\n              width: img.getAttribute('width'),\n              height: img.getAttribute('height')\n            };\n    \n            normalizeImageSize(attrs);\n    \n            // Handle style attribute\n            if (attrs.style !== null && attrs.style !== undefined) {\n              img.setAttribute('style', attrs.style);\n            } else {\n              img.removeAttribute('style');\n            }\n    \n            // Handle width attribute\n            if ('width' in attrs && attrs.width !== null && attrs.width !== undefined) {\n              img.setAttribute('width', attrs.width);\n            } else {\n              img.removeAttribute('width');\n            }\n    \n            // Handle height attribute\n            if ('height' in attrs && attrs.height !== null && attrs.height !== undefined) {\n              img.setAttribute('height', attrs.height);\n            } else {\n              img.removeAttribute('height');\n            }\n          });\n        }\n        \n        function safeApplyImageNormalization() {\n          // Error-safe wrapper for the normalization function\n          try {\n            applyImageNormalization();\n          } catch (e) {\n            console.error('Image normalization failed:', e);\n          }\n        }\n        \n        // Run normalization when page loads\n        window.onload = safeApplyImageNormalization;\n      </script>\n    ") + t10) + "\n      </body>\n      </html> \n    ";
       t1 = document.createElement("iframe");
       t1.toString;
       t2 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
@@ -163,85 +304,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     dispose$0() {
       this._html_content_viewer_on_web_widget$_htmlData = null;
-      var t1 = this.___HtmlContentViewerOnWebState_sizeListener_F;
+      var t1 = this.___HtmlContentViewerOnWebState__onMessageSubscription_F;
       t1 === $ && A.throwUnnamedLateFieldNI();
       t1.cancel$0(0);
       this.super$State$dispose();
     }
   };
-  var typesOffset = hunkHelpers.updateTypes([]);
-  B._HtmlContentViewerOnWebState_initState_closure.prototype = {
-    call$1($event) {
-      var docHeight, scrollHeightWithBuffer, docWidth, link, _s4_ = "type",
-        data = C.C_JsonCodec.decode$1(0, new A._AcceptStructuredCloneDart2Js([], []).convertNativeToDart_AcceptStructuredClone$2$mustCopy($event.data, true)),
-        t1 = J.getInterceptor$asx(data),
-        t2 = t1.$index(data, "view"),
-        t3 = this.$this,
-        t4 = t3.___HtmlContentViewerOnWebState__createdViewId_A;
-      t4 === $ && A.throwUnnamedLateFieldNI();
-      if (!J.$eq$(t2, t4))
-        return;
-      if (J.$eq$(t1.$index(data, "message"), "iframeHasBeenLoaded"))
-        t3._html_content_viewer_on_web_widget$_iframeLoaded = true;
-      if (!t3._html_content_viewer_on_web_widget$_iframeLoaded)
-        return;
-      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlHeight")) {
-        docHeight = t1.$index(data, "height");
-        if (docHeight == null) {
-          t2 = t3.___HtmlContentViewerOnWebState__actualHeight_A;
-          t2 === $ && A.throwUnnamedLateFieldNI();
-          docHeight = t2;
-        }
-        t2 = t3._framework$_element;
-        if (t2 != null) {
-          scrollHeightWithBuffer = J.$add$ansx(docHeight, 30);
-          if (J.$gt$n(scrollHeightWithBuffer, t3.minHeight))
-            t3.setState$1(new B._HtmlContentViewerOnWebState_initState__closure(t3, scrollHeightWithBuffer));
-        }
-        if (t3._framework$_element != null && t3._html_content_viewer_on_web_widget$_isLoading)
-          t3.setState$1(new B._HtmlContentViewerOnWebState_initState__closure0(t3));
-      }
-      if (t1.$index(data, _s4_) != null) {
-        t2 = J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlWidth");
-        if (t2)
-          t3._widget.toString;
-      } else
-        t2 = false;
-      if (t2) {
-        docWidth = t1.$index(data, "width");
-        if (docWidth == null) {
-          t2 = t3.___HtmlContentViewerOnWebState__actualWidth_A;
-          t2 === $ && A.throwUnnamedLateFieldNI();
-          docWidth = t2;
-        }
-        t2 = t3._framework$_element;
-        if (t2 != null)
-          if (J.$gt$n(docWidth, 300) && t3._widget.allowResizeToDocumentSize)
-            t3.setState$1(new B._HtmlContentViewerOnWebState_initState__closure1(t3, docWidth));
-      }
-      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: OpenLink")) {
-        link = t1.$index(data, "url");
-        if (link != null && t3._framework$_element != null) {
-          A._asString(link);
-          if (C.JSString_methods.startsWith$1(link, "mailto:")) {
-            t2 = t3._widget.mailtoDelegate;
-            if (t2 != null)
-              t2.call$1(A.Uri_parse(link, 0, null));
-          }
-        }
-      }
-      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: onClickHyperLink")) {
-        link = A._asStringQ(t1.$index(data, "url"));
-        if (link != null && t3._framework$_element != null) {
-          t1 = t3._widget.onClickHyperLinkAction;
-          if (t1 != null)
-            t1.call$1(A.Uri_parse(link, 0, null));
-        }
-      }
-    },
-    $signature: 136
-  };
-  B._HtmlContentViewerOnWebState_initState__closure.prototype = {
+  var typesOffset = hunkHelpers.updateTypes(["~(MessageEvent)"]);
+  B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure.prototype = {
     call$0() {
       var t1 = this.$this;
       t1.___HtmlContentViewerOnWebState__actualHeight_A = this.scrollHeightWithBuffer;
@@ -249,15 +319,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
-  B._HtmlContentViewerOnWebState_initState__closure0.prototype = {
+  B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure0.prototype = {
     call$0() {
       this.$this._html_content_viewer_on_web_widget$_isLoading = false;
     },
     $signature: 0
   };
-  B._HtmlContentViewerOnWebState_initState__closure1.prototype = {
+  B._HtmlContentViewerOnWebState__handleContentWidthEvent_closure.prototype = {
     call$0() {
-      this.$this.___HtmlContentViewerOnWebState__actualWidth_A = this.docWidth;
+      return this.$this.___HtmlContentViewerOnWebState__actualWidth_A = this.docWidth;
     },
     $signature: 0
   };
@@ -265,7 +335,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 474
+    $signature: 728
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
@@ -277,7 +347,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraint) {
       var t2, t3,
         t1 = this.$this;
-      t1.minHeight = Math.max(constraint.maxHeight, t1.minHeight);
+      t1.minHeight = Math.min(constraint.maxHeight, t1.minHeight);
       t2 = A._setArrayType([], type$.JSArray_Widget);
       t3 = t1._html_content_viewer_on_web_widget$_htmlData;
       if ((t3 == null ? null : t3.length !== 0) === false)
@@ -289,11 +359,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._widget.toString;
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 1847
+    $signature: 1900
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
-      var t1, t2, t3, t4;
+      var t1, t2, t3, t4, t5;
       if (snapshot.data != null) {
         t1 = this.$this;
         t2 = t1.___HtmlContentViewerOnWebState__actualHeight_A;
@@ -301,28 +371,34 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t1.___HtmlContentViewerOnWebState__actualWidth_A;
         t3 === $ && A.throwUnnamedLateFieldNI();
         t4 = t1._html_content_viewer_on_web_widget$_htmlData;
+        t5 = A.S(t1._widget.key);
         t1 = t1.___HtmlContentViewerOnWebState__createdViewId_A;
         t1 === $ && A.throwUnnamedLateFieldNI();
-        return new A.SizedBox(t3, t2, new A.HtmlElementView(t1, null, null, new A.ValueKey(t4, type$.ValueKey_nullable_String)), null);
+        return new A.SizedBox(t3, t2, new A.HtmlElementView(t1, null, null, new A.ValueKey(A.S(t4) + "-" + t5, type$.ValueKey_String)), null);
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1848
+    $signature: 1901
   };
+  (function installTearOffs() {
+    var _instance_1_u = hunkHelpers._instance_1u;
+    _instance_1_u(B._HtmlContentViewerOnWebState.prototype, "get$_handleMessageEvent", "_handleMessageEvent$1", 0);
+  })();
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
     _inherit(B.HtmlContentViewerOnWeb, A.StatefulWidget);
     _inherit(B._HtmlContentViewerOnWebState, A.State0);
-    _inheritMany(A.Closure, [B._HtmlContentViewerOnWebState_initState_closure, B._HtmlContentViewerOnWebState__setUpWeb_closure]);
-    _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState_initState__closure, B._HtmlContentViewerOnWebState_initState__closure0, B._HtmlContentViewerOnWebState_initState__closure1, B._HtmlContentViewerOnWebState__setUpWeb_closure0]);
+    _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure, B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure0, B._HtmlContentViewerOnWebState__handleContentWidthEvent_closure, B._HtmlContentViewerOnWebState__setUpWeb_closure0]);
+    _inherit(B._HtmlContentViewerOnWebState__setUpWeb_closure, A.Closure);
     _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState_build_closure, B._HtmlContentViewerOnWebState_build__closure]);
   })();
   A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]}}'));
   var type$ = {
     JSArray_Widget: A.findType("JSArray<Widget>"),
     MessageEvent: A.findType("MessageEvent"),
-    ValueKey_nullable_String: A.findType("ValueKey<String?>"),
+    ValueKey_String: A.findType("ValueKey<String>"),
+    _FrozenElementList_Element: A.findType("_FrozenElementList<Element1>"),
     bool: A.findType("bool"),
     int: A.findType("int")
   };
@@ -336,5 +412,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "o5T4npQy1SX/P+po5vjSGrARBks=");
+})($__dart_deferred_initializers__, "l8Xj0fdtVfEaUlYGVUAkfvBDlEk=");
 ;
