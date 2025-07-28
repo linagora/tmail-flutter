@@ -1198,9 +1198,7 @@ class ThreadController extends BaseController with EmailActionController {
         openEmailInNewTabAction(selectedEmail);
         break;
       case EmailActionType.archiveMessage:
-        if (currentContext != null) {
-          archiveMessage(currentContext!, selectedEmail);
-        }
+        archiveMessage(selectedEmail);
         break;
       case EmailActionType.editAsNewEmail:
         editAsNewEmail(selectedEmail);
@@ -1376,7 +1374,7 @@ class ThreadController extends BaseController with EmailActionController {
       ReadActions readActions = !email.hasRead ? ReadActions.markAsRead : ReadActions.markAsUnread;
       markAsEmailRead(email, readActions, MarkReadAction.swipeOnThread);
     } else if (direction == DismissDirection.endToStart) {
-      archiveMessage(context, email);
+      archiveMessage(email);
     }
     return false;
   }

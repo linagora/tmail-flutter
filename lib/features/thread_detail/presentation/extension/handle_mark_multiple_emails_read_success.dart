@@ -5,7 +5,6 @@ import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/toggle_thread_detail_collapse_expand.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleMarkMultipleEmailsReadSuccess on ThreadDetailController {
   void handleMarkMultipleEmailsReadSuccess(
@@ -17,7 +16,7 @@ extension HandleMarkMultipleEmailsReadSuccess on ThreadDetailController {
     if (readActions == ReadActions.markAsRead) return;
 
     if (emailsInThreadDetailInfo.length == 1) {
-      closeThreadDetailAction(currentContext);
+      closeThreadDetailAction();
       return;
     }
 

@@ -34,7 +34,7 @@ class ThreadDetailAppBar extends StatelessWidget {
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
   final bool isSearchRunning;
-  final void Function(BuildContext context) closeThreadDetailAction;
+  final VoidCallback closeThreadDetailAction;
   final bool threadActionReady;
   final bool threadDetailIsStarred;
   final bool isThreadDetailEnabled;
@@ -50,7 +50,7 @@ class ThreadDetailAppBar extends StatelessWidget {
       builder: (context, constraints) {
         Widget backButton = EmailViewBackButton(
           imagePaths: imagePaths,
-          onBackAction: () => closeThreadDetailAction(context),
+          onBackAction: closeThreadDetailAction,
           mailboxContain: mailboxContain,
           isSearchActivated: isSearchRunning,
           maxWidth: constraints.maxWidth,
@@ -139,7 +139,7 @@ class ThreadDetailAppBar extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (_, __) {
-        closeThreadDetailAction(context);
+        closeThreadDetailAction();
       },
       child: child,
     );

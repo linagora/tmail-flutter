@@ -20,7 +20,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     BuildContext? context,
   ) {
     if (selectedEmail?.id == null) {
-      closeThreadDetailAction(context);
+      closeThreadDetailAction();
       return;
     }
 

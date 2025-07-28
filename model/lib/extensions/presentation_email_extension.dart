@@ -15,6 +15,7 @@ import 'package:model/email/eml_attachment.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/utc_date_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
@@ -202,4 +203,13 @@ extension PresentationEmailExtension on PresentationEmail {
 
   MailboxId? get firstMailboxIdAvailable =>
       mailboxIds?.entries.firstWhereOrNull((element) => element.value)?.key;
+
+  bool get isDeletePermanentlyEnabled {
+    return mailboxContain?.isTrash ?? mailboxContain?.isSpam ?? false;
+  }
+
+  bool isReplyAllEnabled(String ownerEmailAddress) {
+    final countMailAddress = getCountMailAddressWithoutMe(ownerEmailAddress);
+    return countMailAddress > 1;
+  }
 }
