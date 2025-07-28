@@ -4606,5 +4606,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "initializing_data": "",
+  "@initializing_data": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLocalCopyInForwardFailed": "",
+  "@editLocalCopyInForwardFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
