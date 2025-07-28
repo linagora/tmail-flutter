@@ -78,7 +78,6 @@ cozy-stack instances add tmail.localhost:8080 --passphrase cozy --apps home,stor
 If there is a need of modifying Cozy libs
 1. On cozy-libs side
 - Clone `https://github.com/cozy/cozy-libs`
-- `yarn set version classic`
 - `yarn install`
 - `yarn build`
 For example, if you want to use locally modified `cozy-external-bridge`
@@ -87,7 +86,7 @@ For example, if you want to use locally modified `cozy-external-bridge`
 - `yarn build`
 
 2. On cozy-twakemail side
-- Please ask Dat Dang (tddang@linagora.com) for rlink.sh file, leave the file in ~/Downloads
+- Look for rlink.sh file in /scripts, move the file to ~/Downloads
 - `mv ~/Downloads/rlink.sh ~/bin/rlink`
 - `chmod +x ~/bin/rlink`
 - Reset the terminal
