@@ -443,11 +443,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         );
         mailboxDashBoardController.clearEmailUIAction();
       } else if (action is TriggerMailViewKeyboardShortcutAction) {
+        mailboxDashBoardController.clearEmailUIAction();
+        if (_currentEmailId == null ||
+            action.email.id != _currentEmailId) {
+          return;
+        }
         handleMailActionByShortcutAction(
           actionType: action.actionType,
           email: action.email,
         );
-        mailboxDashBoardController.clearEmailUIAction();
       }
     }));
 

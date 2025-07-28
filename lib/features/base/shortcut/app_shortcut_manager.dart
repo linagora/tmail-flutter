@@ -1,6 +1,7 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/services.dart';
 import 'package:tmail_ui_user/features/base/extensions/logical_key_set_helper.dart';
+import 'package:tmail_ui_user/features/base/shortcut/mail/mail_list_action_shortcut_type.dart';
 import 'package:tmail_ui_user/features/base/shortcut/mail/mail_view_action_shortcut_type.dart';
 
 class AppShortcutManager {
@@ -20,6 +21,23 @@ class AppShortcutManager {
       return MailViewActionShortcutType.newMessage;
     } else if (keysPressed.isOnly(LogicalKeyboardKey.keyU)) {
       return MailViewActionShortcutType.markAsUnread;
+    } else {
+      return null;
+    }
+  }
+
+  static MailListActionShortcutType? getMailListActionFromEvent(KeyEvent event) {
+    final keysPressed = HardwareKeyboard.instance.logicalKeysPressed;
+    log('AppShortcutManager::getMailListActionFromEvent: Keys pressed: $keysPressed');
+    if (keysPressed.isOnly(LogicalKeyboardKey.delete) ||
+        keysPressed.isOnly(LogicalKeyboardKey.backspace)) {
+      return MailListActionShortcutType.delete;
+    } else if (keysPressed.isOnly(LogicalKeyboardKey.keyN)) {
+      return MailListActionShortcutType.newMessage;
+    } else if (keysPressed.isOnly(LogicalKeyboardKey.keyQ)) {
+      return MailListActionShortcutType.markAsRead;
+    }  else if (keysPressed.isOnly(LogicalKeyboardKey.keyU)) {
+      return MailListActionShortcutType.markAsUnread;
     } else {
       return null;
     }
