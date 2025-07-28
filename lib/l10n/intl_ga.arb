@@ -4587,13 +4587,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thread": "Snáithe",
+  "thread": "",
   "@thread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "threadSettingExplanation": "Féach ar ríomhphoist ghaolmhara iolracha cosúil le comhrá",
+  "threadSettingExplanation": "",
   "@threadSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -4627,7 +4627,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "daysAgo": "",
+  "daysAgo": "{days,plural, =0{}=1{ (1 lá ó shin)}other{ ({days} lá ó shin)}}",
   "@daysAgo": {
     "type": "text",
     "placeholders_order": [
