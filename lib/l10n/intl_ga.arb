@@ -4539,7 +4539,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editLocalCopyInForwardFailed": "Theip ar chóip áitiúil a athrú agus ríomhphoist á n-aistriú.",
+  "editLocalCopyInForwardFailed": "Theip ar chóip áitiúil a chur in eagar sa chur ar aghaidh.",
   "@editLocalCopyInForwardFailed": {
     "type": "text",
     "placeholders_order": [],
@@ -4583,6 +4583,46 @@
   },
   "startToComposeEmails": "Tosaigh ag scríobh ríomhphoist.",
   "@startToComposeEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thread": "Snáithe",
+  "@thread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "threadSettingExplanation": "Féach ar ríomhphoist ghaolmhara iolracha cosúil le comhrá",
+  "@threadSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "threadToggleDescription": "Cumasaigh snáithe",
+  "@threadToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "Níl cuireadh tugtha duit chuig an ócáid seo. Téigh i dteagmháil leis an eagraí le do thoil.",
+  "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "countMessageInSpam": "{count} teachtaireacht sa turscar",
+  "@countMessageInSpam": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "view": "Amharc",
+  "@view": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
