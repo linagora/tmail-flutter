@@ -4636,5 +4636,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "drafts_saved": "",
+  "@drafts_saved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
