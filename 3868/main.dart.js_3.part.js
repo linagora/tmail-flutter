@@ -293,13 +293,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         t3.completeError$1(e);
     },
-    $signature: 372
+    $signature: 386
   };
   A.ImageLoaderMixin_buildImage_closure.prototype = {
     call$1(_) {
       return C.CupertinoActivityIndicator_null_true_1_null;
     },
-    $signature: 1794
+    $signature: 1821
   };
   A.ImageLoaderMixin_buildImage_closure0.prototype = {
     call$3(_, child, loadingProgress) {
@@ -309,7 +309,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 1795
+    $signature: 1822
   };
   A.ImageLoaderMixin_buildImage_closure1.prototype = {
     call$3(context, error, stackTrace) {
@@ -318,7 +318,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.imageSize;
       return B.Container$(C.Alignment_0_0, D.Icon_MYE, C.Clip_0, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, t1);
     },
-    $signature: 1796
+    $signature: 1823
   };
   A.NetworkImage__loadAsync_closure.prototype = {
     call$1(e) {
@@ -335,19 +335,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         throw B.wrapException(A.NetworkImageLoadException$($status, this.resolved));
       }
     },
-    $signature: 85
+    $signature: 87
   };
   A.NetworkImage__loadAsync_closure0.prototype = {
     call$1(e) {
       return this.completer.completeError$1(e);
     },
-    $signature: 78
+    $signature: 85
   };
   A.NetworkImage__loadAsync_closure1.prototype = {
     call$2(bytes, total) {
       this.chunkEvents.add$1(0, new A.ImageChunkEvent(bytes, total));
     },
-    $signature: 247
+    $signature: 248
   };
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
@@ -381,7 +381,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
   (function constants() {
     D.Center_IFX = new B.Center(C.Alignment_0_0, null, null, C.CupertinoActivityIndicator_null_true_1_null, null);
-    D.EdgeInsetsDirectional_16_16_16_0 = new B.EdgeInsetsDirectional(16, 16, 16, 0);
     D.Icon_MYE = new B.Icon(C.IconData_57912_false, null, null, null, null);
   })();
 };
@@ -389,5 +388,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "FrxJDbcfyF9HY+MS34QbhisEyHk=");
+})($__dart_deferred_initializers__, "E4+Xhyx75xoxCort42dn4Xjnr10=");
 ;
