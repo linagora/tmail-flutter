@@ -106,6 +106,7 @@ export 'presentation/views/button/multi_click_widget.dart';
 export 'presentation/views/semantics/checkbox_semantics.dart';
 export 'presentation/views/semantics/text_field_semantics.dart';
 export 'presentation/views/semantics/icon_semantics.dart';
+export 'presentation/views/shortcut/key_shortcut.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';

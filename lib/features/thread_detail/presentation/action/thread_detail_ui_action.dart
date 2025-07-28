@@ -52,3 +52,7 @@ class LoadThreadDetailAfterSelectedEmailAction extends ThreadDetailUIAction {
   @override
   List<Object?> get props => [threadId, isSentMailbox];
 }
+
+class ReclaimMailViewKeyboardShortcutFocusAction extends ThreadDetailUIAction {}
+
+class ClearMailViewKeyboardShortcutFocusAction extends ThreadDetailUIAction {}

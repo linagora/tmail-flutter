@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/shortcut/key_shortcut.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
@@ -14,6 +15,7 @@ import 'package:universal_html/html.dart' as html;
 
 typedef OnClickHyperLinkAction = Function(Uri?);
 typedef OnMailtoClicked = void Function(Uri? uri);
+typedef OnIFrameKeyboardShortcutAction = void Function(KeyShortcut keyShortcut);
 
 class HtmlContentViewerOnWeb extends StatefulWidget {
 
@@ -29,6 +31,8 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final OnMailtoClicked? mailtoDelegate;
 
   final OnClickHyperLinkAction? onClickHyperLinkAction;
+
+  final OnIFrameKeyboardShortcutAction? onIFrameKeyboardShortcutAction;
 
   // if widthContent is bigger than width of htmlContent, set this to true let widget able to resize to width of htmlContent
   final bool allowResizeToDocumentSize;
@@ -66,6 +70,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.htmlContentMinWidth = ConstantsUI.htmlContentMinWidth,
     this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
     this.viewMaxHeight,
+    this.onIFrameKeyboardShortcutAction,
   }) : super(key: key);
 
   @override
@@ -115,6 +120,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         return;
       } else if (_isScrollingIsAvailable && _isScrollEndEventTriggered(type)) {
         _handleIframeOnScrollEndListener(data, widget.scrollController!);
+        return;
+      } else if (_isIframeKeyboardEventTriggered(type)) {
+        _handleOnIFrameKeyboardEvent(data);
         return;
       }
 
@@ -257,6 +265,21 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
   }
 
+  bool _isIframeKeyboardEventTriggered(String? type) {
+    return widget.onIFrameKeyboardShortcutAction != null &&
+        type?.contains('toDart: iframeKeydown') == true;
+  }
+
+  void _handleOnIFrameKeyboardEvent(dynamic data) {
+    final shortcut = KeyShortcut(
+      key: data['key'] as String,
+      code: data['code'] as String,
+      shift: data['shift'] == true,
+    );
+    log('_HtmlContentViewerOnWebState::_handleOnIFrameKeyboardEvent:📥 Shortcut pressed: $shortcut');
+    widget.onIFrameKeyboardShortcutAction?.call(shortcut);
+  }
+
   @override
   void didUpdateWidget(covariant HtmlContentViewerOnWeb oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -397,6 +420,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
                 viewId: _createdViewId,
                 onScrollChangedEvent: onScrollChangedEvent,
               ),
+      if (widget.onIFrameKeyboardShortcutAction != null)
+        HtmlInteraction.scriptHandleIframeKeyboardListener(_createdViewId),
     ].join();
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(

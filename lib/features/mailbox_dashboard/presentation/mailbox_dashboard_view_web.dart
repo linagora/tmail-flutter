@@ -68,137 +68,141 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         ResponsiveWidget(
             responsiveUtils: controller.responsiveUtils,
             desktop: Scaffold(
-              body: GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: Container(
-                  color: AppColor.colorBgDesktop,
-                  child: Column(children: [
-                    FutureBuilder(
-                      future: CozyConfigManager().isInsideCozy,
-                      builder: (context, snapshot) {
-                        if (snapshot.data == true) {
-                          return const SizedBox.shrink();
+              backgroundColor: AppColor.colorBgDesktop,
+              body: Column(
+                children: [
+                  FutureBuilder(
+                    future: CozyConfigManager().isInsideCozy,
+                    builder: (context, snapshot) {
+                      if (snapshot.data == true) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return Obx(() {
+                        final accountId = controller.accountId.value;
+                        String accountDisplayName = controller.ownEmailAddress.value;
+                        final contactSupportCapability = accountId != null
+                          ? controller.sessionCurrent?.getContactSupportCapability(accountId)
+                          : null;
+                        if (accountDisplayName.trim().isEmpty) {
+                          accountDisplayName = controller
+                            .sessionCurrent
+                            ?.getOwnEmailAddressOrUsername() ?? '';
                         }
 
-                        return Obx(() {
-                          final accountId = controller.accountId.value;
-                          String accountDisplayName = controller.ownEmailAddress.value;
-                          final contactSupportCapability = accountId != null
-                            ? controller.sessionCurrent?.getContactSupportCapability(accountId)
-                            : null;
-                          if (accountDisplayName.trim().isEmpty) {
-                            accountDisplayName = controller
-                              .sessionCurrent
-                              ?.getOwnEmailAddressOrUsername() ?? '';
-                          }
-
-                          return NavigationBarWidget(
-                            imagePaths: controller.imagePaths,
-                            accountId: accountId,
-                            ownEmailAddress: accountDisplayName,
-                            contactSupportCapability: contactSupportCapability,
-                            searchForm: SearchInputFormWidget(),
-                            appGridController:
-                                controller.appGridDashboardController,
-                            settingActionTypes: ProfileSettingActionType.values,
-                            onTapApplicationLogoAction:
-                                controller.redirectToInboxAction,
-                            onTapContactSupportAction: (contactSupport) =>
-                                controller.onGetHelpOrReportBug(contactSupport),
-                            onProfileSettingActionTypeClick: (actionType) =>
-                                controller.handleProfileSettingActionTypeClick(
-                              context: context,
-                              actionType: actionType,
-                            ),
-                          );
-                        });
-                      },
-                    ),
-                  Expanded(child: Row(children: [
-                      Column(children: [
-                        ComposeButtonWidget(
+                        return NavigationBarWidget(
                           imagePaths: controller.imagePaths,
-                          onTapAction: () =>
-                            controller.openComposer(ComposerArguments()),
+                          accountId: accountId,
+                          ownEmailAddress: accountDisplayName,
+                          contactSupportCapability: contactSupportCapability,
+                          searchForm: SearchInputFormWidget(),
+                          appGridController:
+                              controller.appGridDashboardController,
+                          settingActionTypes: ProfileSettingActionType.values,
+                          onTapApplicationLogoAction:
+                              controller.redirectToInboxAction,
+                          onTapContactSupportAction: (contactSupport) =>
+                              controller.onGetHelpOrReportBug(contactSupport),
+                          onProfileSettingActionTypeClick: (actionType) =>
+                              controller.handleProfileSettingActionTypeClick(
+                            context: context,
+                            actionType: actionType,
+                          ),
+                        );
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Column(
+                          children: [
+                            ComposeButtonWidget(
+                              imagePaths: controller.imagePaths,
+                              onTapAction: () =>
+                                controller.openComposer(ComposerArguments()),
+                            ),
+                            Expanded(child: SizedBox(
+                              width: ResponsiveUtils.defaultSizeMenu,
+                              child: Obx(() {
+                                if (controller.searchMailboxActivated.isTrue) {
+                                  return const SearchMailboxView(
+                                    backgroundColor: AppColor.colorBgDesktop
+                                  );
+                                } else {
+                                  return MailboxView();
+                                }
+                              })
+                            ))
+                          ],
                         ),
-                        Expanded(child: SizedBox(
-                          width: ResponsiveUtils.defaultSizeMenu,
-                          child: Obx(() {
-                            if (controller.searchMailboxActivated.isTrue) {
-                              return const SearchMailboxView(
-                                backgroundColor: AppColor.colorBgDesktop
-                              );
-                            } else {
-                              return MailboxView();
-                            }
-                          })
-                        ))
-                      ]),
-                      Expanded(child: Column(children: [
-                        const SizedBox(height: 16),
-                        FutureBuilder(
-                          future: CozyConfigManager().isInsideCozy,
-                          builder: (context, snapshot) {
-                            if (snapshot.data != true) {
-                              return const SizedBox.shrink();
-                            }
+                        Expanded(
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 16),
+                              FutureBuilder(
+                                future: CozyConfigManager().isInsideCozy,
+                                builder: (context, snapshot) {
+                                  if (snapshot.data != true) {
+                                    return const SizedBox.shrink();
+                                  }
 
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: MediaQuery.sizeOf(context).width * 0.4,
-                                    height: 44,
-                                    child: SearchInputFormWidget(
-                                      fontSize: 15,
-                                      contentPadding: const EdgeInsets.only(bottom: 4),
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Obx(() {
-                                    String accountDisplayName =
-                                        controller.ownEmailAddress.value;
-                                    if (accountDisplayName.trim().isEmpty) {
-                                      accountDisplayName = controller
-                                        .sessionCurrent
-                                        ?.getOwnEmailAddressOrUsername() ?? '';
-                                    }
-                                    return ProfileSettingIcon(
-                                      ownEmailAddress: accountDisplayName,
-                                      settingActionTypes: ProfileSettingActionType.values,
-                                      onProfileSettingActionTypeClick: (actionType) =>
-                                        controller.handleProfileSettingActionTypeClick(
-                                          context: context,
-                                          actionType: actionType,
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          width: MediaQuery.sizeOf(context).width * 0.4,
+                                          height: 44,
+                                          child: SearchInputFormWidget(
+                                            fontSize: 15,
+                                            contentPadding: const EdgeInsets.only(bottom: 4),
+                                          ),
                                         ),
-                                      isInsideCozy: true,
-                                    );
-                                  }),
-                                ],
+                                        const Spacer(),
+                                        Obx(() {
+                                          String accountDisplayName =
+                                              controller.ownEmailAddress.value;
+                                          if (accountDisplayName.trim().isEmpty) {
+                                            accountDisplayName = controller
+                                              .sessionCurrent
+                                              ?.getOwnEmailAddressOrUsername() ?? '';
+                                          }
+                                          return ProfileSettingIcon(
+                                            ownEmailAddress: accountDisplayName,
+                                            settingActionTypes: ProfileSettingActionType.values,
+                                            onProfileSettingActionTypeClick: (actionType) =>
+                                              controller.handleProfileSettingActionTypeClick(
+                                                context: context,
+                                                actionType: actionType,
+                                              ),
+                                            isInsideCozy: true,
+                                          );
+                                        }),
+                                      ],
+                                    ),
+                                  );
+                                }
                               ),
-                            );
-                          }
-                        ),
-                        Obx(() => RecoverDeletedMessageLoadingBannerWidget(
-                          isLoading: controller.isRecoveringDeletedMessage.value,
-                          horizontalLoadingWidget: horizontalLoadingWidget,
-                          responsiveUtils: controller.responsiveUtils,
-                        )),
-                        Obx(() => MarkMailboxAsReadLoadingBanner(
-                          viewState: controller.viewStateMailboxActionProgress.value,
-                        )),
-                        Obx(() {
-                          final spamController = controller.spamReportController;
+                              Obx(() => RecoverDeletedMessageLoadingBannerWidget(
+                                isLoading: controller.isRecoveringDeletedMessage.value,
+                                horizontalLoadingWidget: horizontalLoadingWidget,
+                                responsiveUtils: controller.responsiveUtils,
+                              )),
+                              Obx(() => MarkMailboxAsReadLoadingBanner(
+                                viewState: controller.viewStateMailboxActionProgress.value,
+                              )),
+                              Obx(() {
+                                final spamController = controller.spamReportController;
 
-                          final isSpamReportDisabled = spamController.spamReportState.value == SpamReportState.disabled;
+                                final isSpamReportDisabled = spamController.spamReportState.value == SpamReportState.disabled;
 
-                          final isSpamFolderSelected = controller
-                              .selectedMailbox
-                              .value
-                              ?.isSpam == true;
+                                final isSpamFolderSelected = controller
+                                    .selectedMailbox
+                                    .value
+                                    ?.isSpam == true;
 
-                          final isPresentationSpamMailboxIsNull = spamController.presentationSpamMailbox.value == null;
+                                final isPresentationSpamMailboxIsNull = spamController.presentationSpamMailbox.value == null;
 
                           final isEmailOpened = controller.dashboardRoute.value == DashboardRoutes.threadDetailed;
 
@@ -209,91 +213,96 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             return const SizedBox.shrink();
                           }
 
-                          return ReportMessageBanner(
-                            imagePaths: controller.imagePaths,
-                            message: AppLocalizations
-                              .of(context)
-                              .countMessageInSpam(
-                                spamController.numberOfUnreadSpamEmails,
-                              ),
-                            positiveName: AppLocalizations.of(context).view,
-                            isDesktop: controller
-                                .responsiveUtils
-                                .isDesktop(context),
-                            margin: SpamReportBannerWebStyles.bannerMargin,
-                            onPositiveAction: spamController.openMailbox,
-                            onNegativeAction: () =>
-                                spamController.dismissSpamReportAction(context),
-                          );
-                        }),
-                        QuotasBannerWidget(),
-                        _buildVacationNotificationMessage(context),
-                        Obx(() {
-                          final selectedMailbox = controller
-                            .selectedMailbox
-                            .value;
+                                return ReportMessageBanner(
+                                  imagePaths: controller.imagePaths,
+                                  message: AppLocalizations
+                                    .of(context)
+                                    .countMessageInSpam(
+                                      spamController.numberOfUnreadSpamEmails,
+                                    ),
+                                  positiveName: AppLocalizations.of(context).view,
+                                  isDesktop: controller
+                                      .responsiveUtils
+                                      .isDesktop(context),
+                                  margin: SpamReportBannerWebStyles.bannerMargin,
+                                  onPositiveAction: spamController.openMailbox,
+                                  onNegativeAction: () =>
+                                      spamController.dismissSpamReportAction(context),
+                                );
+                              }),
+                              QuotasBannerWidget(),
+                              _buildVacationNotificationMessage(context),
+                              Obx(() {
+                                final selectedMailbox = controller
+                                  .selectedMailbox
+                                  .value;
 
-                          bool showTrashBanner = controller
-                            .isEmptyTrashBannerEnabledOnWeb(
-                              context,
-                              selectedMailbox,
-                            );
-                          bool showSpamBanner = controller
-                            .isEmptySpamBannerEnabledOnWeb(
-                              context,
-                              selectedMailbox,
-                            );
+                                bool showTrashBanner = controller
+                                  .isEmptyTrashBannerEnabledOnWeb(
+                                    context,
+                                    selectedMailbox,
+                                  );
+                                bool showSpamBanner = controller
+                                  .isEmptySpamBannerEnabledOnWeb(
+                                    context,
+                                    selectedMailbox,
+                                  );
 
-                          if (showTrashBanner) {
-                            return CleanMessagesBanner(
-                              responsiveUtils: controller.responsiveUtils,
-                              message: AppLocalizations
-                                .of(context)
-                                .message_delete_all_email_in_trash_button,
-                              positiveAction: AppLocalizations
-                                .of(context)
-                                .empty_trash_now,
-                              onPositiveAction: controller.emptyTrashAction,
-                              margin: const EdgeInsetsDirectional.only(
-                                bottom: 8,
-                                end: 16,
-                              ),
-                            );
-                          } else if (showSpamBanner) {
-                            return CleanMessagesBanner(
-                              responsiveUtils: controller.responsiveUtils,
-                              message: AppLocalizations
-                                .of(context)
-                                .bannerDeleteAllSpamEmailsMessage,
-                              positiveAction: AppLocalizations
-                                .of(context)
-                                .deleteAllSpamEmailsNow,
-                              onPositiveAction: () =>
-                                controller.openDialogEmptySpamFolder(context),
-                              margin: const EdgeInsetsDirectional.only(
-                                bottom: 8,
-                                end: 16,
-                              ),
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        }),
-                        _buildListButtonQuickSearchFilter(context),
-                        Expanded(child: Obx(() {
-                          switch(controller.dashboardRoute.value) {
-                            case DashboardRoutes.thread:
-                              return _buildThreadViewForWebDesktop(context);
-                            case DashboardRoutes.threadDetailed:
-                              return const ThreadDetailView();
-                            default:
-                              return const SizedBox.shrink();
-                          }
-                        }))
-                      ]))
-                    ]))
-                  ]),
-                ),
+                                if (showTrashBanner) {
+                                  return CleanMessagesBanner(
+                                    responsiveUtils: controller.responsiveUtils,
+                                    message: AppLocalizations
+                                      .of(context)
+                                      .message_delete_all_email_in_trash_button,
+                                    positiveAction: AppLocalizations
+                                      .of(context)
+                                      .empty_trash_now,
+                                    onPositiveAction: controller.emptyTrashAction,
+                                    margin: const EdgeInsetsDirectional.only(
+                                      bottom: 8,
+                                      end: 16,
+                                    ),
+                                  );
+                                } else if (showSpamBanner) {
+                                  return CleanMessagesBanner(
+                                    responsiveUtils: controller.responsiveUtils,
+                                    message: AppLocalizations
+                                      .of(context)
+                                      .bannerDeleteAllSpamEmailsMessage,
+                                    positiveAction: AppLocalizations
+                                      .of(context)
+                                      .deleteAllSpamEmailsNow,
+                                    onPositiveAction: () =>
+                                      controller.openDialogEmptySpamFolder(context),
+                                    margin: const EdgeInsetsDirectional.only(
+                                      bottom: 8,
+                                      end: 16,
+                                    ),
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                              _buildListButtonQuickSearchFilter(context),
+                              Expanded(
+                                child: Obx(() {
+                                  switch(controller.dashboardRoute.value) {
+                                    case DashboardRoutes.thread:
+                                      return _buildThreadViewForWebDesktop(context);
+                                    case DashboardRoutes.threadDetailed:
+                                      return const ThreadDetailView();
+                                    default:
+                                      return const SizedBox.shrink();
+                                  }
+                                }),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
               ),
             ),
             tabletLarge: Obx(() {

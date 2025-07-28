@@ -60,7 +60,7 @@ class HtmlInteraction {
   ''';
 
   static const String scriptsHandleContentSizeChanged = '''
-    <script>
+    <script type="text/javascript">
       const bodyResizeObserver = new ResizeObserver(entries => {
         window.flutter_inappwebview.callHandler('$contentSizeChangedEventJSChannelName', '');
       })
@@ -70,7 +70,7 @@ class HtmlInteraction {
   ''';
 
   static const String scriptsHandleLazyLoadingBackgroundImage = '''
-    <script>
+    <script type="text/javascript">
       const lazyImages = document.querySelectorAll('[lazy]');
       const lazyImageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach((entry) => {
@@ -377,5 +377,20 @@ class HtmlInteraction {
       });
     </script>
 
+  ''';
+
+  static String scriptHandleIframeKeyboardListener(String viewId) => '''
+    <script type="text/javascript">
+      window.addEventListener('keydown', function (event) {
+        const payload = {
+          view: '$viewId',
+          type: 'toDart: iframeKeydown',
+          key: event.key,
+          code: event.code,
+          shift: event.shiftKey
+        };
+        window.parent.postMessage(JSON.stringify(payload), "*");
+      });
+    </script>
   ''';
 }

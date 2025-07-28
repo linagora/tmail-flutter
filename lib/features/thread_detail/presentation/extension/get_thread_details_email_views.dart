@@ -1,12 +1,13 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
-import 'package:model/email/email_in_thread_status.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load_more_thread_detail_emails.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_load_more_segments.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_open_email_address_detail_action.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_load_more_segments.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/toggle_thread_detail_collapse_expand.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_collapsed_email.dart';
@@ -78,6 +79,9 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           onToggleThreadDetailCollapseExpand: () {
             toggleThreadDetailCollapseExpand(presentationEmail);
           },
+          onIFrameKeyboardShortcutAction: keyboardShortcutFocusNode != null
+            ? onIFrameKeyboardShortcutAction
+            : null,
           scrollController: scrollController,
         );
       }
@@ -91,6 +95,9 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         onToggleThreadDetailCollapseExpand: () {
           toggleThreadDetailCollapseExpand(presentationEmail);
         },
+        onIFrameKeyboardShortcutAction: keyboardShortcutFocusNode != null
+          ? onIFrameKeyboardShortcutAction
+          : null,
         scrollController: scrollController,
       );
     }).toList();

@@ -156,3 +156,5 @@ class SynchronizeEmailSortOrderAction extends DashBoardAction {
   @override
   List<Object?> get props => [emailSortOrderType];
 }
+
+class ReclaimMailListKeyboardShortcutFocusAction extends DashBoardAction {}

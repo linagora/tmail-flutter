@@ -47,6 +47,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   final listFilterOnSuggestionForm = RxList<QuickSearchFilter>();
   final simpleSearchIsActivated = RxBool(false);
   final advancedSearchIsActivated = RxBool(false);
+  final isSearchInputFocused = RxBool(false);
 
   SearchQuery? get searchQuery => searchEmailFilter.value.text;
 
@@ -58,6 +59,17 @@ class SearchController extends BaseController with DateRangePickerMixin {
     this._saveRecentSearchInteractor,
     this._getAllRecentSearchLatestInteractor,
   );
+
+  @override
+  void onInit() {
+    super.onInit();
+    searchFocus.addListener(_onSearchFocusChanged);
+  }
+
+  void _onSearchFocusChanged() {
+    log('SearchController::_onSearchFocusChanged: ${searchFocus.hasFocus}');
+    isSearchInputFocused.value = searchFocus.hasFocus;
+  }
 
   void openAdvanceSearch() {
     isAdvancedSearchViewOpen.value = true;
@@ -322,6 +334,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   @override
   void onClose() {
     searchInputController.dispose();
+    searchFocus.removeListener(_onSearchFocusChanged);
     searchFocus.dispose();
     super.onClose();
   }
