@@ -542,25 +542,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1885
+    $signature: 1896
   };
   C.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1886
+    $signature: 1897
   };
   C.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1887
+    $signature: 1898
   };
   C.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1888
+    $signature: 1899
   };
   C._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure.prototype = {
     call$1(entry) {
@@ -592,7 +592,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return B.SizedBox_null_null_null_null;
     },
-    $signature: 500
+    $signature: 506
   };
   C.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -637,7 +637,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 4
+    $signature: 5
   };
   C.LoginView__buildWebForm_closure.prototype = {
     call$0() {
@@ -673,7 +673,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 4
+    $signature: 5
   };
   C.LoginView__buildLoadingProgress_closure.prototype = {
     call$0() {
@@ -684,7 +684,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.context;
       return J.fold$2$ax(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).viewState.get$value(0), new C.LoginView__buildLoadingProgress__closure(t1, t3), new C.LoginView__buildLoadingProgress__closure0(t1, t3));
     },
-    $signature: 4
+    $signature: 5
   };
   C.LoginView__buildLoadingProgress__closure.prototype = {
     call$1(failure) {
@@ -717,7 +717,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 54
+    $signature: 52
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -754,7 +754,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message(_s40_, _null, _s12_, _null, _null);
       }
     },
-    $signature: 1889
+    $signature: 1900
   };
   C.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -775,19 +775,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1890
+    $signature: 1901
   };
   C.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return B.Color_4293281350;
     },
-    $signature: 1891
+    $signature: 1902
   };
   C.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return B.Color_4278190080;
     },
-    $signature: 1892
+    $signature: 1903
   };
   C._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -895,5 +895,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "tF5+sd9jcGlKVuGsqW94dOJy2sQ=");
+})($__dart_deferred_initializers__, "xkTM2Lgez9TLCDtH/xiGeSBMgtw=");
 ;

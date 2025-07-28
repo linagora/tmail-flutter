@@ -339,7 +339,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 717
+    $signature: 720
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
@@ -363,7 +363,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._widget.toString;
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 1883
+    $signature: 1894
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -382,7 +382,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1884
+    $signature: 1895
   };
   (function installTearOffs() {
     var _instance_1_u = hunkHelpers._instance_1u;
@@ -416,5 +416,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "bEuC2K5uwhulNugp+1ECWT3H0tA=");
+})($__dart_deferred_initializers__, "jA6ZmCjYXVw2GatJXN2XqwO6rms=");
 ;
