@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:tmail_ui_user/features/base/extensions/logical_key_set_helper.dart';
 import 'package:tmail_ui_user/features/base/shortcut/mail/mail_list_action_shortcut_type.dart';
 import 'package:tmail_ui_user/features/base/shortcut/mail/mail_view_action_shortcut_type.dart';
+import 'package:tmail_ui_user/features/base/shortcut/search/search_action_shortcut_type.dart';
 
 class AppShortcutManager {
   static MailViewActionShortcutType? getMailViewActionFromEvent(KeyEvent event) {
@@ -38,6 +39,16 @@ class AppShortcutManager {
       return MailListActionShortcutType.markAsRead;
     }  else if (keysPressed.isOnly(LogicalKeyboardKey.keyU)) {
       return MailListActionShortcutType.markAsUnread;
+    } else {
+      return null;
+    }
+  }
+
+  static SearchActionShortcutType? getSearchActionFromEvent(KeyEvent event) {
+    final keysPressed = HardwareKeyboard.instance.logicalKeysPressed;
+    log('AppShortcutManager::getSearchActionFromEvent: Keys pressed: $keysPressed');
+    if (keysPressed.isOnly(LogicalKeyboardKey.escape)) {
+      return SearchActionShortcutType.unFocus;
     } else {
       return null;
     }

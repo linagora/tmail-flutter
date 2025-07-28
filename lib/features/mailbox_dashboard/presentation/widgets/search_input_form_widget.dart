@@ -20,10 +20,12 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_overlay.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/icon_open_advanced_search_widget.dart';
@@ -52,6 +54,96 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      Widget searchInputForm = QuickSearchInputForm<PresentationEmail, EmailAddress, RecentSearch>(
+        maxHeight: 52,
+        suggestionsBoxVerticalOffset: 0.0,
+        minInputLengthAutocomplete: _dashBoardController.minInputLengthAutocomplete,
+        textFieldConfiguration: _createConfiguration(context),
+        suggestionsBoxDecoration: const QuickSearchSuggestionsBoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+        debounceDuration: const Duration(milliseconds: 300),
+        listActionButton: const [
+          QuickSearchFilter.hasAttachment,
+          QuickSearchFilter.last7Days,
+          QuickSearchFilter.fromMe,
+          QuickSearchFilter.starred,
+        ],
+        actionButtonBuilder: (context, filterAction, suggestionsListState) {
+          if (filterAction is QuickSearchFilter) {
+            return buildListButtonForQuickSearchForm(
+                context,
+                filterAction,
+                suggestionsListState);
+          } else {
+            return const SizedBox.shrink();
+          }
+        },
+        buttonActionCallback: (filterAction) {
+          if (filterAction is QuickSearchFilter) {
+            _searchController.addQuickSearchFilterToSuggestionSearchView(filterAction);
+          }
+        },
+        listActionPadding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 6),
+        titleHeaderRecent: Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 8, top: 12),
+            child: Text(
+                AppLocalizations.of(context).recent,
+                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                    fontSize: 13.0,
+                    color: AppColor.colorTextButtonHeaderThread,
+                    fontWeight: FontWeight.w500
+                )
+            )
+        ),
+        buttonShowAllResult: (context, keyword, _) {
+          if (keyword is String) {
+            return _buildShowAllResultButton(context, keyword);
+          } else {
+            return const SizedBox.shrink();
+          }
+        },
+        loadingBuilder: (context) => Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: loadingWidget
+        ),
+        fetchRecentActionCallback: (pattern) {
+          final accountId = _dashBoardController.accountId.value;
+          final userName = _dashBoardController.sessionCurrent?.username;
+
+          if (accountId == null || userName == null) {
+            logError('SearchInputFormWidget::fetchRecentActionCallback: accountId or userName is null');
+            return <RecentSearch>[];
+          } else {
+            return _searchController.getAllRecentSearchAction(
+              accountId,
+              userName,
+              pattern,
+            );
+          }
+        },
+        itemRecentBuilder: (context, recent) => RecentSearchItemTileWidget(recent),
+        onRecentSelected: _invokeSelectRecentItem,
+        suggestionsCallback: _dashBoardController.quickSearchEmails,
+        itemBuilder: (context, email) => EmailQuickSearchItemTileWidget(
+            email,
+            _dashBoardController.selectedMailbox.value,
+            searchQuery: SearchQuery(_searchController.currentSearchText.trim())),
+        onSuggestionSelected: _invokeSelectSuggestionItem,
+        contactItemBuilder: (context, emailAddress) => ContactQuickSearchItem(emailAddress: emailAddress),
+        contactSuggestionsCallback: _dashBoardController.getContactSuggestion,
+        onContactSuggestionSelected: _invokeSelectContactSuggestion,
+      );
+
+      if (_searchController.keyboardFocusNode != null) {
+        searchInputForm = KeyboardHandlerWrapper(
+          focusNode: _searchController.keyboardFocusNode!,
+          onKeyDownEventAction: _searchController.onKeyDownEventAction,
+          child: searchInputForm,
+        );
+      }
+
       return PortalTarget(
         visible: _searchController.isAdvancedSearchViewOpen.isTrue,
         portalFollower: PointerInterceptor(
@@ -73,87 +165,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             ),
           ),
           portalFollower: const AdvancedSearchFilterOverlay(),
-          child: QuickSearchInputForm<PresentationEmail, EmailAddress, RecentSearch>(
-            maxHeight: 52,
-            suggestionsBoxVerticalOffset: 0.0,
-            minInputLengthAutocomplete: _dashBoardController.minInputLengthAutocomplete,
-            textFieldConfiguration: _createConfiguration(context),
-            suggestionsBoxDecoration: const QuickSearchSuggestionsBoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-            debounceDuration: const Duration(milliseconds: 300),
-            listActionButton: const [
-              QuickSearchFilter.hasAttachment,
-              QuickSearchFilter.last7Days,
-              QuickSearchFilter.fromMe,
-              QuickSearchFilter.starred,
-            ],
-            actionButtonBuilder: (context, filterAction, suggestionsListState) {
-              if (filterAction is QuickSearchFilter) {
-                return buildListButtonForQuickSearchForm(
-                  context,
-                  filterAction,
-                  suggestionsListState);
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
-            buttonActionCallback: (filterAction) {
-              if (filterAction is QuickSearchFilter) {
-                _searchController.addQuickSearchFilterToSuggestionSearchView(filterAction);
-              }
-            },
-            listActionPadding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 6),
-            titleHeaderRecent: Padding(
-              padding: const EdgeInsets.only(left: 12, right: 12, bottom: 8, top: 12),
-              child: Text(
-                AppLocalizations.of(context).recent,
-                style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                  fontSize: 13.0,
-                  color: AppColor.colorTextButtonHeaderThread,
-                  fontWeight: FontWeight.w500
-                )
-              )
-            ),
-            buttonShowAllResult: (context, keyword, _) {
-              if (keyword is String) {
-                return _buildShowAllResultButton(context, keyword);
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
-            loadingBuilder: (context) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: loadingWidget
-            ),
-            fetchRecentActionCallback: (pattern) {
-              final accountId = _dashBoardController.accountId.value;
-              final userName = _dashBoardController.sessionCurrent?.username;
-
-              if (accountId == null || userName == null) {
-                logError('SearchInputFormWidget::fetchRecentActionCallback: accountId or userName is null');
-                return <RecentSearch>[];
-              } else {
-                return _searchController.getAllRecentSearchAction(
-                  accountId,
-                  userName,
-                  pattern,
-                );
-              }
-            },
-            itemRecentBuilder: (context, recent) => RecentSearchItemTileWidget(recent),
-            onRecentSelected: _invokeSelectRecentItem,
-            suggestionsCallback: _dashBoardController.quickSearchEmails,
-            itemBuilder: (context, email) => EmailQuickSearchItemTileWidget(
-              email,
-              _dashBoardController.selectedMailbox.value,
-              searchQuery: SearchQuery(_searchController.currentSearchText.trim())),
-            onSuggestionSelected: _invokeSelectSuggestionItem,
-            contactItemBuilder: (context, emailAddress) => ContactQuickSearchItem(emailAddress: emailAddress),
-            contactSuggestionsCallback: _dashBoardController.getContactSuggestion,
-            onContactSuggestionSelected: _invokeSelectContactSuggestion,
-          )
+          child: searchInputForm,
         ),
       );
     });
