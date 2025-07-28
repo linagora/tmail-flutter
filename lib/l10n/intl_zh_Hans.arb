@@ -4533,67 +4533,67 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addRecipientsFailed": "",
+  "addRecipientsFailed": "添加收件人失败。",
   "@addRecipientsFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFilter": "",
+  "createFilter": "创建筛选器",
   "@createFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "startToComposeEmails": "",
+  "startToComposeEmails": "开始撰写邮件。",
   "@startToComposeEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "support": "",
+  "support": "支持",
   "@support": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFilterRuleFailed": "",
+  "createFilterRuleFailed": "创建筛选规则失败",
   "@createFilterRuleFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youDoNotHaveAnyEmailInYourCurrentFolder": "",
+  "youDoNotHaveAnyEmailInYourCurrentFolder": "此文件夹中\n 没有任何邮件。",
   "@youDoNotHaveAnyEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteRecipientsFailed": "",
+  "deleteRecipientsFailed": "删除收件人失败。",
   "@deleteRecipientsFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thread": "",
+  "thread": "线程",
   "@thread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "",
+  "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "您未受邀参加此活动。请联系组织者。",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "view": "",
+  "view": "查看",
   "@view": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "countMessageInSpam": "",
+  "countMessageInSpam": "垃圾邮件中有 {count} 封邮件",
   "@countMessageInSpam": {
     "type": "text",
     "placeholders_order": [
@@ -4603,7 +4603,7 @@
       "count": {}
     }
   },
-  "daysAgo": "",
+  "daysAgo": "{days,plural, =0{}=1{ (1 天前)}other{ ({days} 天前)}}",
   "@daysAgo": {
     "type": "text",
     "placeholders_order": [
@@ -4613,19 +4613,19 @@
       "days": {}
     }
   },
-  "threadSettingExplanation": "",
+  "threadSettingExplanation": "像对话一样查看多封相关邮件",
   "@threadSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "threadToggleDescription": "",
+  "threadToggleDescription": "启用线程",
   "@threadToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editLocalCopyInForwardFailed": "",
+  "editLocalCopyInForwardFailed": "编辑转发的本地副本失败。",
   "@editLocalCopyInForwardFailed": {
     "type": "text",
     "placeholders_order": [],
