@@ -225,7 +225,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         });
       
         function handleMessage(e) {
-          if (e && e.data && e.data.includes("toIframe:")) {
+          if (e && e.data && typeof e.data === "string" && e.data.includes("toIframe:")) {
             var data = JSON.parse(e.data);
             if (data["view"].includes("$_createdViewId")) {
               if (data["type"].includes("getHeight")) {
