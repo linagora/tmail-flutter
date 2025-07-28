@@ -7,7 +7,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -24,12 +23,14 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanent
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -60,11 +61,13 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/refresh_thread_detail_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -89,7 +92,7 @@ class ThreadController extends BaseController with EmailActionController {
   final CleanAndGetEmailsInMailboxInteractor cleanAndGetEmailsInMailboxInteractor;
 
   final listEmailDrag = <PresentationEmail>[].obs;
-  bool _rangeSelectionMode = false;
+  bool rangeSelectionMode = false;
   final openingEmail = RxBool(false);
   final loadingMoreStatus = Rx(LoadingMoreStatus.idle);
 
@@ -101,7 +104,9 @@ class ThreadController extends BaseController with EmailActionController {
   @visibleForTesting
   bool isListEmailScrollViewJumping = false;
   WebSocketQueueHandler? _webSocketQueueHandler;
-  FocusNode? focusNodeKeyBoard;
+  FocusNode? keyboardFocusNode;
+  StreamController<MailListShortcutActionViewEvent>? shortcutActionEventController;
+  StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
 
   StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
 
@@ -133,8 +138,8 @@ class ThreadController extends BaseController with EmailActionController {
   void onInit() {
     _registerObxStreamListener();
     if (PlatformInfo.isWeb) {
-      focusNodeKeyBoard = FocusNode();
       _registerBrowserResizeListener();
+      onKeyboardShortcutInit();
     }
     _initWebSocketQueueHandler();
     super.onInit();
@@ -150,10 +155,9 @@ class ThreadController extends BaseController with EmailActionController {
   void onClose() {
     _currentMemoryMailboxId = null;
     listEmailController.dispose();
-    focusNodeKeyBoard?.dispose();
-    focusNodeKeyBoard = null;
     if (PlatformInfo.isWeb) {
       _resizeBrowserStreamSubscription?.cancel();
+      onKeyboardShortcutDispose();
     }
     _webSocketQueueHandler?.dispose();
     super.onClose();
@@ -231,11 +235,19 @@ class ThreadController extends BaseController with EmailActionController {
 
   @override
   void onDone() {
-    viewState.value.map((success) {
-      if (success is GetAllEmailSuccess) {
-        _handleOnDoneGetAllEmailSuccess(success);
-      }
-    });
+    viewState.value.fold(
+      (failure) {
+        if (failure is GetAllEmailFailure ||
+            failure is CleanAndGetAllEmailFailure) {
+          _handleOnDoneGetAllEmailFailure();
+        }
+      },
+      (success) {
+        if (success is GetAllEmailSuccess) {
+          _handleOnDoneGetAllEmailSuccess();
+        }
+      },
+    );
   }
 
   void _initWebSocketQueueHandler() {
@@ -328,6 +340,12 @@ class ThreadController extends BaseController with EmailActionController {
         }
         canSearchMore = true;
         mailboxDashBoardController.emailsInCurrentMailbox.clear();
+      } else if (action is ReclaimMailListKeyboardShortcutFocusAction) {
+        refocusMailShortcutFocus();
+        mailboxDashBoardController.clearDashBoardAction();
+      } else if (action is ClearMailListKeyboardShortcutFocusAction) {
+        clearMailShortcutFocus();
+        mailboxDashBoardController.clearDashBoardAction();
       }
     });
 
@@ -508,9 +526,19 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void _handleOnDoneGetAllEmailSuccess(GetAllEmailSuccess success) {
+  void _handleOnDoneGetAllEmailSuccess() {
     if (PlatformInfo.isWeb) {
       _validateBrowserHeight();
+
+      if (mailboxDashBoardController.isEmailListDisplayed) {
+        refocusMailShortcutFocus();
+      }
+    }
+  }
+
+  void _handleOnDoneGetAllEmailFailure() {
+    if (PlatformInfo.isWeb && mailboxDashBoardController.isEmailListDisplayed) {
+      refocusMailShortcutFocus();
     }
   }
 
@@ -862,7 +890,7 @@ class ThreadController extends BaseController with EmailActionController {
   void selectEmail(PresentationEmail presentationEmailSelected) {
     final emailsInCurrentMailbox = mailboxDashBoardController.emailsInCurrentMailbox;
 
-    if (_rangeSelectionMode && latestEmailSelectedOrUnselected.value != null && latestEmailSelectedOrUnselected.value?.id != presentationEmailSelected.id) {
+    if (rangeSelectionMode && latestEmailSelectedOrUnselected.value != null && latestEmailSelectedOrUnselected.value?.id != presentationEmailSelected.id) {
       _rangeSelectionEmailsAction(presentationEmailSelected);
     } else {
       final newEmailList = emailsInCurrentMailbox
@@ -875,7 +903,7 @@ class ThreadController extends BaseController with EmailActionController {
       .firstWhereOrNull((e) => e.id == presentationEmailSelected.id);
 
     if (PlatformInfo.isWeb) {
-      focusNodeKeyBoard?.requestFocus();
+      refocusMailShortcutFocus();
     }
 
     if (mailboxDashBoardController.emailsInCurrentMailbox.isAllSelectionInActive) {
@@ -896,6 +924,9 @@ class ThreadController extends BaseController with EmailActionController {
     mailboxDashBoardController.updateEmailList(newEmailList);
     mailboxDashBoardController.currentSelectMode.value = SelectMode.ACTIVE;
     mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
+    if (PlatformInfo.isWeb) {
+      refocusMailShortcutFocus();
+    }
   }
 
   List<PresentationEmail> get listEmailSelected =>
@@ -1140,6 +1171,9 @@ class ThreadController extends BaseController with EmailActionController {
         cancelSelectEmail();
         moveEmailsToArchive(selectionEmail);
         break;
+      case EmailActionType.compose:
+        mailboxDashBoardController.openComposer(ComposerArguments());
+        break;
       default:
         break;
     }
@@ -1231,20 +1265,6 @@ class ThreadController extends BaseController with EmailActionController {
         listEmailDrag.add(currentPresentationEmail);
       }
     }
-  }
-
-  KeyEventResult handleKeyEvent(FocusNode node, KeyEvent event) {
-    final shiftEvent = event.logicalKey == LogicalKeyboardKey.shiftLeft || event.logicalKey == LogicalKeyboardKey.shiftRight;
-    if (event is KeyDownEvent && shiftEvent) {
-      _rangeSelectionMode = true;
-    }
-
-    if (event is KeyUpEvent && shiftEvent) {
-      _rangeSelectionMode = false;
-    }
-    return shiftEvent
-        ? KeyEventResult.handled
-        : KeyEventResult.ignored;
   }
 
   PresentationEmail generateEmailByPlatform(PresentationEmail currentEmail) {
@@ -1369,7 +1389,10 @@ class ThreadController extends BaseController with EmailActionController {
     mailboxDashBoardController.onDragMailbox(isDrag);
   }
 
-  Future<bool> swipeEmailAction(BuildContext context, PresentationEmail email, DismissDirection direction) async {
+  Future<bool> swipeEmailAction(
+    PresentationEmail email,
+    DismissDirection direction,
+  ) async {
     if (direction == DismissDirection.startToEnd) {
       ReadActions readActions = !email.hasRead ? ReadActions.markAsRead : ReadActions.markAsUnread;
       markAsEmailRead(email, readActions, MarkReadAction.swipeOnThread);

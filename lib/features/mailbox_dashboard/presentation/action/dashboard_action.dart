@@ -160,3 +160,5 @@ class SynchronizeEmailSortOrderAction extends DashBoardAction {
 }
 
 class ReclaimMailListKeyboardShortcutFocusAction extends DashBoardAction {}
+
+class ClearMailListKeyboardShortcutFocusAction extends DashBoardAction {}
