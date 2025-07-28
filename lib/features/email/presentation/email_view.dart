@@ -51,6 +51,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     this.isFirstEmailInThreadDetail = false,
     this.threadSubject,
     this.onToggleThreadDetailCollapseExpand,
+    this.onIFrameKeyboardShortcutAction,
     this.scrollController,
   });
 
@@ -59,6 +60,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   final bool isFirstEmailInThreadDetail;
   final String? threadSubject;
   final VoidCallback? onToggleThreadDetailCollapseExpand;
+  final OnIFrameKeyboardShortcutAction? onIFrameKeyboardShortcutAction;
   final ScrollController? scrollController;
 
   @override
@@ -83,7 +85,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     mailboxContain: _getMailboxContain(currentEmail),
                     isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
                     onBackAction: () => controller.closeEmailView(context: context),
-                    onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
+                    onEmailActionClick: controller.handleEmailAction,
                     onMoreActionClick: (presentationEmail, position) {
                       return controller.emailActionReactor.handleMoreEmailAction(
                         mailboxContain: controller.getMailboxContain(presentationEmail),
@@ -92,7 +94,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         responsiveUtils: controller.responsiveUtils,
                         imagePaths: controller.imagePaths,
                         ownEmailAddress: controller.ownEmailAddress,
-                        handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
+                        handleEmailAction: controller.handleEmailAction,
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
                         openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
@@ -256,7 +258,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           maxBodyHeight: bodyConstraints.maxHeight,
           isInsideThreadCollapsed: false,
           openEmailAddressDetailAction: (_, emailAddress) => controller.openEmailAddressDialog(emailAddress),
-          onEmailActionClick: (presentationEmail, actionType) => controller.handleEmailAction(context, presentationEmail, actionType),
+          onEmailActionClick: controller.handleEmailAction,
           isInsideThreadDetailView: isInsideThreadDetailView,
           emailLoaded: controller.currentEmailLoaded.value,
           onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
@@ -266,7 +268,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             responsiveUtils: controller.responsiveUtils,
             imagePaths: controller.imagePaths,
             ownEmailAddress: controller.ownEmailAddress,
-            handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
+            handleEmailAction: controller.handleEmailAction,
             additionalActions: [
               EmailActionType.reply,
               EmailActionType.forward,
@@ -360,6 +362,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     scrollController: scrollController,
                     enableQuoteToggle: true,
                     fontSize: isMobileResponsive ? 16 : 14,
+                    onIFrameKeyboardShortcutAction: onIFrameKeyboardShortcutAction,
                   ),
                 );
               } else if (PlatformInfo.isIOS) {

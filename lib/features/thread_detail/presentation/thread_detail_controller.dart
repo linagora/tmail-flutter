@@ -50,9 +50,11 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_thread_by_id_failure.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mark_multiple_emails_read_success.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_refresh_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_selected_email_updated.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/model/mail_view_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -124,6 +126,9 @@ class ThreadDetailController extends BaseController {
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   bool loadThreadOnThreadChanged = false;
   bool isDisplayAllAttachments = false;
+  FocusNode? keyboardShortcutFocusNode;
+  StreamController<MailViewShortcutActionViewEvent>? shortcutActionEventController;
+  StreamSubscription<MailViewShortcutActionViewEvent>? shortcutActionEventSubscription;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -197,6 +202,10 @@ class ThreadDetailController extends BaseController {
           threadId: action.threadId,
           isSentMailbox: action.isSentMailbox,
         );
+      } else if (action is ReclaimMailViewKeyboardShortcutFocusAction) {
+        refocusMailShortcutFocus();
+      } else if (action is ClearMailViewKeyboardShortcutFocusAction) {
+        clearMailShortcutFocus();
       }
       // Reset [threadDetailUIAction] to original value
       mailboxDashBoardController.dispatchThreadDetailUIAction(
@@ -212,6 +221,8 @@ class ThreadDetailController extends BaseController {
         );
       }
     });
+
+    onKeyboardShortcutInit();
   }
 
   bool _validateLoadThread(ThreadId? threadId) {
@@ -294,5 +305,11 @@ class ThreadDetailController extends BaseController {
       toastManager.showMessageFailure(failure as FeatureFailure);
     }
     super.handleFailureViewState(failure);
+  }
+
+  @override
+  void onClose() {
+    onKeyboardShortcutDispose();
+    super.onClose();
   }
 }

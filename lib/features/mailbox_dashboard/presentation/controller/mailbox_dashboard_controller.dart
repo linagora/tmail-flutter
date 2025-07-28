@@ -121,6 +121,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_clear_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_reactive_obx_variable_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_save_email_as_draft_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/initialize_app_language.dart';
@@ -310,6 +311,8 @@ class MailboxDashBoardController extends ReloadableController
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailSortOrderType currentSortOrder = SearchEmailFilter.defaultSortOrder;
   PaywallController? paywallController;
+  Worker? advancedSearchVisibleWorker;
+  Worker? searchInputFocusWorker;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -376,6 +379,7 @@ class MailboxDashBoardController extends ReloadableController
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController = ScrollController();
       twakeAppManager.setExecutingBeforeReconnect(false);
+      registerReactiveObxVariableListener();
     }
     if (PlatformInfo.isIOS) {
       _registerPendingCurrentEmailIdInNotification();
@@ -3039,18 +3043,17 @@ class MailboxDashBoardController extends ReloadableController
     return false;
   }
 
-  void archiveMessage(BuildContext context, PresentationEmail email) {
+  void archiveMessage(PresentationEmail email) {
     final mailboxContain = email.findMailboxContain(mapMailboxById);
     if (mailboxContain != null) {
       final archiveMailboxId = getMailboxIdByRole(PresentationMailbox.roleArchive);
-      final archiveMailboxPath = mapMailboxById[archiveMailboxId]?.getDisplayName(context);
       if (archiveMailboxId != null) {
         final moveToArchiveMailboxRequest = MoveToMailboxRequest(
           {mailboxContain.id: [email.id!]},
           archiveMailboxId,
           MoveAction.moving,
           EmailActionType.moveToMailbox,
-          destinationPath: archiveMailboxPath
+          destinationPath: getMailboxNameById(archiveMailboxId),
         );
         moveToMailbox(
           sessionCurrent!,
@@ -3059,6 +3062,15 @@ class MailboxDashBoardController extends ReloadableController
           {email.id!: email.hasRead}
         );
       }
+    }
+  }
+
+  String getMailboxNameById(MailboxId mailboxId) {
+    final mailbox = mapMailboxById[mailboxId];
+    if (currentContext != null) {
+      return mailbox?.getDisplayName(currentContext!) ?? '';
+    } else {
+      return mailbox?.name?.name ?? '';
     }
   }
 
@@ -3271,10 +3283,14 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
+  bool get isEmailOpened =>
+      dashboardRoute.value == DashboardRoutes.threadDetailed;
+
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController?.dispose();
+      disposeReactiveObxVariableListener();
     }
     if (PlatformInfo.isIOS) {
       _iosNotificationManager?.dispose();
