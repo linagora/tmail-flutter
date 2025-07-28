@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
+import 'package:core/presentation/views/shortcut/key_shortcut.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
@@ -13,6 +14,7 @@ import 'package:universal_html/html.dart' as html;
 
 typedef OnClickHyperLinkAction = Function(Uri?);
 typedef OnMailtoClicked = void Function(Uri? uri);
+typedef OnIFrameKeyboardShortcutAction = void Function(KeyShortcut keyShortcut);
 
 class HtmlContentViewerOnWeb extends StatefulWidget {
 
@@ -27,6 +29,8 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final OnMailtoClicked? mailtoDelegate;
 
   final OnClickHyperLinkAction? onClickHyperLinkAction;
+  
+  final OnIFrameKeyboardShortcutAction? onIFrameKeyboardShortcutAction;
 
   // if widthContent is bigger than width of htmlContent, set this to true let widget able to resize to width of htmlContent
   final bool allowResizeToDocumentSize;
@@ -49,6 +53,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.contentPadding,
     this.scrollController,
     this.enableQuoteToggle = false,
+    this.onIFrameKeyboardShortcutAction,
   }) : super(key: key);
 
   @override
@@ -95,6 +100,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       final type = data['type'];
       if (_isScrollChangedEventTriggered(type)) {
         _handleIframeOnScrollChangedListener(data, widget.scrollController!);
+        return;
+      } else if (_isIframeKeyboardEventTriggered(type)) {
+        _handleOnIFrameKeyboardEvent(data);
         return;
       }
 
@@ -188,6 +196,21 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     if (url != null && mounted && url is String) {
       widget.onClickHyperLinkAction?.call(Uri.tryParse(url));
     }
+  }
+
+  bool _isIframeKeyboardEventTriggered(String? type) {
+    return widget.onIFrameKeyboardShortcutAction != null && 
+        type?.contains('toDart: iframeKeydown') == true;
+  }
+
+  void _handleOnIFrameKeyboardEvent(dynamic data) {
+    final shortcut = KeyShortcut(
+      key: data['key'] as String,
+      code: data['code'] as String,
+      shift: data['shift'] == true,
+    );
+    log('_HtmlContentViewerOnWebState::_handleOnIFrameKeyboardEvent:📥 Shortcut pressed: $shortcut');
+    widget.onIFrameKeyboardShortcutAction?.call(shortcut);
   }
 
   @override
@@ -313,39 +336,31 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       </script>
     ''';
 
-    const scriptsDisableZoom = '''
-      <script type="text/javascript">
-        document.addEventListener('wheel', function(e) {
-          e.ctrlKey && e.preventDefault();
-        }, {
-          passive: false,
-        });
-        window.addEventListener('keydown', function(e) {
-          if (event.metaKey || event.ctrlKey) {
-            switch (event.key) {
-              case '=':
-              case '-':
-                event.preventDefault();
-                break;
-            }
-          }
-        });
-      </script>
-    ''';
+    final processedContent = widget.enableQuoteToggle
+        ? HtmlUtils.addQuoteToggle(content)
+        : content;
+
+    final combinedCss = [
+      HtmlTemplate.tooltipLinkCss,
+      if (widget.enableQuoteToggle) HtmlUtils.quoteToggleStyle,
+    ].join();
+
+    final combinedScripts = [
+      webViewActionScripts,
+      HtmlInteraction.scriptHandleDisableZoom,
+      HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
+      HtmlInteraction.generateNormalizeImageScript(widget.widthContent),
+      if (widget.onIFrameKeyboardShortcutAction != null)
+        HtmlInteraction.scriptHandleIframeKeyboardListener(_createdViewId),
+      if (widget.enableQuoteToggle) HtmlUtils.quoteToggleScript,
+    ].join();
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
-      content: widget.enableQuoteToggle
-        ? HtmlUtils.addQuoteToggle(content)
-        : content,
+      content: processedContent,
       minHeight: minHeight,
       minWidth: _minWidth,
-      styleCSS: HtmlTemplate.tooltipLinkCss
-          + (widget.enableQuoteToggle ? HtmlUtils.quoteToggleStyle : ''),
-      javaScripts: webViewActionScripts
-          + scriptsDisableZoom
-          + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage
-          + HtmlInteraction.generateNormalizeImageScript(widget.widthContent)
-          + (widget.enableQuoteToggle ? HtmlUtils.quoteToggleScript : ''),
+      styleCSS: combinedCss,
+      javaScripts: combinedScripts,
       direction: widget.direction,
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,

@@ -143,7 +143,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       moveActionRequest.moveRequest,
       moveActionRequest.emailIdsWithReadStatus,
     );
-    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction();
   }
 
   void _trashEmail(PresentationEmail presentationEmail) {
@@ -163,7 +163,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       moveActionRequest.moveRequest,
       moveActionRequest.emailIdsWithReadStatus,
     );
-    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction();
   }
 
   void _markEmailSpam(PresentationEmail presentationEmail) {
@@ -183,7 +183,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       moveActionRequest.moveRequest,
       moveActionRequest.emailIdsWithReadStatus,
     );
-    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction();
   }
 
   void _unSpamEmail(PresentationEmail presentationEmail) {
@@ -203,7 +203,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       moveActionRequest.moveRequest,
       moveActionRequest.emailIdsWithReadStatus,
     );
-    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction();
   }
 
   void _deleteEmailPermanently(PresentationEmail email) {
@@ -216,7 +216,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,
     );
-    if (emailIdsPresentation.length == 1) closeThreadDetailAction(currentContext);
+    if (emailIdsPresentation.length == 1) closeThreadDetailAction();
   }
 
   void _quickCreateRule(PresentationEmail presentationEmail) {
@@ -255,9 +255,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
 
     emailActionReactor.archiveMessage(
       presentationEmail,
-      onArchiveEmailRequest: (presentationEmail) {
-        mailboxDashBoardController.archiveMessage(currentContext!, presentationEmail);
-      },
+      onArchiveEmailRequest: mailboxDashBoardController.archiveMessage,
     );
   }
   

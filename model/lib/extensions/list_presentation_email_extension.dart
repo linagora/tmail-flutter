@@ -8,6 +8,8 @@ import 'package:model/model.dart';
 extension ListPresentationEmailExtension on List<PresentationEmail> {
   bool get isAllEmailRead => every((email) => email.hasRead);
 
+  bool get isAllEmailUnread => every((email) => !email.hasRead);
+
   bool get isAllEmailStarred => every((email) => email.hasStarred);
 
   bool get isAllSelectionInActive {

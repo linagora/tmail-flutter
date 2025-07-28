@@ -5,7 +5,7 @@ import 'package:model/email/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
 extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
-  void toggleThreadDetailCollapeExpand(PresentationEmail presentationEmail) {
+  void toggleThreadDetailCollapseExpand(PresentationEmail presentationEmail) {
     final emailId = presentationEmail.id;
     final expansionStatus = presentationEmail.emailInThreadStatus;
     if (emailId == null || expansionStatus == null) return;
