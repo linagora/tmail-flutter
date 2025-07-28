@@ -643,11 +643,14 @@ class HtmlUtils {
       .quote-toggle-button {
         display: flex;
         align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
         gap: 2px;
-        background-color: #e8eaed;
-        padding: 4px 8px;
+        background-color: #d7e2f5;
+        padding: 0;
         margin: 8px 0;
-        border-radius: 9999px;
+        border-radius: 50%;
         transition: background-color 0.2s ease-in-out;
         border: none;
         cursor: pointer;
@@ -664,10 +667,10 @@ class HtmlUtils {
         background-color: #cdcdcd !important;
       }
       .dot {
-        width: 4px;
-        height: 4px;
-        background-color: #4b5563;
-        border-radius: 9999px;
+        width: 3.75px;
+        height: 3.75px;
+        background-color: #55687d;
+        border-radius: 50%;
       }
     </style>''';
 
