@@ -1,0 +1,4 @@
+
+enum SearchActionShortcutType {
+  unFocus;
+}
