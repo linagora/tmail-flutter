@@ -41,7 +41,7 @@ extension MarkCollapsedEmailReadSuccess on ThreadDetailController {
   ) {
     if (success.readActions == ReadActions.markAsRead) return;
     if (emailIdsPresentation.length == 1) {
-      closeThreadDetailAction(currentContext);
+      closeThreadDetailAction();
     } else {
       emailIdsPresentation[success.emailId] = emailIdsPresentation
         [success.emailId]

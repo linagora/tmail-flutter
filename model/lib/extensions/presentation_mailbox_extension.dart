@@ -58,6 +58,10 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get allowedHasEmptyAction => (isTrash || isSpam) && countTotalEmails > 0;
 
+  bool get isDeletePermanentlyEnabled {
+    return isTrash == true || isDrafts == true || isSpam == true;
+  }
+
   String get countTotalEmailsAsString {
     if (countTotalEmails <= 0) return '';
     return countTotalEmails <= 999 ? '$countTotalEmails' : '999+';
