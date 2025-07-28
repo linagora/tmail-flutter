@@ -411,8 +411,15 @@ class ManageAccountDashBoardController extends ReloadableController {
   }
 
   Future<void> registerCozyPopState() async {
-    final isInsideCozy = await CozyConfigManager().isInsideCozy;
-    if (!isInsideCozy) return;
+    if (!PlatformInfo.isWeb) return;
+
+    try {
+      final isInsideCozy = await CozyConfigManager().isInsideCozy;
+      if (!isInsideCozy) return;
+    } catch (e) {
+      logError('ManageAccountDashBoardController::registerCozyPopState::isInsideCozy:Exception = $e');
+      return;
+    }
 
     _popStateDebouncer = Debouncer(
       const Duration(milliseconds: 100),

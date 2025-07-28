@@ -2937,13 +2937,10 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::_navigateToScreen: dashboardRoute: $dashboardRoute');
     switch(dashboardRoute.value) {
       case DashboardRoutes.threadDetailed:
-        if (PlatformInfo.isMobile) {
-          if (currentContext != null && canBack(currentContext!)) {
-            return false;
-          } else {
-            clearSelectedEmail();
-            return true;
-          }
+        if (PlatformInfo.isMobile &&
+            currentContext != null &&
+            canBack(currentContext!)) {
+          return false;
         } else {
           clearSelectedEmail();
           return true;
@@ -3302,8 +3299,15 @@ class MailboxDashBoardController extends ReloadableController
   }
   
   Future<void> registerCozyPopState() async {
-    final isInsideCozy = await CozyConfigManager().isInsideCozy;
-    if (!isInsideCozy) return;
+    if (!PlatformInfo.isWeb) return;
+
+    try {
+      final isInsideCozy = await CozyConfigManager().isInsideCozy;
+      if (!isInsideCozy) return;
+    } catch (e) {
+      logError('MailboxDashBoardController::registerCozyPopState::isInsideCozy:Exception = $e');
+      return;
+    }
 
     _popStateDebouncer = Debouncer(
       const Duration(milliseconds: 100),
