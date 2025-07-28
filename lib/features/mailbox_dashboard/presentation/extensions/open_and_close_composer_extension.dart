@@ -81,7 +81,7 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
     }
 
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
-
+    registerCozyPopState();
     _handleResultAfterCloseComposer(result);
   }
 

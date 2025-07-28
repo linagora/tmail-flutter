@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
+import 'package:cozy/cozy_config_manager/cozy_config_manager.dart';
 import 'package:dartz/dartz.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:flutter/material.dart';
@@ -292,6 +294,8 @@ class MailboxDashBoardController extends ReloadableController
   bool _isFirstSessionLoad = false;
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
+  StreamSubscription<html.PopStateEvent>? _popStateEventStreamSubscription;
+  Debouncer<html.PopStateEvent?>? _popStateDebouncer;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -345,6 +349,7 @@ class MailboxDashBoardController extends ReloadableController
     }
     _registerStreamListener();
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
+    registerCozyPopState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await applicationManager.initUserAgent();
     });
@@ -1910,6 +1915,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void goToSettings() async {
     closeMailboxMenuDrawer();
+    unregisterCozyPopState();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     final result = await push(
       AppRoutes.settings,
@@ -1920,6 +1926,7 @@ class MailboxDashBoardController extends ReloadableController
     );
 
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
+    registerCozyPopState();
 
     if (result is Tuple2) {
       if (result.value1 is VacationResponse) {
@@ -1978,6 +1985,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void goToVacationSetting() async {
+    unregisterCozyPopState();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     final result = await push(
       AppRoutes.settings,
@@ -1989,6 +1997,7 @@ class MailboxDashBoardController extends ReloadableController
     );
 
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
+    registerCozyPopState();
 
     if (result is Tuple2) {
       if (result.value1 is VacationResponse) {
@@ -2927,6 +2936,18 @@ class MailboxDashBoardController extends ReloadableController
   bool _navigateToScreen() {
     log('MailboxDashBoardController::_navigateToScreen: dashboardRoute: $dashboardRoute');
     switch(dashboardRoute.value) {
+      case DashboardRoutes.threadDetailed:
+        if (PlatformInfo.isMobile) {
+          if (currentContext != null && canBack(currentContext!)) {
+            return false;
+          } else {
+            clearSelectedEmail();
+            return true;
+          }
+        } else {
+          clearSelectedEmail();
+          return true;
+        }
       case DashboardRoutes.emailDetailed:
         if (PlatformInfo.isMobile) {
           if (currentContext != null && canBack(currentContext!)) {
@@ -3265,6 +3286,7 @@ class MailboxDashBoardController extends ReloadableController
     _notificationManager.closeStream();
     _fcmService.closeStream();
     applicationManager.releaseUserAgent();
+    unregisterCozyPopState();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     _identities = null;
     outboxMailbox = null;
@@ -3275,6 +3297,28 @@ class MailboxDashBoardController extends ReloadableController
     _currentEmailState = null;
     _isFirstSessionLoad = false;
     twakeAppManager.setHasComposer(false);
+    _popStateEventStreamSubscription?.cancel();
     super.onClose();
+  }
+  
+  Future<void> registerCozyPopState() async {
+    final isInsideCozy = await CozyConfigManager().isInsideCozy;
+    if (!isInsideCozy) return;
+
+    _popStateDebouncer = Debouncer(
+      const Duration(milliseconds: 100),
+      initialValue: null,
+      onChanged: (value) {
+        onBackButtonInterceptor(false, RouteInfo());
+      },
+    );
+    _popStateEventStreamSubscription = html.window.onPopState.listen((event) {
+      _popStateDebouncer?.value = event;
+    });
+  }
+
+  void unregisterCozyPopState() {
+    _popStateDebouncer?.cancel();
+    _popStateEventStreamSubscription?.cancel();
   }
 }

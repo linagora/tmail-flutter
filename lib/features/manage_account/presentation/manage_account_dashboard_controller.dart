@@ -1,7 +1,10 @@
+import 'dart:async';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
+import 'package:cozy/cozy_config_manager/cozy_config_manager.dart';
 import 'package:dartz/dartz.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:fcm/model/firebase_capability.dart';
 import 'package:flutter/material.dart';
 import 'package:forward/forward/capability_forward.dart';
@@ -42,6 +45,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ManageAccountDashBoardController extends ReloadableController {
@@ -59,9 +63,12 @@ class ManageAccountDashBoardController extends ReloadableController {
   Session? sessionCurrent;
   bool? isVacationDateDialogDisplayed;
   Uri? previousUri;
+  StreamSubscription<html.PopStateEvent>? _popStateEventStreamSubscription;
+  Debouncer<html.PopStateEvent?>? _popStateDebouncer;
 
   @override
   void onInit() {
+    registerCozyPopState();
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.settings);
     super.onInit();
     if (LogTracking().isEnabled) {
@@ -403,8 +410,30 @@ class ManageAccountDashBoardController extends ReloadableController {
       accountId: accountId.value!);
   }
 
+  Future<void> registerCozyPopState() async {
+    final isInsideCozy = await CozyConfigManager().isInsideCozy;
+    if (!isInsideCozy) return;
+
+    _popStateDebouncer = Debouncer(
+      const Duration(milliseconds: 100),
+      initialValue: null,
+      onChanged: (value) {
+        _onBackButtonInterceptor(false, RouteInfo());
+      },
+    );
+    _popStateEventStreamSubscription = html.window.onPopState.listen((event) {
+      _popStateDebouncer?.value = event;
+    });
+  }
+
+  void unregisterCozyPopState() {
+    _popStateDebouncer?.cancel();
+    _popStateEventStreamSubscription?.cancel();
+  }
+
   @override
   void onClose() {
+    unregisterCozyPopState();
     BackButtonInterceptor.removeByName(AppRoutes.settings);
     if (LogTracking().isEnabled) {
       disposeTraceLogDependencies();
