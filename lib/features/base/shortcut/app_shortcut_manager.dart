@@ -25,4 +25,21 @@ class AppShortcutManager {
       return null;
     }
   }
+
+  static MailListActionShortcutType? getMailListActionFromEvent(KeyEvent event) {
+    final keysPressed = HardwareKeyboard.instance.logicalKeysPressed;
+    log('AppShortcutManager::getMailListActionFromEvent: Keys pressed: $keysPressed');
+    if (keysPressed.isOnly(LogicalKeyboardKey.delete) ||
+        keysPressed.isOnly(LogicalKeyboardKey.backspace)) {
+      return MailListActionShortcutType.delete;
+    } else if (keysPressed.isOnly(LogicalKeyboardKey.keyN)) {
+      return MailListActionShortcutType.newMessage;
+    } else if (keysPressed.isOnly(LogicalKeyboardKey.keyQ)) {
+      return MailListActionShortcutType.markAsRead;
+    }  else if (keysPressed.isOnly(LogicalKeyboardKey.keyU)) {
+      return MailListActionShortcutType.markAsUnread;
+    } else {
+      return null;
+    }
+  }
 }

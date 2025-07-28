@@ -1,6 +1,7 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get_rx/src/rx_workers/rx_workers.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 
@@ -14,7 +15,7 @@ extension HandleReactiveObxVariableExtension on MailboxDashBoardController {
 
     searchInputFocusWorker = ever(
       searchController.isSearchInputFocused,
-      _onSearchInputFocusChanged
+      onSearchInputFocusChanged
     );
   }
 
@@ -22,13 +23,17 @@ extension HandleReactiveObxVariableExtension on MailboxDashBoardController {
     log('$runtimeType::_onAdvancedSearchVisibleChanged: visible is $visible | isEmailOpened = $isEmailOpened');
     if (isEmailOpened) {
       _performThreadDetailUIActionWhenEmailOpened(visible);
+    } else if (isEmailListDisplayed) {
+      _performDashboardUIActionWhenEmailListDisplayed(visible);
     }
   }
 
-  void _onSearchInputFocusChanged(bool focused) {
+  void onSearchInputFocusChanged(bool focused) {
     log('$runtimeType::_onSearchInputFocusChanged: focused is $focused | isEmailOpened = $isEmailOpened');
     if (isEmailOpened) {
       _performThreadDetailUIActionWhenEmailOpened(focused);
+    } else if (isEmailListDisplayed) {
+      _performDashboardUIActionWhenEmailListDisplayed(focused);
     }
   }
 
@@ -38,6 +43,14 @@ extension HandleReactiveObxVariableExtension on MailboxDashBoardController {
         : ReclaimMailViewKeyboardShortcutFocusAction();
 
     dispatchThreadDetailUIAction(emailAction);
+  }
+
+  void _performDashboardUIActionWhenEmailListDisplayed(bool focused) {
+    final dashboardAction = focused
+        ? ClearMailListKeyboardShortcutFocusAction()
+        : ReclaimMailListKeyboardShortcutFocusAction();
+
+    dispatchAction(dashboardAction);
   }
 
   void disposeReactiveObxVariableListener() {

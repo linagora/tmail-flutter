@@ -3264,6 +3264,9 @@ class MailboxDashBoardController extends ReloadableController
       dashboardRoute.value == DashboardRoutes.emailDetailed ||
           dashboardRoute.value == DashboardRoutes.threadDetailed;
 
+  bool get isEmailListDisplayed =>
+      dashboardRoute.value == DashboardRoutes.thread;
+
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {

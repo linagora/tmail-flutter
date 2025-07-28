@@ -35,9 +35,6 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
   void onKeyboardShortcutInit() {
     if (PlatformInfo.isWeb) {
       keyboardShortcutFocusNode = FocusNode();
-      keyboardShortcutFocusNode?.addListener(() {
-        log('$runtimeType::onInit:keyboardShortcutFocusNode: ${keyboardShortcutFocusNode?.hasFocus}');
-      });
       shortcutActionEventController =
           StreamController<MailViewShortcutActionViewEvent>();
       shortcutActionEventSubscription = shortcutActionEventController
