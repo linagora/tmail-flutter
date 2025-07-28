@@ -4539,7 +4539,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editLocalCopyInForwardFailed": "Theip ar chóip áitiúil a chur in eagar sa chur ar aghaidh.",
+  "editLocalCopyInForwardFailed": "Theip ar chóip áitiúil a athrú agus ríomhphoist á n-aistriú.",
   "@editLocalCopyInForwardFailed": {
     "type": "text",
     "placeholders_order": [],
@@ -4599,19 +4599,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "threadToggleDescription": "Cumasaigh snáithe",
+  "threadToggleDescription": "",
   "@threadToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "Níl cuireadh tugtha duit chuig an ócáid seo. Téigh i dteagmháil leis an eagraí le do thoil.",
+  "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "countMessageInSpam": "{count} teachtaireacht sa turscar",
+  "countMessageInSpam": "",
   "@countMessageInSpam": {
     "type": "text",
     "placeholders_order": [
@@ -4621,10 +4621,20 @@
       "count": {}
     }
   },
-  "view": "Amharc",
+  "view": "",
   "@view": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "daysAgo": "",
+  "@daysAgo": {
+    "type": "text",
+    "placeholders_order": [
+      "days"
+    ],
+    "placeholders": {
+      "days": {}
+    }
   }
 }
