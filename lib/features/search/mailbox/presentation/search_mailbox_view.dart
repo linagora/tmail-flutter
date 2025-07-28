@@ -38,14 +38,18 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: PlatformInfo.isWeb
-          ? PointerInterceptor(child: _buildSearchBody(context))
-          : SafeArea(child: _buildSearchBody(context)),
-      ),
-    );
+    if (PlatformInfo.isWeb) {
+      return Scaffold(
+        body: PointerInterceptor(child: _buildSearchBody(context)),
+      );
+    } else {
+      return Scaffold(
+        body: GestureDetector(
+          onTap: FocusScope.of(context).unfocus,
+          child: SafeArea(child: _buildSearchBody(context)),
+        ),
+      );
+    }
   }
 
   Widget _buildSearchBody(BuildContext context) {
@@ -150,6 +154,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
       autoFocus: true,
       maxLines: 1,
       controller: controller.textInputSearchController,
+      focusNode: controller.searchFocusNode,
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       textStyle: ThemeUtils.textStyleBodyBody2(
         color: Colors.black,
