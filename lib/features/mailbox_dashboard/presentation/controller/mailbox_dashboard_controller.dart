@@ -129,6 +129,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refr
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
@@ -2149,7 +2150,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void _deleteSortOrderSearchFilter() {
     searchController.updateFilterEmail(
-      sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent));
+      sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder));
     dispatchAction(StartSearchEmailAction());
   }
 
