@@ -186,9 +186,9 @@ class _WebTabletBodyEmailItemWidgetState
                       if (_isHover) ...[
                         TMailButtonWidget.fromIcon(
                           icon: _imagePaths.icOpenInNewTab,
-                          iconColor: ItemEmailTileStyles.actionIconColor,
+                          iconColor: ItemEmailTileStyles.actionIconHoverColor,
                           iconSize: _getIconSize(),
-                          padding: _getPaddingIcon(context),
+                          padding: _getPaddingIcon(),
                           backgroundColor: Colors.transparent,
                           tooltipMessage:
                               AppLocalizations.of(context).openInNewTab,
@@ -203,9 +203,9 @@ class _WebTabletBodyEmailItemWidgetState
                             icon: widget.presentationEmail.hasRead
                                 ? _imagePaths.icUnread
                                 : _imagePaths.icRead,
-                            iconColor: ItemEmailTileStyles.actionIconColor,
+                            iconColor: ItemEmailTileStyles.actionIconHoverColor,
                             iconSize: _getIconSize(),
-                            padding: _getPaddingIcon(context),
+                            padding: _getPaddingIcon(),
                             backgroundColor: Colors.transparent,
                             tooltipMessage: widget.presentationEmail.hasRead
                                 ? AppLocalizations.of(context).mark_as_unread
@@ -222,9 +222,9 @@ class _WebTabletBodyEmailItemWidgetState
                             widget.mailboxContain?.isDrafts == false) ...[
                           TMailButtonWidget.fromIcon(
                             icon: _imagePaths.icMove,
-                            iconColor: ItemEmailTileStyles.actionIconColor,
+                            iconColor: ItemEmailTileStyles.actionIconHoverColor,
                             iconSize: _getIconSize(),
-                            padding: _getPaddingIcon(context),
+                            padding: _getPaddingIcon(),
                             backgroundColor: Colors.transparent,
                             tooltipMessage: AppLocalizations.of(context).move,
                             onTapActionCallback: () =>
@@ -236,9 +236,9 @@ class _WebTabletBodyEmailItemWidgetState
                         ],
                         TMailButtonWidget.fromIcon(
                           icon: _imagePaths.icDeleteComposer,
-                          iconColor: ItemEmailTileStyles.actionIconColor,
-                          iconSize: 14,
-                          padding: _getPaddingIcon(context),
+                          iconColor: ItemEmailTileStyles.actionIconHoverColor,
+                          iconSize: _getIconSize(),
+                          padding: _getPaddingIcon(),
                           backgroundColor: Colors.transparent,
                           tooltipMessage: widget.canDeletePermanently
                               ? AppLocalizations.of(context).delete_permanently
@@ -255,9 +255,9 @@ class _WebTabletBodyEmailItemWidgetState
                       if (_shouldShowPopupMenu)
                         TMailButtonWidget.fromIcon(
                           icon: _imagePaths.icMoreVertical,
-                          iconColor: ItemEmailTileStyles.actionIconColor,
+                          iconColor: ItemEmailTileStyles.actionIconHoverColor,
                           iconSize: _getIconSize(),
-                          padding: _getPaddingIcon(context),
+                          padding: _getPaddingIcon(),
                           backgroundColor: _popupMenuVisible
                               ? Theme.of(context)
                                   .colorScheme
@@ -364,7 +364,7 @@ class _WebTabletBodyEmailItemWidgetState
 
   double _getIconSize() => 16;
 
-  EdgeInsets _getPaddingIcon(BuildContext context) {
+  EdgeInsetsGeometry _getPaddingIcon() {
     return const EdgeInsets.all(5);
   }
 

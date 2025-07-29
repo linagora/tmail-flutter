@@ -47,9 +47,9 @@ class _DesktopListEmailActionHoverWidgetState
       if (widget.isHovered) ...[
         TMailButtonWidget.fromIcon(
           icon: _imagePaths.icOpenInNewTab,
-          iconColor: ItemEmailTileStyles.actionIconColor,
+          iconColor: ItemEmailTileStyles.actionIconHoverColor,
           iconSize: _getIconSize(),
-          padding: _getPaddingIcon(context),
+          padding: _getPaddingIcon(),
           backgroundColor: Colors.transparent,
           tooltipMessage: AppLocalizations.of(context).openInNewTab,
           onTapActionCallback: () => widget.emailActionClick?.call(
@@ -62,9 +62,10 @@ class _DesktopListEmailActionHoverWidgetState
             icon: widget.presentationEmail.hasRead
                 ? _imagePaths.icUnread
                 : _imagePaths.icRead,
-            iconColor: ItemEmailTileStyles.actionIconColor,
+            iconColor: ItemEmailTileStyles.actionIconHoverColor,
             iconSize: _getIconSize(),
-            padding: _getPaddingIcon(context),
+            padding: _getPaddingIcon(),
+            margin: _getMarginIcon(),
             backgroundColor: Colors.transparent,
             tooltipMessage: widget.presentationEmail.hasRead
                 ? AppLocalizations.of(context).mark_as_unread
@@ -80,9 +81,10 @@ class _DesktopListEmailActionHoverWidgetState
             widget.mailboxContain?.isDrafts == false) ...[
           TMailButtonWidget.fromIcon(
             icon: _imagePaths.icMove,
-            iconColor: ItemEmailTileStyles.actionIconColor,
+            iconColor: ItemEmailTileStyles.actionIconHoverColor,
             iconSize: _getIconSize(),
-            padding: _getPaddingIcon(context),
+            padding: _getPaddingIcon(),
+            margin: _getMarginIcon(),
             backgroundColor: Colors.transparent,
             tooltipMessage: AppLocalizations.of(context).move,
             onTapActionCallback: () => widget.emailActionClick?.call(
@@ -93,9 +95,10 @@ class _DesktopListEmailActionHoverWidgetState
         ],
         TMailButtonWidget.fromIcon(
           icon: _imagePaths.icDeleteComposer,
-          iconColor: ItemEmailTileStyles.actionIconColor,
-          iconSize: 16,
-          padding: _getPaddingIcon(context),
+          iconColor: ItemEmailTileStyles.actionIconHoverColor,
+          iconSize: _getIconSize(),
+          padding: _getPaddingIcon(),
+          margin: _getMarginIcon(),
           backgroundColor: Colors.transparent,
           tooltipMessage: widget.canDeletePermanently
               ? AppLocalizations.of(context).delete_permanently
@@ -111,9 +114,10 @@ class _DesktopListEmailActionHoverWidgetState
       if (_shouldShowPopupMenu) ...[
         TMailButtonWidget.fromIcon(
           icon: _imagePaths.icMoreVertical,
-          iconColor: ItemEmailTileStyles.actionIconColor,
+          iconColor: ItemEmailTileStyles.actionIconHoverColor,
           iconSize: _getIconSize(),
-          padding: _getPaddingIcon(context),
+          padding: _getPaddingIcon(),
+          margin: _getMarginIcon(),
           backgroundColor: _popupMenuVisible
               ? Theme.of(context).colorScheme.outline.withOpacity(0.08)
               : Colors.transparent,
@@ -150,10 +154,14 @@ class _DesktopListEmailActionHoverWidgetState
     return Row(children: listActionWidget);
   }
 
-  double _getIconSize() => 18;
+  double _getIconSize() => 16;
 
-  EdgeInsets _getPaddingIcon(BuildContext context) {
+  EdgeInsetsGeometry _getPaddingIcon() {
     return const EdgeInsets.all(5);
+  }
+
+  EdgeInsetsGeometry _getMarginIcon() {
+    return const EdgeInsetsDirectional.only(start: 11);
   }
 
   bool get _shouldShowPopupMenu => widget.isHovered || _popupMenuVisible;

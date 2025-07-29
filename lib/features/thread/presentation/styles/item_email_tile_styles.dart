@@ -10,6 +10,7 @@ class ItemEmailTileStyles {
   static const double horizontalTitleGap = 8.0;
 
   static const Color actionIconColor = AppColor.steelGray200;
+  static const Color actionIconHoverColor = AppColor.steelGrayA540;
 
   static EdgeInsetsGeometry getSpaceCalendarEventIcon(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isScreenWithShortestSide(context)) {
