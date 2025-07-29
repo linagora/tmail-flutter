@@ -37,6 +37,9 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
 
   factory SearchEmailFilter.initial() => SearchEmailFilter();
 
+  factory SearchEmailFilter.withSortOrder(EmailSortOrderType sortOrder) =>
+      SearchEmailFilter(sortOrderType: sortOrder);
+
   SearchEmailFilter({
     this.text,
     this.subject,

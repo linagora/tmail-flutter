@@ -35,7 +35,7 @@ class AdvancedFilterController extends BaseController {
   final hasAttachment = false.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
-  final sortOrderType = EmailSortOrderType.defaultSortOrder.obs;
+  final sortOrderType = SearchEmailFilter.defaultSortOrder.obs;
   final selectedFolderName = Rxn<String>();
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
@@ -56,7 +56,7 @@ class AdvancedFilterController extends BaseController {
   final MailboxDashBoardController _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
   final focusManager = InputFieldFocusManager.initial();
-  SearchEmailFilter _memorySearchFilter = SearchEmailFilter.initial();
+  late SearchEmailFilter _memorySearchFilter;
 
   PresentationMailbox? _destinationMailboxSelected;
 
@@ -74,11 +74,17 @@ class AdvancedFilterController extends BaseController {
     injectAutoCompleteBindings(
       _mailboxDashBoardController.sessionCurrent,
       _mailboxDashBoardController.accountId.value);
+    _setUpDefaultSortOrder(_mailboxDashBoardController.currentSortOrder);
     super.onReady();
   }
 
+  void _setUpDefaultSortOrder(EmailSortOrderType emailSortOrderType) {
+    sortOrderType.value = emailSortOrderType;
+    _memorySearchFilter = SearchEmailFilter.withSortOrder(emailSortOrderType);
+  }
+
   void clearSearchFilter() {
-    _memorySearchFilter = SearchEmailFilter.initial();
+    _memorySearchFilter = SearchEmailFilter.withSortOrder(sortOrderType.value);
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
     _mailboxDashBoardController.handleClearAdvancedSearchFilterEmail();
@@ -460,6 +466,7 @@ class AdvancedFilterController extends BaseController {
     _dashboardActionWorker = ever(
       _mailboxDashBoardController.dashBoardAction,
       (action) {
+        log('AdvancedFilterController::_registerWorkerListener(): ${action.runtimeType}');
         if (action is ClearAllFieldOfAdvancedSearchAction) {
           _handleClearAllFieldOfAdvancedSearch();
         } else if (action is SelectDateRangeToAdvancedSearch) {
@@ -478,6 +485,8 @@ class AdvancedFilterController extends BaseController {
           initSearchFilterField(currentContext);
         } else if (action is ClearSearchFilterAppliedAction) {
           clearSearchFilter();
+        } else if (action is SynchronizeEmailSortOrderAction) {
+          _setUpDefaultSortOrder(action.emailSortOrderType);
         }
       }
     );
@@ -500,7 +509,7 @@ class AdvancedFilterController extends BaseController {
   void _handleClearAllFieldOfAdvancedSearch() {
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
-    _memorySearchFilter = SearchEmailFilter.initial();
+    _memorySearchFilter = SearchEmailFilter.withSortOrder(sortOrderType.value);
   }
 
   void onSearchAction() {
@@ -572,8 +581,8 @@ class AdvancedFilterController extends BaseController {
   }
 
   void _handleQuickSearchEmailByFromAction(EmailAddress emailAddress) {
-    searchController.clearSearchFilter();
-    _memorySearchFilter = SearchEmailFilter.initial();
+    searchController.clearSearchFilter(sortOrderType: sortOrderType.value);
+    _memorySearchFilter = SearchEmailFilter.withSortOrder(sortOrderType.value);
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
     searchController.searchInputController.clear();
@@ -596,7 +605,7 @@ class AdvancedFilterController extends BaseController {
     fromEmailAddressController.dispose();
     _unregisterWorkerListener();
     _resetAllToOriginalValue();
-    _memorySearchFilter = SearchEmailFilter.initial();
+    _memorySearchFilter = SearchEmailFilter.withSortOrder(sortOrderType.value);
     super.onClose();
   }
 }

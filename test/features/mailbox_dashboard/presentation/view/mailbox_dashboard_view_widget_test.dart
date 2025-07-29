@@ -58,11 +58,13 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -150,6 +152,8 @@ const fallbackGenerators = {
   MockSpec<QuickSearchEmailInteractor>(),
   MockSpec<SaveRecentSearchInteractor>(),
   MockSpec<GetAllRecentSearchLatestInteractor>(),
+  MockSpec<StoreEmailSortOrderInteractor>(),
+  MockSpec<GetStoredEmailSortOrderInteractor>(),
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
   MockSpec<UpdateAccountCacheInteractor>(),
@@ -231,6 +235,8 @@ void main() {
   final quickSearchEmailInteractor = MockQuickSearchEmailInteractor();
   final saveRecentSearchInteractor = MockSaveRecentSearchInteractor();
   final getAllRecentSearchLatestInteractor = MockGetAllRecentSearchLatestInteractor();
+  final storeEmailSortOrderInteractor = MockStoreEmailSortOrderInteractor();
+  final getStoredEmailSortOrderInteractor = MockGetStoredEmailSortOrderInteractor();
 
   final cachingManager = MockCachingManager();
   final languageCacheManager = MockLanguageCacheManager();
@@ -377,6 +383,8 @@ void main() {
         removeComposerCacheByIdOnWebInteractor,
         getAllIdentitiesInteractor,
         clearMailboxInteractor,
+        storeEmailSortOrderInteractor,
+        getStoredEmailSortOrderInteractor,
       );
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();

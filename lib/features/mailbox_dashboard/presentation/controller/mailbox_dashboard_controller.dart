@@ -98,11 +98,14 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_stored_email_sort_order_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
@@ -114,6 +117,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_save_email_as_draft_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/initialize_app_language.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/notify_thread_detail_setting_updated.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
@@ -239,6 +243,8 @@ class MailboxDashBoardController extends ReloadableController
   final RemoveAllComposerCacheOnWebInteractor _removeAllComposerCacheOnWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final ClearMailboxInteractor clearMailboxInteractor;
+  final StoreEmailSortOrderInteractor storeEmailSortOrderInteractor;
+  final GetStoredEmailSortOrderInteractor getStoredEmailSortOrderInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -294,6 +300,7 @@ class MailboxDashBoardController extends ReloadableController
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
+  EmailSortOrderType currentSortOrder = SearchEmailFilter.defaultSortOrder;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -337,6 +344,8 @@ class MailboxDashBoardController extends ReloadableController
     this._removeComposerCacheByIdOnWebInteractor,
     this._getAllIdentitiesInteractor,
     this.clearMailboxInteractor,
+    this.storeEmailSortOrderInteractor,
+    this.getStoredEmailSortOrderInteractor,
   );
 
   @override
@@ -364,6 +373,7 @@ class MailboxDashBoardController extends ReloadableController
     }
     _handleArguments();
     _loadAppGrid();
+    loadStoredEmailSortOrder();
     super.onReady();
   }
 
@@ -485,6 +495,8 @@ class MailboxDashBoardController extends ReloadableController
         tokenOIDC: success.tokenOIDC,
         oidcConfiguration: success.configuration,
       );
+    } else if (success is GetStoredEmailSortOrderSuccess) {
+      setUpDefaultEmailSortOrder(success.emailSortOrderType);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -915,6 +927,7 @@ class MailboxDashBoardController extends ReloadableController
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
     FocusManager.instance.primaryFocus?.unfocus();
+    storeEmailSortOrder(searchController.searchEmailFilter.value.sortOrderType);
     dispatchAction(StartSearchEmailAction());
   }
 
@@ -2135,6 +2148,7 @@ class MailboxDashBoardController extends ReloadableController
   void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrder) {
     log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
     searchController.updateFilterEmail(sortOrderTypeOption: Some(sortOrder));
+    storeEmailSortOrder(sortOrder);
     dispatchAction(StartSearchEmailAction());
   }
 
