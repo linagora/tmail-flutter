@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -128,5 +129,132 @@ void main() {
         ]));
       },
     );
+  });
+
+  group('validateNewCreatedEmailForCurrentThread test:', () {
+    test(
+      'should return false '
+      'when email is not in same thread as current thread',
+    () {
+      // arrange
+      final email = Email(threadId: ThreadId(Id('other-thread-id')));
+      final threadId = ThreadId(Id('thread-id'));
+      
+      // act
+      final result = threadDetailController.validateNewCreatedEmailForCurrentThread(
+        email,
+        threadId,
+      );
+      
+      // assert
+      expect(result, false);
+    });
+
+    test(
+      'should return true '
+      'when email is in same thread as current thread '
+      'and email is not in sent mailbox',
+    () {
+      // arrange
+      final threadId = ThreadId(Id('thread-id'));
+      final sentMailboxId = MailboxId(Id('sent-mailbox-id'));
+      final email = Email(threadId: threadId);
+      when(threadDetailController.sentMailboxId).thenReturn(sentMailboxId);
+      
+      // act
+      final result = threadDetailController.validateNewCreatedEmailForCurrentThread(
+        email,
+        threadId,
+      );
+      
+      // assert
+      expect(result, true);
+    });
+
+    test(
+      'should return true '
+      'when email is in same thread as current thread '
+      'and email is in sent mailbox '
+      'and email is not sent by current user',
+    () {
+      // arrange
+      final threadId = ThreadId(Id('thread-id'));
+      final sentMailboxId = MailboxId(Id('sent-mailbox-id'));
+      final email = Email(
+        threadId: threadId,
+        mailboxIds: {sentMailboxId: true},
+      );
+      const ownEmailAddress = '9jEYK@example.com';
+      when(threadDetailController.sentMailboxId).thenReturn(sentMailboxId);
+      when(threadDetailController.ownEmailAddress).thenReturn(ownEmailAddress);
+      
+      // act
+      final result = threadDetailController.validateNewCreatedEmailForCurrentThread(
+        email,
+        threadId,
+      );
+      
+      // assert
+      expect(result, true);
+    });
+
+    test(
+      'should return true '
+      'when email is in same thread as current thread '
+      'and email is in sent mailbox '
+      'and email is sent by current user '
+      'and email is not sent to current user',
+    () {
+      // arrange
+      final threadId = ThreadId(Id('thread-id'));
+      final sentMailboxId = MailboxId(Id('sent-mailbox-id'));
+      const ownEmailAddress = '9jEYK@example.com';
+      final email = Email(
+        threadId: threadId,
+        mailboxIds: {sentMailboxId: true},
+        from: {EmailAddress(null, ownEmailAddress)},
+      );
+      when(threadDetailController.sentMailboxId).thenReturn(sentMailboxId);
+      when(threadDetailController.ownEmailAddress).thenReturn(ownEmailAddress);
+      
+      // act
+      final result = threadDetailController.validateNewCreatedEmailForCurrentThread(
+        email,
+        threadId,
+      );
+      
+      // assert
+      expect(result, true);
+    });
+
+    test(
+      'should return false '
+      'when email is in same thread as current thread '
+      'and email is in sent mailbox '
+      'and email is sent by current user '
+      'and email is sent to current user',
+    () {
+      // arrange
+      final threadId = ThreadId(Id('thread-id'));
+      final sentMailboxId = MailboxId(Id('sent-mailbox-id'));
+      const ownEmailAddress = '9jEYK@example.com';
+      final email = Email(
+        threadId: threadId,
+        mailboxIds: {sentMailboxId: true},
+        from: {EmailAddress(null, ownEmailAddress)},
+        to: {EmailAddress(null, ownEmailAddress)},
+      );
+      when(threadDetailController.sentMailboxId).thenReturn(sentMailboxId);
+      when(threadDetailController.ownEmailAddress).thenReturn(ownEmailAddress);
+      
+      // act
+      final result = threadDetailController.validateNewCreatedEmailForCurrentThread(
+        email,
+        threadId,
+      );
+      
+      // assert
+      expect(result, false);
+    });
   });
 }

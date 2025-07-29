@@ -70,7 +70,7 @@ james-cli ImportEml \#private "bob@example.com" "Calendar" "/root/conf/integrati
 
 # For test reply email
 # Import emails into 'Reply Emails' folder for user Bob
-replyEmailsEML=("reply-all.eml" "reply-to-list.eml" "with-reply-to.eml" "without-reply-to.eml")
+replyEmailsEML=("reply-all.eml" "reply-to-list.eml" "with-reply-to.eml" "without-reply-to.eml" "reply-thread.eml")
 
 for eml in "${replyEmailsEML[@]}"; do
   echo "Importing $eml into 'Reply Emails' folder for user bob"

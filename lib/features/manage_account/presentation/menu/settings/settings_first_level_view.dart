@@ -72,6 +72,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
+                key: const ValueKey('setting_preferences'),
                 AccountMenuItem.preferences.getName(AppLocalizations.of(context)),
                 AccountMenuItem.preferences.getIcon(controller.imagePaths),
                 subtitle: AppLocalizations.of(context).emailReadReceiptsSettingExplanation,
