@@ -274,10 +274,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    ThemeUtils_textStyleInter600() {
-      var _null = null;
-      return A.TextStyle$(_null, _null, B.Color_kmW.withValues$1$alpha(0.9), _null, _null, _null, _null, _null, "Inter", _null, _null, 24, _null, _null, B.FontWeight_5_600, _null, 1.1670833333333335, true, _null, 0, _null, _null, _null, _null, _null, _null);
-    },
     SessionExtensions_getContactSupportCapability(_this, accountId) {
       var contactSupportCapability, e, exception;
       try {
@@ -622,7 +618,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C.ProfileLabelWidget.prototype = {
     build$1(context) {
       var _null = null;
-      return A.Container$(_null, A.EmailAddressWithCopyWidget$(this.copyLabelIcon, this.label, this.onCopyButtonAction), B.Clip_0, _null, _null, _null, _null, 40, _null, _null, B.EdgeInsets_16_0_16_0, _null, _null, _null);
+      return A.Container$(_null, A.EmailAddressWithCopyWidget$(_null, _null, this.copyLabelIcon, this.label, this.onCopyButtonAction, _null), B.Clip_0, _null, _null, _null, _null, 40, _null, _null, B.EdgeInsets_16_0_16_0, _null, _null, _null);
     }
   };
   C.ProfileSettingIcon.prototype = {
@@ -853,7 +849,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1924
+    $signature: 1928
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -869,7 +865,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_9Sx, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 399
+    $signature: 377
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -908,7 +904,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.push(new C.ProfileSettingIcon(t2.ownEmailAddress, t2.settingActionTypes, t2.onProfileSettingActionTypeClick, false, _null));
       return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 382
+    $signature: 386
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -989,7 +985,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t4, t7, new C.ProfileSettingMenuOverlay(t5, t6, t1._profile_setting_icon$_imagePaths, new C._ProfileSettingIconState_build__closure0(t1, context), new C._ProfileSettingIconState_build__closure1(t1), t2, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 399
+    $signature: 377
   };
   C._ProfileSettingIconState_build__closure0.prototype = {
     call$0() {
@@ -1017,7 +1013,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this._isExpandedNotifier;
       t1.set$value(0, !t1._change_notifier$_value);
     },
-    $signature: 124
+    $signature: 119
   };
   C.ProfileSettingMenuOverlay_build_closure.prototype = {
     call$1(actionType) {
@@ -1033,7 +1029,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(menuAction) {
       this.$this.onProfileSettingActionTypeClick.call$1(menuAction.action);
     },
-    $signature: 72
+    $signature: 71
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -1130,5 +1126,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "4jkWydhAtd86n8xRhPTOUwUSOTU=");
+})($__dart_deferred_initializers__, "WvD8C4DpP5NBMKocUSSNQk6J874=");
 ;
