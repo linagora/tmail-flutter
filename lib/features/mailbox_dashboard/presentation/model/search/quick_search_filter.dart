@@ -43,7 +43,7 @@ enum QuickSearchFilter {
         return AppLocalizations.of(context).fromMe;
       case QuickSearchFilter.sortBy:
         return sortOrderType?.getTitle(context)
-          ?? AppLocalizations.of(context).mostRecent;
+          ?? SearchEmailFilter.defaultSortOrder.getTitle(context);
       case QuickSearchFilter.dateTime:
         return receiveTimeType?.getTitle(
           context,
@@ -138,7 +138,7 @@ enum QuickSearchFilter {
           currentUserEmail?.isNotEmpty == true &&
           currentUserEmail == searchFilter.from.first;
       case QuickSearchFilter.sortBy:
-        return sortOrderType != EmailSortOrderType.mostRecent;
+        return sortOrderType != SearchEmailFilter.defaultSortOrder;
       case QuickSearchFilter.dateTime:
         return searchFilter.emailReceiveTimeType != EmailReceiveTimeType.allTime;
       case QuickSearchFilter.from:

@@ -35,7 +35,7 @@ class AdvancedFilterController extends BaseController {
   final hasAttachment = false.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
-  final sortOrderType = EmailSortOrderType.mostRecent.obs;
+  final sortOrderType = EmailSortOrderType.defaultSortOrder.obs;
   final selectedFolderName = Rxn<String>();
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
