@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/remove_draggable_email_address_between_recipient_fields_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -39,12 +41,12 @@ class ComposerView extends GetWidget<ComposerController> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveWidget(
+    final bodyWidget = ResponsiveWidget(
       responsiveUtils: controller.responsiveUtils,
       mobile: MobileResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocus(context),
+            onTap: controller.onClickOutsideComposer,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -68,7 +70,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                   saveToDraftsAction: () => controller.handleClickSaveAsDraftsButton(context),
                   saveToTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
-                  deleteComposerAction: () => controller.handleClickDeleteComposer(context),
+                  deleteComposerAction: controller.handleClickDeleteComposer,
                 )),
                 ConstrainedBox(
                   constraints: BoxConstraints(
@@ -252,6 +254,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                       uploadError: uploadError
                                     ),
                                   onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
+                                  onKeyDownEditorAction: controller.onKeyDownEditorAction,
                                 )),
                               ),
                               Obx(() {
@@ -340,7 +343,7 @@ class ComposerView extends GetWidget<ComposerController> {
       desktop: Obx(() => DesktopResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocus(context),
+            onTap: controller.onClickOutsideComposer,
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 imagePaths: controller.imagePaths,
@@ -543,6 +546,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                               uploadError: uploadError
                                             ),
                                           onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
+                                          onKeyDownEditorAction: controller.onKeyDownEditorAction,
                                         );
                                       }),
                                     ),
@@ -585,7 +589,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                               attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
-                              deleteComposerAction: () => controller.handleClickDeleteComposer(context),
+                              deleteComposerAction: controller.handleClickDeleteComposer,
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               isEmailChanged: controller.isEmailChanged.isTrue,
@@ -662,7 +666,7 @@ class ComposerView extends GetWidget<ComposerController> {
       tablet: TabletResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocus(context),
+            onTap: controller.onClickOutsideComposer,
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 imagePaths: controller.imagePaths,
@@ -862,6 +866,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                             uploadError: uploadError
                                           ),
                                         onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
+                                        onKeyDownEditorAction: controller.onKeyDownEditorAction,
                                       )),
                                     ),
                                     Obx(() {
@@ -903,7 +908,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                               attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
-                              deleteComposerAction: () => controller.handleClickDeleteComposer(context),
+                              deleteComposerAction: controller.handleClickDeleteComposer,
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               isEmailChanged: controller.isEmailChanged.isTrue,
@@ -971,5 +976,15 @@ class ComposerView extends GetWidget<ComposerController> {
         },
       )
     );
+
+    if (controller.keyboardShortcutFocusNode != null) {
+      return KeyboardHandlerWrapper(
+        focusNode: controller.keyboardShortcutFocusNode!,
+        onKeyDownEventAction: controller.onKeyDownEventAction,
+        child: bodyWidget,
+      );
+    } else {
+      return bodyWidget;
+    }
   }
 }

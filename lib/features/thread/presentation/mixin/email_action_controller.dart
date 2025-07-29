@@ -332,8 +332,8 @@ mixin EmailActionController {
     AppUtils.launchLink(email.routeWebAsString);
   }
 
-  void archiveMessage(BuildContext context, PresentationEmail email) {
-    mailboxDashBoardController.archiveMessage(context, email);
+  void archiveMessage(PresentationEmail email) {
+    mailboxDashBoardController.archiveMessage(email);
   }
 
   bool hasArchiveMailbox() {

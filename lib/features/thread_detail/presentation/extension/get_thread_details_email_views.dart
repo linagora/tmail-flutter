@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load_more_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_open_email_address_detail_action.dart';
@@ -96,7 +97,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
             openEmailAddressDetailAction(emailAddress);
           },
           onToggleThreadDetailCollapseExpand: () {
-            toggleThreadDetailCollapeExpand(presentationEmail);
+            toggleThreadDetailCollapseExpand(presentationEmail);
           },
         );
       }
@@ -111,8 +112,11 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
             isFirstEmailInThreadDetail: true,
             threadSubject: emailIdsPresentation.values.last?.subject,
             onToggleThreadDetailCollapseExpand: () {
-              toggleThreadDetailCollapeExpand(presentationEmail);
+              toggleThreadDetailCollapseExpand(presentationEmail);
             },
+            onIFrameKeyboardShortcutAction: keyboardShortcutFocusNode != null
+              ? onIFrameKeyboardShortcutAction
+              : null,
             scrollController: scrollController,
           ),
         );
@@ -125,8 +129,11 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           isInsideThreadDetailView: true,
           emailId: presentationEmail.id,
           onToggleThreadDetailCollapseExpand: () {
-            toggleThreadDetailCollapeExpand(presentationEmail);
+            toggleThreadDetailCollapseExpand(presentationEmail);
           },
+          onIFrameKeyboardShortcutAction: keyboardShortcutFocusNode != null
+            ? onIFrameKeyboardShortcutAction
+            : null,
           scrollController: scrollController,
         ),
       );

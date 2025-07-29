@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
@@ -19,6 +20,7 @@ import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_details_email_views.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_page_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -223,7 +225,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     }
 
     if (controller.responsiveUtils.isDesktop(context)) {
-      return Container(
+      bodyWidget = Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(20)),
           color: Colors.white,
@@ -233,7 +235,17 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
         child: bodyWidget,
       );
     } else {
-      return ColoredBox(color: Colors.white, child: bodyWidget);
+      bodyWidget = ColoredBox(color: Colors.white, child: bodyWidget);
+    }
+
+    if (PlatformInfo.isWeb && controller.keyboardShortcutFocusNode != null) {
+      return KeyboardHandlerWrapper(
+        onKeyDownEventAction: controller.onKeyDownEventAction,
+        focusNode: controller.keyboardShortcutFocusNode!,
+        child: bodyWidget,
+      );
+    } else {
+      return bodyWidget;
     }
   }
 
