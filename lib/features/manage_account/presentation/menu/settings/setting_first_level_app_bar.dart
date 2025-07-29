@@ -33,6 +33,7 @@ class SettingFirstLevelAppBar extends StatelessWidget {
           PositionedDirectional(
             start: 0,
             child: TMailButtonWidget.fromIcon(
+              key: const ValueKey('settings_first_level_close_button'),
               icon: imagePaths.icArrowBack,
               tooltipMessage: appLocalizations.back,
               backgroundColor: Colors.transparent,

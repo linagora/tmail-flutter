@@ -59,11 +59,17 @@ class SettingOptionItem extends StatelessWidget {
         Row(
           children: [
             InkWell(
+              key: ValueKey(optionType.getTitle(appLocalizations)),
               onTap: () => onTapSettingOptionAction(
                 optionType,
                 optionType.isEnabled(settingOption, localSettings),
               ),
               child: SvgPicture.asset(
+                key: ValueKey(
+                  optionType.isEnabled(settingOption, localSettings)
+                      ? 'setting_option_switch_on'
+                      : 'setting_option_switch_off',
+                ),
                 optionType.isEnabled(settingOption, localSettings)
                   ? imagePaths.icSwitchOn
                   : imagePaths.icSwitchOff,

@@ -37,6 +37,7 @@ class UniversalSettingAppBar extends StatelessWidget {
               PositionedDirectional(
                 start: 24,
                 child: TMailButtonWidget.fromIcon(
+                  key: const ValueKey('settings_close_button'),
                   icon: imagePaths.icClose,
                   iconSize: 28,
                   padding: const EdgeInsets.all(5),

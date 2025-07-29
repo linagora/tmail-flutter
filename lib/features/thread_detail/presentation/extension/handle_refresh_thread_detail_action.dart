@@ -104,11 +104,14 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
     Email email,
     ThreadId currentThreadId,
   ) {
-    return email.threadId == currentThreadId &&
-        sentMailboxId != null &&
-        !email.inSentMailbox(sentMailboxId!) &&
-        ownEmailAddress != null &&
-        !email.fromMe(ownEmailAddress!) &&
-        !email.recipientsHasMe(ownEmailAddress!);
+    if (email.threadId != currentThreadId) return false;
+
+    if (sentMailboxId != null && !email.inSentMailbox(sentMailboxId!)) {
+      return true;
+    }
+
+    return ownEmailAddress != null &&
+        (!email.fromMe(ownEmailAddress!) ||
+            !email.recipientsHasMe(ownEmailAddress!));
   }
 }
