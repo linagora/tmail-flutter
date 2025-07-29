@@ -23,6 +23,7 @@ typedef OnPasteImageFailureAction = Function(
     String? base64,
     UploadError uploadError);
 typedef OnInitialContentLoadComplete = Function(String text);
+typedef OnKeyDownEditorAction = Function(int? keyCode);
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -43,6 +44,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnPasteImageSuccessAction? onPasteImageSuccessAction;
   final OnPasteImageFailureAction? onPasteImageFailureAction;
   final OnInitialContentLoadComplete? onInitialContentLoadComplete;
+  final OnKeyDownEditorAction? onKeyDownEditorAction;
 
   const WebEditorWidget({
     super.key,
@@ -63,6 +65,7 @@ class WebEditorWidget extends StatefulWidget {
     this.onPasteImageSuccessAction,
     this.onPasteImageFailureAction,
     this.onInitialContentLoadComplete,
+    this.onKeyDownEditorAction,
   });
 
   @override
@@ -76,7 +79,7 @@ class _WebEditorState extends State<WebEditorWidget> {
   late HtmlEditorController _editorController;
   bool _dropListenerRegistered = false;
   Function(Event)? _dropListener;
-  
+
   OverlayEntry? _signatureTooltipEntry;
   final GlobalKey _signatureTooltipKey = GlobalKey();
   double _signatureTooltipLeft = 0;
@@ -197,7 +200,7 @@ class _WebEditorState extends State<WebEditorWidget> {
           _showSignatureTooltipAtPosition(
             position,
             isContentVisible
-              ? AppLocalizations.of(context).hideSignature 
+              ? AppLocalizations.of(context).hideSignature
               : AppLocalizations.of(context).showSignature,
           );
         },
@@ -205,6 +208,7 @@ class _WebEditorState extends State<WebEditorWidget> {
           log('_WebEditorState::build: onSignatureHoverOut');
           _hideSignatureTooltip();
         },
+        onKeyDown: widget.onKeyDownEditorAction,
       ),
     );
   }

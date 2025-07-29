@@ -1,11 +1,14 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/services.dart';
 import 'package:tmail_ui_user/features/base/extensions/logical_key_set_helper.dart';
+import 'package:tmail_ui_user/features/base/shortcut/composer/composer_action_shortcut_type.dart';
 import 'package:tmail_ui_user/features/base/shortcut/mail/mail_list_action_shortcut_type.dart';
 import 'package:tmail_ui_user/features/base/shortcut/mail/mail_view_action_shortcut_type.dart';
 import 'package:tmail_ui_user/features/base/shortcut/search/search_action_shortcut_type.dart';
 
 class AppShortcutManager {
+  static const int escapeKeyCode = 27;
+
   static MailViewActionShortcutType? getMailViewActionFromEvent(KeyEvent event) {
     final keysPressed = HardwareKeyboard.instance.logicalKeysPressed;
     log('AppShortcutManager::getMailViewActionFromEvent: Keys pressed: $keysPressed');
@@ -49,6 +52,25 @@ class AppShortcutManager {
     log('AppShortcutManager::getSearchActionFromEvent: Keys pressed: $keysPressed');
     if (keysPressed.isOnly(LogicalKeyboardKey.escape)) {
       return SearchActionShortcutType.unFocus;
+    } else {
+      return null;
+    }
+  }
+
+  static ComposerActionShortcutType? getComposerActionFromEvent(KeyEvent event) {
+    final keysPressed = HardwareKeyboard.instance.logicalKeysPressed;
+    log('AppShortcutManager::getComposerActionFromEvent: Keys pressed: $keysPressed');
+    if (keysPressed.isOnly(LogicalKeyboardKey.escape)) {
+      return ComposerActionShortcutType.closeView;
+    } else {
+      return null;
+    }
+  }
+
+  static ComposerActionShortcutType? getComposerActionFromKeyCode(int? keyCode) {
+    log('AppShortcutManager::getComposerActionFromKeyCode: Keys pressed: $keyCode');
+    if (keyCode == escapeKeyCode) {
+      return ComposerActionShortcutType.closeView;
     } else {
       return null;
     }

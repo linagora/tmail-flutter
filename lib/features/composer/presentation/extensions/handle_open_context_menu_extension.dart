@@ -57,7 +57,7 @@ extension HandleOpenContextMenuExtension on ComposerController {
         handleClickSaveAsTemplateButton(context);
         break;
       case ComposerActionType.delete:
-        handleClickDeleteComposer(context);
+        handleClickDeleteComposer();
         break;
     }
   }
