@@ -103,7 +103,7 @@ class SearchEmailController extends BaseController
   final searchIsRunning = RxBool(false);
   final emailReceiveTimeType = EmailReceiveTimeType.allTime.obs;
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
-  final emailSortOrderType = EmailSortOrderType.mostRecent.obs;
+  final emailSortOrderType = SearchEmailFilter.defaultSortOrder.obs;
   final suggestionSearchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final resultSearchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
@@ -589,7 +589,7 @@ class SearchEmailController extends BaseController
     listSuggestionSearch.clear();
     listResultSearch.clear();
     emailReceiveTimeType.value = EmailReceiveTimeType.allTime;
-    emailSortOrderType.value = EmailSortOrderType.mostRecent;
+    emailSortOrderType.value = SearchEmailFilter.defaultSortOrder;
     searchEmailFilter.value = SearchEmailFilter.initial();
     searchIsRunning.value = false;
     final isMailAddress = EmailUtils.isEmailAddressValid(queryString);
@@ -1017,8 +1017,8 @@ class SearchEmailController extends BaseController
   }
 
   void _deleteSortOrderSearchFilter(BuildContext context) {
-    emailSortOrderType.value = EmailSortOrderType.mostRecent;
-    _updateSimpleSearchFilter(sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent));
+    emailSortOrderType.value = SearchEmailFilter.defaultSortOrder;
+    _updateSimpleSearchFilter(sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder));
     _searchEmailAction(context);
   }
 
@@ -1056,7 +1056,7 @@ class SearchEmailController extends BaseController
     canSearchMore = true;
     searchMoreState = SearchMoreState.idle;
     emailReceiveTimeType.value = EmailReceiveTimeType.allTime;
-    emailSortOrderType.value = EmailSortOrderType.mostRecent;
+    emailSortOrderType.value = SearchEmailFilter.defaultSortOrder;
     searchEmailFilter.value = SearchEmailFilter.initial();
     _searchEmailAction(context);
   }

@@ -17,6 +17,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
 class SearchEmailFilter with EquatableMixin, OptionParamMixin {
+
+  static const EmailSortOrderType defaultSortOrder = EmailSortOrderType.relevance;
+
   final Set<String> from;
   final Set<String> to;
   final SearchQuery? text;
@@ -56,7 +59,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         hasAttachment = hasAttachment ?? false,
         emailReceiveTimeType =
           emailReceiveTimeType ?? EmailReceiveTimeType.allTime,
-        sortOrderType = sortOrderType ?? EmailSortOrderType.mostRecent;
+        sortOrderType = sortOrderType ?? defaultSortOrder;
 
   SearchEmailFilter copyWith({
     Option<Set<String>>? fromOption,
@@ -189,7 +192,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     hasKeyword.isNotEmpty == true ||
     notKeyword.isNotEmpty == true ||
     emailReceiveTimeType != EmailReceiveTimeType.allTime ||
-    sortOrderType != EmailSortOrderType.mostRecent ||
+    sortOrderType != SearchEmailFilter.defaultSortOrder ||
     (mailbox != null && mailbox?.id != PresentationMailbox.unifiedMailbox.id) ||
     hasAttachment;
 
