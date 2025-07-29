@@ -68,6 +68,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/lo
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/local_spam_report_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_sort_order_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/linagora_ecosystem_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/app_grid_repository_impl.dart';
@@ -84,11 +85,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_mailbox_cached_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_report_state_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
@@ -206,6 +209,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<RemoveComposerCacheByIdOnWebInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<ClearMailboxInteractor>(),
+      Get.find<StoreEmailSortOrderInteractor>(),
+      Get.find<GetStoredEmailSortOrderInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -238,6 +243,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => SearchDataSourceImpl(
       Get.find<RecentSearchCacheManager>(),
+      Get.find<LocalSortOrderManager>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => ThreadDataSourceImpl(
       Get.find<ThreadAPI>(),
@@ -317,6 +323,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => DeleteEmailPermanentlyInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => SaveRecentSearchInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => GetAllRecentSearchLatestInteractor(Get.find<SearchRepository>()));
+    Get.lazyPut(() => StoreEmailSortOrderInteractor(Get.find<SearchRepository>()));
+    Get.lazyPut(() => GetStoredEmailSortOrderInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => SearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => RefreshChangesSearchEmailInteractor(Get.find<ThreadRepository>()));
