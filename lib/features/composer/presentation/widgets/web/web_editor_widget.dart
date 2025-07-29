@@ -21,6 +21,7 @@ typedef OnPasteImageFailureAction = Function(
     String? base64,
     UploadError uploadError);
 typedef OnInitialContentLoadComplete = Function(String text);
+typedef OnKeyDownEditorAction = Function(int? keyCode);
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -41,6 +42,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnPasteImageSuccessAction? onPasteImageSuccessAction;
   final OnPasteImageFailureAction? onPasteImageFailureAction;
   final OnInitialContentLoadComplete? onInitialContentLoadComplete;
+  final OnKeyDownEditorAction? onKeyDownEditorAction;
 
   const WebEditorWidget({
     super.key,
@@ -61,6 +63,7 @@ class WebEditorWidget extends StatefulWidget {
     this.onPasteImageSuccessAction,
     this.onPasteImageFailureAction,
     this.onInitialContentLoadComplete,
+    this.onKeyDownEditorAction,
   });
 
   @override
@@ -176,6 +179,7 @@ class _WebEditorState extends State<WebEditorWidget> {
         onImageUpload: widget.onPasteImageSuccessAction,
         onImageUploadError: widget.onPasteImageFailureAction,
         onInitialTextLoadComplete: widget.onInitialContentLoadComplete,
+        onKeyDown: widget.onKeyDownEditorAction,
       ),
     );
   }
