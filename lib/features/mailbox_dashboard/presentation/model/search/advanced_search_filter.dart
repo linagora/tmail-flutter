@@ -1,6 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum AdvancedSearchFilterField {
@@ -52,7 +53,7 @@ enum AdvancedSearchFilterField {
       case AdvancedSearchFilterField.date:
         return AppLocalizations.of(context).allTime;
       case AdvancedSearchFilterField.sortBy:
-        return AppLocalizations.of(context).mostRecent;
+        return SearchEmailFilter.defaultSortOrder.getTitle(context);
       case AdvancedSearchFilterField.hasAttachment:
         return AppLocalizations.of(context).hasAttachment;
     }

@@ -27,7 +27,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
@@ -351,7 +350,7 @@ void main() {
           AccountFixtures.aliceAccountId,
           limit: UnsignedInt(emailList.length),
           position: null,
-          sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+          sort: SearchEmailFilter.defaultSortOrder.getSortOrder().toNullable(),
           filter: SearchEmailFilter.initial().mappingToEmailFilterCondition(),
           properties: EmailUtils.getPropertiesForEmailGetMethod(
             SessionFixtures.aliceSession,
@@ -428,7 +427,7 @@ void main() {
           AccountFixtures.aliceAccountId,
           limit: ThreadConstants.defaultLimit,
           position: null,
-          sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+          sort: SearchEmailFilter.defaultSortOrder.getSortOrder().toNullable(),
           filter: SearchEmailFilter.initial().mappingToEmailFilterCondition(),
           properties: EmailUtils.getPropertiesForEmailGetMethod(
             SessionFixtures.aliceSession,

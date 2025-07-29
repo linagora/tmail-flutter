@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_emails_with_new_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -103,7 +104,7 @@ class SearchEmailController extends BaseController
   final searchIsRunning = RxBool(false);
   final emailReceiveTimeType = EmailReceiveTimeType.allTime.obs;
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
-  final emailSortOrderType = EmailSortOrderType.mostRecent.obs;
+  final emailSortOrderType = SearchEmailFilter.defaultSortOrder.obs;
   final suggestionSearchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final resultSearchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
@@ -162,6 +163,7 @@ class SearchEmailController extends BaseController
     textInputSearchFocus.requestFocus();
     searchMoreState = SearchMoreState.idle;
     canSearchMore = true;
+    _setUpDefaultSortOrder(mailboxDashBoardController.currentSortOrder);
     super.onReady();
   }
 
@@ -203,6 +205,11 @@ class SearchEmailController extends BaseController
     if (failure is SearchEmailFailure) {
       _searchEmailsFailure(failure);
     }
+  }
+
+  void _setUpDefaultSortOrder(EmailSortOrderType sortOrderType) {
+    emailSortOrderType.value = sortOrderType;
+    searchEmailFilter.value = SearchEmailFilter.withSortOrder(sortOrderType);
   }
 
   void _initializeDebounceTimeTextSearchChange() {
@@ -247,11 +254,15 @@ class SearchEmailController extends BaseController
     dashBoardActionWorker = ever(
       mailboxDashBoardController.dashBoardAction,
       (action) {
+        log('SearchEmailController::_initWorkerListener(): ${action.runtimeType}');
         if (action is CloseSearchEmailViewAction) {
           closeSearchView(context: currentContext);
           mailboxDashBoardController.clearDashBoardAction();
         } else if (action is CancelSelectionSearchEmailAction) {
           cancelSelectionMode();
+          mailboxDashBoardController.clearDashBoardAction();
+        } else if (action is SynchronizeEmailSortOrderAction) {
+          _setUpDefaultSortOrder(action.emailSortOrderType);
           mailboxDashBoardController.clearDashBoardAction();
         }
       }
@@ -589,8 +600,10 @@ class SearchEmailController extends BaseController
     listSuggestionSearch.clear();
     listResultSearch.clear();
     emailReceiveTimeType.value = EmailReceiveTimeType.allTime;
-    emailSortOrderType.value = EmailSortOrderType.mostRecent;
-    searchEmailFilter.value = SearchEmailFilter.initial();
+    emailSortOrderType.value = mailboxDashBoardController.currentSortOrder;
+    searchEmailFilter.value = SearchEmailFilter.withSortOrder(
+      emailSortOrderType.value,
+    );
     searchIsRunning.value = false;
     final isMailAddress = EmailUtils.isEmailAddressValid(queryString);
     if (isMailAddress) {
@@ -664,6 +677,7 @@ class SearchEmailController extends BaseController
   void selectSortOrderQuickSearchFilter(BuildContext context, EmailSortOrderType sortOrderType) {
     emailSortOrderType.value = sortOrderType;
     _updateSimpleSearchFilter(sortOrderTypeOption: Some(sortOrderType));
+    mailboxDashBoardController.storeEmailSortOrder(sortOrderType);
     _searchEmailAction(context);
   }
 
@@ -813,7 +827,9 @@ class SearchEmailController extends BaseController
     listSuggestionSearch.clear();
     listContactSuggestionSearch.clear();
     listResultSearch.clear();
-    searchEmailFilter.value = SearchEmailFilter.initial();
+    searchEmailFilter.value = SearchEmailFilter.withSortOrder(
+      mailboxDashBoardController.currentSortOrder,
+    );
   }
 
   void closeSearchView({BuildContext? context}) {
@@ -1017,8 +1033,8 @@ class SearchEmailController extends BaseController
   }
 
   void _deleteSortOrderSearchFilter(BuildContext context) {
-    emailSortOrderType.value = EmailSortOrderType.mostRecent;
-    _updateSimpleSearchFilter(sortOrderTypeOption: const Some(EmailSortOrderType.mostRecent));
+    emailSortOrderType.value = SearchEmailFilter.defaultSortOrder;
+    _updateSimpleSearchFilter(sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder));
     _searchEmailAction(context);
   }
 
@@ -1056,8 +1072,10 @@ class SearchEmailController extends BaseController
     canSearchMore = true;
     searchMoreState = SearchMoreState.idle;
     emailReceiveTimeType.value = EmailReceiveTimeType.allTime;
-    emailSortOrderType.value = EmailSortOrderType.mostRecent;
-    searchEmailFilter.value = SearchEmailFilter.initial();
+    emailSortOrderType.value = mailboxDashBoardController.currentSortOrder;
+    searchEmailFilter.value = SearchEmailFilter.withSortOrder(
+      emailSortOrderType.value,
+    );
     _searchEmailAction(context);
   }
 

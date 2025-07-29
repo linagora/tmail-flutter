@@ -45,11 +45,13 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -167,6 +169,8 @@ const fallbackGenerators = {
   MockSpec<GetAuthenticationInfoInteractor>(),
   MockSpec<GetStoredOidcConfigurationInteractor>(),
   MockSpec<GetTokenOIDCInteractor>(),
+  MockSpec<StoreEmailSortOrderInteractor>(),
+  MockSpec<GetStoredEmailSortOrderInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -186,6 +190,8 @@ void main() {
   late MockQuickSearchEmailInteractor mockQuickSearchEmailInteractor;
   late MockSaveRecentSearchInteractor mockSaveRecentSearchInteractor;
   late MockGetAllRecentSearchLatestInteractor mockGetAllRecentSearchLatestInteractor;
+  late MockStoreEmailSortOrderInteractor mockStoreEmailSortOrderInteractor;
+  late MockGetStoredEmailSortOrderInteractor mockGetStoredEmailSortOrderInteractor;
 
   // Declaration mailbox dashboard controller
   final MockGetSessionInteractor getSessionInteractor = MockGetSessionInteractor();
@@ -296,6 +302,8 @@ void main() {
     mockQuickSearchEmailInteractor = MockQuickSearchEmailInteractor();
     mockSaveRecentSearchInteractor = MockSaveRecentSearchInteractor();
     mockGetAllRecentSearchLatestInteractor = MockGetAllRecentSearchLatestInteractor();
+    mockStoreEmailSortOrderInteractor = MockStoreEmailSortOrderInteractor();
+    mockGetStoredEmailSortOrderInteractor = MockGetStoredEmailSortOrderInteractor();
 
     // Mock dashboard controller
     moveToMailboxInteractor = MockMoveToMailboxInteractor();
@@ -377,6 +385,8 @@ void main() {
       removeComposerCacheByIdOnWebInteractor,
       getAllIdentitiesInteractor,
       clearMailboxInteractor,
+      mockStoreEmailSortOrderInteractor,
+      mockGetStoredEmailSortOrderInteractor,
     );
 
     when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
