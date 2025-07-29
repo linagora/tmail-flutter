@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
@@ -67,6 +68,7 @@ const fallbackGenerators = {
   MockSpec<QuickSearchEmailInteractor>(),
   MockSpec<SaveRecentSearchInteractor>(),
   MockSpec<GetAllRecentSearchLatestInteractor>(),
+  MockSpec<StoreEmailSortOrderInteractor>(),
 ])
 void main() {
   // Declaration advanced filter controller
@@ -80,6 +82,7 @@ void main() {
   late MockQuickSearchEmailInteractor mockQuickSearchEmailInteractor;
   late MockSaveRecentSearchInteractor mockSaveRecentSearchInteractor;
   late MockGetAllRecentSearchLatestInteractor mockGetAllRecentSearchLatestInteractor;
+  late MockStoreEmailSortOrderInteractor mockStoreEmailSortOrderInteractor;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -138,6 +141,7 @@ void main() {
     mockQuickSearchEmailInteractor = MockQuickSearchEmailInteractor();
     mockSaveRecentSearchInteractor = MockSaveRecentSearchInteractor();
     mockGetAllRecentSearchLatestInteractor = MockGetAllRecentSearchLatestInteractor();
+    mockStoreEmailSortOrderInteractor = MockStoreEmailSortOrderInteractor();
 
     searchController = SearchController(
       mockQuickSearchEmailInteractor,
@@ -152,6 +156,7 @@ void main() {
 
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<GetAutoCompleteInteractor>(mockGetAutoCompleteInteractor);
+    Get.put<StoreEmailSortOrderInteractor>(mockStoreEmailSortOrderInteractor);
 
     advancedFilterController = AdvancedFilterController();
   });
@@ -160,6 +165,7 @@ void main() {
     group('applyAdvancedSearchFilter::test', () {
       test('SHOULD make sure memory search filter and search filter should be the same after applying', () async {
         // Arrange
+        advancedFilterController.setMemorySearchFilter(SearchEmailFilter.initial());
         advancedFilterController.hasKeyWordFilterInputController.text = 'Hello';
         advancedFilterController.notKeyWordFilterInputController.text = 'dab';
         advancedFilterController.listFromEmailAddress = [EmailAddress(null, 'user1@example.com')];
