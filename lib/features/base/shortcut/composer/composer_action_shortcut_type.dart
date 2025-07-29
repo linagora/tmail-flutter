@@ -1,0 +1,4 @@
+
+enum ComposerActionShortcutType {
+  closeView;
+}
