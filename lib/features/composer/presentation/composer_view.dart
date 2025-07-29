@@ -45,7 +45,7 @@ class ComposerView extends GetWidget<ComposerController> {
       responsiveUtils: controller.responsiveUtils,
       mobile: MobileContainerView(
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
-        onClearFocusAction: () => controller.clearFocus(context),
+        onClearFocusAction: controller.clearFocus,
         backgroundColor: MobileAppBarComposerWidgetStyle.backgroundColor,
         childBuilder: (_, constraints) => SafeArea(
           left: !controller.responsiveUtils.isLandscapeMobile(context),
@@ -248,7 +248,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
                               return ViewEntireMessageWithMessageClippedWidget(
                                 buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
-                                onViewEntireMessageAction: () => controller.viewEntireContent(context),
+                                onViewEntireMessageAction: controller.viewEntireContent,
                                 topPadding: 12,
                               );
                             } else {
@@ -268,7 +268,7 @@ class ComposerView extends GetWidget<ComposerController> {
       tablet: TabletContainerView(
         keyboardRichTextController: controller.richTextMobileTabletController!.richTextController,
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
-        onClearFocusAction: () => controller.clearFocus(context),
+        onClearFocusAction: controller.clearFocus,
         childBuilder: (_, constraints) => ColoredBox(
           color: ComposerStyle.mobileBackgroundColor,
           child: Column(
@@ -427,7 +427,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
                           return ViewEntireMessageWithMessageClippedWidget(
                             buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
-                            onViewEntireMessageAction: () => controller.viewEntireContent(context),
+                            onViewEntireMessageAction: controller.viewEntireContent,
                             topPadding: 12,
                           );
                         } else {
@@ -443,7 +443,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 imagePaths: controller.imagePaths,
                 hasReadReceipt: controller.hasRequestReadReceipt.value,
                 isMarkAsImportant: controller.isMarkAsImportant.value,
-                deleteComposerAction: () => controller.handleClickDeleteComposer(context),
+                deleteComposerAction: controller.handleClickDeleteComposer,
                 saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                 sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
