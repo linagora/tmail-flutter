@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/checkbox/custom_icon_labeled_checkbox.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
@@ -82,7 +83,11 @@ class IdentityCreatorFormBottomView extends StatelessWidget {
 
     if (isMobile) {
       return Padding(
-        padding: const EdgeInsetsDirectional.symmetric(horizontal: 17),
+        padding: EdgeInsetsDirectional.only(
+          start: 17,
+          end: 17,
+          bottom: PlatformInfo.isMobile ? 24 : 0,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
