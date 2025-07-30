@@ -18,6 +18,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/named_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
@@ -557,6 +558,17 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   ) => _createMailTag(value, stateSetter);
 
   void _createMailTag(String value, StateSetter stateSetter) {
+    final namedAddress = StringConvert.parseNamedAddress(value.trim());
+    if (namedAddress != null) {
+      if (!_isDuplicatedRecipient(namedAddress.address)) {
+        stateSetter(
+          () => _currentListEmailAddress.add(namedAddress.toEmailAddress()),
+        );
+        _updateListEmailAddressAction();
+      }
+      return;
+    }
+
     final listString = StringConvert.extractEmailAddress(value.trim()).toSet();
 
     if (listString.isEmpty && !_isDuplicatedRecipient(value)) {

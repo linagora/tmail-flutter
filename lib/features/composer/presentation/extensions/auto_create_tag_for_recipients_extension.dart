@@ -4,9 +4,11 @@ import 'package:core/utils/string_convert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:model/extensions/email_address_extension.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/named_address_extension.dart';
 
 extension AutoCreateTagForRecipientsExtension on ComposerController {
 
@@ -40,25 +42,34 @@ extension AutoCreateTagForRecipientsExtension on ComposerController {
   };
 
   void autoCreateEmailTagForType(PrefixEmailAddress type, String input) {
-    final addressSet = StringConvert.extractEmailAddress(input).toSet();
-    if (addressSet.isEmpty) return;
+    final namedAddress = StringConvert.parseNamedAddress(input);
+    Set<String> addressSet = {};
+
+    if (namedAddress == null) {
+      addressSet = StringConvert.extractEmailAddress(input).toSet();
+      if (addressSet.isEmpty) return;
+    }
 
     final emailList = _emailLists[type]!;
     final keyEditor = _emailEditors[type]!;
-    final listEmailAddressRecord = addressSet
-        .map((address) => _generateEmailAddressFromString(address))
+    List<EmailAddress> listEmailAddress = [];
+
+    final emailSet = emailList.map((email) => email.emailAddress).toSet();
+
+    if (namedAddress != null && !emailSet.contains(namedAddress.address)) {
+      listEmailAddress.add(namedAddress.toEmailAddress());
+    } else if (addressSet.isNotEmpty) {
+      final listEmailAddressRecord = addressSet
+        .map(_generateEmailAddressFromString)
         .toList();
 
-    final emailSet = emailList.map((email) => email.email).toSet();
-
-    final newEmails = addressSet.difference(emailSet);
-
-    if (newEmails.isEmpty) return;
-
-    final listEmailAddress = listEmailAddressRecord
-        .where((emailRecord) => newEmails.contains(emailRecord.$1))
+      listEmailAddress = listEmailAddressRecord
+        .where((emailRecord) => !emailSet.contains(emailRecord.$1))
         .map((emailRecord) => emailRecord.$2)
         .toList();
+    }
+
+    if (listEmailAddress.isEmpty) return;
 
     emailList.addAll(listEmailAddress);
 
