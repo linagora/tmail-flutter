@@ -2800,7 +2800,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
       t2 = this._setting_first_level_app_bar$_getPadding$1(context);
-      return A.Container$(_null, new A.Stack(B.Alignment_0_0, _null, B.StackFit_0, B.Clip_1, A._setArrayType([A.PositionedDirectional$(_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_9Sx, 20, _null, _null, "assets/images/ic_arrow_back.svg", _null, _null, _null, _null, 1 / 0, _null, this.onBackAction, _null, A.Intl__message("Back", _null, "back", _null, _null), _null), _null, 0, _null, _null), A.Center$(new A.Padding(B.EdgeInsets_50_0_50_0, A.Text$(this.accountMenuItem.getName$1(t1), _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, B.TextStyle_xCx, _null, _null, _null, _null, _null), _null), _null, _null)], type$.JSArray_Widget), _null), B.Clip_0, _null, _null, _null, _null, 64, _null, _null, t2, _null, _null, _null);
+      return A.Container$(_null, new A.Stack(B.Alignment_0_0, _null, B.StackFit_0, B.Clip_1, A._setArrayType([A.PositionedDirectional$(_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_9Sx, 20, _null, _null, "assets/images/ic_arrow_back.svg", _null, _null, D.ValueKey_WRi, _null, 1 / 0, _null, this.onBackAction, _null, A.Intl__message("Back", _null, "back", _null, _null), _null), _null, 0, _null, _null), A.Center$(new A.Padding(B.EdgeInsets_50_0_50_0, A.Text$(this.accountMenuItem.getName$1(t1), _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, B.TextStyle_xCx, _null, _null, _null, _null, _null), _null), _null, _null)], type$.JSArray_Widget), _null), B.Clip_0, _null, _null, _null, _null, 64, _null, _null, t2, _null, _null, _null);
     },
     _setting_first_level_app_bar$_getPadding$1(context) {
       var t1 = type$.MediaQuery;
@@ -2868,7 +2868,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       t1 = this._universal_setting_app_bar$_getPadding$1(context);
       t2 = type$.JSArray_Widget;
-      appBarWidget = A.Column$(A._setArrayType([A.Container$(_null, new A.Stack(B.Alignment_0_0, _null, B.StackFit_0, B.Clip_1, A._setArrayType([A.PositionedDirectional$(_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_9Sx, 20, _null, _null, "assets/images/ic_close.svg", _null, 28, _null, _null, 1 / 0, _null, this.onBackAction, B.EdgeInsets_5_5_5_5, A.Intl__message("Close", _null, "close", _null, _null), _null), _null, 24, _null, _null), A.Center$(new A.Padding(D.EdgeInsets_60_0_60_0, A.Text$(A.Intl__message("Settings", _null, "settings", _null, _null), _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, A.ThemeUtils_textStyleInter700(_null, _null).copyWith$2$fontSize$height(20, 1.2), _null, _null, _null, _null, _null), _null), _null, _null)], t2), _null), B.Clip_0, _null, _null, _null, _null, 52, _null, _null, t1, _null, _null, _null), D.Divider_fsw0], t2), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
+      appBarWidget = A.Column$(A._setArrayType([A.Container$(_null, new A.Stack(B.Alignment_0_0, _null, B.StackFit_0, B.Clip_1, A._setArrayType([A.PositionedDirectional$(_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_9Sx, 20, _null, _null, "assets/images/ic_close.svg", _null, 28, D.ValueKey_settings_close_button, _null, 1 / 0, _null, this.onBackAction, B.EdgeInsets_5_5_5_5, A.Intl__message("Close", _null, "close", _null, _null), _null), _null, 24, _null, _null), A.Center$(new A.Padding(D.EdgeInsets_60_0_60_0, A.Text$(A.Intl__message("Settings", _null, "settings", _null, _null), _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, A.ThemeUtils_textStyleInter700(_null, _null).copyWith$2$fontSize$height(20, 1.2), _null, _null, _null, _null, _null), _null), _null, _null)], t2), _null), B.Clip_0, _null, _null, _null, _null, 52, _null, _null, t1, _null, _null, _null), D.Divider_fsw0], t2), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
       t1 = $.LogTracking__instance;
       if (t1 == null)
         $.LogTracking__instance = new A.LogTracking(A.ListQueue$(_null, type$.String));
@@ -2969,14 +2969,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C._PreferencesView_GetWidget_AppLoaderMixin.prototype = {};
   C.SettingOptionItem.prototype = {
     build$1(context) {
-      var t2, t3, t4, t5, _this = this, _null = null,
+      var t2, t3, t4, t5, t6, t7, t8, t9, _this = this, _null = null,
         t1 = A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
       t2 = _this.optionType;
       t3 = A.Text$(t2.getTitle$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleInter600().copyWith$4$color$fontSize$height$letterSpacing(B.Color_kmW, 14, 1.4285714285714286, 0.25), _null, _null, _null, _null, _null);
       t4 = A.Text$(t2.getExplanation$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_gw1.copyWith$4$color$fontSize$height$letterSpacing(B.Color_kmW.withValues$1$alpha(0.64), 14, 1.500714285714286, -0.15), _null, _null, _null, _null, _null);
-      t5 = type$.JSArray_Widget;
-      return A.Column$(A._setArrayType([t3, new A.Padding(B.EdgeInsets_0_12_0_12, t4, _null), A.Row$(A._setArrayType([A.InkWell$(false, _null, true, A.SvgPicture$asset(t2.isEnabled$2(0, _this.settingOption, _this.localSettings) ? "assets/images/ic_switch_on.svg" : "assets/images/ic_switch_off.svg", B.Alignment_0_0, _null, B.BoxFit_0, 28, _null, _null, 44), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.SettingOptionItem_build_closure(_this), _null, _null, _null, _null, _null, _null, _null), B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(t2.getToggleDescription$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody2(_null, _null, _null).copyWith$1$color(B.Color_9Sx1), _null, _null, _null, _null, _null), 1)], t5), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null)], t5), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
+      t5 = t2.getTitle$1(t1);
+      t6 = type$.ValueKey_String;
+      t7 = _this.settingOption;
+      t8 = _this.localSettings;
+      t9 = t2.isEnabled$2(0, t7, t8) ? "setting_option_switch_on" : "setting_option_switch_off";
+      t7 = t2.isEnabled$2(0, t7, t8) ? "assets/images/ic_switch_on.svg" : "assets/images/ic_switch_off.svg";
+      t8 = type$.JSArray_Widget;
+      return A.Column$(A._setArrayType([t3, new A.Padding(B.EdgeInsets_0_12_0_12, t4, _null), A.Row$(A._setArrayType([A.InkWell$(false, _null, true, A.SvgPicture$asset(t7, B.Alignment_0_0, _null, B.BoxFit_0, 28, new A.ValueKey(t9, t6), _null, 44), _null, true, _null, _null, _null, _null, new A.ValueKey(t5, t6), _null, _null, _null, _null, _null, _null, new C.SettingOptionItem_build_closure(_this), _null, _null, _null, _null, _null, _null, _null), B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(t2.getToggleDescription$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody2(_null, _null, _null).copyWith$1$color(B.Color_9Sx1), _null, _null, _null, _null, _null), 1)], t8), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null)], t8), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
     }
   };
   C.IdentitiesView.prototype = {
@@ -4631,7 +4637,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.SettingsFirstLevelView_build_closure3.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, _null = null,
+      var t3, t4, t5, t6, t7,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -4646,7 +4652,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t1);
         t7 = B.AccountMenuItem_2.getIcon$1(t3._as(t2.get(t1)).imagePaths);
         A.Localizations_of(t4, B.Type_AppLocalizations_CTL, t5).toString;
-        t7 = C.SettingFirstLevelTileBuilder$(t6, t7, new C.SettingsFirstLevelView_build__closure3(t1), _null, A.Intl__message("Read receipts are notifications that can be sent to and from your users to verify that mail has been read.", _null, "emailReadReceiptsSettingExplanation", _null, _null));
+        t7 = C.SettingFirstLevelTileBuilder$(t6, t7, new C.SettingsFirstLevelView_build__closure3(t1), D.ValueKey_setting_preferences, A.Intl__message("Read receipts are notifications that can be sent to and from your users to verify that mail has been read.", null, "emailReadReceiptsSettingExplanation", null, null));
         A.Expando__checkType(t1);
         t6 = C.SettingsUtils_getHorizontalPadding(t4, t3._as(t2.get(t1)).responsiveUtils);
         A.Expando__checkType(t1);
@@ -6048,6 +6054,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.SizedBox_null_28_null_null = new A.SizedBox(null, 28, null, null);
     D.SizedBox_null_49_null_null = new A.SizedBox(null, 49, null, null);
     D.ValueKey_LB7 = new A.ValueKey("vacation_message_html_text_editor_web", type$.ValueKey_String);
+    D.ValueKey_WRi = new A.ValueKey("settings_first_level_close_button", type$.ValueKey_String);
     D.ValueKey_back_to_dashboard_button = new A.ValueKey("back_to_dashboard_button", type$.ValueKey_String);
     D.ValueKey_button_add_identity = new A.ValueKey("button_add_identity", type$.ValueKey_String);
     D.ValueKey_button_add_recipient = new A.ValueKey("button_add_recipient", type$.ValueKey_String);
@@ -6057,6 +6064,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.ValueKey_new_rule_button = new A.ValueKey("new_rule_button", type$.ValueKey_String);
     D.ValueKey_setting_language_region = new A.ValueKey("setting_language_region", type$.ValueKey_String);
     D.ValueKey_setting_menu = new A.ValueKey("setting_menu", type$.ValueKey_String);
+    D.ValueKey_setting_preferences = new A.ValueKey("setting_preferences", type$.ValueKey_String);
+    D.ValueKey_settings_close_button = new A.ValueKey("settings_close_button", type$.ValueKey_String);
     D._RadioType_0 = new C._RadioType(0, "material");
     D._ScrollState_0 = new C._ScrollState(0, "notScrollable");
     D._ScrollState_1 = new C._ScrollState(1, "scrollableAtStart");
@@ -6068,5 +6077,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "CgIsIHXYqtPHcq3EsfK9Ya4ILrI=");
+})($__dart_deferred_initializers__, "PT6hBrSKQRl+QgxRAWLMVU/QRBc=");
 ;
