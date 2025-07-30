@@ -373,7 +373,6 @@ class MailboxDashBoardController extends ReloadableController
     }
     _handleArguments();
     _loadAppGrid();
-    loadStoredEmailSortOrder();
     super.onReady();
   }
 
@@ -825,6 +824,7 @@ class MailboxDashBoardController extends ReloadableController
     notifyThreadDetailSettingUpdated();
     getServerSetting();
     cleanupRecentSearch();
+    loadStoredEmailSortOrder();
 
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
