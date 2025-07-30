@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/ex
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/update_own_email_address_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/bindings/mailbox_visibility_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -34,7 +35,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/bindings/notification_binding.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_bindings.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -196,7 +196,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   void _bindingControllerMenuItemView(AccountMenuItem item) {
     switch (item) {
       case AccountMenuItem.profiles:
-        ProfileBindings().dependencies();
+        IdentityBindings().dependencies();
         break;
       case AccountMenuItem.languageAndRegion:
         LanguageAndRegionBindings().dependencies();

@@ -8,18 +8,21 @@ class SettingExplanationWidget extends StatelessWidget {
   final AccountMenuItem menuItem;
   final EdgeInsetsGeometry? padding;
   final bool isCenter;
+  final TextAlign? textAlign;
 
   const SettingExplanationWidget({
     Key? key,
     required this.menuItem,
     this.isCenter = false,
     this.padding,
+    this.textAlign,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Widget child = Text(
       menuItem.getExplanation(AppLocalizations.of(context)),
+      textAlign: textAlign,
       style: ThemeUtils.textStyleM3BodyMedium1
           .copyWith(color: AppColor.gray424244.withValues(alpha: 0.64)),
     );

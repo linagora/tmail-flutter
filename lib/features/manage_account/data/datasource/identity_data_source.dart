@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/identity_signature.dart';
 
 abstract class IdentityDataSource {
   Future<IdentitiesResponse> getAllIdentities(Session session, AccountId accountId, {Properties? properties});
@@ -15,5 +16,5 @@ abstract class IdentityDataSource {
 
   Future<bool> editIdentity(Session session, AccountId accountId, EditIdentityRequest editIdentityRequest);
 
-  Future<String> transformHtmlSignature(String signature);
+  Future<IdentitySignature> transformHtmlSignature(IdentitySignature identitySignature);
 }

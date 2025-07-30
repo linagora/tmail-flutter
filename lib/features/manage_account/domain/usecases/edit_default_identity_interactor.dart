@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/edit_default_
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/identity_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_default_identity_state.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
 
 class EditDefaultIdentityInteractor {
   final IdentityRepository _identityRepository;
