@@ -5,11 +5,12 @@ import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
+import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 import 'package:url_launcher/url_launcher_string.dart';
@@ -30,10 +31,12 @@ class HtmlContentViewer extends StatefulWidget {
   final double? contentPadding;
   final bool useDefaultFont;
   final double? maxHtmlContentHeight;
-  final double minHtmlContentHeight;
+  final double htmlContentMinHeight;
   final double offsetHtmlContentHeight;
   final bool keepAlive;
   final bool enableQuoteToggle;
+  final bool disableScrolling;
+  final double? maxViewHeight;
 
   final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
@@ -47,13 +50,15 @@ class HtmlContentViewer extends StatefulWidget {
     required this.contentHtml,
     this.initialWidth,
     this.direction,
-    this.minHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
+    this.htmlContentMinHeight = ConstantsUI.htmlContentMinHeight,
     this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
     this.keepAlive = false,
     this.enableQuoteToggle = false,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
     this.useDefaultFont = false,
+    this.disableScrolling = false,
+    this.maxViewHeight,
     this.maxHtmlContentHeight,
     this.onLoadWidthHtmlViewer,
     this.onMailtoDelegateAction,
@@ -72,17 +77,11 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
   late InAppWebViewController _webViewController;
   late double _actualHeight;
   late Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers;
-  late StringBuffer _customScriptsBuilder;
+  late InAppWebViewSettings _webViewSetting;
 
   final _loadingBarNotifier = ValueNotifier(true);
 
   String? _htmlData;
-
-  final _webViewSetting = InAppWebViewSettings(
-    transparentBackground: true,
-    verticalScrollBarEnabled: false,
-    supportZoom: false,
-  );
 
   @visibleForTesting
   InAppWebViewController get webViewController => _webViewController;
@@ -90,27 +89,27 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
   @override
   void initState() {
     super.initState();
-    if (PlatformInfo.isAndroid) {
-      _gestureRecognizers = {
-        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
+    _webViewSetting = InAppWebViewSettings(
+      transparentBackground: true,
+      verticalScrollBarEnabled: false,
+      supportZoom: false,
+      disableHorizontalScroll: widget.disableScrolling,
+      disableVerticalScroll: widget.disableScrolling,
+      horizontalScrollBarEnabled: !widget.disableScrolling,
+    );
+
+    _gestureRecognizers = {
+      Factory<LongPressGestureRecognizer>(
+        () => LongPressGestureRecognizer(
+          duration: PlatformInfo.isAndroid
+            ? null
+            : _longPressGestureDurationIOS,
+        ),
+      ),
+      if (PlatformInfo.isAndroid && !widget.disableScrolling)
         Factory<ScaleGestureRecognizer>(() => ScaleGestureRecognizer()),
-      };
-    } else {
-      _gestureRecognizers = {
-        Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(duration: _longPressGestureDurationIOS)),
-      };
-    }
-    _customScriptsBuilder = StringBuffer();
-    _customScriptsBuilder.write(HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage);
-    if (widget.enableQuoteToggle) {
-      _customScriptsBuilder.write(HtmlUtils.quoteToggleScript);
-    }
-    if (widget.initialWidth != null) {
-      _customScriptsBuilder.write(HtmlInteraction.generateNormalizeImageScript(widget.initialWidth!));
-    }
-    if (PlatformInfo.isAndroid) {
-      _customScriptsBuilder.write(HtmlInteraction.scriptsHandleContentSizeChanged);
-    }
+    };
+
     _initialData();
   }
 
@@ -125,16 +124,33 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
   }
 
   void _initialData() {
-    _actualHeight = widget.minHtmlContentHeight;
-    _htmlData = HtmlUtils.generateHtmlDocument(
-      content: widget.enableQuoteToggle
+    _actualHeight = widget.htmlContentMinHeight;
+
+    final processedContent = widget.enableQuoteToggle
         ? HtmlUtils.addQuoteToggle(widget.contentHtml)
-        : widget.contentHtml,
+        : widget.contentHtml;
+
+    final combinedCss = [
+      if (widget.enableQuoteToggle) HtmlUtils.quoteToggleStyle,
+      if (widget.disableScrolling) HtmlTemplate.disableScrollingStyleCSS,
+    ].join();
+
+    final combinedScripts = [
+      HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
+      if (widget.enableQuoteToggle) HtmlUtils.quoteToggleScript,
+      if (widget.initialWidth != null)
+        HtmlInteraction.generateNormalizeImageScript(widget.initialWidth!),
+      if (PlatformInfo.isAndroid)
+        HtmlInteraction.scriptsHandleContentSizeChanged,
+    ].join();
+
+    _htmlData = HtmlUtils.generateHtmlDocument(
+      content: processedContent,
       direction: widget.direction,
-      javaScripts: _customScriptsBuilder.toString(),
+      javaScripts: combinedScripts,
+      styleCSS: combinedCss,
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
-      styleCSS: widget.enableQuoteToggle ? HtmlUtils.quoteToggleStyle : null
     );
   }
 
@@ -142,23 +158,20 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
   Widget build(BuildContext context) {
     super.build(context);
     final child = Stack(children: [
-      if (_htmlData == null)
-        const SizedBox.shrink()
-      else
-        SizedBox(
-          height: _actualHeight,
-          width: widget.initialWidth,
-          child: InAppWebView(
-            key: ValueKey(_htmlData),
-            initialSettings: _webViewSetting,
-            onWebViewCreated: _onWebViewCreated,
-            onLoadStop: _onLoadStop,
-            onContentSizeChanged: _onContentSizeChanged,
-            shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-            gestureRecognizers: _gestureRecognizers,
-            onScrollChanged: (controller, x, y) => controller.scrollTo(x: 0, y: 0)
+      if (_htmlData?.trim().isNotEmpty == true)
+        if (widget.maxViewHeight != null)
+          Container(
+            height: _actualHeight,
+            width: widget.initialWidth,
+            constraints: BoxConstraints(maxHeight: widget.maxViewHeight!),
+            child: _buildWebView(),
           )
-        ),
+        else
+          SizedBox(
+            height: _actualHeight,
+            width: widget.initialWidth,
+            child: _buildWebView(),
+          ),
       ValueListenableBuilder(
         valueListenable: _loadingBarNotifier,
         builder: (context, loading, child) {
@@ -171,11 +184,28 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
       ),
     ]);
 
-    if (!widget.keepWidthWhileLoading) return child;
-    return SizedBox(
-      width: widget.initialWidth,
-      child: child,
+    if (!widget.keepWidthWhileLoading) {
+      return child;
+    } else {
+      return SizedBox(width: widget.initialWidth, child: child);
+    }
+  }
+
+  Widget _buildWebView() {
+    return InAppWebView(
+      key: ValueKey(_htmlData),
+      initialSettings: _webViewSetting,
+      onWebViewCreated: _onWebViewCreated,
+      onLoadStop: _onLoadStop,
+      onContentSizeChanged: _onContentSizeChanged,
+      shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+      gestureRecognizers: _gestureRecognizers,
+      onScrollChanged: widget.disableScrolling ? null : _onScrollChanged,
     );
+  }
+
+  void _onScrollChanged(InAppWebViewController controller, int x, int y) {
+    controller.scrollTo(x: 0, y: 0);
   }
 
   void _onWebViewCreated(InAppWebViewController controller) async {
@@ -184,10 +214,12 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
 
     await controller.loadData(data: _htmlData ?? '');
 
-    controller.addJavaScriptHandler(
-      handlerName: HtmlInteraction.scrollEventJSChannelName,
-      callback: _onHandleScrollEvent
-    );
+    if (!widget.disableScrolling) {
+      controller.addJavaScriptHandler(
+        handlerName: HtmlInteraction.scrollEventJSChannelName,
+        callback: _onHandleScrollEvent,
+      );
+    }
 
     if (PlatformInfo.isAndroid) {
       controller.addJavaScriptHandler(
@@ -230,12 +262,8 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
     double currentHeight = maxContentHeight + widget.offsetHtmlContentHeight;
 
     if (PlatformInfo.isIOS && widget.maxHtmlContentHeight != null) {
-      final bool isClipped = currentHeight > widget.maxHtmlContentHeight!;
-      if (isClipped) {
-        widget.onHtmlContentClippedAction?.call(true);
-      }
-      currentHeight = currentHeight.clamp(
-        widget.minHtmlContentHeight,
+      currentHeight = _reStandardizeHeight(
+        currentHeight,
         widget.maxHtmlContentHeight!,
       );
     }
@@ -259,57 +287,73 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
 
     log('_HtmlContentViewState::_getActualSizeHtmlViewer(): listSize: $listSize');
 
-    bool isScrollActivated = false;
-    Set<Factory<OneSequenceGestureRecognizer>>? newGestureRecognizers;
-
     final double? scrollWidth = listSize[0] is num ? (listSize[0] as num).toDouble() : null;
     final double? offsetWidth = listSize[1] is num ? (listSize[1] as num).toDouble() : null;
     final double? scrollHeight = listSize[2] is num ? (listSize[2] as num).toDouble() : null;
 
-    if (scrollWidth != null && offsetWidth != null) {
-      isScrollActivated = scrollWidth.round() == offsetWidth.round();
-      if (!isScrollActivated && PlatformInfo.isIOS) {
-        newGestureRecognizers = {
-          Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(duration: _longPressGestureDurationIOS)),
-          Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer()),
-        };
-      }
-    }
+    bool isContentFullyVisible = scrollWidth != null &&
+        offsetWidth != null &&
+        scrollWidth.round() == offsetWidth.round();
+
+    final isIOSScrollingEnabled = !isContentFullyVisible && PlatformInfo.isIOS;
+    log('_HtmlContentViewState::_getActualSizeHtmlViewer: isIOSScrollingEnabled = $isIOSScrollingEnabled | isContentFullyVisible = $isContentFullyVisible');
 
     if (scrollHeight != null && scrollHeight > 0) {
       double currentHeight = scrollHeight + widget.offsetHtmlContentHeight;
 
       if (PlatformInfo.isIOS && widget.maxHtmlContentHeight != null) {
-        final bool isClipped = currentHeight > widget.maxHtmlContentHeight!;
-        if (isClipped) {
-          widget.onHtmlContentClippedAction?.call(true);
-        }
-        currentHeight = currentHeight.clamp(
-          widget.minHtmlContentHeight,
+        currentHeight = _reStandardizeHeight(
+          currentHeight,
           widget.maxHtmlContentHeight!,
         );
       }
+      log('_HtmlContentViewState::_getActualSizeHtmlViewer: currentHeight = $currentHeight');
 
-      if (_actualHeight != currentHeight || newGestureRecognizers != null) {
-        log('_HtmlContentViewState::_getActualSizeHtmlViewer: currentHeight = $currentHeight');
+      if (_actualHeight != currentHeight || isIOSScrollingEnabled) {
         setState(() {
           _actualHeight = currentHeight;
-          if (newGestureRecognizers != null) {
-            _gestureRecognizers = newGestureRecognizers;
+          if (isIOSScrollingEnabled && !widget.disableScrolling) {
+            _gestureRecognizers = _iOSGestureRecognizersWithScrolling;
           }
         });
       }
-    } else if (newGestureRecognizers != null) {
+    } else if (isIOSScrollingEnabled && !widget.disableScrolling) {
       setState(() {
-        _gestureRecognizers = newGestureRecognizers!;
+        _gestureRecognizers = _iOSGestureRecognizersWithScrolling;
       });
     }
 
-    if (!isScrollActivated) {
-      await _webViewController.evaluateJavascript(source: HtmlInteraction.runScriptsHandleScrollEvent);
+    if (!isContentFullyVisible && !widget.disableScrolling) {
+      await _webViewController.evaluateJavascript(
+        source: HtmlInteraction.runScriptsHandleScrollEvent,
+      );
+
+      widget.onLoadWidthHtmlViewer?.call(isContentFullyVisible);
     }
-    widget.onLoadWidthHtmlViewer?.call(isScrollActivated);
   }
+
+  double _reStandardizeHeight(double currentHeight, double maxHtmlContentHeight) {
+    final bool isClipped = currentHeight > maxHtmlContentHeight;
+    if (isClipped) {
+      widget.onHtmlContentClippedAction?.call(true);
+    }
+
+    return currentHeight.clamp(
+      widget.htmlContentMinHeight,
+      maxHtmlContentHeight,
+    );
+  }
+
+  Set<Factory<OneSequenceGestureRecognizer>> get _iOSGestureRecognizersWithScrolling => {
+    Factory<LongPressGestureRecognizer>(
+      () => LongPressGestureRecognizer(
+        duration: _longPressGestureDurationIOS,
+      ),
+    ),
+    Factory<HorizontalDragGestureRecognizer>(
+      () => HorizontalDragGestureRecognizer(),
+    ),
+  };
 
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(
     InAppWebViewController controller,
