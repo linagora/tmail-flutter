@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/domain/exceptions/string_exception.dart';
+import 'package:core/utils/mail/named_address.dart';
 import 'package:html/parser.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -136,5 +137,17 @@ class StringConvert {
         line.contains(asciiArtRegex) && line.split(asciiArtRegex).length > 1);
     log('StringConvert::isTextTable:isMarkdown = $isMarkdown | isAscii = $isAsciiArt');
     return isMarkdown || isAsciiArt;
+  }
+
+  static NamedAddress? parseNamedAddress(String input) {
+    final regex = RegExp(r'''^(['"])(.+?)\1\s*<([^>\s]+)>$''');
+    final match = regex.firstMatch(input.trim());
+    if (match != null) {
+      final name = match.group(2)!;
+      final address = match.group(3)!;
+
+      return NamedAddress(name: name, address: address);
+    }
+    return null;
   }
 }

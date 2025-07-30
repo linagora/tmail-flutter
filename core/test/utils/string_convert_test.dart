@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:core/domain/exceptions/string_exception.dart';
+import 'package:core/utils/mail/named_address.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('StringConvert::decodeBase64ToString::test', () {
+  group('StringConvert.decodeBase64ToString', () {
     test('should decode a valid Base64 string to a normal string', () {
       // Arrange
       const base64Encoded = 'SGVsbG8gV29ybGQh';
@@ -41,7 +42,7 @@ void main() {
     });
   });
 
-  group('StringConvert::extractEmailAddress::', () {
+  group('StringConvert.extractEmailAddress', () {
     group('Basic Functionality', () {
       test('should not extract strings separated by spaces', () {
         const input = 'user1@example.com user2@example.com';
@@ -197,7 +198,7 @@ void main() {
     });
   });
 
-  group('string convert test:', () {
+  group('StringConvert.decodeFromBytes', () {
     const testText = 'Hello';
     test(
       'should use utf8 decoder '
@@ -284,7 +285,7 @@ void main() {
     });
   });
 
-  group('StringConvert::getMediaTypeFromBase64ImageTag::', () {
+  group('StringConvert.getMediaTypeFromBase64ImageTag', () {
     test('should return correct MediaType for valid JPEG base64 tag', () {
       const validJpegTag = 'data:image/jpeg;base64,/9j/4AAQSkZJRg==';
       final result = StringConvert.getMediaTypeFromBase64ImageTag(validJpegTag);
@@ -331,7 +332,7 @@ void main() {
     });
   });
 
-  group('StringConvert::isTextTable::', () {
+  group('StringConvert.isTextTable', () {
     // ---------------------------
     // Test cases cho Markdown tables
     // ---------------------------
@@ -514,6 +515,65 @@ void main() {
         +-----+-----+
       """;
       expect(StringConvert.isTextTable(text), isTrue);
+    });
+  });
+
+  group('StringConvert.parseNamedAddress', () {
+    test('Parses valid double-quoted input', () {
+      const input = '"John Doe" <john@example.com>';
+      final result = StringConvert.parseNamedAddress(input);
+      expect(
+        result,
+        NamedAddress(name: 'John Doe', address: 'john@example.com'),
+      );
+    });
+
+    test('Parses valid single-quoted input', () {
+      const input = "'Jane Smith' <jane123@abc.com>";
+      final result = StringConvert.parseNamedAddress(input);
+      expect(
+        result,
+        NamedAddress(name: 'Jane Smith', address: 'jane123@abc.com'),
+      );
+    });
+
+    test('Keeps encoded values as-is (no decode)', () {
+      const input = '"John%20Doe" <john%40example.com>';
+      final result = StringConvert.parseNamedAddress(input);
+      expect(
+        result,
+        NamedAddress(name: 'John%20Doe', address: 'john%40example.com'),
+      );
+    });
+
+    test('Accepts whitespace between name and <address>', () {
+      const input = '"Name"     <value>';
+      final result = StringConvert.parseNamedAddress(input);
+      expect(result, NamedAddress(name: 'Name', address: 'value'));
+    });
+
+    test('Returns null for empty name', () {
+      const input = '"" <something>';
+      final result = StringConvert.parseNamedAddress(input);
+      expect(result, isNull);
+    });
+
+    test('Returns null for empty address', () {
+      const input = '"Valid" <>';
+      final result = StringConvert.parseNamedAddress(input);
+      expect(result, isNull);
+    });
+
+    test('Returns null for missing quotes', () {
+      const input = 'NoQuotes <abc>';
+      final result = StringConvert.parseNamedAddress(input);
+      expect(result, isNull);
+    });
+
+    test('Returns null for mismatched quotes', () {
+      const input = "'Mismatch\" <abc>";
+      final result = StringConvert.parseNamedAddress(input);
+      expect(result, isNull);
     });
   });
 }
