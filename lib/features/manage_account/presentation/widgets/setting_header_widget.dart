@@ -26,6 +26,8 @@ class SettingHeaderWidget extends StatelessWidget {
         style: textStyle ?? ThemeUtils.textStyleInter600().copyWith(
           color: Colors.black,
         ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
       if (menuItem.getExplanation(appLocalizations).isNotEmpty)
         Padding(
@@ -38,6 +40,8 @@ class SettingHeaderWidget extends StatelessWidget {
               letterSpacing: -0.15,
               color: AppColor.gray424244.withValues(alpha: 0.64),
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
     ];
@@ -46,6 +50,7 @@ class SettingHeaderWidget extends StatelessWidget {
         ? children.first
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: children,
           );
 

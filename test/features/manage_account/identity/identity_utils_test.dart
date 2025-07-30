@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
 
 void main() {
   final identityUtils = IdentityUtils();

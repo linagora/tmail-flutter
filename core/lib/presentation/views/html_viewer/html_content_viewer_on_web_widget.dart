@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
 import 'package:core/utils/app_logger.dart';
@@ -9,6 +10,7 @@ import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
 
 typedef OnClickHyperLinkAction = Function(Uri?);
@@ -34,6 +36,13 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final bool keepWidthWhileLoading;
   final ScrollController? scrollController;
   final bool enableQuoteToggle;
+  final bool disableScrolling;
+  final bool keepAlive;
+  final double htmlContentMinHeight;
+  final double htmlContentMinWidth;
+  final double offsetHtmlContentHeight;
+  final double? viewMaxHeight;
+  final bool autoAdjustHeight;
 
   const HtmlContentViewerOnWeb({
     Key? key,
@@ -49,15 +58,21 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.contentPadding,
     this.scrollController,
     this.enableQuoteToggle = false,
+    this.keepAlive = false,
+    this.disableScrolling = false,
+    this.autoAdjustHeight = false,
+    this.htmlContentMinHeight = ConstantsUI.htmlContentMinHeight,
+    this.htmlContentMinWidth = ConstantsUI.htmlContentMinWidth,
+    this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
+    this.viewMaxHeight,
   }) : super(key: key);
 
   @override
   State<HtmlContentViewerOnWeb> createState() => _HtmlContentViewerOnWebState();
 }
 
-class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
-
-  static const double _minWidth = 300;
+class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
+    with AutomaticKeepAliveClientMixin {
   /// The view ID for the IFrameElement. Must be unique.
   late String _createdViewId;
   /// The actual height of the content view, used to automatically set the height
@@ -68,7 +83,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   Future<bool>? _webInit;
   String? _htmlData;
   bool _isLoading = true;
-  double minHeight = 100;
+  late double minHeight;
   late final StreamSubscription<html.MessageEvent> _onMessageSubscription;
   bool _iframeLoaded = false;
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
@@ -80,7 +95,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     super.initState();
     _actualHeight = widget.heightContent;
     _actualWidth = widget.widthContent;
-    _createdViewId = _getRandString(10);
+    minHeight = widget.htmlContentMinHeight;
     _setUpWeb();
     _onMessageSubscription = html.window.onMessage.listen(_handleMessageEvent);
   }
@@ -119,6 +134,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
   bool _isScrollChangedEventTriggered(String? type) {
     return widget.scrollController != null &&
+        widget.scrollController?.hasClients == true &&
         type?.contains('toDart: $onScrollChangedEvent') == true;
   }
 
@@ -144,8 +160,13 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   void _handleContentHeightEvent(dynamic height) {
     final docHeight = height ?? _actualHeight;
     if (docHeight != null && mounted) {
-      final scrollHeightWithBuffer = docHeight + 30.0;
-      if (scrollHeightWithBuffer > minHeight) {
+      final scrollHeightWithBuffer = docHeight + widget.offsetHtmlContentHeight;
+      log('$runtimeType::_handleContentHeightEvent: ScrollHeightWithBuffer = $scrollHeightWithBuffer');
+      bool isHeightChanged = widget.autoAdjustHeight
+        ? scrollHeightWithBuffer >= minHeight
+        : scrollHeightWithBuffer > minHeight;
+
+      if (isHeightChanged) {
         setState(() {
           _actualHeight = scrollHeightWithBuffer;
           _isLoading = false;
@@ -166,7 +187,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   void _handleContentWidthEvent(dynamic width) {
     final docWidth = width ?? _actualWidth;
     if (docWidth != null && mounted &&
-        docWidth > _minWidth &&
+        docWidth > widget.htmlContentMinWidth &&
         widget.allowResizeToDocumentSize) {
       setState(() => _actualWidth = docWidth);
     }
@@ -196,7 +217,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     log('_HtmlContentViewerOnWebState::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
     if (widget.contentHtml != oldWidget.contentHtml ||
         widget.direction != oldWidget.direction) {
-      _createdViewId = _getRandString(10);
       _setUpWeb();
     }
 
@@ -247,10 +267,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           }
         }
 
-        const resizeObserver = new ResizeObserver((entries) => {
-          var height = document.body.scrollHeight;
-          window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
-        });
+        ${!widget.autoAdjustHeight ? '''
+          const resizeObserver = new ResizeObserver((entries) => {
+            var height = document.body.scrollHeight;
+            window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
+          });
+        ''' : ''}
         
         ${widget.mailtoDelegate != null
             ? '''
@@ -297,7 +319,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                 '''
               : ''}
           
-          resizeObserver.observe(document.body);
+          ${!widget.autoAdjustHeight ? 'resizeObserver.observe(document.body);' : ''}
         }
         
         ${widget.scrollController != null ? '''
@@ -313,39 +335,30 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       </script>
     ''';
 
-    const scriptsDisableZoom = '''
-      <script type="text/javascript">
-        document.addEventListener('wheel', function(e) {
-          e.ctrlKey && e.preventDefault();
-        }, {
-          passive: false,
-        });
-        window.addEventListener('keydown', function(e) {
-          if (event.metaKey || event.ctrlKey) {
-            switch (event.key) {
-              case '=':
-              case '-':
-                event.preventDefault();
-                break;
-            }
-          }
-        });
-      </script>
-    ''';
+    final processedContent = widget.enableQuoteToggle
+        ? HtmlUtils.addQuoteToggle(content)
+        : content;
+
+    final combinedCss = [
+      HtmlTemplate.tooltipLinkCss,
+      if (widget.enableQuoteToggle) HtmlUtils.quoteToggleStyle,
+      if (widget.disableScrolling) HtmlTemplate.disableScrollingStyleCSS,
+    ].join();
+
+    final combinedScripts = [
+      webViewActionScripts,
+      HtmlInteraction.scriptsDisableZoom,
+      HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
+      HtmlInteraction.generateNormalizeImageScript(widget.widthContent),
+      if (widget.enableQuoteToggle) HtmlUtils.quoteToggleScript,
+    ].join();
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
-      content: widget.enableQuoteToggle
-        ? HtmlUtils.addQuoteToggle(content)
-        : content,
+      content: processedContent,
       minHeight: minHeight,
-      minWidth: _minWidth,
-      styleCSS: HtmlTemplate.tooltipLinkCss
-          + (widget.enableQuoteToggle ? HtmlUtils.quoteToggleStyle : ''),
-      javaScripts: webViewActionScripts
-          + scriptsDisableZoom
-          + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage
-          + HtmlInteraction.generateNormalizeImageScript(widget.widthContent)
-          + (widget.enableQuoteToggle ? HtmlUtils.quoteToggleScript : ''),
+      minWidth: widget.htmlContentMinWidth,
+      styleCSS: combinedCss,
+      javaScripts: combinedScripts,
       direction: widget.direction,
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
@@ -355,6 +368,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   }
 
   void _setUpWeb() {
+    _createdViewId = _getRandString(10);
     _htmlData = _generateHtmlDocument(widget.contentHtml);
 
     final iframe = html.IFrameElement()
@@ -377,54 +391,76 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraint) {
-      minHeight = math.min(constraint.maxHeight, minHeight);
-      final child = Stack(
-        children: [
-          if (_htmlData?.isNotEmpty == false)
-            const SizedBox.shrink()
-          else
-            FutureBuilder<bool>(
-              future: _webInit,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
+    super.build(context);
+
+    if (widget.autoAdjustHeight) {
+      return _buildHtmlElementView();
+    } else {
+      return LayoutBuilder(
+        builder: (_, constraint) {
+          minHeight = math.min(constraint.maxHeight, minHeight);
+          return _buildHtmlElementView();
+        },
+      );
+    }
+  }
+
+  Widget _buildHtmlElementView() {
+    log('$runtimeType::_buildHtmlElementView: ActualHeight: $_actualHeight');
+    final child = Stack(
+      children: [
+        if (_htmlData?.trim().isNotEmpty == true)
+          FutureBuilder<bool>(
+            future: _webInit,
+            builder: (_, snapshot) {
+              if (snapshot.hasData) {
+                final htmlView = HtmlElementView(
+                  key: ValueKey('$_htmlData-${widget.key}'),
+                  viewType: _createdViewId,
+                );
+
+                if (widget.viewMaxHeight != null) {
+                  return Container(
+                    height: _actualHeight,
+                    width: _actualWidth,
+                    color: Colors.greenAccent,
+                    constraints: BoxConstraints(
+                      maxHeight: widget.viewMaxHeight!,
+                    ),
+                    child: htmlView,
+                  );
+                } else {
                   return SizedBox(
                     height: _actualHeight,
                     width: _actualWidth,
-                    child: HtmlElementView(
-                      key: ValueKey('$_htmlData-${widget.key}'),
-                      viewType: _createdViewId,
-                    ),
+                    child: htmlView,
                   );
-                } else {
-                  return const SizedBox.shrink();
                 }
+              } else {
+                return const SizedBox.shrink();
               }
+            },
+          ),
+        if (_isLoading)
+          const Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CupertinoActivityIndicator(color: AppColor.colorLoading),
+              ),
             ),
-          if (_isLoading)
-            const Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CupertinoActivityIndicator(
-                    color: AppColor.colorLoading
-                  )
-                )
-              )
-            )
-        ],
-      );
+          ),
+      ],
+    );
 
-      if (!widget.keepWidthWhileLoading) return child;
-
-      return SizedBox(
-        width: _actualWidth,
-        child: child,
-      );
-    });
+    if (widget.keepWidthWhileLoading) {
+      return child;
+    } else {
+      return SizedBox(width: _actualWidth, child: child);
+    }
   }
 
   @override
@@ -433,4 +469,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     _onMessageSubscription.cancel();
     super.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => widget.keepAlive;
 }

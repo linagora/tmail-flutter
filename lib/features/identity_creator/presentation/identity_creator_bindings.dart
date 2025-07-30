@@ -8,8 +8,8 @@ import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_iden
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 
 class IdentityCreatorBindings extends BaseBindings {

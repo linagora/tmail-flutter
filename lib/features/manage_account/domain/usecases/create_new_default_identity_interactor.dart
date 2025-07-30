@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_de
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/identity_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_default_identity_state.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
 
 class CreateNewDefaultIdentityInteractor {
   final IdentityRepository _identityRepository;
