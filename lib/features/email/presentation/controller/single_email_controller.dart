@@ -222,6 +222,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   String get ownEmailAddress => mailboxDashBoardController.ownEmailAddress.value;
 
+  GlobalObjectKey? get htmlViewKey => _threadDetailController?.expandedEmailHtmlViewKey;
+
   SingleEmailController(
     this._getEmailContentInteractor,
     this._markAsEmailReadInteractor,

@@ -424,7 +424,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         return Stack(
                           children: [
                             HtmlContentViewerOnWeb(
-                              key: ValueKey(tag),
+                              key: controller.htmlViewKey,
                               widthContent: constraints.maxWidth,
                               heightContent: min(
                                 constraints.maxHeight,

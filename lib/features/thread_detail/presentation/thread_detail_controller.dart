@@ -136,6 +136,9 @@ class ThreadDetailController extends BaseController {
       networkConnectionController.isNetworkConnectionAvailable();
   bool get isThreadDetailEnabled =>
       threadDetailManager.isThreadDetailEnabled;
+  GlobalObjectKey? get expandedEmailHtmlViewKey => currentExpandedEmailId.value != null
+      ? GlobalObjectKey(currentExpandedEmailId.value!)
+      : null;
 
   @override
   void onInit() {
