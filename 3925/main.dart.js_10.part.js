@@ -6,132 +6,7 @@
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var J, A, B,
-  C = {FadingEdgeScrollView: function FadingEdgeScrollView(t0, t1, t2, t3, t4, t5, t6) {
-      var _ = this;
-      _.child = t0;
-      _.scrollController = t1;
-      _.reverse = t2;
-      _.scrollDirection = t3;
-      _.gradientFractionOnStart = t4;
-      _.gradientFractionOnEnd = t5;
-      _.key = t6;
-    }, FadingEdgeScrollViewState: function FadingEdgeScrollViewState(t0) {
-      var _ = this;
-      _.__FadingEdgeScrollViewState__controller_A = $;
-      _._scrollState = t0;
-      _._framework$_element = _._widget = null;
-    }, FadingEdgeScrollViewState_build_closure: function FadingEdgeScrollViewState_build_closure(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    }, FadingEdgeScrollViewState_build_closure0: function FadingEdgeScrollViewState_build_closure0(t0) {
-      this.$this = t0;
-    }, FadingEdgeScrollViewState__updateScrollState_closure: function FadingEdgeScrollViewState__updateScrollState_closure(t0, t1) {
-      this.$this = t0;
-      this.scrollState = t1;
-    }, _ScrollState: function _ScrollState(t0, t1) {
-      this.index = t0;
-      this._name = t1;
-    }, _FadingEdgeScrollViewState_State_WidgetsBindingObserver: function _FadingEdgeScrollViewState_State_WidgetsBindingObserver() {
-    }, _RadioType: function _RadioType(t0, t1) {
-      this.index = t0;
-      this._name = t1;
-    }, Radio: function Radio(t0, t1, t2, t3, t4, t5, t6) {
-      var _ = this;
-      _.value = t0;
-      _.groupValue = t1;
-      _.onChanged = t2;
-      _.activeColor = t3;
-      _.splashRadius = t4;
-      _.key = t5;
-      _.$ti = t6;
-    }, _RadioState: function _RadioState(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) {
-      var _ = this;
-      _._radio$_painter = t0;
-      _.ToggleableStateMixin___ToggleableStateMixin__positionController_A = t1;
-      _.ToggleableStateMixin___ToggleableStateMixin__position_A = t2;
-      _.ToggleableStateMixin___ToggleableStateMixin__reactionController_A = t3;
-      _.ToggleableStateMixin___ToggleableStateMixin__reaction_A = t4;
-      _.ToggleableStateMixin___ToggleableStateMixin__reactionHoverFade_A = t5;
-      _.ToggleableStateMixin___ToggleableStateMixin__reactionHoverFadeController_A = t6;
-      _.ToggleableStateMixin___ToggleableStateMixin__reactionFocusFade_A = t7;
-      _.ToggleableStateMixin___ToggleableStateMixin__reactionFocusFadeController_A = t8;
-      _.ToggleableStateMixin__reactionAnimationDuration = t9;
-      _.ToggleableStateMixin___ToggleableStateMixin__actionMap_FI = t10;
-      _.ToggleableStateMixin__downPosition = t11;
-      _.ToggleableStateMixin__focused = t12;
-      _.ToggleableStateMixin__hovering = t13;
-      _.TickerProviderStateMixin__tickers = t14;
-      _.TickerProviderStateMixin__tickerModeNotifier = t15;
-      _._framework$_element = _._widget = null;
-      _.$ti = t16;
-    }, _RadioState__widgetFillColor_closure: function _RadioState__widgetFillColor_closure(t0) {
-      this.$this = t0;
-    }, _RadioState_build_closure: function _RadioState_build_closure(t0, t1) {
-      this.$this = t0;
-      this.radioTheme = t1;
-    }, _RadioPainter: function _RadioPainter(t0) {
-      var _ = this;
-      _._isActive = _._toggleable$_isHovered = _._toggleable$_isFocused = _._downPosition = _._splashRadius = _._toggleable$_focusColor = _._toggleable$_hoverColor = _._reactionColor = _._inactiveReactionColor = _._inactiveColor = _._activeColor = _._reactionHoverFade = _._reactionFocusFade = _._reaction = _._toggleable$_position = null;
-      _.ChangeNotifier__count = 0;
-      _.ChangeNotifier__listeners = t0;
-      _.ChangeNotifier__reentrantlyRemovedListeners = _.ChangeNotifier__notificationCallStackDepth = 0;
-    }, _RadioDefaultsM3: function _RadioDefaultsM3(t0, t1, t2, t3, t4, t5, t6) {
-      var _ = this;
-      _.context = t0;
-      _.___RadioDefaultsM3__colors_FI = _.___RadioDefaultsM3__theme_FI = $;
-      _.mouseCursor = t1;
-      _.fillColor = t2;
-      _.overlayColor = t3;
-      _.splashRadius = t4;
-      _.materialTapTargetSize = t5;
-      _.visualDensity = t6;
-    }, _RadioDefaultsM3_fillColor_closure: function _RadioDefaultsM3_fillColor_closure(t0) {
-      this.$this = t0;
-    }, _RadioDefaultsM3_overlayColor_closure: function _RadioDefaultsM3_overlayColor_closure(t0) {
-      this.$this = t0;
-    }, __RadioState_State_TickerProviderStateMixin: function __RadioState_State_TickerProviderStateMixin() {
-    }, __RadioState_State_TickerProviderStateMixin_ToggleableStateMixin: function __RadioState_State_TickerProviderStateMixin_ToggleableStateMixin() {
-    }, ShaderMaskLayer: function ShaderMaskLayer(t0, t1) {
-      var _ = this;
-      _._lastChild = _._firstChild = _._layer$_blendMode = _._maskRect = _._layer$_shader = null;
-      _._callbacks = t0;
-      _._compositionCallbackCount = 0;
-      _._parentHandle = t1;
-      _._refCount = 0;
-      _._layer$_parent = null;
-      _._needsAddToScene = true;
-      _._layer$_owner = _._engineLayer = null;
-      _._layer$_depth = 0;
-      _._previousSibling = _._nextSibling = null;
-    }, RenderShaderMask: function RenderShaderMask(t0, t1, t2, t3, t4) {
-      var _ = this;
-      _._shaderCallback = t0;
-      _._blendMode = t1;
-      _.RenderObjectWithChildMixin__child = t2;
-      _._layoutCacheStorage = t3;
-      _.parentData = _._box$_size = null;
-      _._object$_depth = 0;
-      _._object$_owner = _._object$_parent = null;
-      _._needsLayout = true;
-      _._relayoutBoundary = null;
-      _._doingThisLayoutWithCallback = false;
-      _._constraints = null;
-      _.__RenderObject__wasRepaintBoundary_A = $;
-      _._layerHandle = t4;
-      _._needsCompositingBitsUpdate = false;
-      _.__RenderObject__needsCompositing_A = $;
-      _._needsPaint = true;
-      _._needsCompositedLayerUpdate = false;
-      _._cachedSemanticsConfiguration = null;
-      _._needsSemanticsUpdate = true;
-      _._semantics = null;
-    }, ShaderMask: function ShaderMask(t0, t1, t2, t3) {
-      var _ = this;
-      _.shaderCallback = t0;
-      _.blendMode = t1;
-      _.child = t2;
-      _.key = t3;
-    },
+  C = {
     BorderButtonField$(backgroundColor, hintText, isEmpty, label, mouseCursor, tapActionCallback, value, $T) {
       return new C.BorderButtonField(value, tapActionCallback, mouseCursor, hintText, isEmpty, backgroundColor, label, null, $T._eval$1("BorderButtonField<0>"));
     },
@@ -150,20 +25,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     BorderButtonField_build_closure: function BorderButtonField_build_closure(t0) {
       this.$this = t0;
     },
-    MaterialTextIconButton$(backgroundColor, icon, iconColor, iconSize, key, label, labelColor, minimumSize, onTap) {
-      return new C.MaterialTextIconButton(label, icon, onTap, iconSize, minimumSize, labelColor, iconColor, backgroundColor, key);
-    },
-    MaterialTextIconButton: function MaterialTextIconButton(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
+    MaterialTextIconButton: function MaterialTextIconButton(t0, t1, t2, t3, t4, t5, t6, t7) {
       var _ = this;
       _.label = t0;
       _.icon = t1;
       _.onTap = t2;
-      _.iconSize = t3;
-      _.minimumSize = t4;
-      _.labelColor = t5;
-      _.iconColor = t6;
-      _.backgroundColor = t7;
-      _.key = t8;
+      _.minimumSize = t3;
+      _.labelColor = t4;
+      _.iconColor = t5;
+      _.backgroundColor = t6;
+      _.key = t7;
     },
     TextInputFieldBuilder$(editingController, focusNode, hint, label) {
       return new C.TextInputFieldBuilder(label, hint, editingController, focusNode, null);
@@ -486,6 +357,103 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     ListEmailForwardsWidget__buildDeleteAllButton_closure: function ListEmailForwardsWidget__buildDeleteAllButton_closure(t0, t1) {
       this.$this = t0;
       this.context = t1;
+    },
+    IdentitiesView: function IdentitiesView(t0) {
+      this.key = t0;
+    },
+    IdentitiesView_build_closure: function IdentitiesView_build_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    IdentitiesView_build_closure0: function IdentitiesView_build_closure0(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    IdentitiesView_build_closure1: function IdentitiesView_build_closure1(t0) {
+      this.$this = t0;
+    },
+    IdentitiesView_build_closure2: function IdentitiesView_build_closure2(t0, t1) {
+      this.$this = t0;
+      this.isDesktop = t1;
+    },
+    IdentitiesView_build__closure: function IdentitiesView_build__closure(t0, t1) {
+      this.$this = t0;
+      this.isDesktop = t1;
+    },
+    IdentitiesView_build___closure: function IdentitiesView_build___closure(t0, t1, t2, t3, t4) {
+      var _ = this;
+      _.$this = t0;
+      _.identity = t1;
+      _.isSelected = t2;
+      _.isDesktop = t3;
+      _.context = t4;
+    },
+    IdentitiesView_build____closure: function IdentitiesView_build____closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    IdentitiesView_build____closure0: function IdentitiesView_build____closure0(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
+    },
+    IdentitiesView_build__closure0: function IdentitiesView_build__closure0() {
+    },
+    CreateNewIdentityButtonWidget: function CreateNewIdentityButtonWidget(t0, t1, t2, t3) {
+      var _ = this;
+      _.imagePaths = t0;
+      _.onCreateNewIdentityAction = t1;
+      _.margin = t2;
+      _.key = t3;
+    },
+    IdentityListTileBuilder: function IdentityListTileBuilder(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {
+      var _ = this;
+      _.identity = t0;
+      _.mapIdentitySignatures = t1;
+      _.signatureViewState = t2;
+      _.imagePaths = t3;
+      _.isSelected = t4;
+      _.isDesktop = t5;
+      _.onEditIdentityAction = t6;
+      _.onDeleteIdentityAction = t7;
+      _.scrollController = t8;
+      _.key = t9;
+    },
+    IdentityLoadingWidget: function IdentityLoadingWidget(t0, t1) {
+      this.identityViewState = t0;
+      this.key = t1;
+    },
+    IdentityLoadingWidget_build_closure: function IdentityLoadingWidget_build_closure() {
+    },
+    IdentityLoadingWidget_build_closure0: function IdentityLoadingWidget_build_closure0() {
+    },
+    ListIdentityItemActionsWidget: function ListIdentityItemActionsWidget(t0, t1, t2, t3, t4) {
+      var _ = this;
+      _.identity = t0;
+      _.imagePaths = t1;
+      _.onEditIdentityAction = t2;
+      _.onDeleteIdentityAction = t3;
+      _.key = t4;
+    },
+    ListIdentityItemActionsWidget_build_closure: function ListIdentityItemActionsWidget_build_closure(t0) {
+      this.$this = t0;
+    },
+    ListIdentityItemActionsWidget_build_closure0: function ListIdentityItemActionsWidget_build_closure0(t0) {
+      this.$this = t0;
+    },
+    SignatureBuilder: function SignatureBuilder(t0, t1, t2, t3) {
+      var _ = this;
+      _.value = t0;
+      _.width = t1;
+      _.scrollController = t2;
+      _.key = t3;
+    },
+    SignatureLoadingWidget: function SignatureLoadingWidget(t0, t1) {
+      this.signatureViewState = t0;
+      this.key = t1;
+    },
+    SignatureLoadingWidget_build_closure: function SignatureLoadingWidget_build_closure() {
+    },
+    SignatureLoadingWidget_build_closure0: function SignatureLoadingWidget_build_closure0() {
     },
     LanguageAndRegionView: function LanguageAndRegionView(t0) {
       this.key = t0;
@@ -879,122 +847,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     SettingOptionItem_build_closure: function SettingOptionItem_build_closure(t0) {
       this.$this = t0;
     },
-    IdentitiesView: function IdentitiesView(t0) {
-      this.key = t0;
-    },
-    IdentitiesView__buildIdentitiesViewMobile_closure: function IdentitiesView__buildIdentitiesViewMobile_closure(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    IdentitiesView__buildIdentitiesViewWebDesktop_closure: function IdentitiesView__buildIdentitiesViewWebDesktop_closure(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    _IdentitiesView_GetWidget_PopupMenuWidgetMixin: function _IdentitiesView_GetWidget_PopupMenuWidgetMixin() {
-    },
-    _IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin: function _IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin() {
-    },
-    IdentitiesHeaderWidget: function IdentitiesHeaderWidget(t0, t1) {
-      this.onAddNewIdentityAction = t0;
-      this.key = t1;
-    },
-    IdentitiesRadioListBuilder: function IdentitiesRadioListBuilder(t0, t1, t2, t3) {
-      var _ = this;
-      _.controller = t0;
-      _.responsiveUtils = t1;
-      _.imagePaths = t2;
-      _.key = t3;
-    },
-    IdentitiesRadioListBuilder_build_closure: function IdentitiesRadioListBuilder_build_closure(t0) {
-      this.$this = t0;
-    },
-    IdentitiesRadioListBuilder__buildIdentityViewVertical_closure: function IdentitiesRadioListBuilder__buildIdentityViewVertical_closure(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    IdentitiesRadioListBuilder__buildIdentityViewVertical__closure: function IdentitiesRadioListBuilder__buildIdentityViewVertical__closure(t0) {
-      this.$this = t0;
-    },
-    IdentitiesRadioListBuilder__buildIdentityViewHorizontal_closure: function IdentitiesRadioListBuilder__buildIdentityViewHorizontal_closure(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure: function IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure(t0) {
-      this.$this = t0;
-    },
-    IdentitiesRadioListBuilder__buildListIdentityView_closure: function IdentitiesRadioListBuilder__buildListIdentityView_closure(t0) {
-      this.$this = t0;
-    },
-    IdentitiesRadioListBuilder__buildListIdentityView__closure: function IdentitiesRadioListBuilder__buildListIdentityView__closure(t0) {
-      this.$this = t0;
-    },
-    IdentitiesRadioListBuilder__buildListIdentityView___closure: function IdentitiesRadioListBuilder__buildListIdentityView___closure(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    IdentitiesRadioListBuilder__buildListIdentityView___closure0: function IdentitiesRadioListBuilder__buildListIdentityView___closure0(t0, t1) {
-      this.$this = t0;
-      this.context = t1;
-    },
-    IdentitiesRadioListBuilder__buildLoadingView_closure: function IdentitiesRadioListBuilder__buildLoadingView_closure(t0) {
-      this.$this = t0;
-    },
-    IdentitiesRadioListBuilder__buildLoadingView__closure: function IdentitiesRadioListBuilder__buildLoadingView__closure() {
-    },
-    IdentitiesRadioListBuilder__buildLoadingView__closure0: function IdentitiesRadioListBuilder__buildLoadingView__closure0() {
-    },
-    IdentityListTileBuilder: function IdentityListTileBuilder(t0, t1, t2, t3, t4, t5, t6) {
-      var _ = this;
-      _.identity = t0;
-      _.identitySelected = t1;
-      _.imagePaths = t2;
-      _.onSelectIdentityAction = t3;
-      _.onEditIdentityAction = t4;
-      _.onDeleteIdentityAction = t5;
-      _.key = t6;
-    },
-    IdentityListTileBuilder_build_closure1: function IdentityListTileBuilder_build_closure1(t0) {
-      this.$this = t0;
-    },
-    IdentityListTileBuilder_build_closure: function IdentityListTileBuilder_build_closure(t0) {
-      this.$this = t0;
-    },
-    IdentityListTileBuilder_build_closure0: function IdentityListTileBuilder_build_closure0(t0) {
-      this.$this = t0;
-    },
-    IdentityLoadingWidget: function IdentityLoadingWidget(t0, t1, t2) {
-      this.identityViewState = t0;
-      this.settingViewState = t1;
-      this.key = t2;
-    },
-    IdentityLoadingWidget_build_closure: function IdentityLoadingWidget_build_closure(t0) {
-      this.$this = t0;
-    },
-    IdentityLoadingWidget_build__closure1: function IdentityLoadingWidget_build__closure1() {
-    },
-    IdentityLoadingWidget_build__closure2: function IdentityLoadingWidget_build__closure2() {
-    },
-    IdentityLoadingWidget_build_closure0: function IdentityLoadingWidget_build_closure0(t0) {
-      this.$this = t0;
-    },
-    IdentityLoadingWidget_build__closure: function IdentityLoadingWidget_build__closure() {
-    },
-    IdentityLoadingWidget_build__closure0: function IdentityLoadingWidget_build__closure0() {
-    },
-    SignatureBuilder$(signatureSelected) {
-      return new C.SignatureBuilder(signatureSelected, null);
-    },
-    SignatureBuilder: function SignatureBuilder(t0, t1) {
-      this.signatureSelected = t0;
-      this.key = t1;
-    },
-    SignatureBuilder_build_closure: function SignatureBuilder_build_closure(t0) {
-      this.$this = t0;
-    },
-    ProfilesView: function ProfilesView(t0, t1) {
-      this.responsiveUtils = t0;
-      this.key = t1;
-    },
     VacationView$() {
       $.$get$Get();
       var t1 = $.GetInstance__getInstance;
@@ -1103,12 +955,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _VacationView_GetWidget_RichTextButtonMixin: function _VacationView_GetWidget_RichTextButtonMixin() {
     },
-    SettingExplanationWidget: function SettingExplanationWidget(t0, t1, t2, t3) {
+    SettingExplanationWidget: function SettingExplanationWidget(t0, t1, t2, t3, t4) {
       var _ = this;
       _.menuItem = t0;
       _.padding = t1;
       _.isCenter = t2;
-      _.key = t3;
+      _.textAlign = t3;
+      _.key = t4;
     },
     SettingHeaderWidget: function SettingHeaderWidget(t0, t1, t2, t3) {
       var _ = this;
@@ -1116,12 +969,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.padding = t1;
       _.textStyle = t2;
       _.key = t3;
-    },
-    buildSVGIconButton(icon, iconColor, iconSize, onTap) {
-      var _null = null,
-        t1 = A.ColorNullableExtension_asFilter(iconColor);
-      t1 = A.SvgPicture$asset(icon, B.Alignment_0_0, t1, B.BoxFit_0, iconSize, _null, _null, iconSize);
-      return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(B.EdgeInsets_8_8_8_8, t1, _null), B.CircleBorder_eHh, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onTap, _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_9Sx, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
     },
     TimeOfDayExtension_formatTime(_this, context) {
       var t1 = A.Localizations_of(context, B.Type_MaterialLocalizations_EyN, type$.MaterialLocalizations);
@@ -1262,7 +1109,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return value;
     }
   },
-  D, G, F, E, H, I;
+  D, G, F, E, H;
   J = holdersList[1];
   A = holdersList[0];
   B = holdersList[2];
@@ -1272,534 +1119,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   F = holdersList[10];
   E = holdersList[18];
   H = holdersList[12];
-  I = holdersList[22];
-  C.FadingEdgeScrollView.prototype = {
-    createState$0() {
-      return new C.FadingEdgeScrollViewState(D._ScrollState_0);
-    }
-  };
-  C.FadingEdgeScrollViewState.prototype = {
-    initState$0() {
-      var t1, _this = this;
-      _this.super$State$initState();
-      t1 = _this._widget.scrollController;
-      _this.__FadingEdgeScrollViewState__controller_A = t1;
-      t1.addListener$1(0, _this.get$_updateScrollState());
-      $.WidgetsBinding__instance.WidgetsBinding__observers.push(_this);
-    },
-    dispose$0() {
-      var t1, _this = this;
-      $.WidgetsBinding__instance.removeObserver$1(_this);
-      _this.super$State$dispose();
-      t1 = _this.__FadingEdgeScrollViewState__controller_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.removeListener$1(0, _this.get$_updateScrollState());
-    },
-    didChangeMetrics$0() {
-      this.super$WidgetsBindingObserver$didChangeMetrics();
-      this._updateScrollState$0();
-    },
-    build$1(context) {
-      return new C.ShaderMask(new C.FadingEdgeScrollViewState_build_closure(this, context), B.BlendMode_6, new A.NotificationListener(new C.FadingEdgeScrollViewState_build_closure0(this), this._widget.child, null, type$.NotificationListener_ScrollMetricsNotification), null);
-    },
-    _updateScrollState$0() {
-      var minOffset, isScrolledToEnd, isScrolledToStart, _0_4_isSet, _0_1, _0_3, _0_5, _0_4, _0_7, _0_4_isSet0, _0_8, _this = this, _null = null,
-        t1 = _this.__FadingEdgeScrollViewState__controller_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1 = t1._positions;
-      if (t1.length !== 0) {
-        t1 = B.JSArray_methods.get$last(t1);
-        t1 = t1._scroll_position$_minScrollExtent != null && t1._scroll_position$_maxScrollExtent != null;
-      } else
-        t1 = false;
-      if (!t1)
-        return;
-      t1 = B.JSArray_methods.get$last(_this.__FadingEdgeScrollViewState__controller_A._positions)._pixels;
-      t1.toString;
-      minOffset = B.JSArray_methods.get$last(_this.__FadingEdgeScrollViewState__controller_A._positions).get$minScrollExtent();
-      isScrolledToEnd = t1 >= B.JSArray_methods.get$last(_this.__FadingEdgeScrollViewState__controller_A._positions).get$maxScrollExtent();
-      isScrolledToStart = t1 <= minOffset;
-      $label0$0: {
-        _0_4_isSet = isScrolledToStart;
-        _0_1 = _0_4_isSet;
-        _0_3 = _0_1;
-        _0_5 = _null;
-        _0_4 = _null;
-        if (_0_4_isSet) {
-          t1 = isScrolledToEnd;
-          _0_4 = t1;
-          _0_5 = _0_4;
-        } else
-          t1 = false;
-        if (t1) {
-          t1 = D._ScrollState_0;
-          break $label0$0;
-        }
-        _0_7 = _null;
-        if (_0_3) {
-          if (_0_4_isSet) {
-            t1 = _0_4;
-            _0_4_isSet0 = _0_4_isSet;
-          } else {
-            t1 = isScrolledToEnd;
-            _0_4 = t1;
-            _0_4_isSet0 = true;
-          }
-          _0_7 = false === t1;
-          t1 = _0_7;
-        } else {
-          _0_4_isSet0 = _0_4_isSet;
-          t1 = false;
-        }
-        if (t1) {
-          t1 = D._ScrollState_1;
-          break $label0$0;
-        }
-        _0_8 = false === _0_1;
-        t1 = _0_8;
-        if (t1)
-          if (_0_4_isSet) {
-            t1 = _0_5;
-            _0_4_isSet = _0_4_isSet0;
-          } else {
-            if (_0_4_isSet0) {
-              t1 = _0_4;
-              _0_4_isSet = _0_4_isSet0;
-            } else {
-              t1 = isScrolledToEnd;
-              _0_4 = t1;
-              _0_4_isSet = true;
-            }
-            _0_5 = true === t1;
-            t1 = _0_5;
-          }
-        else {
-          _0_4_isSet = _0_4_isSet0;
-          t1 = false;
-        }
-        if (t1) {
-          t1 = D._ScrollState_2;
-          break $label0$0;
-        }
-        if (_0_8)
-          if (_0_3)
-            t1 = _0_7;
-          else {
-            _0_7 = false === (_0_4_isSet ? _0_4 : isScrolledToEnd);
-            t1 = _0_7;
-          }
-        else
-          t1 = false;
-        if (t1) {
-          t1 = D._ScrollState_3;
-          break $label0$0;
-        }
-        throw A.wrapException(new A.ReachabilityError("None of the patterns in the switch expression the matched input value. See https://github.com/dart-lang/language/issues/3488 for details."));
-      }
-      if (_this._scrollState !== t1)
-        _this.setState$1(new C.FadingEdgeScrollViewState__updateScrollState_closure(_this, t1));
-    }
-  };
-  C._ScrollState.prototype = {
-    _enumToString$0() {
-      return "_ScrollState." + this._name;
-    }
-  };
-  C._FadingEdgeScrollViewState_State_WidgetsBindingObserver.prototype = {};
-  C._RadioType.prototype = {
-    _enumToString$0() {
-      return "_RadioType." + this._name;
-    }
-  };
-  C.Radio.prototype = {
-    createState$0() {
-      return new C._RadioState(new C._RadioPainter($.$get$ChangeNotifier__emptyListeners()), $, $, $, $, $, $, $, $, B.Duration_100000, $, null, false, false, null, null, this.$ti._eval$1("_RadioState<1>"));
-    }
-  };
-  C._RadioState.prototype = {
-    _radio$_handleChanged$1(selected) {
-      var t1;
-      if (selected == null) {
-        this._widget.onChanged.call$1(null);
-        return;
-      }
-      if (selected) {
-        t1 = this._widget;
-        t1.onChanged.call$1(t1.value);
-      }
-    },
-    didUpdateWidget$1(oldWidget) {
-      var t1;
-      this.super$State$didUpdateWidget(oldWidget);
-      t1 = this._widget;
-      if (t1.value.$eq(0, t1.groupValue) !== oldWidget.value.$eq(0, oldWidget.groupValue))
-        this.animateToValue$0();
-    },
-    dispose$0() {
-      this._radio$_painter.dispose$0();
-      this.super$__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin$dispose();
-    },
-    get$onChanged() {
-      this._widget.toString;
-      return this.get$_radio$_handleChanged();
-    },
-    get$tristate() {
-      this._widget.toString;
-      return false;
-    },
-    get$value(_) {
-      var t1 = this._widget;
-      return t1.value.$eq(0, t1.groupValue);
-    },
-    get$_radio$_widgetFillColor() {
-      return new A._WidgetStatePropertyWith(new C._RadioState__widgetFillColor_closure(this), type$._WidgetStatePropertyWith_nullable_Color);
-    },
-    build$1(context) {
-      var radioTheme, defaults, effectiveMaterialTapTargetSize, effectiveVisualDensity, t1, size, activeStates, inactiveStates, activeColor, t2, effectiveActiveColor, inactiveColor, t3, effectiveInactiveColor, focusedStates, t4, effectiveFocusOverlayColor, hoveredStates, effectiveHoverOverlayColor, effectiveActivePressedOverlayColor, effectiveInactivePressedOverlayColor, accessibilitySelected, _this = this, _null = null;
-      _this._widget.toString;
-      switch (0) {
-        case 0:
-          break;
-      }
-      context.dependOnInheritedWidgetOfExactType$1$0(type$.RadioTheme);
-      radioTheme = A.Theme_of(context).radioTheme;
-      A.Theme_of(context);
-      defaults = new C._RadioDefaultsM3(context, _null, _null, _null, _null, _null, _null);
-      _this._widget.toString;
-      effectiveMaterialTapTargetSize = defaults.get$materialTapTargetSize();
-      _this._widget.toString;
-      effectiveVisualDensity = defaults.get$visualDensity();
-      switch (effectiveMaterialTapTargetSize.index) {
-        case 0:
-          t1 = B.Size_48_48;
-          break;
-        case 1:
-          t1 = B.Size_40_40;
-          break;
-        default:
-          t1 = _null;
-      }
-      size = t1.$add(0, new A.Offset(effectiveVisualDensity.horizontal, effectiveVisualDensity.vertical).$mul(0, 4));
-      activeStates = _this.get$states();
-      activeStates.add$1(0, B.WidgetState_4);
-      inactiveStates = _this.get$states();
-      inactiveStates.remove$1(0, B.WidgetState_4);
-      _this._widget.toString;
-      activeColor = _this.get$_radio$_widgetFillColor()._widget_state$_resolve.call$1(activeStates);
-      if (activeColor == null) {
-        t1 = radioTheme.fillColor;
-        activeColor = t1 == null ? _null : t1.resolve$1(activeStates);
-      }
-      t1 = activeColor == null;
-      if (t1) {
-        t2 = defaults.get$fillColor()._widget_state$_resolve.call$1(activeStates);
-        t2.toString;
-        effectiveActiveColor = t2;
-      } else
-        effectiveActiveColor = activeColor;
-      _this._widget.toString;
-      inactiveColor = _this.get$_radio$_widgetFillColor()._widget_state$_resolve.call$1(inactiveStates);
-      if (inactiveColor == null) {
-        t2 = radioTheme.fillColor;
-        inactiveColor = t2 == null ? _null : t2.resolve$1(inactiveStates);
-      }
-      t2 = inactiveColor == null;
-      if (t2) {
-        t3 = defaults.get$fillColor()._widget_state$_resolve.call$1(inactiveStates);
-        t3.toString;
-        effectiveInactiveColor = t3;
-      } else
-        effectiveInactiveColor = inactiveColor;
-      focusedStates = _this.get$states();
-      focusedStates.add$1(0, B.WidgetState_1);
-      _this._widget.toString;
-      t3 = radioTheme.overlayColor;
-      t4 = t3 == null ? _null : t3.resolve$1(focusedStates);
-      effectiveFocusOverlayColor = t4;
-      if (effectiveFocusOverlayColor == null) {
-        t4 = defaults.get$overlayColor()._widget_state$_resolve.call$1(focusedStates);
-        t4.toString;
-        effectiveFocusOverlayColor = t4;
-      }
-      hoveredStates = _this.get$states();
-      hoveredStates.add$1(0, B.WidgetState_0);
-      _this._widget.toString;
-      t4 = t3 == null ? _null : t3.resolve$1(hoveredStates);
-      effectiveHoverOverlayColor = t4;
-      if (effectiveHoverOverlayColor == null) {
-        t4 = defaults.get$overlayColor()._widget_state$_resolve.call$1(hoveredStates);
-        t4.toString;
-        effectiveHoverOverlayColor = t4;
-      }
-      activeStates.add$1(0, B.WidgetState_2);
-      _this._widget.toString;
-      t4 = t3 == null ? _null : t3.resolve$1(activeStates);
-      if (t4 == null) {
-        t1 = t1 ? _null : activeColor.withAlpha$1(31);
-        effectiveActivePressedOverlayColor = t1;
-      } else
-        effectiveActivePressedOverlayColor = t4;
-      if (effectiveActivePressedOverlayColor == null) {
-        t1 = defaults.get$overlayColor()._widget_state$_resolve.call$1(activeStates);
-        t1.toString;
-        effectiveActivePressedOverlayColor = t1;
-      }
-      inactiveStates.add$1(0, B.WidgetState_2);
-      _this._widget.toString;
-      t1 = t3 == null ? _null : t3.resolve$1(inactiveStates);
-      if (t1 == null) {
-        t1 = t2 ? _null : inactiveColor.withAlpha$1(31);
-        effectiveInactivePressedOverlayColor = t1;
-      } else
-        effectiveInactivePressedOverlayColor = t1;
-      if (effectiveInactivePressedOverlayColor == null) {
-        t1 = defaults.get$overlayColor()._widget_state$_resolve.call$1(inactiveStates);
-        t1.toString;
-        effectiveInactivePressedOverlayColor = t1;
-      }
-      if (_this.ToggleableStateMixin__downPosition != null) {
-        effectiveHoverOverlayColor = _this.get$states().contains$1(0, B.WidgetState_4) ? effectiveActivePressedOverlayColor : effectiveInactivePressedOverlayColor;
-        effectiveFocusOverlayColor = _this.get$states().contains$1(0, B.WidgetState_4) ? effectiveActivePressedOverlayColor : effectiveInactivePressedOverlayColor;
-      }
-      accessibilitySelected = _null;
-      switch (A.defaultTargetPlatform().index) {
-        case 0:
-        case 1:
-        case 3:
-        case 5:
-          break;
-        case 2:
-        case 4:
-          t1 = _this._widget;
-          accessibilitySelected = t1.value.$eq(0, t1.groupValue);
-          break;
-      }
-      t1 = _this._widget;
-      t1 = t1.value.$eq(0, t1.groupValue);
-      _this._widget.toString;
-      t2 = _this._radio$_painter;
-      t3 = _this.ToggleableStateMixin___ToggleableStateMixin__position_A;
-      t3 === $ && A.throwUnnamedLateFieldNI();
-      t2.set$position(0, t3);
-      t3 = _this.ToggleableStateMixin___ToggleableStateMixin__reaction_A;
-      t3 === $ && A.throwUnnamedLateFieldNI();
-      t2.set$reaction(t3);
-      t3 = _this.ToggleableStateMixin___ToggleableStateMixin__reactionFocusFade_A;
-      t3 === $ && A.throwUnnamedLateFieldNI();
-      t2.set$reactionFocusFade(t3);
-      t3 = _this.ToggleableStateMixin___ToggleableStateMixin__reactionHoverFade_A;
-      t3 === $ && A.throwUnnamedLateFieldNI();
-      t2.set$reactionHoverFade(t3);
-      t2.set$inactiveReactionColor(effectiveInactivePressedOverlayColor);
-      t2.set$reactionColor(effectiveActivePressedOverlayColor);
-      t2.set$hoverColor(effectiveHoverOverlayColor);
-      t2.set$focusColor(effectiveFocusOverlayColor);
-      t3 = _this._widget.splashRadius;
-      t2.set$splashRadius(t3);
-      t2.set$downPosition(_this.ToggleableStateMixin__downPosition);
-      t2.set$isFocused(_this.get$states().contains$1(0, B.WidgetState_1));
-      t2.set$isHovered(_this.get$states().contains$1(0, B.WidgetState_0));
-      t2.set$activeColor(effectiveActiveColor);
-      t2.set$inactiveColor(effectiveInactiveColor);
-      t2 = _this.buildToggleable$5$autofocus$focusNode$mouseCursor$painter$size(false, _null, new A._WidgetStatePropertyWith(new C._RadioState_build_closure(_this, radioTheme), type$._WidgetStatePropertyWith_MouseCursor), t2, size);
-      return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, accessibilitySelected, _null, _null, _null, _null, _null, _null, _null, _null), false, false, false, false, t2, _null);
-    }
-  };
-  C._RadioPainter.prototype = {
-    paint$2(canvas, size) {
-      var center, paint, t1, t2, _this = this;
-      _this.paintRadialReaction$2$canvas$origin(canvas, size.center$1(B.Offset_0_0));
-      center = new A.Rect(0, 0, 0 + size._dx, 0 + size._dy).get$center();
-      paint = $.$get$_renderer().createPaint$0();
-      t1 = _this._inactiveColor;
-      t1.toString;
-      t2 = _this._activeColor;
-      t2.toString;
-      t2 = A.Color_lerp(t1, t2, _this._toggleable$_position.get$value(0));
-      t2.toString;
-      paint.set$color(0, t2);
-      paint.set$style(0, B.PaintingStyle_1);
-      paint.set$strokeWidth(2);
-      canvas.drawCircle$3(center, 8, paint);
-      if (_this._toggleable$_position.get$status(0) !== B.AnimationStatus_0) {
-        paint.set$style(0, B.PaintingStyle_0);
-        canvas.drawCircle$3(center, 4.5 * _this._toggleable$_position.get$value(0), paint);
-      }
-    }
-  };
-  C._RadioDefaultsM3.prototype = {
-    get$_radio$_theme() {
-      var result, _this = this,
-        value = _this.___RadioDefaultsM3__theme_FI;
-      if (value === $) {
-        result = A.Theme_of(_this.context);
-        _this.___RadioDefaultsM3__theme_FI !== $ && A.throwUnnamedLateFieldADI();
-        _this.___RadioDefaultsM3__theme_FI = result;
-        value = result;
-      }
-      return value;
-    },
-    get$_radio$_colors() {
-      var t1, _this = this,
-        value = _this.___RadioDefaultsM3__colors_FI;
-      if (value === $) {
-        t1 = _this.get$_radio$_theme();
-        _this.___RadioDefaultsM3__colors_FI !== $ && A.throwUnnamedLateFieldADI();
-        value = _this.___RadioDefaultsM3__colors_FI = t1.colorScheme;
-      }
-      return value;
-    },
-    get$fillColor() {
-      return new A._WidgetStatePropertyWith(new C._RadioDefaultsM3_fillColor_closure(this), type$._WidgetStatePropertyWith_Color);
-    },
-    get$overlayColor() {
-      return new A._WidgetStatePropertyWith(new C._RadioDefaultsM3_overlayColor_closure(this), type$._WidgetStatePropertyWith_Color);
-    },
-    get$materialTapTargetSize() {
-      return this.get$_radio$_theme().materialTapTargetSize;
-    },
-    get$visualDensity() {
-      return this.get$_radio$_theme().visualDensity;
-    }
-  };
-  C.__RadioState_State_TickerProviderStateMixin.prototype = {
-    activate$0() {
-      this.super$State$activate();
-      this._updateTickerModeNotifier$0();
-      this._updateTickers$0();
-    },
-    dispose$0() {
-      var _this = this,
-        t1 = _this.TickerProviderStateMixin__tickerModeNotifier;
-      if (t1 != null)
-        t1.removeListener$1(0, _this.get$_updateTickers());
-      _this.TickerProviderStateMixin__tickerModeNotifier = null;
-      _this.super$State$dispose();
-    }
-  };
-  C.__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin.prototype = {
-    initState$0() {
-      var t1, t2, _this = this, _null = null;
-      _this.super$State$initState();
-      t1 = _this._widget;
-      t2 = A.AnimationController$(B.AnimationBehavior_0, _null, B.Duration_200000, 0, _null, 1, !t1.value.$eq(0, t1.groupValue) ? 0 : 1, _this);
-      _this.ToggleableStateMixin___ToggleableStateMixin__positionController_A = t2;
-      _this.ToggleableStateMixin___ToggleableStateMixin__position_A = A.CurvedAnimation$(B.Cubic_WKj0, t2, B.Cubic_OxC0);
-      t2 = A.AnimationController$(B.AnimationBehavior_0, _null, _this.ToggleableStateMixin__reactionAnimationDuration, 0, _null, 1, _null, _this);
-      _this.ToggleableStateMixin___ToggleableStateMixin__reactionController_A = t2;
-      _this.ToggleableStateMixin___ToggleableStateMixin__reaction_A = A.CurvedAnimation$(B.Cubic_EBD, t2, _null);
-      t1 = A.AnimationController$(B.AnimationBehavior_0, _null, B.Duration_50000, 0, _null, 1, _this.ToggleableStateMixin__hovering || _this.ToggleableStateMixin__focused ? 1 : 0, _this);
-      _this.ToggleableStateMixin___ToggleableStateMixin__reactionHoverFadeController_A = t1;
-      _this.ToggleableStateMixin___ToggleableStateMixin__reactionHoverFade_A = A.CurvedAnimation$(B.Cubic_EBD, t1, _null);
-      t1 = A.AnimationController$(B.AnimationBehavior_0, _null, B.Duration_50000, 0, _null, 1, _this.ToggleableStateMixin__hovering || _this.ToggleableStateMixin__focused ? 1 : 0, _this);
-      _this.ToggleableStateMixin___ToggleableStateMixin__reactionFocusFadeController_A = t1;
-      _this.ToggleableStateMixin___ToggleableStateMixin__reactionFocusFade_A = A.CurvedAnimation$(B.Cubic_EBD, t1, _null);
-    },
-    dispose$0() {
-      var _this = this,
-        t1 = _this.ToggleableStateMixin___ToggleableStateMixin__positionController_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.ToggleableStateMixin___ToggleableStateMixin__position_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.ToggleableStateMixin___ToggleableStateMixin__reactionController_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.ToggleableStateMixin___ToggleableStateMixin__reaction_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.ToggleableStateMixin___ToggleableStateMixin__reactionHoverFadeController_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.ToggleableStateMixin___ToggleableStateMixin__reactionHoverFade_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.ToggleableStateMixin___ToggleableStateMixin__reactionFocusFadeController_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      t1 = _this.ToggleableStateMixin___ToggleableStateMixin__reactionFocusFade_A;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t1.dispose$0();
-      _this.super$__RadioState_State_TickerProviderStateMixin$dispose();
-    }
-  };
-  C.ShaderMaskLayer.prototype = {
-    addToScene$1(builder) {
-      var t2, t3, _this = this,
-        t1 = _this._layer$_shader;
-      t1.toString;
-      t2 = _this._maskRect;
-      t2.toString;
-      t3 = _this._layer$_blendMode;
-      t3.toString;
-      _this.set$engineLayer(builder.pushShaderMask$4$oldLayer(t1, t2, t3, type$.nullable_ShaderMaskEngineLayer._as(_this._engineLayer)));
-      _this.addChildrenToScene$1(builder);
-      builder.pop$0();
-    }
-  };
-  C.RenderShaderMask.prototype = {
-    set$shaderCallback(value) {
-      if (J.$eq$(this._shaderCallback, value))
-        return;
-      this._shaderCallback = value;
-      this.markNeedsPaint$0();
-    },
-    set$blendMode(value) {
-      if (this._blendMode === value)
-        return;
-      this._blendMode = value;
-      this.markNeedsPaint$0();
-    },
-    get$alwaysNeedsCompositing() {
-      return this.RenderObjectWithChildMixin__child != null;
-    },
-    paint$2(context, offset) {
-      var t1, t2, t3, t4, t5, _this = this;
-      if (_this.RenderObjectWithChildMixin__child != null) {
-        t1 = type$.nullable_ShaderMaskLayer;
-        if (t1._as(A.RenderObject.prototype.get$layer.call(_this, 0)) == null)
-          _this._layerHandle.set$layer(0, new C.ShaderMaskLayer(A.LinkedHashMap_LinkedHashMap$_empty(type$.int, type$.void_Function), A.LayerHandle$(type$.Layer)));
-        t2 = t1._as(A.RenderObject.prototype.get$layer.call(_this, 0));
-        t2.toString;
-        t3 = _this.get$size(0);
-        t3 = _this._shaderCallback.call$1(new A.Rect(0, 0, 0 + t3._dx, 0 + t3._dy));
-        if (t3 != t2._layer$_shader) {
-          t2._layer$_shader = t3;
-          t2.markNeedsAddToScene$0();
-        }
-        t3 = _this.get$size(0);
-        t4 = offset._dx;
-        t5 = offset._dy;
-        t3 = new A.Rect(t4, t5, t4 + t3._dx, t5 + t3._dy);
-        if (!t3.$eq(0, t2._maskRect)) {
-          t2._maskRect = t3;
-          t2.markNeedsAddToScene$0();
-        }
-        t3 = _this._blendMode;
-        if (t3 !== t2._layer$_blendMode) {
-          t2._layer$_blendMode = t3;
-          t2.markNeedsAddToScene$0();
-        }
-        t1 = t1._as(A.RenderObject.prototype.get$layer.call(_this, 0));
-        t1.toString;
-        context.pushLayer$3(t1, A.RenderProxyBoxMixin.prototype.get$paint.call(_this), offset);
-      } else
-        _this._layerHandle.set$layer(0, null);
-    }
-  };
-  C.ShaderMask.prototype = {
-    createRenderObject$1(context) {
-      var t1 = new C.RenderShaderMask(this.shaderCallback, this.blendMode, null, new A._LayoutCacheStorage(), A.LayerHandle$(type$.ContainerLayer));
-      t1.RenderObject$0();
-      t1.set$child(null);
-      return t1;
-    },
-    updateRenderObject$2(context, renderObject) {
-      renderObject.set$shaderCallback(this.shaderCallback);
-      renderObject.set$blendMode(this.blendMode);
-    }
-  };
   C.BorderButtonField.prototype = {
     build$1(context) {
       var buttonField, _this = this, _null = null,
@@ -1834,19 +1153,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.MaterialTextIconButton.prototype = {
     build$1(context) {
-      var t3, t4, _this = this, _null = null,
-        t1 = _this.iconSize,
-        t2 = _this.iconColor;
-      t1 = A.SvgPicture$asset(_this.icon, B.Alignment_0_0, A.ColorNullableExtension_asFilter(t2 == null ? B.Color_0ND : t2), B.BoxFit_0, t1, _null, _null, t1);
-      t2 = _this.labelColor;
-      t3 = B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(t2 == null ? B.Color_0ND : t2, 16, B.FontWeight_4_500);
+      var _this = this, _null = null,
+        t1 = A.SvgPicture$asset(_this.icon, B.Alignment_0_0, A.ColorNullableExtension_asFilter(_this.iconColor), B.BoxFit_0, 24, _null, _null, 24),
+        t2 = _this.labelColor,
+        t3 = B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(t2, 16, B.FontWeight_4_500);
       t3 = A.Text$(_this.label, _null, _null, _null, _null, _null, _null, _null, _null, t3, _null, _null, _null, _null, _null);
-      if (t2 == null)
-        t2 = B.Color_0ND;
-      t4 = _this.backgroundColor;
-      if (t4 == null)
-        t4 = B.Color_ioO0;
-      return F.ElevatedButton_ElevatedButton$icon(t1, t3, _this.onTap, A.ElevatedButton_styleFrom(_null, _null, t4, _null, _null, _null, 0, _null, _null, t2, _null, _this.minimumSize, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(12), B.BorderSide_KY7), _null, _null, _null, _null));
+      return F.ElevatedButton_ElevatedButton$icon(t1, t3, _this.onTap, A.ElevatedButton_styleFrom(_null, _null, _this.backgroundColor, _null, _null, _null, 0, _null, _null, t2, _null, _this.minimumSize, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(12), B.BorderSide_KY7), _null, _null, _null, _null));
     }
   };
   C.TextInputFieldBuilder.prototype = {
@@ -2042,7 +1354,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t2.size._dx >= 1200)
         t1.push(D.SettingHeaderWidget_WRr);
       else
-        t1.push(D.SettingExplanationWidget_uwZ);
+        t1.push(D.SettingExplanationWidget_B8J);
       t1.push(new A.Padding(B.EdgeInsets_16_16_16_16, this._buildButtonAddNewRule$1(context), _null));
       return A.Container$(_null, A.Column$(t1, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, _null, _null, D.BoxDecoration_jDT0, _null, _null, _null, _null, _null, _null, _null, 1 / 0);
     },
@@ -2095,7 +1407,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2._as(t1.get(_this)).toString;
       t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t6).data;
       if (!(t1.size._dx >= 1200))
-        t8.push(D.SettingExplanationWidget_knt);
+        t8.push(D.SettingExplanationWidget_sEN);
       t8.push(_this._buildKeepLocalSwitchButton$1(context));
       t8.push(new A.Obx(new C.ForwardView_build_closure(_this, context), _null));
       t8.push(_this._forward_view$_buildLoadingView$0());
@@ -2254,10 +1566,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.MappedIterable(t1, new C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0(), t1.$ti._eval$1("MappedIterable<1,SuggestionEmailAddress>"));
     },
     _buildAddRecipientButton$2$maxWidth(context, maxWidth) {
-      var t1;
+      var t1, t2;
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       t1 = A.Intl__message("Add recipient", null, "addRecipientButton", null, null);
-      return C.MaterialTextIconButton$(B.Color_0ND, "assets/images/ic_add_identity.svg", B.Color_9Sx0, 24, D.ValueKey_button_add_recipient, t1, B.Color_9Sx0, new A.Size(maxWidth == null ? 167 : maxWidth, 54), new C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure(this, context));
+      t2 = maxWidth == null ? 167 : maxWidth;
+      return new C.MaterialTextIconButton(t1, "assets/images/ic_add_identity.svg", new C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure(this, context), new A.Size(t2, 54), B.Color_9Sx0, B.Color_9Sx0, B.Color_0ND, D.ValueKey_button_add_recipient);
     },
     _buildAddRecipientButton$1(context) {
       return this._buildAddRecipientButton$2$maxWidth(context, null);
@@ -2477,6 +1790,132 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_6_8_6_8, A.Text$(A.Intl__message("Remove", _null, "remove", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_U44, 15, B.FontWeight_3_400), _null, _null, _null, _null, _null), _null), D.RoundedRectangleBorder_RoN12, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.ListEmailForwardsWidget__buildDeleteAllButton_closure(this, context), _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_9Sx, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
     }
   };
+  C.IdentitiesView.prototype = {
+    build$1(context) {
+      var t2, isDesktop, t3, t4, t5, t6, t7, t8, t9, _this = this, _null = null,
+        t1 = $.$get$GetWidget__cache();
+      A.Expando__checkType(_this);
+      t1 = t1._jsWeakMap;
+      t2 = A._instanceType(_this)._eval$1("GetWidget.S");
+      t2._as(t1.get(_this)).toString;
+      isDesktop = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200;
+      A.Expando__checkType(_this);
+      t3 = t2._as(t1.get(_this)).responsiveUtils;
+      A.Expando__checkType(_this);
+      t4 = C.SettingsUtils_getContentBackgroundColor(context, t2._as(t1.get(_this)).responsiveUtils, B.Color_9Sx0);
+      A.Expando__checkType(_this);
+      t5 = C.SettingsUtils_getBoxDecorationForContent(context, t2._as(t1.get(_this)).responsiveUtils, B.Color_9Sx0);
+      t6 = isDesktop ? D.EdgeInsetsDirectional_30_22_30_0 : _null;
+      t7 = type$.JSArray_Widget;
+      t8 = A._setArrayType([], t7);
+      if (isDesktop) {
+        t9 = A.Expanded$(new C.SettingHeaderWidget(B.AccountMenuItem_0, B.EdgeInsetsDirectional_0_0_16_0, A.ThemeUtils_textStyleInter600().copyWith$1$color(B.Color_9Sx1.withValues$1$alpha(0.9)), _null), 1);
+        A.Expando__checkType(_this);
+        B.JSArray_methods.addAll$1(t8, A._setArrayType([A.Row$(A._setArrayType([t9, new C.CreateNewIdentityButtonWidget(t2._as(t1.get(_this)).imagePaths, new C.IdentitiesView_build_closure(_this, context), _null, _null)], t7), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.SizedBox_null_14_null_null], t7));
+      } else {
+        A.Expando__checkType(_this);
+        B.JSArray_methods.addAll$1(t8, A._setArrayType([D.SettingExplanationWidget_M1N, A.Center$(new C.CreateNewIdentityButtonWidget(t2._as(t1.get(_this)).imagePaths, new C.IdentitiesView_build_closure0(_this, context), D.EdgeInsets_0_24_0_16, _null), _null, _null)], t7));
+      }
+      t8.push(new A.Obx(new C.IdentitiesView_build_closure1(_this), _null));
+      t8.push(A.Expanded$(new A.Obx(new C.IdentitiesView_build_closure2(_this, isDesktop), _null), 1));
+      return new C.SettingDetailViewBuilder(t3, A.Container$(_null, A.Column$(t8, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, t4, _null, t5, _null, _null, _null, _null, t6, _null, _null, 1 / 0), _null, B.Color_9Sx0, _null, _null);
+    }
+  };
+  C.CreateNewIdentityButtonWidget.prototype = {
+    build$1(context) {
+      var _null = null;
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      return A.TMailButtonWidget$(_null, B.Color_Axm, _null, 100, _null, true, 48, _null, "assets/images/ic_add_identity.svg", B.TextDirection_1, B.Color_9Sx0, 16, 8, false, _null, B.MainAxisSize_0, this.margin, 1 / 0, 1, 300, 0, _null, _null, this.onCreateNewIdentityAction, B.EdgeInsetsDirectional_32_0_32_0, A.Intl__message("Create new identity", _null, "createNewIdentity", _null, _null), _null, B.TextOverflow_2, A.ThemeUtils_textStyleM3LabelLarge(B.Color_9Sx0), _null, _null, _null, _null, false, _null);
+    }
+  };
+  C.IdentityListTileBuilder.prototype = {
+    build$1(context) {
+      var signatureContent, t4, t5, t6, identityContent, _this = this, _null = null,
+        selectedIcon = A.SvgPicture$asset(_this.isSelected ? "assets/images/ic_radio_selected.svg" : "assets/images/ic_radio.svg", B.Alignment_0_0, _null, B.BoxFit_0, 18, _null, _null, 18),
+        t1 = _this.mapIdentitySignatures,
+        t2 = _this.identity,
+        t3 = t2.id;
+      t3.toString;
+      signatureContent = J.$index$asx(t1.get$value(0), t1.$ti._precomputed1._as(t3));
+      if (signatureContent == null)
+        signatureContent = A.IdentityExtension_get_signatureAsString(t2);
+      t1 = t2.name;
+      if (t1 == null)
+        t1 = "";
+      t3 = type$.JSArray_Widget;
+      t1 = A._setArrayType([new A.Padding(B.EdgeInsets_0_0_0_8, A.Text$(t1, _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody1(B.Color_9Sx1, _null, _null), _null, _null, _null, _null, _null), _null)], t3);
+      t4 = t2.email;
+      t5 = t4 == null;
+      if ((t5 ? _null : t4.length !== 0) === true) {
+        if (t5)
+          t4 = "";
+        t5 = A.Theme_of(context).textTheme.bodySmall;
+        t1.push(new A.Padding(B.EdgeInsets_0_0_0_8, A.Text$(t4, _null, _null, _null, _null, _null, _null, _null, _null, t5 == null ? _null : t5.copyWith$1$color(B.Color_8eb), _null, _null, _null, _null, _null), _null));
+      }
+      t4 = t2.replyTo;
+      t5 = t4 == null;
+      if ((t5 ? _null : t4._collection$_length !== 0) === true) {
+        A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        t6 = A.Intl__message("Reply to", _null, "reply_to", _null, _null);
+        t4 = t5 ? _null : A.SetEmailAddressExtension_listEmailAddressToString(t4, true);
+        t5 = A.Theme_of(context).textTheme.bodySmall;
+        t5 = t5 == null ? _null : t5.copyWith$1$color(B.Color_8eb);
+        t1.push(new A.Padding(B.EdgeInsets_0_0_0_8, A.Text$(t6.toUpperCase() + ": " + A.S(t4), _null, _null, _null, _null, _null, _null, _null, _null, t5, _null, _null, _null, _null, _null), _null));
+      }
+      t4 = t2.bcc;
+      t5 = t4 == null;
+      if ((t5 ? _null : t4._collection$_length !== 0) === true) {
+        A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        t6 = A.Intl__message("Bcc", _null, "bcc_email_address_prefix", _null, _null);
+        t4 = t5 ? _null : A.SetEmailAddressExtension_listEmailAddressToString(t4, true);
+        t5 = A.Theme_of(context).textTheme.bodySmall;
+        t5 = t5 == null ? _null : t5.copyWith$1$color(B.Color_8eb);
+        t1.push(new A.Padding(B.EdgeInsets_0_0_0_8, A.Text$(t6.toUpperCase() + ": " + A.S(t4), _null, _null, _null, _null, _null, _null, _null, _null, t5, _null, _null, _null, _null, _null), _null));
+      }
+      if (B.JSString_methods.trim$0(signatureContent).length !== 0) {
+        t4 = A.Text$("--", _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody2(_null, B.Color_9Sx1, _null), _null, _null, _null, _null, _null);
+        t5 = _this.isDesktop ? 280 : 1 / 0;
+        B.JSArray_methods.addAll$1(t1, A._setArrayType([t4, new C.SignatureLoadingWidget(_this.signatureViewState, _null), new C.SignatureBuilder(signatureContent, t5, _this.scrollController, _null)], t3));
+      }
+      identityContent = A.Column$(t1, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
+      t1 = _this.imagePaths;
+      t4 = _this.onEditIdentityAction;
+      t5 = _this.onDeleteIdentityAction;
+      if (_this.isDesktop)
+        return A.Row$(A._setArrayType([selectedIcon, A.Container$(_null, identityContent, B.Clip_0, _null, _null, _null, _null, _null, _null, _null, D.EdgeInsetsDirectional_18_0_12_0, _null, _null, 280), new C.ListIdentityItemActionsWidget(t2, t1, t4, t5, _null), B.Spacer_null], t3), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+      else
+        return A.Column$(A._setArrayType([A.Row$(A._setArrayType([selectedIcon, B.SizedBox_18_null_null_null, A.Expanded$(identityContent, 1)], t3), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.SizedBox_null_24_null_null, new C.ListIdentityItemActionsWidget(t2, t1, t4, t5, _null)], t3), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
+    }
+  };
+  C.IdentityLoadingWidget.prototype = {
+    build$1(context) {
+      return this.identityViewState.fold$2(0, new C.IdentityLoadingWidget_build_closure(), new C.IdentityLoadingWidget_build_closure0());
+    }
+  };
+  C.ListIdentityItemActionsWidget.prototype = {
+    build$1(context) {
+      var t2, _null = null,
+        t1 = type$.AppLocalizations;
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
+      t2 = A.TMailButtonWidget$(_null, B.Color_9Sx, _null, 20, _null, true, _null, _null, "assets/images/ic_compose.svg", B.TextDirection_1, B.Color_0ND, 20, 4, false, _null, B.MainAxisSize_0, _null, 1 / 0, 1, 1 / 0, 100, _null, _null, new C.ListIdentityItemActionsWidget_build_closure(this), B.EdgeInsetsDirectional_8_5_8_5, A.Intl__message("Edit", _null, "edit", _null, _null), _null, _null, B.TextStyle_Svc.copyWith$4$color$fontSize$height$letterSpacing(B.Color_0ND, 13, 1, 0.39), _null, _null, _null, _null, false, _null);
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
+      return A.Row$(A._setArrayType([t2, A.TMailButtonWidget$(_null, B.Color_9Sx, _null, 20, _null, true, _null, _null, "assets/images/ic_delete_rule.svg", B.TextDirection_1, B.Color_0ND, 20, 4, false, _null, B.MainAxisSize_0, _null, 1 / 0, 1, 1 / 0, 100, _null, _null, new C.ListIdentityItemActionsWidget_build_closure0(this), B.EdgeInsetsDirectional_8_5_8_5, A.Intl__message("Delete", _null, "delete", _null, _null), _null, _null, B.TextStyle_Svc.copyWith$4$color$fontSize$height$letterSpacing(B.Color_0ND, 13, 1, 0.39), _null, _null, _null, _null, false, _null)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_0, _null);
+    }
+  };
+  C.SignatureBuilder.prototype = {
+    build$1(context) {
+      var t1 = this.width,
+        t2 = A.Directionality_maybeOf(context);
+      if (t2 == null)
+        t2 = B.TextDirection_1;
+      return H.HtmlContentViewerOnWeb$(false, true, this.value, 0, t2, true, false, 150, 0, t1, true, null, null, 0, null, this.scrollController, false, 150, t1);
+    }
+  };
+  C.SignatureLoadingWidget.prototype = {
+    build$1(context) {
+      return this.signatureViewState.fold$2(0, new C.SignatureLoadingWidget_build_closure(), new C.SignatureLoadingWidget_build_closure0());
+    }
+  };
   C.LanguageAndRegionView.prototype = {
     build$1(context) {
       var t2, t3, t4, t5, t6, t7, t8, _this = this, _null = null,
@@ -2500,7 +1939,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t6.size._dx >= 1200)
         t8.push(new C.SettingHeaderWidget(B.AccountMenuItem_1, B.EdgeInsets_0_0_0_0, A.ThemeUtils_textStyleInter600().copyWith$1$color(B.Color_9Sx1.withValues$1$alpha(0.9)), _null));
       else
-        t8.push(D.SettingExplanationWidget_sIv);
+        t8.push(D.SettingExplanationWidget_ejJ);
       A.Expando__checkType(_this);
       t8.push(A.Expanded$(new A.Padding(D.EdgeInsets_0_39_0_0, new C.ChangeLanguageButtonWidget(t2._as(t1.get(_this)).get$openLanguageContextMenu(), _null), _null), 1));
       return A.Portal$(new C.SettingDetailViewBuilder(t3, A.Container$(_null, A.Column$(t8, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, t4, _null, t5, _null, _null, _null, _null, t7, _null, _null, 1 / 0), _null, B.Color_9Sx0, _null, _null));
@@ -2985,173 +2424,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Column$(A._setArrayType([t3, new A.Padding(B.EdgeInsets_0_12_0_12, t4, _null), A.Row$(A._setArrayType([A.InkWell$(false, _null, true, A.SvgPicture$asset(t7, B.Alignment_0_0, _null, B.BoxFit_0, 28, new A.ValueKey(t9, t6), _null, 44), _null, true, _null, _null, _null, _null, new A.ValueKey(t5, t6), _null, _null, _null, _null, _null, _null, new C.SettingOptionItem_build_closure(_this), _null, _null, _null, _null, _null, _null, _null), B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(t2.getToggleDescription$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody2(_null, _null, _null).copyWith$1$color(B.Color_9Sx1), _null, _null, _null, _null, _null), 1)], t8), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null)], t8), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
     }
   };
-  C.IdentitiesView.prototype = {
-    build$1(context) {
-      var t2, t3, _this = this,
-        t1 = $.$get$GetWidget__cache();
-      A.Expando__checkType(_this);
-      t1 = t1._jsWeakMap;
-      t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      t3 = C.SettingsUtils_getSettingContentPadding(context, t2._as(t1.get(_this)).responsiveUtils);
-      A.Expando__checkType(_this);
-      t2._as(t1.get(_this)).toString;
-      t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
-      return new A.Padding(t3, t1.size._dx >= 1200 ? _this._buildIdentitiesViewWebDesktop$1(context) : _this._buildIdentitiesViewMobile$1(context), null);
-    },
-    _buildIdentitiesViewMobile$1(context) {
-      var t2, t3, t4, _this = this,
-        t1 = $.$get$GetWidget__cache();
-      A.Expando__checkType(_this);
-      t1 = t1._jsWeakMap;
-      t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      t3 = t2._as(t1.get(_this));
-      A.Expando__checkType(_this);
-      t4 = t2._as(t1.get(_this)).responsiveUtils;
-      A.Expando__checkType(_this);
-      return A.Column$(A._setArrayType([new C.IdentitiesHeaderWidget(new C.IdentitiesView__buildIdentitiesViewMobile_closure(_this, context), null), B.SizedBox_null_12_null_null, new C.IdentitiesRadioListBuilder(t3, t4, t2._as(t1.get(_this)).imagePaths, null)], type$.JSArray_Widget), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
-    },
-    _buildIdentitiesViewWebDesktop$1(context) {
-      var t2, t3, t4, _this = this, _null = null,
-        t1 = $.$get$GetWidget__cache();
-      A.Expando__checkType(_this);
-      t1 = t1._jsWeakMap;
-      t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      t3 = t2._as(t1.get(_this));
-      A.Expando__checkType(_this);
-      t4 = t2._as(t1.get(_this)).responsiveUtils;
-      A.Expando__checkType(_this);
-      return A.Row$(A._setArrayType([new A.SizedBox(224, _null, new C.IdentitiesHeaderWidget(new C.IdentitiesView__buildIdentitiesViewWebDesktop_closure(_this, context), _null), _null), B.SizedBox_12_null_null_null, A.Expanded$(new C.IdentitiesRadioListBuilder(t3, t4, t2._as(t1.get(_this)).imagePaths, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
-    }
-  };
-  C._IdentitiesView_GetWidget_PopupMenuWidgetMixin.prototype = {};
-  C._IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin.prototype = {};
-  C.IdentitiesHeaderWidget.prototype = {
-    build$1(context) {
-      var t1, t2, t3, _null = null;
-      $.$get$Get();
-      t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = B.C_GetInstance;
-      t1.find$1$1$tag(0, _null, type$.ImagePaths);
-      t1 = type$.AppLocalizations;
-      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-      t2 = A.Text$(A.Intl__message("Identities", _null, "identities", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_9Sx1, 17, B.FontWeight_4_500), _null, _null, _null, _null, _null);
-      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-      t3 = A.Text$(A.Intl__message("Select the identity or email address you want to use to send an emails", _null, "identitiesSettingExplanation", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_8eb, 15, B.FontWeight_3_400), _null, _null, _null, _null, _null);
-      A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-      return A.Column$(A._setArrayType([t2, B.SizedBox_null_4_null_null, t3, B.SizedBox_null_24_null_null, C.MaterialTextIconButton$(_null, "assets/images/ic_add_identity.svg", _null, 28, D.ValueKey_button_add_identity, A.Intl__message("Create new identity", _null, "createNewIdentity", _null, _null), _null, D.Size_HFk, this.onAddNewIdentityAction)], type$.JSArray_Widget), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
-    }
-  };
-  C.IdentitiesRadioListBuilder.prototype = {
-    build$1(context) {
-      var t3, t4, _null = null,
-        t1 = type$.MediaQuery,
-        t2 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data;
-      t2 = t2.size._dx >= 1200 ? 256 : _null;
-      t3 = A.Border_Border$all(B.Color_gkc0, 1);
-      t4 = A._setArrayType([], type$.JSArray_Widget);
-      t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t1).data;
-      if (t1.size._dx >= 1200)
-        t4.push(this._buildIdentityViewHorizontal$1(context));
-      else
-        t4.push(this._buildIdentityViewVertical$1(context));
-      t4.push(new A.Obx(new C.IdentitiesRadioListBuilder_build_closure(this), _null));
-      return A.Container$(_null, A.ClipRRect$(B.BorderRadius_ww88, new A.Stack(B.AlignmentDirectional_m1_m1, _null, B.StackFit_0, B.Clip_1, t4, _null), B.Clip_2), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_9Sx0, _null, t3, B.BorderRadius_ww88, _null, _null, _null, B.BoxShape_0), _null, t2, _null, _null, _null, _null, _null, _null);
-    },
-    _buildIdentityViewVertical$1(context) {
-      return new A.Obx(new C.IdentitiesRadioListBuilder__buildIdentityViewVertical_closure(this, context), null);
-    },
-    _buildIdentityViewHorizontal$1(context) {
-      return new A.Obx(new C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal_closure(this, context), null);
-    },
-    _buildListIdentityView$1(context) {
-      var _null = null,
-        t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
-      t1 = t1.size._dx >= 1200 ? 320 : _null;
-      return A.Container$(_null, new A.Obx(new C.IdentitiesRadioListBuilder__buildListIdentityView_closure(this), _null), B.Clip_0, _null, _null, _null, _null, 256, D.ValueKey_identities_list, _null, D.EdgeInsets_12_12_0_12, _null, _null, t1);
-    },
-    _identities_radio_list_builder$_buildLoadingView$0() {
-      return new A.Obx(new C.IdentitiesRadioListBuilder__buildLoadingView_closure(this), null);
-    }
-  };
-  C.IdentityListTileBuilder.prototype = {
-    build$1(context) {
-      var t6, t7, t8, t9, _this = this, _null = null,
-        t1 = A.BorderRadius$circular(12),
-        t2 = A.BorderRadius$circular(12),
-        t3 = _this.get$_isIdentitySelected() ? B.Color_FYo : B.Color_9Sx,
-        t4 = _this.identity,
-        t5 = t4.name;
-      if (t5 == null)
-        t5 = "";
-      t6 = type$.JSArray_Widget;
-      t5 = A._setArrayType([new A.Padding(D.EdgeInsets_0_0_0_6, A.TextOverflowBuilder$(t5, 1, B.TextOverflow_2, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_9Sx1, 16, B.FontWeight_4_500)), _null)], t6);
-      t7 = t4.email;
-      if ((t7 == null ? _null : t7.length !== 0) === true)
-        t5.push(_this._buildIconSVGWithTextLine$2("assets/images/ic_email.svg", t7));
-      t7 = t4.replyTo;
-      t8 = t7 == null;
-      if ((t8 ? _null : t7._collection$_length !== 0) === true)
-        t5.push(_this._buildIconSVGWithTextLine$2("assets/images/ic_reply_to.svg", t8 ? _null : A.SetEmailAddressExtension_listEmailAddressToString(t7, true)));
-      t7 = t4.bcc;
-      t8 = t7 == null;
-      if ((t8 ? _null : t7._collection$_length !== 0) === true) {
-        A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t9 = A.Intl__message("Bcc", _null, "bcc_email_address_prefix", _null, _null);
-        t7 = t8 ? _null : A.SetEmailAddressExtension_listEmailAddressToString(t7, true);
-        t9 = A.Container$(B.Alignment_m1_0, A.Text$(t9, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$4$color$decoration$fontSize$fontWeight(B.Color_0ND, B.TextDecoration_1, 15, B.FontWeight_3_400), _null, _null, _null, _null, _null), B.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, 30);
-        if (t7 == null)
-          t7 = "";
-        t5.push(new A.Padding(E.EdgeInsets_0_0_0_4, A.Row$(A._setArrayType([t9, B.SizedBox_4_null_null_null, A.Expanded$(A.TextOverflowBuilder$(t7, 1, B.TextOverflow_2, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_8eb, 13, B.FontWeight_3_400)), 1)], t6), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null));
-      }
-      t4 = A._setArrayType([new C.Radio(t4, _this.identitySelected, _this.onSelectIdentityAction, B.Color_0ND, 15, _null, type$.Radio_Identity), B.SizedBox_10_null_null_null, A.Expanded$(A.Column$(t5, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), 1)], t6);
-      if (_this.get$_isIdentitySelected())
-        B.JSArray_methods.addAll$1(t4, A._setArrayType([C.buildSVGIconButton("assets/images/ic_edit_rule.svg", B.Color_0ND, 24, new C.IdentityListTileBuilder_build_closure(_this)), C.buildSVGIconButton("assets/images/ic_delete_rule.svg", B.Color_U44, 24, new C.IdentityListTileBuilder_build_closure0(_this))], t6));
-      return A.Material$(B.Duration_200000, true, _null, new A.Padding(D.EdgeInsets_0_0_0_2, A.InkWell$(false, t1, true, A.Container$(_null, A.Row$(t4, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, _null, _null, new A.BoxDecoration(t3, _null, _null, t2, _null, _null, _null, B.BoxShape_0), _null, _null, _null, _null, B.EdgeInsets_12_12_12_12, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.IdentityListTileBuilder_build_closure1(_this), _null, _null, _null, _null, _null, _null, _null), _null), B.Clip_0, B.Color_9Sx, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
-    },
-    _buildIconSVGWithTextLine$2(imagePath, text) {
-      var _null = null,
-        t1 = A.SvgPicture$asset(imagePath, B.Alignment_0_0, _null, B.BoxFit_1, 15, _null, _null, 15),
-        t2 = text == null ? "" : text;
-      return new A.Padding(E.EdgeInsets_0_0_0_4, A.Row$(A._setArrayType([new A.SizedBox(30, _null, new A.Align(B.Alignment_m1_0, _null, _null, t1, _null), _null), B.SizedBox_4_null_null_null, A.Expanded$(A.TextOverflowBuilder$(t2, 1, B.TextOverflow_2, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_8eb, 13, B.FontWeight_3_400)), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null);
-    },
-    get$_isIdentitySelected() {
-      var t1 = this.identitySelected;
-      t1 = t1 == null ? null : t1.id;
-      return J.$eq$(this.identity.id, t1);
-    }
-  };
-  C.IdentityLoadingWidget.prototype = {
-    build$1(context) {
-      return this.settingViewState.fold$2(0, new C.IdentityLoadingWidget_build_closure(this), new C.IdentityLoadingWidget_build_closure0(this));
-    }
-  };
-  C.SignatureBuilder.prototype = {
-    build$1(context) {
-      return new A.LayoutBuilder(new C.SignatureBuilder_build_closure(this), null);
-    },
-    _buildSignature$3(context, width, height) {
-      var t2, _null = null,
-        t1 = this.signatureSelected;
-      if (t1.length !== 0) {
-        t2 = A.Directionality_maybeOf(context);
-        return H.HtmlContentViewerOnWeb$(false, t1, _null, t2 == null ? B.TextDirection_1 : t2, false, height, _null, _null, _null, _null, false, width);
-      } else
-        return new A.SizedBox(width, height, _null, _null);
-    }
-  };
-  C.ProfilesView.prototype = {
-    build$1(context) {
-      var _null = null,
-        t1 = type$.JSArray_Widget,
-        t2 = A._setArrayType([], t1),
-        t3 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data;
-      if (t3.size._dx >= 1200)
-        B.JSArray_methods.addAll$1(t2, A._setArrayType([D.SettingHeaderWidget_IgH, D.Divider_YT1], t1));
-      t2.push(A.Expanded$(A.SingleChildScrollView$(A.Column$(A._setArrayType([new C.IdentitiesView(_null)], t1), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, _null, B.ClampingScrollPhysics_null, _null, B.Axis_1), 1));
-      return new C.SettingDetailViewBuilder(this.responsiveUtils, A.Column$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, B.Color_9Sx0, _null, _null);
-    }
-  };
   C.VacationView.prototype = {
     build$1(context) {
       var t2, t3, t4, t5, t6, t7, t8, vacationInputForm, _this = this, _null = null,
@@ -3169,7 +2441,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = type$.MediaQuery;
       t8 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, t7).data;
       if (!(t8.size._dx >= 1200))
-        t6.push(D.SettingExplanationWidget_MQf);
+        t6.push(D.SettingExplanationWidget_izR);
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       t6.push(A.Row$(A._setArrayType([new A.Obx(new C.VacationView_build_closure(_this), _null), B.SizedBox_16_null_null_null, A.Expanded$(A.Text$(A.Intl__message("Automatically reply to messages when they are received.", _null, "vacationSettingToggleButtonAutoReply", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$4$color$fontSize$fontWeight$height(B.Color_9Sx1, 16, B.FontWeight_3_400, 1.25), _null, _null, _null, _null, _null), 1)], t5), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null));
       t6.push(D.SizedBox_null_28_null_null);
@@ -3251,13 +2523,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C._VacationView_GetWidget_RichTextButtonMixin.prototype = {};
   C.SettingExplanationWidget.prototype = {
     build$1(context) {
-      var child, _null = null,
+      var child, _this = this, _null = null,
         t1 = A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
-      child = A.Text$(this.menuItem.getExplanation$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_RsV.copyWith$1$color(B.Color_kmW.withValues$1$alpha(0.64)), _null, _null, _null, _null, _null);
-      if (this.isCenter)
+      child = A.Text$(_this.menuItem.getExplanation$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_RsV.copyWith$1$color(B.Color_kmW.withValues$1$alpha(0.64)), _this.textAlign, _null, _null, _null, _null);
+      if (_this.isCenter)
         child = A.Center$(child, _null, _null);
-      return new A.Padding(this.padding, child, _null);
+      return new A.Padding(_this.padding, child, _null);
     }
   };
   C.SettingHeaderWidget.prototype = {
@@ -3268,139 +2540,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = this.menuItem;
       t3 = t2.getName$1(t1);
       t4 = this.textStyle;
-      t3 = A._setArrayType([A.Text$(t3, _null, _null, _null, _null, _null, _null, _null, _null, t4 == null ? A.ThemeUtils_textStyleInter600().copyWith$1$color(B.Color_9Sx1) : t4, _null, _null, _null, _null, _null)], type$.JSArray_Widget);
+      t3 = A._setArrayType([A.Text$(t3, _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, t4 == null ? A.ThemeUtils_textStyleInter600().copyWith$1$color(B.Color_9Sx1) : t4, _null, _null, _null, _null, _null)], type$.JSArray_Widget);
       if (t2.getExplanation$1(t1).length !== 0)
-        t3.push(new A.Padding(D.EdgeInsets_0_13_0_0, A.Text$(t2.getExplanation$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_gw1.copyWith$4$color$fontSize$height$letterSpacing(B.Color_kmW.withValues$1$alpha(0.64), 16, 1.313125, -0.15), _null, _null, _null, _null, _null), _null));
-      child = t3.length === 1 ? B.JSArray_methods.get$first(t3) : A.Column$(t3, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
+        t3.push(new A.Padding(D.EdgeInsets_0_13_0_0, A.Text$(t2.getExplanation$1(t1), _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, B.TextStyle_gw1.copyWith$4$color$fontSize$height$letterSpacing(B.Color_kmW.withValues$1$alpha(0.64), 16, 1.313125, -0.15), _null, _null, _null, _null, _null), _null));
+      child = t3.length === 1 ? B.JSArray_methods.get$first(t3) : A.Column$(t3, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
       t1 = this.padding;
       return new A.Padding(t1 == null ? B.EdgeInsets_16_16_16_16 : t1, child, _null);
     }
   };
-  var typesOffset = hunkHelpers.updateTypes(["~()", "~(bool?)", "EmailRulesItemWidget(BuildContext,int)", "List<SuggestionEmailAddress>/(String{limit:int?})", "bool(EmailAddress)", "ContactInputTagItem(BuildContext,int)", "EmailForwardItemWidget(BuildContext,int)", "TMailDropDownWidget()", "LanguageItemWidget(BuildContext,int)", "NavigationBarWidget()", "~(ProfileSettingActionType)", "AccountMenuItemTileBuilder()", "UserInformationWidget()", "SettingAppBar()", "SettingOptionItem(BuildContext,int)", "FadingEdgeScrollView()", "IdentityListTileBuilder(BuildContext,int)"]);
-  C.FadingEdgeScrollViewState_build_closure.prototype = {
-    call$1(bounds) {
-      var t4, t5, t0, t6,
-        t1 = this.$this,
-        t2 = t1._widget,
-        t3 = t2.scrollDirection === B.Axis_1;
-      if (t3) {
-        t4 = t2.reverse;
-        t5 = t4 ? B.Alignment_0_1 : B.Alignment_0_m1;
-        t0 = t5;
-        t5 = t4;
-        t4 = t0;
-      } else {
-        t4 = t2.reverse;
-        t5 = t4 ? B.AlignmentDirectional_1_0 : B.AlignmentDirectional_m1_0;
-        t0 = t5;
-        t5 = t4;
-        t4 = t0;
-      }
-      if (t3)
-        t3 = t5 ? B.Alignment_0_m1 : B.Alignment_0_1;
-      else
-        t3 = t5 ? B.AlignmentDirectional_m1_0 : B.AlignmentDirectional_1_0;
-      t2 = A._setArrayType([0, t2.gradientFractionOnStart * 0.5, 1 - t2.gradientFractionOnEnd * 0.5, 1], type$.JSArray_double);
-      t5 = t1._widget;
-      if (t5.gradientFractionOnStart > 0) {
-        t6 = t1._scrollState;
-        t6 = t6 === D._ScrollState_2 || t6 === D._ScrollState_3;
-      } else
-        t6 = false;
-      if (t5.gradientFractionOnEnd > 0) {
-        t1 = t1._scrollState;
-        t1 = t1 === D._ScrollState_1 || t1 === D._ScrollState_3;
-      } else
-        t1 = false;
-      t5 = t6 ? B.Color_9Sx : B.Color_9Sx0;
-      return new A.LinearGradient0(t4, t3, B.TileMode_0, A._setArrayType([t5, B.Color_9Sx0, B.Color_9Sx0, t1 ? B.Color_9Sx : B.Color_9Sx0], type$.JSArray_Color), t2, null).createShader$2$textDirection(0, bounds.shift$1(new A.Offset(-bounds.left, -bounds.top)), this.context.dependOnInheritedWidgetOfExactType$1$0(type$.Directionality).textDirection);
-    },
-    $signature: 1916
-  };
-  C.FadingEdgeScrollViewState_build_closure0.prototype = {
-    call$1(_) {
-      this.$this._updateScrollState$0();
-      return false;
-    },
-    $signature: 248
-  };
-  C.FadingEdgeScrollViewState__updateScrollState_closure.prototype = {
-    call$0() {
-      this.$this._scrollState = this.scrollState;
-    },
-    $signature: 0
-  };
-  C._RadioState__widgetFillColor_closure.prototype = {
-    call$1(states) {
-      if (states.contains$1(0, B.WidgetState_6))
-        return null;
-      if (states.contains$1(0, B.WidgetState_4))
-        return this.$this._widget.activeColor;
-      return null;
-    },
-    $signature: 65
-  };
-  C._RadioState_build_closure.prototype = {
-    call$1(states) {
-      var t1;
-      this.$this._widget.toString;
-      t1 = A.WidgetStateProperty_resolveAs(null, states, type$.nullable_MouseCursor);
-      if (t1 == null)
-        t1 = null;
-      return t1 == null ? A.WidgetStateProperty_resolveAs(B._EnabledAndDisabledMouseCursor_SystemMouseCursor_click_clickable, states, type$.MouseCursor) : t1;
-    },
-    $signature: 500
-  };
-  C._RadioDefaultsM3_fillColor_closure.prototype = {
-    call$1(states) {
-      var t1, t2, _this = this;
-      if (states.contains$1(0, B.WidgetState_4)) {
-        if (states.contains$1(0, B.WidgetState_6))
-          return _this.$this.get$_radio$_colors().onSurface.withOpacity$1(0.38);
-        if (states.contains$1(0, B.WidgetState_2))
-          return _this.$this.get$_radio$_colors().primary;
-        if (states.contains$1(0, B.WidgetState_0))
-          return _this.$this.get$_radio$_colors().primary;
-        if (states.contains$1(0, B.WidgetState_1))
-          return _this.$this.get$_radio$_colors().primary;
-        return _this.$this.get$_radio$_colors().primary;
-      }
-      if (states.contains$1(0, B.WidgetState_6))
-        return _this.$this.get$_radio$_colors().onSurface.withOpacity$1(0.38);
-      if (states.contains$1(0, B.WidgetState_2))
-        return _this.$this.get$_radio$_colors().onSurface;
-      if (states.contains$1(0, B.WidgetState_0))
-        return _this.$this.get$_radio$_colors().onSurface;
-      if (states.contains$1(0, B.WidgetState_1))
-        return _this.$this.get$_radio$_colors().onSurface;
-      t1 = _this.$this.get$_radio$_colors();
-      t2 = t1._onSurfaceVariant;
-      return t2 == null ? t1.onSurface : t2;
-    },
-    $signature: 17
-  };
-  C._RadioDefaultsM3_overlayColor_closure.prototype = {
-    call$1(states) {
-      var _this = this;
-      if (states.contains$1(0, B.WidgetState_4)) {
-        if (states.contains$1(0, B.WidgetState_2))
-          return _this.$this.get$_radio$_colors().onSurface.withOpacity$1(0.1);
-        if (states.contains$1(0, B.WidgetState_0))
-          return _this.$this.get$_radio$_colors().primary.withOpacity$1(0.08);
-        if (states.contains$1(0, B.WidgetState_1))
-          return _this.$this.get$_radio$_colors().primary.withOpacity$1(0.1);
-        return B.Color_9Sx;
-      }
-      if (states.contains$1(0, B.WidgetState_2))
-        return _this.$this.get$_radio$_colors().primary.withOpacity$1(0.1);
-      if (states.contains$1(0, B.WidgetState_0))
-        return _this.$this.get$_radio$_colors().onSurface.withOpacity$1(0.08);
-      if (states.contains$1(0, B.WidgetState_1))
-        return _this.$this.get$_radio$_colors().onSurface.withOpacity$1(0.1);
-      return B.Color_9Sx;
-    },
-    $signature: 17
-  };
+  var typesOffset = hunkHelpers.updateTypes(["EmailRulesItemWidget(BuildContext,int)", "List<SuggestionEmailAddress>/(String{limit:int?})", "bool(EmailAddress)", "ContactInputTagItem(BuildContext,int)", "EmailForwardItemWidget(BuildContext,int)", "IdentityLoadingWidget()", "IdentityListTileBuilder()", "TMailDropDownWidget()", "LanguageItemWidget(BuildContext,int)", "NavigationBarWidget()", "~(ProfileSettingActionType)", "AccountMenuItemTileBuilder()", "UserInformationWidget()", "SettingAppBar()", "SettingOptionItem(BuildContext,int)"]);
   C.BorderButtonField_build_closure.prototype = {
     call$0() {
       var t1 = this.$this;
@@ -3447,13 +2595,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 50
+    $signature: 53
   };
   C.EmailRulesView__buildLoadingView__closure0.prototype = {
     call$1(success) {
       return success instanceof A.LoadingState ? new A.Padding(B.EdgeInsets_0_0_0_24, B.Center_lau, null) : B.SizedBox_0_0_null_null;
     },
-    $signature: 89
+    $signature: 70
   };
   C.EmailRulesItemWidget_build_closure.prototype = {
     call$0() {
@@ -3501,7 +2649,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.ListView$separated(null, new C.ListEmailRulesWidget_build__closure(t1), J.get$length$asx(t3._as(t2.get(t1)).listEmailRule.get$value(0)), null, B.ScrollViewKeyboardDismissBehavior_0, B.EdgeInsets_0_0_0_0, null, false, false, B.Axis_1, new C.ListEmailRulesWidget_build__closure0(t1), true);
     },
-    $signature: 191
+    $signature: 225
   };
   C.ListEmailRulesWidget_build__closure.prototype = {
     call$2(context, index) {
@@ -3525,7 +2673,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = $.GetInstance__getInstance = B.C_GetInstance;
       return new C.EmailRulesItemWidget(t1, t2, t3.find$1$1$tag(0, _null, type$.EmailRulesController), ruleWithId, _null);
     },
-    $signature: typesOffset + 2
+    $signature: typesOffset + 0
   };
   C.ListEmailRulesWidget_build__closure0.prototype = {
     call$2(context, index) {
@@ -3538,7 +2686,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 118
+    $signature: 109
   };
   C.ForwardView_build_closure1.prototype = {
     call$0() {
@@ -3612,7 +2760,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = B.SizedBox_null_null_null_null;
       return t1;
     },
-    $signature: 95
+    $signature: 96
   };
   C.ForwardView__buildLoadingView_closure.prototype = {
     call$0() {
@@ -3627,13 +2775,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 50
+    $signature: 53
   };
   C.ForwardView__buildLoadingView__closure0.prototype = {
     call$1(success) {
       return success instanceof A.LoadingState ? B.Center_lau : B.SizedBox_0_0_null_null;
     },
-    $signature: 58
+    $signature: 64
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure.prototype = {
     call$1(listRecipientsSelected) {
@@ -3647,7 +2795,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId != null)
         t1._handleAddRecipients$2(accountId, listRecipientsSelected);
     },
-    $signature: 1917
+    $signature: 1921
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure0.prototype = {
     call$1(exception) {
@@ -3667,14 +2815,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.showToastErrorMessage$2(t2, A.Intl__message("Incorrect email format", _null, "incorrectEmailFormat", _null, _null));
       }
     },
-    $signature: 1918
+    $signature: 1922
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure1.prototype = {
     call$1(focused) {
       var t1 = this.$this;
       t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build__closure1(t1, focused));
     },
-    $signature: 80
+    $signature: 85
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure1.prototype = {
     call$0() {
@@ -3704,7 +2852,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(item) {
       return this.$this._addEmailAddressToInputFieldAction$2$context$emailAddress(this.context, item.emailAddress);
     },
-    $signature: 412
+    $signature: 399
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure3.prototype = {
     call$1(value) {
@@ -3719,14 +2867,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 === $ && A.throwUnnamedLateFieldNI();
       return new C.ContactInputTagItem(J.$index$asx(t2.get$value(0), index), index === J.get$length$asx(t1.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A.get$value(0)) - 1, t1.lastTagFocused, new C._AutocompleteContactTextFieldWithTagsState_build__closure(t1), null);
     },
-    $signature: typesOffset + 5
+    $signature: typesOffset + 3
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure.prototype = {
     call$1(contact) {
       var t1 = this.$this;
       t1.setState$1(new C._AutocompleteContactTextFieldWithTagsState_build___closure(t1, contact));
     },
-    $signature: 270
+    $signature: 289
   };
   C._AutocompleteContactTextFieldWithTagsState_build___closure.prototype = {
     call$0() {
@@ -3745,14 +2893,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(queryString) {
       return this.$this._autocomplete_contact_text_field_with_tags$_findSuggestions$2$limit(queryString, 8);
     },
-    $signature: 413
+    $signature: 398
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure5.prototype = {
     call$7(context, tagEditorState, suggestionEmailAddress, index, $length, highlight, suggestionValid) {
       var t1 = this.$this;
       return new A.Padding(B.EdgeInsets_12_0_12_0, new C.ContactSuggestionBoxItem(t1._autocomplete_contact_text_field_with_tags$_imagePaths, suggestionEmailAddress, new C._AutocompleteContactTextFieldWithTagsState_build__closure0(t1, context, tagEditorState), B.RoundedRectangleBorder_RoN6, null), null);
     },
-    $signature: 1919
+    $signature: 1923
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure0.prototype = {
     call$1(contact) {
@@ -3762,13 +2910,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.closeSuggestionBox$0();
       t1.resetTextField$0();
     },
-    $signature: 270
+    $signature: 289
   };
   C._AutocompleteContactTextFieldWithTagsState__isDuplicatedRecipient_closure.prototype = {
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 357
+    $signature: 397
   };
   C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure.prototype = {
     call$1(emailAddress) {
@@ -3777,7 +2925,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 === $ && A.throwUnnamedLateFieldNI();
       return t1._autocomplete_contact_text_field_with_tags$_toSuggestionEmailAddress$2(emailAddress, t2);
     },
-    $signature: 160
+    $signature: 155
   };
   C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -3786,13 +2934,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return B.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 36
+    $signature: 37
   };
   C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
       return new A.SuggestionEmailAddress(emailAddress, B.SuggestionEmailState_1);
     },
-    $signature: 160
+    $signature: 155
   };
   C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure.prototype = {
     call$0() {
@@ -4002,7 +3150,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = $.GetInstance__getInstance = B.C_GetInstance;
       return new C.EmailForwardItemWidget(t4, t6, t5, t2, new C.ListEmailForwardsWidget_build___closure(t1, context), t3.find$1$1$tag(0, null, type$.ImagePaths), null);
     },
-    $signature: typesOffset + 6
+    $signature: typesOffset + 4
   };
   C.ListEmailForwardsWidget_build___closure.prototype = {
     call$1(recipientForward) {
@@ -4015,7 +3163,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = "";
       t1.deleteRecipients$2(this.context, t2);
     },
-    $signature: 1920
+    $signature: 1924
   };
   C.ListEmailForwardsWidget__buildTitleHeader_closure.prototype = {
     call$0() {
@@ -4068,7 +3216,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(t3._buildDeleteAllButton$1(_this.context));
       return A.Container$(_null, A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, B.Color_9Sx, _null, _null, _null, 44, _null, _null, B.EdgeInsets_0_0_12_0, _null, _null, 1 / 0);
     },
-    $signature: 508
+    $signature: 564
   };
   C.ListEmailForwardsWidget__buildDeleteAllButton_closure.prototype = {
     call$0() {
@@ -4083,6 +3231,152 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return t4.deleteMultipleRecipients$2(this.context, C.ListRecipientForwardExtension_get_listEmailAddress(t3._as(t2.get(t1)).get$listRecipientForwardSelected()));
     },
     $signature: 0
+  };
+  C.IdentitiesView_build_closure.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).goToCreateNewIdentity$1(this.context);
+    },
+    $signature: 0
+  };
+  C.IdentitiesView_build_closure0.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).goToCreateNewIdentity$1(this.context);
+    },
+    $signature: 0
+  };
+  C.IdentitiesView_build_closure1.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return new C.IdentityLoadingWidget(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).identitiesViewState.get$value(0), null);
+    },
+    $signature: typesOffset + 5
+  };
+  C.IdentitiesView_build_closure2.prototype = {
+    call$0() {
+      var t3, t4,
+        t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      t4 = J.get$length$asx(t3._as(t2.get(t1)).listAllIdentities.get$value(0));
+      A.Expando__checkType(t1);
+      return A.ListView$separated(t3._as(t2.get(t1)).listIdentityScrollController, new C.IdentitiesView_build__closure(t1, this.isDesktop), t4 + 1, null, B.ScrollViewKeyboardDismissBehavior_0, D.EdgeInsetsDirectional_24_0_24_24, null, null, false, B.Axis_1, new C.IdentitiesView_build__closure0(), true);
+    },
+    $signature: 5
+  };
+  C.IdentitiesView_build__closure.prototype = {
+    call$2(context, index) {
+      var t3, identity,
+        t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      if (index === J.get$length$asx(t3._as(t2.get(t1)).listAllIdentities.get$value(0)))
+        return B.SizedBox_0_0_null_null;
+      A.Expando__checkType(t1);
+      identity = J.$index$asx(t3._as(t2.get(t1)).listAllIdentities.get$value(0), index);
+      A.Expando__checkType(t1);
+      return new A.Obx(new C.IdentitiesView_build___closure(t1, identity, identity.$eq(0, t3._as(t2.get(t1)).identitySelected.get$value(0)), this.isDesktop, context), null);
+    },
+    $signature: 109
+  };
+  C.IdentitiesView_build___closure.prototype = {
+    call$0() {
+      var t3, t4, t5, t6, t7, _this = this,
+        t1 = _this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      t4 = t3._as(t2.get(t1)).imagePaths;
+      A.Expando__checkType(t1);
+      t5 = t3._as(t2.get(t1)).mapIdentitySignatures;
+      A.Expando__checkType(t1);
+      t6 = t3._as(t2.get(t1)).signatureViewState.get$value(0);
+      A.Expando__checkType(t1);
+      t7 = _this.context;
+      return new C.IdentityListTileBuilder(_this.identity, t5, t6, t4, _this.isSelected, _this.isDesktop, new C.IdentitiesView_build____closure(t1, t7), new C.IdentitiesView_build____closure0(t1, t7), t3._as(t2.get(t1)).listIdentityScrollController, null);
+    },
+    $signature: typesOffset + 6
+  };
+  C.IdentitiesView_build____closure.prototype = {
+    call$1(identitySelected) {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).goToEditIdentity$2(this.context, identitySelected);
+    },
+    $signature: 501
+  };
+  C.IdentitiesView_build____closure0.prototype = {
+    call$1(identitySelected) {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openConfirmationDialogDeleteIdentityAction$2(this.context, identitySelected);
+    },
+    $signature: 501
+  };
+  C.IdentitiesView_build__closure0.prototype = {
+    call$2(_, index) {
+      var _null = null;
+      return new A.Padding(D.EdgeInsets_0_24_0_24, A.Divider$(B.Color_9Sx1.withValues$1$alpha(0.08), _null, _null, _null), _null);
+    },
+    $signature: 201
+  };
+  C.IdentityLoadingWidget_build_closure.prototype = {
+    call$1(failure) {
+      return B.SizedBox_0_0_null_null;
+    },
+    $signature: 53
+  };
+  C.IdentityLoadingWidget_build_closure0.prototype = {
+    call$1(success) {
+      if (success instanceof A.GetAllIdentitiesLoading)
+        return D.Center_OLK;
+      else
+        return B.SizedBox_0_0_null_null;
+    },
+    $signature: 70
+  };
+  C.ListIdentityItemActionsWidget_build_closure.prototype = {
+    call$0() {
+      var t1 = this.$this;
+      return t1.onEditIdentityAction.call$1(t1.identity);
+    },
+    $signature: 0
+  };
+  C.ListIdentityItemActionsWidget_build_closure0.prototype = {
+    call$0() {
+      var t1 = this.$this;
+      return t1.onDeleteIdentityAction.call$1(t1.identity);
+    },
+    $signature: 0
+  };
+  C.SignatureLoadingWidget_build_closure.prototype = {
+    call$1(failure) {
+      return B.SizedBox_0_0_null_null;
+    },
+    $signature: 53
+  };
+  C.SignatureLoadingWidget_build_closure0.prototype = {
+    call$1(success) {
+      if (success instanceof A.TransformListSignatureLoading)
+        return D.Center_qoL;
+      else
+        return B.SizedBox_0_0_null_null;
+    },
+    $signature: 70
   };
   C._ChangeLanguageButtonWidgetState__buildLanguageMenu_closure.prototype = {
     call$3(context, isVisible, child) {
@@ -4099,7 +3393,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = isVisible ? B.Color_ioO0.withValues$1$alpha(0.6) : _null;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(E.Aligned_wEo, new C.TMailDropDownWidget(t6, "assets/images/ic_dropdown.svg", new C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure0(t1), t4, _null), new C.LanguageRegionOverlay(t1._change_language_button_widget$_imagePaths, t1._change_language_button_widget$_responsiveUtils, t3.listSupportedLanguages, t5, this.maxWidth, new C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure1(t1), _null), isVisible), t2, isVisible);
     },
-    $signature: 415
+    $signature: 378
   };
   C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure.prototype = {
     call$0() {
@@ -4114,7 +3408,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._languageMenuIsVisibleNotifier.set$value(0, false);
       t1._languageAndRegionController.selectLanguage$1(language);
     },
-    $signature: 1922
+    $signature: 1926
   };
   C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure0.prototype = {
     call$0() {
@@ -4168,13 +3462,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 50
+    $signature: 53
   };
   C.MailboxVisibilityView__buildLoadingView__closure0.prototype = {
     call$1(success) {
       return success instanceof A.LoadingState || success instanceof A.LoadingBuildTreeMailboxVisibility ? new A.Padding(B.EdgeInsets_0_16_0_0, B.Center_lau, null) : B.SizedBox_0_0_null_null;
     },
-    $signature: 89
+    $signature: 70
   };
   C.MailboxVisibilityView__buildListMailbox_closure.prototype = {
     call$0() {
@@ -4235,7 +3529,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t2);
       return A.MailboxCategoryWidget$(t1, A.MailboxCategoriessExtension_getExpandMode(t1, A._instanceType(t2)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(t2)).mailboxCategoriesExpandMode.get$value(0)), null, null, true, null, new C.MailboxVisibilityView__buildMailboxCategory__closure(t2), B.EdgeInsetsDirectional_0_8_0_8, false);
     },
-    $signature: 352
+    $signature: 383
   };
   C.MailboxVisibilityView__buildMailboxCategory__closure.prototype = {
     call$2(categories, itemKey) {
@@ -4249,7 +3543,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return t4.toggleMailboxCategories$3(categories, t3._as(t2.get(t1)).mailboxListScrollController, itemKey);
     },
-    $signature: 351
+    $signature: 382
   };
   C.MailboxVisibilityView__buildListChildTileWidget_closure.prototype = {
     call$1(mailboxNode) {
@@ -4270,7 +3564,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1;
     },
-    $signature: 349
+    $signature: 381
   };
   C.MailboxVisibilityView__buildListChildTileWidget__closure.prototype = {
     call$2(mailboxNode, itemKey) {
@@ -4284,7 +3578,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$3(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController, itemKey);
     },
-    $signature: 267
+    $signature: 239
   };
   C.MailboxVisibilityView__buildListChildTileWidget__closure0.prototype = {
     call$2(mailboxNode, itemKey) {
@@ -4298,7 +3592,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$3(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController, itemKey);
     },
-    $signature: 267
+    $signature: 239
   };
   C._MailBoxVisibilityFolderTileBuilderState_build_closure.prototype = {
     call$0() {
@@ -4334,7 +3628,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.SizedBox_0_0_null_null;
       return new A.Obx(new C.ManageAccountDashBoardView_build__closure0(this.$this, context), null);
     },
-    $signature: 295
+    $signature: 186
   };
   C.ManageAccountDashBoardView_build__closure0.prototype = {
     call$0() {
@@ -4436,8 +3730,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       switch (t3._as(t2.get(t1)).accountMenuItemSelected.get$value(0)) {
         case B.AccountMenuItem_0:
-          A.Expando__checkType(t1);
-          return new C.ProfilesView(t3._as(t2.get(t1)).responsiveUtils, null);
+          return D.IdentitiesView_null;
         case B.AccountMenuItem_1:
           A.Expando__checkType(t1);
           if (t3._as(t2.get(t1)).get$isLanguageSettingDisplayed())
@@ -4503,7 +3796,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Obx(new C.ManageAccountMenuView_build___closure(this.$this, index), null);
     },
-    $signature: 271
+    $signature: 241
   };
   C.ManageAccountMenuView_build___closure.prototype = {
     call$0() {
@@ -4558,7 +3851,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       t1.onGetHelpOrReportBug$2$route(t2, "/settings");
     },
-    $signature: 342
+    $signature: 355
   };
   C.ManageAccountMenuView_build_closure2.prototype = {
     call$1(_) {
@@ -4574,7 +3867,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4._handleLogoutAction$2(t5, t3._as(t2.get(t1)).dashBoardController.accountId.get$value(0));
     },
-    $signature: 342
+    $signature: 355
   };
   C.SettingsFirstLevelView_build_closure1.prototype = {
     call$0() {
@@ -4624,7 +3917,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 85
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure4.prototype = {
     call$0() {
@@ -4660,7 +3953,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 85
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure3.prototype = {
     call$0() {
@@ -4696,7 +3989,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 85
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure2.prototype = {
     call$0() {
@@ -4732,7 +4025,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 85
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure1.prototype = {
     call$0() {
@@ -4773,7 +4066,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.Column$(A._setArrayType([t5, C.SettingFirstLevelTileBuilder$(t4, B.AccountMenuItem_1.getIcon$1(t3._as(t2.get(t1)).imagePaths), new C.SettingsFirstLevelView_build__closure0(t1), D.ValueKey_setting_language_region, null)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
     },
-    $signature: 85
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure0.prototype = {
     call$0() {
@@ -4792,7 +4085,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).manageAccountDashboardController.get$isFcmCapabilitySupported();
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 85
+    $signature: 87
   };
   C.SettingsFirstLevelView_build_closure8.prototype = {
     call$0() {
@@ -4821,7 +4114,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.Column$(A._setArrayType([t5, C.SettingFirstLevelTileBuilder$(t4, B.AccountMenuItem_8.getIcon$1(t3._as(t2.get(t1)).imagePaths), new C.SettingsFirstLevelView_build__closure(t1, contactSupportCapability), _null, _null)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
     },
-    $signature: 85
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure.prototype = {
     call$0() {
@@ -4974,8 +4267,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       switch (t3._as(t2.get(t1)).manageAccountDashboardController.accountMenuItemSelected.get$value(0)) {
         case B.AccountMenuItem_0:
-          A.Expando__checkType(t1);
-          return new C.ProfilesView(t3._as(t2.get(t1)).responsiveUtils, null);
+          return D.IdentitiesView_null;
         case B.AccountMenuItem_1:
           A.Expando__checkType(t1);
           if (t3._as(t2.get(t1)).manageAccountDashboardController.get$isLanguageSettingDisplayed())
@@ -5029,7 +4321,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return t1;
     },
-    $signature: 1923
+    $signature: 1927
   };
   C.NotificationView_build_closure.prototype = {
     call$0() {
@@ -5067,7 +4359,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Row$(A._setArrayType([t6, B.SizedBox_12_null_null_null, A.InkWell$(false, _null, true, new A.Padding(B.EdgeInsets_4_4_4_4, A.SvgPicture$asset(t1, B.Alignment_0_0, _null, B.BoxFit_1, 32, _null, _null, 52), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null, _null, _null, _null, _null)], t5), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 85
+    $signature: 87
   };
   C.PreferencesView_build_closure0.prototype = {
     call$0() {
@@ -5082,7 +4374,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return new A.Padding(C.SettingsUtils_getSettingProgressBarPadding(this.context, t3._as(t2.get(t1)).responsiveUtils), B.Center_pYG, null);
     },
-    $signature: 95
+    $signature: 96
   };
   C.PreferencesView_build_closure.prototype = {
     call$0() {
@@ -5116,13 +4408,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(optionType) {
       return !optionType.get$isLocal();
     },
-    $signature: 727
+    $signature: 497
   };
   C.PreferencesView_build__closure0.prototype = {
     call$1(optionType) {
       return optionType.get$isLocal();
     },
-    $signature: 727
+    $signature: 497
   };
   C.PreferencesView_build__closure1.prototype = {
     call$2(context, index) {
@@ -5146,7 +4438,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(_, __) {
       return D.SizedBox_null_49_null_null;
     },
-    $signature: 361
+    $signature: 348
   };
   C.SettingOptionItem_build_closure.prototype = {
     call$0() {
@@ -5155,216 +4447,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return t1.onTapSettingOptionAction.call$2(t2, t2.isEnabled$2(0, t1.settingOption, t1.localSettings));
     },
     $signature: 0
-  };
-  C.IdentitiesView__buildIdentitiesViewMobile_closure.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = $.$get$GetWidget__cache();
-      A.Expando__checkType(t1);
-      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).goToCreateNewIdentity$1(this.context);
-    },
-    $signature: 0
-  };
-  C.IdentitiesView__buildIdentitiesViewWebDesktop_closure.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = $.$get$GetWidget__cache();
-      A.Expando__checkType(t1);
-      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).goToCreateNewIdentity$1(this.context);
-    },
-    $signature: 0
-  };
-  C.IdentitiesRadioListBuilder_build_closure.prototype = {
-    call$0() {
-      var _null = null,
-        t1 = this.$this.controller;
-      return new A.Align(B.AlignmentDirectional_0_m1, _null, _null, new C.IdentityLoadingWidget(t1.viewState.get$value(0), t1.accountDashBoardController.viewState.get$value(0), _null), _null);
-    },
-    $signature: 1925
-  };
-  C.IdentitiesRadioListBuilder__buildIdentityViewVertical_closure.prototype = {
-    call$0() {
-      var _null = null,
-        t1 = type$.JSArray_Widget,
-        t2 = A._setArrayType([], t1),
-        t3 = this.$this,
-        t4 = this.context;
-      if (t3.controller.identitySelected.get$value(0) != null)
-        B.JSArray_methods.addAll$1(t2, A._setArrayType([t3._buildListIdentityView$1(t4), A.Container$(_null, _null, B.Clip_0, B.Color_gkc0, _null, _null, _null, 1, _null, _null, _null, _null, _null, _null), new A.Obx(new C.IdentitiesRadioListBuilder__buildIdentityViewVertical__closure(t3), _null)], t1));
-      else
-        t2.push(t3._buildListIdentityView$1(t4));
-      return A.Column$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
-    },
-    $signature: 299
-  };
-  C.IdentitiesRadioListBuilder__buildIdentityViewVertical__closure.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1.controller;
-      if (t2.identitySelected.get$value(0) != null) {
-        t1 = t2.signatureSelected.get$value(0);
-        t1.toString;
-        return C.SignatureBuilder$(t1);
-      } else
-        return t1._identities_radio_list_builder$_buildLoadingView$0();
-    },
-    $signature: 5
-  };
-  C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal_closure.prototype = {
-    call$0() {
-      var _null = null,
-        t1 = type$.JSArray_Widget,
-        t2 = A._setArrayType([], t1),
-        t3 = this.$this,
-        t4 = this.context;
-      if (t3.controller.identitySelected.get$value(0) != null)
-        B.JSArray_methods.addAll$1(t2, A._setArrayType([t3._buildListIdentityView$1(t4), A.Container$(_null, _null, B.Clip_0, B.Color_gkc0, _null, _null, _null, _null, _null, _null, _null, _null, _null, 1), A.Expanded$(new A.Obx(new C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure(t3), _null), 1)], t1));
-      else
-        t2.push(A.Expanded$(t3._buildListIdentityView$1(t4), 1));
-      return A.Row$(t2, B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
-    },
-    $signature: 1926
-  };
-  C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure.prototype = {
-    call$0() {
-      var t1 = this.$this,
-        t2 = t1.controller.signatureSelected;
-      if (t2.get$value(0) != null) {
-        t1 = t2.get$value(0);
-        t1.toString;
-        return C.SignatureBuilder$(t1);
-      } else
-        return t1._identities_radio_list_builder$_buildLoadingView$0();
-    },
-    $signature: 5
-  };
-  C.IdentitiesRadioListBuilder__buildListIdentityView_closure.prototype = {
-    call$0() {
-      var controller, _null = null,
-        t1 = this.$this;
-      t1 = A.ListView$builder(new A.ScrollController(0, true, _null, _null, _null, A._setArrayType([], type$.JSArray_ScrollPosition), $.$get$ChangeNotifier__emptyListeners()), new C.IdentitiesRadioListBuilder__buildListIdentityView__closure(t1), J.get$length$asx(t1.controller.listAllIdentities.get$value(0)), _null, _null, B.EdgeInsets_0_0_12_0, _null, _null, B.Axis_1, false);
-      controller = t1.controller;
-      if (controller == null)
-        A.throwExpression(A.Exception_Exception("Child must have controller set"));
-      return new C.FadingEdgeScrollView(t1, controller, t1.reverse, t1.scrollDirection, 0.3, 0.3, _null);
-    },
-    $signature: typesOffset + 15
-  };
-  C.IdentitiesRadioListBuilder__buildListIdentityView__closure.prototype = {
-    call$2(context, index) {
-      var t1 = this.$this,
-        t2 = t1.controller;
-      return new C.IdentityListTileBuilder(J.$index$asx(t2.listAllIdentities.get$value(0), index), t2.identitySelected.get$value(0), t1.imagePaths, t2.get$selectIdentity(), new C.IdentitiesRadioListBuilder__buildListIdentityView___closure(t1, context), new C.IdentitiesRadioListBuilder__buildListIdentityView___closure0(t1, context), null);
-    },
-    $signature: typesOffset + 16
-  };
-  C.IdentitiesRadioListBuilder__buildListIdentityView___closure.prototype = {
-    call$1(identitySelected) {
-      return this.$this.controller.goToEditIdentity$2(this.context, identitySelected);
-    },
-    $signature: 728
-  };
-  C.IdentitiesRadioListBuilder__buildListIdentityView___closure0.prototype = {
-    call$1(identitySelected) {
-      return this.$this.controller.openConfirmationDialogDeleteIdentityAction$2(this.context, identitySelected);
-    },
-    $signature: 728
-  };
-  C.IdentitiesRadioListBuilder__buildLoadingView_closure.prototype = {
-    call$0() {
-      return J.fold$2$ax(this.$this.controller.viewState.get$value(0), new C.IdentitiesRadioListBuilder__buildLoadingView__closure(), new C.IdentitiesRadioListBuilder__buildLoadingView__closure0());
-    },
-    $signature: 5
-  };
-  C.IdentitiesRadioListBuilder__buildLoadingView__closure.prototype = {
-    call$1(failure) {
-      return B.SizedBox_0_0_null_null;
-    },
-    $signature: 50
-  };
-  C.IdentitiesRadioListBuilder__buildLoadingView__closure0.prototype = {
-    call$1(success) {
-      if (success instanceof A.TransformHtmlSignatureLoading)
-        return I.Align_yur;
-      else
-        return B.SizedBox_0_0_null_null;
-    },
-    $signature: 89
-  };
-  C.IdentityListTileBuilder_build_closure1.prototype = {
-    call$0() {
-      var t1 = this.$this;
-      t1 = t1.onSelectIdentityAction.call$1(t1.identity);
-      return t1;
-    },
-    $signature: 0
-  };
-  C.IdentityListTileBuilder_build_closure.prototype = {
-    call$0() {
-      var t1 = this.$this;
-      t1 = t1.onEditIdentityAction.call$1(t1.identity);
-      return t1;
-    },
-    $signature: 0
-  };
-  C.IdentityListTileBuilder_build_closure0.prototype = {
-    call$0() {
-      var t1 = this.$this;
-      t1 = t1.onDeleteIdentityAction.call$1(t1.identity);
-      return t1;
-    },
-    $signature: 0
-  };
-  C.IdentityLoadingWidget_build_closure.prototype = {
-    call$1(failure) {
-      return this.$this.identityViewState.fold$2(0, new C.IdentityLoadingWidget_build__closure1(), new C.IdentityLoadingWidget_build__closure2());
-    },
-    $signature: 99
-  };
-  C.IdentityLoadingWidget_build__closure1.prototype = {
-    call$1(failure) {
-      return B.SizedBox_0_0_null_null;
-    },
-    $signature: 50
-  };
-  C.IdentityLoadingWidget_build__closure2.prototype = {
-    call$1(success) {
-      if (success instanceof A.GetAllIdentitiesLoading || success instanceof A.GetSessionLoading)
-        return D.CircleLoadingWidget_FVJ;
-      else
-        return B.SizedBox_0_0_null_null;
-    },
-    $signature: 58
-  };
-  C.IdentityLoadingWidget_build_closure0.prototype = {
-    call$1(success) {
-      return this.$this.identityViewState.fold$2(0, new C.IdentityLoadingWidget_build__closure(), new C.IdentityLoadingWidget_build__closure0());
-    },
-    $signature: 58
-  };
-  C.IdentityLoadingWidget_build__closure.prototype = {
-    call$1(failure) {
-      return B.SizedBox_0_0_null_null;
-    },
-    $signature: 50
-  };
-  C.IdentityLoadingWidget_build__closure0.prototype = {
-    call$1(success) {
-      if (success instanceof A.GetAllIdentitiesLoading || success instanceof A.GetSessionLoading)
-        return D.CircleLoadingWidget_FVJ;
-      else
-        return B.SizedBox_0_0_null_null;
-    },
-    $signature: 58
-  };
-  C.SignatureBuilder_build_closure.prototype = {
-    call$2(context, constraints) {
-      var _null = null,
-        signatureWidth = A.clampDouble(1 / 0, constraints.minWidth, constraints.maxWidth);
-      A.clampDouble(1 / 0, constraints.minHeight, constraints.maxHeight);
-      return A.Container$(_null, this.$this._buildSignature$3(context, signatureWidth, 256), B.Clip_0, B.Color_9Sx0, _null, _null, _null, _null, _null, _null, D.EdgeInsets_8_16_8_16, _null, _null, signatureWidth);
-    },
-    $signature: 135
   };
   C.VacationView_build_closure.prototype = {
     call$0() {
@@ -5385,7 +4467,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.InkWell$(false, _null, true, A.SvgPicture$asset(t2, B.Alignment_0_0, _null, B.BoxFit_0, 24, _null, _null, 24), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.VacationView_build__closure8(t1), _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 729
+    $signature: 492
   };
   C.VacationView_build__closure8.prototype = {
     call$0() {
@@ -5479,7 +4561,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(t1, _null, t5), _null);
     },
-    $signature: 226
+    $signature: 210
   };
   C.VacationView_build__closure4.prototype = {
     call$1(value) {
@@ -5488,7 +4570,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectDate$3(this.context, B.DateType_00, value);
     },
-    $signature: 18
+    $signature: 17
   };
   C.VacationView_build__closure5.prototype = {
     call$1(value) {
@@ -5497,7 +4579,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectTime$3(this.context, B.DateType_00, value);
     },
-    $signature: 18
+    $signature: 17
   };
   C.VacationView_build__closure6.prototype = {
     call$1(value) {
@@ -5506,7 +4588,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectDate$3(this.context, B.DateType_00, value);
     },
-    $signature: 18
+    $signature: 17
   };
   C.VacationView_build__closure7.prototype = {
     call$1(value) {
@@ -5515,7 +4597,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectTime$3(this.context, B.DateType_00, value);
     },
-    $signature: 18
+    $signature: 17
   };
   C.VacationView_build_closure1.prototype = {
     call$0() {
@@ -5531,7 +4613,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(A.Row$(A._setArrayType([new A.Obx(new C.VacationView_build__closure3(t1), _null), B.SizedBox_16_null_null_null, A.Expanded$(A.Text$(A.Intl__message("Vacation stops at", _null, "vacationStopsAt", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_9Sx1, 16, B.FontWeight_3_400), _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null, t2), _null);
     },
-    $signature: 226
+    $signature: 210
   };
   C.VacationView_build__closure3.prototype = {
     call$0() {
@@ -5552,7 +4634,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.InkWell$(false, _null, true, A.SvgPicture$asset(t2, B.Alignment_0_0, _null, B.BoxFit_0, 24, _null, _null, 24), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.VacationView_build___closure(t1), _null, _null, _null, _null, _null, _null, _null);
     },
-    $signature: 729
+    $signature: 492
   };
   C.VacationView_build___closure.prototype = {
     call$0() {
@@ -5652,7 +4734,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.AbsorbPointer$(!t4, A.Opacity$(t1, _null, t5), _null);
     },
-    $signature: 226
+    $signature: 210
   };
   C.VacationView_build__closure.prototype = {
     call$1(value) {
@@ -5661,7 +4743,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectDate$3(this.context, B.DateType_10, value);
     },
-    $signature: 18
+    $signature: 17
   };
   C.VacationView_build__closure0.prototype = {
     call$1(value) {
@@ -5670,7 +4752,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectTime$3(this.context, B.DateType_10, value);
     },
-    $signature: 18
+    $signature: 17
   };
   C.VacationView_build__closure1.prototype = {
     call$1(value) {
@@ -5679,7 +4761,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectDate$3(this.context, B.DateType_10, value);
     },
-    $signature: 18
+    $signature: 17
   };
   C.VacationView_build__closure2.prototype = {
     call$1(value) {
@@ -5688,7 +4770,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectTime$3(this.context, B.DateType_10, value);
     },
-    $signature: 18
+    $signature: 17
   };
   C.VacationView_build_closure3.prototype = {
     call$0() {
@@ -5734,7 +4816,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, t1, _null);
     },
-    $signature: 226
+    $signature: 210
   };
   C.VacationView_build_closure4.prototype = {
     call$0() {
@@ -5760,7 +4842,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t11.push(A.Center$(A.PointerInterceptor$(t1.buildToolbarRichTextForWeb$3$layoutType(t6, t2, B.ButtonLayoutType_0)), _null, _null));
       return A.AbsorbPointer$(t4 !== B.VacationResponderStatus_0, A.Opacity$(A.Column$(A._setArrayType([t7, B.SizedBox_null_8_null_null, A.Container$(_null, A.Column$(t11, B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_9Sx0, _null, t9, t8, _null, _null, _null, B.BoxShape_0), _null, _null, _null, _null, D.EdgeInsetsDirectional_12_12_12_0, _null, _null, _null)], t10), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, t5), _null);
     },
-    $signature: 226
+    $signature: 210
   };
   C.VacationView_build_closure5.prototype = {
     call$0() {
@@ -5849,68 +4931,41 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 9
   };
-  (function aliases() {
-    var _ = C.__RadioState_State_TickerProviderStateMixin.prototype;
-    _.super$__RadioState_State_TickerProviderStateMixin$dispose = _.dispose$0;
-    _ = C.__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin.prototype;
-    _.super$__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin$dispose = _.dispose$0;
-  })();
   (function installTearOffs() {
-    var _instance_0_u = hunkHelpers._instance_0u,
-      _instance_1_u = hunkHelpers._instance_1u,
-      _instance = hunkHelpers.installInstanceTearOff;
-    _instance_0_u(C.FadingEdgeScrollViewState.prototype, "get$_updateScrollState", "_updateScrollState$0", 0);
-    _instance_1_u(C._RadioState.prototype, "get$_radio$_handleChanged", "_radio$_handleChanged$1", 1);
+    var _instance = hunkHelpers.installInstanceTearOff,
+      _instance_1_u = hunkHelpers._instance_1u;
     var _;
-    _instance(_ = C._AutocompleteContactTextFieldWithTagsState.prototype, "get$_autocomplete_contact_text_field_with_tags$_findSuggestions", 0, 1, null, ["call$2$limit", "call$1"], ["_autocomplete_contact_text_field_with_tags$_findSuggestions$2$limit", "_autocomplete_contact_text_field_with_tags$_findSuggestions$1"], 3, 0, 0);
-    _instance_1_u(_, "get$_validateEmailAddressIsValid", "_validateEmailAddressIsValid$1", 4);
+    _instance(_ = C._AutocompleteContactTextFieldWithTagsState.prototype, "get$_autocomplete_contact_text_field_with_tags$_findSuggestions", 0, 1, null, ["call$2$limit", "call$1"], ["_autocomplete_contact_text_field_with_tags$_findSuggestions$2$limit", "_autocomplete_contact_text_field_with_tags$_findSuggestions$1"], 1, 0, 0);
+    _instance_1_u(_, "get$_validateEmailAddressIsValid", "_validateEmailAddressIsValid$1", 2);
   })();
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
-      _mixinHard = hunkHelpers.mixinHard,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
-    _inheritMany(A.StatefulWidget, [C.FadingEdgeScrollView, C.Radio, C.AutocompleteContactTextFieldWithTags, C.ChangeLanguageButtonWidget, C.MailBoxVisibilityFolderTileBuilder]);
-    _inheritMany(A.State0, [C._FadingEdgeScrollViewState_State_WidgetsBindingObserver, C.__RadioState_State_TickerProviderStateMixin, C.__AutocompleteContactTextFieldWithTagsState_State_MessageDialogActionMixin, C._ChangeLanguageButtonWidgetState, C._MailBoxVisibilityFolderTileBuilderState]);
-    _inherit(C.FadingEdgeScrollViewState, C._FadingEdgeScrollViewState_State_WidgetsBindingObserver);
-    _inheritMany(A.Closure, [C.FadingEdgeScrollViewState_build_closure, C.FadingEdgeScrollViewState_build_closure0, C._RadioState__widgetFillColor_closure, C._RadioState_build_closure, C._RadioDefaultsM3_fillColor_closure, C._RadioDefaultsM3_overlayColor_closure, C.EmailRulesView__buildLoadingView__closure, C.EmailRulesView__buildLoadingView__closure0, C.ForwardView__buildLoadingView__closure, C.ForwardView__buildLoadingView__closure0, C.ForwardView__buildAddRecipientsFormWidget_closure, C.ForwardView__buildAddRecipientsFormWidget_closure0, C._AutocompleteContactTextFieldWithTagsState_build_closure1, C._AutocompleteContactTextFieldWithTagsState_build_closure2, C._AutocompleteContactTextFieldWithTagsState_build_closure3, C._AutocompleteContactTextFieldWithTagsState_build__closure, C._AutocompleteContactTextFieldWithTagsState_build_closure4, C._AutocompleteContactTextFieldWithTagsState_build_closure, C._AutocompleteContactTextFieldWithTagsState_build_closure5, C._AutocompleteContactTextFieldWithTagsState_build__closure0, C._AutocompleteContactTextFieldWithTagsState__isDuplicatedRecipient_closure, C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure, C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure, C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0, C.ListEmailForwardsWidget_build___closure, C._ChangeLanguageButtonWidgetState__buildLanguageMenu_closure, C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure1, C.MailboxVisibilityView__buildLoadingView__closure, C.MailboxVisibilityView__buildLoadingView__closure0, C.MailboxVisibilityView__buildListChildTileWidget_closure, C.ManageAccountDashBoardView_build___closure, C.ManageAccountMenuView_build__closure, C.ManageAccountMenuView_build_closure2, C.ListRecipientForwardExtension_get_listEmailAddress_closure, C.PreferencesView_build__closure, C.PreferencesView_build__closure0, C.IdentitiesRadioListBuilder__buildListIdentityView___closure, C.IdentitiesRadioListBuilder__buildListIdentityView___closure0, C.IdentitiesRadioListBuilder__buildLoadingView__closure, C.IdentitiesRadioListBuilder__buildLoadingView__closure0, C.IdentityLoadingWidget_build_closure, C.IdentityLoadingWidget_build__closure1, C.IdentityLoadingWidget_build__closure2, C.IdentityLoadingWidget_build_closure0, C.IdentityLoadingWidget_build__closure, C.IdentityLoadingWidget_build__closure0, C.VacationView_build__closure4, C.VacationView_build__closure5, C.VacationView_build__closure6, C.VacationView_build__closure7, C.VacationView_build__closure, C.VacationView_build__closure0, C.VacationView_build__closure1, C.VacationView_build__closure2]);
-    _inheritMany(A.Closure0Args, [C.FadingEdgeScrollViewState__updateScrollState_closure, C.BorderButtonField_build_closure, C.ContactInputTagItem_build_closure, C.ContactSuggestionBoxItem_build_closure, C.EmailRulesView_build_closure, C.EmailRulesView__buildLoadingView_closure, C.EmailRulesItemWidget_build_closure, C.EmailRulesItemWidget_build_closure0, C.EmailRulesItemWidget_build_closure1, C.ListEmailRulesWidget_build_closure, C.ListEmailRulesWidget_build_closure0, C.ForwardView_build_closure1, C.ForwardView_build_closure, C.ForwardView_build_closure0, C.ForwardView__buildKeepLocalSwitchButton_closure, C.ForwardView__buildLoadingView_closure, C._AutocompleteContactTextFieldWithTagsState_build__closure1, C._AutocompleteContactTextFieldWithTagsState_build_closure0, C._AutocompleteContactTextFieldWithTagsState_build__closure2, C._AutocompleteContactTextFieldWithTagsState_build___closure, C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure0, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure2, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure1, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure0, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure2, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1, C.EmailForwardItemWidget_build_closure0, C.EmailForwardItemWidget_build_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure0, C.ListEmailForwardsWidget_build_closure, C.ListEmailForwardsWidget__buildTitleHeader_closure, C.ListEmailForwardsWidget__buildDeleteAllButton_closure, C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure, C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure0, C._ChangeLanguageButtonWidgetState__buildMobileLanguageMenu_closure, C._ChangeLanguageButtonWidgetState__buildMobileLanguageMenu__closure, C.LanguageItemWidget_build_closure, C.MailboxVisibilityView__buildLoadingView_closure, C.MailboxVisibilityView__buildListMailbox_closure, C.MailboxVisibilityView__buildListMailbox_closure0, C.MailboxVisibilityView__buildListMailbox_closure1, C.MailboxVisibilityView__buildMailboxCategory_closure, C._MailBoxVisibilityFolderTileBuilderState_build_closure, C._MailBoxVisibilityFolderTileBuilderState__buildLeadingMailboxItem_closure, C._MailBoxVisibilityFolderTileBuilderState__buildSubscribeButton_closure, C.ManageAccountDashBoardView_build_closure1, C.ManageAccountDashBoardView_build__closure0, C.ManageAccountDashBoardView_build___closure0, C.ManageAccountDashBoardView_build_closure0, C.ManageAccountDashBoardView_build__closure, C.ManageAccountDashBoardView__viewDisplayedOfAccountMenuItem_closure, C.ManageAccountMenuView_build_closure, C.ManageAccountMenuView_build_closure0, C.ManageAccountMenuView_build___closure, C.ManageAccountMenuView_build_closure1, C.SettingsFirstLevelView_build_closure1, C.SettingsFirstLevelView_build_closure, C.SettingsFirstLevelView_build_closure2, C.SettingsFirstLevelView_build__closure4, C.SettingsFirstLevelView_build_closure3, C.SettingsFirstLevelView_build__closure3, C.SettingsFirstLevelView_build_closure4, C.SettingsFirstLevelView_build__closure2, C.SettingsFirstLevelView_build_closure5, C.SettingsFirstLevelView_build__closure1, C.SettingsFirstLevelView_build_closure0, C.SettingsFirstLevelView_build_closure6, C.SettingsFirstLevelView_build__closure0, C.SettingsFirstLevelView_build_closure7, C.SettingsFirstLevelView_build_closure8, C.SettingsFirstLevelView_build__closure, C.SettingsFirstLevelView_build_closure9, C.SettingsView_build_closure, C.SettingsView_build__closure0, C.SettingsView_build__closure1, C.SettingsView_build_closure0, C.SettingsView_build__closure, C.SettingsView__bodySettingsScreen_closure, C.SettingsView__viewDisplayedOfAccountMenuItem_closure, C.AccountMenuItemTileBuilder_build_closure, C.NotificationView_build_closure, C.PreferencesView_build_closure0, C.PreferencesView_build_closure, C.SettingOptionItem_build_closure, C.IdentitiesView__buildIdentitiesViewMobile_closure, C.IdentitiesView__buildIdentitiesViewWebDesktop_closure, C.IdentitiesRadioListBuilder_build_closure, C.IdentitiesRadioListBuilder__buildIdentityViewVertical_closure, C.IdentitiesRadioListBuilder__buildIdentityViewVertical__closure, C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal_closure, C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure, C.IdentitiesRadioListBuilder__buildListIdentityView_closure, C.IdentitiesRadioListBuilder__buildLoadingView_closure, C.IdentityListTileBuilder_build_closure1, C.IdentityListTileBuilder_build_closure, C.IdentityListTileBuilder_build_closure0, C.VacationView_build_closure, C.VacationView_build__closure8, C.VacationView_build_closure0, C.VacationView_build_closure1, C.VacationView_build__closure3, C.VacationView_build___closure, C.VacationView_build_closure2, C.VacationView_build_closure3, C.VacationView_build_closure4, C.VacationView_build_closure5, C.VacationView__buildListButtonAction_closure, C.VacationView__buildListButtonAction_closure0, C.VacationView__buildListButtonAction_closure1, C.VacationView__buildListButtonAction_closure2, C.VacationView__buildListButtonAction_closure3, C.VacationView__buildMessageHtmlTextEditor_closure, C.VacationView__buildMessageHtmlTextEditor__closure]);
-    _inheritMany(A._Enum, [C._ScrollState, C._RadioType]);
-    _inherit(C.__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin, C.__RadioState_State_TickerProviderStateMixin);
-    _inherit(C._RadioState, C.__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin);
-    _inherit(C._RadioPainter, A.ToggleablePainter);
-    _inherit(C._RadioDefaultsM3, A.RadioThemeData);
-    _inherit(C.ShaderMaskLayer, A.ContainerLayer0);
-    _inherit(C.RenderShaderMask, A.RenderProxyBox);
-    _inherit(C.ShaderMask, A.SingleChildRenderObjectWidget);
-    _inheritMany(A.StatelessWidget, [C.BorderButtonField, C.MaterialTextIconButton, C.TextInputFieldBuilder, C.TMailDropDownWidget, C.ContactInputTagItem, C.ContactSuggestionBoxItem, C.UserInformationWidget, C.SettingDetailViewBuilder, C.EmailRulesItemWidget, C.EmailRulesHeaderWidget, C.EmailForwardItemWidget, C.ForwardWarningBanner, C.LanguageRegionOverlay, C.LanguageItemWidget, C.SettingAppBar, C.SettingFirstLevelAppBar, C.UniversalSettingAppBar, C.AccountMenuItemTileBuilder, C.SettingFirstLevelTileBuilder, C.SettingOptionItem, C.IdentitiesHeaderWidget, C.IdentitiesRadioListBuilder, C.IdentityListTileBuilder, C.IdentityLoadingWidget, C.SignatureBuilder, C.ProfilesView, C.SettingExplanationWidget, C.SettingHeaderWidget]);
+    _inheritMany(A.StatelessWidget, [C.BorderButtonField, C.MaterialTextIconButton, C.TextInputFieldBuilder, C.TMailDropDownWidget, C.ContactInputTagItem, C.ContactSuggestionBoxItem, C.UserInformationWidget, C.SettingDetailViewBuilder, C.EmailRulesItemWidget, C.EmailRulesHeaderWidget, C.EmailForwardItemWidget, C.ForwardWarningBanner, C.CreateNewIdentityButtonWidget, C.IdentityListTileBuilder, C.IdentityLoadingWidget, C.ListIdentityItemActionsWidget, C.SignatureBuilder, C.SignatureLoadingWidget, C.LanguageRegionOverlay, C.LanguageItemWidget, C.SettingAppBar, C.SettingFirstLevelAppBar, C.UniversalSettingAppBar, C.AccountMenuItemTileBuilder, C.SettingFirstLevelTileBuilder, C.SettingOptionItem, C.SettingExplanationWidget, C.SettingHeaderWidget]);
+    _inheritMany(A.Closure0Args, [C.BorderButtonField_build_closure, C.ContactInputTagItem_build_closure, C.ContactSuggestionBoxItem_build_closure, C.EmailRulesView_build_closure, C.EmailRulesView__buildLoadingView_closure, C.EmailRulesItemWidget_build_closure, C.EmailRulesItemWidget_build_closure0, C.EmailRulesItemWidget_build_closure1, C.ListEmailRulesWidget_build_closure, C.ListEmailRulesWidget_build_closure0, C.ForwardView_build_closure1, C.ForwardView_build_closure, C.ForwardView_build_closure0, C.ForwardView__buildKeepLocalSwitchButton_closure, C.ForwardView__buildLoadingView_closure, C._AutocompleteContactTextFieldWithTagsState_build__closure1, C._AutocompleteContactTextFieldWithTagsState_build_closure0, C._AutocompleteContactTextFieldWithTagsState_build__closure2, C._AutocompleteContactTextFieldWithTagsState_build___closure, C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure0, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure2, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure1, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure0, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure2, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1, C.EmailForwardItemWidget_build_closure0, C.EmailForwardItemWidget_build_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure0, C.ListEmailForwardsWidget_build_closure, C.ListEmailForwardsWidget__buildTitleHeader_closure, C.ListEmailForwardsWidget__buildDeleteAllButton_closure, C.IdentitiesView_build_closure, C.IdentitiesView_build_closure0, C.IdentitiesView_build_closure1, C.IdentitiesView_build_closure2, C.IdentitiesView_build___closure, C.ListIdentityItemActionsWidget_build_closure, C.ListIdentityItemActionsWidget_build_closure0, C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure, C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure0, C._ChangeLanguageButtonWidgetState__buildMobileLanguageMenu_closure, C._ChangeLanguageButtonWidgetState__buildMobileLanguageMenu__closure, C.LanguageItemWidget_build_closure, C.MailboxVisibilityView__buildLoadingView_closure, C.MailboxVisibilityView__buildListMailbox_closure, C.MailboxVisibilityView__buildListMailbox_closure0, C.MailboxVisibilityView__buildListMailbox_closure1, C.MailboxVisibilityView__buildMailboxCategory_closure, C._MailBoxVisibilityFolderTileBuilderState_build_closure, C._MailBoxVisibilityFolderTileBuilderState__buildLeadingMailboxItem_closure, C._MailBoxVisibilityFolderTileBuilderState__buildSubscribeButton_closure, C.ManageAccountDashBoardView_build_closure1, C.ManageAccountDashBoardView_build__closure0, C.ManageAccountDashBoardView_build___closure0, C.ManageAccountDashBoardView_build_closure0, C.ManageAccountDashBoardView_build__closure, C.ManageAccountDashBoardView__viewDisplayedOfAccountMenuItem_closure, C.ManageAccountMenuView_build_closure, C.ManageAccountMenuView_build_closure0, C.ManageAccountMenuView_build___closure, C.ManageAccountMenuView_build_closure1, C.SettingsFirstLevelView_build_closure1, C.SettingsFirstLevelView_build_closure, C.SettingsFirstLevelView_build_closure2, C.SettingsFirstLevelView_build__closure4, C.SettingsFirstLevelView_build_closure3, C.SettingsFirstLevelView_build__closure3, C.SettingsFirstLevelView_build_closure4, C.SettingsFirstLevelView_build__closure2, C.SettingsFirstLevelView_build_closure5, C.SettingsFirstLevelView_build__closure1, C.SettingsFirstLevelView_build_closure0, C.SettingsFirstLevelView_build_closure6, C.SettingsFirstLevelView_build__closure0, C.SettingsFirstLevelView_build_closure7, C.SettingsFirstLevelView_build_closure8, C.SettingsFirstLevelView_build__closure, C.SettingsFirstLevelView_build_closure9, C.SettingsView_build_closure, C.SettingsView_build__closure0, C.SettingsView_build__closure1, C.SettingsView_build_closure0, C.SettingsView_build__closure, C.SettingsView__bodySettingsScreen_closure, C.SettingsView__viewDisplayedOfAccountMenuItem_closure, C.AccountMenuItemTileBuilder_build_closure, C.NotificationView_build_closure, C.PreferencesView_build_closure0, C.PreferencesView_build_closure, C.SettingOptionItem_build_closure, C.VacationView_build_closure, C.VacationView_build__closure8, C.VacationView_build_closure0, C.VacationView_build_closure1, C.VacationView_build__closure3, C.VacationView_build___closure, C.VacationView_build_closure2, C.VacationView_build_closure3, C.VacationView_build_closure4, C.VacationView_build_closure5, C.VacationView__buildListButtonAction_closure, C.VacationView__buildListButtonAction_closure0, C.VacationView__buildListButtonAction_closure1, C.VacationView__buildListButtonAction_closure2, C.VacationView__buildListButtonAction_closure3, C.VacationView__buildMessageHtmlTextEditor_closure, C.VacationView__buildMessageHtmlTextEditor__closure]);
     _inheritMany(A.Object, [C.RecipientListIsEmptyException, C.RecipientListWithInvalidEmailsException]);
-    _inheritMany(A.GetWidget, [C._EmailRulesView_GetWidget_AppLoaderMixin, C.ListEmailRulesWidget, C._ForwardView_GetWidget_AppLoaderMixin, C.ListEmailForwardsWidget, C.LanguageAndRegionView, C._MailboxVisibilityView_GetWidget_AppLoaderMixin, C.ManageAccountDashBoardView, C.ManageAccountMenuView, C.SettingsFirstLevelView, C.SettingsView, C.NotificationView, C._PreferencesView_GetWidget_AppLoaderMixin, C._IdentitiesView_GetWidget_PopupMenuWidgetMixin, C._VacationView_GetWidget_RichTextButtonMixin]);
+    _inheritMany(A.GetWidget, [C._EmailRulesView_GetWidget_AppLoaderMixin, C.ListEmailRulesWidget, C._ForwardView_GetWidget_AppLoaderMixin, C.ListEmailForwardsWidget, C.IdentitiesView, C.LanguageAndRegionView, C._MailboxVisibilityView_GetWidget_AppLoaderMixin, C.ManageAccountDashBoardView, C.ManageAccountMenuView, C.SettingsFirstLevelView, C.SettingsView, C.NotificationView, C._PreferencesView_GetWidget_AppLoaderMixin, C._VacationView_GetWidget_RichTextButtonMixin]);
     _inherit(C.EmailRulesView, C._EmailRulesView_GetWidget_AppLoaderMixin);
-    _inheritMany(A.Closure2Args, [C.ListEmailRulesWidget_build__closure, C.ListEmailRulesWidget_build__closure0, C._AutocompleteContactTextFieldWithTagsState_build_closure6, C.ListEmailForwardsWidget_build__closure, C.LanguageRegionOverlay_build_closure, C.MailboxVisibilityView__buildMailboxCategory__closure, C.MailboxVisibilityView__buildListChildTileWidget__closure, C.MailboxVisibilityView__buildListChildTileWidget__closure0, C.ManageAccountDashBoardView_build_closure, C.ManageAccountMenuView_build__closure0, C.PreferencesView_build__closure1, C.PreferencesView_build__closure2, C.IdentitiesRadioListBuilder__buildListIdentityView__closure, C.SignatureBuilder_build_closure]);
+    _inheritMany(A.Closure, [C.EmailRulesView__buildLoadingView__closure, C.EmailRulesView__buildLoadingView__closure0, C.ForwardView__buildLoadingView__closure, C.ForwardView__buildLoadingView__closure0, C.ForwardView__buildAddRecipientsFormWidget_closure, C.ForwardView__buildAddRecipientsFormWidget_closure0, C._AutocompleteContactTextFieldWithTagsState_build_closure1, C._AutocompleteContactTextFieldWithTagsState_build_closure2, C._AutocompleteContactTextFieldWithTagsState_build_closure3, C._AutocompleteContactTextFieldWithTagsState_build__closure, C._AutocompleteContactTextFieldWithTagsState_build_closure4, C._AutocompleteContactTextFieldWithTagsState_build_closure, C._AutocompleteContactTextFieldWithTagsState_build_closure5, C._AutocompleteContactTextFieldWithTagsState_build__closure0, C._AutocompleteContactTextFieldWithTagsState__isDuplicatedRecipient_closure, C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure, C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure, C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure0, C.ListEmailForwardsWidget_build___closure, C.IdentitiesView_build____closure, C.IdentitiesView_build____closure0, C.IdentityLoadingWidget_build_closure, C.IdentityLoadingWidget_build_closure0, C.SignatureLoadingWidget_build_closure, C.SignatureLoadingWidget_build_closure0, C._ChangeLanguageButtonWidgetState__buildLanguageMenu_closure, C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure1, C.MailboxVisibilityView__buildLoadingView__closure, C.MailboxVisibilityView__buildLoadingView__closure0, C.MailboxVisibilityView__buildListChildTileWidget_closure, C.ManageAccountDashBoardView_build___closure, C.ManageAccountMenuView_build__closure, C.ManageAccountMenuView_build_closure2, C.ListRecipientForwardExtension_get_listEmailAddress_closure, C.PreferencesView_build__closure, C.PreferencesView_build__closure0, C.VacationView_build__closure4, C.VacationView_build__closure5, C.VacationView_build__closure6, C.VacationView_build__closure7, C.VacationView_build__closure, C.VacationView_build__closure0, C.VacationView_build__closure1, C.VacationView_build__closure2]);
+    _inheritMany(A.Closure2Args, [C.ListEmailRulesWidget_build__closure, C.ListEmailRulesWidget_build__closure0, C._AutocompleteContactTextFieldWithTagsState_build_closure6, C.ListEmailForwardsWidget_build__closure, C.IdentitiesView_build__closure, C.IdentitiesView_build__closure0, C.LanguageRegionOverlay_build_closure, C.MailboxVisibilityView__buildMailboxCategory__closure, C.MailboxVisibilityView__buildListChildTileWidget__closure, C.MailboxVisibilityView__buildListChildTileWidget__closure0, C.ManageAccountDashBoardView_build_closure, C.ManageAccountMenuView_build__closure0, C.PreferencesView_build__closure1, C.PreferencesView_build__closure2]);
     _inherit(C.ForwardView, C._ForwardView_GetWidget_AppLoaderMixin);
+    _inheritMany(A.StatefulWidget, [C.AutocompleteContactTextFieldWithTags, C.ChangeLanguageButtonWidget, C.MailBoxVisibilityFolderTileBuilder]);
+    _inheritMany(A.State0, [C.__AutocompleteContactTextFieldWithTagsState_State_MessageDialogActionMixin, C._ChangeLanguageButtonWidgetState, C._MailBoxVisibilityFolderTileBuilderState]);
     _inherit(C._AutocompleteContactTextFieldWithTagsState, C.__AutocompleteContactTextFieldWithTagsState_State_MessageDialogActionMixin);
     _inherit(C._MailboxVisibilityView_GetWidget_AppLoaderMixin_MailboxWidgetMixin, C._MailboxVisibilityView_GetWidget_AppLoaderMixin);
     _inherit(C.MailboxVisibilityView, C._MailboxVisibilityView_GetWidget_AppLoaderMixin_MailboxWidgetMixin);
     _inherit(C.PreferencesView, C._PreferencesView_GetWidget_AppLoaderMixin);
-    _inherit(C._IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin, C._IdentitiesView_GetWidget_PopupMenuWidgetMixin);
-    _inherit(C.IdentitiesView, C._IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin);
     _inherit(C.VacationView, C._VacationView_GetWidget_RichTextButtonMixin);
-    _mixin(C._FadingEdgeScrollViewState_State_WidgetsBindingObserver, A.WidgetsBindingObserver);
-    _mixinHard(C.__RadioState_State_TickerProviderStateMixin, A.TickerProviderStateMixin);
-    _mixinHard(C.__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin, A.ToggleableStateMixin);
     _mixin(C._EmailRulesView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(C._ForwardView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(C.__AutocompleteContactTextFieldWithTagsState_State_MessageDialogActionMixin, A.MessageDialogActionMixin);
     _mixin(C._MailboxVisibilityView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(C._MailboxVisibilityView_GetWidget_AppLoaderMixin_MailboxWidgetMixin, A.MailboxWidgetMixin);
     _mixin(C._PreferencesView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
-    _mixin(C._IdentitiesView_GetWidget_PopupMenuWidgetMixin, F.PopupMenuWidgetMixin);
-    _mixin(C._IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(C._VacationView_GetWidget_RichTextButtonMixin, A.RichTextButtonMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"FadingEdgeScrollView":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"FadingEdgeScrollViewState":{"State0":["FadingEdgeScrollView"],"WidgetsBindingObserver":[]},"Radio":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RadioState":{"State0":["Radio<1>"]},"_RadioPainter":{"Listenable":[]},"ShaderMaskLayer":{"ContainerLayer0":[],"Layer0":[],"DiagnosticableTree":[]},"RenderShaderMask":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"ShaderMask":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"BorderButtonField":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextIconButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TextInputFieldBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TMailDropDownWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactInputTagItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactSuggestionBoxItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientListIsEmptyException":{"Exception":[]},"RecipientListWithInvalidEmailsException":{"Exception":[]},"SettingDetailViewBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesView":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"EmailRulesItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailRulesWidget":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"ForwardView":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"AutocompleteContactTextFieldWithTags":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AutocompleteContactTextFieldWithTagsState":{"State0":["AutocompleteContactTextFieldWithTags"]},"EmailForwardItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ForwardWarningBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailForwardsWidget":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"LanguageAndRegionView":{"GetWidget":["LanguageAndRegionController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LanguageAndRegionController"},"ChangeLanguageButtonWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChangeLanguageButtonWidgetState":{"State0":["ChangeLanguageButtonWidget"]},"LanguageRegionOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxVisibilityView":{"GetWidget":["MailboxVisibilityController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxVisibilityController"},"MailBoxVisibilityFolderTileBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_MailBoxVisibilityFolderTileBuilderState":{"State0":["MailBoxVisibilityFolderTileBuilder"]},"ManageAccountDashBoardView":{"GetWidget":["ManageAccountDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountDashBoardController"},"ManageAccountMenuView":{"GetWidget":["ManageAccountMenuController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountMenuController"},"SettingAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingsFirstLevelView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"SettingsView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"UniversalSettingAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AccountMenuItemTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NotificationView":{"GetWidget":["NotificationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"NotificationController"},"PreferencesView":{"GetWidget":["PreferencesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"PreferencesController"},"SettingOptionItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentitiesView":{"GetWidget":["IdentitiesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"IdentitiesController"},"IdentitiesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentitiesRadioListBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityListTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityLoadingWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SignatureBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfilesView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationView":{"GetWidget":["VacationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"VacationController"},"SettingExplanationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RadioTheme":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
-  A._Universe_addErasedTypes(init.typeUniverse, JSON.parse('{"__RadioState_State_TickerProviderStateMixin":1,"__RadioState_State_TickerProviderStateMixin_ToggleableStateMixin":1}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"BorderButtonField":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextIconButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TextInputFieldBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TMailDropDownWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactInputTagItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactSuggestionBoxItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientListIsEmptyException":{"Exception":[]},"RecipientListWithInvalidEmailsException":{"Exception":[]},"SettingDetailViewBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesView":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"EmailRulesItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailRulesWidget":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"ForwardView":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"AutocompleteContactTextFieldWithTags":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AutocompleteContactTextFieldWithTagsState":{"State0":["AutocompleteContactTextFieldWithTags"]},"EmailForwardItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ForwardWarningBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailForwardsWidget":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"IdentitiesView":{"GetWidget":["IdentitiesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"IdentitiesController"},"CreateNewIdentityButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityListTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityLoadingWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListIdentityItemActionsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SignatureBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SignatureLoadingWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageAndRegionView":{"GetWidget":["LanguageAndRegionController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LanguageAndRegionController"},"ChangeLanguageButtonWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChangeLanguageButtonWidgetState":{"State0":["ChangeLanguageButtonWidget"]},"LanguageRegionOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxVisibilityView":{"GetWidget":["MailboxVisibilityController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxVisibilityController"},"MailBoxVisibilityFolderTileBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_MailBoxVisibilityFolderTileBuilderState":{"State0":["MailBoxVisibilityFolderTileBuilder"]},"ManageAccountDashBoardView":{"GetWidget":["ManageAccountDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountDashBoardController"},"ManageAccountMenuView":{"GetWidget":["ManageAccountMenuController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountMenuController"},"SettingAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingsFirstLevelView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"SettingsView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"UniversalSettingAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AccountMenuItemTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NotificationView":{"GetWidget":["NotificationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"NotificationController"},"PreferencesView":{"GetWidget":["PreferencesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"PreferencesController"},"SettingOptionItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationView":{"GetWidget":["VacationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"VacationController"},"SettingExplanationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var string$ = {
     ______x22: '^(([^<>()[\\]\\\\.,;:\\s@"]+(\\.[^<>()[\\]\\\\.,;:\\s@"]+)*)|(".+"))@localhost$',
     ______x5c: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$'
@@ -5919,33 +4974,23 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     var findType = A.findType;
     return {
       AppLocalizations: findType("AppLocalizations"),
-      ContainerLayer: findType("ContainerLayer0"),
       DateTime: findType("DateTime"),
-      Directionality: findType("Directionality"),
       EmailAddress: findType("EmailAddress"),
       EmailRulesController: findType("EmailRulesController"),
       ImagePaths: findType("ImagePaths0"),
       JSArray_BoxShadow: findType("JSArray<BoxShadow>"),
-      JSArray_Color: findType("JSArray<Color>"),
       JSArray_Object: findType("JSArray<Object>"),
-      JSArray_ScrollPosition: findType("JSArray<ScrollPosition>"),
       JSArray_SettingOptionType: findType("JSArray<SettingOptionType>"),
       JSArray_SuggestionEmailAddress: findType("JSArray<SuggestionEmailAddress>"),
       JSArray_Widget: findType("JSArray<Widget>"),
-      JSArray_double: findType("JSArray<double>"),
       LabeledGlobalKey_State_StatefulWidget: findType("LabeledGlobalKey<State0<StatefulWidget>>"),
       LabeledGlobalKey_TagsEditorState_dynamic: findType("LabeledGlobalKey<TagsEditorState<@>>"),
       LanguageAndRegionController: findType("LanguageAndRegionController"),
-      Layer: findType("Layer0"),
       List_SuggestionEmailAddress: findType("List<SuggestionEmailAddress>"),
       MaterialLocalizations: findType("MaterialLocalizations"),
       MediaQuery: findType("MediaQuery"),
-      MouseCursor: findType("MouseCursor0"),
       NonNullsIterable_String: findType("NonNullsIterable<String>"),
-      NotificationListener_ScrollMetricsNotification: findType("NotificationListener<ScrollMetricsNotification>"),
       Null: findType("Null"),
-      RadioTheme: findType("RadioTheme"),
-      Radio_Identity: findType("Radio<Identity>"),
       ResponsiveUtils: findType("ResponsiveUtils0"),
       String: findType("String"),
       SuggestionEmailAddress: findType("SuggestionEmailAddress"),
@@ -5956,19 +5001,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ValueNotifier_bool: findType("ValueNotifier<bool>"),
       WhereIterable_SettingOptionType: findType("WhereIterable<SettingOptionType>"),
       _LocalizationsScope: findType("_LocalizationsScope"),
-      _WidgetStatePropertyWith_Color: findType("_WidgetStatePropertyWith<Color>"),
-      _WidgetStatePropertyWith_MouseCursor: findType("_WidgetStatePropertyWith<MouseCursor0>"),
-      _WidgetStatePropertyWith_nullable_Color: findType("_WidgetStatePropertyWith<Color?>"),
       bool: findType("bool"),
       dynamic: findType("@"),
-      int: findType("int"),
       nullable_LocalSettingOptions: findType("LocalSettingOptions?"),
-      nullable_MouseCursor: findType("MouseCursor0?"),
       nullable_Object: findType("Object?"),
-      nullable_ShaderMaskEngineLayer: findType("ShaderMaskEngineLayer0?"),
-      nullable_ShaderMaskLayer: findType("ShaderMaskLayer?"),
-      void: findType("~"),
-      void_Function: findType("~()")
+      void: findType("~")
     };
   })();
   (function constants() {
@@ -5979,6 +5016,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_Uqb = new A.Color(1, 0.9803921568627451, 0.9686274509803922, 0.9686274509803922, B.ColorSpace_0);
     D.BoxDecoration_u9w = new A.BoxDecoration(D.Color_Uqb, null, null, B.BorderRadius_ww812, null, null, null, B.BoxShape_0);
     D.CircleLoadingWidget_FVJ = new F.CircleLoadingWidget0(null, B.EdgeInsets_16_16_16_16, null);
+    D.Center_OLK = new A.Center(B.Alignment_0_0, null, null, D.CircleLoadingWidget_FVJ, null);
+    D.Padding_8D4 = new A.Padding(B.EdgeInsets_8_8_8_8, B.CupertinoActivityIndicator_DQZ, null);
+    D.Center_qoL = new A.Center(B.Alignment_0_0, null, null, D.Padding_8D4, null);
     D.Color_er0 = new A.Color(1, 0.058823529411764705, 0.4627450980392157, 0.9058823529411765, B.ColorSpace_0);
     D.Color_ubZ = new A.Color(1, 0.8627450980392157, 0.8784313725490196, 0.8980392156862745, B.ColorSpace_0);
     D.Divider_YT1 = new A.Divider(1, null, null, B.Color_Cy0, null);
@@ -5986,17 +5026,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_0_16_16_0 = new A.EdgeInsetsDirectional(0, 16, 16, 0);
     D.EdgeInsetsDirectional_0_16_16_16 = new A.EdgeInsetsDirectional(0, 16, 16, 16);
     D.EdgeInsetsDirectional_12_12_12_0 = new A.EdgeInsetsDirectional(12, 12, 12, 0);
+    D.EdgeInsetsDirectional_18_0_12_0 = new A.EdgeInsetsDirectional(18, 0, 12, 0);
     D.EdgeInsetsDirectional_19_8_12_8 = new A.EdgeInsetsDirectional(19, 8, 12, 8);
     D.EdgeInsetsDirectional_20_0_20_0 = new A.EdgeInsetsDirectional(20, 0, 20, 0);
+    D.EdgeInsetsDirectional_24_0_24_24 = new A.EdgeInsetsDirectional(24, 0, 24, 24);
     D.EdgeInsetsDirectional_28_0_28_0 = new A.EdgeInsetsDirectional(28, 0, 28, 0);
+    D.EdgeInsetsDirectional_30_22_30_0 = new A.EdgeInsetsDirectional(30, 22, 30, 0);
     D.EdgeInsetsDirectional_32_16_32_0 = new A.EdgeInsetsDirectional(32, 16, 32, 0);
     D.EdgeInsetsDirectional_44_0_44_0 = new A.EdgeInsetsDirectional(44, 0, 44, 0);
     D.EdgeInsetsDirectional_50_0_50_0 = new A.EdgeInsetsDirectional(50, 0, 50, 0);
     D.EdgeInsetsDirectional_9_16_8_16 = new A.EdgeInsetsDirectional(9, 16, 8, 16);
-    D.EdgeInsets_0_0_0_2 = new A.EdgeInsets(0, 0, 0, 2);
-    D.EdgeInsets_0_0_0_6 = new A.EdgeInsets(0, 0, 0, 6);
     D.EdgeInsets_0_10_0_0 = new A.EdgeInsets(0, 10, 0, 0);
     D.EdgeInsets_0_13_0_0 = new A.EdgeInsets(0, 13, 0, 0);
+    D.EdgeInsets_0_24_0_16 = new A.EdgeInsets(0, 24, 0, 16);
+    D.EdgeInsets_0_24_0_24 = new A.EdgeInsets(0, 24, 0, 24);
     D.EdgeInsets_0_39_0_0 = new A.EdgeInsets(0, 39, 0, 0);
     D.EdgeInsets_0_4_0_24 = new A.EdgeInsets(0, 4, 0, 24);
     D.EdgeInsets_0_8_0_24 = new A.EdgeInsets(0, 8, 0, 24);
@@ -6010,8 +5053,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_60_0_60_0 = new A.EdgeInsets(60, 0, 60, 0);
     D.EdgeInsets_6_8_6_8 = new A.EdgeInsets(6, 8, 6, 8);
     D.EdgeInsets_7_7_7_7 = new A.EdgeInsets(7, 7, 7, 7);
-    D.EdgeInsets_8_16_8_16 = new A.EdgeInsets(8, 16, 8, 16);
     D.Expanded_3Rt = new A.Expanded(1, B.FlexFit_0, B.SizedBox_0_0_null_null, null);
+    D.IdentitiesView_null = new C.IdentitiesView(null);
     D.LanguageAndRegionView_null = new C.LanguageAndRegionView(null);
     D.ListEmailForwardsWidget_null = new C.ListEmailForwardsWidget(null);
     D.ListEmailRulesWidget_null = new C.ListEmailRulesWidget(null);
@@ -6033,20 +5076,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.RoundedRectangleBorder_RoN12 = new A.RoundedRectangleBorder(B.BorderRadius_ww820, B.BorderSide_KY7);
     D.SettingsView_null = new C.SettingsView(null);
     D.SafeArea_5qD = new A.SafeArea(true, true, true, true, B.EdgeInsets_0_0_0_0, D.SettingsView_null, null);
-    D.SettingExplanationWidget_MQf = new C.SettingExplanationWidget(B.AccountMenuItem_5, B.EdgeInsets_0_0_0_24, false, null);
-    D.SettingExplanationWidget_knt = new C.SettingExplanationWidget(B.AccountMenuItem_4, B.EdgeInsetsDirectional_0_0_0_24, false, null);
+    D.SettingExplanationWidget_B8J = new C.SettingExplanationWidget(B.AccountMenuItem_3, B.EdgeInsets_16_16_16_16, false, null, null);
+    D.SettingExplanationWidget_M1N = new C.SettingExplanationWidget(B.AccountMenuItem_0, B.EdgeInsetsDirectional_16_0_16_0, true, B.TextAlign_2, null);
     D.EdgeInsetsDirectional_16_0_16_16 = new A.EdgeInsetsDirectional(16, 0, 16, 16);
-    D.SettingExplanationWidget_sIv = new C.SettingExplanationWidget(B.AccountMenuItem_1, D.EdgeInsetsDirectional_16_0_16_16, true, null);
-    D.SettingExplanationWidget_uwZ = new C.SettingExplanationWidget(B.AccountMenuItem_3, B.EdgeInsets_16_16_16_16, false, null);
+    D.SettingExplanationWidget_ejJ = new C.SettingExplanationWidget(B.AccountMenuItem_1, D.EdgeInsetsDirectional_16_0_16_16, true, null, null);
+    D.SettingExplanationWidget_izR = new C.SettingExplanationWidget(B.AccountMenuItem_5, B.EdgeInsets_0_0_0_24, false, null, null);
+    D.SettingExplanationWidget_sEN = new C.SettingExplanationWidget(B.AccountMenuItem_4, B.EdgeInsetsDirectional_0_0_0_24, false, null, null);
     D.EdgeInsets_0_0_0_21 = new A.EdgeInsets(0, 0, 0, 21);
     D.SettingHeaderWidget_27z = new C.SettingHeaderWidget(B.AccountMenuItem_2, D.EdgeInsets_0_0_0_21, null, null);
-    D.SettingHeaderWidget_IgH = new C.SettingHeaderWidget(B.AccountMenuItem_0, null, null, null);
     D.SettingHeaderWidget_QqY = new C.SettingHeaderWidget(B.AccountMenuItem_6, null, null, null);
     D.SettingHeaderWidget_WRr = new C.SettingHeaderWidget(B.AccountMenuItem_3, null, null, null);
     D.SettingHeaderWidget_i9K = new C.SettingHeaderWidget(B.AccountMenuItem_4, null, null, null);
     D.SettingHeaderWidget_m0p = new C.SettingHeaderWidget(B.AccountMenuItem_5, null, null, null);
     D.SettingsFirstLevelView_null = new C.SettingsFirstLevelView(null);
-    D.Size_HFk = new A.Size(1 / 0, 44);
     D.SizedBox_32_null_null_null = new A.SizedBox(32, null, null, null);
     D.ManageAccountMenuView_null = new C.ManageAccountMenuView(null);
     D.SizedBox_gRf = new A.SizedBox(256, null, D.ManageAccountMenuView_null, null);
@@ -6056,9 +5098,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.ValueKey_LB7 = new A.ValueKey("vacation_message_html_text_editor_web", type$.ValueKey_String);
     D.ValueKey_WRi = new A.ValueKey("settings_first_level_close_button", type$.ValueKey_String);
     D.ValueKey_back_to_dashboard_button = new A.ValueKey("back_to_dashboard_button", type$.ValueKey_String);
-    D.ValueKey_button_add_identity = new A.ValueKey("button_add_identity", type$.ValueKey_String);
     D.ValueKey_button_add_recipient = new A.ValueKey("button_add_recipient", type$.ValueKey_String);
-    D.ValueKey_identities_list = new A.ValueKey("identities_list", type$.ValueKey_String);
     D.ValueKey_language_drop_down_button = new A.ValueKey("language_drop_down_button", type$.ValueKey_String);
     D.ValueKey_list_manage_account_menu_item = new A.ValueKey("list_manage_account_menu_item", type$.ValueKey_String);
     D.ValueKey_new_rule_button = new A.ValueKey("new_rule_button", type$.ValueKey_String);
@@ -6066,16 +5106,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.ValueKey_setting_menu = new A.ValueKey("setting_menu", type$.ValueKey_String);
     D.ValueKey_setting_preferences = new A.ValueKey("setting_preferences", type$.ValueKey_String);
     D.ValueKey_settings_close_button = new A.ValueKey("settings_close_button", type$.ValueKey_String);
-    D._RadioType_0 = new C._RadioType(0, "material");
-    D._ScrollState_0 = new C._ScrollState(0, "notScrollable");
-    D._ScrollState_1 = new C._ScrollState(1, "scrollableAtStart");
-    D._ScrollState_2 = new C._ScrollState(2, "scrollableAtEnd");
-    D._ScrollState_3 = new C._ScrollState(3, "scrollableInTheMiddle");
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "PErg48I6YZr7ckyeVCHsu84tGE4=");
+})($__dart_deferred_initializers__, "irAmRBwA+VhfybbrG6NgRY1eojM=");
 ;
