@@ -1,7 +1,9 @@
 ARG FLUTTER_VERSION=3.27.4
 # Stage 1 - Install dependencies and build the app
 # This matches the flutter version on our CI/CD pipeline on Github
-FROM --platform=amd64 ghcr.io/cirruslabs/flutter:${FLUTTER_VERSION} AS build-env
+# FROM --platform=amd64 ghcr.io/cirruslabs/flutter:${FLUTTER_VERSION} AS build-env
+FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
+# TODO: Revert back to cirruslabs when upgrade Flutter pass 3.27.4, as this tag is missing for cirruslabs
 
 # Set directory to Copy App
 WORKDIR /app
