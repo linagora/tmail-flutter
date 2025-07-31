@@ -10,7 +10,6 @@ import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
 
 typedef OnClickHyperLinkAction = Function(Uri?);
@@ -423,7 +422,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
                   return Container(
                     height: _actualHeight,
                     width: _actualWidth,
-                    color: Colors.greenAccent,
                     constraints: BoxConstraints(
                       maxHeight: widget.viewMaxHeight!,
                     ),
