@@ -348,7 +348,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 return Padding(
                   padding: EmailViewStyles.emailContentPadding,
                   child: HtmlContentViewerOnWeb(
-                    key: ValueKey(tag),
+                    key: controller.htmlViewKey,
                     widthContent: bodyConstraints.maxWidth,
                     contentHtml: allEmailContents,
                     mailtoDelegate: controller.openMailToLink,
