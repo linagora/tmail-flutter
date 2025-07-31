@@ -400,6 +400,7 @@ class ComposerBindings extends BaseBindings {
     Get.delete<CreateNewAndSaveEmailToDraftsInteractor>(tag: composerId);
     Get.delete<RestoreEmailInlineImagesInteractor>(tag: composerId);
     Get.delete<PrintEmailInteractor>(tag: composerId);
+    Get.delete<SaveTemplateEmailInteractor>(tag: composerId);
 
     IdentityInteractorsBindings(composerId: composerId).dispose();
     PreferencesInteractorsBindings(composerId: composerId).dispose();

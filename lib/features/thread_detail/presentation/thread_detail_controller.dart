@@ -88,7 +88,7 @@ class ThreadDetailController extends BaseController {
     EmailProperty.messageId,
   });
   final cachedEmailLoaded = <EmailId, EmailLoaded>{};
-  late final _threadGetDebouncer = Debouncer<ThreadId?>(
+  late Debouncer<ThreadId?>? _threadGetDebouncer = Debouncer<ThreadId?>(
     const Duration(milliseconds: 500),
     initialValue: null,
     checkEquality: false,
@@ -136,6 +136,9 @@ class ThreadDetailController extends BaseController {
       networkConnectionController.isNetworkConnectionAvailable();
   bool get isThreadDetailEnabled =>
       threadDetailManager.isThreadDetailEnabled;
+  GlobalObjectKey? get expandedEmailHtmlViewKey => currentExpandedEmailId.value != null
+      ? GlobalObjectKey(currentExpandedEmailId.value!)
+      : null;
 
   @override
   void onInit() {
@@ -179,7 +182,7 @@ class ThreadDetailController extends BaseController {
       } else if (action is EmailMovedAction) {
         handleEmailMovedAction(action);
       } else if (action is LoadThreadDetailAfterSelectedEmailAction) {
-        _threadGetDebouncer.value = action.threadId;
+        _threadGetDebouncer?.value = action.threadId;
       }
       // Reset [threadDetailUIAction] to original value
       mailboxDashBoardController.dispatchThreadDetailUIAction(
@@ -215,7 +218,8 @@ class ThreadDetailController extends BaseController {
     currentExpandedEmailId.value = null;
     currentEmailLoaded.value = null;
     cachedEmailLoaded.clear();
-    _threadGetDebouncer.value = null;
+    _threadGetDebouncer?.cancel();
+    _threadGetDebouncer = null;
   }
 
   @override

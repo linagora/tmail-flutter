@@ -58,4 +58,17 @@ class CalendarEventInteractorBindings extends InteractorsBindings {
       Get.find<HtmlDataSource>(),
     ));
   }
+
+  void dispose() {
+    Get.delete<CalendarEventDataSource>();
+    Get.delete<CalendarEventAPI>();
+    Get.delete<CalendarEventDataSourceImpl>();
+    Get.delete<ParseCalendarEventInteractor>();
+    Get.delete<AcceptCalendarEventInteractor>();
+    Get.delete<MaybeCalendarEventInteractor>();
+    Get.delete<RejectCalendarEventInteractor>();
+    Get.delete<AcceptCounterCalendarEventInteractor>();
+    Get.delete<CalendarEventRepository>();
+    Get.delete<CalendarEventRepositoryImpl>();
+  }
 }

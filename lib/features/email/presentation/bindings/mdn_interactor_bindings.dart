@@ -34,4 +34,12 @@ class MdnInteractorBindings extends InteractorsBindings {
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => MdnRepositoryImpl(Get.find<MdnDataSource>()));
   }
+
+  void dispose() {
+    Get.delete<MdnDataSource>();
+    Get.delete<MdnDataSourceImpl>();
+    Get.delete<SendReceiptToSenderInteractor>();
+    Get.delete<MdnRepository>();
+    Get.delete<MdnRepositoryImpl>();
+  }
 }

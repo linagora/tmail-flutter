@@ -1,5 +1,3 @@
-import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:model/email/email_in_thread_status.dart';
@@ -14,7 +12,6 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     }
 
     final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
-    final isLoadMore = emailIdsPresentation.values.nonNulls.isNotEmpty;
     
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;
@@ -38,42 +35,5 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
       );
     }
     threadDetailManager.currentMobilePageViewIndex.refresh();
-
-    if (_skipScrollJump(isLoadMore)) return;
-    
-    final currentExpandedEmailIndex = currentExpandedEmailId.value == null
-      ? -1
-      : emailIdsPresentation.keys.toList().indexOf(currentExpandedEmailId.value!);
-    final firstLoadedMoreEmailId = success.presentationEmails.firstOrNull?.id;
-    final firstLoadedMoreEmailIndex = firstLoadedMoreEmailId == null
-      ? -1
-      : emailIdsPresentation.keys.toList().indexOf(firstLoadedMoreEmailId);
-    if (currentExpandedEmailIndex == -1 || firstLoadedMoreEmailIndex == -1) {
-      return;
-    }
-
-    if (scrollController?.hasClients == false) return;
-    final currentScrollPosition = scrollController?.position.pixels;
-    final maxScrollExtent = scrollController?.position.maxScrollExtent;
-    final currentBottomScrollPosition = currentScrollPosition != null
-        && maxScrollExtent != null
-      ? maxScrollExtent - currentScrollPosition
-      : null;
-    
-    if (currentBottomScrollPosition != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final newMaxScrollExtent = scrollController?.position.maxScrollExtent;
-        if (newMaxScrollExtent == null) return;
-
-        if (currentExpandedEmailIndex < firstLoadedMoreEmailIndex) {
-          return;
-        } else if (newMaxScrollExtent != maxScrollExtent!) {
-          scrollController?.jumpTo(newMaxScrollExtent - currentBottomScrollPosition);
-        }
-      });
-    }
   }
-
-  bool _skipScrollJump(bool isLoadMore) =>
-      !isLoadMore || emailIdsPresentation.length == 1;
 }
