@@ -127,7 +127,10 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           }
         }),
         Obx(() {
-          final threadChildren = controller.getThreadDetailEmailViews();
+          final emailIdsPresentation = controller.emailIdsPresentation;
+          final threadChildren = controller.getThreadDetailEmailViews(
+            emailIdsPresentation,
+          );
 
           late Widget threadBody;
 

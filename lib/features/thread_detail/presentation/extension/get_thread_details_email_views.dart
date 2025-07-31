@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:model/email/email_in_thread_status.dart';
@@ -17,7 +19,9 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension GetThreadDetailEmailViews on ThreadDetailController {
-  List<Widget> getThreadDetailEmailViews() {
+  List<Widget> getThreadDetailEmailViews(
+    Map<EmailId, PresentationEmail?> emailIdsPresentation,
+  ) {
     final loadMoreSegments = Map<LoadMoreIndex, LoadMoreCount>.from(this.loadMoreSegments);
 
     return emailIdsPresentation.entries.map((entry) {

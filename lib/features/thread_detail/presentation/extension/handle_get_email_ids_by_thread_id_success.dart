@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
@@ -25,11 +27,12 @@ extension HandleGetEmailIdsByThreadIdSuccess on ThreadDetailController {
 
     final selectedEmail = mailboxDashBoardController.selectedEmail.value;
     final selectedEmailId = selectedEmail?.id;
-    emailIdsPresentation.value = {
+    final originalMap = Map.from(emailIdsPresentation.value);
+    emailIdsPresentation.value..clear()..addAll({
       for (final id in allEmailIds)
         id: id == selectedEmailId
-            ? emailIdsPresentation[id] ?? selectedEmail
+            ? originalMap[id] ?? selectedEmail
             : null,
-    };
+    });
   }
 }
