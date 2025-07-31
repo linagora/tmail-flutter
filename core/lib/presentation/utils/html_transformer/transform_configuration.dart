@@ -6,6 +6,7 @@ import 'package:core/presentation/utils/html_transformer/dom/hide_draft_signatur
 import 'package:core/presentation/utils/html_transformer/dom/block_code_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/block_quoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/normalize_line_height_in_style_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_collapsed_signature_button_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading_for_background_image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading_image_transformers.dart';
@@ -46,6 +47,7 @@ class TransformConfiguration {
       const RemoveTooltipLinkTransformer(),
     const SignatureTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
+    const NormalizeLineHeightInStyleTransformer(),
   ]);
 
   factory TransformConfiguration.forReplyForwardEmptyEmail() => TransformConfiguration.fromDomTransformers([
@@ -54,7 +56,10 @@ class TransformConfiguration {
   ]);
 
   factory TransformConfiguration.forDraftsEmail() => TransformConfiguration.create(
-    customDomTransformers: [const ImageTransformer()]
+    customDomTransformers: [
+      const ImageTransformer(),
+      const NormalizeLineHeightInStyleTransformer(),
+    ]
   );
   factory TransformConfiguration.forEditDraftsEmail() => TransformConfiguration.create(
     customDomTransformers: [
@@ -73,6 +78,7 @@ class TransformConfiguration {
       const ImageTransformer(),
       const AddLazyLoadingForBackgroundImageTransformer(),
       const RemoveCollapsedSignatureButtonTransformer(),
+      const NormalizeLineHeightInStyleTransformer(),
     ]
   );
 
@@ -137,6 +143,7 @@ class TransformConfiguration {
     const ImageTransformer(),
     const AddLazyLoadingForBackgroundImageTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
+    const NormalizeLineHeightInStyleTransformer(),
   ];
 
   static const List<TextTransformer> standardTextTransformers = [
