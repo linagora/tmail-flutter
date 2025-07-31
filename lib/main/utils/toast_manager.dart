@@ -8,6 +8,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_appauth_web/authorization_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -23,6 +24,7 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
@@ -98,7 +100,7 @@ class ToastManager {
       return '[${exception.type.value}] ${exception.message}';
     } else if (exception is SetError) {
       return '[${exception.type.value}] ${exception.description}';
-    }else if (exception is PlatformException &&
+    } else if (exception is PlatformException &&
         exception.message?.isNotEmpty == true) {
       return exception.message!;
     } else if (exception is NotGrantedPermissionStorageException) {
@@ -114,6 +116,12 @@ class ToastManager {
         final firstError = mapErrors.values.first;
         return '[${firstError.type.value}] ${firstError.description}';
       }
+    } else if (exception is ServerError) {
+      return '[${exception.error}] ${exception.errorDescription}';
+    } else if (exception is TemporarilyUnavailable) {
+      return '[${exception.error}] ${exception.errorDescription}';
+    } else if (exception is AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException) {
+      return '';
     }
 
     if (useDefaultMessage) {

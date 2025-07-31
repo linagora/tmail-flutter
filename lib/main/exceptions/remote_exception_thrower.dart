@@ -6,6 +6,7 @@ import 'package:get/get_connect/http/src/status/http_status.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -28,48 +29,66 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
   void handleDioError(dynamic error) {
     if (error is DioError) {
-      logError('RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}');
-      if (error.response != null) {
-        if (error.response!.statusCode == HttpStatus.internalServerError) {
-          throw const InternalServerError();
-        } else if (error.response!.statusCode == HttpStatus.badGateway) {
-          throw BadGateway();
-        } else if (error.response!.statusCode == HttpStatus.unauthorized) {
-          throw const BadCredentialsException();
-        } else {
-          throw UnknownError(
-              code: error.response!.statusCode,
-              message: error.response!.statusMessage);
-        }
-      } else {
-        switch (error.type) {
-          case DioErrorType.connectionTimeout:
-            throw ConnectionTimeout(message: error.message);
-          case DioErrorType.connectionError:
-            throw ConnectionError(message: error.message);
-          case DioErrorType.badResponse:
+      logError(
+        'RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
+      );
+
+      final response = error.response;
+      final statusCode = response?.statusCode;
+
+      if (response != null) {
+        switch (statusCode) {
+          case HttpStatus.internalServerError:
+            throw const InternalServerError();
+          case HttpStatus.badGateway:
+            throw BadGateway();
+          case HttpStatus.unauthorized:
             throw const BadCredentialsException();
           default:
-            if (error.error is SocketException) {
-              throw const SocketError();
-            } else if (error.error != null) {
-              throw UnknownError(message: error.error);
-            } else {
-              throw const UnknownError();
-            }
+            throw UnknownError(
+              code: statusCode,
+              message: response.statusMessage,
+            );
         }
       }
-    } else if (error is ErrorMethodResponseException) {
+
+      return _handleDioErrorWithoutResponse(error);
+    }
+
+    if (error is ErrorMethodResponseException) {
       final errorResponse = error.errorResponse as ErrorMethodResponse;
       if (errorResponse is CannotCalculateChangesMethodResponse) {
         throw CannotCalculateChangesMethodResponseException();
       } else {
         throw MethodLevelErrors(
-            errorResponse.type,
-            message: errorResponse.description);
+          errorResponse.type,
+          message: errorResponse.description,
+        );
       }
-    } else {
-      throw error;
+    }
+
+    throw error;
+  }
+
+  void _handleDioErrorWithoutResponse(DioError error) {
+    switch (error.type) {
+      case DioErrorType.connectionTimeout:
+        throw ConnectionTimeout(message: error.message);
+      case DioErrorType.connectionError:
+        throw ConnectionError(message: error.message);
+      case DioErrorType.badResponse:
+        throw const BadCredentialsException();
+      default:
+        final underlyingError = error.error;
+        if (underlyingError is SocketException) {
+          throw const SocketError();
+        } else if (underlyingError is OAuthAuthorizationError) {
+          throw underlyingError;
+        } else if (underlyingError != null) {
+          throw UnknownError(message: underlyingError);
+        } else {
+          throw const UnknownError();
+        }
     }
   }
 }

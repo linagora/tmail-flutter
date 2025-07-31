@@ -697,27 +697,27 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_appauth
-      sha256: f2696d4cf437f627fa09bc4864afdd8c80273f2e293fde544b18202a627754b1
+      sha256: b09fa8e3eaba12ec341c69ec45063e06eb565304e24cc35caaf105bbae2e955c
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.6"
+    version: "9.0.1"
   flutter_appauth_platform_interface:
     dependency: "direct main"
     description:
       name: flutter_appauth_platform_interface
-      sha256: "44feaa7058191b5d3cd7c9ff195262725773643121bcada172d49c2ddcff71cb"
+      sha256: fd2920b853d09741aff2e1178e044ea2ade0c87799cd8e63f094ab35b00fdf70
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.0"
+    version: "9.0.0"
   flutter_appauth_web:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "39f9806f27f45da34bb86b2b9b22847be9153516"
-      url: "https://github.com/CarlosPacheco/flutter_appauth_web.git"
+      ref: upgrade-flutter-appauth
+      resolved-ref: "0952346bf781bd87b93b8c61619f81a264be52db"
+      url: "https://github.com/linagora/flutter_appauth_web.git"
     source: git
-    version: "0.0.3"
+    version: "1.0.0"
   flutter_charset_detector:
     dependency: transitive
     description:
