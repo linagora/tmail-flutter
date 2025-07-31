@@ -219,7 +219,6 @@ class ThreadDetailController extends BaseController {
     currentEmailLoaded.value = null;
     cachedEmailLoaded.clear();
     _threadGetDebouncer.value = null;
-    _threadGetDebouncer.cancel();
   }
 
   @override
