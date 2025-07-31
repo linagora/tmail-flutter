@@ -93,6 +93,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sen
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
@@ -265,6 +266,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _threadDetailController = null;
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
+    CalendarEventInteractorBindings().dispose();
+    MdnInteractorBindings().dispose();
     super.onClose();
   }
 
