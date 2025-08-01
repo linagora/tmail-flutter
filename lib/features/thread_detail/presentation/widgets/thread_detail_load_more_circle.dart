@@ -3,6 +3,10 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/instance_manager.dart';
+import 'package:get/state_manager.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
 class ThreadDetailLoadMoreCircle extends StatefulWidget {
   const ThreadDetailLoadMoreCircle({
@@ -10,13 +14,13 @@ class ThreadDetailLoadMoreCircle extends StatefulWidget {
     required this.count,
     required this.onTap,
     required this.imagePaths,
-    required this.isLoading,
+    required this.loadingIndex,
   });
 
   final int count;
   final VoidCallback onTap;
   final ImagePaths imagePaths;
-  final bool isLoading;
+  final int loadingIndex;
 
   @override
   State<ThreadDetailLoadMoreCircle> createState() => _ThreadDetailLoadMoreCircleState();
@@ -24,6 +28,7 @@ class ThreadDetailLoadMoreCircle extends StatefulWidget {
 
 class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle> {
   final _isHover = ValueNotifier(false);
+  final threadDetailController = Get.find<ThreadDetailController>();
 
   @override
   void dispose() {
@@ -67,26 +72,34 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
               child: ValueListenableBuilder(
                 valueListenable: _isHover,
                 builder: (context, isHover, child) {
-                  if (widget.isLoading) {
-                    return const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CupertinoLoadingWidget(),
+                  return Obx(() {
+                    final isLoading = threadDetailController.viewState.value.fold(
+                      (failure) => false,
+                      (success) => success is GettingEmailsByIds &&
+                        success.loadingIndex == widget.loadingIndex,
                     );
-                  }
 
-                  if (isHover) {
-                    return child ?? const SizedBox.shrink();
-                  }
+                    if (isLoading) {
+                      return const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CupertinoLoadingWidget(),
+                      );
+                    }
 
-                  return Text(
-                    '${widget.count}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.normal,
-                      height: 24 / 16,
-                      letterSpacing: -0.1,
-                    ),
-                  );
+                    if (isHover) {
+                      return child ?? const SizedBox.shrink();
+                    }
+
+                    return Text(
+                      '${widget.count}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.normal,
+                        height: 24 / 16,
+                        letterSpacing: -0.1,
+                      ),
+                    );
+                  });
                 },
                 child: SvgPicture.asset(widget.imagePaths.icExpandArrows),
               ),
