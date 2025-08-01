@@ -177,9 +177,6 @@ class PreviewEmlFileUtils {
       listAttachment: listAttachment,
     );
 
-    Element linkFontElement = Element.html(HtmlTemplate.fontLink);
-    document.head?.append(linkFontElement);
-
     Element styleElement = Element.html(HtmlTemplate.previewEMLFileCssStyle);
     document.head?.append(styleElement);
 

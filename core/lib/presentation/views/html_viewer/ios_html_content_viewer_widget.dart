@@ -15,7 +15,7 @@ class IosHtmlContentViewerWidget extends StatefulWidget {
 
   final String contentHtml;
   final TextDirection? direction;
-  final bool useDefaultFont;
+  final bool useDefaultFontStyle;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
   final OnPreviewEMLDelegateAction? onPreviewEMLDelegateAction;
   final OnDownloadAttachmentDelegateAction? onDownloadAttachmentDelegateAction;
@@ -24,7 +24,7 @@ class IosHtmlContentViewerWidget extends StatefulWidget {
     Key? key,
     required this.contentHtml,
     this.direction,
-    this.useDefaultFont = false,
+    this.useDefaultFontStyle = true,
     this.onMailtoDelegateAction,
     this.onPreviewEMLDelegateAction,
     this.onDownloadAttachmentDelegateAction,
@@ -53,7 +53,7 @@ class _IosHtmlContentViewerWidgetState extends State<IosHtmlContentViewerWidget>
       content: widget.contentHtml,
       direction: widget.direction,
       javaScripts: HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
-      useDefaultFont: widget.useDefaultFont,
+      useDefaultFontStyle: widget.useDefaultFontStyle,
     ));
   }
 

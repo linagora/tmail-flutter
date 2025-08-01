@@ -22,7 +22,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final double heightContent;
   final TextDirection? direction;
   final double? contentPadding;
-  final bool useDefaultFont;
+  final bool useDefaultFontStyle;
 
   /// Handler for mailto: links
   final OnMailtoClicked? mailtoDelegate;
@@ -49,7 +49,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     required this.widthContent,
     this.heightContent = 200,
     this.allowResizeToDocumentSize = true,
-    this.useDefaultFont = false,
+    this.useDefaultFontStyle = false,
     this.mailtoDelegate,
     this.direction,
     this.onClickHyperLinkAction,
@@ -360,7 +360,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       javaScripts: combinedScripts,
       direction: widget.direction,
       contentPadding: widget.contentPadding,
-      useDefaultFont: widget.useDefaultFont,
+      useDefaultFontStyle: widget.useDefaultFontStyle,
     );
 
     return htmlTemplate;

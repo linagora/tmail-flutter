@@ -121,11 +121,14 @@ class _WebEditorState extends State<WebEditorWidget> {
         darkMode: false,
         cacheHTMLAssetOffline: true,
         initialText: widget.content,
-        customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(
+        customBodyCssStyle: HtmlUtils.customInlineBodyCssStyleHtmlEditor(
           direction: widget.direction,
           horizontalPadding: widget.horizontalPadding,
         ),
-        customInternalCSS: HtmlTemplate.customInternalStyleCSS,
+        customInternalCSS: HtmlTemplate.webCustomInternalStyleCSS(
+          useDefaultFontStyle: true,
+          customScrollbar: true,
+        ),
         spellCheck: true,
         disableDragAndDrop: true,
         webInitialScripts: UnmodifiableListView([
