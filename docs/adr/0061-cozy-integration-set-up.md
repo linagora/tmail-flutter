@@ -65,7 +65,8 @@ cozy-stack instances add tmail.localhost:8080 --passphrase cozy --apps home,stor
 - `cozy-stack feature flags --domain tmail.localhost:8080 '{"mail.embedded-app-url": "http://localhost:2023"}'`
 
 2. On the tmail side
-- Config tmail to run on basic auth (possible on dev environment)
+- Apply patchs/cozy-dev-config.patch
+- Edit session url in jmap-dart-client to /jmap/session
 - isInsideCozy will be `false` if run on localhost, so in cozy_config_web.dart, return true on isInsideCozy
 - in `env.file`, COZY_INTEGRATION=true
 - `flutter run -d chrome --web-port 2023 --web-browser-flag "--disable-web-security" --profile`

@@ -1,0 +1,120 @@
+diff --git a/cozy/lib/cozy_config_manager/cozy_config_manager_web.dart b/cozy/lib/cozy_config_manager/cozy_config_manager_web.dart
+index 03da73f1e..b518b19ef 100644
+--- a/cozy/lib/cozy_config_manager/cozy_config_manager_web.dart
++++ b/cozy/lib/cozy_config_manager/cozy_config_manager_web.dart
+@@ -14,6 +14,7 @@ class CozyConfigManager {
+   }
+ 
+   Future<bool> get isInsideCozy async {
++    return true;
+     return _isInsideCozy ??= await _checkCozyEnvironment();
+   }
+ 
+diff --git a/env.file b/env.file
+index 77b662611..2c60bb1a1 100644
+--- a/env.file
++++ b/env.file
+@@ -1,6 +1,6 @@
+-SERVER_URL=http://localhost/
+-DOMAIN_REDIRECT_URL=http://localhost:3000
+-WEB_OIDC_CLIENT_ID=teammail-web
++SERVER_URL=https://jmap.lin-saas.dev
++DOMAIN_REDIRECT_URL=http://localhost:2023
++WEB_OIDC_CLIENT_ID=teammail-web-dev
+ OIDC_SCOPES=openid,profile,email,offline_access
+ APP_GRID_AVAILABLE=supported
+ FCM_AVAILABLE=supported
+@@ -8,4 +8,4 @@ IOS_FCM=supported
+ FORWARD_WARNING_MESSAGE=
+ PLATFORM=other
+ WS_ECHO_PING=
+-COZY_INTEGRATION=
+\ No newline at end of file
++COZY_INTEGRATION=true
+\ No newline at end of file
+diff --git a/lib/features/home/presentation/extensions/handle_web_finger_to_get_token_extension.dart b/lib/features/home/presentation/extensions/handle_web_finger_to_get_token_extension.dart
+index a51b1a9d2..7d8734e0c 100644
+--- a/lib/features/home/presentation/extensions/handle_web_finger_to_get_token_extension.dart
++++ b/lib/features/home/presentation/extensions/handle_web_finger_to_get_token_extension.dart
+@@ -2,11 +2,11 @@ import 'package:core/presentation/state/failure.dart';
+ import 'package:core/utils/platform_info.dart';
+ import 'package:dartz/dartz.dart';
+ import 'package:model/oidc/oidc_configuration.dart';
+-import 'package:model/oidc/request/oidc_request.dart';
+ import 'package:model/oidc/response/oidc_response.dart';
+ import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
++import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
+ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+-import 'package:tmail_ui_user/features/login/domain/model/base_url_oidc_response.dart';
++import 'package:tmail_ui_user/features/login/domain/state/check_oidc_is_available_state.dart';
+ import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
+ import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
+ import 'package:tmail_ui_user/main/utils/app_config.dart';
+@@ -21,9 +21,7 @@ extension HandleWebFingerToGetTokenExtension on HomeController {
+     if (baseUri == null) {
+       goToLogin();
+     } else {
+-      consumeState(
+-        checkOIDCIsAvailableInteractor.execute(OIDCRequest.fromUri(baseUri)),
+-      );
++      handleFailureViewState(CheckOIDCIsAvailableFailure(CanNotFoundOIDCLinks()));
+     }
+   }
+ 
+@@ -58,7 +56,7 @@ extension HandleWebFingerToGetTokenExtension on HomeController {
+   }
+ 
+   void tryGetOIDCConfigurationFromBaseUri(Uri baseUri) {
+-    getOIDCConfiguration(BaseUrlOidcResponse(baseUri));
++    handleFailureViewState(GetOIDCConfigurationFromBaseUrlFailure(null));
+   }
+ 
+   bool isGetTokenOIDCFailure(Failure? failure) {
+diff --git a/lib/features/login/presentation/extensions/handle_openid_configuration.dart b/lib/features/login/presentation/extensions/handle_openid_configuration.dart
+index d8b35fd1b..f1c4ca3c4 100644
+--- a/lib/features/login/presentation/extensions/handle_openid_configuration.dart
++++ b/lib/features/login/presentation/extensions/handle_openid_configuration.dart
+@@ -1,11 +1,11 @@
+ 
+-import 'package:tmail_ui_user/features/login/domain/model/base_url_oidc_response.dart';
++import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
+ import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
+ 
+ extension HandleOpenidConfiguration on LoginController {
+ 
+   void tryGetOIDCConfigurationFromBaseUrl(Uri baseUri) {
+-    getOIDCConfiguration(BaseUrlOidcResponse(baseUri));
++    handleFailureViewState(GetOIDCConfigurationFromBaseUrlFailure(null));
+   }
+ 
+   void handleGetOIDCConfigurationFromBaseUrlFailure() {
+diff --git a/lib/features/login/presentation/login_controller.dart b/lib/features/login/presentation/login_controller.dart
+index ec41a9e7a..15b4864c6 100644
+--- a/lib/features/login/presentation/login_controller.dart
++++ b/lib/features/login/presentation/login_controller.dart
+@@ -15,7 +15,6 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
+ import 'package:jmap_dart_client/jmap/core/user_name.dart';
+ import 'package:model/account/password.dart';
+ import 'package:model/oidc/oidc_configuration.dart';
+-import 'package:model/oidc/request/oidc_request.dart';
+ import 'package:model/oidc/response/oidc_response.dart';
+ import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+ import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
+@@ -340,16 +339,7 @@ class LoginController extends ReloadableController {
+   }
+ 
+   void _checkOIDCIsAvailable() {
+-    if (_currentBaseUrl == null) {
+-      dispatchState(Left(CheckOIDCIsAvailableFailure(CanNotFoundBaseUrl())));
+-    } else {
+-      consumeState(_checkOIDCIsAvailableInteractor.execute(
+-        OIDCRequest(
+-          baseUrl: _currentBaseUrl!.toString(),
+-          resourceUrl: _currentBaseUrl!.origin
+-        )
+-      ));
+-    }
++    handleFailureViewState(CheckOIDCIsAvailableFailure(CanNotFoundOIDCLinks()));
+   }
+ 
+   void handleBackButtonAction(BuildContext context) {
