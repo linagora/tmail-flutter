@@ -70,7 +70,6 @@ class EditorFullscreenDialogView extends StatelessWidget {
             Expanded(
               child: IosHtmlContentViewerWidget(
                 contentHtml: content,
-                useDefaultFont: true,
                 direction: AppUtils.getCurrentDirection(context),
               ),
             ),

@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -484,7 +485,10 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
             cacheHTMLAssetOffline: true,
             initialText: controller.vacationMessageHtmlText,
             spellCheck: true,
-            customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context))
+            customBodyCssStyle: HtmlUtils.customInlineBodyCssStyleHtmlEditor(
+              direction: AppUtils.getCurrentDirection(context),
+            ),
+            customInternalCSS: HtmlTemplate.webCustomInternalStyleCSS(),
           ),
           htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
               toolbarType: html_editor_browser.ToolbarType.hide,
@@ -510,7 +514,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           maxHeight: PlatformInfo.isIOS ? ConstantsUI.composerHtmlContentMaxHeight : null,
           addDefaultSelectionMenuItems: false,
           initialContent: controller.vacationMessageHtmlText ?? '',
-          customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
+          customStyleCss: HtmlTemplate.mobileCustomInternalStyleCSS(direction: AppUtils.getCurrentDirection(context)),
           onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi)
       );
     }

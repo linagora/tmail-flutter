@@ -58,6 +58,7 @@ class EmailPreviewerView extends GetWidget<EmailPreviewerController> {
       widthContent: context.width,
       heightContent: context.height,
       contentHtml: emlPreviewer.content,
+      useDefaultFontStyle: true,
       direction: AppUtils.getCurrentDirection(context),
       onClickHyperLinkAction: controller.onClickHyperLink,
     );
