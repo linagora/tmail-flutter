@@ -29,7 +29,7 @@ class HtmlContentViewer extends StatefulWidget {
   final TextDirection? direction;
   final bool keepWidthWhileLoading;
   final double? contentPadding;
-  final bool useDefaultFont;
+  final bool useDefaultFontStyle;
   final double? maxHtmlContentHeight;
   final double htmlContentMinHeight;
   final double offsetHtmlContentHeight;
@@ -56,7 +56,7 @@ class HtmlContentViewer extends StatefulWidget {
     this.enableQuoteToggle = false,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
-    this.useDefaultFont = false,
+    this.useDefaultFontStyle = false,
     this.disableScrolling = false,
     this.maxViewHeight,
     this.maxHtmlContentHeight,
@@ -150,7 +150,7 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
       javaScripts: combinedScripts,
       styleCSS: combinedCss,
       contentPadding: widget.contentPadding,
-      useDefaultFont: widget.useDefaultFont,
+      useDefaultFontStyle: widget.useDefaultFontStyle,
     );
   }
 

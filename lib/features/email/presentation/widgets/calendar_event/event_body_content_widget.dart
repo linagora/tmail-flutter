@@ -50,6 +50,7 @@ class EventBodyContentWidget extends StatelessWidget {
                 return HtmlContentViewerOnWeb(
                   widthContent: constraints.maxWidth,
                   contentHtml: content,
+                  useDefaultFontStyle: true,
                   mailtoDelegate: onMailtoDelegateAction,
                   direction: AppUtils.getCurrentDirection(context),
                   scrollController: scrollController,
@@ -64,6 +65,7 @@ class EventBodyContentWidget extends StatelessWidget {
                 maxHtmlContentHeight: PlatformInfo.isIOS
                   ? ConstantsUI.htmlContentMaxHeight
                   : null,
+                useDefaultFontStyle: true,
                 direction: AppUtils.getCurrentDirection(context),
                 onMailtoDelegateAction: onMailtoDelegateAction
               );
