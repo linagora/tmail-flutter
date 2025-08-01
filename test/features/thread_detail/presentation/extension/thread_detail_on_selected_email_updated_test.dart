@@ -70,6 +70,8 @@ void main() {
         threadId: ThreadId(Id('1')),
       );
       when(threadDetailController.currentExpandedEmailId).thenReturn(Rxn());
+      when(threadDetailController.emailIdsPresentation)
+          .thenReturn(<EmailId, PresentationEmail?>{}.obs);
 
       // act
       threadDetailController.onSelectedEmailUpdated(

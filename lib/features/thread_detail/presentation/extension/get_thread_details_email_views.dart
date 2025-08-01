@@ -5,7 +5,6 @@ import 'package:model/email/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load_more_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_open_email_address_detail_action.dart';
-import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_load_more_segments.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/toggle_thread_detail_collape_expand.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -32,11 +31,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
             loadMoreCount: loadMoreSegments[indexOfEmailId]!,
           ),
           imagePaths: imagePaths,
-          isLoading: viewState.value.fold(
-            (failure) => false,
-            (success) => success is GettingEmailsByIds &&
-              success.loadingIndex == indexOfEmailId,
-          ),
+          loadingIndex: indexOfEmailId,
         );
       }
 
