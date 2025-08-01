@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
@@ -127,6 +129,17 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           }
         }),
         Obx(() {
+          final loadingIndicator = Obx(() {
+            return controller.viewState.value.fold(
+              (failure) => const SizedBox.shrink(),
+              (success) => success is GettingThreadById || success is GettingEmailsByIds
+                  ? const Center(
+                      child: CupertinoLoadingWidget(),
+                    )
+                  : const SizedBox.shrink(),
+            );
+          });
+
           final threadChildren = controller.getThreadDetailEmailViews();
 
           late Widget threadBody;
@@ -141,9 +154,14 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           }
 
           final nonPageViewThread = Expanded(
-            child: SingleChildScrollView(
-              controller: controller.scrollController,
-              child: threadBody,
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  controller: controller.scrollController,
+                  child: threadBody,
+                ),
+                loadingIndicator,
+              ],
             ),
           );
 
@@ -154,18 +172,23 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             if (currentIndex == -1) return nonPageViewThread;
 
             return Expanded(
-              child: PageView.builder(
-                controller: manager.pageController,
-                itemCount: manager.isThreadDetailEnabled
-                    ? manager.availableThreadIds.length
-                    : manager.currentDisplayedEmails.length,
-                itemBuilder: (context, index) {
-                  if (index != currentIndex) {
-                    return const SizedBox.shrink();
-                  }
-                  return SingleChildScrollView(child: threadBody);
-                },
-                onPageChanged: controller.onThreadPageChanged,
+              child: Stack(
+                children: [
+                  PageView.builder(
+                    controller: manager.pageController,
+                    itemCount: manager.isThreadDetailEnabled
+                        ? manager.availableThreadIds.length
+                        : manager.currentDisplayedEmails.length,
+                    itemBuilder: (context, index) {
+                      if (index != currentIndex) {
+                        return const SizedBox.shrink();
+                      }
+                      return SingleChildScrollView(child: threadBody);
+                    },
+                    onPageChanged: controller.onThreadPageChanged,
+                  ),
+                  loadingIndicator,
+                ],
               ),
             );
           }

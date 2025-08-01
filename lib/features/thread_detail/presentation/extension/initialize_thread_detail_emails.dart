@@ -34,7 +34,14 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       ))));
       return;
     }
-    if (_currentThreadOnlyContainsSelectedEmail(selectedEmailId)) return;
+    if (_currentThreadOnlyContainsSelectedEmail(selectedEmailId)) {
+      if (!loadThreadOnThreadChanged) {
+        consumeState(Stream.value(Right(GetEmailsByIdsSuccess(
+          [mailboxDashBoardController.selectedEmail.value!],
+        ))));
+      }
+      return;
+    } 
 
     consumeState(getEmailsByIdsInteractor.execute(
       session!,
