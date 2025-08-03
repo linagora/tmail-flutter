@@ -139,15 +139,61 @@ class StringConvert {
     return isMarkdown || isAsciiArt;
   }
 
-  static NamedAddress? parseNamedAddress(String input) {
-    final regex = RegExp(r'''^(['"])(.+?)\1\s*<([^>\s]+)>$''');
-    final match = regex.firstMatch(input.trim());
-    if (match != null) {
-      final name = match.group(2)!;
-      final address = match.group(3)!;
+  static List<NamedAddress> extractNamedAddresses(String input) {
+    try {
+      if (input.contains('%')) {
+        input = Uri.decodeComponent(input);
+      }
 
-      return NamedAddress(name: name, address: address);
+      if (input.length % 4 == 0 &&
+          input.contains(RegExp(r'^[A-Za-z0-9+/=]+$'))) {
+        try {
+          input = utf8.decode(base64.decode(input));
+        } catch (_) {}
+      }
+
+      input = input.replaceAll('\n', ' ');
+      final results = <NamedAddress>[];
+
+      final pattern = RegExp(r'''(?:"([^"]+)"|'([^']+)'|)\s*<([^>]+)>''');
+
+      int currentIndex = 0;
+      final matches = pattern.allMatches(input).toList();
+
+      for (final match in matches) {
+        if (match.start > currentIndex) {
+          final between = input.substring(currentIndex, match.start);
+          results.addAll(_splitPlainAddresses(between, emailSeparatorPattern));
+        }
+
+        final name = match.group(1) ?? match.group(2) ?? '';
+        final email = match.group(3) ?? '';
+        results.add(NamedAddress(name: name.trim(), address: email.trim()));
+
+        currentIndex = match.end;
+      }
+
+      if (currentIndex < input.length) {
+        final tail = input.substring(currentIndex);
+        results.addAll(_splitPlainAddresses(tail, emailSeparatorPattern));
+      }
+      log('StringConvert::extractNamedAddresses:results = $results');
+      return results;
+    } catch (_) {
+      return [];
     }
-    return null;
+  }
+
+  static List<NamedAddress> _splitPlainAddresses(
+    String input,
+    String emailSeparatorPattern,
+  ) {
+    final separator = RegExp(emailSeparatorPattern);
+    return input
+        .split(separator)
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .map((e) => NamedAddress(name: '', address: e))
+        .toList();
   }
 }

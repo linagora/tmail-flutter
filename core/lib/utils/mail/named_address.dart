@@ -8,4 +8,7 @@ class NamedAddress with EquatableMixin {
 
   @override
   List<Object?> get props => [name, address];
+
+  @override
+  String toString() => name.isNotEmpty ? '$name <$address>' : address;
 }
