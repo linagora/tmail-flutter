@@ -69,6 +69,9 @@ extension SetEmailAddressExtension on Set<EmailAddress>? {
 extension ListEmailAddressExtension on List<EmailAddress> {
   Set<String> asSetAddress() => map((emailAddress) => emailAddress.emailAddress).toSet();
 
+  Set<String> toNormalizedEmailSet() =>
+      map((e) => e.email?.toLowerCase()).whereType<String>().toSet();
+
   List<EmailAddress> removeInvalidEmails(String username) {
     final Set<String> seenEmails = {};
     return where((email) {
