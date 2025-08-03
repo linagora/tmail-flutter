@@ -35,7 +35,7 @@ extension HandleMailboxActionTypeExtension on BaseMailboxController {
       throw InvalidMailFormatException(userEmail);
     }
 
-    return '${userEmail.substring(0, atIndex)}+$folderName@${userEmail.substring(atIndex + 1)}';
+    return '<${userEmail.substring(0, atIndex)}+$folderName@${userEmail.substring(atIndex + 1)}>';
   }
 
   void openConfirmationDialogSubAddressingAction(
