@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/base/shortcut/app_shortcut_manager.dart';
 import 'package:tmail_ui_user/features/base/shortcut/mail/mail_list_action_shortcut_type.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/model/mail_searched_list_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_shift_selection_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
@@ -53,7 +54,12 @@ extension HandleKeyboardShortcutActionsExtension on ThreadController {
     final shortcutType = AppShortcutManager.getMailListActionFromEvent(event);
     log('$runtimeType::onKeyDownEventAction:🔥Shortcut triggered: $shortcutType');
     if (shortcutType == null) return;
-    handleMailListShortcutAction(shortcutType);
+
+    if (searchController.isSearchEmailRunning) {
+      handleMailSearchListShortcutAction(shortcutType);
+    } else {
+      handleMailListShortcutAction(shortcutType);
+    }
   }
 
   void handleMailListShortcutAction(MailListActionShortcutType shortcutType) {
@@ -71,6 +77,20 @@ extension HandleKeyboardShortcutActionsExtension on ThreadController {
 
     shortcutActionEventController?.add(
       MailListShortcutActionViewEvent(emailActionType, selectedEmails),
+    );
+  }
+
+  void handleMailSearchListShortcutAction(MailListActionShortcutType shortcutType) {
+    log('$runtimeType::handleMailSearchListShortcutAction: 🔥 Shortcut triggered: $shortcutType');
+    final selectedEmails = listEmailSelected;
+    final emailActionType = shortcutType.getEmailActionTypeBySearch(
+      selectedEmails: selectedEmails,
+    );
+
+    if (emailActionType == null) return;
+
+    shortcutActionEventController?.add(
+      MailSearchedListShortcutActionViewEvent(emailActionType, selectedEmails),
     );
   }
 }
