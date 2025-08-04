@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/search_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/search_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 
 class SearchRepositoryImpl extends SearchRepository {
 
@@ -35,5 +36,15 @@ class SearchRepositoryImpl extends SearchRepository {
       limit: limit,
       pattern: pattern,
     );
+  }
+
+  @override
+  Future<void> storeEmailSortOrder(EmailSortOrderType sortOrderType) {
+    return searchDataSource.storeEmailSortOrder(sortOrderType);
+  }
+
+  @override
+  Future<EmailSortOrderType> getStoredEmailSortOrder() {
+    return searchDataSource.getStoredEmailSortOrder();
   }
 }

@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_sort_order_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/local_setting_cache_manager.dart';
@@ -94,6 +95,7 @@ class LocalBindings extends Bindings {
     Get.put(SessionHiveCacheClient());
     Get.put(SessionCacheManager(Get.find<SessionHiveCacheClient>()));
     Get.put(LocalSpamReportManager(Get.find<SharedPreferences>()));
+    Get.put(LocalSortOrderManager(Get.find<SharedPreferences>()));
     Get.put(CachingManager(
       Get.find<MailboxCacheManager>(),
       Get.find<StateCacheManager>(),

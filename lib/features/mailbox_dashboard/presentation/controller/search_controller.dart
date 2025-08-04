@@ -68,8 +68,10 @@ class SearchController extends BaseController with DateRangePickerMixin {
     isAdvancedSearchViewOpen.value = false;
   }
 
-  void clearSearchFilter() {
-    searchEmailFilter.value = SearchEmailFilter.initial();
+  void clearSearchFilter({
+    EmailSortOrderType sortOrderType = SearchEmailFilter.defaultSortOrder,
+  }) {
+    searchEmailFilter.value = SearchEmailFilter.withSortOrder(sortOrderType);
   }
 
   void synchronizeSearchFilter(SearchEmailFilter searchFilter) {
