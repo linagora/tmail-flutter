@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_t
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_app_bar.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_cupertino_loading_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -141,9 +142,16 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           }
 
           final nonPageViewThread = Expanded(
-            child: SingleChildScrollView(
-              controller: controller.scrollController,
-              child: threadBody,
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  controller: controller.scrollController,
+                  child: threadBody,
+                ),
+                ThreadDetailCupertinoLoadingWidget(
+                  threadDetailController: controller,
+                ),
+              ],
             ),
           );
 
@@ -154,18 +162,25 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             if (currentIndex == -1) return nonPageViewThread;
 
             return Expanded(
-              child: PageView.builder(
-                controller: manager.pageController,
-                itemCount: manager.isThreadDetailEnabled
-                    ? manager.availableThreadIds.length
-                    : manager.currentDisplayedEmails.length,
-                itemBuilder: (context, index) {
-                  if (index != currentIndex) {
-                    return const SizedBox.shrink();
-                  }
-                  return SingleChildScrollView(child: threadBody);
-                },
-                onPageChanged: controller.onThreadPageChanged,
+              child: Stack(
+                children: [
+                  PageView.builder(
+                    controller: manager.pageController,
+                    itemCount: manager.isThreadDetailEnabled
+                        ? manager.availableThreadIds.length
+                        : manager.currentDisplayedEmails.length,
+                    itemBuilder: (context, index) {
+                      if (index != currentIndex) {
+                        return const SizedBox.shrink();
+                      }
+                      return SingleChildScrollView(child: threadBody);
+                    },
+                    onPageChanged: controller.onThreadPageChanged,
+                  ),
+                  ThreadDetailCupertinoLoadingWidget(
+                    threadDetailController: controller,
+                  ),
+                ],
               ),
             );
           }

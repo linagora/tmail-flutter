@@ -20,6 +20,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       return;
     }
 
+    emailIdsPresentation.clear();
     scrollController ??= ScrollController();
 
     if (currentExpandedEmailId.value == null) {
