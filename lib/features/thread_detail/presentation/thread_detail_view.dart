@@ -44,6 +44,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             closeThreadDetailAction: controller.closeThreadDetailAction,
             lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
             ownUserName: controller.session?.getOwnEmailAddress() ?? '',
+            isThreadDetailEnabled: controller.isThreadDetailEnabled,
             mailboxContain: _getMailboxContain(),
             onEmailActionClick: isLoading
                 ? null
