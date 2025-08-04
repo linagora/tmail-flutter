@@ -662,7 +662,7 @@ void main() {
       const String folderName = 'folder';
       final result = mailboxController.getSubAddress(userEmail, folderName);
 
-      expect(result, equals('user+folder@example.com'));
+      expect(result, equals('<user+folder@example.com>'));
     });
 
     test('should throw an error if empty local part', () {

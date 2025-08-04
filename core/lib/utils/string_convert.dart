@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/domain/exceptions/string_exception.dart';
+import 'package:core/utils/mail/named_address.dart';
 import 'package:html/parser.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -136,5 +137,63 @@ class StringConvert {
         line.contains(asciiArtRegex) && line.split(asciiArtRegex).length > 1);
     log('StringConvert::isTextTable:isMarkdown = $isMarkdown | isAscii = $isAsciiArt');
     return isMarkdown || isAsciiArt;
+  }
+
+  static List<NamedAddress> extractNamedAddresses(String input) {
+    try {
+      if (input.contains('%')) {
+        input = Uri.decodeComponent(input);
+      }
+
+      if (input.length % 4 == 0 &&
+          input.contains(RegExp(r'^[A-Za-z0-9+/=]+$'))) {
+        try {
+          input = utf8.decode(base64.decode(input));
+        } catch (_) {}
+      }
+
+      input = input.replaceAll('\n', ' ');
+      final results = <NamedAddress>[];
+
+      final pattern = RegExp(r'''(?:"([^"]+)"|'([^']+)'|)\s*<([^>]+)>''');
+
+      int currentIndex = 0;
+      final matches = pattern.allMatches(input).toList();
+
+      for (final match in matches) {
+        if (match.start > currentIndex) {
+          final between = input.substring(currentIndex, match.start);
+          results.addAll(_splitPlainAddresses(between, emailSeparatorPattern));
+        }
+
+        final name = match.group(1) ?? match.group(2) ?? '';
+        final email = match.group(3) ?? '';
+        results.add(NamedAddress(name: name.trim(), address: email.trim()));
+
+        currentIndex = match.end;
+      }
+
+      if (currentIndex < input.length) {
+        final tail = input.substring(currentIndex);
+        results.addAll(_splitPlainAddresses(tail, emailSeparatorPattern));
+      }
+      log('StringConvert::extractNamedAddresses:results = $results');
+      return results;
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static List<NamedAddress> _splitPlainAddresses(
+    String input,
+    String emailSeparatorPattern,
+  ) {
+    final separator = RegExp(emailSeparatorPattern);
+    return input
+        .split(separator)
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .map((e) => NamedAddress(name: '', address: e))
+        .toList();
   }
 }
