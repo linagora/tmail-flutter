@@ -28,6 +28,7 @@ class ThreadDetailLoadMoreCircle extends StatefulWidget {
 
 class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle> {
   final _isHover = ValueNotifier(false);
+  final threadDetailController = Get.find<ThreadDetailController>();
 
   @override
   void dispose() {
@@ -37,7 +38,6 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
 
   @override
   Widget build(BuildContext context) {
-    final threadDetailController = Get.find<ThreadDetailController>();
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       color: Colors.white,

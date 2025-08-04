@@ -14,8 +14,10 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
 
     if (success is PreloadEmailsByIdsSuccess) {
       final email = success.presentationEmails.first;
-      EmailBindings(currentEmailId: email.id).dependencies();
-      currentExpandedEmailId.value = email.id;
+      final emailId = email.id;
+      if (emailId == null) return;
+      EmailBindings(currentEmailId: emailId).dependencies();
+      currentExpandedEmailId.value = emailId;
       
       if (isThreadDetailEnabled) {
         loadThreadOnThreadChanged = false;
@@ -23,7 +25,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
           LoadThreadDetailAfterSelectedEmailAction(email.threadId!),
         );
       } else {
-        emailIdsPresentation[email.id!] = emailIdsPresentation[email.id!]?.copyWith(
+        emailIdsPresentation[emailId] = emailIdsPresentation[emailId]?.copyWith(
           emailInThreadStatus: EmailInThreadStatus.expanded,
         );
       }
