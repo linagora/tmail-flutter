@@ -128,6 +128,8 @@ class _WebEditorState extends State<WebEditorWidget> {
         customInternalCSS: HtmlTemplate.customInternalStyleCSS,
         spellCheck: true,
         disableDragAndDrop: true,
+        normalizeHtmlTextWhenDropping: true,
+        normalizeHtmlTextWhenPasting: true,
         webInitialScripts: UnmodifiableListView([
           WebScript(
             name: HtmlUtils.lineHeight100Percent.name,
