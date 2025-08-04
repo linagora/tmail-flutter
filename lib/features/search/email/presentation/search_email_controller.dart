@@ -1,8 +1,9 @@
 
+import 'dart:async';
+
 import 'package:core/presentation/extensions/either_view_state_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -59,6 +60,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -71,6 +73,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -114,6 +117,9 @@ class SearchEmailController extends BaseController
   late SearchMoreState searchMoreState;
   late bool canSearchMore;
   WebSocketQueueHandler? _webSocketQueueHandler;
+  FocusNode? keyboardFocusNode;
+  StreamController<MailListShortcutActionViewEvent>? shortcutActionEventController;
+  StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
 
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
 
@@ -157,6 +163,7 @@ class SearchEmailController extends BaseController
     _initializeTextInputFocus();
     _initWorkerListener();
     _initWebSocketQueueHandler();
+    onKeyboardShortcutInit();
   }
 
   @override
@@ -446,7 +453,6 @@ class SearchEmailController extends BaseController
   }
 
   void _searchEmailAction(BuildContext context) {
-    KeyboardUtils.hideKeyboard(context);
     textInputSearchFocus.unfocus();
 
     if (session == null || accountId == null) {
@@ -512,6 +518,10 @@ class SearchEmailController extends BaseController
           0,
           duration: const Duration(milliseconds: 500),
           curve: Curves.fastOutSlowIn);
+    }
+
+    if (PlatformInfo.isWeb) {
+      refocusMailShortcutFocus();
     }
   }
 
@@ -825,6 +835,8 @@ class SearchEmailController extends BaseController
     listContactSuggestionSearch.clear();
     if (requestFocus) {
       textInputSearchFocus.requestFocus();
+    } else {
+      textInputSearchFocus.unfocus();
     }
   }
 
@@ -843,9 +855,6 @@ class SearchEmailController extends BaseController
   void closeSearchView({BuildContext? context}) {
     clearAllTextInputSearchForm();
     clearAllResultSearch();
-    if (context != null) {
-      KeyboardUtils.hideKeyboard(context);
-    }
     mailboxDashBoardController.searchController.disableAllSearchEmail();
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     if (PlatformInfo.isWeb) {
@@ -927,6 +936,10 @@ class SearchEmailController extends BaseController
         selectionMode.value = SelectMode.ACTIVE;
       }
     }
+
+    if (PlatformInfo.isWeb) {
+      refocusMailShortcutFocus();
+    }
   }
 
   void cancelSelectionMode() {
@@ -934,6 +947,9 @@ class SearchEmailController extends BaseController
         .map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE))
         .toList();
     selectionMode.value = SelectMode.INACTIVE;
+    if (PlatformInfo.isWeb) {
+      clearMailShortcutFocus();
+    }
   }
 
   void setSelectAllEmailAction() {
@@ -1107,6 +1123,7 @@ class SearchEmailController extends BaseController
     emailUIActionWorker.dispose();
     dashBoardActionWorker.dispose();
     _webSocketQueueHandler?.dispose();
+    onKeyboardShortcutDispose();
     super.onClose();
   }
 }
