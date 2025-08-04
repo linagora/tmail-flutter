@@ -113,10 +113,14 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
       twakeAppManager.setHasComposer(false);
     }
 
-    dispatchThreadDetailUIAction(ReclaimMailViewKeyboardShortcutFocusAction());
-    dispatchAction(ReclaimMailListKeyboardShortcutFocusAction());
-
     _handleResultAfterCloseComposer(result);
+
+    if (!composerManager.isAnyComposerOpened) {
+      dispatchThreadDetailUIAction(ReclaimMailViewKeyboardShortcutFocusAction());
+      dispatchAction(ReclaimMailListKeyboardShortcutFocusAction());
+    } else {
+      composerManager.refocusKeyboardShortcutFocusFirstComposer();
+    }
 
     if (composerId != null) {
       await removeComposerCacheByIdOnWeb(composerId);
