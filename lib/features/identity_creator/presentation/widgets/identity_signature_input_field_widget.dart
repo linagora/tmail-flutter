@@ -143,6 +143,8 @@ class IdentitySignatureInputFieldWidget extends StatelessWidget
         initialText: initContent.isEmpty ? null : initContent,
         disableDragAndDrop: true,
         spellCheck: true,
+        normalizeHtmlTextWhenDropping: true,
+        normalizeHtmlTextWhenPasting: true,
         customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(
           direction: AppUtils.getCurrentDirection(context),
         ),
