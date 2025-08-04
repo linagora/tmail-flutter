@@ -19,9 +19,6 @@ extension HandleKeyboardShortcutActionsExtension on ComposerController {
   void onKeyboardShortcutInit() {
     if (PlatformInfo.isWeb) {
       keyboardShortcutFocusNode = FocusNode();
-      keyboardShortcutFocusNode?.addListener(() {
-        log('$runtimeType::onKeyboardShortcutInit: keyboardShortcutFocusNode: ${keyboardShortcutFocusNode?.hasFocus}');
-      });
     }
   }
 
