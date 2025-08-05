@@ -9,7 +9,6 @@ class LoadingMoveMultipleEmailToMailboxAll extends UIState {}
 
 class MoveMultipleEmailToMailboxAllSuccess extends UIState {
   final List<EmailId> movedListEmailId;
-  final MailboxId currentMailboxId;
   final MailboxId destinationMailboxId;
   final MoveAction moveAction;
   final EmailActionType emailActionType;
@@ -19,7 +18,6 @@ class MoveMultipleEmailToMailboxAllSuccess extends UIState {
 
   MoveMultipleEmailToMailboxAllSuccess(
     this.movedListEmailId,
-    this.currentMailboxId,
     this.destinationMailboxId,
     this.moveAction,
     this.emailActionType,
@@ -33,7 +31,6 @@ class MoveMultipleEmailToMailboxAllSuccess extends UIState {
   @override
   List<Object?> get props => [
     movedListEmailId,
-    currentMailboxId,
     destinationMailboxId,
     moveAction,
     emailActionType,
@@ -55,7 +52,6 @@ class MoveMultipleEmailToMailboxAllFailure extends FeatureFailure {
 
 class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
   final List<EmailId> movedListEmailId;
-  final MailboxId currentMailboxId;
   final MailboxId destinationMailboxId;
   final MoveAction moveAction;
   final EmailActionType emailActionType;
@@ -65,7 +61,6 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
 
   MoveMultipleEmailToMailboxHasSomeEmailFailure(
     this.movedListEmailId,
-    this.currentMailboxId,
     this.destinationMailboxId,
     this.moveAction,
     this.emailActionType,
@@ -79,7 +74,6 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
   @override
   List<Object?> get props => [
     movedListEmailId,
-    currentMailboxId,
     destinationMailboxId,
     moveAction,
     emailActionType,

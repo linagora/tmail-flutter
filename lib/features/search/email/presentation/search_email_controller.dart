@@ -912,6 +912,13 @@ class SearchEmailController extends BaseController
     selectionMode.value = SelectMode.INACTIVE;
   }
 
+  void setSelectAllEmailAction() {
+    listResultSearch.value = listResultSearch
+        .map((email) => email.toSelectedEmail(selectMode: SelectMode.ACTIVE))
+        .toList();
+    selectionMode.value = SelectMode.ACTIVE;
+  }
+
   void handleSelectionEmailAction(
       EmailActionType actionType,
       List<PresentationEmail> listEmails
@@ -931,22 +938,14 @@ class SearchEmailController extends BaseController
         break;
       case EmailActionType.unMarkAsStarred:
         cancelSelectionMode();
-
         markAsStarSelectedMultipleEmail(listEmails, MarkStarAction.unMarkStar);
         break;
       case EmailActionType.moveToMailbox:
-        cancelSelectionMode();
-        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
-        if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToMailbox(listEmails, mailboxContainCurrent);
-        }
+        moveEmailsToMailbox(listEmails, onCallbackAction: cancelSelectionMode);
         break;
       case EmailActionType.moveToTrash:
         cancelSelectionMode();
-        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
-        if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToTrash(listEmails, mailboxContainCurrent);
-        }
+        moveEmailsToTrash(listEmails);
         break;
       case EmailActionType.deletePermanently:
         final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
@@ -961,10 +960,7 @@ class SearchEmailController extends BaseController
         break;
       case EmailActionType.moveToSpam:
         cancelSelectionMode();
-        final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
-        if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToSpam(listEmails, mailboxContainCurrent);
-        }
+        moveEmailsToSpam(listEmails);
         break;
       case EmailActionType.unSpam:
         cancelSelectionMode();

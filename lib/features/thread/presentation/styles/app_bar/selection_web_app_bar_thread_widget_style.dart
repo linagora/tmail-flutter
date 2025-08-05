@@ -5,7 +5,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class SelectionWebAppBarThreadWidgetStyle {
-  static const double minHeight = 56;
+  static const double height = 56;
   static const double iconSize = 20;
 
   static const Color backgroundColor = Colors.white;
@@ -13,9 +13,9 @@ class SelectionWebAppBarThreadWidgetStyle {
 
   static EdgeInsetsGeometry getPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isMobile(context) || responsiveUtils.isTabletLarge(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+      return const EdgeInsets.symmetric(horizontal: 16);
     } else {
-      return const EdgeInsets.symmetric(horizontal: 24, vertical: 8);
+      return const EdgeInsets.symmetric(horizontal: 24);
     }
   }
 
