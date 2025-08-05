@@ -44,8 +44,11 @@ class DefaultMobileAppBarThreadWidget extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         color: MobileAppBarThreadWidgetStyle.backgroundColor,
-        padding: MobileAppBarThreadWidgetStyle.getPadding(context, responsiveUtils),
-        constraints: const BoxConstraints(minHeight: MobileAppBarThreadWidgetStyle.minHeight),
+        padding: MobileAppBarThreadWidgetStyle.getPadding(
+          context,
+          responsiveUtils,
+        ),
+        height: MobileAppBarThreadWidgetStyle.height,
         child: Row(
           children: [
             TMailButtonWidget.fromIcon(
