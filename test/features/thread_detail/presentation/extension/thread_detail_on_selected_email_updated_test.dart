@@ -8,6 +8,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -85,7 +86,14 @@ void main() {
       expect(
         streamsConsumed,
         emitsInOrder([
-          Right(PreloadEmailIdsInThreadSuccess([selectedEmail.id!], threadId: ThreadId(Id('1')))),
+          Right(PreloadEmailIdsInThreadSuccess(
+            [selectedEmail.id!],
+            threadId: ThreadId(Id('1')),
+            emailsInThreadDetailInfo: [selectedEmail].toEmailsInThreadDetailInfo(
+              sentMailboxId: null,
+              ownEmailAddress: null,
+            ),
+          )),
           Right(PreloadEmailsByIdsSuccess([selectedEmail])),
         ]),
       );

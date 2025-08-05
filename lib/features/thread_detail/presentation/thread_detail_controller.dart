@@ -24,7 +24,6 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
@@ -37,6 +36,11 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -46,6 +50,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_thread_by_id_failure.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mark_multiple_emails_read_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_refresh_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_selected_email_updated.dart';
@@ -53,7 +58,6 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_collapsed_email_download_states.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_star_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/quick_create_rule_from_collapsed_email_success.dart';
 
@@ -65,6 +69,8 @@ class ThreadDetailController extends BaseController {
   final PrintEmailInteractor _printEmailInteractor;
   final GetEmailContentInteractor _getEmailContentInteractor;
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
+  final MarkAsStarMultipleEmailInteractor markAsStarMultipleEmailInteractor;
+  final MarkAsMultipleEmailReadInteractor markAsMultipleEmailReadInteractor;
 
   ThreadDetailController(
     this._getEmailIdsByThreadIdInteractor,
@@ -74,16 +80,18 @@ class ThreadDetailController extends BaseController {
     this._printEmailInteractor,
     this._getEmailContentInteractor,
     this._downloadAttachmentForWebInteractor,
+    this.markAsStarMultipleEmailInteractor,
+    this.markAsMultipleEmailReadInteractor,
   );
 
   final emailIdsPresentation = <EmailId, PresentationEmail?>{}.obs;
   final currentExpandedEmailId = Rxn<EmailId>();
   final currentEmailLoaded = Rxn<EmailLoaded>();
+  final emailsInThreadDetailInfo = RxList<EmailInThreadDetailInfo>();
 
   late final EmailActionReactor emailActionReactor;
   final additionalProperties = Properties({
     IndividualHeaderIdentifier.listPostHeader.value,
-    IndividualHeaderIdentifier.listUnsubscribeHeader.value,
     EmailProperty.references,
     EmailProperty.messageId,
   });
@@ -100,7 +108,6 @@ class ThreadDetailController extends BaseController {
           accountId!,
           sentMailboxId!,
           ownEmailAddress!,
-          selectedEmailId: mailboxDashBoardController.selectedEmail.value?.id,
         ));
       }
     },
@@ -227,8 +234,18 @@ class ThreadDetailController extends BaseController {
       handleGetEmailsByIdsSuccess(success);
     } else if (success is MarkAsEmailReadSuccess) {
       markCollapsedEmailReadSuccess(success);
-    } else if (success is MarkAsStarEmailSuccess) {
-      markCollapsedEmailStarSuccess(success);
+    } else if (success is MarkAsMultipleEmailReadAllSuccess) {
+      handleMarkMultipleEmailsReadSuccess(
+        success,
+        success.readActions,
+        success.emailIds,
+      );
+    } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+      handleMarkMultipleEmailsReadSuccess(
+        success,
+        success.readActions,
+        success.successEmailIds,
+      );
     } else if (success is CreateNewRuleFilterSuccess) {
       quickCreateRuleFromCollapsedEmailSuccess(success);
     } else if (success is DownloadAttachmentForWebSuccess) {
@@ -260,6 +277,10 @@ class ThreadDetailController extends BaseController {
         );
       }
       return;
+    }
+    if (failure is MarkAsMultipleEmailReadFailure ||
+        failure is MarkAsStarMultipleEmailFailure) {
+      toastManager.showMessageFailure(failure as FeatureFailure);
     }
     super.handleFailureViewState(failure);
   }

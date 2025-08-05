@@ -44,7 +44,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   final OnTapAvatarActionClick? onTapAvatarActionClick;
   final PresentationMailbox? mailboxContain;
   final bool showUnreadVisualization;
-  final bool isOnlyEmailInThread;
 
   const InformationSenderAndReceiverBuilder({
     Key? key,
@@ -64,7 +63,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     this.onTapAvatarActionClick,
     this.mailboxContain,
     this.showUnreadVisualization = false,
-    this.isOnlyEmailInThread = false,
   }) : super(key: key);
 
   @override
@@ -201,7 +199,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                               iconPadding: const EdgeInsets.all(8),
                               iconMargin: EdgeInsets.zero,
                               padding: EdgeInsets.zero,
-                              isOnlyEmailInThread: isOnlyEmailInThread,
                             ),
                           ),
                         ),

@@ -3,16 +3,16 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 
 abstract class ThreadDetailRepository {
-  Future<List<EmailId>> getThreadById(
+  Future<List<EmailInThreadDetailInfo>> getThreadById(
     ThreadId threadId,
     Session session,
     AccountId accountId,
     MailboxId sentMailboxId,
-    String ownEmailAddress, {
-    required EmailId? selectedEmailId,
-  });
+    String ownEmailAddress,
+  );
 
   Future<List<Email>> getEmailsByIds(
     Session session,

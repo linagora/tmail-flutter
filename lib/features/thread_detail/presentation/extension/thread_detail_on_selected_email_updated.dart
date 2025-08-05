@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -56,6 +57,10 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       Right(PreloadEmailIdsInThreadSuccess(
         [selectedEmail.id!],
         threadId: selectedEmail.threadId,
+        emailsInThreadDetailInfo: [selectedEmail].toEmailsInThreadDetailInfo(
+          sentMailboxId: sentMailboxId,
+          ownEmailAddress: ownEmailAddress,
+        ),
       )),
       Right(PreloadEmailsByIdsSuccess([selectedEmail])),
     ]));
