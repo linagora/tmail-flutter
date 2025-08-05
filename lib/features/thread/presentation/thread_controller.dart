@@ -878,7 +878,7 @@ class ThreadController extends BaseController with EmailActionController {
       focusNodeKeyBoard?.requestFocus();
     }
 
-    if (_isUnSelectedAll()) {
+    if (mailboxDashBoardController.emailsInCurrentMailbox.isAllSelectionInActive) {
       mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
       mailboxDashBoardController.listEmailSelected.clear();
     } else {
@@ -900,11 +900,6 @@ class ThreadController extends BaseController with EmailActionController {
 
   List<PresentationEmail> get listEmailSelected =>
     mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected;
-
-  bool _isUnSelectedAll() {
-    return mailboxDashBoardController.emailsInCurrentMailbox
-      .every((email) => email.selectMode == SelectMode.INACTIVE);
-  }
 
   void cancelSelectEmail() {
     if (mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE) {
