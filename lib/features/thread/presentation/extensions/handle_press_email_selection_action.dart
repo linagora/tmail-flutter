@@ -23,6 +23,8 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
       pressEmailSelectionAction(emailActionType, emails);
     } else if (type == EmailSelectionActionType.moreAction) {
       _showMoreActionMenu(context, emails, selectedMailbox);
+    } else if (type == EmailSelectionActionType.selectAll) {
+      _showSelectAllEmails();
     }
   }
 
@@ -79,5 +81,11 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
         pressEmailSelectionAction(menuAction.action, emails);
       },
     );
+  }
+
+  void _showSelectAllEmails() {
+    if (mailboxDashBoardController.emailsInCurrentMailbox.isAnySelectionInActive) {
+      setSelectAllEmailAction();
+    }
   }
 }
