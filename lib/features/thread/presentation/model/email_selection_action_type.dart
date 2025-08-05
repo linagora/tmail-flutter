@@ -62,7 +62,7 @@ enum EmailSelectionActionType {
         return imagePaths.icMoveMailbox;
       case EmailSelectionActionType.moveToTrash:
       case EmailSelectionActionType.deletePermanently:
-        return imagePaths.icMailboxTrash;
+        return imagePaths.icDeleteComposer;
       case EmailSelectionActionType.markAsSpam:
         return imagePaths.icSpam;
       case EmailSelectionActionType.markAsNotSpam:

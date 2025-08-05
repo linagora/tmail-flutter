@@ -210,7 +210,7 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.moveToMailbox:
         return appLocalizations.move_message;
       case EmailActionType.markAsStarred:
-        return appLocalizations.mark_as_starred;
+        return appLocalizations.starred;
       case EmailActionType.unMarkAsStarred:
         return appLocalizations.not_starred;
       case EmailActionType.moveToTrash:
@@ -237,6 +237,24 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppColor.redFF3347;
       default:
         return Colors.black;
+    }
+  }
+
+  Color getContextMenuIconColor() {
+    switch(this) {
+      case EmailActionType.deletePermanently:
+        return AppColor.redFF3347;
+      default:
+        return AppColor.gray424244.withValues(alpha: 0.72);
+    }
+  }
+
+  Color getContextMenuTitleColor() {
+    switch(this) {
+      case EmailActionType.deletePermanently:
+        return AppColor.redFF3347;
+      default:
+        return AppColor.gray424244.withValues(alpha: 0.9);
     }
   }
 }
