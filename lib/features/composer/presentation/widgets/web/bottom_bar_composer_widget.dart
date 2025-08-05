@@ -210,6 +210,8 @@ class BottomBarComposerWidget extends StatelessWidget {
             text: AppLocalizations.of(context).send,
             icon: imagePaths.icSend,
             iconAlignment: TextDirection.rtl,
+            height: BottomBarComposerWidgetStyle.sendButtonHeight,
+            minWidth: BottomBarComposerWidgetStyle.sendButtonMinWidth,
             padding: BottomBarComposerWidgetStyle.sendButtonPadding,
             iconSize: BottomBarComposerWidgetStyle.iconSize,
             iconSpace: BottomBarComposerWidgetStyle.sendButtonIconSpace,
