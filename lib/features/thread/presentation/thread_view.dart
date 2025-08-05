@@ -91,7 +91,13 @@ class ThreadView extends GetWidget<ThreadController>
                               onPopupMenuFilterEmailAction: !controller.responsiveUtils.isScreenWithShortestSide(context)
                                 ? (filterOption, position) => controller.handleOpenContextMenuFilterEmailAction(context, position, filterOption)
                                 : null,
-                              onPressEmailSelectionActionClick: controller.handlePressEmailSelectionAction,
+                              onPressEmailSelectionActionClick: (type, emails) =>
+                                  controller.handlePressEmailSelectionAction(
+                                    context,
+                                    type,
+                                    emails,
+                                    controller.selectedMailbox,
+                                  ),
                               );
                           }),
                           if (PlatformInfo.isMobile)
