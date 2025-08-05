@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
@@ -24,6 +25,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_email_more_action_extension.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_press_email_selection_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_receive_time_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_sort_order_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_date_filter_action.dart';
@@ -32,12 +34,13 @@ import 'package:tmail_ui_user/features/search/email/presentation/model/search_mo
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/styles/search_email_view_style.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/utils/search_email_utils.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/widgets/app_bar_selection_mode.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/empty_search_email_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/search_email_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/email_selection_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/selection_mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -77,11 +80,29 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   ),
                   child: Obx(() {
                     if (controller.selectionMode.value == SelectMode.ACTIVE) {
-                      return AppBarSelectionMode(
-                          controller.listResultSearch.listEmailSelected,
-                          controller.mailboxDashBoardController.mapMailboxById,
-                          onCancelSelection: controller.cancelSelectionMode,
-                          onHandleEmailAction: controller.handleSelectionEmailAction);
+                      final mapMailboxById = controller.mailboxDashBoardController.mapMailboxById;
+                      final selectedEmails = controller.listResultSearch.listEmailSelected;
+
+                      final actionTypes = _createEmailSelectionActionTypes(
+                        mapMailboxById,
+                        selectedEmails,
+                      );
+
+                      return SelectionMobileAppBarThreadWidget(
+                        imagePaths: controller.imagePaths,
+                        responsiveUtils: controller.responsiveUtils,
+                        selectedEmails: selectedEmails,
+                        padding: EdgeInsets.zero,
+                        onCancelSelectionAction: controller.cancelSelectionMode,
+                        emailSelectionActionTypes: actionTypes,
+                        onPressEmailSelectionActionClick: (type, emails) =>
+                            controller.handlePressEmailSelectionAction(
+                              context,
+                              type,
+                              emails,
+                              mapMailboxById,
+                            ),
+                      );
                     } else {
                       return _buildSearchInputForm(context);
                     }
@@ -133,6 +154,26 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         ),
       ),
     );
+  }
+
+  List<EmailSelectionActionType> _createEmailSelectionActionTypes(
+    Map<MailboxId, PresentationMailbox> mapMailboxById,
+    List<PresentationEmail> selectedEmails,
+  ) {
+    return <EmailSelectionActionType>[
+      EmailSelectionActionType.selectAll,
+      if (selectedEmails.isArchiveMessageEnabled(mapMailboxById))
+        EmailSelectionActionType.archiveMessage,
+      if (selectedEmails.isDeletePermanentlyDisabled(mapMailboxById))
+        EmailSelectionActionType.moveToTrash
+      else
+        EmailSelectionActionType.deletePermanently,
+      if (selectedEmails.isAllEmailRead)
+        EmailSelectionActionType.markAsUnread
+      else
+        EmailSelectionActionType.markAsRead,
+      EmailSelectionActionType.moreAction,
+    ];
   }
 
   Widget _buildSearchInputForm(BuildContext context) {

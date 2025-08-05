@@ -19,7 +19,7 @@ class WebAppBarThreadWidget extends StatelessWidget {
   final SelectMode selectMode;
   final FilterMessageOption filterOption;
   final OnOpenMailboxMenuActionClick openMailboxAction;
-  final OnCancelEditThreadAction cancelEditThreadAction;
+  final OnCancelSelectionAction onCancelSelectionAction;
   final OnEmailSelectionAction emailSelectionAction;
   final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
   final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
@@ -33,7 +33,7 @@ class WebAppBarThreadWidget extends StatelessWidget {
     required this.selectMode,
     required this.filterOption,
     required this.openMailboxAction,
-    required this.cancelEditThreadAction,
+    required this.onCancelSelectionAction,
     required this.emailSelectionAction,
     this.onPopupMenuFilterEmailAction,
     this.onContextMenuFilterEmailAction,
@@ -59,12 +59,8 @@ class WebAppBarThreadWidget extends StatelessWidget {
         responsiveUtils: responsiveUtils,
         listEmailSelected: listEmailSelected,
         mailboxSelected: mailboxSelected,
-        filterOption: filterOption,
-        openMailboxAction: openMailboxAction,
-        cancelEditThreadAction: cancelEditThreadAction,
+        onCancelSelectionAction: onCancelSelectionAction,
         emailSelectionAction: emailSelectionAction,
-        onPopupMenuFilterEmailAction: onPopupMenuFilterEmailAction,
-        onContextMenuFilterEmailAction: onContextMenuFilterEmailAction,
       );
     }
   }
