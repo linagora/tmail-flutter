@@ -147,6 +147,8 @@ class ToastManager {
       message = message ?? AppLocalizations.of(context).emptyTrashFolderFailed;
     } else if (_isMarkAsSpamFailure(failure)) {
       message = message ?? AppLocalizations.of(context).markAsSpamFailed;
+    } else if (_isArchiveMessagesFailure(failure)) {
+      message = message ?? AppLocalizations.of(context).archiveMessagesFailed;
     } else if (failure is SignInTwakeWorkplaceFailure) {
       message = message ?? AppLocalizations.of(context).sigInSaasFailed;
     } else if (failure is SignUpTwakeWorkplaceFailure) {
@@ -193,6 +195,12 @@ class ToastManager {
   bool _isMarkAsSpamFailure(FeatureFailure failure) {
     return failure is MoveMultipleEmailToMailboxFailure &&
         failure.emailActionType == EmailActionType.moveToSpam &&
+        failure.moveAction == MoveAction.moving;
+  }
+
+  bool _isArchiveMessagesFailure(FeatureFailure failure) {
+    return failure is MoveMultipleEmailToMailboxFailure &&
+        failure.emailActionType == EmailActionType.archiveMessage &&
         failure.moveAction == MoveAction.moving;
   }
 
