@@ -4934,4 +4934,11 @@ class AppLocalizations {
       name: 'showSignature',
     );
   }
+
+  String get archiveMessagesFailed {
+    return Intl.message(
+      'Archive messages failed',
+      name: 'archiveMessagesFailed',
+    );
+  }
 }

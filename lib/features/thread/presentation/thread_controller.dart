@@ -1109,22 +1109,11 @@ class ThreadController extends BaseController with EmailActionController {
         markAsStarSelectedMultipleEmail(selectionEmail, MarkStarAction.unMarkStar);
         break;
       case EmailActionType.moveToMailbox:
-        cancelSelectEmail();
-        final mailboxContainCurrent = searchController.isSearchEmailRunning
-            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
-            : selectedMailbox;
-        if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToMailbox(selectionEmail, mailboxContainCurrent);
-        }
+        moveEmailsToMailbox(selectionEmail, onCallbackAction: cancelSelectEmail);
         break;
       case EmailActionType.moveToTrash:
         cancelSelectEmail();
-        final mailboxContainCurrent = searchController.isSearchEmailRunning
-            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
-            : selectedMailbox;
-        if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToTrash(selectionEmail, mailboxContainCurrent);
-        }
+        moveEmailsToTrash(selectionEmail);
         break;
       case EmailActionType.deletePermanently:
         final mailboxContainCurrent = searchController.isSearchEmailRunning
@@ -1141,16 +1130,15 @@ class ThreadController extends BaseController with EmailActionController {
         break;
       case EmailActionType.moveToSpam:
         cancelSelectEmail();
-        final mailboxContainCurrent = searchController.isSearchEmailRunning
-            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
-            : selectedMailbox;
-        if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToSpam(selectionEmail, mailboxContainCurrent);
-        }
+        moveEmailsToSpam(selectionEmail);
         break;
       case EmailActionType.unSpam:
         cancelSelectEmail();
         unSpamSelectedMultipleEmail(selectionEmail);
+        break;
+      case EmailActionType.archiveMessage:
+        cancelSelectEmail();
+        moveEmailsToArchive(selectionEmail);
         break;
       default:
         break;
