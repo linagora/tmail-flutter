@@ -12,6 +12,7 @@ import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_data_source.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/exceptions/empty_thread_detail_exception.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/repository/thread_detail_repository.dart';
 
 class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
@@ -20,14 +21,13 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
   final Map<DataSourceType, ThreadDetailDataSource> threadDetailDataSource;
 
   @override
-  Future<List<EmailId>> getThreadById(
+  Future<List<EmailInThreadDetailInfo>> getThreadById(
     ThreadId threadId,
     Session session,
     AccountId accountId,
     MailboxId sentMailboxId,
-    String ownEmailAddress, {
-    required EmailId? selectedEmailId,
-  }) async {
+    String ownEmailAddress,
+  ) async {
     final originalEmailIds = await threadDetailDataSource[DataSourceType.network]!
       .getThreadById(threadId, accountId);
 
@@ -44,27 +44,24 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
           emailIds,
           sentMailboxId,
           ownEmailAddress,
-          selectedEmailId: selectedEmailId,
         ))
     );
 
     return filteredEmailIds
-      .reduce((prev, curr) => prev + curr)
+      .reduce((prev, curr) => prev..addAll(curr))
       .sortWithResult(EmailComparator(
         EmailComparatorProperty.receivedAt
       )..setIsAscending(true))
-      .map((e) => e.id!)
-      .toList();
+      .toEmailsInThreadDetailInfo();
   }
 
-  Future<List<Email>> _filterBadEmails(
+  Future<Map<Email, bool>> _filterBadEmails(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
     MailboxId sentMailboxId,
-    String ownEmailAddress, {
-    required EmailId? selectedEmailId,
-  }) async {
+    String ownEmailAddress,
+  ) async {
     int retry = 3;
     while (retry > 0) {
       try {
@@ -81,37 +78,23 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
               EmailProperty.cc,
               EmailProperty.bcc,
               EmailProperty.receivedAt,
+              EmailProperty.keywords,
             }),
           );
-        return emails
-          .where((email) => checkEmailValidForThreadDetail(
-            email,
-            sentMailboxId,
-            ownEmailAddress,
-            selectedEmailId: selectedEmailId,
-          ))
-          .toList();
+        return {
+          for (final email in emails)
+            email: email.checkEmailValidForThreadDetail(
+              sentMailboxId,
+              ownEmailAddress,
+            ),
+        };
       } catch (e) {
         retry--;
 
         if (retry <= 0) rethrow;
       }
     }
-    return [];
-  }
-
-  bool checkEmailValidForThreadDetail(
-    Email email,
-    MailboxId sentMailboxId,
-    String ownEmailAddress, {
-    required EmailId? selectedEmailId
-  }) {
-    return email.id != null && (
-      !email.inSentMailbox(sentMailboxId)
-      || !email.fromMe(ownEmailAddress)
-      || !email.recipientsHasMe(ownEmailAddress)
-      || email.id == selectedEmailId
-    );
+    return {};
   }
 
   @override
@@ -129,5 +112,29 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
   Future<bool> getThreadDetailStatus() {
     return threadDetailDataSource[DataSourceType.local]!
       .getThreadDetailStatus();
+  }
+}
+
+extension SortListEmailInThreadDetailInfo on Map<Email, bool> {
+  Map<Email, bool> sortWithResult(
+    EmailComparator comparator,
+  ) {
+    final originalEmails = keys.toList();
+    final sortedEmails = originalEmails.sortWithResult(comparator);
+    return {
+      for (final email in sortedEmails)
+        email: this[email] ?? false,
+    };
+  }
+
+  List<EmailInThreadDetailInfo> toEmailsInThreadDetailInfo() {
+    return entries.map(
+      (entry) => EmailInThreadDetailInfo(
+        emailId: entry.key.id!,
+        keywords: entry.key.keywords,
+        mailboxIds: entry.key.mailboxIds,
+        isValidToDisplay: entry.value,
+      ),
+    ).toList();
   }
 }

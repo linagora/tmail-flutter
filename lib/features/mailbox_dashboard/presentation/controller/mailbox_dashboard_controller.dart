@@ -22,6 +22,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
@@ -181,6 +182,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
@@ -1560,6 +1562,54 @@ class MailboxDashBoardController extends ReloadableController
           .where((email) => email.id != null)
           .map((email) => MapEntry(email.id!, email.hasRead)),
       ),
+    );
+  }
+
+  void moveMultipleEmailInThreadDetail(
+    List<EmailInThreadDetailInfo> emailsInThreadDetailInfo, {
+    required MailboxId destinationMailboxId,
+    required EmailActionType emailActionType,
+  }) {
+    if (sessionCurrent == null || accountId.value == null) {
+      consumeState(Stream.value(
+        Left(MoveMultipleEmailToMailboxFailure(
+          emailActionType,
+          MoveAction.moving,
+          NotFoundSessionException()
+        ))
+      ));
+      return;
+    }
+    final currentMailboxes = <MailboxId, List<EmailId>>{};
+    for (final email in emailsInThreadDetailInfo) {
+      final mailboxIdContain = email.mailboxIdContain;
+      if (mailboxIdContain == null) continue;
+
+      currentMailboxes.putIfAbsent(mailboxIdContain, () => []).add(email.emailId);
+    }
+    final moveRequest = MoveToMailboxRequest(
+      currentMailboxes,
+      destinationMailboxId,
+      MoveAction.moving,
+      emailActionType,
+      destinationPath: currentContext == null
+          ? mapMailboxById[destinationMailboxId]?.name?.name
+          : mapMailboxById[destinationMailboxId]?.getDisplayName(currentContext!),
+    );
+    final emailIdsWithReadStatus = Map.fromEntries(
+      emailsInThreadDetailInfo.map(
+        (email) => MapEntry(
+          email.emailId,
+          email.keywords?[KeyWordIdentifier.emailSeen] == true,
+        ),
+      ),
+    );
+
+    _moveSelectedEmailMultipleToMailboxAction(
+      sessionCurrent!,
+      accountId.value!,
+      moveRequest,
+      emailIdsWithReadStatus,
     );
   }
 

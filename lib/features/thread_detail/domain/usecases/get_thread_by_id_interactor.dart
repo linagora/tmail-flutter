@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/extensions/list_email_in_thread_detail_info_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/repository/thread_detail_repository.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 
@@ -20,7 +21,6 @@ class GetThreadByIdInteractor {
     AccountId accountId,
     MailboxId sentMailboxId,
     String ownEmailAddress, {
-    required EmailId? selectedEmailId,
     bool updateCurrentThreadDetail = false,
   }) async* {
     try {
@@ -33,13 +33,13 @@ class GetThreadByIdInteractor {
         accountId,
         sentMailboxId,
         ownEmailAddress,
-        selectedEmailId: selectedEmailId,
       );
 
       yield Right(GetThreadByIdSuccess(
-        result,
+        result.emailIdsToDisplay,
         threadId: threadId,
         updateCurrentThreadDetail: updateCurrentThreadDetail,
+        emailsInThreadDetailInfo: result,
       ));
     } catch (e) {
       logError('GetEmailIdsByThreadIdInteractor::execute(): Exception: $e');
@@ -51,7 +51,6 @@ class GetThreadByIdInteractor {
           accountId,
           sentMailboxId,
           ownEmailAddress,
-          selectedEmailId: selectedEmailId,
         ),
         updateCurrentThreadDetail: updateCurrentThreadDetail,
       ));

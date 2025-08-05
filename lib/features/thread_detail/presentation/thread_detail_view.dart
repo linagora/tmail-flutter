@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -8,19 +7,17 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:model/email/email_action_type.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_email_mailbox_contains.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_action_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_details_email_views.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_detail_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_page_changed.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_app_bar.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -35,49 +32,18 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     Widget bodyWidget = Column(
       children: [
         Obx(() {
-          final isLoading = showLoadingView(controller.viewState.value);
-
           return ThreadDetailAppBar(
             responsiveUtils: controller.responsiveUtils,
             imagePaths: controller.imagePaths,
             isSearchRunning: controller.isSearchRunning,
             closeThreadDetailAction: controller.closeThreadDetailAction,
-            lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
-            ownUserName: controller.session?.getOwnEmailAddress() ?? '',
             isThreadDetailEnabled: controller.isThreadDetailEnabled,
             mailboxContain: _getMailboxContain(),
-            onEmailActionClick: isLoading
-                ? null
-                : controller.threadDetailOnEmailActionClick,
-            onMoreActionClick: (presentationEmail, position) => isLoading
-                ? null
-                : controller.emailActionReactor.handleMoreEmailAction(
-              mailboxContain: controller.getThreadDetailEmailMailboxContains(
-                presentationEmail,
-              ),
-              presentationEmail: presentationEmail,
-              position: position,
-              responsiveUtils: controller.responsiveUtils,
-              imagePaths: controller.imagePaths,
-              username: controller.session?.username,
-              handleEmailAction: controller.threadDetailOnEmailActionClick,
-              additionalActions: [
-                if (controller.responsiveUtils.isMobile(context)) ...[
-                  EmailActionType.forward,
-                  EmailActionType.replyAll,
-                  EmailActionType.replyToList,
-                ],
-                EmailActionType.markAsStarred,
-                EmailActionType.unMarkAsStarred,
-                EmailActionType.moveToTrash,
-                EmailActionType.deletePermanently,
-                EmailActionType.printAll,
-                EmailActionType.moveToMailbox,
-              ],
-              emailIsRead: presentationEmail.hasRead,
-              openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
-              openPopupMenu: controller.mailboxDashBoardController.openPopupMenu,
-            ),
+            threadActionReady: controller.emailsInThreadDetailInfo.isNotEmpty &&
+                controller.emailIdsPresentation.length > 1,
+            threadDetailIsStarred: controller.threadDetailIsStarred,
+            onThreadActionClick: controller.onThreadDetailActionClick,
+            onThreadMoreActionClick: controller.onThreadDetailMoreActionClick,
             optionWidgets: [
               if (controller.previousAvailable)
                 TMailButtonWidget.fromIcon(

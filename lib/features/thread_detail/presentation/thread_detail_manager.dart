@@ -4,9 +4,10 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/state_manager.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_detail_status_state.dart';
@@ -16,7 +17,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/init
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/refresh_thread_detail_on_setting_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_setting_status.dart';
 
-class ThreadDetailManager extends BaseController {
+class ThreadDetailManager extends ReloadableController {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
   final GetThreadDetailStatusInteractor _getThreadDetailStatusInteractor;
@@ -84,6 +85,12 @@ class ThreadDetailManager extends BaseController {
         initializeThreadDetailManager(currentDisplayedEmails);
       },
     );
+  }
+
+  @override
+  void handleReloaded(Session session) {
+    super.handleReloaded(session);
+    consumeState(_getThreadDetailStatusInteractor.execute());
   }
 
   @override

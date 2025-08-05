@@ -11,15 +11,22 @@ extension HandleGetEmailIdsByThreadIdSuccess on ThreadDetailController {
     }
 
     final allEmailIds = success.emailIds;
+    final allEmailsInThreadDetailInfo = success.emailsInThreadDetailInfo;
     if (success.updateCurrentThreadDetail) {
       final newEmailIds = allEmailIds.where(
         (emailId) => !emailIdsPresentation.keys.contains(emailId),
+      );
+      final newEmailsInThreadDetailInfo = allEmailsInThreadDetailInfo.where(
+        (email) => !emailsInThreadDetailInfo.contains(email),
       );
       emailIdsPresentation
         ..removeWhere((key, _) => !allEmailIds.contains(key))
         ..addEntries(
           newEmailIds.map((emailId) => MapEntry(emailId, null)),
         );
+      emailsInThreadDetailInfo
+        ..removeWhere((e) => !allEmailsInThreadDetailInfo.contains(e))
+        ..addAll(newEmailsInThreadDetailInfo);
       return;
     }
 
@@ -31,5 +38,9 @@ extension HandleGetEmailIdsByThreadIdSuccess on ThreadDetailController {
             ? emailIdsPresentation[id] ?? selectedEmail
             : null,
     };
+    if ((isThreadDetailEnabled && success is! PreloadEmailIdsInThreadSuccess) ||
+        (!isThreadDetailEnabled && success is PreloadEmailIdsInThreadSuccess)) {
+      emailsInThreadDetailInfo.value = allEmailsInThreadDetailInfo;
+    }
   }
 }

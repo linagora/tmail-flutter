@@ -3,7 +3,10 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 
 class ThreadDetailPresentationUtils {
   const ThreadDetailPresentationUtils._();
@@ -88,6 +91,34 @@ class ThreadDetailPresentationUtils {
           );
         }),
       ...created,
+    ];
+  }
+
+  static List<EmailInThreadDetailInfo> refreshThreadDetailInfo({
+    required List<EmailInThreadDetailInfo> original,
+    required List<PresentationEmail> created,
+    required List<PresentationEmail> updated,
+    required List<EmailId> destroyed,
+    required MailboxId? sentMailboxId,
+    required String? ownEmailAddress,
+  }) {
+    return [
+      ...original
+        .whereNot((email) => destroyed.contains(email.emailId))
+        .map((email) {
+          final updatedInOriginal = updated.firstWhereOrNull(
+            (updatedEmail) => updatedEmail.id == email.emailId,
+          );
+
+          return email.copyWith(
+            keywords: updatedInOriginal?.keywords,
+            mailboxIds: updatedInOriginal?.mailboxIds,
+          );
+        }),
+      ...created.toEmailsInThreadDetailInfo(
+        sentMailboxId: sentMailboxId,
+        ownEmailAddress: ownEmailAddress,
+      ),
     ];
   }
 }

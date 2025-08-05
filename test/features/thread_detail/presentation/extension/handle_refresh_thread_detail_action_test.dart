@@ -11,6 +11,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -98,6 +99,8 @@ void main() {
             .thenReturn(MailboxId(Id('sent-mailbox-id')));
         when(threadDetailController.ownEmailAddress)
             .thenReturn('9jEYK@example.com');
+        when(threadDetailController.emailsInThreadDetailInfo)
+            .thenReturn(<EmailInThreadDetailInfo>[].obs);
 
         // act
         threadDetailController.handleRefreshThreadDetailAction(
