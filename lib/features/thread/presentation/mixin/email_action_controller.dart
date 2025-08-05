@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -290,21 +291,35 @@ mixin EmailActionController {
     mailboxDashBoardController.markAsStarSelectedMultipleEmail(listEmails, markStarAction);
   }
 
-  void moveSelectedMultipleEmailToMailbox(
-    List<PresentationEmail> listEmails,
-    PresentationMailbox mailboxCurrent
-  ) {
-    mailboxDashBoardController.moveSelectedMultipleEmailToMailbox(
+  void moveEmailsToMailbox(
+    List<PresentationEmail> listEmails, {
+    VoidCallback? onCallbackAction,
+  }) {
+    mailboxDashBoardController.moveEmailsToMailbox(
       listEmails,
-      mailboxCurrent);
+      onCallbackAction: onCallbackAction,
+    );
   }
 
-  void moveSelectedMultipleEmailToTrash(List<PresentationEmail> listEmails, PresentationMailbox mailboxCurrent) {
-    mailboxDashBoardController.moveSelectedMultipleEmailToTrash(listEmails, mailboxCurrent);
+  void moveEmailsToTrash(List<PresentationEmail> listEmails) {
+    mailboxDashBoardController.moveEmailsToFolder(
+      listEmails,
+      EmailActionType.moveToTrash,
+    );
   }
 
-  void moveSelectedMultipleEmailToSpam(List<PresentationEmail> listEmails, PresentationMailbox mailboxCurrent) {
-    mailboxDashBoardController.moveSelectedMultipleEmailToSpam(listEmails, mailboxCurrent);
+  void moveEmailsToArchive(List<PresentationEmail> listEmails) {
+    mailboxDashBoardController.moveEmailsToFolder(
+      listEmails,
+      EmailActionType.archiveMessage,
+    );
+  }
+
+  void moveEmailsToSpam(List<PresentationEmail> listEmails) {
+    mailboxDashBoardController.moveEmailsToFolder(
+      listEmails,
+      EmailActionType.moveToSpam,
+    );
   }
 
   void unSpamSelectedMultipleEmail(List<PresentationEmail> listEmails) {

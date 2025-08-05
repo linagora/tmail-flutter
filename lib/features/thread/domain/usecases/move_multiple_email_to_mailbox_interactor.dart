@@ -29,7 +29,6 @@ class MoveMultipleEmailToMailboxInteractor {
       if (moveRequest.totalEmails == result.emailIdsSuccess.length) {
         yield Right(MoveMultipleEmailToMailboxAllSuccess(
           result.emailIdsSuccess,
-          moveRequest.currentMailboxes.keys.first,
           moveRequest.destinationMailboxId,
           moveRequest.moveAction,
           moveRequest.emailActionType,
@@ -52,7 +51,6 @@ class MoveMultipleEmailToMailboxInteractor {
           .where((emailId, _) => result.emailIdsSuccess.contains(emailId));
         yield Right(MoveMultipleEmailToMailboxHasSomeEmailFailure(
           result.emailIdsSuccess,
-          moveRequest.currentMailboxes.keys.first,
           moveRequest.destinationMailboxId,
           moveRequest.moveAction,
           moveRequest.emailActionType,

@@ -4677,5 +4677,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "archiveMessagesFailed": "Archive messages failed",
+  "@archiveMessagesFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
