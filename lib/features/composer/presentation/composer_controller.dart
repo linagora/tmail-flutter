@@ -586,6 +586,9 @@ class ComposerController extends BaseController
       }
       _collapseAllRecipient();
       autoCreateEmailTag();
+      if (PlatformInfo.isWeb) {
+        _hideCcBccReplyToRecipients();
+      }
     }
   }
 
@@ -1359,6 +1362,14 @@ class ComposerController extends BaseController
     FocusScope.of(context).unfocus();
   }
 
+  void clickOutsideComposer(BuildContext context) {
+    clearFocus(context);
+    if (PlatformInfo.isWeb) {
+      _collapseAllRecipient();
+      _hideCcBccReplyToRecipients();
+    }
+  }
+
   void _closeComposerAction({dynamic result, bool closeOverlays = false}) {
     mailboxDashBoardController.closeComposer(
       result: result,
@@ -1430,6 +1441,12 @@ class ComposerController extends BaseController
     ccAddressExpandMode.value = ExpandMode.COLLAPSE;
     bccAddressExpandMode.value = ExpandMode.COLLAPSE;
     replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
+  }
+
+  void _hideCcBccReplyToRecipients() {
+    ccRecipientState.value = PrefixRecipientState.disabled;
+    bccRecipientState.value = PrefixRecipientState.disabled;
+    replyToRecipientState.value = PrefixRecipientState.disabled;
   }
 
   void _closeSuggestionBox() {
@@ -1660,6 +1677,9 @@ class ComposerController extends BaseController
     }
     _collapseAllRecipient();
     autoCreateEmailTag();
+    if (PlatformInfo.isWeb) {
+      _hideCcBccReplyToRecipients();
+    }
   }
 
   void _onChangeCursorOnMobile(List<int>? coordinates, BuildContext context) {
@@ -1791,6 +1811,9 @@ class ComposerController extends BaseController
   void handleOnMouseDownHtmlEditorWeb() {
     _collapseAllRecipient();
     autoCreateEmailTag();
+    if (PlatformInfo.isWeb) {
+      _hideCcBccReplyToRecipients();
+    }
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {

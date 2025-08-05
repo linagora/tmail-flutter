@@ -44,7 +44,7 @@ class ComposerView extends GetWidget<ComposerController> {
       mobile: MobileResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocus(context),
+            onTap: () => controller.clickOutsideComposer(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -342,7 +342,7 @@ class ComposerView extends GetWidget<ComposerController> {
       desktop: Obx(() => DesktopResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocus(context),
+            onTap: () => controller.clickOutsideComposer(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 imagePaths: controller.imagePaths,
@@ -666,7 +666,7 @@ class ComposerView extends GetWidget<ComposerController> {
       tablet: TabletResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocus(context),
+            onTap: () => controller.clickOutsideComposer(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 imagePaths: controller.imagePaths,
