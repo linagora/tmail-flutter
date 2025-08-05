@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_st
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_open_context_menu_filter_email_action_extension.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_press_email_selection_action.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pull_to_refresh_list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_select_message_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
@@ -41,7 +42,6 @@ import 'package:tmail_ui_user/features/thread/presentation/styles/scroll_to_top_
 import 'package:tmail_ui_user/features/thread/presentation/styles/thread_view_style.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
@@ -90,8 +90,9 @@ class ThreadView extends GetWidget<ThreadController>
                                 : null,
                               onPopupMenuFilterEmailAction: !controller.responsiveUtils.isScreenWithShortestSide(context)
                                 ? (filterOption, position) => controller.handleOpenContextMenuFilterEmailAction(context, position, filterOption)
-                                : null
-                            );
+                                : null,
+                              onPressEmailSelectionActionClick: controller.handlePressEmailSelectionAction,
+                              );
                           }),
                           if (PlatformInfo.isMobile)
                             Obx(() {
@@ -169,7 +170,7 @@ class ThreadView extends GetWidget<ThreadController>
                               return const SizedBox.shrink();
                             }
                           }),
-                            Obx(() => RecoverDeletedMessageLoadingBannerWidget(
+                          Obx(() => RecoverDeletedMessageLoadingBannerWidget(
                                 isLoading: controller.mailboxDashBoardController.isRecoveringDeletedMessage.value,
                                 horizontalLoadingWidget: horizontalLoadingWidget,
                                 responsiveUtils: controller.responsiveUtils,
@@ -252,7 +253,6 @@ class ThreadView extends GetWidget<ThreadController>
                           })
                         )
                       ),
-                      _buildListButtonSelectionForMobile(context),
                     ]
                 )
             ))
@@ -292,54 +292,6 @@ class ThreadView extends GetWidget<ThreadController>
         controller.responsiveUtils.isTabletLarge(context) ||
         controller.responsiveUtils.isLandscapeTablet(context);
     }
-  }
-
-  Widget _buildListButtonSelectionForMobile(BuildContext context) {
-    return Obx(() {
-      final listEmailSelected = controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected;
-      final currentSelectMode = controller.mailboxDashBoardController.currentSelectMode.value;
-      final isSearchEmailRunning = controller.searchController.simpleSearchIsActivated.isTrue
-          || controller.searchController.advancedSearchIsActivated.isTrue;
-
-      if (_validateDisplayBottomBarSelection(
-        context: context,
-        listEmailSelected: listEmailSelected,
-        isSearchEmailRunning: isSearchEmailRunning,
-        currentSelectMode: currentSelectMode
-      )) {
-        return BottomBarThreadSelectionWidget(
-          controller.imagePaths,
-          controller.responsiveUtils,
-          listEmailSelected,
-          controller.mailboxDashBoardController.selectedMailbox.value,
-          onPressEmailSelectionActionClick: controller.pressEmailSelectionAction
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
-  }
-
-  bool _validateDisplayBottomBarSelection({
-    required BuildContext context,
-    required List<PresentationEmail> listEmailSelected,
-    required bool isSearchEmailRunning,
-    required SelectMode currentSelectMode,
-  }) {
-    if (PlatformInfo.isMobile && listEmailSelected.isNotEmpty) {
-      return true;
-    }
-
-    if (PlatformInfo.isWeb
-        && currentSelectMode == SelectMode.ACTIVE
-        && isSearchEmailRunning
-        && !controller.responsiveUtils.isDesktop(context)
-        && listEmailSelected.isNotEmpty
-    ) {
-      return true;
-    }
-
-    return false;
   }
 
   Widget _buildFloatingButtonCompose(BuildContext context) {

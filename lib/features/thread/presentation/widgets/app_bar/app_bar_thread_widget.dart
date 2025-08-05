@@ -1,4 +1,3 @@
-
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -8,17 +7,29 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/email_selection_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/web_app_bar_thread_widget.dart';
 
-typedef OnPopupMenuFilterEmailAction = void Function(FilterMessageOption, RelativeRect);
-typedef OnContextMenuFilterEmailAction = void Function(FilterMessageOption);
+typedef OnPopupMenuFilterEmailAction = void Function(
+  FilterMessageOption option,
+  RelativeRect position,
+);
+typedef OnContextMenuFilterEmailAction = void Function(
+  FilterMessageOption option,
+);
 typedef OnOpenMailboxMenuActionClick = void Function();
 typedef OnCancelEditThreadAction = void Function();
-typedef OnEmailSelectionAction = void Function(EmailActionType, List<PresentationEmail>);
+typedef OnEmailSelectionAction = void Function(
+  EmailActionType type,
+  List<PresentationEmail> emails,
+);
+typedef OnPressEmailSelectionActionClick = void Function(
+  EmailSelectionActionType type,
+  List<PresentationEmail> emails,
+);
 
 class AppBarThreadWidget extends StatelessWidget {
-
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
   final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
@@ -30,6 +41,7 @@ class AppBarThreadWidget extends StatelessWidget {
   final List<PresentationEmail> listEmailSelected;
   final SelectMode selectMode;
   final FilterMessageOption filterOption;
+  final OnPressEmailSelectionActionClick? onPressEmailSelectionActionClick;
 
   const AppBarThreadWidget({
     Key? key,
@@ -44,6 +56,7 @@ class AppBarThreadWidget extends StatelessWidget {
     required this.emailSelectionAction,
     this.onPopupMenuFilterEmailAction,
     this.onContextMenuFilterEmailAction,
+    this.onPressEmailSelectionActionClick,
   }) : super(key: key);
 
   @override
@@ -76,6 +89,7 @@ class AppBarThreadWidget extends StatelessWidget {
         cancelEditThreadAction: cancelEditThreadAction,
         onPopupMenuFilterEmailAction: onPopupMenuFilterEmailAction,
         onContextMenuFilterEmailAction: onContextMenuFilterEmailAction,
+        onPressEmailSelectionActionClick: onPressEmailSelectionActionClick,
       );
     }
   }
