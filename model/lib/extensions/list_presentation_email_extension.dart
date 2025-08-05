@@ -13,6 +13,10 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
     return every((email) => email.selectMode == SelectMode.INACTIVE);
   }
 
+  bool get isAnySelectionInActive {
+    return any((email) => email.selectMode == SelectMode.INACTIVE);
+  }
+
   List<Email> get listEmail => map((presentationEmail) => presentationEmail.toEmail()).toList();
 
   List<PresentationEmail> get listEmailSelected {
