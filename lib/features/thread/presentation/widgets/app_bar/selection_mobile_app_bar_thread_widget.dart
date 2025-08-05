@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/email_selection_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/app_bar/mobile_app_bar_thread_widget_style.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SelectionMobileAppBarThreadWidget extends StatelessWidget {
