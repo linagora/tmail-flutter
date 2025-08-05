@@ -19,7 +19,7 @@ typedef OnContextMenuFilterEmailAction = void Function(
   FilterMessageOption option,
 );
 typedef OnOpenMailboxMenuActionClick = void Function();
-typedef OnCancelEditThreadAction = void Function();
+typedef OnCancelSelectionAction = void Function();
 typedef OnEmailSelectionAction = void Function(
   EmailActionType type,
   List<PresentationEmail> emails,
@@ -35,7 +35,7 @@ class AppBarThreadWidget extends StatelessWidget {
   final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
   final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
   final OnOpenMailboxMenuActionClick openMailboxAction;
-  final OnCancelEditThreadAction cancelEditThreadAction;
+  final OnCancelSelectionAction onCancelSelectionAction;
   final OnEmailSelectionAction emailSelectionAction;
   final PresentationMailbox? mailboxSelected;
   final List<PresentationEmail> listEmailSelected;
@@ -52,7 +52,7 @@ class AppBarThreadWidget extends StatelessWidget {
     required this.selectMode,
     required this.filterOption,
     required this.openMailboxAction,
-    required this.cancelEditThreadAction,
+    required this.onCancelSelectionAction,
     required this.emailSelectionAction,
     this.onPopupMenuFilterEmailAction,
     this.onContextMenuFilterEmailAction,
@@ -71,7 +71,7 @@ class AppBarThreadWidget extends StatelessWidget {
         selectMode: selectMode,
         filterOption: filterOption,
         openMailboxAction: openMailboxAction,
-        cancelEditThreadAction: cancelEditThreadAction,
+        onCancelSelectionAction: onCancelSelectionAction,
         emailSelectionAction: emailSelectionAction,
         onPopupMenuFilterEmailAction: onPopupMenuFilterEmailAction,
         onContextMenuFilterEmailAction: onContextMenuFilterEmailAction,
@@ -86,7 +86,7 @@ class AppBarThreadWidget extends StatelessWidget {
         selectMode: selectMode,
         filterOption: filterOption,
         openMailboxAction: openMailboxAction,
-        cancelEditThreadAction: cancelEditThreadAction,
+        onCancelSelectionAction: onCancelSelectionAction,
         onPopupMenuFilterEmailAction: onPopupMenuFilterEmailAction,
         onContextMenuFilterEmailAction: onContextMenuFilterEmailAction,
         onPressEmailSelectionActionClick: onPressEmailSelectionActionClick,

@@ -9,7 +9,6 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/app_bar/selection_web_app_bar_thread_widget_style.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -20,12 +19,8 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
   final ImagePaths imagePaths;
   final PresentationMailbox? mailboxSelected;
   final List<PresentationEmail> listEmailSelected;
-  final FilterMessageOption filterOption;
-  final OnOpenMailboxMenuActionClick openMailboxAction;
-  final OnCancelEditThreadAction cancelEditThreadAction;
+  final OnCancelSelectionAction onCancelSelectionAction;
   final OnEmailSelectionAction emailSelectionAction;
-  final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
-  final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
 
   const SelectionWebAppBarThreadWidget({
     super.key,
@@ -33,12 +28,8 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
     required this.imagePaths,
     required this.listEmailSelected,
     required this.mailboxSelected,
-    required this.filterOption,
-    required this.openMailboxAction,
-    required this.cancelEditThreadAction,
+    required this.onCancelSelectionAction,
     required this.emailSelectionAction,
-    this.onPopupMenuFilterEmailAction,
-    this.onContextMenuFilterEmailAction,
   });
 
   @override
@@ -57,7 +48,7 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
             iconColor: SelectionWebAppBarThreadWidgetStyle.iconColor,
             iconSize: SelectionWebAppBarThreadWidgetStyle.iconSize,
             tooltipMessage: AppLocalizations.of(context).cancel,
-            onTapActionCallback: cancelEditThreadAction,
+            onTapActionCallback: onCancelSelectionAction,
           ),
           Expanded(
             child: Text(

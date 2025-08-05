@@ -14,7 +14,8 @@ class SelectionMobileAppBarThreadWidget extends StatelessWidget {
   final List<PresentationEmail> selectedEmails;
   final List<EmailSelectionActionType> emailSelectionActionTypes;
   final OnPressEmailSelectionActionClick onPressEmailSelectionActionClick;
-  final OnCancelEditThreadAction cancelEditThreadAction;
+  final OnCancelSelectionAction onCancelSelectionAction;
+  final EdgeInsetsGeometry? padding;
 
   const SelectionMobileAppBarThreadWidget({
     super.key,
@@ -23,14 +24,15 @@ class SelectionMobileAppBarThreadWidget extends StatelessWidget {
     required this.selectedEmails,
     required this.emailSelectionActionTypes,
     required this.onPressEmailSelectionActionClick,
-    required this.cancelEditThreadAction,
+    required this.onCancelSelectionAction,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: MobileAppBarThreadWidgetStyle.backgroundColor,
-      padding: MobileAppBarThreadWidgetStyle.getPadding(
+      padding: padding ?? MobileAppBarThreadWidgetStyle.getPadding(
         context,
         responsiveUtils,
       ),
@@ -54,7 +56,7 @@ class SelectionMobileAppBarThreadWidget extends StatelessWidget {
                   flexibleText: true,
                   mainAxisSize: MainAxisSize.min,
                   maxLines: 1,
-                  onTapActionCallback: cancelEditThreadAction,
+                  onTapActionCallback: onCancelSelectionAction,
                 ),
               )
             ],

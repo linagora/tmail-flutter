@@ -928,6 +928,13 @@ class SearchEmailController extends BaseController
     selectionMode.value = SelectMode.INACTIVE;
   }
 
+  void setSelectAllEmailAction() {
+    listResultSearch.value = listResultSearch
+        .map((email) => email.toSelectedEmail(selectMode: SelectMode.ACTIVE))
+        .toList();
+    selectionMode.value = SelectMode.ACTIVE;
+  }
+
   void handleSelectionEmailAction(
       EmailActionType actionType,
       List<PresentationEmail> listEmails
