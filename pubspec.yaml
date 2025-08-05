@@ -118,7 +118,7 @@ dependencies:
 
   intl_generator: 0.4.1
 
-  flutter_svg: 2.0.9
+  flutter_svg: 2.1.0
 
   dio: 5.0.0
 
