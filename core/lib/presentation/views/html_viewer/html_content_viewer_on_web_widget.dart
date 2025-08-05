@@ -141,7 +141,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         _handleHyperLinkEvent(data['url']);
       }
     } catch (e) {
-      logError('_HtmlContentViewerOnWebState::_handleMessageEvent:Exception = $e');
+      logError('$runtimeType::_handleMessageEvent:Exception = $e');
     }
   }
 
@@ -162,28 +162,32 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     dynamic data,
     ScrollController controller,
   ) {
-    final deltaY = data['deltaY'] ?? 0.0;
-    final target = controller.offset + deltaY;
+    try {
+      final deltaY = data['deltaY'] ?? 0.0;
+      final target = controller.offset + deltaY;
 
-    if (PlatformInfo.isWebTouchDevice) {
-      final newOffset = target.clamp(
-        controller.position.minScrollExtent,
-        controller.position.maxScrollExtent,
-      );
+      if (PlatformInfo.isWebTouchDevice) {
+        final newOffset = target.clamp(
+          controller.position.minScrollExtent,
+          controller.position.maxScrollExtent,
+        );
 
-      controller.animateTo(
-        newOffset,
-        duration: const Duration(milliseconds: 50),
-        curve: Curves.linear,
-      );
-    } else {
-      if (target < controller.position.minScrollExtent) {
-        controller.jumpTo(controller.position.minScrollExtent);
-      } else if (target > controller.position.maxScrollExtent) {
-        controller.jumpTo(controller.position.maxScrollExtent);
+        controller.animateTo(
+          newOffset,
+          duration: const Duration(milliseconds: 50),
+          curve: Curves.linear,
+        );
       } else {
-        controller.jumpTo(target);
+        if (target < controller.position.minScrollExtent) {
+          controller.jumpTo(controller.position.minScrollExtent);
+        } else if (target > controller.position.maxScrollExtent) {
+          controller.jumpTo(controller.position.maxScrollExtent);
+        } else {
+          controller.jumpTo(target);
+        }
       }
+    } catch (e) {
+      logError('$runtimeType::_handleIframeOnScrollChangedListener:Exception = $e');
     }
   }
 
@@ -271,19 +275,23 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   }
 
   void _handleOnIFrameKeyboardEvent(dynamic data) {
-    final shortcut = KeyShortcut(
-      key: data['key'] as String,
-      code: data['code'] as String,
-      shift: data['shift'] == true,
-    );
-    log('_HtmlContentViewerOnWebState::_handleOnIFrameKeyboardEvent:📥 Shortcut pressed: $shortcut');
-    widget.onIFrameKeyboardShortcutAction?.call(shortcut);
+    try {
+      final shortcut = KeyShortcut(
+        key: data['key'] as String,
+        code: data['code'] as String,
+        shift: data['shift'] == true,
+      );
+      log('$runtimeType::_handleOnIFrameKeyboardEvent:📥 Shortcut pressed: $shortcut');
+      widget.onIFrameKeyboardShortcutAction?.call(shortcut);
+    } catch (e) {
+      logError('$runtimeType::_handleOnIFrameKeyboardEvent: Exception = $e');
+    }
   }
 
   @override
   void didUpdateWidget(covariant HtmlContentViewerOnWeb oldWidget) {
     super.didUpdateWidget(oldWidget);
-    log('_HtmlContentViewerOnWebState::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
+    log('$runtimeType::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
     if (widget.contentHtml != oldWidget.contentHtml ||
         widget.direction != oldWidget.direction) {
       _setUpWeb();
@@ -311,6 +319,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         window.addEventListener('load', handleOnLoad);
         window.addEventListener('pagehide', (event) => {
           window.parent.removeEventListener('message', handleMessage, false);
+          window.removeEventListener('load', handleOnLoad);
         });
       
         function handleMessage(e) {
