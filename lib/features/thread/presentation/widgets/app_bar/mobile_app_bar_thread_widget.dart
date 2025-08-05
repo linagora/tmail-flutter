@@ -8,9 +8,22 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/email_selection_action_type.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/default_mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/selection_mobile_app_bar_thread_widget.dart';
+
+typedef OnPopupMenuFilterEmailAction = void Function(
+  FilterMessageOption option,
+  RelativeRect position,
+);
+typedef OnContextMenuFilterEmailAction = void Function(
+  FilterMessageOption option,
+);
+typedef OnOpenMailboxMenuActionClick = void Function();
+typedef OnCancelSelectionAction = void Function();
+typedef OnPressEmailSelectionActionClick = void Function(
+  EmailSelectionActionType type,
+  List<PresentationEmail> emails,
+);
 
 class MobileAppBarThreadWidget extends StatelessWidget {
   final ResponsiveUtils responsiveUtils;

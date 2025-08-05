@@ -41,7 +41,7 @@ import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_til
 import 'package:tmail_ui_user/features/thread/presentation/styles/scroll_to_top_button_widget_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/thread_view_style.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
@@ -75,7 +75,7 @@ class ThreadView extends GetWidget<ThreadController>
                       if (!controller.responsiveUtils.isWebDesktop(context))
                         ... [
                           Obx(() {
-                            return AppBarThreadWidget(
+                            return MobileAppBarThreadWidget(
                               responsiveUtils: controller.responsiveUtils,
                               imagePaths: controller.imagePaths,
                               mailboxSelected: controller.selectedMailbox,
@@ -84,7 +84,6 @@ class ThreadView extends GetWidget<ThreadController>
                               filterOption: controller.mailboxDashBoardController.filterMessageOption.value,
                               openMailboxAction: controller.openMailboxLeftMenu,
                               onCancelSelectionAction: controller.cancelSelectEmail,
-                              emailSelectionAction: controller.pressEmailSelectionAction,
                               onContextMenuFilterEmailAction: controller.responsiveUtils.isScreenWithShortestSide(context)
                                 ? (filterOption) => controller.handleSelectMessageFilter(context, filterOption)
                                 : null,
