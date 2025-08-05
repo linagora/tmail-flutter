@@ -286,7 +286,13 @@ class HtmlInteraction {
       }, {
         passive: false,
       });
-      window.addEventListener('keydown', function(e) {
+      window.addEventListener('keydown', disableZoomControl);
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('keydown', disableZoomControl);
+      });
+      
+      function disableZoomControl(event) {
         if (event.metaKey || event.ctrlKey) {
           switch (event.key) {
             case '=':
@@ -295,13 +301,19 @@ class HtmlInteraction {
               break;
           }
         }
-      });
+      }
     </script>
   ''';
 
   static String scriptHandleIframeKeyboardListener(String viewId) => '''
     <script type="text/javascript">
-      window.addEventListener('keydown', function (event) {
+      window.addEventListener('keydown', handleIframeKeydown);
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('keydown', handleIframeKeydown);
+      });
+      
+      function handleIframeKeydown(event) {
         const payload = {
           view: '$viewId',
           type: 'toDart: iframeKeydown',
@@ -310,7 +322,26 @@ class HtmlInteraction {
           shift: event.shiftKey
         };
         window.parent.postMessage(JSON.stringify(payload), "*");
+      }
+    </script>
+  ''';
+
+  static String scriptHandleIframeScrollingListener(String viewId) => '''
+    <script type="text/javascript">
+      window.addEventListener('wheel', handleIframeScrolling);
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('wheel', handleIframeScrolling);
       });
+      
+      function handleIframeScrolling(event) {
+        const payload = {
+          view: '$viewId',
+          type: 'toDart: iframeScrolling',
+          deltaY: event.deltaY,
+        };
+        window.parent.postMessage(JSON.stringify(payload), "*");
+      }
     </script>
   ''';
 }
