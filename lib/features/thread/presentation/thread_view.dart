@@ -83,7 +83,7 @@ class ThreadView extends GetWidget<ThreadController>
                               selectMode: controller.mailboxDashBoardController.currentSelectMode.value,
                               filterOption: controller.mailboxDashBoardController.filterMessageOption.value,
                               openMailboxAction: controller.openMailboxLeftMenu,
-                              cancelEditThreadAction: controller.cancelSelectEmail,
+                              onCancelSelectionAction: controller.cancelSelectEmail,
                               emailSelectionAction: controller.pressEmailSelectionAction,
                               onContextMenuFilterEmailAction: controller.responsiveUtils.isScreenWithShortestSide(context)
                                 ? (filterOption) => controller.handleSelectMessageFilter(context, filterOption)

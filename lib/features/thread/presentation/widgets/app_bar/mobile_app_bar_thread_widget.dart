@@ -22,7 +22,7 @@ class MobileAppBarThreadWidget extends StatelessWidget {
   final OnOpenMailboxMenuActionClick openMailboxAction;
   final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
   final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
-  final OnCancelEditThreadAction cancelEditThreadAction;
+  final OnCancelSelectionAction onCancelSelectionAction;
   final OnPressEmailSelectionActionClick? onPressEmailSelectionActionClick;
 
   const MobileAppBarThreadWidget({
@@ -34,7 +34,7 @@ class MobileAppBarThreadWidget extends StatelessWidget {
     required this.selectMode,
     required this.filterOption,
     required this.openMailboxAction,
-    required this.cancelEditThreadAction,
+    required this.onCancelSelectionAction,
     this.onPopupMenuFilterEmailAction,
     this.onContextMenuFilterEmailAction,
     this.onPressEmailSelectionActionClick,
@@ -62,7 +62,7 @@ class MobileAppBarThreadWidget extends StatelessWidget {
         imagePaths: imagePaths,
         responsiveUtils: responsiveUtils,
         selectedEmails: listEmailSelected,
-        cancelEditThreadAction: cancelEditThreadAction,
+        onCancelSelectionAction: onCancelSelectionAction,
         emailSelectionActionTypes: actionTypes,
         onPressEmailSelectionActionClick: (type, emails) =>
             onPressEmailSelectionActionClick?.call(type, emails),
@@ -71,12 +71,9 @@ class MobileAppBarThreadWidget extends StatelessWidget {
       return DefaultMobileAppBarThreadWidget(
         imagePaths: imagePaths,
         responsiveUtils: responsiveUtils,
-        listEmailSelected: listEmailSelected,
         mailboxSelected: mailboxSelected,
-        selectMode: selectMode,
         filterOption: filterOption,
         openMailboxAction: openMailboxAction,
-        cancelEditThreadAction: cancelEditThreadAction,
         onPopupMenuFilterEmailAction: onPopupMenuFilterEmailAction,
         onContextMenuFilterEmailAction: onContextMenuFilterEmailAction,
       );
