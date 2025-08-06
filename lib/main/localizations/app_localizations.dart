@@ -1167,13 +1167,6 @@ class AppLocalizations {
     );
   }
 
-  String get move_message {
-    return Intl.message(
-      'Move message',
-      name: 'move_message',
-    );
-  }
-
   String get forwarded_message {
     return Intl.message(
       'Forwarded message',

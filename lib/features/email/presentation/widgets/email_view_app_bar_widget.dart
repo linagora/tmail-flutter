@@ -165,7 +165,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     icon: _imagePaths.icMoveEmail,
     iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
-    tooltipMessage: appLocalizations.move_message,
+    tooltipMessage: appLocalizations.moveMessage,
     backgroundColor: Colors.transparent,
     onTapActionCallback: () => onEmailActionClick?.call(
       presentationEmail,

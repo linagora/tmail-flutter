@@ -1154,12 +1154,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_message": "Move message",
-  "@move_message": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "forwarded_message": "Forwarded message",
   "@forwarded_message": {
     "type": "text",
