@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-07-25T12:21:42.514040",
+  "@@last_modified": "2025-08-07T01:15:56.220129",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4662,6 +4662,18 @@
   },
   "creatingAnArchiveForDownloading": "Creating an archive for downloading",
   "@creatingAnArchiveForDownloading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hideSignature": "Hide signature",
+  "@hideSignature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showSignature": "Show signature",
+  "@showSignature": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
