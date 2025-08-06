@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -48,10 +49,12 @@ class SearchController extends BaseController with DateRangePickerMixin {
   final listFilterOnSuggestionForm = RxList<QuickSearchFilter>();
   final simpleSearchIsActivated = RxBool(false);
   final advancedSearchIsActivated = RxBool(false);
+  final isSearchInputFocused = RxBool(false);
 
   SearchQuery? get searchQuery => searchEmailFilter.value.text;
 
   FocusNode searchFocus = FocusNode();
+  FocusNode? keyboardFocusNode;
   String currentSearchText = '';
 
   SearchController(
@@ -59,6 +62,23 @@ class SearchController extends BaseController with DateRangePickerMixin {
     this._saveRecentSearchInteractor,
     this._getAllRecentSearchLatestInteractor,
   );
+
+  @override
+  void onInit() {
+    super.onInit();
+    searchFocus.addListener(_onSearchFocusChanged);
+    onKeyboardShortcutInit();
+  }
+
+  void _onSearchFocusChanged() {
+    log('SearchController::_onSearchFocusChanged: ${searchFocus.hasFocus}');
+    isSearchInputFocused.value = searchFocus.hasFocus;
+    if (searchFocus.hasFocus) {
+      refocusKeyboardShortcutFocus();
+    } else {
+      clearKeyboardShortcutFocus();
+    }
+  }
 
   void openAdvanceSearch() {
     isAdvancedSearchViewOpen.value = true;
@@ -322,7 +342,9 @@ class SearchController extends BaseController with DateRangePickerMixin {
   @override
   void onClose() {
     searchInputController.dispose();
+    searchFocus.removeListener(_onSearchFocusChanged);
     searchFocus.dispose();
+    onKeyboardShortcutDispose();
     super.onClose();
   }
 }
