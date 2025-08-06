@@ -1,6 +1,6 @@
 
 import 'package:core/presentation/constants/constants_ui.dart';
-import 'package:core/utils/html/html_utils.dart';
+import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
@@ -34,9 +34,9 @@ class MobileEditorWidget extends StatelessWidget {
       maxHeight: PlatformInfo.isIOS ? ConstantsUI.composerHtmlContentMaxHeight : null,
       addDefaultSelectionMenuItems: false,
       initialContent: content,
-      customStyleCss: HtmlUtils.customCssStyleHtmlEditor(
+      customStyleCss: HtmlTemplate.mobileCustomInternalStyleCSS(
         direction: direction,
-        useDefaultFont: true,
+        useDefaultFontStyle: true,
       ),
       onCreated: (editorApi) => onCreatedEditorAction.call(context, editorApi, content),
       onCompleted: onLoadCompletedEditorAction,

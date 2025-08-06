@@ -1,5 +1,6 @@
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -143,9 +144,10 @@ class IdentitySignatureInputFieldWidget extends StatelessWidget
         initialText: initContent.isEmpty ? null : initContent,
         disableDragAndDrop: true,
         spellCheck: true,
-        customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(
+        customBodyCssStyle: HtmlUtils.customInlineBodyCssStyleHtmlEditor(
           direction: AppUtils.getCurrentDirection(context),
         ),
+        customInternalCSS: HtmlTemplate.webCustomInternalStyleCSS(),
       ),
       htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
         toolbarType: html_editor_browser.ToolbarType.hide,
@@ -200,7 +202,7 @@ class IdentitySignatureInputFieldWidget extends StatelessWidget
           PlatformInfo.isIOS ? ConstantsUI.composerHtmlContentMaxHeight : null,
       addDefaultSelectionMenuItems: false,
       initialContent: initialContent ?? '',
-      customStyleCss: HtmlUtils.customCssStyleHtmlEditor(
+      customStyleCss: HtmlTemplate.mobileCustomInternalStyleCSS(
         direction: AppUtils.getCurrentDirection(context),
       ),
       onCreated: (editorApi) => controller.initRichTextForMobile(
