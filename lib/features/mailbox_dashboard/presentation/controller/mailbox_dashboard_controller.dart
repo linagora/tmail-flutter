@@ -1616,7 +1616,7 @@ class MailboxDashBoardController extends ReloadableController
     if (sessionCurrent == null || accountId.value == null) {
       consumeState(Stream.value(
         Left(MoveMultipleEmailToMailboxFailure(
-          EmailActionType.unSpam,
+          emailActionType,
           MoveAction.moving,
           NotFoundSessionException()
         ))
@@ -1628,15 +1628,16 @@ class MailboxDashBoardController extends ReloadableController
       final mailboxIdContain = email.mailboxIdContain;
       if (mailboxIdContain == null) continue;
 
-      currentMailboxes.putIfAbsent(mailboxIdContain, () => []);
-      currentMailboxes[mailboxIdContain]!.add(email.emailId);
+      currentMailboxes.putIfAbsent(mailboxIdContain, () => []).add(email.emailId);
     }
     final moveRequest = MoveToMailboxRequest(
       currentMailboxes,
       destinationMailboxId,
       MoveAction.moving,
       emailActionType,
-      destinationPath: mapMailboxById[destinationMailboxId]?.name?.name,
+      destinationPath: currentContext == null
+          ? mapMailboxById[destinationMailboxId]?.name?.name
+          : mapMailboxById[destinationMailboxId]?.getDisplayName(currentContext!),
     );
     final emailIdsWithReadStatus = Map.fromEntries(
       emailsInThreadDetailInfo.map(

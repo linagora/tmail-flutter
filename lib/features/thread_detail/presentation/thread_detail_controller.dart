@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
@@ -276,6 +277,10 @@ class ThreadDetailController extends BaseController {
         );
       }
       return;
+    }
+    if (failure is MarkAsMultipleEmailReadFailure ||
+        failure is MarkAsStarMultipleEmailFailure) {
+      toastManager.showMessageFailure(failure as FeatureFailure);
     }
     super.handleFailureViewState(failure);
   }

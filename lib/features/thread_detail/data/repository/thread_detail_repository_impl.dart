@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_data_source.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/exceptions/empty_thread_detail_exception.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
@@ -52,12 +53,7 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
       .sortWithResult(EmailComparator(
         EmailComparatorProperty.receivedAt
       )..setIsAscending(true))
-      .map((e) => EmailInThreadDetailInfo(
-        emailId: e.id!,
-        keywords: e.keywords,
-        mailboxIds: e.mailboxIds,
-      ))
-      .toList();
+      .toEmailsInThreadDetailInfo();
   }
 
   Future<List<Email>> _filterBadEmails(

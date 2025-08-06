@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
@@ -7,7 +8,10 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_action_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -19,7 +23,15 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     switch (threadDetailActionType) {
       case EmailActionType.markAsRead:
       case EmailActionType.markAsUnread:
-        if (session == null || accountId == null) return;
+        if (session == null || accountId == null) {
+          consumeState(Stream.value(Left(MarkAsMultipleEmailReadFailure(
+            threadDetailActionType == EmailActionType.markAsRead
+                ? ReadActions.markAsRead
+                : ReadActions.markAsUnread,
+            NotFoundSessionException(),
+          ))));
+          return;
+        }
         consumeState(markAsMultipleEmailReadInteractor.execute(
           session!,
           accountId!,
@@ -32,7 +44,15 @@ extension OnThreadDetailActionClick on ThreadDetailController {
         break;
       case EmailActionType.markAsStarred:
       case EmailActionType.unMarkAsStarred:
-        if (session == null || accountId == null) return;
+        if (session == null || accountId == null) {
+          consumeState(Stream.value(Left(MarkAsStarMultipleEmailFailure(
+            threadDetailActionType == EmailActionType.markAsStarred
+                ? MarkStarAction.markStar
+                : MarkStarAction.unMarkStar,
+            NotFoundSessionException(),
+          ))));
+          return;
+        }
         consumeState(markAsStarMultipleEmailInteractor.execute(
           session!,
           accountId!,

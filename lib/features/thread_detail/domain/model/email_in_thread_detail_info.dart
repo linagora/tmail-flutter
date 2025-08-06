@@ -32,7 +32,7 @@ class EmailInThreadDetailInfo with EquatableMixin {
 
   MailboxId? get mailboxIdContain {
     return mailboxIds?.entries
-        .firstWhereOrNull((entry) => entry.value == true)
+        .firstWhereOrNull((entry) => entry.value)
         ?.key;
   }
 }
