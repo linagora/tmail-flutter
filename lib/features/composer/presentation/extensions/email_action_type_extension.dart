@@ -209,7 +209,7 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.replyToList:
         return appLocalizations.replyToList;
       case EmailActionType.moveToMailbox:
-        return appLocalizations.move_message;
+        return appLocalizations.moveMessage;
       case EmailActionType.markAsStarred:
         return appLocalizations.starred;
       case EmailActionType.unMarkAsStarred:

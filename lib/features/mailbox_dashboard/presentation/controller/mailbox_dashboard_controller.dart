@@ -1613,6 +1613,33 @@ class MailboxDashBoardController extends ReloadableController
     );
   }
 
+  void permanentDeleteMultipleEmailInThreadDetail(
+    List<EmailInThreadDetailInfo> emailsInThreadDetailInfo, {
+    VoidCallback? onConfirm,
+  }) {
+    if (currentContext == null) return;
+
+    final mailboxContainId = emailsInThreadDetailInfo.firstOrNull?.mailboxIdContain;
+    final mailboxContain = mailboxContainId == null
+        ? null
+        : mapMailboxById[mailboxContainId];
+
+    deleteSelectionEmailsPermanently(
+      currentContext!,
+      DeleteActionType.multiple,
+      listEmails: emailsInThreadDetailInfo
+          .map(
+            (email) => PresentationEmail(
+              id: email.emailId,
+              mailboxContain: mailboxContain,
+            ),
+          )
+          .toList(),
+      mailboxCurrent: mailboxContain,
+      onConfirm: onConfirm,
+    );
+  }
+
   void deleteSelectionEmailsPermanently(
       BuildContext context,
       DeleteActionType actionType,
@@ -1620,6 +1647,7 @@ class MailboxDashBoardController extends ReloadableController
         List<PresentationEmail>? listEmails,
         PresentationMailbox? mailboxCurrent,
         Function? onCancelSelectionEmail,
+        VoidCallback? onConfirm,
       }
   ) {
     if (responsiveUtils.isScreenWithShortestSide(context)) {
@@ -1631,10 +1659,14 @@ class MailboxDashBoardController extends ReloadableController
         ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
         ..onConfirmAction(
             actionType.getConfirmActionName(context),
-            () => _deleteSelectionEmailsPermanentlyAction(
+            () {
+              onConfirm?.call();
+              _deleteSelectionEmailsPermanentlyAction(
                 actionType,
                 listEmails: listEmails,
-                onCancelSelectionEmail: onCancelSelectionEmail)))
+                onCancelSelectionEmail: onCancelSelectionEmail,
+              );
+            }))
       .show();
     } else {
       Get.dialog(
@@ -1649,11 +1681,14 @@ class MailboxDashBoardController extends ReloadableController
           ),
           confirmText: actionType.getConfirmActionName(context),
           cancelText: AppLocalizations.of(context).cancel,
-          onConfirmButtonAction: () => _deleteSelectionEmailsPermanentlyAction(
-            actionType,
-            listEmails: listEmails,
-            onCancelSelectionEmail: onCancelSelectionEmail,
-          ),
+          onConfirmButtonAction: () {
+            onConfirm?.call();
+            _deleteSelectionEmailsPermanentlyAction(
+              actionType,
+              listEmails: listEmails,
+              onCancelSelectionEmail: onCancelSelectionEmail,
+            );
+          },
           onCancelButtonAction: popBack,
           onCloseButtonAction: popBack,
         )),
