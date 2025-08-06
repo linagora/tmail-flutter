@@ -4,15 +4,14 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
-import 'package:model/email/presentation_email.dart';
-import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
-import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app_bar_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+
+typedef OnThreadActionClick = void Function(EmailActionType);
+typedef OnThreadMoreActionClick = void Function(RelativeRect?);
 
 class ThreadDetailAppBar extends StatelessWidget {
   const ThreadDetailAppBar({
@@ -21,31 +20,27 @@ class ThreadDetailAppBar extends StatelessWidget {
     required this.imagePaths,
     required this.isSearchRunning,
     required this.closeThreadDetailAction,
-    required this.lastEmailOfThread,
-    required this.ownUserName,
+    required this.threadActionReady,
+    required this.threadDetailIsStarred,
     this.mailboxContain,
     this.optionWidgets = const [],
-    this.onEmailActionClick,
-    this.onMoreActionClick,
+    this.onThreadActionClick,
+    this.onThreadMoreActionClick,
   });
 
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
   final bool isSearchRunning;
   final void Function(BuildContext context) closeThreadDetailAction;
-  final PresentationEmail? lastEmailOfThread;
-  final String ownUserName;
+  final bool threadActionReady;
+  final bool threadDetailIsStarred;
   final PresentationMailbox? mailboxContain;
   final List<Widget> optionWidgets;
-  final OnEmailActionClick? onEmailActionClick;
-  final OnMoreActionClick? onMoreActionClick;
+  final OnThreadActionClick? onThreadActionClick;
+  final OnThreadMoreActionClick? onThreadMoreActionClick;
 
   @override
   Widget build(BuildContext context) {
-    final isReplyToListEnabled = EmailUtils.isReplyToListEnabled(
-      lastEmailOfThread?.listPost ?? '',
-    );
-
     final child = LayoutBuilder(
       builder: (context, constraints) {
         Widget backButton = EmailViewBackButton(
@@ -84,76 +79,31 @@ class ThreadDetailAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (_supportDisplayMailboxNameTitle(context)) backButton,
-              if (lastEmailOfThread != null) ...[
-                TMailButtonWidget.fromIcon(
-                  icon: imagePaths.icReply,
-                  iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                  tooltipMessage: AppLocalizations.of(context).reply,
-                  backgroundColor: Colors.transparent,
-                  onTapActionCallback: () => onEmailActionClick?.call(
-                    lastEmailOfThread!,
-                    EmailActionType.reply,
-                  ),
+              if (threadActionReady)
+                _ThreadDetailAppBarButton(
+                  icon: threadDetailIsStarred
+                      ? imagePaths.icUnStar
+                      : imagePaths.icStar,
+                  tooltipMessage: threadDetailIsStarred
+                      ? AppLocalizations.of(context).not_starred
+                      : AppLocalizations.of(context).mark_as_starred,
+                  responsiveUtils: responsiveUtils,
+                  iconColor: null,
+                  onTapActionCallback: threadDetailIsStarred
+                      ? (_) => onThreadActionClick?.call(EmailActionType.unMarkAsStarred)
+                      : (_) => onThreadActionClick?.call(EmailActionType.markAsStarred),
                 ),
-                if (!responsiveUtils.isMobile(context)) ...[
-                  if (lastEmailOfThread!.getCountMailAddressWithoutMe(ownUserName) > 1)
-                    TMailButtonWidget.fromIcon(
-                      icon: imagePaths.icReplyAll,
-                      iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                      iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                      tooltipMessage: AppLocalizations.of(context).reply_all,
-                      backgroundColor: Colors.transparent,
-                      onTapActionCallback: () => onEmailActionClick?.call(
-                        lastEmailOfThread!,
-                        EmailActionType.replyAll,
-                      ),
-                    ),
-                  if (isReplyToListEnabled)
-                    TMailButtonWidget.fromIcon(
-                      icon: imagePaths.icReply,
-                      iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                      iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                      tooltipMessage: AppLocalizations.of(context).replyToList,
-                      backgroundColor: Colors.transparent,
-                      onTapActionCallback: () => onEmailActionClick?.call(
-                        lastEmailOfThread!,
-                        EmailActionType.replyToList,
-                      ),
-                    ),
-                  TMailButtonWidget.fromIcon(
-                    icon: imagePaths.icForward,
-                    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                    iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                    tooltipMessage: AppLocalizations.of(context).forward,
-                    backgroundColor: Colors.transparent,
-                    onTapActionCallback: () => onEmailActionClick?.call(
-                      lastEmailOfThread!,
-                      EmailActionType.forward,
-                    ),
-                  ),
-                ],
-                if (!responsiveUtils.isMobile(context)) const Spacer(),
-              ] else const Spacer(),
+              if (!responsiveUtils.isMobile(context)) const Spacer(),
               if (AppUtils.getCurrentDirection(context) == TextDirection.rtl)
                 ...optionWidgets.reversed
               else
                 ...optionWidgets,
-              if (lastEmailOfThread != null)
-                TMailButtonWidget.fromIcon(
+              if (threadActionReady)
+                _ThreadDetailAppBarButton(
                   icon: imagePaths.icMoreVertical,
-                  iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                  backgroundColor: Colors.transparent,
                   tooltipMessage: AppLocalizations.of(context).more,
-                  onTapActionCallback: responsiveUtils.isScreenWithShortestSide(context) &&
-                      lastEmailOfThread != null
-                    ? () => onMoreActionClick?.call(lastEmailOfThread!, null)
-                    : null,
-                  onTapActionAtPositionCallback: !responsiveUtils.isScreenWithShortestSide(context) &&
-                      lastEmailOfThread != null
-                    ? (position) => onMoreActionClick?.call(lastEmailOfThread!, position)
-                    : null,
+                  responsiveUtils: responsiveUtils,
+                  onTapActionCallback: onThreadMoreActionClick,
                 ),
             ],
           ),
@@ -179,5 +129,39 @@ class ThreadDetailAppBar extends StatelessWidget {
           || responsiveUtils.isLandscapeMobile(context)
           || responsiveUtils.isTablet(context);
     return isSupportedDevice || isSearchRunning;
+  }
+}
+
+class _ThreadDetailAppBarButton extends StatelessWidget {
+  const _ThreadDetailAppBarButton({
+    required this.icon,
+    required this.tooltipMessage,
+    required this.onTapActionCallback,
+    required this.responsiveUtils,
+    this.iconColor = EmailViewAppBarWidgetStyles.iconColor,
+  });
+
+  final String icon;
+  final String tooltipMessage;
+  final void Function(RelativeRect? position)? onTapActionCallback;
+  final ResponsiveUtils responsiveUtils;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final smallScreen = responsiveUtils.isScreenWithShortestSide(context);
+
+    return TMailButtonWidget.fromIcon(
+      icon: icon,
+      iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+      iconColor: iconColor,
+      backgroundColor: Colors.transparent,
+      tooltipMessage: tooltipMessage,
+      onTapActionCallback:
+          smallScreen ? () => onTapActionCallback?.call(null) : null,
+      onTapActionAtPositionCallback: !smallScreen
+          ? (position) => onTapActionCallback?.call(position)
+          : null,
+    );
   }
 }

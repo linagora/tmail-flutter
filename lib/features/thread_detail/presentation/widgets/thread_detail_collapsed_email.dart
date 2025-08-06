@@ -23,7 +23,6 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
     this.mailboxContain,
     this.emailLoaded,
     this.onEmailActionClick,
-    this.onMoreActionClick,
     this.onToggleThreadDetailCollapseExpand,
   });
 
@@ -35,7 +34,6 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
   final PresentationMailbox? mailboxContain;
   final EmailLoaded? emailLoaded;
   final OnEmailActionClick? onEmailActionClick;
-  final OnMoreActionClick? onMoreActionClick;
   final VoidCallback? onToggleThreadDetailCollapseExpand;
 
   String get preview => presentationEmail.getPartialContent();
@@ -69,7 +67,6 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
               emailLoaded: emailLoaded,
               isInsideThreadDetailView: true,
               onEmailActionClick: onEmailActionClick,
-              onMoreActionClick: onMoreActionClick,
               openEmailAddressDetailAction: openEmailAddressDetailAction,
               showRecipients: false,
               onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,

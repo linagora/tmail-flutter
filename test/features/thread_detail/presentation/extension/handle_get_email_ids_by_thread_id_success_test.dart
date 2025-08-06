@@ -7,6 +7,7 @@ import 'package:mockito/mockito.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -62,6 +63,8 @@ void main() {
       };
       when(threadDetailController.emailIdsPresentation)
         .thenReturn(initialEmailIdsPresentation.obs);
+      when(threadDetailController.emailsInThreadDetailInfo)
+        .thenReturn(<EmailInThreadDetailInfo>[].obs);
       when(threadDetailController.mailboxDashBoardController)
         .thenReturn(mailboxDashBoardController);
       when(mailboxDashBoardController.selectedEmail)
