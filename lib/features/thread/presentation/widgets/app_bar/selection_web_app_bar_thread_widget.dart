@@ -118,7 +118,7 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
               iconSize: SelectionWebAppBarThreadWidgetStyle.iconSize,
               iconColor: SelectionWebAppBarThreadWidgetStyle.iconColor,
               backgroundColor: Colors.transparent,
-              tooltipMessage: AppLocalizations.of(context).move_message,
+              tooltipMessage: AppLocalizations.of(context).moveMessage,
               onTapActionCallback: () => emailSelectionAction(EmailActionType.moveToMailbox, listEmailSelected),
             ),
           if (mailboxSelected?.isDrafts == false)

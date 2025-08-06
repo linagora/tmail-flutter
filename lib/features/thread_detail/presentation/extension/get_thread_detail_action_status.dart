@@ -46,4 +46,14 @@ extension GetThreadDetailActionStatus on ThreadDetailController {
       },
     );
   }
+
+  bool get threadDetailIsTrashed {
+    return emailsInThreadDetailInfo.every(
+      (email) {
+        final trashMailboxId =
+            getMailboxIdByRole(PresentationMailbox.roleTrash);
+        return email.mailboxIds?[trashMailboxId] == true;
+      },
+    );
+  }
 }
