@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -86,11 +87,12 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       length: listEmailAddress.length,
       controller: widget.controller,
       focusNodeKeyboard: _focusNodeKeyboard,
-      borderRadius: 12,
-      backgroundColor: AppColor.colorInputBackgroundCreateMailbox,
-      focusedBorderColor: AppColor.colorTextButton,
-      enableBorderColor: AppColor.colorInputBorderCreateMailbox,
-      cursorColor: AppColor.primaryColor,
+      borderRadius: 10,
+      backgroundColor: Colors.white,
+      enableBorder: true,
+      focusedBorderColor: AppColor.primaryMain,
+      enableBorderColor: AppColor.m3Neutral90,
+      cursorColor: AppColor.primaryMain,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       suggestionPadding: const EdgeInsets.symmetric(vertical: 12),
       suggestionMargin: const EdgeInsets.symmetric(vertical: 4),
@@ -125,18 +127,11 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         emailAddress: EmailAddress(null, value),
         isClearInput: true
       ),
-      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-        color: Colors.black,
-        fontSize: 16,
-        fontWeight: FontWeight.w500),
+      textStyle: ThemeUtils.textStyleBodyBody3(color: Colors.black),
       inputDecoration: InputDecoration(
         border: InputBorder.none,
         hintText: AppLocalizations.of(context).hintInputAutocompleteContact,
-        hintStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-          fontWeight: FontWeight.w500,
-          color: AppColor.colorSettingExplanation,
-          fontSize: 16
-        )
+        hintStyle: ThemeUtils.textStyleBodyBody3(color: AppColor.steelGray400)
       ),
       tagBuilder: (context, index) => ContactInputTagItem(
         listEmailAddress[index],
@@ -187,12 +182,23 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
               _buildAddRecipientButton(context)
             ],
           )
-        : Row(
-            children: [
-              Expanded(child: itemTagEditor),
-              const SizedBox(width: 12),
-              _buildAddRecipientButton(context)
-            ],
+        : LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                children: [
+                  Flexible(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: min(404, constraints.maxWidth),
+                      ),
+                      child: itemTagEditor,
+                    )
+                  ),
+                  const SizedBox(width: 12),
+                  _buildAddRecipientButton(context)
+                ],
+              );
+            },
           );
     } else {
       return itemTagEditor;
