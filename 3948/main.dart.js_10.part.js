@@ -2686,7 +2686,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 107
+    $signature: 100
   };
   C.ForwardView_build_closure1.prototype = {
     call$0() {
@@ -3288,7 +3288,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return new A.Obx(new C.IdentitiesView_build___closure(t1, identity, identity.$eq(0, t3._as(t2.get(t1)).identitySelected.get$value(0)), this.isDesktop, context), null);
     },
-    $signature: 107
+    $signature: 100
   };
   C.IdentitiesView_build___closure.prototype = {
     call$0() {
@@ -5111,5 +5111,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "AXcLSi867Kt1ZgzAr57Wft/y/34=");
+})($__dart_deferred_initializers__, "RwlB08P6wRl0M/Yneie6wBYm1+U=");
 ;
