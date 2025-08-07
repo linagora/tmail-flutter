@@ -123,10 +123,11 @@ class ForwardController extends BaseController {
       context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
-      AppLocalizations.of(context).cancel,
-      cancelTitle: AppLocalizations.of(context).remove,
-      onCancelAction: () => _handleDeleteRecipientAction({emailAddress}),
-      showAsBottomSheet: true,
+      AppLocalizations.of(context).remove,
+      cancelTitle: AppLocalizations.of(context).cancel,
+      onCloseButtonAction: popBack,
+      onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
+      alignCenter: true,
       dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
     );
   }
@@ -207,10 +208,11 @@ class ForwardController extends BaseController {
       context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward,
-      AppLocalizations.of(context).cancel,
-      cancelTitle: AppLocalizations.of(context).remove,
-      onCancelAction: () => _handleDeleteRecipientAction(listEmailAddress),
-      showAsBottomSheet: true,
+      AppLocalizations.of(context).remove,
+      cancelTitle: AppLocalizations.of(context).cancel,
+      onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
+      onCloseButtonAction: popBack,
+      alignCenter: true,
       dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
     );
   }

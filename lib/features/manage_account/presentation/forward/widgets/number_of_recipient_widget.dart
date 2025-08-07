@@ -12,7 +12,7 @@ class NumberOfRecipientWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 36),
+      padding: const EdgeInsets.only(top: 20, bottom: 36),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

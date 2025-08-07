@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ForwardWarningBanner extends StatelessWidget {
@@ -28,7 +29,9 @@ class ForwardWarningBanner extends StatelessWidget {
         color: AppColor.lightGrayEAEDF2,
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: responsiveUtils.isWebDesktop(context)
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start,
         children: [
           SvgPicture.asset(
             imagePaths.icInfoCircleOutline,
@@ -40,7 +43,8 @@ class ForwardWarningBanner extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              AppConfig.getForwardWarningMessage(context),
+              AppConfig.forwardWarningMessage ??
+                  AppLocalizations.of(context).messageWarningDialogForForwardsToOtherDomains,
               style: ThemeUtils.textStyleInter400.copyWith(
                 letterSpacing: 0.0,
                 color: AppColor.steelGray400,
