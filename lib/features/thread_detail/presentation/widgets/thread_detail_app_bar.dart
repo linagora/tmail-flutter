@@ -22,6 +22,7 @@ class ThreadDetailAppBar extends StatelessWidget {
     required this.closeThreadDetailAction,
     required this.threadActionReady,
     required this.threadDetailIsStarred,
+    required this.threadDetailCanPermanentlyDelete,
     this.mailboxContain,
     this.optionWidgets = const [],
     this.onThreadActionClick,
@@ -34,6 +35,7 @@ class ThreadDetailAppBar extends StatelessWidget {
   final void Function(BuildContext context) closeThreadDetailAction;
   final bool threadActionReady;
   final bool threadDetailIsStarred;
+  final bool threadDetailCanPermanentlyDelete;
   final PresentationMailbox? mailboxContain;
   final List<Widget> optionWidgets;
   final OnThreadActionClick? onThreadActionClick;
@@ -79,7 +81,7 @@ class ThreadDetailAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (_supportDisplayMailboxNameTitle(context)) backButton,
-              if (threadActionReady)
+              if (threadActionReady) ...[
                 _ThreadDetailAppBarButton(
                   icon: threadDetailIsStarred
                       ? imagePaths.icUnStar
@@ -93,6 +95,23 @@ class ThreadDetailAppBar extends StatelessWidget {
                       ? (_) => onThreadActionClick?.call(EmailActionType.unMarkAsStarred)
                       : (_) => onThreadActionClick?.call(EmailActionType.markAsStarred),
                 ),
+                _ThreadDetailAppBarButton(
+                  icon: imagePaths.icMoveEmail,
+                  tooltipMessage: AppLocalizations.of(context).moveMessage,
+                  responsiveUtils: responsiveUtils,
+                  onTapActionCallback: (_) => onThreadActionClick?.call(EmailActionType.moveToMailbox),
+                ),
+                _ThreadDetailAppBarButton(
+                  icon: imagePaths.icDeleteComposer,
+                  tooltipMessage: threadDetailCanPermanentlyDelete
+                      ? AppLocalizations.of(context).delete_permanently
+                      : AppLocalizations.of(context).move_to_trash,
+                  responsiveUtils: responsiveUtils,
+                  onTapActionCallback: threadDetailCanPermanentlyDelete
+                      ? (_) => onThreadActionClick?.call(EmailActionType.deletePermanently)
+                      : (_) => onThreadActionClick?.call(EmailActionType.moveToTrash),
+                ),
+              ],
               if (!responsiveUtils.isMobile(context)) const Spacer(),
               if (AppUtils.getCurrentDirection(context) == TextDirection.rtl)
                 ...optionWidgets.reversed

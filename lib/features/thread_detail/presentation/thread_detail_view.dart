@@ -40,6 +40,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             mailboxContain: _getMailboxContain(),
             threadActionReady: controller.emailsInThreadDetailInfo.isNotEmpty,
             threadDetailIsStarred: controller.threadDetailIsStarred,
+            threadDetailCanPermanentlyDelete: controller.threadDetailCanPermanentlyDelete,
             onThreadActionClick: controller.onThreadDetailActionClick,
             onThreadMoreActionClick: controller.onThreadDetailMoreActionClick,
             optionWidgets: [
