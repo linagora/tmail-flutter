@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-07-25T12:21:42.514040",
+  "@@last_modified": "2025-08-07T16:04:26.371891",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2162,12 +2162,6 @@
   },
   "toastMessageLocalCopyDisable": "Keep local copy disable.",
   "@toastMessageLocalCopyDisable": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "keepLocalCopyForwardLabel": "Keep a copy of the email in Inbox",
-  "@keepLocalCopyForwardLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -4662,6 +4656,18 @@
   },
   "creatingAnArchiveForDownloading": "Creating an archive for downloading",
   "@creatingAnArchiveForDownloading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepACopyInInbox": "Keep a copy in Inbox",
+  "@keepACopyInInbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepACopyInInboxDescription": "Store forwarded emails in your inbox as well as sending them to recipients",
+  "@keepACopyInInboxDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
