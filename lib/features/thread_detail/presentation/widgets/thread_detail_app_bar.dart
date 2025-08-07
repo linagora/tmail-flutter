@@ -22,7 +22,7 @@ class ThreadDetailAppBar extends StatelessWidget {
     required this.closeThreadDetailAction,
     required this.threadActionReady,
     required this.threadDetailIsStarred,
-    required this.threadDetailIsTrashed,
+    required this.threadDetailCanPermanentlyDelete,
     this.mailboxContain,
     this.optionWidgets = const [],
     this.onThreadActionClick,
@@ -35,7 +35,7 @@ class ThreadDetailAppBar extends StatelessWidget {
   final void Function(BuildContext context) closeThreadDetailAction;
   final bool threadActionReady;
   final bool threadDetailIsStarred;
-  final bool threadDetailIsTrashed;
+  final bool threadDetailCanPermanentlyDelete;
   final PresentationMailbox? mailboxContain;
   final List<Widget> optionWidgets;
   final OnThreadActionClick? onThreadActionClick;
@@ -103,11 +103,11 @@ class ThreadDetailAppBar extends StatelessWidget {
                 ),
                 _ThreadDetailAppBarButton(
                   icon: imagePaths.icDeleteComposer,
-                  tooltipMessage: threadDetailIsTrashed
+                  tooltipMessage: threadDetailCanPermanentlyDelete
                       ? AppLocalizations.of(context).delete_permanently
                       : AppLocalizations.of(context).move_to_trash,
                   responsiveUtils: responsiveUtils,
-                  onTapActionCallback: threadDetailIsTrashed
+                  onTapActionCallback: threadDetailCanPermanentlyDelete
                       ? (_) => onThreadActionClick?.call(EmailActionType.deletePermanently)
                       : (_) => onThreadActionClick?.call(EmailActionType.moveToTrash),
                 ),

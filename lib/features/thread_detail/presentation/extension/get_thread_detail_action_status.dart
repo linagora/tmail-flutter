@@ -48,12 +48,24 @@ extension GetThreadDetailActionStatus on ThreadDetailController {
   }
 
   bool get threadDetailIsTrashed {
+    final trashMailboxId = getMailboxIdByRole(PresentationMailbox.roleTrash);
     return emailsInThreadDetailInfo.every(
       (email) {
-        final trashMailboxId =
-            getMailboxIdByRole(PresentationMailbox.roleTrash);
         return email.mailboxIds?[trashMailboxId] == true;
       },
     );
+  }
+
+  bool get threadDetailIsDraft {
+    final draftMailboxId = getMailboxIdByRole(PresentationMailbox.roleDrafts);
+    return emailsInThreadDetailInfo.every(
+      (email) {
+        return email.mailboxIds?[draftMailboxId] == true;
+      },
+    );
+  }
+
+  bool get threadDetailCanPermanentlyDelete {
+    return threadDetailIsTrashed || threadDetailIsSpam || threadDetailIsDraft;
   }
 }
