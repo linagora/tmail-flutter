@@ -27,7 +27,7 @@ class KeepCopyInInboxWidget extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(top: 24),
+      padding: const EdgeInsets.only(top: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

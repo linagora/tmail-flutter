@@ -51,7 +51,11 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
               ),
               width: double.infinity,
               padding: controller.responsiveUtils.isDesktop(context)
-                  ? const EdgeInsets.symmetric(vertical: 30, horizontal: 22)
+                  ? const EdgeInsetsDirectional.only(
+                      start: 22,
+                      end: 22,
+                      top: 30,
+                    )
                   : null,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +66,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                       textStyle: ThemeUtils.textStyleInter600().copyWith(
                         color: Colors.black.withValues(alpha: 0.9),
                       ),
-                      padding: EdgeInsets.zero,
+                      padding: const EdgeInsets.only(bottom: 16),
                     )
                   else
                     const SettingExplanationWidget(
@@ -76,39 +80,42 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                       textAlign: TextAlign.center,
                     ),
                   Expanded(
-                    child: Padding(
-                      padding: isWebDesktop
-                        ? EdgeInsets.zero
-                        : const EdgeInsetsDirectional.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Obx(() => KeepCopyInInboxWidget(
-                            imagePaths: controller.imagePaths,
-                            recipientForwards: controller.listRecipientForward,
-                            localCopyState: controller.currentForwardLocalCopyState,
-                            onToggleLocalCopy: controller.handleEditLocalCopy,
-                          )),
-                          Obx(
-                            () => NumberOfRecipientWidget(
-                              numberOfRecipient:
-                                controller.listRecipientForward.length,
+                    child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      child: Padding(
+                        padding: isWebDesktop
+                          ? EdgeInsets.zero
+                          : const EdgeInsetsDirectional.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Obx(() => KeepCopyInInboxWidget(
+                              imagePaths: controller.imagePaths,
+                              recipientForwards: controller.listRecipientForward,
+                              localCopyState: controller.currentForwardLocalCopyState,
+                              onToggleLocalCopy: controller.handleEditLocalCopy,
+                            )),
+                            Obx(
+                              () => NumberOfRecipientWidget(
+                                numberOfRecipient:
+                                  controller.listRecipientForward.length,
+                              ),
                             ),
-                          ),
-                          Obx(
-                            () => controller.currentForward.value != null
-                                ? _buildAddRecipientsFormWidget(context)
-                                : const SizedBox.shrink(),
-                          ),
-                          _buildLoadingView(),
-                          Obx(() {
-                            if (controller.listRecipientForward.isNotEmpty) {
-                              return const ListEmailForwardsWidget();
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                        ],
+                            Obx(
+                              () => controller.currentForward.value != null
+                                  ? _buildAddRecipientsFormWidget(context)
+                                  : const SizedBox.shrink(),
+                            ),
+                            _buildLoadingView(),
+                            Obx(() {
+                              if (controller.listRecipientForward.isNotEmpty) {
+                                return const ListEmailForwardsWidget();
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            }),
+                          ],
+                        ),
                       ),
                     ),
                   ),
