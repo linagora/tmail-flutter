@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_co
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/local_file_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
@@ -39,6 +40,19 @@ class ComposerView extends GetWidget<ComposerController> {
 
   @override
   Widget build(BuildContext context) {
+    final iframeOverlay = Obx(() {
+      if (controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame) {
+        return Positioned.fill(
+          key: const ValueKey('tap-to-close'),
+          child: PointerInterceptor(
+            child: const SizedBox.expand(),
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
+
     return ResponsiveWidget(
       responsiveUtils: controller.responsiveUtils,
       mobile: MobileResponsiveContainerView(
@@ -327,6 +341,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               return const SizedBox.shrink();
                             }
                           }),
+                          iframeOverlay,
                         ],
                       );
                     }
@@ -643,6 +658,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
+                        iframeOverlay,
                       ],
                     );
                   }
@@ -961,6 +977,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
+                        iframeOverlay,
                       ],
                     );
                   },

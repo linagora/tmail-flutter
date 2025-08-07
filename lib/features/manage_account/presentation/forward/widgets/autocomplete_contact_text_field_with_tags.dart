@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_icon_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
@@ -56,7 +56,7 @@ class AutocompleteContactTextFieldWithTags extends StatefulWidget {
   State<AutocompleteContactTextFieldWithTags> createState() => _AutocompleteContactTextFieldWithTagsState();
 }
 
-class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteContactTextFieldWithTags> with MessageDialogActionMixin {
+class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteContactTextFieldWithTags> {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -439,7 +439,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     VoidCallback? confirmAction,
     VoidCallback? cancelAction
   }) async {
-    await showConfirmDialogAction(
+    await MessageDialogActionManager.showConfirmDialogAction(
       context,
       AppLocalizations.of(context).doYouWantToProceed,
       AppLocalizations.of(context).no,

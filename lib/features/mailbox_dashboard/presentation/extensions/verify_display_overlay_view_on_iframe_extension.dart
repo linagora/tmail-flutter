@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 
 extension VerifyDisplayOverlayViewOnIframeExtension
@@ -9,6 +10,7 @@ extension VerifyDisplayOverlayViewOnIframeExtension
         isAppGridDialogDisplayed.isTrue ||
         isDrawerOpened.isTrue ||
         isContextMenuOpened.isTrue ||
-        isPopupMenuOpened.isTrue;
+        isPopupMenuOpened.isTrue ||
+        MessageDialogActionManager.isDialogOpened.isTrue;
   }
 }

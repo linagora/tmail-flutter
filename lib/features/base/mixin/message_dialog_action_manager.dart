@@ -8,13 +8,13 @@ import 'package:core/presentation/views/dialog/edit_text_dialog_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-mixin MessageDialogActionMixin {
-
-  Future<dynamic> showConfirmDialogAction(
+class MessageDialogActionManager {
+  static final isDialogOpened = RxBool(false);
+  
+  static Future<void> showConfirmDialogAction(
       BuildContext context,
       String message,
       String actionName,
@@ -33,6 +33,7 @@ mixin MessageDialogActionMixin {
         bool usePopScope = false,
         List<TextSpan>? listTextSpan,
         Widget? icon,
+        Widget? additionalWidgetContent,
         Color? actionButtonColor,
         Color? cancelButtonColor,
         Color? cancelLabelButtonColor,
@@ -44,27 +45,71 @@ mixin MessageDialogActionMixin {
         EdgeInsetsGeometry? dialogMargin,
       }
   ) async {
+    isDialogOpened.value = true;
     final responsiveUtils = Get.find<ResponsiveUtils>();
     final imagePaths = Get.find<ImagePaths>();
 
     if (alignCenter) {
-      final childWidget = PointerInterceptor(
-        child: ConfirmationDialogBuilder(
+      final childWidget = ConfirmationDialogBuilder(
+        key: key,
+        imagePath: imagePaths,
+        listTextSpan: listTextSpan,
+        isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
+        useIconAsBasicLogo: useIconAsBasicLogo,
+        isScrollContentEnabled: isScrollContentEnabled,
+        title: title ?? '',
+        textContent: message,
+        confirmText: actionName,
+        cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+        iconWidget: icon,
+        additionalWidgetContent: additionalWidgetContent,
+        cancelBackgroundButtonColor: cancelButtonColor,
+        confirmBackgroundButtonColor: actionButtonColor,
+        cancelLabelButtonColor: cancelLabelButtonColor,
+        confirmLabelButtonColor: confirmLabelButtonColor,
+        onConfirmButtonAction: () {
+          if (autoPerformPopBack) {
+            popBack();
+          }
+          onConfirmAction?.call();
+        },
+        onCancelButtonAction: () {
+          if (autoPerformPopBack) {
+            popBack();
+          }
+          onCancelAction?.call();
+        },
+        onCloseButtonAction: onCloseButtonAction,
+      );
+      await Get.dialog(
+        usePopScope && PlatformInfo.isMobile
+          ? PopScope(onPopInvokedWithResult: onPopInvoked, canPop: false, child: childWidget)
+          : childWidget,
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        barrierDismissible: outsideDismissible
+      );
+    } else {
+      if (responsiveUtils.isMobile(context)) {
+        final childWidget = ConfirmationDialogBuilder(
           key: key,
           imagePath: imagePaths,
+          showAsBottomSheet: true,
           listTextSpan: listTextSpan,
+          maxWidth: responsiveUtils.getSizeScreenShortestSide(context) - 16,
           isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
-          useIconAsBasicLogo: useIconAsBasicLogo,
-          isScrollContentEnabled: isScrollContentEnabled,
-          title: title ?? '',
           textContent: message,
-          confirmText: actionName,
-          cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+          title: title ?? '',
           iconWidget: icon,
-          cancelBackgroundButtonColor: cancelButtonColor,
+          additionalWidgetContent: additionalWidgetContent,
+          margin: dialogMargin,
           confirmBackgroundButtonColor: actionButtonColor,
+          cancelBackgroundButtonColor: cancelButtonColor,
           cancelLabelButtonColor: cancelLabelButtonColor,
           confirmLabelButtonColor: confirmLabelButtonColor,
+          confirmText: actionName,
+          cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+          useIconAsBasicLogo: useIconAsBasicLogo,
+          isScrollContentEnabled: isScrollContentEnabled,
           onConfirmButtonAction: () {
             if (autoPerformPopBack) {
               popBack();
@@ -77,55 +122,10 @@ mixin MessageDialogActionMixin {
             }
             onCancelAction?.call();
           },
-          onCloseButtonAction: onCloseButtonAction,
-        ),
-      );
-      return await Get.dialog(
-        usePopScope && PlatformInfo.isMobile
-          ? PopScope(onPopInvokedWithResult: onPopInvoked, canPop: false, child: childWidget)
-          : childWidget,
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-        barrierDismissible: outsideDismissible
-      );
-    } else {
-      if (responsiveUtils.isMobile(context)) {
-        final childWidget = PointerInterceptor(
-          child: ConfirmationDialogBuilder(
-            key: key,
-            imagePath: imagePaths,
-            showAsBottomSheet: true,
-            listTextSpan: listTextSpan,
-            maxWidth: responsiveUtils.getSizeScreenShortestSide(context) - 16,
-            isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
-            textContent: message,
-            title: title ?? '',
-            iconWidget: icon,
-            margin: dialogMargin,
-            confirmBackgroundButtonColor: actionButtonColor,
-            cancelBackgroundButtonColor: cancelButtonColor,
-            cancelLabelButtonColor: cancelLabelButtonColor,
-            confirmLabelButtonColor: confirmLabelButtonColor,
-            confirmText: actionName,
-            cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
-            useIconAsBasicLogo: useIconAsBasicLogo,
-            isScrollContentEnabled: isScrollContentEnabled,
-            onConfirmButtonAction: () {
-              if (autoPerformPopBack) {
-                popBack();
-              }
-              onConfirmAction?.call();
-            },
-            onCancelButtonAction: () {
-              if (autoPerformPopBack) {
-                popBack();
-              }
-              onCancelAction?.call();
-            },
-            onCloseButtonAction: onCloseButtonAction ?? popBack
-          ),
+          onCloseButtonAction: onCloseButtonAction ?? popBack
         );
         if (showAsBottomSheet) {
-          return await Get.bottomSheet(
+          await Get.bottomSheet(
             usePopScope && PlatformInfo.isMobile
               ? PopScope(onPopInvokedWithResult: onPopInvoked, canPop: false, child: childWidget)
               : childWidget,
@@ -138,7 +138,7 @@ mixin MessageDialogActionMixin {
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(18))),
           );
         } else {
-          return (ConfirmationDialogActionSheetBuilder(context, listTextSpan: listTextSpan)
+          await (ConfirmationDialogActionSheetBuilder(context, listTextSpan: listTextSpan)
             ..messageText(message)
             ..onCancelAction(
                 cancelTitle ?? AppLocalizations.of(context).cancel,
@@ -157,39 +157,38 @@ mixin MessageDialogActionMixin {
             })).show();
         }
       } else {
-        final childWidget = PointerInterceptor(
-          child: ConfirmationDialogBuilder(
-            key: key,
-            imagePath: imagePaths,
-            listTextSpan: listTextSpan,
-            isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
-            useIconAsBasicLogo: useIconAsBasicLogo,
-            isScrollContentEnabled: isScrollContentEnabled,
-            title: title ?? '',
-            textContent: message,
-            iconWidget: icon,
-            confirmBackgroundButtonColor: actionButtonColor,
-            cancelBackgroundButtonColor: cancelButtonColor,
-            cancelLabelButtonColor: cancelLabelButtonColor,
-            confirmLabelButtonColor: confirmLabelButtonColor,
-            confirmText: actionName,
-            cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
-            onConfirmButtonAction: () {
-              if (autoPerformPopBack) {
-                popBack();
-              }
-              onConfirmAction?.call();
-            },
-            onCancelButtonAction: () {
-              if (autoPerformPopBack) {
-                popBack();
-              }
-              onCancelAction?.call();
-            },
-            onCloseButtonAction: onCloseButtonAction ?? popBack,
-          ),
+        final childWidget = ConfirmationDialogBuilder(
+          key: key,
+          imagePath: imagePaths,
+          listTextSpan: listTextSpan,
+          isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
+          useIconAsBasicLogo: useIconAsBasicLogo,
+          isScrollContentEnabled: isScrollContentEnabled,
+          title: title ?? '',
+          textContent: message,
+          iconWidget: icon,
+          additionalWidgetContent: additionalWidgetContent,
+          confirmBackgroundButtonColor: actionButtonColor,
+          cancelBackgroundButtonColor: cancelButtonColor,
+          cancelLabelButtonColor: cancelLabelButtonColor,
+          confirmLabelButtonColor: confirmLabelButtonColor,
+          confirmText: actionName,
+          cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+          onConfirmButtonAction: () {
+            if (autoPerformPopBack) {
+              popBack();
+            }
+            onConfirmAction?.call();
+          },
+          onCancelButtonAction: () {
+            if (autoPerformPopBack) {
+              popBack();
+            }
+            onCancelAction?.call();
+          },
+          onCloseButtonAction: onCloseButtonAction ?? popBack,
         );
-        return await Get.dialog(
+        await Get.dialog(
           usePopScope && PlatformInfo.isMobile
             ? PopScope(onPopInvokedWithResult: onPopInvoked, canPop: false, child: childWidget)
             : childWidget,
@@ -198,9 +197,10 @@ mixin MessageDialogActionMixin {
         );
       }
     }
+    isDialogOpened.value = false;
   }
 
-  Future<dynamic> showInputDialogAction({
+  static Future<void> showInputDialogAction({
     required BuildContext context,
     required String title,
     required String value,
@@ -211,23 +211,25 @@ mixin MessageDialogActionMixin {
     String? closeIcon,
     OnInputDialogNegativeButtonAction? onNegativeButtonAction,
     OnInputDialogInputErrorChangedAction? onInputErrorChanged,
+    bool outsideDismissible = false,
   }) async {
-    return await Get.dialog(
-      PointerInterceptor(
-        child: EditTextDialogBuilder(
-          key: key,
-          title: AppLocalizations.of(context).renameFolder,
-          value: value,
-          positiveText: positiveText,
-          negativeText: negativeText,
-          closeIcon: closeIcon,
-          onInputErrorChanged: onInputErrorChanged,
-          onPositiveButtonAction: onPositiveButtonAction,
-          onNegativeButtonAction: onNegativeButtonAction,
-          onCloseButtonAction: closeIcon != null ? popBack : null,
-        ),
+    isDialogOpened.value = true;
+    await Get.dialog(
+      EditTextDialogBuilder(
+        key: key,
+        title: AppLocalizations.of(context).renameFolder,
+        value: value,
+        positiveText: positiveText,
+        negativeText: negativeText,
+        closeIcon: closeIcon,
+        onInputErrorChanged: onInputErrorChanged,
+        onPositiveButtonAction: onPositiveButtonAction,
+        onNegativeButtonAction: onNegativeButtonAction,
+        onCloseButtonAction: closeIcon != null ? popBack : null,
       ),
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      barrierDismissible: outsideDismissible,
     );
+    isDialogOpened.value = false;
   }
 }
