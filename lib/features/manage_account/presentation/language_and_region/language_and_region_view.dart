@@ -51,6 +51,7 @@ class LanguageAndRegionView extends GetWidget<LanguageAndRegionController> {
                     bottom: 16,
                   ),
                   isCenter: true,
+                  textAlign: TextAlign.center,
                 ),
               Expanded(
                 child: Padding(
