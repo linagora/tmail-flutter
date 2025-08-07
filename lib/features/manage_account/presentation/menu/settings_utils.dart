@@ -149,19 +149,4 @@ class SettingsUtils {
       return const EdgeInsetsDirectional.symmetric(vertical: 8);
     }
   }
-
-  static EdgeInsetsGeometry getForwardBannerPadding(
-    BuildContext context,
-    ResponsiveUtils responsiveUtils,
-  ) {
-    if (responsiveUtils.isWebDesktop(context)) {
-      return const EdgeInsetsDirectional.only(start: 16, end: 16, top: 16);
-    } else if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
-    } else if (responsiveUtils.isLandscapeMobile(context)) {
-      return const EdgeInsets.all(12);
-    } else {
-      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
-    }
-  }
 }
