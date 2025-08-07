@@ -1,4 +1,5 @@
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -83,9 +84,10 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                     child: SingleChildScrollView(
                       physics: const ClampingScrollPhysics(),
                       child: Padding(
-                        padding: isWebDesktop
-                          ? EdgeInsets.zero
-                          : const EdgeInsetsDirectional.symmetric(horizontal: 16),
+                        padding: _getScrollViewPadding(
+                          context,
+                          controller.responsiveUtils,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -126,6 +128,19 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         ),
       ],
     );
+  }
+
+  EdgeInsetsGeometry _getScrollViewPadding(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils
+  ) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return EdgeInsets.zero;
+    } else if (responsiveUtils.isMobile(context)) {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 16);
+    } else {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 32);
+    }
   }
 
   Widget _buildLoadingView() {
