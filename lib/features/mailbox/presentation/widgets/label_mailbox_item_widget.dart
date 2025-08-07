@@ -75,7 +75,6 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
             itemKey: widget.itemKey,
             mailboxNode: widget.mailboxNode,
             imagePaths: _imagePaths,
-            responsiveUtils: _responsiveUtils,
             onExpandFolderActionClick: widget.onClickExpandMailboxNodeAction,
           ),
       ],
