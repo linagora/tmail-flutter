@@ -62,11 +62,12 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
                 padding: EdgeInsetsDirectional.only(
                   start: 16,
                   end: 16,
-                  bottom: 16,
+                  bottom: 8,
                 ),
                 isCenter: true,
+                textAlign: TextAlign.center,
               ),
-            _buildLoadingView(),
+            _buildLoadingView(context),
             Expanded(
               child: _buildListMailbox(context),
             ),
@@ -76,47 +77,69 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
     );
   }
 
-  Widget _buildLoadingView() {
+  Widget _buildLoadingView(BuildContext context) {
+    final isScreenWithShortestSide = controller
+        .responsiveUtils
+        .isScreenWithShortestSide(context);
+
     return Obx(
       () => controller.viewState.value.fold(
-        (failure) => const SizedBox(height: 24),
-        (success) => success is LoadingState || success is LoadingBuildTreeMailboxVisibility
-            ? loadingWidget
+        (failure) => isScreenWithShortestSide
+            ? const SizedBox.shrink()
             : const SizedBox(height: 24),
+        (success) => success is LoadingState ||
+                success is LoadingBuildTreeMailboxVisibility
+            ? loadingWidget
+            : isScreenWithShortestSide
+                ? const SizedBox.shrink()
+                : const SizedBox(height: 24),
       ),
     );
   }
 
   Widget _buildListMailbox(BuildContext context) {
-    return SingleChildScrollView(
-      controller: controller.mailboxListScrollController,
-      key: const PageStorageKey('mailbox_list'),
-      physics: const ClampingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Obx(() => controller.defaultMailboxIsNotEmpty
+    Widget bodyListMailbox = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Obx(
+          () => controller.defaultMailboxIsNotEmpty
               ? _buildMailboxCategory(
                   context,
                   MailboxCategories.exchange,
                   controller.defaultRootNode,
                 )
-              : const SizedBox.shrink()),
-          Obx(() {
-            return MailboxVisibilityFoldersBarWidget(
-              imagePaths: controller.imagePaths,
-              expandMode: controller.foldersExpandMode.value,
-              onToggleExpandFolder: controller.toggleExpandFolders,
-            );
-          }),
-          Obx(() => AnimatedContainer(
-                duration: const Duration(milliseconds: 400),
-                child: controller.foldersExpandMode.value == ExpandMode.EXPAND
-                    ? buildFolders(context)
-                    : const Offstage(),
-              )),
-        ],
-      ),
+              : const SizedBox.shrink(),
+        ),
+        Obx(() {
+          return MailboxVisibilityFoldersBarWidget(
+            imagePaths: controller.imagePaths,
+            expandMode: controller.foldersExpandMode.value,
+            onToggleExpandFolder: controller.toggleExpandFolders,
+          );
+        }),
+        Obx(
+          () => AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            child: controller.foldersExpandMode.value == ExpandMode.EXPAND
+                ? buildFolders(context)
+                : const Offstage(),
+          ),
+        ),
+      ],
+    );
+
+    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
+      bodyListMailbox = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: bodyListMailbox,
+      );
+    }
+
+    return SingleChildScrollView(
+      controller: controller.mailboxListScrollController,
+      key: const PageStorageKey('mailbox_list'),
+      physics: const ClampingScrollPhysics(),
+      child: bodyListMailbox,
     );
   }
 

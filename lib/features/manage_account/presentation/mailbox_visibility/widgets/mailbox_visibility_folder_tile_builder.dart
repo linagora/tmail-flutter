@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -32,11 +33,13 @@ class MailBoxVisibilityFolderTileBuilder extends StatefulWidget {
 class _MailBoxVisibilityFolderTileBuilderState
     extends State<MailBoxVisibilityFolderTileBuilder> {
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   final GlobalKey _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
+    final isScreenWithShortestSide = _responsiveUtils.isScreenWithShortestSide(context);
     final bodyWidget = Material(
       key: _key,
       type: MaterialType.transparency,
@@ -47,8 +50,10 @@ class _MailBoxVisibilityFolderTileBuilderState
         ),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          width: 315,
-          height: 40,
+          width: isScreenWithShortestSide ? double.infinity : 315,
+          height: widget.mailboxNode.item.isTeamMailboxes
+              ? MailboxItemWidgetStyles.teamMailboxHeight
+              : 40,
           child: Row(children: [
             if (_isIconDisplayed)
               MailboxIconWidget(
@@ -77,12 +82,16 @@ class _MailBoxVisibilityFolderTileBuilderState
       ),
     );
 
-    return Row(
-      children: [
-        Flexible(child: bodyWidget),
-        const Spacer(),
-      ],
-    );
+    if (isScreenWithShortestSide) {
+      return bodyWidget;
+    } else {
+      return Row(
+        children: [
+          Flexible(child: bodyWidget),
+          const Spacer(),
+        ],
+      );
+    }
   }
 
   PresentationMailbox get _mailbox => widget.mailboxNode.item;
