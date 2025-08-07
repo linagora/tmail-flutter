@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
@@ -25,6 +24,8 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
 
   @override
   Widget build(BuildContext context) {
+    final isWebDesktop = controller.responsiveUtils.isWebDesktop(context);
+
     return Column(
       children: [
         Obx(() {
@@ -40,47 +41,69 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         Expanded(
           child: SettingDetailViewBuilder(
             responsiveUtils: controller.responsiveUtils,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (controller.responsiveUtils.isWebDesktop(context))
-                  ...[
-                    const SettingHeaderWidget(menuItem: AccountMenuItem.forward),
-                    const Divider(height: 1, color: AppColor.colorDividerHeaderSetting),
-                  ],
-                Expanded(child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: Padding(
-                    padding: SettingsUtils.getSettingContentPadding(
-                      context,
-                      controller.responsiveUtils,
+            child: Container(
+              color: SettingsUtils.getContentBackgroundColor(
+                context,
+                controller.responsiveUtils,
+              ),
+              decoration: SettingsUtils.getBoxDecorationForContent(
+                context,
+                controller.responsiveUtils,
+              ),
+              width: double.infinity,
+              padding: controller.responsiveUtils.isDesktop(context)
+                  ? const EdgeInsets.symmetric(vertical: 30, horizontal: 22)
+                  : null,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (isWebDesktop)
+                    SettingHeaderWidget(
+                      menuItem: AccountMenuItem.forward,
+                      textStyle: ThemeUtils.textStyleInter600().copyWith(
+                        color: Colors.black.withValues(alpha: 0.9),
+                      ),
+                      padding: EdgeInsets.zero,
+                    )
+                  else
+                    const SettingExplanationWidget(
+                      menuItem: AccountMenuItem.forward,
+                      padding: EdgeInsetsDirectional.only(
+                        start: 16,
+                        end: 16,
+                        bottom: 16,
+                      ),
+                      isCenter: true,
+                      textAlign: TextAlign.center,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (!controller.responsiveUtils.isWebDesktop(context))
-                          const SettingExplanationWidget(
-                            menuItem: AccountMenuItem.forward,
-                            padding: EdgeInsetsDirectional.only(bottom: 24),
+                  Expanded(
+                    child: Padding(
+                      padding: isWebDesktop
+                        ? const EdgeInsetsDirectional.only(top: 24)
+                        : const EdgeInsetsDirectional.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildKeepLocalSwitchButton(context),
+                          Obx(
+                            () => controller.currentForward.value != null
+                                ? _buildAddRecipientsFormWidget(context)
+                                : const SizedBox.shrink(),
                           ),
-                        _buildKeepLocalSwitchButton(context),
-                        Obx(() => controller.currentForward.value != null
-                          ? _buildAddRecipientsFormWidget(context)
-                          : const SizedBox.shrink()
-                        ),
-                        _buildLoadingView(),
-                        Obx(() {
-                          if (controller.listRecipientForward.isNotEmpty) {
-                            return const ListEmailForwardsWidget();
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        })
-                      ],
+                          _buildLoadingView(),
+                          Obx(() {
+                            if (controller.listRecipientForward.isNotEmpty) {
+                              return const ListEmailForwardsWidget();
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                        ],
+                      ),
                     ),
-                  )
-                ))
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
