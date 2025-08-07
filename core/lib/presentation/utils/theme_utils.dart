@@ -245,6 +245,15 @@ class ThemeUtils {
     color: AppColor.m3Tertiary20,
   );
 
+  static TextStyle get textStyleM3TitleMedium => defaultTextStyleInterFont.copyWith(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.15,
+    fontSize: 16,
+    height: 24 / 16,
+    color: AppColor.secondaryContrastText,
+  );
+
   static TextStyle textStyleM3BodyMedium1 = defaultTextStyleInterFont.copyWith(
     fontWeight: FontWeight.w400,
     letterSpacing: -0.15,

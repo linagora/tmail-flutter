@@ -26,22 +26,29 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
           if (controller.listRecipientForward.isEmpty) {
             return const SizedBox.shrink();
           } else {
-            return ListView.builder(
-              shrinkWrap: true,
-              primary: false,
-              itemCount: controller.listRecipientForward.length,
-              padding: EdgeInsets.zero,
-              itemBuilder: (context, index) {
-                return EmailForwardItemWidget(
-                  recipientForward: controller.listRecipientForward[index],
-                  internalDomain: controller.accountDashBoardController.sessionCurrent?.internalDomain ?? '',
-                  selectionMode: controller.selectionMode.value,
-                  onSelectRecipientCallback: controller.selectRecipientForward,
-                  onDeleteRecipientCallback: (recipientForward) {
-                    controller.deleteRecipients(context, recipientForward.emailAddress.emailAddress);
-                  },
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  primary: false,
+                  itemCount: controller.listRecipientForward.length,
+                  padding: const EdgeInsets.only(bottom: 30),
+                  itemBuilder: (context, index) {
+                    return EmailForwardItemWidget(
+                      imagePaths: controller.imagePaths,
+                      responsiveUtils: controller.responsiveUtils,
+                      recipientForward: controller.listRecipientForward[index],
+                      internalDomain: controller.accountDashBoardController.sessionCurrent?.internalDomain ?? '',
+                      selectionMode: controller.selectionMode.value,
+                      maxWidth: constraints.maxWidth,
+                      onSelectRecipientCallback: controller.selectRecipientForward,
+                      onDeleteRecipientCallback: (recipientForward) {
+                        controller.deleteRecipients(context, recipientForward.emailAddress.emailAddress);
+                      },
+                    );
+                  }
                 );
-              }
+              },
             );
           }
         }),
