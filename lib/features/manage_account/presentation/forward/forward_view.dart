@@ -1,8 +1,6 @@
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
@@ -11,13 +9,13 @@ import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/autocomplete_contact_text_field_with_tags.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_warning_banner.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/keep_copy_in_inbox_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/list_email_forward_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/number_of_recipient_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
 
@@ -85,7 +83,12 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildKeepLocalSwitchButton(context),
+                          Obx(() => KeepCopyInInboxWidget(
+                            imagePaths: controller.imagePaths,
+                            recipientForwards: controller.listRecipientForward,
+                            localCopyState: controller.currentForwardLocalCopyState,
+                            onToggleLocalCopy: controller.handleEditLocalCopy,
+                          )),
                           Obx(
                             () => NumberOfRecipientWidget(
                               numberOfRecipient:
@@ -116,43 +119,6 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         ),
       ],
     );
-  }
-
-  Widget _buildKeepLocalSwitchButton(BuildContext context) {
-    return Obx(() {
-      return controller.listRecipientForward.isNotEmpty
-          ? Padding(
-              padding: const EdgeInsets.only(bottom: 24, top: 8),
-              child: Row(children: [
-                  InkWell(
-                    onTap: controller.handleEditLocalCopy,
-                    child: SvgPicture.asset(
-                      controller.currentForwardLocalCopyState
-                        ? controller.imagePaths.icSwitchOn
-                        : controller.imagePaths.icSwitchOff,
-                      fit: BoxFit.fill,
-                      width: 36,
-                      height: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context).keepLocalCopyForwardLabel,
-                      overflow: CommonTextStyle.defaultTextOverFlow,
-                      softWrap: CommonTextStyle.defaultSoftWrap,
-                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black)
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : const SizedBox();
-    });
-
   }
 
   Widget _buildLoadingView() {

@@ -2148,12 +2148,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepLocalCopyForwardLabel": "Keep a copy of the email in Inbox",
-  "@keepLocalCopyForwardLabel": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "emailRuleSettingExplanation": "Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.",
   "@emailRuleSettingExplanation": {
     "type": "text",
@@ -4650,6 +4644,18 @@
   },
   "ok": "OK",
   "@ok": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepACopyInInbox": "Keep a copy in Inbox",
+  "@keepACopyInInbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepACopyInInboxDescription": "Store forwarded emails in your inbox as well as sending them to recipients",
+  "@keepACopyInInboxDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
