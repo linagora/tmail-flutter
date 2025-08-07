@@ -2191,13 +2191,6 @@ class AppLocalizations {
         name: 'toastMessageLocalCopyDisable');
   }
 
-  String get keepLocalCopyForwardLabel {
-    return Intl.message(
-      'Keep a copy of the email in Inbox',
-      name: 'keepLocalCopyForwardLabel',
-    );
-  }
-
   String get emailRuleSettingExplanation {
     return Intl.message(
       'Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.',
@@ -4903,6 +4896,20 @@ class AppLocalizations {
     return Intl.message(
       'OK',
       name: 'ok',
+    );
+  }
+
+  String get keepACopyInInbox {
+    return Intl.message(
+      'Keep a copy in Inbox',
+      name: 'keepACopyInInbox',
+    );
+  }
+
+  String get keepACopyInInboxDescription {
+    return Intl.message(
+      'Store forwarded emails in your inbox as well as sending them to recipients',
+      name: 'keepACopyInInboxDescription',
     );
   }
 }
