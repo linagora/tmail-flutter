@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:rich_text_composer/views/commons/logger.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/auto_sign_in_via_deep_link_interactor.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_callback_action_define.dart';
@@ -13,7 +13,7 @@ import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-mixin OpenAppDeepLinkHandlerMixin on MessageDialogActionMixin {
+mixin OpenAppDeepLinkHandlerMixin {
   OpenAppDeepLinkData? parseOpenAppDeepLink(Uri uri) {
     try {
       final accessToken = uri.queryParameters['access_token'] ?? '';
@@ -120,7 +120,7 @@ mixin OpenAppDeepLinkHandlerMixin on MessageDialogActionMixin {
   }) {
     final appLocalizations = AppLocalizations.of(context);
 
-    showConfirmDialogAction(
+    MessageDialogActionManager().showConfirmDialogAction(
       context,
       '',
       appLocalizations.yes,

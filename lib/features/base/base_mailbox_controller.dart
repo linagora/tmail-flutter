@@ -1,8 +1,6 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
-import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/presentation/views/modal_sheets/edit_text_modal_sheet_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
@@ -17,11 +15,11 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_action/update_mailbox_name_action.dart';
 import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_action/update_mailbox_total_emails_count_action.dart';
 import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_action/update_mailbox_unread_count_action.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
@@ -378,9 +376,10 @@ abstract class BaseMailboxController extends BaseController {
             )))
       ).show(context);
     } else {
-      showInputDialogAction(
+      MessageDialogActionManager().showInputDialogAction(
         key: const Key('rename_mailbox_dialog'),
         context: context,
+        outsideDismissible: true,
         title: AppLocalizations.of(context).renameFolder,
         value: presentationMailbox.name?.name ?? '',
         negativeText: AppLocalizations.of(context).cancel,
@@ -449,21 +448,16 @@ abstract class BaseMailboxController extends BaseController {
         ..onConfirmAction(AppLocalizations.of(context).delete, () => onDeleteMailboxAction(presentationMailbox))
       ).show();
     } else {
-      Get.dialog(
-        PointerInterceptor(
-          child: ConfirmationDialogBuilder(
-            key: const Key('confirm_dialog_delete_mailbox'),
-            imagePath: imagePaths,
-            title: AppLocalizations.of(context).deleteFolders,
-            textContent: AppLocalizations.of(context).message_confirmation_dialog_delete_folder(presentationMailbox.getDisplayName(context)),
-            confirmText: AppLocalizations.of(context).delete,
-            cancelText: AppLocalizations.of(context).cancel,
-            onConfirmButtonAction: () => onDeleteMailboxAction(presentationMailbox),
-            onCancelButtonAction: popBack,
-            onCloseButtonAction: popBack,
-          ),
-        ),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        AppLocalizations.of(context).message_confirmation_dialog_delete_folder(presentationMailbox.getDisplayName(context)),
+        AppLocalizations.of(context).delete,
+        key: const Key('confirm_dialog_delete_mailbox'),
+        title: AppLocalizations.of(context).deleteFolders,
+        cancelTitle: AppLocalizations.of(context).cancel,
+        onConfirmAction: () => onDeleteMailboxAction(presentationMailbox),
+        onCancelAction: popBack,
+        onCloseButtonAction: popBack,
       );
     }
   }

@@ -127,6 +127,18 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   Map<MailboxId, PresentationMailbox> get mapMailboxById => {};
+
+  @override
+  RxBool get isAppGridDialogDisplayed => false.obs;
+
+  @override
+  RxBool get isDrawerOpened => false.obs;
+
+  @override
+  RxBool get isContextMenuOpened => false.obs;
+
+  @override
+  RxBool get isPopupMenuOpened => false.obs;
 }
 
 @GenerateNiceMocks([

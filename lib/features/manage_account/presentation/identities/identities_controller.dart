@@ -1,8 +1,6 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -16,6 +14,7 @@ import 'package:model/extensions/identity_request_dto_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/model/identity_cache.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
@@ -43,7 +42,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/update_own_email_address_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/list_identity_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/identities/widgets/delete_identity_dialog_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/extensions/string_to_public_asset_extension.dart';
@@ -291,13 +289,19 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   }
 
   void openConfirmationDialogDeleteIdentityAction(BuildContext context, Identity identity) {
-    Get.dialog(
-      DeleteIdentityDialogBuilder(
-        responsiveUtils: responsiveUtils,
-        imagePaths: imagePaths,
-        onDeleteIdentityAction: () => _dereferencePublicAssets(identity),
-      ),
-      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    final appLocalizations = AppLocalizations.of(context);
+    MessageDialogActionManager().showConfirmDialogAction(
+      context,
+      appLocalizations.message_confirmation_dialog_delete_identity,
+      appLocalizations.delete,
+      key: const Key('confirm_dialog_delete_identity'),
+      showAsBottomSheet: responsiveUtils.isMobile(context),
+      outsideDialogPadding: EdgeInsets.only(bottom: PlatformInfo.isWeb ? 42 : 16),
+      title: appLocalizations.delete_identity,
+      cancelTitle: appLocalizations.cancel,
+      onCancelAction: popBack,
+      onCloseButtonAction: popBack,
+      onConfirmAction: () => _dereferencePublicAssets(identity),
     );
   }
 
@@ -358,16 +362,14 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
 
   void _deleteIdentityFailure(DeleteIdentityFailure failure) {
     if (currentContext != null) {
-      Get.dialog(
-        ConfirmationDialogBuilder(
-          key: const Key('dialog_message_delete_identity_failed'),
-          imagePath: imagePaths,
-          title: AppLocalizations.of(currentContext!).delete_failed,
-          confirmText: '${AppLocalizations.of(currentContext!).got_it}!',
-          onConfirmButtonAction: popBack,
-          onCloseButtonAction: popBack,
-        ),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      MessageDialogActionManager().showConfirmDialogAction(
+        key: const Key('dialog_message_delete_identity_failed'),
+        currentContext!,
+        title: AppLocalizations.of(currentContext!).delete_failed,
+        '',
+        '${AppLocalizations.of(currentContext!).got_it}!',
+        onConfirmAction: popBack,
+        onCloseButtonAction: popBack,
       );
     }
   }

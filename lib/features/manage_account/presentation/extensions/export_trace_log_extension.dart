@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/export_trace_log_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -18,7 +19,7 @@ extension ExportTraceLogExtension on ManageAccountDashBoardController {
   }
 
   Future<void> showExportTraceLogConfirmDialog(BuildContext context) async {
-    await showConfirmDialogAction(
+    await MessageDialogActionManager().showConfirmDialogAction(
       context,
       AppLocalizations.of(context).messageExportTraceLogDialog,
       AppLocalizations.of(context).yes,

@@ -15,13 +15,13 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_type_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/launcher_application_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
@@ -1056,19 +1056,16 @@ class MailboxController extends BaseMailboxController
             _deleteMultipleMailboxAction(selectedMailboxList)))
         .show();
     } else {
-      Get.dialog(
-        PointerInterceptor(child: ConfirmationDialogBuilder(
-          key: const Key('confirm_dialog_delete_multiple_mailbox'),
-          imagePath: imagePaths,
-          title: AppLocalizations.of(context).deleteFolders,
-          textContent: AppLocalizations.of(context).messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length),
-          cancelText: AppLocalizations.of(context).cancel,
-          confirmText: AppLocalizations.of(context).delete,
-          onConfirmButtonAction: () => _deleteMultipleMailboxAction(selectedMailboxList),
-          onCancelButtonAction: popBack,
-          onCloseButtonAction: popBack,
-        )),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      MessageDialogActionManager().showConfirmDialogAction(
+        key: const Key('confirm_dialog_delete_multiple_mailbox'),
+        context,
+        title: AppLocalizations.of(context).deleteFolders,
+        AppLocalizations.of(context).messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length),
+        cancelTitle: AppLocalizations.of(context).cancel,
+        AppLocalizations.of(context).delete,
+        onCancelAction: popBack,
+        onConfirmAction: () => _deleteMultipleMailboxAction(selectedMailboxList),
+        onCloseButtonAction: popBack,
       );
     }
   }

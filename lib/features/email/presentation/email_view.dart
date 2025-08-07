@@ -13,11 +13,13 @@ import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
@@ -529,7 +531,9 @@ class EmailView extends GetWidget<SingleEmailController> {
             ),
           ),
           Obx(() {
-            if (controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame) {
+            if (controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
+                MessageDialogActionManager().isDialogOpened ||
+                EmailActionReactor.isDialogOpened) {
               return Positioned.fill(
                 child: PointerInterceptor(
                   child: const SizedBox.expand(),

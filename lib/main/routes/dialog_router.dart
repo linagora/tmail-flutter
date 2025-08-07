@@ -21,14 +21,23 @@ class DialogRouter {
   static Future<dynamic> pushGeneralDialog({
     required String routeName,
     required Object? arguments
-  }) {
+  }) async {
+    _isDialogOpened.value = true;
     _bindingDI(routeName);
 
-    return Get.generalDialog(
+    final returnedValue = await Get.generalDialog(
+      barrierDismissible: true,
+      barrierLabel: routeName,
       routeSettings: RouteSettings(arguments: arguments),
       pageBuilder: (_, __, ___) => _generateView(routeName: routeName, arguments: arguments)
     );
+
+    _isDialogOpened.value = false;
+    return returnedValue;
   }
+
+  static final RxBool _isDialogOpened = false.obs;
+  static bool get isDialogOpened => _isDialogOpened.value;
 
   static void _bindingDI(String routeName) {
     log('DialogRouter::_bindingDI():routeName: $routeName');
