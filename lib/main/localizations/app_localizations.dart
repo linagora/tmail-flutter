@@ -3848,12 +3848,6 @@ class AppLocalizations {
     );
   }
 
-  String get doYouWantToProceed {
-    return Intl.message(
-      'Do you want to proceed?',
-      name: 'doYouWantToProceed');
-  }
-
   String get messageWarningDialogForForwardsToOtherDomains {
     return Intl.message(
       'You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.',
@@ -4910,6 +4904,20 @@ class AppLocalizations {
     return Intl.message(
       'Store forwarded emails in your inbox as well as sending them to recipients',
       name: 'keepACopyInInboxDescription',
+    );
+  }
+
+  String get dialogWarningTitleForForwardsToOtherDomains {
+    return Intl.message(
+      'You are redirecting emails to another domain.',
+      name: 'dialogWarningTitleForForwardsToOtherDomains',
+    );
+  }
+
+  String get dialogWarningMessageForForwardsToOtherDomains {
+    return Intl.message(
+      'This could be a security threat or considered illegal data extraction. Do you want to proceed?',
+      name: 'dialogWarningMessageForForwardsToOtherDomains',
     );
   }
 }

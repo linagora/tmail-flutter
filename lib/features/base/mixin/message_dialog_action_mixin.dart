@@ -42,6 +42,7 @@ mixin MessageDialogActionMixin {
         bool useIconAsBasicLogo = false,
         bool isScrollContentEnabled = false,
         EdgeInsetsGeometry? dialogMargin,
+        EdgeInsets? outsideDialogPadding,
       }
   ) async {
     final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -61,6 +62,10 @@ mixin MessageDialogActionMixin {
           confirmText: actionName,
           cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
           iconWidget: icon,
+          outsideDialogPadding: outsideDialogPadding ??
+              (responsiveUtils.isScreenWithShortestSide(context)
+                  ? const EdgeInsets.all(16)
+                  : null),
           cancelBackgroundButtonColor: cancelButtonColor,
           confirmBackgroundButtonColor: actionButtonColor,
           cancelLabelButtonColor: cancelLabelButtonColor,
