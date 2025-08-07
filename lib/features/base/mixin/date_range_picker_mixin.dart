@@ -26,6 +26,9 @@ mixin DateRangePickerMixin {
       initStartDate: initStartDate,
       initEndDate: initEndDate,
       autoClose: false,
+      barrierDismissible: true,
+      barrierLabel: 'Multiple view date range picker',
+      usePointerInterceptor: false,
       selectDateRangeActionCallback: (startDate, endDate) {
         _handleSelectDateRangeResult(
           context,

@@ -2,6 +2,10 @@ import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_w
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:get/state_manager.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SignatureBuilder extends StatelessWidget {
@@ -22,7 +26,20 @@ class SignatureBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      return HtmlContentViewerOnWeb(
+      final iframeOverlay = Obx(() {
+        if (MessageDialogActionManager().isDialogOpened ||
+            DialogRouter.isDialogOpened) {
+          return Positioned.fill(
+            child: PointerInterceptor(
+              child: const SizedBox.expand(),
+            ),
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      });
+
+      final htmlView = HtmlContentViewerOnWeb(
         contentHtml: value,
         widthContent: width,
         heightContent: height,
@@ -37,6 +54,13 @@ class SignatureBuilder extends StatelessWidget {
         keepAlive: true,
         disableScrolling: true,
         autoAdjustHeight: true,
+      );
+
+      return Stack(
+        children: [
+          htmlView,
+          iframeOverlay,
+        ],
       );
     } else {
       return HtmlContentViewer(

@@ -26,11 +26,11 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
@@ -1669,30 +1669,27 @@ class MailboxDashBoardController extends ReloadableController
             }))
       .show();
     } else {
-      Get.dialog(
-        PointerInterceptor(child: ConfirmationDialogBuilder(
-          key: const Key('confirm_dialog_delete_emails_permanently'),
-          imagePath: imagePaths,
-          title: actionType.getTitleDialog(context),
-          textContent: actionType.getContentDialog(
-            context,
-            count: listEmails?.length,
-            mailboxName: mailboxCurrent?.getDisplayName(context),
-          ),
-          confirmText: actionType.getConfirmActionName(context),
-          cancelText: AppLocalizations.of(context).cancel,
-          onConfirmButtonAction: () {
+      MessageDialogActionManager().showConfirmDialogAction(
+        key: const Key('confirm_dialog_delete_emails_permanently'),
+        context,
+        title: actionType.getTitleDialog(context),
+        actionType.getContentDialog(
+          context,
+          count: listEmails?.length,
+          mailboxName: mailboxCurrent?.getDisplayName(context),
+        ),
+        actionType.getConfirmActionName(context),
+        cancelTitle: AppLocalizations.of(context).cancel,
+        onConfirmAction: () {
             onConfirm?.call();
             _deleteSelectionEmailsPermanentlyAction(
-              actionType,
-              listEmails: listEmails,
-              onCancelSelectionEmail: onCancelSelectionEmail,
-            );
+            actionType,
+            listEmails: listEmails,
+            onCancelSelectionEmail: onCancelSelectionEmail,
+          );
           },
-          onCancelButtonAction: popBack,
-          onCloseButtonAction: popBack,
-        )),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        onCancelAction: popBack,
+        onCloseButtonAction: popBack,
       );
     }
   }
@@ -2730,32 +2727,26 @@ class MailboxDashBoardController extends ReloadableController
         }))
           .show();
     } else {
-      Get.dialog(
-        PointerInterceptor(child: ConfirmationDialogBuilder(
-          key: const Key('confirm_dialog_empty_spam'),
-          imagePath: imagePaths,
-          title: AppLocalizations.of(context).emptySpamFolder,
-          textContent: AppLocalizations.of(context).emptySpamMessageDialog,
-          confirmText: AppLocalizations.of(context).delete_all,
-          cancelText: AppLocalizations.of(context).cancel,
-          onConfirmButtonAction: () {
-            popBack();
-            if (spamMailbox.countTotalEmails > 0) {
-              emptySpamFolderAction(
-                spamFolderId: spamMailbox.id,
-                totalEmails: spamMailbox.countTotalEmails,
-              );
-            } else {
-              appToast.showToastWarningMessage(
-                context,
-                AppLocalizations.of(context).noEmailInYourCurrentFolder,
-              );
-            }
-          },
-          onCancelButtonAction: popBack,
-          onCloseButtonAction: popBack,
-        )),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      MessageDialogActionManager().showConfirmDialogAction(
+        key: const Key('confirm_dialog_empty_spam'),
+        context,
+        title: AppLocalizations.of(context).emptySpamFolder,
+        AppLocalizations.of(context).emptySpamMessageDialog,
+        AppLocalizations.of(context).delete_all,
+        cancelTitle: AppLocalizations.of(context).cancel,
+        onConfirmAction: () {
+          popBack();
+          if (spamMailbox.countTotalEmails > 0) {
+            emptySpamFolderAction(spamFolderId: spamMailbox.id, totalEmails: spamMailbox.countTotalEmails);
+          } else {
+            appToast.showToastWarningMessage(
+              context,
+              AppLocalizations.of(context).noEmailInYourCurrentFolder
+            );
+          }
+        },
+        onCancelAction: popBack,
+        onCloseButtonAction: popBack,
       );
     }
   }

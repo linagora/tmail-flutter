@@ -1,9 +1,9 @@
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-mixin LogoutMixin implements MessageDialogActionMixin {
+mixin LogoutMixin {
   void showLogoutConfirmDialog({
     required BuildContext context,
     required String userAddress,
@@ -11,7 +11,7 @@ mixin LogoutMixin implements MessageDialogActionMixin {
   }) {
     final appLocalizations = AppLocalizations.of(context);
 
-    showConfirmDialogAction(
+    MessageDialogActionManager().showConfirmDialogAction(
       context,
       '',
       appLocalizations.yesLogout,

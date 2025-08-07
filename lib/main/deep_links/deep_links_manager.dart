@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_action_type.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_callback_action_define.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_handler_mixin.dart';
 
-class DeepLinksManager with MessageDialogActionMixin, OpenAppDeepLinkHandlerMixin {
+class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
 
   BehaviorSubject<DeepLinkData?> _pendingDeepLinkData = BehaviorSubject.seeded(null);
 
