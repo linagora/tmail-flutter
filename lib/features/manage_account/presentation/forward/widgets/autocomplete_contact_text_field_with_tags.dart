@@ -6,6 +6,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
-import 'package:tmail_ui_user/features/base/widget/material_text_icon_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_input_tag_item.dart';
@@ -184,7 +184,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
             children: [
               itemTagEditor,
               const SizedBox(height: 16),
-              _buildAddRecipientButton(context, maxWidth: double.infinity)
+              _buildAddRecipientButton(context)
             ],
           )
         : Row(
@@ -264,16 +264,23 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
 
   bool _validateListEmailAddressIsValid(List<EmailAddress> listEmailAddress) => listEmailAddress.every(_validateEmailAddressIsValid);
 
-  Widget _buildAddRecipientButton(BuildContext context, {double? maxWidth}) {
-    return MaterialTextIconButton(
-      key: const Key('button_add_recipient'),
-      label: AppLocalizations.of(context).addRecipientButton,
+  Widget _buildAddRecipientButton(BuildContext context) {
+    return TMailButtonWidget(
+      text: AppLocalizations.of(context).addRecipientButton,
       icon: _imagePaths.icAddIdentity,
-      backgroundColor: AppColor.colorTextButton,
-      labelColor: Colors.white,
+      backgroundColor: AppColor.primaryMain,
       iconColor: Colors.white,
-      minimumSize: Size(maxWidth ?? 167, PlatformInfo.isMobile ? 44 : 54),
-      onTap: () => _handleAddRecipientAction(context)
+      iconSize: 18,
+      height: 48,
+      minWidth: 183,
+      width: _responsiveUtils.isScreenWithShortestSide(context)
+        ? double.infinity
+        : null,
+      iconSpace: 8,
+      borderRadius: 100,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      textStyle: ThemeUtils.textStyleM3LabelLarge(color: Colors.white),
+      onTapActionCallback: () => _handleAddRecipientAction(context),
     );
   }
 
