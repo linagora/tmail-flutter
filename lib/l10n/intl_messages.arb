@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-08-07T16:04:26.371891",
+  "@@last_modified": "2025-08-08T00:39:19.081628",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3724,12 +3724,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doYouWantToProceed": "Do you want to proceed?",
-  "@doYouWantToProceed": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "messageWarningDialogForForwardsToOtherDomains": "You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.",
   "@messageWarningDialogForForwardsToOtherDomains": {
     "type": "text",
@@ -4668,6 +4662,18 @@
   },
   "keepACopyInInboxDescription": "Store forwarded emails in your inbox as well as sending them to recipients",
   "@keepACopyInInboxDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogWarningTitleForForwardsToOtherDomains": "You are redirecting emails to another domain.",
+  "@dialogWarningTitleForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogWarningMessageForForwardsToOtherDomains": "This could be a security threat or considered illegal data extraction. Do you want to proceed?",
+  "@dialogWarningMessageForForwardsToOtherDomains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

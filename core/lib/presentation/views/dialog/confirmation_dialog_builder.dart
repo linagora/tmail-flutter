@@ -254,6 +254,7 @@ class _BodyContent extends StatelessWidget {
               style: ThemeUtils.textStyleM3HeadlineSmall.copyWith(
                 color: AppColor.textPrimary,
               ),
+              textAlign: TextAlign.center,
             ),
           )
         : const SizedBox.shrink();

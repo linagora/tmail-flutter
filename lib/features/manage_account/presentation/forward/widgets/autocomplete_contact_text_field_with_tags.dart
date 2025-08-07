@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_sugg
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/exceptions/forward_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -452,15 +453,27 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     VoidCallback? confirmAction,
     VoidCallback? cancelAction
   }) async {
+    final appLocalizations = AppLocalizations.of(context);
+    final forwardWarningMessage = AppConfig.forwardWarningMessage;
+    final title = forwardWarningMessage != null
+        ? null
+        : appLocalizations.dialogWarningTitleForForwardsToOtherDomains;
+    final message = forwardWarningMessage
+        ?? appLocalizations.dialogWarningMessageForForwardsToOtherDomains;
+
     await showConfirmDialogAction(
       context,
-      AppLocalizations.of(context).doYouWantToProceed,
-      AppLocalizations.of(context).no,
-      title: AppConfig.getForwardWarningMessage(context),
-      cancelTitle: AppLocalizations.of(context).yes,
+      message,
+      AppLocalizations.of(context).yes,
+      title: title,
+      cancelTitle: AppLocalizations.of(context).no,
       alignCenter: true,
-      onConfirmAction: cancelAction,
-      onCancelAction: confirmAction,
+      onConfirmAction: confirmAction,
+      onCancelAction: cancelAction,
+      onCloseButtonAction: () {
+        popBack();
+        cancelAction?.call();
+      },
     );
   }
 }
