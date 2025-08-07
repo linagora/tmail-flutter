@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/forward/forwa
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/autocomplete_contact_text_field_with_tags.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_warning_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/list_email_forward_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/number_of_recipient_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
@@ -79,12 +80,18 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                   Expanded(
                     child: Padding(
                       padding: isWebDesktop
-                        ? const EdgeInsetsDirectional.only(top: 24)
+                        ? EdgeInsets.zero
                         : const EdgeInsetsDirectional.symmetric(horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildKeepLocalSwitchButton(context),
+                          Obx(
+                            () => NumberOfRecipientWidget(
+                              numberOfRecipient:
+                                controller.listRecipientForward.length,
+                            ),
+                          ),
                           Obx(
                             () => controller.currentForward.value != null
                                 ? _buildAddRecipientsFormWidget(context)
