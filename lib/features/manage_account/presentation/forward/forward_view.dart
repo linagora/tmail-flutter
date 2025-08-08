@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
@@ -26,7 +27,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
   Widget build(BuildContext context) {
     final isWebDesktop = controller.responsiveUtils.isWebDesktop(context);
 
-    return Column(
+    final bodyWidget = Column(
       children: [
         Obx(() {
           if (controller.forwardWarningBannerState.value == BannerState.enabled) {
@@ -128,6 +129,15 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
         ),
       ],
     );
+
+    if (PlatformInfo.isMobile) {
+      return GestureDetector(
+        onTap: controller.clearInputFocus,
+        child: bodyWidget,
+      );
+    } else {
+      return bodyWidget;
+    }
   }
 
   EdgeInsetsGeometry _getScrollViewPadding(
@@ -147,7 +157,10 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) => success is LoadingState
-        ? loadingWidget
+        ? Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: loadingWidget,
+          )
         : const SizedBox.shrink()
     ));
   }

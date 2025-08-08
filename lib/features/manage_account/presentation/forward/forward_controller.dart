@@ -1,7 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:get/get.dart';
@@ -119,6 +119,8 @@ class ForwardController extends BaseController {
   }
 
   void deleteRecipients(BuildContext context, String emailAddress) {
+    clearInputFocus();
+
     showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).deleteRecipient,
@@ -180,6 +182,8 @@ class ForwardController extends BaseController {
     });
 
   void selectRecipientForward(RecipientForward recipientForward) {
+    clearInputFocus();
+
     if (selectionMode.value == SelectMode.INACTIVE) {
       selectionMode.value = SelectMode.ACTIVE;
     }
@@ -204,6 +208,8 @@ class ForwardController extends BaseController {
   }
 
   void deleteMultipleRecipients(BuildContext context, Set<String> listEmailAddress) {
+    clearInputFocus();
+
     showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).deleteRecipient,
@@ -228,7 +234,7 @@ class ForwardController extends BaseController {
   }
 
   void addRecipientAction(BuildContext context, List<EmailAddress> listRecipientsSelected) {
-    KeyboardUtils.hideKeyboard(context);
+    clearInputFocus();
 
     final accountId = accountDashBoardController.accountId.value;
     if (accountId != null) {
@@ -263,6 +269,8 @@ class ForwardController extends BaseController {
   }
 
   void handleEditLocalCopy() {
+    clearInputFocus();
+
     final accountId = accountDashBoardController.accountId.value;
     if (accountId != null &&
         currentForward.value != null &&
@@ -319,5 +327,11 @@ class ForwardController extends BaseController {
       ? BannerState.enabled
       : BannerState.disabled;
     log('ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${forwardWarningBannerState.value}');
+  }
+
+  void clearInputFocus() {
+    if (PlatformInfo.isMobile) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
   }
 }
