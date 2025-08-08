@@ -2076,27 +2076,6 @@ class AppLocalizations {
     );
   }
 
-  String get noStartTime {
-    return Intl.message(
-      'No start time',
-      name: 'noStartTime',
-    );
-  }
-
-  String get noEndTime {
-    return Intl.message(
-      'No end time',
-      name: 'noEndTime',
-    );
-  }
-
-  String get noEndDate {
-    return Intl.message(
-      'No end date',
-      name: 'noEndDate',
-    );
-  }
-
   String get errorMessageWhenStartDateVacationIsEmpty {
     return Intl.message(
       'Please enter a valid start date',
