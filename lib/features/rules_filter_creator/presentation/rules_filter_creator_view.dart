@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/rule_condition_group.dart';
+import 'package:tmail_ui_user/features/base/widget/pop_back_barrier_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/select_rule_action_field_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_condition_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
@@ -23,80 +24,81 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
 
   @override
   Widget build(BuildContext context) {
+    final responsiveUtil = controller.responsiveUtils;
+    final focusScope = FocusScope.of(context);
+
     return PointerInterceptor(
       child: ResponsiveWidget(
-          responsiveUtils: controller.responsiveUtils,
-          mobile: Scaffold(
-              backgroundColor: PlatformInfo.isWeb
-                  ? Colors.black.withAlpha(24)
-                  : Colors.black38,
-              body: GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: SafeArea(
-                  bottom: false,
-                  left: false,
-                  right: false,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16)),
-                      color: Colors.white),
-                    margin: EdgeInsets.only(top: PlatformInfo.isWeb ? 70 : 0),
-                    child: ClipRRect(
-                        borderRadius: const  BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16)),
-                        child: SafeArea(child: _buildRulesFilterFormOnMobile(context))
-                    )
+        responsiveUtils: responsiveUtil,
+        mobile: Scaffold(
+          backgroundColor:
+              PlatformInfo.isWeb ? Colors.black.withAlpha(24) : Colors.black38,
+          body: PopBackBarrierWidget(
+            child: SafeArea(
+              bottom: false,
+              left: false,
+              right: false,
+              child: GestureDetector(
+                onTap: focusScope.unfocus,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
+                    color: Colors.white,
+                  ),
+                  margin: EdgeInsets.only(top: PlatformInfo.isWeb ? 70 : 0),
+                  child: SafeArea(
+                    child: _buildRulesFilterFormOnMobile(context),
                   ),
                 ),
-              )
+              ),
+            ),
           ),
-          tablet: Scaffold(
-              backgroundColor: Colors.black.withAlpha(24),
-              body: GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: Align(alignment: Alignment.bottomCenter, child: Container(
-                    decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                        )),
-                    width: double.infinity,
-                    height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.7,
-                    child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16)),
-                        child: _buildRulesFilterFormOnTablet(context)
-                    )
-                )),
-              )
+        ),
+        tablet: Scaffold(
+          backgroundColor: Colors.black.withAlpha(24),
+          body: PopBackBarrierWidget(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: GestureDetector(
+                onTap: focusScope.unfocus,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(16),
+                    ),
+                  ),
+                  height: responsiveUtil.getSizeScreenHeight(context) * 0.7,
+                  child: _buildRulesFilterFormOnTablet(context),
+                ),
+              ),
+            ),
           ),
-          desktop: Scaffold(
-              backgroundColor: Colors.black.withAlpha(24),
-              body: GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: Center(child: Card(
-                    color: Colors.transparent,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(16))),
-                    child: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(16))),
-                        width: controller.responsiveUtils.getSizeScreenWidth(context) * 0.6,
-                        height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.7,
-                        child: ClipRRect(
-                            borderRadius: const BorderRadius.all(Radius.circular(16)),
-                            child: _buildRulesFilterFormOnDesktop(context)
-                        )
-                    )
-                )),
-              )
-          )
+        ),
+        desktop: Scaffold(
+          backgroundColor: Colors.black.withAlpha(24),
+          body: PopBackBarrierWidget(
+            child: Center(
+              child: GestureDetector(
+                onTap: focusScope.unfocus,
+                child: Card(
+                  color: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: SizedBox(
+                    width: responsiveUtil.getSizeScreenWidth(context) * 0.6,
+                    height: responsiveUtil.getSizeScreenHeight(context) * 0.7,
+                    child: _buildRulesFilterFormOnDesktop(context),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

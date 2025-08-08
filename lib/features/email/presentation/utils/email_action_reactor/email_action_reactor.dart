@@ -37,7 +37,7 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -88,7 +88,7 @@ typedef OpenPopUpContextMenuAction = Future<void> Function(
   List<PopupMenuEntry> popupMenuItems,
 );
 
-class EmailActionReactor with MessageDialogActionMixin {
+class EmailActionReactor {
   const EmailActionReactor(
     this._markAsEmailReadInteractor,
     this._markAsStarEmailInteractor,
@@ -331,7 +331,7 @@ class EmailActionReactor with MessageDialogActionMixin {
   }) async {
     if (currentContext == null || !currentContext!.mounted) return;
 
-    await showConfirmDialogAction(
+    await MessageDialogActionManager.showConfirmDialogAction(
       currentContext!,
       '',
       AppLocalizations.of(currentContext!).unsubscribe,

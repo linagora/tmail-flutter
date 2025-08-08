@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/auto_complete_result_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
@@ -778,7 +779,7 @@ class ComposerController extends BaseController
     }
 
     if (!isEnableEmailSendButton.value) {
-      showConfirmDialogAction(context,
+      MessageDialogActionManager.showConfirmDialogAction(context,
         AppLocalizations.of(context).message_dialog_send_email_without_recipient,
         AppLocalizations.of(context).add_recipients,
         title: AppLocalizations.of(context).sending_failed,
@@ -794,7 +795,7 @@ class ComposerController extends BaseController
         .where((emailAddress) => !EmailUtils.isEmailAddressValid(emailAddress.emailAddress))
         .toList();
     if (listEmailAddressInvalid.isNotEmpty) {
-      showConfirmDialogAction(context,
+      MessageDialogActionManager.showConfirmDialogAction(context,
         AppLocalizations.of(context).message_dialog_send_email_with_email_address_invalid,
         AppLocalizations.of(context).fix_email_addresses,
         onConfirmAction: () {
@@ -812,7 +813,7 @@ class ComposerController extends BaseController
     }
 
     if (subjectEmail.value == null || subjectEmail.isEmpty == true) {
-      showConfirmDialogAction(context,
+      MessageDialogActionManager.showConfirmDialogAction(context,
         AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
         AppLocalizations.of(context).cancel,
         cancelTitle: AppLocalizations.of(context).send_anyway,
@@ -827,7 +828,7 @@ class ComposerController extends BaseController
     }
 
     if (!uploadController.allUploadAttachmentsCompleted) {
-      showConfirmDialogAction(
+      MessageDialogActionManager.showConfirmDialogAction(
         context,
         AppLocalizations.of(context).messageDialogSendEmailUploadingAttachment,
         AppLocalizations.of(context).got_it,
@@ -840,7 +841,7 @@ class ComposerController extends BaseController
     }
 
     if (uploadController.isExceededMaxSizeAttachmentsPerEmail()) {
-      showConfirmDialogAction(
+      MessageDialogActionManager.showConfirmDialogAction(
         context,
         AppLocalizations.of(context).message_dialog_send_email_exceeds_maximum_size(
             filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
@@ -982,7 +983,7 @@ class ComposerController extends BaseController
       appLocalizations: AppLocalizations.of(context),
       exception: failure.exception,
     );
-    await showConfirmDialogAction(
+    await MessageDialogActionManager.showConfirmDialogAction(
       context,
       title: '',
       errorMessage,
@@ -1933,14 +1934,13 @@ class ComposerController extends BaseController
   }
 
   Future<void> _showConfirmDialogSaveMessage(BuildContext context) async {
-    await showConfirmDialogAction(
+    await MessageDialogActionManager.showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).saveMessage.capitalizeFirstEach,
       AppLocalizations.of(context).warningMessageWhenClickCloseComposer,
       AppLocalizations.of(context).save,
       cancelTitle: AppLocalizations.of(context).discardChanges,
       alignCenter: true,
-      outsideDismissible: false,
       autoPerformPopBack: false,
       isArrangeActionButtonsVertical: true,
       isScrollContentEnabled: responsiveUtils.isLandscapeMobile(context),
@@ -1964,6 +1964,7 @@ class ComposerController extends BaseController
         }
       },
     );
+    _closeComposerButtonState = ButtonState.enabled;
   }
 
   void handleOnDragEnterHtmlEditorWeb(List<dynamic>? types) {
@@ -2189,7 +2190,7 @@ class ComposerController extends BaseController
       exception: failure.exception,
       isDraft: true,
     );
-    await showConfirmDialogAction(
+    await MessageDialogActionManager.showConfirmDialogAction(
       context,
       title: '',
       errorMessage,
