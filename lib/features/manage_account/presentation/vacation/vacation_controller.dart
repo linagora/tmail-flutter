@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vac
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_presentation.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
@@ -41,6 +42,7 @@ class VacationController extends BaseController {
   RichTextWebController? richTextControllerForWeb;
 
   final ScrollController scrollController = ScrollController();
+  final ScrollController richTextButtonScrollController = ScrollController();
 
   VacationController(this._updateVacationInteractor);
 
@@ -355,12 +357,17 @@ class VacationController extends BaseController {
     }
   }
 
+  void switchProfileSetting() {
+    _accountDashBoardController.selectAccountMenuItem(AccountMenuItem.profiles);
+  }
+
   @override
   void onClose() {
     subjectTextFocusNode.removeListener(_onSubjectTextListener);
     subjectTextFocusNode.dispose();
     subjectTextController.dispose();
     scrollController.dispose();
+    richTextButtonScrollController.dispose();
     if (PlatformInfo.isWeb) {
       richTextControllerForWeb?.onClose();
     } else {

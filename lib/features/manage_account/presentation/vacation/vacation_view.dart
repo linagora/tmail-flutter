@@ -2,38 +2,37 @@
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
-import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
-import 'package:tmail_ui_user/features/base/widget/border_button_field.dart';
-import 'package:tmail_ui_user/features/base/widget/text_input_field_builder.dart';
-import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/button_layout_type.dart';
+import 'package:tmail_ui_user/features/base/widget/label_border_button_field.dart';
+import 'package:tmail_ui_user/features/base/widget/switch_label_button_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/horizontal_toolbar_rich_text_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_list_action_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class VacationView extends GetWidget<VacationController> with RichTextButtonMixin {
+class VacationView extends GetWidget<VacationController> {
 
-  VacationView({Key? key}) : super(key: key);
+  const VacationView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,212 +40,209 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
       physics: const ClampingScrollPhysics(),
       controller: controller.scrollController,
       child: Padding(
-        padding: SettingsUtils.getSettingContentPadding(
+        padding: _getScrollViewPadding(
           context,
           controller.responsiveUtils,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!controller.responsiveUtils.isWebDesktop(context))
-              const SettingExplanationWidget(
-                menuItem: AccountMenuItem.vacation,
-                padding: EdgeInsets.only(bottom: 24)
-              ),
-            Row(children: [
-              Obx(() {
-                return InkWell(
-                  onTap: () {
-                    final newStatus = controller.isVacationDeactivated
+            Obx(() {
+              final isVacationDeactivated = controller.isVacationDeactivated;
+
+              return SwitchLabelButtonWidget(
+                imagePaths: controller.imagePaths,
+                label: AppLocalizations.of(context).vacationSettingToggleButtonAutoReply,
+                isActive: !isVacationDeactivated,
+                padding: const EdgeInsets.only(top: 10, bottom: 12),
+                onSwitchAction: () {
+                  final newStatus = isVacationDeactivated
                       ? VacationResponderStatus.activated
                       : VacationResponderStatus.deactivated;
-                    controller.updateVacationPresentation(newStatus: newStatus);
-                  },
-                  child: SvgPicture.asset(
-                    controller.isVacationDeactivated
-                      ? controller.imagePaths.icSwitchOff
-                      : controller.imagePaths.icSwitchOn,
-                    fit: BoxFit.fill,
-                    width: 24,
-                    height: 24
-                  )
-                );
-              }),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  AppLocalizations.of(context).vacationSettingToggleButtonAutoReply,
-                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    fontSize: 16,
-                    height: 20 / 16,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.black
-                  )
-                ),
-              )
-            ]),
-            const SizedBox(height: 28),
+                  controller.updateVacationPresentation(newStatus: newStatus);
+                },
+              );
+            }),
             Obx(() => AbsorbPointer(
               absorbing: controller.isVacationDeactivated,
               child: Opacity(
                 opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                child: controller.responsiveUtils.isPortraitMobile(context)
+                child: controller.responsiveUtils.isScreenWithShortestSide(context)
                   ? Column(children: [
-                      BorderButtonField<DateTime>(
+                      LabelBorderButtonField<DateTime>(
                         label: AppLocalizations.of(context).startDate,
                         value: controller.vacationPresentation.value.startDate,
-                        mouseCursor: SystemMouseCursors.text,
-                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                        isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.startDateIsNull,
+                        isEmpty: !controller.isVacationDeactivated && 
+                          controller.vacationPresentation.value.startDateIsNull,
                         hintText: AppLocalizations.of(context).startDate,
-                        tapActionCallback: (value) => controller.selectDate(context, DateType.start, value)
+                        onSelectValueAction: (value) => controller.selectDate(
+                          context,
+                          DateType.start,
+                          value,
+                        ),
                       ),
                       const SizedBox(height: 18),
-                      BorderButtonField<TimeOfDay>(
+                      LabelBorderButtonField<TimeOfDay>(
                         label: AppLocalizations.of(context).startTime,
                         value: controller.vacationPresentation.value.startTime,
-                        mouseCursor: SystemMouseCursors.text,
-                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                        isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.starTimeIsNull,
-                        hintText: AppLocalizations.of(context).noStartTime,
-                        tapActionCallback: (value) => controller.selectTime(context, DateType.start, value)
+                        isEmpty: !controller.isVacationDeactivated && 
+                          controller.vacationPresentation.value.starTimeIsNull,
+                        hintText: 'dd/mm/yyyy',
+                        onSelectValueAction: (value) => controller.selectTime(
+                          context, 
+                          DateType.start,
+                          value,
+                        ),
                       ),
                     ])
-                  : Row(children: [
-                      Expanded(child: BorderButtonField<DateTime>(
-                        label: AppLocalizations.of(context).startDate,
-                        value: controller.vacationPresentation.value.startDate,
-                        mouseCursor: SystemMouseCursors.text,
-                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                        isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.startDateIsNull,
-                        hintText: AppLocalizations.of(context).startDate,
-                        tapActionCallback: (value) => controller.selectDate(context, DateType.start, value))
-                      ),
-                      const SizedBox(width: 24),
-                      Expanded(child: BorderButtonField<TimeOfDay>(
-                        label: AppLocalizations.of(context).startTime,
-                        value: controller.vacationPresentation.value.startTime,
-                        mouseCursor: SystemMouseCursors.text,
-                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                        isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.starTimeIsNull,
-                        hintText: AppLocalizations.of(context).noStartTime,
-                        tapActionCallback: (value) => controller.selectTime(context, DateType.start, value))
-                      ),
-                    ]),
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        LabelBorderButtonField<DateTime>(
+                          label: AppLocalizations.of(context).startDate,
+                          value: controller.vacationPresentation.value.startDate,
+                          isEmpty: !controller.isVacationDeactivated &&
+                            controller.vacationPresentation.value.startDateIsNull,
+                          hintText: AppLocalizations.of(context).startDate,
+                          onSelectValueAction: (value) => controller.selectDate(
+                            context,
+                            DateType.start,
+                            value,
+                          ),
+                        ),
+                        const SizedBox(width: 32),
+                        LabelBorderButtonField<TimeOfDay>(
+                          label: AppLocalizations.of(context).startTime,
+                          value: controller.vacationPresentation.value.startTime,
+                          isEmpty: !controller.isVacationDeactivated &&
+                            controller.vacationPresentation.value.starTimeIsNull,
+                          hintText: 'hh:min AM/PM',
+                          horizontalSpacing: 8,
+                          minWidth: 117,
+                          onSelectValueAction: (value) => controller.selectTime(
+                            context,
+                            DateType.start,
+                            value,
+                          ),
+                        ),
+                      ],
+                    ),
               ),
             )),
-            const SizedBox(height: 24),
-            Obx(() => AbsorbPointer(
-              absorbing: controller.isVacationDeactivated,
-              child: Opacity(
-                opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                child: Row(children: [
-                  Obx(() => InkWell(
-                    onTap: () {
-                      final value = !controller.vacationPresentation.value.vacationStopEnabled;
-                      controller.updateVacationPresentation(vacationStopEnabled: value);
-                    },
-                    child: SvgPicture.asset(
-                      controller.vacationPresentation.value.vacationStopEnabled
-                        ? controller.imagePaths.icSwitchOn
-                        : controller.imagePaths.icSwitchOff,
-                      fit: BoxFit.fill,
-                      width: 24,
-                      height: 24
-                    )
-                  )),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context).vacationStopsAt,
-                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black
-                      )
-                    ),
-                  )
-                ]),
-              )
-            )),
-            const SizedBox(height: 24),
+            const SizedBox(height: 37),
+            Obx(
+              () => AbsorbPointer(
+                absorbing: controller.isVacationDeactivated,
+                child: Opacity(
+                  opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
+                  child: Obx(() {
+                    final vacationStopEnabled = controller
+                        .vacationPresentation.value.vacationStopEnabled;
+
+                    return SwitchLabelButtonWidget(
+                      imagePaths: controller.imagePaths,
+                      label: AppLocalizations.of(context).vacationStopsAt,
+                      isActive: vacationStopEnabled,
+                      onSwitchAction: () {
+                        controller.updateVacationPresentation(
+                          vacationStopEnabled: !vacationStopEnabled,
+                        );
+                      },
+                    );
+                  }),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
             Obx(() => AbsorbPointer(
               absorbing: !controller.canChangeEndDate,
               child: Opacity(
                 opacity: !controller.canChangeEndDate ? 0.3 : 1.0,
-                child: controller.responsiveUtils.isPortraitMobile(context)
+                child: controller.responsiveUtils.isScreenWithShortestSide(context)
                   ? Column(children: [
-                      BorderButtonField<DateTime>(
+                      LabelBorderButtonField<DateTime>(
                         label: AppLocalizations.of(context).endDate,
                         value: controller.vacationPresentation.value.endDate,
-                        mouseCursor: SystemMouseCursors.text,
-                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                        isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endDateIsNull,
-                        hintText: AppLocalizations.of(context).noEndDate,
-                        tapActionCallback: (value) => controller.selectDate(context, DateType.end, value)
+                        isEmpty: controller.canChangeEndDate && 
+                          controller.vacationPresentation.value.endDateIsNull,
+                        hintText: 'dd/mm/yyyy',
+                        onSelectValueAction: (value) => controller.selectDate(
+                          context, 
+                          DateType.end,
+                          value,
+                        ),
                       ),
                       const SizedBox(height: 18),
-                      BorderButtonField<TimeOfDay>(
+                      LabelBorderButtonField<TimeOfDay>(
                         label: AppLocalizations.of(context).endTime,
                         value: controller.vacationPresentation.value.endTime,
-                        mouseCursor: SystemMouseCursors.text,
-                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                        isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endTimeIsNull,
-                        hintText: AppLocalizations.of(context).noEndTime,
-                        tapActionCallback: (value) => controller.selectTime(context, DateType.end, value)
+                        isEmpty: controller.canChangeEndDate && 
+                          controller.vacationPresentation.value.endTimeIsNull,
+                        hintText: 'hh:min AM/PM',
+                        onSelectValueAction: (value) => controller.selectTime(
+                          context,
+                          DateType.end,
+                          value,
+                        ),
                       ),
                     ])
-                  : Row(children: [
-                      Expanded(child: BorderButtonField<DateTime>(
-                        label: AppLocalizations.of(context).endDate,
-                        value: controller.vacationPresentation.value.endDate,
-                        mouseCursor: SystemMouseCursors.text,
-                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                        isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endDateIsNull,
-                        hintText: AppLocalizations.of(context).noEndDate,
-                        tapActionCallback: (value) => controller.selectDate(context, DateType.end, value))
-                      ),
-                      const SizedBox(width: 24),
-                      Expanded(child: BorderButtonField<TimeOfDay>(
-                        label: AppLocalizations.of(context).endTime,
-                        value: controller.vacationPresentation.value.endTime,
-                        mouseCursor: SystemMouseCursors.text,
-                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                        isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endTimeIsNull,
-                        hintText: AppLocalizations.of(context).noEndTime,
-                        tapActionCallback: (value) => controller.selectTime(context, DateType.end, value))
-                      ),
-                    ]),
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        LabelBorderButtonField<DateTime>(
+                          label: AppLocalizations.of(context).endDate,
+                          value: controller.vacationPresentation.value.endDate,
+                          isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endDateIsNull,
+                          hintText: 'dd/mm/yyyy',
+                          onSelectValueAction: (value) => controller.selectDate(
+                            context,
+                            DateType.end,
+                            value,
+                          ),
+                        ),
+                        const SizedBox(width: 32),
+                        LabelBorderButtonField<TimeOfDay>(
+                          label: AppLocalizations.of(context).endTime,
+                          value: controller.vacationPresentation.value.endTime,
+                          isEmpty: controller.canChangeEndDate &&
+                            controller.vacationPresentation.value.endTimeIsNull,
+                          hintText: 'hh:min AM/PM',
+                          horizontalSpacing: 8,
+                          minWidth: 117,
+                          onSelectValueAction: (value) => controller.selectTime(
+                            context,
+                            DateType.end,
+                            value,
+                          ),
+                        ),
+                      ],
+                    ),
               )
             )),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             Obx(() => AbsorbPointer(
               absorbing: controller.isVacationDeactivated,
-              child: controller.responsiveUtils.isPortraitMobile(context)
+              child: controller.responsiveUtils.isScreenWithShortestSide(context)
                 ? Opacity(
                     opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                    child: TextInputFieldBuilder(
+                    child: LabelInputFieldBuilder(
                       label: AppLocalizations.of(context).subject,
-                      hint: AppLocalizations.of(context).hintSubjectInputVacationSetting,
-                      editingController: controller.subjectTextController,
+                      hintText: AppLocalizations.of(context).hintSubjectInputVacationSetting,
+                      textEditingController: controller.subjectTextController,
                       focusNode: controller.subjectTextFocusNode,
                     ),
                   )
-                : Row(children: [
-                    Expanded(child: Opacity(
-                      opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                      child: TextInputFieldBuilder(
-                        label: AppLocalizations.of(context).subject,
-                        hint: AppLocalizations.of(context).hintSubjectInputVacationSetting,
-                        editingController: controller.subjectTextController,
-                        focusNode: controller.subjectTextFocusNode,
-                      ),
-                    )),
-                    const SizedBox(width: 24),
-                    const Expanded(child: SizedBox.shrink())
-                  ])
+                : Opacity(
+                    opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
+                    child: LabelInputFieldBuilder(
+                      label: AppLocalizations.of(context).subject,
+                      hintText: AppLocalizations.of(context).hintSubjectInputVacationSetting,
+                      textEditingController: controller.subjectTextController,
+                      focusNode: controller.subjectTextFocusNode,
+                    ),
+                  ),
             )),
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             Obx(() => AbsorbPointer(
               absorbing: controller.isVacationDeactivated,
               child: Opacity(
@@ -254,9 +250,20 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                 child: _buildVacationMessage(context),
               ),
             )),
-            const SizedBox(height: 24),
-            _buildListButtonAction(context),
-            const SizedBox(height: 24)
+            Container(
+              padding: const EdgeInsets.only(top: 22),
+              constraints: const BoxConstraints(maxWidth: 660),
+              child: VacationListActionWidget(
+                onCancelButtonAction: () {
+                  if (controller.responsiveUtils.isWebDesktop(context)) {
+                    controller.switchProfileSetting();
+                  } else {
+                    controller.backToUniversalSettings(context);
+                  }
+                },
+                onConfirmButtonAction: () => controller.saveVacation(context),
+              ),
+            ),
           ]
         ),
       ),
@@ -265,17 +272,46 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
     if (PlatformInfo.isWeb) {
       return SettingDetailViewBuilder(
         responsiveUtils: controller.responsiveUtils,
-        onTapGestureDetector: () => controller.clearFocusEditor(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (controller.responsiveUtils.isWebDesktop(context))
-              ...[
-                const SettingHeaderWidget(menuItem: AccountMenuItem.vacation),
-                const Divider(height: 1, color: AppColor.colorDividerHeaderSetting),
-              ],
-            Expanded(child: vacationInputForm),
-          ],
+        child: Container(
+          color: SettingsUtils.getContentBackgroundColor(
+            context,
+            controller.responsiveUtils,
+          ),
+          decoration: SettingsUtils.getBoxDecorationForContent(
+            context,
+            controller.responsiveUtils,
+          ),
+          width: double.infinity,
+          padding: controller.responsiveUtils.isDesktop(context)
+              ? const EdgeInsetsDirectional.only(
+                  top: 30,
+                  start: 22,
+                )
+              : null,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (controller.responsiveUtils.isWebDesktop(context))
+                SettingHeaderWidget(
+                  menuItem: AccountMenuItem.vacation,
+                  textStyle: ThemeUtils.textStyleInter600().copyWith(
+                    color: Colors.black.withValues(alpha: 0.9),
+                  ),
+                  padding: const EdgeInsetsDirectional.only(bottom: 16, end: 22),
+                )
+              else
+                const SettingExplanationWidget(
+                  menuItem: AccountMenuItem.vacation,
+                  padding: EdgeInsetsDirectional.only(
+                    start: 16,
+                    end: 16,
+                    bottom: 16,
+                  ),
+                  isCenter: true,
+                ),
+              Expanded(child: vacationInputForm),
+            ],
+          ),
         ),
       );
     } else {
@@ -286,9 +322,9 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           child: Scaffold(
             backgroundColor: SettingsUtils.getBackgroundColor(context, controller.responsiveUtils),
             body: SafeArea(
-              left: controller.responsiveUtils.isPortraitMobile(context),
+              left: controller.responsiveUtils.isScreenWithShortestSide(context),
               top: false,
-              right: controller.responsiveUtils.isPortraitMobile(context),
+              right: controller.responsiveUtils.isScreenWithShortestSide(context),
               child: KeyboardRichText(
                 richTextController: controller.richTextControllerForMobile!,
                 keyBroadToolbar: RichTextKeyboardToolBar(
@@ -353,158 +389,124 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
     }
   }
 
-  Widget _buildListButtonAction(BuildContext context) {
-    if (controller.responsiveUtils.isWebDesktop(context)) {
-      return Align(
-        alignment: Alignment.centerRight,
-        child: buildTextButton(
-            AppLocalizations.of(context).saveChanges,
-            textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.normal,
-                fontSize: 16
+  Widget _buildVacationMessage(BuildContext context) {
+    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${AppLocalizations.of(context).message}:',
+            style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              border: Border.all(color: AppColor.m3Neutral90),
             ),
-            width: 156,
-            height: 44,
-            radius: 10,
-            onTap: () => controller.saveVacation(context)),
+            padding: const EdgeInsetsDirectional.symmetric(
+              vertical: 8,
+              horizontal: 12,
+            ),
+            height: PlatformInfo.isMobile ? null : 236,
+            child: PlatformInfo.isMobile
+              ? _buildMessageHtmlTextEditor(context)
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(child: _buildMessageHtmlTextEditor(context)),
+                    HorizontalToolbarRichTextWidget(
+                      richTextController: controller.richTextControllerForWeb!,
+                      scrollController: controller.richTextButtonScrollController,
+                      imagePaths: controller.imagePaths,
+                    ),
+                  ],
+                ),
+          ),
+        ],
       );
     } else {
-      if (controller.responsiveUtils.isPortraitMobile(context)) {
-        return Row(children: [
-          Expanded(
-            child: buildTextButton(
-                AppLocalizations.of(context).cancel,
-                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 17,
-                    color: AppColor.colorTextButton),
-                backgroundColor: AppColor.emailAddressChipColor,
-                width: 156,
-                height: 44,
-                radius: 10,
-                onTap: () => controller.backToUniversalSettings(context)),
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 83),
+            child: Text(
+              '${AppLocalizations.of(context).message}:',
+              style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
+            ),
           ),
           const SizedBox(width: 12),
-          Expanded(
-            child: buildTextButton(
-                AppLocalizations.of(context).saveChanges,
-                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16
-                ),
-                width: 156,
-                height: 44,
-                radius: 10,
-                onTap: () => controller.saveVacation(context)),
-          )
-        ]);
-      } else {
-        return Row(children: [
-          const Spacer(),
-          buildTextButton(
-              AppLocalizations.of(context).cancel,
-              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 17,
-                  color: AppColor.colorTextButton),
-              backgroundColor: AppColor.emailAddressChipColor,
-              width: 156,
-              height: 44,
-              radius: 10,
-              onTap: () => controller.backToUniversalSettings(context)),
-          const SizedBox(width: 12),
-          buildTextButton(
-              AppLocalizations.of(context).saveChanges,
-              textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16
+          Flexible(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                border: Border.all(color: AppColor.m3Neutral90),
               ),
-              width: 156,
-              height: 44,
-              radius: 10,
-              onTap: () => controller.saveVacation(context))
-        ]);
-      }
+              constraints: const BoxConstraints(maxWidth: 565),
+              height: PlatformInfo.isMobile ? null : 236,
+              padding: EdgeInsetsDirectional.only(
+                bottom: PlatformInfo.isMobile ? 8 : 0,
+                start: 12,
+                end: 12,
+              ),
+              child: PlatformInfo.isMobile
+                ? _buildMessageHtmlTextEditor(context)
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(child: _buildMessageHtmlTextEditor(context)),
+                      const SizedBox(height: 8),
+                      HorizontalToolbarRichTextWidget(
+                        richTextController: controller.richTextControllerForWeb!,
+                        scrollController: controller.richTextButtonScrollController,
+                        imagePaths: controller.imagePaths,
+                      ),
+                    ],
+                  ),
+            ),
+          ),
+        ],
+      );
     }
-  }
-
-  Widget _buildVacationMessage(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          AppLocalizations.of(context).message,
-          style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
-            color: AppColor.colorContentEmail
-          )
-        ),
-        const SizedBox(height: 8),
-        _buildMessageTextEditor(context)
-      ]
-    );
-  }
-
-  Widget _buildMessageTextEditor(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
-        color: Colors.white),
-      padding: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 12),
-      child: Column(children: [
-        _buildMessageHtmlTextEditor(context),
-        if (PlatformInfo.isWeb)
-          Center(
-            child: PointerInterceptor(
-              child: buildToolbarRichTextForWeb(
-                context,
-                controller.richTextControllerForWeb!,
-                layoutType: ButtonLayoutType.scrollHorizontal
-              )
-            )
-          )
-      ]),
-    );
   }
 
   Widget _buildMessageHtmlTextEditor(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      return ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 300),
-        child: html_editor_browser.HtmlEditor(
-          key: const Key('vacation_message_html_text_editor_web'),
-          controller: controller.richTextControllerForWeb!.editorController,
-          htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
-            hint: '',
-            darkMode: false,
-            cacheHTMLAssetOffline: true,
-            initialText: controller.vacationMessageHtmlText,
-            spellCheck: true,
-            customBodyCssStyle: HtmlUtils.customInlineBodyCssStyleHtmlEditor(
-              direction: AppUtils.getCurrentDirection(context),
-            ),
-            customInternalCSS: HtmlTemplate.webCustomInternalStyleCSS(),
+      return html_editor_browser.HtmlEditor(
+        key: const Key('vacation_message_html_text_editor_web'),
+        controller: controller.richTextControllerForWeb!.editorController,
+        htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
+          hint: '',
+          darkMode: false,
+          cacheHTMLAssetOffline: true,
+          initialText: controller.vacationMessageHtmlText,
+          spellCheck: true,
+          customBodyCssStyle: HtmlUtils.customInlineBodyCssStyleHtmlEditor(
+            direction: AppUtils.getCurrentDirection(context),
+            horizontalPadding: 0,
           ),
-          htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
-              toolbarType: html_editor_browser.ToolbarType.hide,
-              defaultToolbarButtons: []),
-          otherOptions: const html_editor_browser.OtherOptions(height: 150),
-          callbacks: html_editor_browser.Callbacks(
-            onChangeSelection: controller.richTextControllerForWeb?.onEditorSettingsChange,
-            onChangeContent: controller.updateMessageHtmlText,
-            onFocus: () {
-              KeyboardUtils.hideKeyboard(context);
-              Future.delayed(const Duration(milliseconds: 500), () {
-                controller.richTextControllerForWeb?.editorController.setFocus();
-              });
-              controller.richTextControllerForWeb?.closeAllMenuPopup();
-            }
-          ),
+          customInternalCSS: HtmlTemplate.webCustomInternalStyleCSS(),
+        ),
+        htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
+          toolbarType: html_editor_browser.ToolbarType.hide,
+          defaultToolbarButtons: [],
+        ),
+        otherOptions: const html_editor_browser.OtherOptions(height: 300),
+        callbacks: html_editor_browser.Callbacks(
+          onChangeSelection:
+              controller.richTextControllerForWeb?.onEditorSettingsChange,
+          onChangeContent: controller.updateMessageHtmlText,
+          onFocus: () {
+            KeyboardUtils.hideKeyboard(context);
+            Future.delayed(const Duration(milliseconds: 500), () {
+              controller.richTextControllerForWeb?.editorController.setFocus();
+            });
+            controller.richTextControllerForWeb?.closeAllMenuPopup();
+          },
         ),
       );
     } else {
@@ -517,6 +519,19 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           customStyleCss: HtmlTemplate.mobileCustomInternalStyleCSS(direction: AppUtils.getCurrentDirection(context)),
           onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi)
       );
+    }
+  }
+
+  EdgeInsetsGeometry _getScrollViewPadding(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils
+  ) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return const EdgeInsetsDirectional.only(end: 22, bottom: 30);
+    } else if (responsiveUtils.isMobile(context)) {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 16);
+    } else {
+      return const EdgeInsetsDirectional.symmetric(horizontal: 32);
     }
   }
 }
