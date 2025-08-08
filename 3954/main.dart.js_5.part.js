@@ -14201,7 +14201,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      if (A.VerifyDisplayOverlayViewOnIframeExtension_get_isDisplayedOverlayViewOnIFrame(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).mailboxDashBoardController))
+      if (A.VerifyDisplayOverlayViewOnIframeExtension_get_isDisplayedOverlayViewOnIFrame(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).mailboxDashBoardController) || $.$get$MessageDialogActionManager_isDialogOpened().get$value(0))
         return A.Positioned$fill(0, A.PointerInterceptor$(C.SizedBox_ouf), null);
       else
         return C.SizedBox_0_0_null_null;
@@ -20255,5 +20255,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "5wxNd1U7Ulqxfu1sguE8pCy7fGc=");
+})($__dart_deferred_initializers__, "8NhsGA0RPdAXmnBJ26UJrjnEJKA=");
 ;
