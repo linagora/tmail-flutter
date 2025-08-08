@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-07-25T12:21:42.514040",
+  "@@last_modified": "2025-08-08T16:24:37.279860",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2030,24 +2030,6 @@
   },
   "hintMessageBodyVacation": "Vacation messages",
   "@hintMessageBodyVacation": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "noStartTime": "No start time",
-  "@noStartTime": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "noEndTime": "No end time",
-  "@noEndTime": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "noEndDate": "No end date",
-  "@noEndDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
