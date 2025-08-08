@@ -2212,13 +2212,6 @@ class AppLocalizations {
         name: 'toastMessageLocalCopyDisable');
   }
 
-  String get keepLocalCopyForwardLabel {
-    return Intl.message(
-      'Keep a copy of the email in Inbox',
-      name: 'keepLocalCopyForwardLabel',
-    );
-  }
-
   String get emailRuleSettingExplanation {
     return Intl.message(
       'Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.',
@@ -3876,12 +3869,6 @@ class AppLocalizations {
     );
   }
 
-  String get doYouWantToProceed {
-    return Intl.message(
-      'Do you want to proceed?',
-      name: 'doYouWantToProceed');
-  }
-
   String get messageWarningDialogForForwardsToOtherDomains {
     return Intl.message(
       'You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.',
@@ -4917,6 +4904,34 @@ class AppLocalizations {
     return Intl.message(
       'Creating an archive for downloading',
       name: 'creatingAnArchiveForDownloading',
+    );
+  }
+
+  String get keepACopyInInbox {
+    return Intl.message(
+      'Keep a copy in Inbox',
+      name: 'keepACopyInInbox',
+    );
+  }
+
+  String get keepACopyInInboxDescription {
+    return Intl.message(
+      'Store forwarded emails in your inbox as well as sending them to recipients',
+      name: 'keepACopyInInboxDescription',
+    );
+  }
+
+  String get dialogWarningTitleForForwardsToOtherDomains {
+    return Intl.message(
+      'You are redirecting emails to another domain.',
+      name: 'dialogWarningTitleForForwardsToOtherDomains',
+    );
+  }
+
+  String get dialogWarningMessageForForwardsToOtherDomains {
+    return Intl.message(
+      'This could be a security threat or considered illegal data extraction. Do you want to proceed?',
+      name: 'dialogWarningMessageForForwardsToOtherDomains',
     );
   }
 }

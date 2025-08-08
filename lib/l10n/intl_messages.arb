@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-07-25T12:21:42.514040",
+  "@@last_modified": "2025-08-08T00:39:19.081628",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2166,12 +2166,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepLocalCopyForwardLabel": "Keep a copy of the email in Inbox",
-  "@keepLocalCopyForwardLabel": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "emailRuleSettingExplanation": "Creating rules to handle incoming messages. You choose both the condition that triggers a rule and the actions the rule will take.",
   "@emailRuleSettingExplanation": {
     "type": "text",
@@ -3730,12 +3724,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doYouWantToProceed": "Do you want to proceed?",
-  "@doYouWantToProceed": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "messageWarningDialogForForwardsToOtherDomains": "You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.",
   "@messageWarningDialogForForwardsToOtherDomains": {
     "type": "text",
@@ -4662,6 +4650,30 @@
   },
   "creatingAnArchiveForDownloading": "Creating an archive for downloading",
   "@creatingAnArchiveForDownloading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepACopyInInbox": "Keep a copy in Inbox",
+  "@keepACopyInInbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepACopyInInboxDescription": "Store forwarded emails in your inbox as well as sending them to recipients",
+  "@keepACopyInInboxDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogWarningTitleForForwardsToOtherDomains": "You are redirecting emails to another domain.",
+  "@dialogWarningTitleForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogWarningMessageForForwardsToOtherDomains": "This could be a security threat or considered illegal data extraction. Do you want to proceed?",
+  "@dialogWarningMessageForForwardsToOtherDomains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
