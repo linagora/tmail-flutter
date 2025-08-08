@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/rule_condition_group.dart';
+import 'package:tmail_ui_user/features/base/widget/pop_back_barrier_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/select_rule_action_field_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_condition_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
@@ -13,7 +14,6 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_title_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
 
@@ -33,7 +33,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         mobile: Scaffold(
           backgroundColor:
               PlatformInfo.isWeb ? Colors.black.withAlpha(24) : Colors.black38,
-          body: _PopBackBarrier(
+          body: PopBackBarrierWidget(
             child: SafeArea(
               bottom: false,
               left: false,
@@ -58,7 +58,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         ),
         tablet: Scaffold(
           backgroundColor: Colors.black.withAlpha(24),
-          body: _PopBackBarrier(
+          body: PopBackBarrierWidget(
             child: Align(
               alignment: Alignment.bottomCenter,
               child: GestureDetector(
@@ -79,7 +79,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         ),
         desktop: Scaffold(
           backgroundColor: Colors.black.withAlpha(24),
-          body: _PopBackBarrier(
+          body: PopBackBarrierWidget(
             child: Center(
               child: GestureDetector(
                 onTap: focusScope.unfocus,
@@ -645,20 +645,5 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         },
       );
     });
-  }
-}
-
-class _PopBackBarrier extends StatelessWidget {
-  const _PopBackBarrier({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: popBack,
-      child: child,
-    );
   }
 }
