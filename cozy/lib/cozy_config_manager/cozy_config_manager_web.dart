@@ -14,7 +14,11 @@ class CozyConfigManager {
   }
 
   Future<bool> get isInsideCozy async {
-    return _isInsideCozy ??= await _checkCozyEnvironment();
+    try {
+      return _isInsideCozy ??= await _checkCozyEnvironment();
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<bool> _checkCozyEnvironment() async {
