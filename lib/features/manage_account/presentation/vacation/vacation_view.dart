@@ -54,7 +54,7 @@ class VacationView extends GetWidget<VacationController> {
                 imagePaths: controller.imagePaths,
                 label: AppLocalizations.of(context).vacationSettingToggleButtonAutoReply,
                 isActive: !isVacationDeactivated,
-                padding: const EdgeInsets.only(top: 10, bottom: 12),
+                padding: const EdgeInsets.only(top: 10),
                 onSwitchAction: () {
                   final newStatus = isVacationDeactivated
                       ? VacationResponderStatus.activated
@@ -63,73 +63,57 @@ class VacationView extends GetWidget<VacationController> {
                 },
               );
             }),
+            SizedBox(
+              height: controller.responsiveUtils.isScreenWithShortestSide(context)
+                ? 24
+                : 12,
+            ),
             Obx(() => AbsorbPointer(
               absorbing: controller.isVacationDeactivated,
               child: Opacity(
                 opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                child: controller.responsiveUtils.isScreenWithShortestSide(context)
-                  ? Column(children: [
-                      LabelBorderButtonField<DateTime>(
-                        label: AppLocalizations.of(context).startDate,
-                        value: controller.vacationPresentation.value.startDate,
-                        isEmpty: !controller.isVacationDeactivated && 
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    LabelBorderButtonField<DateTime>(
+                      label: AppLocalizations.of(context).startDate,
+                      value: controller.vacationPresentation.value.startDate,
+                      isEmpty: !controller.isVacationDeactivated &&
                           controller.vacationPresentation.value.startDateIsNull,
-                        hintText: AppLocalizations.of(context).startDate,
-                        onSelectValueAction: (value) => controller.selectDate(
-                          context,
-                          DateType.start,
-                          value,
-                        ),
+                      hintText: 'dd/mm/yyyy',
+                      arrangeHorizontally: !controller.responsiveUtils.isScreenWithShortestSide(context),
+                      minWidth: controller.responsiveUtils.isScreenWithShortestSide(context) ? 117 : null,
+                      onSelectValueAction: (value) => controller.selectDate(
+                        context,
+                        DateType.start,
+                        value,
                       ),
-                      const SizedBox(height: 18),
-                      LabelBorderButtonField<TimeOfDay>(
-                        label: AppLocalizations.of(context).startTime,
-                        value: controller.vacationPresentation.value.startTime,
-                        isEmpty: !controller.isVacationDeactivated && 
-                          controller.vacationPresentation.value.starTimeIsNull,
-                        hintText: 'dd/mm/yyyy',
-                        onSelectValueAction: (value) => controller.selectTime(
-                          context, 
-                          DateType.start,
-                          value,
-                        ),
-                      ),
-                    ])
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        LabelBorderButtonField<DateTime>(
-                          label: AppLocalizations.of(context).startDate,
-                          value: controller.vacationPresentation.value.startDate,
-                          isEmpty: !controller.isVacationDeactivated &&
-                            controller.vacationPresentation.value.startDateIsNull,
-                          hintText: AppLocalizations.of(context).startDate,
-                          onSelectValueAction: (value) => controller.selectDate(
-                            context,
-                            DateType.start,
-                            value,
-                          ),
-                        ),
-                        const SizedBox(width: 32),
-                        LabelBorderButtonField<TimeOfDay>(
-                          label: AppLocalizations.of(context).startTime,
-                          value: controller.vacationPresentation.value.startTime,
-                          isEmpty: !controller.isVacationDeactivated &&
-                            controller.vacationPresentation.value.starTimeIsNull,
-                          hintText: 'hh:min AM/PM',
-                          horizontalSpacing: 8,
-                          minWidth: 117,
-                          onSelectValueAction: (value) => controller.selectTime(
-                            context,
-                            DateType.start,
-                            value,
-                          ),
-                        ),
-                      ],
                     ),
+                    const SizedBox(width: 32),
+                    LabelBorderButtonField<TimeOfDay>(
+                      label: AppLocalizations.of(context).startTime,
+                      value: controller.vacationPresentation.value.startTime,
+                      isEmpty: !controller.isVacationDeactivated &&
+                          controller.vacationPresentation.value.starTimeIsNull,
+                      hintText: 'hh:min AM/PM',
+                      horizontalSpacing: 8,
+                      arrangeHorizontally: !controller.responsiveUtils.isScreenWithShortestSide(context),
+                      minWidth: controller.responsiveUtils.isScreenWithShortestSide(context) ? 117 : null,
+                      onSelectValueAction: (value) => controller.selectTime(
+                        context,
+                        DateType.start,
+                        value,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )),
-            const SizedBox(height: 37),
+            SizedBox(
+              height: controller.responsiveUtils.isScreenWithShortestSide(context)
+                  ? 24
+                  : 37,
+            ),
             Obx(
               () => AbsorbPointer(
                 absorbing: controller.isVacationDeactivated,
@@ -153,73 +137,56 @@ class VacationView extends GetWidget<VacationController> {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(
+              height: controller.responsiveUtils.isScreenWithShortestSide(context)
+                ? 24
+                : 12,
+            ),
             Obx(() => AbsorbPointer(
               absorbing: !controller.canChangeEndDate,
               child: Opacity(
                 opacity: !controller.canChangeEndDate ? 0.3 : 1.0,
-                child: controller.responsiveUtils.isScreenWithShortestSide(context)
-                  ? Column(children: [
-                      LabelBorderButtonField<DateTime>(
-                        label: AppLocalizations.of(context).endDate,
-                        value: controller.vacationPresentation.value.endDate,
-                        isEmpty: controller.canChangeEndDate && 
-                          controller.vacationPresentation.value.endDateIsNull,
-                        hintText: 'dd/mm/yyyy',
-                        onSelectValueAction: (value) => controller.selectDate(
-                          context, 
-                          DateType.end,
-                          value,
-                        ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    LabelBorderButtonField<DateTime>(
+                      label: AppLocalizations.of(context).endDate,
+                      value: controller.vacationPresentation.value.endDate,
+                      isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endDateIsNull,
+                      hintText: 'dd/mm/yyyy',
+                      arrangeHorizontally: !controller.responsiveUtils.isScreenWithShortestSide(context),
+                      minWidth: controller.responsiveUtils.isScreenWithShortestSide(context) ? 117 : null,
+                      onSelectValueAction: (value) => controller.selectDate(
+                        context,
+                        DateType.end,
+                        value,
                       ),
-                      const SizedBox(height: 18),
-                      LabelBorderButtonField<TimeOfDay>(
-                        label: AppLocalizations.of(context).endTime,
-                        value: controller.vacationPresentation.value.endTime,
-                        isEmpty: controller.canChangeEndDate && 
-                          controller.vacationPresentation.value.endTimeIsNull,
-                        hintText: 'hh:min AM/PM',
-                        onSelectValueAction: (value) => controller.selectTime(
-                          context,
-                          DateType.end,
-                          value,
-                        ),
-                      ),
-                    ])
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        LabelBorderButtonField<DateTime>(
-                          label: AppLocalizations.of(context).endDate,
-                          value: controller.vacationPresentation.value.endDate,
-                          isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endDateIsNull,
-                          hintText: 'dd/mm/yyyy',
-                          onSelectValueAction: (value) => controller.selectDate(
-                            context,
-                            DateType.end,
-                            value,
-                          ),
-                        ),
-                        const SizedBox(width: 32),
-                        LabelBorderButtonField<TimeOfDay>(
-                          label: AppLocalizations.of(context).endTime,
-                          value: controller.vacationPresentation.value.endTime,
-                          isEmpty: controller.canChangeEndDate &&
-                            controller.vacationPresentation.value.endTimeIsNull,
-                          hintText: 'hh:min AM/PM',
-                          horizontalSpacing: 8,
-                          minWidth: 117,
-                          onSelectValueAction: (value) => controller.selectTime(
-                            context,
-                            DateType.end,
-                            value,
-                          ),
-                        ),
-                      ],
                     ),
+                    const SizedBox(width: 32),
+                    LabelBorderButtonField<TimeOfDay>(
+                      label: AppLocalizations.of(context).endTime,
+                      value: controller.vacationPresentation.value.endTime,
+                      isEmpty: controller.canChangeEndDate &&
+                          controller.vacationPresentation.value.endTimeIsNull,
+                      hintText: 'hh:min AM/PM',
+                      horizontalSpacing: 8,
+                      arrangeHorizontally: !controller.responsiveUtils.isScreenWithShortestSide(context),
+                      minWidth: controller.responsiveUtils.isScreenWithShortestSide(context) ? 117 : null,
+                      onSelectValueAction: (value) => controller.selectTime(
+                        context,
+                        DateType.end,
+                        value,
+                      ),
+                    ),
+                  ],
+                ),
               )
             )),
-            const SizedBox(height: 12),
+            SizedBox(
+              height: controller.responsiveUtils.isScreenWithShortestSide(context)
+                ? 24
+                : 12,
+            ),
             Obx(() => AbsorbPointer(
               absorbing: controller.isVacationDeactivated,
               child: controller.responsiveUtils.isScreenWithShortestSide(context)
@@ -230,6 +197,7 @@ class VacationView extends GetWidget<VacationController> {
                       hintText: AppLocalizations.of(context).hintSubjectInputVacationSetting,
                       textEditingController: controller.subjectTextController,
                       focusNode: controller.subjectTextFocusNode,
+                      arrangeHorizontally: false,
                     ),
                   )
                 : Opacity(
@@ -242,7 +210,11 @@ class VacationView extends GetWidget<VacationController> {
                     ),
                   ),
             )),
-            const SizedBox(height: 12),
+            SizedBox(
+              height: controller.responsiveUtils.isScreenWithShortestSide(context)
+                ? 24
+                : 12,
+            ),
             Obx(() => AbsorbPointer(
               absorbing: controller.isVacationDeactivated,
               child: Opacity(
@@ -251,7 +223,16 @@ class VacationView extends GetWidget<VacationController> {
               ),
             )),
             Container(
-              padding: const EdgeInsets.only(top: 22),
+              padding: EdgeInsets.only(
+                top: controller.responsiveUtils.isScreenWithShortestSide(context)
+                    ? 24
+                    : 22,
+                bottom: controller.responsiveUtils.isScreenWithShortestSide(context)
+                    ? PlatformInfo.isMobile
+                        ? 64
+                        : 24
+                    : 0,
+              ),
               constraints: const BoxConstraints(maxWidth: 660),
               child: VacationListActionWidget(
                 onCancelButtonAction: () {
@@ -269,51 +250,53 @@ class VacationView extends GetWidget<VacationController> {
       ),
     );
 
-    if (PlatformInfo.isWeb) {
-      return SettingDetailViewBuilder(
-        responsiveUtils: controller.responsiveUtils,
-        child: Container(
-          color: SettingsUtils.getContentBackgroundColor(
-            context,
-            controller.responsiveUtils,
-          ),
-          decoration: SettingsUtils.getBoxDecorationForContent(
-            context,
-            controller.responsiveUtils,
-          ),
-          width: double.infinity,
-          padding: controller.responsiveUtils.isDesktop(context)
-              ? const EdgeInsetsDirectional.only(
-                  top: 30,
-                  start: 22,
-                )
-              : null,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (controller.responsiveUtils.isWebDesktop(context))
-                SettingHeaderWidget(
-                  menuItem: AccountMenuItem.vacation,
-                  textStyle: ThemeUtils.textStyleInter600().copyWith(
-                    color: Colors.black.withValues(alpha: 0.9),
-                  ),
-                  padding: const EdgeInsetsDirectional.only(bottom: 16, end: 22),
-                )
-              else
-                const SettingExplanationWidget(
-                  menuItem: AccountMenuItem.vacation,
-                  padding: EdgeInsetsDirectional.only(
-                    start: 16,
-                    end: 16,
-                    bottom: 16,
-                  ),
-                  isCenter: true,
-                ),
-              Expanded(child: vacationInputForm),
-            ],
-          ),
+    final vacationView = SettingDetailViewBuilder(
+      responsiveUtils: controller.responsiveUtils,
+      child: Container(
+        color: SettingsUtils.getContentBackgroundColor(
+          context,
+          controller.responsiveUtils,
         ),
-      );
+        decoration: SettingsUtils.getBoxDecorationForContent(
+          context,
+          controller.responsiveUtils,
+        ),
+        width: double.infinity,
+        padding: controller.responsiveUtils.isDesktop(context)
+            ? const EdgeInsetsDirectional.only(
+          top: 30,
+          start: 22,
+        )
+            : null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (controller.responsiveUtils.isWebDesktop(context))
+              SettingHeaderWidget(
+                menuItem: AccountMenuItem.vacation,
+                textStyle: ThemeUtils.textStyleInter600().copyWith(
+                  color: Colors.black.withValues(alpha: 0.9),
+                ),
+                padding: const EdgeInsetsDirectional.only(bottom: 16, end: 22),
+              )
+            else
+              const SettingExplanationWidget(
+                menuItem: AccountMenuItem.vacation,
+                padding: EdgeInsetsDirectional.only(
+                  start: 16,
+                  end: 16,
+                  bottom: 16,
+                ),
+                isCenter: true,
+              ),
+            Expanded(child: vacationInputForm),
+          ],
+        ),
+      ),
+    );
+
+    if (PlatformInfo.isWeb) {
+      return vacationView;
     } else {
       return ResponsiveWidget(
         responsiveUtils: controller.responsiveUtils,
@@ -347,7 +330,8 @@ class VacationView extends GetWidget<VacationController> {
                   child: SafeArea(
                     top: false,
                     bottom: false,
-                    child: vacationInputForm),
+                    child: vacationView,
+                  ),
                 )
               ),
             ),
@@ -378,7 +362,7 @@ class VacationView extends GetWidget<VacationController> {
                     height: double.infinity,
                     color: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: vacationInputForm,
+                    child: vacationView,
                   ),
                 ),
               ),
