@@ -72,7 +72,12 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                         Obx(() {
                           if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
                             return VacationNotificationMessageWidget(
-                              margin: const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
+                              margin: EdgeInsetsDirectional.only(
+                                start: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                                end: 16,
+                                top: controller.responsiveUtils.isWebDesktop(context) ? 16 : 0,
+                                bottom: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                              ),
                               fromAccountDashBoard: true,
                               vacationResponse: controller.vacationResponse.value!,
                               actionGotoVacationSetting: !controller.inVacationSettings()
@@ -83,7 +88,12 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                               || controller.vacationResponse.value?.vacationResponderIsStopped == true)
                               && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
                             return VacationNotificationMessageWidget(
-                              margin: const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
+                              margin: EdgeInsetsDirectional.only(
+                                start: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                                end: 16,
+                                top: controller.responsiveUtils.isWebDesktop(context) ? 16 : 0,
+                                bottom: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                              ),
                               fromAccountDashBoard: true,
                               vacationResponse: controller.vacationResponse.value!,
                               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -139,7 +149,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
             return const SizedBox.shrink();
           }
         case AccountMenuItem.vacation:
-          return VacationView();
+          return const VacationView();
         case AccountMenuItem.mailboxVisibility:
           return MailboxVisibilityView();
         default:
