@@ -42,7 +42,12 @@ class SettingsView extends GetWidget<SettingsController> {
         Obx(() {
           if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
             return VacationNotificationMessageWidget(
-              margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
+              margin: EdgeInsetsDirectional.only(
+                start: 12,
+                end: 12,
+                top: controller.responsiveUtils.isWebDesktop(context) ? 8 : 0,
+                bottom: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+              ),
               fromAccountDashBoard: true,
               vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
               actionGotoVacationSetting: !controller.manageAccountDashboardController.inVacationSettings()
@@ -54,7 +59,12 @@ class SettingsView extends GetWidget<SettingsController> {
               || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
               && controller.manageAccountDashboardController.inVacationSettings()) {
             return VacationNotificationMessageWidget(
-              margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
+              margin: EdgeInsetsDirectional.only(
+                start: 12,
+                end: 12,
+                top: controller.responsiveUtils.isWebDesktop(context) ? 8 : 0,
+                bottom: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+              ),
               fromAccountDashBoard: true,
               vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -114,7 +124,7 @@ class SettingsView extends GetWidget<SettingsController> {
           }
         case AccountMenuItem.vacation:
           if (controller.manageAccountDashboardController.isVacationCapabilitySupported) {
-            return VacationView();
+            return const VacationView();
           } else {
             return const SizedBox.shrink();
           }

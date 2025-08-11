@@ -9,6 +9,7 @@ typedef OnTextChange = void Function(String text);
 class DefaultInputFieldWidget extends StatelessWidget {
   final TextEditingController textEditingController;
   final String? hintText;
+  final FocusNode? focusNode;
   final OnTextChange? onTextChange;
   final OnTextSubmitted? onTextSubmitted;
 
@@ -16,6 +17,7 @@ class DefaultInputFieldWidget extends StatelessWidget {
     super.key,
     required this.textEditingController,
     this.hintText,
+    this.focusNode,
     this.onTextChange,
     this.onTextSubmitted,
   });
@@ -29,6 +31,7 @@ class DefaultInputFieldWidget extends StatelessWidget {
       textStyle: ThemeUtils.textStyleBodyBody3(
         color: AppColor.m3SurfaceBackground,
       ),
+      focusNode: focusNode,
       onTextSubmitted: onTextSubmitted,
       onTextChange: onTextChange,
       decoration: InputDecoration(
