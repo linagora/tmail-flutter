@@ -34,26 +34,19 @@ class SubjectComposerWidget extends StatelessWidget {
       ),
       margin: margin,
       padding: padding,
-      child: Row(
-        children: [
-          Text(
-            '${AppLocalizations.of(context).subject_email}:',
-            style: SubjectComposerWidgetStyle.labelTextStyle,
-          ),
-          const SizedBox(width:SubjectComposerWidgetStyle.space),
-          Expanded(
-            child: TextFieldBuilder(
-              cursorColor: SubjectComposerWidgetStyle.cursorColor,
-              focusNode: focusNode,
-              onTextChange: onTextChange,
-              maxLines: 1,
-              decoration: const InputDecoration(border: InputBorder.none),
-              textDirection: DirectionUtils.getDirectionByLanguage(context),
-              textStyle: SubjectComposerWidgetStyle.inputTextStyle,
-              controller: textController,
-            )
-          )
-        ]
+      child: TextFieldBuilder(
+        cursorColor: SubjectComposerWidgetStyle.cursorColor,
+        focusNode: focusNode,
+        onTextChange: onTextChange,
+        maxLines: 1,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: AppLocalizations.of(context).subject,
+          hintStyle: SubjectComposerWidgetStyle.hintTextStyle,
+        ),
+        textDirection: DirectionUtils.getDirectionByLanguage(context),
+        textStyle: SubjectComposerWidgetStyle.inputTextStyle,
+        controller: textController,
       ),
     );
   }

@@ -9,10 +9,10 @@ class SubjectComposerWidgetStyle {
   static const Color cursorColor = AppColor.primaryColor;
   static const Color borderColor = AppColor.colorLineComposer;
 
-  static final TextStyle labelTextStyle = ThemeUtils.textStyleBodyBody1(
+  static final TextStyle hintTextStyle = ThemeUtils.textStyleBodyBody1(
     color: AppColor.m3Tertiary,
   );
   static final TextStyle inputTextStyle = ThemeUtils.textStyleBodyBody1(
-    color: AppColor.m3SurfaceBackground,
+    color: Colors.black,
   );
 }
