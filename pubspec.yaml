@@ -63,7 +63,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: main
+      ref: bugfix/line-height-auto-change-when-copy-or-drag-from-odt-file
 
   jmap_dart_client:
     git:
