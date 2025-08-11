@@ -275,6 +275,15 @@ class ThemeUtils {
     color: AppColor.m3Tertiary20,
   );
 
+  static TextStyle get textStyleM3TitleMedium => const TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.15,
+    fontSize: 16,
+    height: 24 / 16,
+    color: AppColor.secondaryContrastText,
+  );
+
   static const TextStyle textStyleM3BodyMedium1 = TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: FontWeight.w400,
