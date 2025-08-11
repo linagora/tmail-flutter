@@ -57,12 +57,16 @@ cozy-stack instances add tmail.localhost:8080 --passphrase cozy --apps home,stor
 1. On the cozy-twakemail side
 - Clone `https://github.com/cozy/cozy-twakemail`
 - `yarn install`
-- In `src/components/AppLayout.jsx`, replace `flag('mail.embedded-app-url')` with `http://localhost:2023`
 - `yarn build`
 - `cozy-stack serve --appdir tmail:build/ --disable-csp`
+- Open another terminal while cozy-stack is running
+- `cozy-stack apps install dataproxy --domain tmail.localhost:8080`
+- `cozy-stack feature flags --domain tmail.localhost:8080 '{"cozy.search.enabled": true}'`
+- `cozy-stack feature flags --domain tmail.localhost:8080 '{"mail.embedded-app-url": "http://localhost:2023"}'`
 
 2. On the tmail side
-- Config tmail to run on basic auth
+- Apply patchs/cozy-dev-config.patch
+- Edit session url in jmap-dart-client to /jmap/session
 - isInsideCozy will be `false` if run on localhost, so in cozy_config_web.dart, return true on isInsideCozy
 - in `env.file`, COZY_INTEGRATION=true
 - `flutter run -d chrome --web-port 2023 --web-browser-flag "--disable-web-security" --profile`
@@ -70,3 +74,29 @@ cozy-stack instances add tmail.localhost:8080 --passphrase cozy --apps home,stor
 3. Access Cozy
 - tmail cozy: http://tmail.localhost:8080/
 - The password is `cozy`
+
+### Run Cozy locally with modified Cozy libs
+If there is a need of modifying Cozy libs
+1. On cozy-libs side
+- Clone `https://github.com/cozy/cozy-libs`
+- `yarn install`
+- `yarn build`
+For example, if you want to use locally modified `cozy-external-bridge`
+- `cd packages/cozy-external-bridge`
+- `yarn link`
+- `yarn build`
+
+2. On cozy-twakemail side
+- Look for rlink.sh file in /scripts, move the file to ~/Downloads
+- `mv ~/Downloads/rlink.sh ~/bin/rlink`
+- `chmod +x ~/bin/rlink`
+- Reset the terminal
+- Repeat part 1 of `Run Cozy locally`
+- While cozy-stack is running, open another terminal in the same directory
+- `rlink {library-you-modified-and-linked}` for example `rlink cozy-external-bridge`
+- While rlink is running, run `yarn build`
+
+3. On tmail side
+- Repeat part 2 of `Run Cozy locally`
+
+Note: You can leave the cozy-stack and rlink running if you plan to further modify Cozy libs. After each modification, run `yarn build` in cozy-libs packages side then run `yarn build` in cozy-twakemail side, then refresh the browser.
