@@ -8,6 +8,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/local_setting_cache_manager.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_data_source.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_local_data_source_impl.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_remote_data_source_impl.dart';
@@ -43,6 +45,8 @@ class ThreadDetailBindings extends BaseBindings {
       Get.find<PrintEmailInteractor>(),
       Get.find<GetEmailContentInteractor>(),
       Get.find<DownloadAttachmentForWebInteractor>(),
+      Get.find<MarkAsStarMultipleEmailInteractor>(),
+      Get.find<MarkAsMultipleEmailReadInteractor>(),
     ));
   }
 

@@ -10,8 +10,10 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_data_source.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/exceptions/empty_thread_detail_exception.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/repository/thread_detail_repository.dart';
 
 class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
@@ -20,14 +22,13 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
   final Map<DataSourceType, ThreadDetailDataSource> threadDetailDataSource;
 
   @override
-  Future<List<EmailId>> getThreadById(
+  Future<List<EmailInThreadDetailInfo>> getThreadById(
     ThreadId threadId,
     Session session,
     AccountId accountId,
     MailboxId sentMailboxId,
-    String ownEmailAddress, {
-    required EmailId? selectedEmailId,
-  }) async {
+    String ownEmailAddress,
+  ) async {
     final originalEmailIds = await threadDetailDataSource[DataSourceType.network]!
       .getThreadById(threadId, accountId);
 
@@ -44,7 +45,6 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
           emailIds,
           sentMailboxId,
           ownEmailAddress,
-          selectedEmailId: selectedEmailId,
         ))
     );
 
@@ -53,8 +53,7 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
       .sortWithResult(EmailComparator(
         EmailComparatorProperty.receivedAt
       )..setIsAscending(true))
-      .map((e) => e.id!)
-      .toList();
+      .toEmailsInThreadDetailInfo();
   }
 
   Future<List<Email>> _filterBadEmails(
@@ -62,9 +61,8 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
     AccountId accountId,
     List<EmailId> emailIds,
     MailboxId sentMailboxId,
-    String ownEmailAddress, {
-    required EmailId? selectedEmailId,
-  }) async {
+    String ownEmailAddress,
+  ) async {
     int retry = 3;
     while (retry > 0) {
       try {
@@ -81,6 +79,7 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
               EmailProperty.cc,
               EmailProperty.bcc,
               EmailProperty.receivedAt,
+              EmailProperty.keywords,
             }),
           );
         return emails
@@ -88,7 +87,6 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
             email,
             sentMailboxId,
             ownEmailAddress,
-            selectedEmailId: selectedEmailId,
           ))
           .toList();
       } catch (e) {
@@ -103,14 +101,11 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
   bool checkEmailValidForThreadDetail(
     Email email,
     MailboxId sentMailboxId,
-    String ownEmailAddress, {
-    required EmailId? selectedEmailId
-  }) {
+    String ownEmailAddress) {
     return email.id != null && (
       !email.inSentMailbox(sentMailboxId)
       || !email.fromMe(ownEmailAddress)
       || !email.recipientsHasMe(ownEmailAddress)
-      || email.id == selectedEmailId
     );
   }
 

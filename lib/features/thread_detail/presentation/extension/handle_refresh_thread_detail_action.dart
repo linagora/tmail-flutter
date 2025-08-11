@@ -7,6 +7,7 @@ import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -34,6 +35,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
           [currentEmailId],
           updateCurrentThreadDetail: true,
           threadId: mailboxDashBoardController.selectedEmail.value?.threadId,
+          emailsInThreadDetailInfo: action.emailChangeResponse.updated?.toEmailsInThreadDetailInfo() ?? [],
         ))));
       }
 
@@ -71,6 +73,12 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
       updated: emailsUpdated,
       destroyed: emailIdsDestroyed.toList(),
     );
+    final afterRefreshedThreadDetailInfo = ThreadDetailPresentationUtils.refreshThreadDetailInfo(
+      original: emailsInThreadDetailInfo,
+      created: emailsCreated,
+      updated: emailsUpdated,
+      destroyed: emailIdsDestroyed.toList(),
+    );
 
     if (afterRefreshedEmailIds.isEmpty) {
       closeThreadDetailAction(currentContext);
@@ -81,6 +89,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
       afterRefreshedEmailIds,
       threadId: currentThreadId,
       updateCurrentThreadDetail: true,
+      emailsInThreadDetailInfo: afterRefreshedThreadDetailInfo,
     ))));
     consumeState(Stream.value(Right(GetEmailsByIdsSuccess(
       afterRefreshedEmails,
