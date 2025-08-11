@@ -48,3 +48,7 @@ class LoadThreadDetailAfterSelectedEmailAction extends ThreadDetailUIAction {
   @override
   List<Object?> get props => [threadId];
 }
+
+class ReclaimMailViewKeyboardShortcutFocusAction extends ThreadDetailUIAction {}
+
+class ClearMailViewKeyboardShortcutFocusAction extends ThreadDetailUIAction {}

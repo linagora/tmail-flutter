@@ -88,3 +88,13 @@ class CollapseEmailInThreadDetailAction extends EmailUIAction {
   @override
   List<Object?> get props => [emailId];
 }
+
+class TriggerMailViewKeyboardShortcutAction extends EmailUIAction {
+  TriggerMailViewKeyboardShortcutAction(this.actionType, this.email);
+
+  final EmailActionType actionType;
+  final PresentationEmail email;
+
+  @override
+  List<Object?> get props => [actionType, email];
+}

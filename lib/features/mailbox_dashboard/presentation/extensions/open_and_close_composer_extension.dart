@@ -11,8 +11,10 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart'
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/composer_arguments_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -112,6 +114,13 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
     }
 
     _handleResultAfterCloseComposer(result);
+
+    if (!composerManager.isAnyComposerOpened) {
+      dispatchThreadDetailUIAction(ReclaimMailViewKeyboardShortcutFocusAction());
+      dispatchAction(ReclaimMailListKeyboardShortcutFocusAction());
+    } else {
+      composerManager.refocusKeyboardShortcutFocusFirstComposer();
+    }
 
     if (composerId != null) {
       await removeComposerCacheByIdOnWeb(composerId);
