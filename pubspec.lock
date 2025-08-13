@@ -113,14 +113,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.8"
-  better_open_file:
-    dependency: "direct main"
-    description:
-      name: better_open_file
-      sha256: aa67d9bc38160401e48023833f93c789b4e2b1c0eb8b6643bd5816d0c1c65dbd
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.6.4"
   bidi:
     dependency: transitive
     description:
@@ -288,15 +280,6 @@ packages:
       relative: true
     source: path
     version: "1.0.0+1"
-  contacts_service:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: "083024c6200f4773e34c471b4001cd76fe1c9cec"
-      url: "https://github.com/linagora/flutter_contacts.git"
-    source: git
-    version: "0.6.3"
   convert:
     dependency: transitive
     description:
@@ -423,6 +406,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.4"
+  desktop_webview_window:
+    dependency: transitive
+    description:
+      name: desktop_webview_window
+      sha256: "57cf20d81689d5cbb1adfd0017e96b669398a669d927906073b0e42fc64111c0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -539,20 +530,11 @@ packages:
   external_app_launcher:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: cb31d10b5a7261f774b6e312d82c5cf1899979b6
-      url: "https://github.com/putnokiabel/external_app_launcher.git"
-    source: git
-    version: "4.0.0"
-  external_path:
-    dependency: "direct main"
-    description:
-      name: external_path
-      sha256: "2095c626fbbefe70d5a4afc9b1137172a68ee2c276e51c3c1283394485bea8f4"
+      name: external_app_launcher
+      sha256: "5657341c5aa7bf7383efdf3e68db80cb3019e80afa9f1df3250c14818e844857"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.3"
+    version: "4.0.3"
   fading_edge_scrollview:
     dependency: "direct main"
     description:
@@ -766,6 +748,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  flutter_contacts:
+    dependency: "direct main"
+    description:
+      name: flutter_contacts
+      sha256: "388d32cd33f16640ee169570128c933b45f3259bddbfae7a100bb49e5ffea9ae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.9+2"
   flutter_date_range_picker:
     dependency: "direct main"
     description:
@@ -1134,18 +1124,18 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_web_auth_2
-      sha256: "3ea3a0cc539ca74319f4f2f7484f62742fe5b2ff9a0fca37575426d6e6f07901"
+      sha256: "3c14babeaa066c371f3a743f204dd0d348b7d42ffa6fae7a9847a521aff33696"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "4.1.0"
   flutter_web_auth_2_platform_interface:
     dependency: transitive
     description:
       name: flutter_web_auth_2_platform_interface
-      sha256: e8669e262005a8354389ba2971f0fc1c36188481234ff50d013aaf993f30f739
+      sha256: c63a472c8070998e4e422f6b34a17070e60782ac442107c70000dd1bed645f4d
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "4.1.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -1529,6 +1519,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  open_filex:
+    dependency: "direct main"
+    description:
+      name: open_filex
+      sha256: "9976da61b6a72302cf3b1efbce259200cd40232643a467aac7370addf94d6900"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.7.0"
   package_config:
     dependency: transitive
     description:
@@ -1677,10 +1675,17 @@ packages:
     dependency: transitive
     description:
       name: pdfrx
+<<<<<<< Updated upstream
       sha256: "29c7b03d27d647c80da8cc08bd1256c74df90e5640fdd676646e4bd04f90553a"
       url: "https://pub.dev"
     source: hosted
     version: "1.0.94"
+=======
+      sha256: "4640c561aa31598c9c8ff9042675f7c1ecb2ca2b1190dff6e2ecaa677d1bc416"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.35"
+>>>>>>> Stashed changes
   percent_indicator:
     dependency: "direct main"
     description:
