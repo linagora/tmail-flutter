@@ -110,7 +110,7 @@ dependencies:
 
   intl_generator: 0.4.1
 
-  flutter_svg: 2.0.9
+  flutter_svg: ^2.1.0
 
   dio: 5.0.0
 
@@ -141,7 +141,7 @@ dependencies:
 
   device_info_plus: 9.0.1
 
-  permission_handler: 10.2.0
+  permission_handler: ^11.0.1
 
   share_plus: 7.2.1
 
@@ -201,13 +201,13 @@ dependencies:
 
   intl: 0.19.0
 
-  workmanager: 0.5.1
+  # workmanager: 0.5.1  # Temporarily disabled due to Android v1 embedding issues
 
   flutter_typeahead: 5.0.2
 
   flutter_keyboard_visibility: 6.0.0
 
-  extended_text: 14.0.0
+  extended_text: ^15.0.2
 
   date_format: 2.0.7
 
@@ -258,6 +258,8 @@ dependencies:
 
   lottie_native: 0.1.2
 
+  syncfusion_flutter_datepicker: ^26.1.40
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -293,8 +295,6 @@ dependency_overrides:
 
   json_annotation: 4.8.1
 
-<<<<<<< Updated upstream
-=======
   intl: 0.20.2
   
   collection: 1.19.1
@@ -304,7 +304,10 @@ dependency_overrides:
   # Pin pdfrx before 1.2.0 (PDF.js removed) to keep PdfJsConfiguration used by Twake previewer
   pdfrx: 1.1.35
 
->>>>>>> Stashed changes
+  # Override to fix Android v1 embedding removal compatibility issues
+  permission_handler_platform_interface: ^4.3.0
+  
+
   # TODO: Due conflict version of hive_ce_generator with other dependencies
   # So we will remove it when found the appropriate version
   hive:
