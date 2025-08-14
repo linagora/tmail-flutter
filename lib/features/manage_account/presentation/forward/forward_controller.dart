@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
@@ -119,7 +120,7 @@ class ForwardController extends BaseController {
   }
 
   void deleteRecipients(BuildContext context, String emailAddress) {
-    showConfirmDialogAction(
+    MessageDialogActionManager.showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
@@ -203,7 +204,7 @@ class ForwardController extends BaseController {
   }
 
   void deleteMultipleRecipients(BuildContext context, Set<String> listEmailAddress) {
-    showConfirmDialogAction(
+    MessageDialogActionManager.showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward,
