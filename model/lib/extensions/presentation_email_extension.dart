@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:core/data/constants/constant.dart';
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
@@ -198,4 +199,7 @@ extension PresentationEmailExtension on PresentationEmail {
 
   String? get sanitizedSearchSnippetSubject => _sanitizeSearchSnippet(searchSnippetSubject);
   String? get sanitizedSearchSnippetPreview => _sanitizeSearchSnippet(searchSnippetPreview);
+
+  MailboxId? get firstMailboxIdAvailable =>
+      mailboxIds?.entries.firstWhereOrNull((element) => element.value)?.key;
 }

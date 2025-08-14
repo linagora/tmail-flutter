@@ -113,6 +113,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_clear_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
@@ -1263,16 +1264,16 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void moveSelectedMultipleEmailToMailbox(
-      List<PresentationEmail> listEmails,
-      PresentationMailbox currentMailbox
-  ) async {
+  Future<void> moveEmailsToMailbox(
+    List<PresentationEmail> listEmails, {
+    VoidCallback? onCallbackAction,
+  }) async {
     if (accountId.value != null) {
       final arguments = DestinationPickerArguments(
         accountId.value!,
         MailboxActions.moveEmail,
         sessionCurrent,
-        mailboxIdSelected: currentMailbox.mailboxId);
+      );
 
       final destinationMailbox = PlatformInfo.isWeb
         ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
@@ -1283,61 +1284,44 @@ class MailboxDashBoardController extends ReloadableController
           sessionCurrent != null &&
           accountId.value != null
       ) {
-        _dispatchMoveToMultipleAction(
-          accountId.value!,
-          sessionCurrent!,
-          listEmails.listEmailIds,
-          currentMailbox,
-          destinationMailbox,
-          Map.fromEntries(
-            listEmails
-              .where((email) => email.id != null)
-              .map((email) => MapEntry(email.id!, email.hasRead)),
-          ),
-        );
-      }
-    }
-  }
+        onCallbackAction?.call();
 
-  void _dispatchMoveToMultipleAction(
-      AccountId accountId,
-      Session session,
-      List<EmailId> listEmailIds,
-      PresentationMailbox currentMailbox,
-      PresentationMailbox destinationMailbox,
-      Map<EmailId, bool> emailIdsWithReadStatus,
-  ) {
-    if (destinationMailbox.isTrash) {
-      _moveSelectedEmailMultipleToMailboxAction(
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {currentMailbox.id: listEmailIds},
-          destinationMailbox.id,
-          MoveAction.moving,
-          EmailActionType.moveToTrash),
-        emailIdsWithReadStatus);
-    } else if (destinationMailbox.isSpam) {
-      _moveSelectedEmailMultipleToMailboxAction(
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {currentMailbox.id: listEmailIds},
-          destinationMailbox.id,
-          MoveAction.moving,
-          EmailActionType.moveToSpam),
-        emailIdsWithReadStatus);
+        if (destinationMailbox.isTrash) {
+          moveEmailsToFolder(
+            listEmails,
+            EmailActionType.moveToTrash,
+            selectedMailboxId: destinationMailbox.id,
+          );
+        } else if (destinationMailbox.isSpam) {
+          moveEmailsToFolder(
+            listEmails,
+            EmailActionType.moveToSpam,
+            selectedMailboxId: destinationMailbox.id,
+          );
+        } else if (destinationMailbox.isArchive) {
+          moveEmailsToFolder(
+            listEmails,
+            EmailActionType.archiveMessage,
+            selectedMailboxId: destinationMailbox.id,
+          );
+        } else {
+          moveEmailsToFolder(
+            listEmails,
+            EmailActionType.moveToMailbox,
+            selectedMailboxId: destinationMailbox.id,
+            destinationFolderPath: destinationMailbox.mailboxPath,
+          );
+        }
+      }
     } else {
-      _moveSelectedEmailMultipleToMailboxAction(
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {currentMailbox.id: listEmailIds},
-          destinationMailbox.id,
-          MoveAction.moving,
+      onCallbackAction?.call();
+      consumeState(
+        Stream.value(Left(MoveMultipleEmailToMailboxFailure(
           EmailActionType.moveToMailbox,
-          destinationPath: destinationMailbox.mailboxPath),
-        emailIdsWithReadStatus);
+          MoveAction.moving,
+          ParametersIsNullException(),
+        ))),
+      );
     }
   }
 
@@ -1424,7 +1408,7 @@ class MailboxDashBoardController extends ReloadableController
     dispatchAction(CancelSelectionAllEmailAction());
   }
 
-  void _moveSelectedEmailMultipleToMailboxAction(
+  void moveSelectedEmailMultipleToMailboxAction(
     Session session,
     AccountId accountId,
     MoveToMailboxRequest moveRequest,
@@ -1446,34 +1430,52 @@ class MailboxDashBoardController extends ReloadableController
     MoveAction? moveAction;
     EmailActionType? emailActionType;
     Map<EmailId, bool>? emailIdsWithReadStatus;
+    bool isUndoActionEnabled = false;
 
     if (success is MoveMultipleEmailToMailboxAllSuccess) {
       destinationPath = success.destinationPath;
       movedEmailIds = success.movedListEmailId;
-      currentMailboxId = success.currentMailboxId;
+      currentMailboxId = success.originalMailboxIdsWithEmailIds.keys.firstOrNull;
       destinationMailboxId = success.destinationMailboxId;
       moveAction = success.moveAction;
       emailActionType = success.emailActionType;
       emailIdsWithReadStatus = success.emailIdsWithReadStatus;
+      isUndoActionEnabled = success.originalMailboxIdsWithEmailIds.length == 1;
     } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
       destinationPath = success.destinationPath;
       movedEmailIds = success.movedListEmailId;
-      currentMailboxId = success.currentMailboxId;
+      currentMailboxId = success.originalMailboxIdsWithMoveSucceededEmailIds.keys.firstOrNull;
       destinationMailboxId = success.destinationMailboxId;
       moveAction = success.moveAction;
       emailActionType = success.emailActionType;
       emailIdsWithReadStatus = success.moveSucceededEmailIdsWithReadStatus;
+      isUndoActionEnabled = success.originalMailboxIdsWithMoveSucceededEmailIds.length == 1;
     }
 
-    if (currentContext != null &&
-        currentOverlayContext != null &&
-        emailActionType != null &&
-        moveAction == MoveAction.moving) {
+    if (currentMailboxId == null ||
+        currentOverlayContext == null ||
+        emailActionType == null ||
+        moveAction != MoveAction.moving) {
+      return;
+    }
+
+    if (!isUndoActionEnabled) {
+      appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        emailActionType.getToastMessageMoveToMailboxSuccess(
+          currentContext!,
+          destinationPath: destinationPath,
+        ),
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: imagePaths.icFolderMailbox,
+      );
+    } else {
       appToast.showToastMessage(
         currentOverlayContext!,
         emailActionType.getToastMessageMoveToMailboxSuccess(
           currentContext!,
-          destinationPath: destinationPath),
+          destinationPath: destinationPath,
+        ),
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () {
           final newCurrentMailboxId = destinationMailboxId;
@@ -1484,7 +1486,7 @@ class MailboxDashBoardController extends ReloadableController
               newDestinationMailboxId,
               MoveAction.undo,
               emailActionType!,
-              destinationPath: destinationPath
+              destinationPath: destinationPath,
             ), emailIdsWithReadStatus ?? {});
           }
         },
@@ -1508,65 +1510,6 @@ class MailboxDashBoardController extends ReloadableController
         newMoveRequest,
         emailIdsWithReadStatus));
     }
-  }
-
-  void moveSelectedMultipleEmailToTrash(List<PresentationEmail> listEmails, PresentationMailbox mailboxCurrent) {
-    final trashMailboxId = getMailboxIdByRole(PresentationMailbox.roleTrash);
-    if (accountId.value != null && trashMailboxId != null && sessionCurrent != null) {
-      _moveSelectedEmailMultipleToMailboxAction(
-        sessionCurrent!,
-        accountId.value!,
-        MoveToMailboxRequest(
-          {mailboxCurrent.id: listEmails.listEmailIds},
-          trashMailboxId,
-          MoveAction.moving,
-          EmailActionType.moveToTrash),
-        Map.fromEntries(
-          listEmails
-            .where((email) => email.id != null)
-            .map((email) => MapEntry(email.id!, email.hasRead)),
-        ),
-      );
-    }
-  }
-
-  void moveSelectedMultipleEmailToSpam(List<PresentationEmail> listEmail, PresentationMailbox mailboxCurrent) {
-    if (accountId.value == null || sessionCurrent == null) {
-      consumeState(Stream.value(
-        Left(MoveMultipleEmailToMailboxFailure(
-          EmailActionType.moveToSpam,
-          MoveAction.moving,
-          NotFoundSessionException()
-        ))
-      ));
-      return;
-    }
-
-    if (spamMailboxId == null) {
-      consumeState(Stream.value(
-        Left(MoveMultipleEmailToMailboxFailure(
-          EmailActionType.moveToSpam,
-          MoveAction.moving,
-          NotFoundSpamMailboxException()
-        ))
-      ));
-      return;
-    }
-
-    _moveSelectedEmailMultipleToMailboxAction(
-      sessionCurrent!,
-      accountId.value!,
-      MoveToMailboxRequest(
-        {mailboxCurrent.id: listEmail.listEmailIds},
-        spamMailboxId!,
-        MoveAction.moving,
-        EmailActionType.moveToSpam),
-      Map.fromEntries(
-        listEmail
-          .where((email) => email.id != null)
-          .map((email) => MapEntry(email.id!, email.hasRead)),
-      ),
-    );
   }
 
   void unSpamSelectedMultipleEmail(List<PresentationEmail> listEmail) {
@@ -1604,7 +1547,7 @@ class MailboxDashBoardController extends ReloadableController
       return;
     }
 
-    _moveSelectedEmailMultipleToMailboxAction(
+    moveSelectedEmailMultipleToMailboxAction(
       sessionCurrent!,
       accountId.value!,
       MoveToMailboxRequest(

@@ -4919,4 +4919,11 @@ class AppLocalizations {
       name: 'creatingAnArchiveForDownloading',
     );
   }
+
+  String get archiveMessagesFailed {
+    return Intl.message(
+      'Archive messages failed',
+      name: 'archiveMessagesFailed',
+    );
+  }
 }

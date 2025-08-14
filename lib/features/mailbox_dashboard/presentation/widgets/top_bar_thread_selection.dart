@@ -34,10 +34,8 @@ class TopBarThreadSelection extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    final canDeletePermanently = listEmail.isAllCanDeletePermanently(mapMailbox);
-    final canSpamAndMove = listEmail.isAllCanSpamAndMove(mapMailbox);
-    final isAllSpam = listEmail.isAllSpam(mapMailbox);
-    final isAllBelongToTheSameMailbox = listEmail.isAllBelongToTheSameMailbox(mapMailbox);
+    final isDeletePermanentlyDisabled = listEmail.isDeletePermanentlyDisabled(mapMailbox);
+    final isMarkAsSpamEnabled = listEmail.isMarkAsSpamEnabled(mapMailbox);
     final isAllEmailRead = listEmail.isAllEmailRead;
     final isAllEmailStarred = listEmail.isAllEmailStarred;
 
@@ -92,68 +90,59 @@ class TopBarThreadSelection extends StatelessWidget{
           List.from(listEmail),
           isAllEmailStarred
             ? EmailActionType.unMarkAsStarred
-            : EmailActionType.markAsStarred
-        )
+            : EmailActionType.markAsStarred,
+        ),
       ),
-    if (canSpamAndMove)
-     ...[
-       TMailButtonWidget.fromIcon(
-         icon: imagePaths.icMoveMailbox,
-         iconSize: TopBarThreadSelectionStyle.iconSize,
-         iconColor: TopBarThreadSelectionStyle.iconColor,
-         tooltipMessage: AppLocalizations.of(context).move,
-         backgroundColor: Colors.transparent,
-         onTapActionCallback: () => onEmailActionTypeAction?.call(
-           List.from(listEmail),
-           EmailActionType.moveToMailbox
-         )
-       ),
-       TMailButtonWidget.fromIcon(
-         icon: isAllSpam ? imagePaths.icNotSpam : imagePaths.icSpam,
-         backgroundColor: Colors.transparent,
-         iconSize: TopBarThreadSelectionStyle.iconSize,
-         iconColor: TopBarThreadSelectionStyle.iconColor,
-         tooltipMessage: isAllSpam
-           ? AppLocalizations.of(context).un_spam
-           : AppLocalizations.of(context).mark_as_spam,
-         onTapActionCallback: () {
-           if (isAllSpam) {
-             onEmailActionTypeAction?.call(
-               List.from(listEmail),
-               EmailActionType.unSpam
-             );
-           } else {
-             onEmailActionTypeAction?.call(
-               List.from(listEmail.listEmailCanSpam(mapMailbox)),
-               EmailActionType.moveToSpam
-             );
-           }
-         }
-       )
-      ],
-      if (isAllBelongToTheSameMailbox)
-        TMailButtonWidget.fromIcon(
-          icon: imagePaths.icDeleteComposer,
-          backgroundColor: Colors.transparent,
-          iconSize: TopBarThreadSelectionStyle.iconSize,
-          iconColor: TopBarThreadSelectionStyle.iconColor,
-          tooltipMessage: canDeletePermanently
+      TMailButtonWidget.fromIcon(
+        icon: imagePaths.icMoveMailbox,
+        iconSize: TopBarThreadSelectionStyle.iconSize,
+        iconColor: TopBarThreadSelectionStyle.iconColor,
+        tooltipMessage: AppLocalizations.of(context).move,
+        backgroundColor: Colors.transparent,
+        onTapActionCallback: () => onEmailActionTypeAction?.call(
+          List.from(listEmail),
+          EmailActionType.moveToMailbox,
+        ),
+      ),
+      TMailButtonWidget.fromIcon(
+        icon: !isMarkAsSpamEnabled ? imagePaths.icNotSpam : imagePaths.icSpam,
+        backgroundColor: Colors.transparent,
+        iconSize: TopBarThreadSelectionStyle.iconSize,
+        iconColor: TopBarThreadSelectionStyle.iconColor,
+        tooltipMessage: !isMarkAsSpamEnabled
+            ? AppLocalizations.of(context).un_spam
+            : AppLocalizations.of(context).mark_as_spam,
+        onTapActionCallback: () {
+          if (!isMarkAsSpamEnabled) {
+            onEmailActionTypeAction?.call(
+              List.from(listEmail),
+              EmailActionType.unSpam,
+            );
+          } else {
+            onEmailActionTypeAction?.call(
+              List.from(listEmail.listEmailCanSpam(mapMailbox)),
+              EmailActionType.moveToSpam,
+            );
+          }
+        },
+      ),
+      TMailButtonWidget.fromIcon(
+        icon: imagePaths.icDeleteComposer,
+        backgroundColor: Colors.transparent,
+        iconSize: TopBarThreadSelectionStyle.iconSize,
+        iconColor: TopBarThreadSelectionStyle.iconColor,
+        tooltipMessage: !isDeletePermanentlyDisabled
             ? AppLocalizations.of(context).delete_permanently
             : AppLocalizations.of(context).move_to_trash,
-          onTapActionCallback: () {
-            if (canDeletePermanently) {
-              onEmailActionTypeAction?.call(
-                List.from(listEmail),
-                EmailActionType.deletePermanently
-              );
-            } else {
-              onEmailActionTypeAction?.call(
-                List.from(listEmail),
-                EmailActionType.moveToTrash
-              );
-            }
-          }
-        ),
+        onTapActionCallback: () {
+          onEmailActionTypeAction?.call(
+            List.from(listEmail),
+            isDeletePermanentlyDisabled
+                ? EmailActionType.moveToTrash
+                : EmailActionType.deletePermanently,
+          );
+        },
+      ),
     ]);
   }
 }

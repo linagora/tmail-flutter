@@ -1,73 +1,81 @@
-
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:model/mailbox/select_mode.dart';
-import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/email_selection_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/app_bar/mobile_app_bar_thread_widget_style.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/mobile_app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SelectionMobileAppBarThreadWidget extends StatelessWidget {
-
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
-  final PresentationMailbox? mailboxSelected;
-  final List<PresentationEmail> listEmailSelected;
-  final SelectMode selectMode;
-  final FilterMessageOption filterOption;
-  final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
-  final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
-  final OnCancelEditThreadAction cancelEditThreadAction;
+  final List<PresentationEmail> selectedEmails;
+  final List<EmailSelectionActionType> emailSelectionActionTypes;
+  final OnPressEmailSelectionActionClick onPressEmailSelectionActionClick;
+  final OnCancelSelectionAction onCancelSelectionAction;
+  final EdgeInsetsGeometry? padding;
 
   const SelectionMobileAppBarThreadWidget({
     super.key,
     required this.responsiveUtils,
     required this.imagePaths,
-    required this.listEmailSelected,
-    required this.mailboxSelected,
-    required this.selectMode,
-    required this.filterOption,
-    required this.cancelEditThreadAction,
-    this.onPopupMenuFilterEmailAction,
-    this.onContextMenuFilterEmailAction,
+    required this.selectedEmails,
+    required this.emailSelectionActionTypes,
+    required this.onPressEmailSelectionActionClick,
+    required this.onCancelSelectionAction,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Container(
-        color: MobileAppBarThreadWidgetStyle.backgroundColor,
-        padding: MobileAppBarThreadWidgetStyle.getPadding(context, responsiveUtils),
-        constraints: const BoxConstraints(minHeight: MobileAppBarThreadWidgetStyle.minHeight),
-        child: Row(
-          children: [
-            TMailButtonWidget(
-              key: const Key('mobile_cancel_selection_thread_button'),
-              text: AppLocalizations.of(context).count_email_selected(listEmailSelected.length),
-              icon: imagePaths.icCancel,
-              iconColor: MobileAppBarThreadWidgetStyle.backButtonColor,
-              textStyle: MobileAppBarThreadWidgetStyle.emailCounterTitleStyle,
-              backgroundColor: Colors.transparent,
-              onTapActionCallback: cancelEditThreadAction,
-            ),
-            const Spacer(),
-            TMailButtonWidget.fromIcon(
-              key: const Key('mobile_filter_message_button'),
-              icon: imagePaths.icFilter,
-              iconColor: MobileAppBarThreadWidgetStyle.getFilterButtonColor(filterOption),
-              backgroundColor: Colors.transparent,
-              maxWidth: MobileAppBarThreadWidgetStyle.buttonMaxWidth,
-              tooltipMessage: AppLocalizations.of(context).filter_messages,
-              onTapActionCallback: () => onContextMenuFilterEmailAction?.call(filterOption),
-              onTapActionAtPositionCallback: (position) => onPopupMenuFilterEmailAction?.call(filterOption, position),
-            ),
-          ]
+    return Container(
+      color: MobileAppBarThreadWidgetStyle.backgroundColor,
+      padding: padding ?? MobileAppBarThreadWidgetStyle.getPadding(
+        context,
+        responsiveUtils,
+      ),
+      height: MobileAppBarThreadWidgetStyle.height,
+      child: Row(children: [
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: TMailButtonWidget(
+                  text: AppLocalizations.of(context).count_email_selected(
+                    selectedEmails.length,
+                  ),
+                  icon: imagePaths.icCancel,
+                  iconColor: MobileAppBarThreadWidgetStyle.actionIconColor,
+                  iconSize: MobileAppBarThreadWidgetStyle.actionIconSize,
+                  textStyle:
+                      MobileAppBarThreadWidgetStyle.emailCounterTitleStyle,
+                  backgroundColor: Colors.transparent,
+                  flexibleText: true,
+                  mainAxisSize: MainAxisSize.min,
+                  maxLines: 1,
+                  onTapActionCallback: onCancelSelectionAction,
+                ),
+              )
+            ],
+          ),
         ),
-      );
-    });
+        ...emailSelectionActionTypes.map(
+          (type) => TMailButtonWidget.fromIcon(
+            icon: type.getIcon(imagePaths),
+            iconColor: type.getIconColor(),
+            iconSize: type.getIconSize(),
+            tooltipMessage: type.getTitle(AppLocalizations.of(context)),
+            backgroundColor: Colors.transparent,
+            onTapActionCallback: () => onPressEmailSelectionActionClick(
+              type,
+              selectedEmails,
+            ),
+          ),
+        ),
+      ]),
+    );
   }
 }
