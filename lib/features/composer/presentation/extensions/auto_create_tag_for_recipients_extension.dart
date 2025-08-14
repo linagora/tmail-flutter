@@ -1,12 +1,12 @@
-
-import 'package:core/utils/mail/mail_address.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/list_address_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/list_named_address_extension.dart';
 
 extension AutoCreateTagForRecipientsExtension on ComposerController {
 
@@ -40,27 +40,28 @@ extension AutoCreateTagForRecipientsExtension on ComposerController {
   };
 
   void autoCreateEmailTagForType(PrefixEmailAddress type, String input) {
-    final addressSet = StringConvert.extractEmailAddress(input).toSet();
-    if (addressSet.isEmpty) return;
+    final namedAddresses = StringConvert.extractNamedAddresses(input);
+    List<EmailAddress> newListEmailAddress = [];
+    final existingEmailList = _emailLists[type]!;
 
-    final emailList = _emailLists[type]!;
-    final keyEditor = _emailEditors[type]!;
-    final listEmailAddressRecord = addressSet
-        .map((address) => _generateEmailAddressFromString(address))
-        .toList();
+    if (namedAddresses.isNotEmpty) {
+      final emailAddressListFromNamed = namedAddresses
+          .toFilteredEmailAddressList(existingEmailList);
+      log('$runtimeType::autoCreateEmailTagForType: Create email tag from named address list with length ${emailAddressListFromNamed.length}');
+      newListEmailAddress = emailAddressListFromNamed;
+    }
 
-    final emailSet = emailList.map((email) => email.email).toSet();
+    if (newListEmailAddress.isEmpty) {
+      List<String> addresses = StringConvert.extractEmailAddress(input);
+      final emailAddressListFromAddress =
+          addresses.toFilteredEmailAddressList(existingEmailList);
+      log('$runtimeType::autoCreateEmailTagForType: Create email tag from address list with length ${emailAddressListFromAddress.length}');
+      newListEmailAddress = emailAddressListFromAddress;
+    }
 
-    final newEmails = addressSet.difference(emailSet);
+    if (newListEmailAddress.isEmpty) return;
 
-    if (newEmails.isEmpty) return;
-
-    final listEmailAddress = listEmailAddressRecord
-        .where((emailRecord) => newEmails.contains(emailRecord.$1))
-        .map((emailRecord) => emailRecord.$2)
-        .toList();
-
-    emailList.addAll(listEmailAddress);
+    existingEmailList.addAll(newListEmailAddress);
 
     if (!isInitialRecipient.value) {
       isInitialRecipient.value = true;
@@ -69,19 +70,11 @@ extension AutoCreateTagForRecipientsExtension on ComposerController {
 
     updateStatusEmailSendButton();
 
+    final keyEditor = _emailEditors[type]!;
     keyEditor.currentState?.resetTextField();
     Future.delayed(
       const Duration(milliseconds: 300),
       keyEditor.currentState?.closeSuggestionBox,
     );
-  }
-
-  (String email, EmailAddress emailAddress) _generateEmailAddressFromString(String input) {
-    try {
-      final mailAddress = MailAddress.validateAddress(input);
-      return (mailAddress.asEncodedString(), mailAddress.asEmailAddress());
-    } catch (e) {
-      return (input, EmailAddress(null, input));
-    }
   }
 }

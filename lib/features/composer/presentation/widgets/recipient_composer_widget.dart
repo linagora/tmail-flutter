@@ -18,6 +18,8 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/list_address_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/list_named_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
@@ -557,23 +559,33 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   ) => _createMailTag(value, stateSetter);
 
   void _createMailTag(String value, StateSetter stateSetter) {
-    final listString = StringConvert.extractEmailAddress(value.trim()).toSet();
-
-    if (listString.isEmpty && !_isDuplicatedRecipient(value)) {
-      _onEmailAddressReceived(value, stateSetter);
-    } else if (listString.isNotEmpty) {
-      final listStringNotExist = listString
-        .where((text) => !_isDuplicatedRecipient(text))
-        .toList();
-
-      if (listStringNotExist.isNotEmpty) {
-        final listAddress = listStringNotExist
-          .map((text) => EmailAddress(null, text))
-          .toList();
-        
-        stateSetter(() => _currentListEmailAddress.addAll(listAddress));
+    final valueTrimmed = value.trim();
+    final namedAddresses = StringConvert.extractNamedAddresses(valueTrimmed);
+    if (namedAddresses.isNotEmpty) {
+      final emailAddressListFromNamed = namedAddresses
+          .toFilteredEmailAddressList(_currentListEmailAddress);
+      log('$runtimeType::_createMailTag: Create email tag from named address list with length ${emailAddressListFromNamed.length}');
+      if (emailAddressListFromNamed.isNotEmpty) {
+        stateSetter(
+          () => _currentListEmailAddress.addAll(emailAddressListFromNamed),
+        );
         _updateListEmailAddressAction();
       }
+      return;
+    }
+
+    List<String> addresses = StringConvert.extractEmailAddress(valueTrimmed);
+    final emailAddressListFromAddress =
+      addresses.toFilteredEmailAddressList(_currentListEmailAddress);
+    log('$runtimeType::_createMailTag: Create email tag from address list with length ${emailAddressListFromAddress.length}');
+
+    if (emailAddressListFromAddress.isNotEmpty) {
+      stateSetter(
+        () => _currentListEmailAddress.addAll(emailAddressListFromAddress),
+      );
+      _updateListEmailAddressAction();
+    } else if (!_isDuplicatedRecipient(valueTrimmed)) {
+      _onEmailAddressReceived(value, stateSetter);
     }
   }
 
