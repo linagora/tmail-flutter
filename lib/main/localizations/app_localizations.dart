@@ -4919,4 +4919,18 @@ class AppLocalizations {
       name: 'creatingAnArchiveForDownloading',
     );
   }
+
+  String get hideSignature {
+    return Intl.message(
+      'Hide signature',
+      name: 'hideSignature',
+    );
+  }
+
+  String get showSignature {
+    return Intl.message(
+      'Show signature',
+      name: 'showSignature',
+    );
+  }
 }

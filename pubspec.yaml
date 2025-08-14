@@ -63,7 +63,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: main
+      ref: improvement/change-style-signature
 
   jmap_dart_client:
     git:
