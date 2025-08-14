@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
@@ -23,6 +24,7 @@ class MailboxCategoryWidget extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final double? height;
   final double? iconSpace;
+  final Color? iconColor;
   final TextStyle? labelTextStyle;
 
   const MailboxCategoryWidget({
@@ -35,6 +37,7 @@ class MailboxCategoryWidget extends StatefulWidget {
     this.padding,
     this.height,
     this.iconSpace,
+    this.iconColor,
     this.labelTextStyle,
   });
 
@@ -59,6 +62,7 @@ class _MailboxCategoryWidgetState extends State<MailboxCategoryWidget> {
               _imagePaths.icFolderMailbox,
               width: MailboxIconWidgetStyles.iconSize,
               height: MailboxIconWidgetStyles.iconSize,
+              colorFilter: widget.iconColor?.asFilter(),
               fit: BoxFit.fill,
             ),
             SizedBox(width: widget.iconSpace ?? MailboxItemWidgetStyles.labelIconSpace),
