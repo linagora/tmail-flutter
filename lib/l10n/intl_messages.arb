@@ -1,5 +1,9 @@
 {
+<<<<<<< Updated upstream
   "@@last_modified": "2025-07-25T12:21:42.514040",
+=======
+  "@@last_modified": "2025-08-13T12:58:55.935423",
+>>>>>>> Stashed changes
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
