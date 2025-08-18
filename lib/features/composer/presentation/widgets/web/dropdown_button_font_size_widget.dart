@@ -2,19 +2,18 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/dropdown_button_font_size_widget_style.dart';
 
 class DropdownButtonFontSizeWidget extends StatelessWidget {
 
-  final _imagePaths = Get.find<ImagePaths>();
-
+  final ImagePaths imagePaths;
   final int value;
 
-  DropdownButtonFontSizeWidget({
+  const DropdownButtonFontSizeWidget({
     Key? key,
     required this.value,
+    required this.imagePaths,
   }) : super(key: key);
 
   @override
@@ -51,7 +50,7 @@ class DropdownButtonFontSizeWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(width: DropdownButtonFontSizeWidgetStyle.space),
-            SvgPicture.asset(_imagePaths.icStyleArrowDown)
+            SvgPicture.asset(imagePaths.icStyleArrowDown)
           ],
         ),
       ),

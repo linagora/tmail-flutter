@@ -240,6 +240,10 @@ class RichTextWebController extends BaseRichTextController {
     final newCodeViewState = isActivated ? CodeViewState.disabled : CodeViewState.enabled;
     codeViewState.value = newCodeViewState;
     editorController.toggleCodeView();
+
+    if (codeViewEnabled) {
+      formattingOptionsState.value = FormattingOptionsState.disabled;
+    }
   }
 
   void applyHeaderStyle(HeaderStyleType? newStyle) {

@@ -15,7 +15,7 @@ class BottomBarComposerWidgetStyle {
   static const Color backgroundColor = Colors.white;
   static const Color iconColor = AppColor.steelGrayA540;
   static const Color sendButtonBackgroundColor = AppColor.blue700;
-  static const Color selectedIconColor = AppColor.steelGrayA540;
+  static const Color selectedIconColor = AppColor.m3Primary;
   static const Color disabledIconColor = AppColor.colorRichButtonComposer;
   static const Color selectedBackgroundColor = AppColor.colorSelected;
 

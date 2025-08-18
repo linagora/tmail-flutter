@@ -16,7 +16,6 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_email_address_drop_down_button.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_horizontal_field_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_label_field_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_creator_form_desktop_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_creator_form_mobile_builder.dart';
@@ -25,8 +24,7 @@ import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/ide
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class IdentityCreatorView extends GetWidget<IdentityCreatorController>
-    with RichTextButtonMixin {
+class IdentityCreatorView extends GetWidget<IdentityCreatorController> {
 
   @override
   final controller = Get.find<IdentityCreatorController>();
