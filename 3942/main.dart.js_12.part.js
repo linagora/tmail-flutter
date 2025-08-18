@@ -64,7 +64,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = C.TextDirection_1;
       t4 = $.$get$GetWidget__cache();
       A.Expando__checkType(this);
-      return F.HtmlContentViewerOnWeb$(true, false, emlPreviewer.content, _null, t3, false, false, t1.size._dy, 150, 300, false, _null, _null, 30, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).get$onClickHyperLink(), _null, false, _null, t2.size._dx);
+      return F.HtmlContentViewerOnWeb$(true, false, emlPreviewer.content, _null, t3, false, false, t1.size._dy, 150, 300, false, _null, _null, 30, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).get$onClickHyperLink(), _null, true, _null, t2.size._dx);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["DownloadAttachmentLoadingBar()"]);
@@ -85,7 +85,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.Center$(A.Text$(A.Intl__message("Cannot preview this eml file", _null, "previewEmailFromEMLFileFailed", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null);
     },
-    $signature: 1939
+    $signature: 1946
   };
   B.EmailPreviewerView_build__closure0.prototype = {
     call$1(success) {
@@ -99,7 +99,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return D.Center_OaN;
     },
-    $signature: 66
+    $signature: 69
   };
   B.EmailPreviewerView_build_closure0.prototype = {
     call$0() {
@@ -133,5 +133,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_12", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "mzudNG0fjPkbHI/OmyAp1mVBiYc=");
+})($__dart_deferred_initializers__, "BJn7836wJw1mCRo9Fgwsf9D8hKs=");
 ;
