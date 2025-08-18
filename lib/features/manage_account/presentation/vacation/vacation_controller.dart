@@ -3,10 +3,10 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/commons/constants.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
@@ -138,34 +138,10 @@ class VacationController extends BaseController {
     }
     FocusScope.of(context).unfocus();
 
-    _accountDashBoardController.isVacationDateDialogDisplayed = true;
-    final datePicked = await showDatePicker(
-        context: context,
-        initialDate: currentDate ?? DateTime.now(),
-        initialDatePickerMode: DatePickerMode.day,
-        firstDate: DateTime(1900),
-        lastDate: DateTime(2100),
-        locale: Localizations.localeOf(context),
-        builder: (context, child) {
-          return PointerInterceptor(
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                colorScheme: const ColorScheme.light(
-                  primary: AppColor.primaryColor,
-                  onPrimary: Colors.white,
-                  onSurface: Colors.black
-                ),
-                textButtonTheme: TextButtonThemeData(
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColor.primaryColor
-                  )
-                )
-              ),
-              child: child!
-            ),
-          );
-        }
-    ).whenComplete(() => _accountDashBoardController.isVacationDateDialogDisplayed = false);
+    final datePicked = await DateTimeDialogPicker().showTwakeDatePicker(
+      context: context,
+      initialDate: currentDate ?? DateTime.now(),
+    );
 
     if (datePicked == null) {
       return;
@@ -184,27 +160,10 @@ class VacationController extends BaseController {
     }
     FocusScope.of(context).unfocus();
 
-    _accountDashBoardController.isVacationDateDialogDisplayed = true;
-    final timePicked = await showTimePicker(
+    final timePicked = await DateTimeDialogPicker().showTwakeTimePicker(
       context: context,
       initialTime: currentTime ?? TimeOfDay.now(),
-      builder: (context, child) {
-        return PointerInterceptor(
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: const ColorScheme.light(
-                primary: AppColor.primaryColor,
-                onPrimary: Colors.white,
-                onSurface: Colors.black),
-              textButtonTheme: TextButtonThemeData(
-                style: TextButton.styleFrom(foregroundColor: AppColor.primaryColor))),
-            child: MediaQuery(
-                data: const MediaQueryData(alwaysUse24HourFormat: false),
-                child: child!),
-          ),
-        );
-      }
-    ).whenComplete(() => _accountDashBoardController.isVacationDateDialogDisplayed = false);
+    );
 
     if (timePicked == null) {
       return;
