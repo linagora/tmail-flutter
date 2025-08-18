@@ -139,6 +139,8 @@ class _WebEditorState extends State<WebEditorWidget> {
         ),
         spellCheck: true,
         disableDragAndDrop: true,
+        normalizeHtmlTextWhenDropping: true,
+        normalizeHtmlTextWhenPasting: true,
         webInitialScripts: UnmodifiableListView([
           WebScript(
             name: HtmlUtils.lineHeight100Percent.name,
