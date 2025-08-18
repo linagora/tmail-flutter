@@ -26,7 +26,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/desktop
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/local_file_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_widget.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
@@ -268,13 +268,15 @@ class ComposerView extends GetWidget<ComposerController> {
                               }),
                               Obx(() {
                                 if (controller.richTextWebController!.isFormattingOptionsEnabled) {
-                                  return ToolbarRichTextWebBuilder(
-                                    richTextWebController: controller.richTextWebController!,
+                                  return ToolbarRichTextWidget(
+                                    richTextController: controller.richTextWebController!,
+                                    imagePaths: controller.imagePaths,
                                     padding: ComposerStyle.richToolbarPadding,
                                     decoration: const BoxDecoration(
                                       color: ComposerStyle.richToolbarColor,
-                                      boxShadow: ComposerStyle.richToolbarShadow
+                                      boxShadow: ComposerStyle.richToolbarShadow,
                                     ),
+                                    isMobile: controller.responsiveUtils.isMobile(context),
                                   );
                                 } else {
                                   return const SizedBox.shrink();
@@ -560,13 +562,15 @@ class ComposerView extends GetWidget<ComposerController> {
                                     }),
                                     Obx(() {
                                       if (controller.richTextWebController!.isFormattingOptionsEnabled) {
-                                        return ToolbarRichTextWebBuilder(
-                                          richTextWebController: controller.richTextWebController!,
+                                        return ToolbarRichTextWidget(
+                                          richTextController: controller.richTextWebController!,
+                                          imagePaths: controller.imagePaths,
                                           padding: ComposerStyle.richToolbarPadding,
                                           decoration: const BoxDecoration(
                                             color: ComposerStyle.richToolbarColor,
-                                            boxShadow: ComposerStyle.richToolbarShadow
+                                            boxShadow: ComposerStyle.richToolbarShadow,
                                           ),
+                                          isMobile: controller.responsiveUtils.isMobile(context),
                                         );
                                       } else {
                                         return const SizedBox.shrink();
@@ -878,13 +882,15 @@ class ComposerView extends GetWidget<ComposerController> {
                                     }),
                                     Obx(() {
                                       if (controller.richTextWebController!.isFormattingOptionsEnabled) {
-                                        return ToolbarRichTextWebBuilder(
-                                          richTextWebController: controller.richTextWebController!,
+                                        return ToolbarRichTextWidget(
+                                          richTextController: controller.richTextWebController!,
+                                          imagePaths: controller.imagePaths,
                                           padding: ComposerStyle.richToolbarPadding,
                                           decoration: const BoxDecoration(
                                             color: ComposerStyle.richToolbarColor,
-                                            boxShadow: ComposerStyle.richToolbarShadow
+                                            boxShadow: ComposerStyle.richToolbarShadow,
                                           ),
+                                          isMobile: controller.responsiveUtils.isMobile(context),
                                         );
                                       } else {
                                         return const SizedBox.shrink();

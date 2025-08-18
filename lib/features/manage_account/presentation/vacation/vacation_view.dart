@@ -17,13 +17,13 @@ import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart
 import 'package:tmail_ui_user/features/base/widget/label_border_button_field.dart';
 import 'package:tmail_ui_user/features/base/widget/switch_label_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/horizontal_toolbar_rich_text_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_list_action_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
@@ -36,7 +36,7 @@ class VacationView extends GetWidget<VacationController> {
 
   @override
   Widget build(BuildContext context) {
-    Widget vacationInputForm = SingleChildScrollView(
+    final vacationInputForm = SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
       controller: controller.scrollController,
       child: Padding(
@@ -400,10 +400,12 @@ class VacationView extends GetWidget<VacationController> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Flexible(child: _buildMessageHtmlTextEditor(context)),
-                    HorizontalToolbarRichTextWidget(
+                    ToolbarRichTextWidget(
                       richTextController: controller.richTextControllerForWeb!,
-                      scrollController: controller.richTextButtonScrollController,
+                      scrollListController: controller.richTextButtonScrollController,
                       imagePaths: controller.imagePaths,
+                      isHorizontalArrange: true,
+                      isMobile: controller.responsiveUtils.isMobile(context),
                     ),
                   ],
                 ),
@@ -444,10 +446,12 @@ class VacationView extends GetWidget<VacationController> {
                     children: [
                       Flexible(child: _buildMessageHtmlTextEditor(context)),
                       const SizedBox(height: 8),
-                      HorizontalToolbarRichTextWidget(
+                      ToolbarRichTextWidget(
                         richTextController: controller.richTextControllerForWeb!,
-                        scrollController: controller.richTextButtonScrollController,
+                        scrollListController: controller.richTextButtonScrollController,
                         imagePaths: controller.imagePaths,
+                        isHorizontalArrange: true,
+                        isMobile: controller.responsiveUtils.isMobile(context),
                       ),
                     ],
                   ),
