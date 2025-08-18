@@ -33,7 +33,6 @@
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" type="text/css" href="splash/style.css">
   <link rel="stylesheet" type="text/css" href="worker_service/style.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
 
   <script type="application/javascript" src="assets/packages/flutter_inappwebview_web/assets/web/web_support.js" defer></script>
@@ -102,7 +101,9 @@ _flutter.buildConfig = {"engineRevision":"82bd5b7209295a5b7ff8cae0df96e7870171e3
           }
           _flutter.loader.load({
             onEntrypointLoaded: async function(engineInitializer) {
-              const appRunner = await engineInitializer.initializeEngine();
+              const appRunner = await engineInitializer.initializeEngine({
+                fontFallbackBaseUrl: ''
+              });
               await setTimeout( async function () {
                 await appRunner.runApp();
               }, 2000);
@@ -112,7 +113,9 @@ _flutter.buildConfig = {"engineRevision":"82bd5b7209295a5b7ff8cae0df96e7870171e3
     } else {
       _flutter.loader.load({
         onEntrypointLoaded: async function(engineInitializer) {
-          const appRunner = await engineInitializer.initializeEngine();
+          const appRunner = await engineInitializer.initializeEngine({
+            fontFallbackBaseUrl: ''
+          });
           await setTimeout( async function () {
             await appRunner.runApp();
           }, 2000);
