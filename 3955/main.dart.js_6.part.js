@@ -485,13 +485,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = _this.vacationResponse;
       t3 = C.VacationResponseExtension_getNotificationMessage(t2, context);
       t2 = C.VacationResponseExtension_getNotificationMessage(t2, context);
-      t1.push(A.Expanded$(A.Tooltip$(A.Text$(t2, _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_9Sx1, 16, B.FontWeight_3_400), _null, _null, _null, _null, _null), _null, t3), 1));
+      t4 = $.$get$ThemeUtils_defaultTextStyleInterFont();
+      t1.push(A.Expanded$(A.Tooltip$(A.Text$(t2, _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, t4.copyWith$3$color$fontSize$fontWeight(B.Color_9Sx1, 16, B.FontWeight_3_400), _null, _null, _null, _null, _null), _null, t3), 1));
       t2 = _this.actionEndNow;
       if (t2 != null) {
         t3 = type$.AppLocalizations;
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t3).toString;
         t4 = A.Intl__message("End now", _null, "endNow", _null, _null);
-        t5 = B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_0ND, 16, B.FontWeight_4_500);
+        t5 = $.$get$ThemeUtils_defaultTextStyleInterFont().copyWith$3$color$fontSize$fontWeight(B.Color_0ND, 16, B.FontWeight_4_500);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t3).toString;
         t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(_null, B.Color_9Sx, 10, _null, _null, 1 / 0, 1, 180, 0, _null, t2, D.EdgeInsets_8_5_8_5, t4, _null, t5, A.Intl__message("End now", _null, "endNow", _null, _null), _null));
       }
@@ -500,7 +501,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = type$.AppLocalizations;
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t3).toString;
         t4 = A.Intl__message(_s16_, _null, _s15_, _null, _null);
-        t5 = B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_0ND, 16, B.FontWeight_4_500);
+        t5 = $.$get$ThemeUtils_defaultTextStyleInterFont().copyWith$3$color$fontSize$fontWeight(B.Color_0ND, 16, B.FontWeight_4_500);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t3).toString;
         t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(_null, B.Color_9Sx, 10, _null, _null, 1 / 0, 1, 310, 0, _null, t2, D.EdgeInsets_8_5_8_5, t4, _null, t5, A.Intl__message(_s16_, _null, _s15_, _null, _null), _null));
       }
@@ -518,14 +519,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = _this.vacationResponse;
       t4 = C.VacationResponseExtension_getNotificationMessage(t3, context);
       t3 = C.VacationResponseExtension_getNotificationMessage(t3, context);
-      t2.push(A.Tooltip$(A.Text$(t3, _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_9Sx1, 16, B.FontWeight_3_400), B.TextAlign_2, _null, _null, _null, _null), _null, t4));
+      t5 = $.$get$ThemeUtils_defaultTextStyleInterFont();
+      t2.push(A.Tooltip$(A.Text$(t3, _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, t5.copyWith$3$color$fontSize$fontWeight(B.Color_9Sx1, 16, B.FontWeight_3_400), B.TextAlign_2, _null, _null, _null, _null), _null, t4));
       t1 = A._setArrayType([], t1);
       t3 = _this.actionEndNow;
       if (t3 != null) {
         t4 = type$.AppLocalizations;
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t4).toString;
         t5 = A.Intl__message("End now", _null, "endNow", _null, _null);
-        t6 = B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_0ND, 16, B.FontWeight_4_500);
+        t6 = $.$get$ThemeUtils_defaultTextStyleInterFont().copyWith$3$color$fontSize$fontWeight(B.Color_0ND, 16, B.FontWeight_4_500);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t4).toString;
         t1.push(new A.Flexible(1, B.FlexFit_1, A.TMailButtonWidget_TMailButtonWidget$fromText(_null, B.Color_9Sx, 10, _null, _null, 1 / 0, 1, 180, 0, _null, t3, D.EdgeInsets_8_5_8_5, t5, _null, t6, A.Intl__message("End now", _null, "endNow", _null, _null), _null), _null));
       }
@@ -534,7 +536,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = type$.AppLocalizations;
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t4).toString;
         t5 = A.Intl__message(_s16_, _null, _s15_, _null, _null);
-        t6 = B.TextStyle_cJC.copyWith$3$color$fontSize$fontWeight(B.Color_0ND, 16, B.FontWeight_4_500);
+        t6 = $.$get$ThemeUtils_defaultTextStyleInterFont().copyWith$3$color$fontSize$fontWeight(B.Color_0ND, 16, B.FontWeight_4_500);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t4).toString;
         t1.push(new A.Flexible(1, B.FlexFit_1, A.TMailButtonWidget_TMailButtonWidget$fromText(_null, B.Color_9Sx, 10, _null, _null, 1 / 0, 1, 180, 0, _null, t3, D.EdgeInsets_8_5_8_5, t5, _null, t6, A.Intl__message(_s16_, _null, _s15_, _null, _null), _null), _null));
       }
@@ -644,7 +646,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1932
+    $signature: 1928
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -660,7 +662,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_9Sx, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 377
+    $signature: 421
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -699,7 +701,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.push(new C.ProfileSettingIcon(t2.ownEmailAddress, t2.settingActionTypes, t2.onProfileSettingActionTypeClick, false, _null));
       return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 393
+    $signature: 420
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -780,7 +782,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t4, t7, new C.ProfileSettingMenuOverlay(t5, t6, t1._profile_setting_icon$_imagePaths, new C._ProfileSettingIconState_build__closure0(t1, context), new C._ProfileSettingIconState_build__closure1(t1), t2, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 377
+    $signature: 421
   };
   C._ProfileSettingIconState_build__closure0.prototype = {
     call$0() {
@@ -824,7 +826,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(menuAction) {
       this.$this.onProfileSettingActionTypeClick.call$1(menuAction.action);
     },
-    $signature: 75
+    $signature: 72
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -876,15 +878,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     var makeConstList = hunkHelpers.makeConstList;
     D.Aligned_43h = new A.Aligned(1, null, B.Alignment_1_m1, B.Alignment_1_1, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, null);
     D.Aligned_wEo = new A.Aligned(1, null, B.Alignment_1_m1, B.Alignment_1_1, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, D.Aligned_43h);
-    D.BorderSide_xw80 = new A.BorderSide(B.Color_gkc0, 0.5, B.BorderStyle_1, -1);
     D.Color_esZ = new A.Color(1, 0.9176470588235294, 0.9294117647058824, 0.9490196078431372, B.ColorSpace_0);
     D.Offset_UrS1 = new A.Offset(0, 0.5);
     D.BoxShadow_vU6 = new A.BoxShadow(1, B.BlurStyle_0, B.Color_cO5, D.Offset_UrS1, 1);
     D.Color_zLN = new A.Color(1, 1, 0.9607843137254902, 0.7607843137254902, B.ColorSpace_0);
     D.EdgeInsetsDirectional_10_0_0_0 = new A.EdgeInsetsDirectional(10, 0, 0, 0);
     D.EdgeInsetsDirectional_10_14_10_14 = new A.EdgeInsetsDirectional(10, 14, 10, 14);
-    D.EdgeInsetsDirectional_12_12_12_0 = new A.EdgeInsetsDirectional(12, 12, 12, 0);
-    D.EdgeInsetsDirectional_12_8_12_0 = new A.EdgeInsetsDirectional(12, 8, 12, 0);
     D.EdgeInsetsDirectional_30_0_30_0 = new A.EdgeInsetsDirectional(30, 0, 30, 0);
     D.EdgeInsetsDirectional_40_0_40_0 = new A.EdgeInsetsDirectional(40, 0, 40, 0);
     D.EdgeInsetsDirectional_8_0_8_0 = new A.EdgeInsetsDirectional(8, 0, 8, 0);
@@ -909,5 +908,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "j8cHa1/LA8Vjzyu5GFvbHzwDV9s=");
+})($__dart_deferred_initializers__, "lJsj1HGAKqkgn8LobbnD2YOibFc=");
 ;
