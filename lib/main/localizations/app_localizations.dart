@@ -4898,4 +4898,11 @@ class AppLocalizations {
       name: 'creatingAnArchiveForDownloading',
     );
   }
+
+  String get ok {
+    return Intl.message(
+      'OK',
+      name: 'ok',
+    );
+  }
 }

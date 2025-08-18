@@ -12,8 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/label_border_button_field.dart';
 import 'package:tmail_ui_user/features/base/widget/switch_label_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
@@ -399,7 +401,24 @@ class VacationView extends GetWidget<VacationController> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Flexible(child: _buildMessageHtmlTextEditor(context)),
+                    Flexible(
+                      child: Stack(
+                        children: [
+                          _buildMessageHtmlTextEditor(context),
+                          Obx(() {
+                            if (DateTimeDialogPicker().isOpened.isTrue) {
+                              return Positioned.fill(
+                                child: PointerInterceptor(
+                                  child: const SizedBox.expand(),
+                                ),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                        ],
+                      ),
+                    ),
                     ToolbarRichTextWidget(
                       richTextController: controller.richTextControllerForWeb!,
                       scrollListController: controller.richTextButtonScrollController,
@@ -444,7 +463,24 @@ class VacationView extends GetWidget<VacationController> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Flexible(child: _buildMessageHtmlTextEditor(context)),
+                      Flexible(
+                        child: Stack(
+                          children: [
+                            _buildMessageHtmlTextEditor(context),
+                            Obx(() {
+                              if (DateTimeDialogPicker().isOpened.isTrue) {
+                                return Positioned.fill(
+                                  child: PointerInterceptor(
+                                    child: const SizedBox.expand(),
+                                  ),
+                                );
+                              } else {
+                                return const SizedBox.shrink();
+                              }
+                            }),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       ToolbarRichTextWidget(
                         richTextController: controller.richTextControllerForWeb!,
