@@ -133,13 +133,26 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: bodyListMailbox,
       );
+    } else {
+      bodyListMailbox = Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12),
+        width: 315,
+        child: bodyListMailbox,
+      );
     }
 
     return SingleChildScrollView(
       controller: controller.mailboxListScrollController,
       key: const PageStorageKey('mailbox_list'),
       physics: const ClampingScrollPhysics(),
-      child: bodyListMailbox,
+      child: controller.responsiveUtils.isScreenWithShortestSide(context)
+        ? bodyListMailbox
+        : Row(
+          children: [
+            Flexible(child: bodyListMailbox),
+            const Spacer(),
+          ],
+        ),
     );
   }
 
