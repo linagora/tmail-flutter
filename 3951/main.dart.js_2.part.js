@@ -71,7 +71,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1920
+    $signature: 1925
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit;
@@ -92,5 +92,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "jx2BzmzmEQ4hAqbZit1RVRGd8qI=");
+})($__dart_deferred_initializers__, "XZImSyi21pCYvAy5qpFzTiCO9B4=");
 ;
