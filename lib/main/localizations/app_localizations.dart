@@ -4920,4 +4920,18 @@ class AppLocalizations {
       name: 'dialogWarningMessageForForwardsToOtherDomains',
     );
   }
+
+  String get hideSignature {
+    return Intl.message(
+      'Hide signature',
+      name: 'hideSignature',
+    );
+  }
+
+  String get showSignature {
+    return Intl.message(
+      'Show signature',
+      name: 'showSignature',
+    );
+  }
 }

@@ -4665,5 +4665,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "hideSignature": "Hide signature",
+  "@hideSignature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showSignature": "Show signature",
+  "@showSignature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
