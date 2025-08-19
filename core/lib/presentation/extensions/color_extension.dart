@@ -272,6 +272,7 @@ extension AppColor on Color {
   static const m3Primary95 = Color(0xFFE3F1FF);
   static const gray49454F = Color(0xFF49454F);
   static const lightGrayF9FAFB = Color(0xFFF9FAFB);
+  static const black4D4D4D = Color(0xFF4D4D4D);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
