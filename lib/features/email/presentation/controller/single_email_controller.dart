@@ -96,6 +96,7 @@ import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_even
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/handle_mail_action_by_shortcut_action_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/update_attendance_status_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -428,6 +429,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           worker.dispose();
         }
         Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
+      } else if (action is TriggerMailViewKeyboardShortcutAction) {
+        mailboxDashBoardController.clearEmailUIAction();
+        if (_currentEmailId == null ||
+            action.email.id != _currentEmailId) {
+          return;
+        }
+        handleMailActionByShortcutAction(
+          actionType: action.actionType,
+          email: action.email,
+        );
       }
     }));
 
@@ -1249,7 +1260,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       }
   }
 
-  void moveToMailbox(BuildContext context, PresentationEmail email) async {
+  void moveToMailbox(PresentationEmail email) async {
     if (session != null && accountId != null) {
       final moveActionRequest = await emailActionReactor.moveToMailbox(
         session!,
@@ -1261,7 +1272,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         ),
         isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
       );
-      if (!context.mounted || moveActionRequest == null) return;
+      if (moveActionRequest == null) return;
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1269,12 +1280,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         moveActionRequest.emailIdsWithReadStatus,
       );
       if (_threadDetailController?.emailIdsPresentation.length == 1) {
-        _threadDetailController?.closeThreadDetailAction(context);
+        _threadDetailController?.closeThreadDetailAction();
       }
     }
   }
 
-  void moveToTrash(BuildContext context, PresentationEmail email) {
+  void moveToTrash(PresentationEmail email) {
     if (session != null && accountId != null) {
       final moveActionRequest = emailActionReactor.moveToTrash(
         email,
@@ -1283,7 +1294,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
-      if (!context.mounted || moveActionRequest == null) return;
+      if (moveActionRequest == null) return;
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1291,12 +1302,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         moveActionRequest.emailIdsWithReadStatus,
       );
       if (_threadDetailController?.emailIdsPresentation.length == 1) {
-        _threadDetailController?.closeThreadDetailAction(context);
+        _threadDetailController?.closeThreadDetailAction();
       }
     }
   }
 
-  void moveToSpam(BuildContext context, PresentationEmail email) {
+  void moveToSpam(PresentationEmail email) {
     if (session != null && accountId != null) {
       final moveActionRequest = emailActionReactor.moveToSpam(
         email,
@@ -1305,7 +1316,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
-      if (!context.mounted || moveActionRequest == null) return;
+      if (moveActionRequest == null) return;
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1313,12 +1324,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         moveActionRequest.emailIdsWithReadStatus,
       );
       if (_threadDetailController?.emailIdsPresentation.length == 1) {
-        _threadDetailController?.closeThreadDetailAction(context);
+        _threadDetailController?.closeThreadDetailAction();
       }
     }
   }
 
-  void unSpam(BuildContext context, PresentationEmail email) {
+  void unSpam(PresentationEmail email) {
     if (session != null && accountId != null) {
       final moveActionRequest = emailActionReactor.unSpam(
         email,
@@ -1327,7 +1338,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
-      if (!context.mounted || moveActionRequest == null) return;
+      if (moveActionRequest == null) return;
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1335,7 +1346,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         moveActionRequest.emailIdsWithReadStatus,
       );
       if (_threadDetailController?.emailIdsPresentation.length == 1) {
-        _threadDetailController?.closeThreadDetailAction(context);
+        _threadDetailController?.closeThreadDetailAction();
       }
     }
   }
@@ -1368,7 +1379,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void handleEmailAction(BuildContext context, PresentationEmail presentationEmail, EmailActionType actionType) {
+  void handleEmailAction(
+    PresentationEmail presentationEmail,
+    EmailActionType actionType,
+  ) {
     switch(actionType) {
       case EmailActionType.markAsUnread:
         if (session != null && accountId != null) {
@@ -1401,31 +1415,31 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         }
         break;
       case EmailActionType.moveToMailbox:
-        moveToMailbox(context, presentationEmail);
+        moveToMailbox(presentationEmail);
         break;
       case EmailActionType.moveToTrash:
-        moveToTrash(context, presentationEmail);
+        moveToTrash(presentationEmail);
         break;
       case EmailActionType.deletePermanently:
-        deleteEmailPermanently(context, presentationEmail);
+        deleteEmailPermanently(presentationEmail);
         break;
       case EmailActionType.moveToSpam:
-        moveToSpam(context, presentationEmail);
+        moveToSpam(presentationEmail);
         break;
       case EmailActionType.unSpam:
-        unSpam(context, presentationEmail);
+        unSpam(presentationEmail);
         break;
       case EmailActionType.createRule:
-        quickCreatingRule(context, presentationEmail.from!.first);
+        quickCreatingRule(presentationEmail.from!.first);
         break;
       case EmailActionType.unsubscribe:
-        _unsubscribeEmail(context, presentationEmail);
+        _unsubscribeEmail(presentationEmail);
         break;
       case EmailActionType.archiveMessage:
-        archiveMessage(context, presentationEmail);
+        archiveMessage(presentationEmail);
         break;
       case EmailActionType.printAll:
-        _printEmail(context, presentationEmail);
+        _printEmail(presentationEmail);
         break;
       case EmailActionType.downloadMessageAsEML:
         _downloadMessageAsEML(presentationEmail);
@@ -1439,6 +1453,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       case EmailActionType.replyAll:
       case EmailActionType.replyToList:
       case EmailActionType.forward:
+      case EmailActionType.compose:
         pressEmailAction(actionType, presentationEmail);
         break;
       default:
@@ -1486,14 +1501,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void deleteEmailPermanently(BuildContext context, PresentationEmail email) {
+  void deleteEmailPermanently(PresentationEmail email) {
     emailActionReactor.deleteEmailPermanently(
       email,
       onDeleteEmailRequest: (email) {
         popBack();
         mailboxDashBoardController.deleteEmailPermanently(email);
         if (_threadDetailController?.emailIdsPresentation.length == 1) {
-          _threadDetailController?.closeThreadDetailAction(context);
+          _threadDetailController?.closeThreadDetailAction();
         }
       },
       responsiveUtils: responsiveUtils,
@@ -1683,7 +1698,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void quickCreatingRule(BuildContext context, EmailAddress emailAddress) async {
+  void quickCreatingRule(EmailAddress emailAddress) {
     popBack();
 
     if (accountId != null && session != null) {
@@ -1801,7 +1816,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _unsubscribeEmail(BuildContext context, PresentationEmail presentationEmail) {
+  void _unsubscribeEmail(PresentationEmail presentationEmail) {
     emailActionReactor.unsubscribeEmail(
       presentationEmail,
       emailUnsubscribe: emailUnsubscribe.value,
@@ -1819,16 +1834,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void archiveMessage(BuildContext context, PresentationEmail email) {
+  void archiveMessage(PresentationEmail email) {
     emailActionReactor.archiveMessage(
       email,
-      onArchiveEmailRequest: (presentationEmail) {
-        mailboxDashBoardController.archiveMessage(context, presentationEmail);
-      },
+      onArchiveEmailRequest: mailboxDashBoardController.archiveMessage,
     );
   }
 
-  void _printEmail(BuildContext context, PresentationEmail email) {
+  void _printEmail(PresentationEmail email) {
     if (_printEmailButtonState == ButtonState.disabled) {
       log('SingleEmailController::_printEmail: Print email started');
       return;

@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
@@ -24,6 +25,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_email_more_action_extension.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_receive_time_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_sort_order_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_date_filter_action.dart';
@@ -56,83 +58,94 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       });
     }
 
-    return Scaffold(
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+    final bodyWidget = Column(children: [
+      PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (_, __) {
+          if (!PlatformInfo.isAndroid) return;
+          controller.closeSearchView(context: context);
+        },
         child: Container(
-          color: Colors.white,
-          child: Column(children: [
-            PopScope(
-              canPop: false,
-              onPopInvokedWithResult: (_, __) {
-                if (!PlatformInfo.isAndroid) return;
-                controller.closeSearchView(context: context);
-              },
-              child: Container(
-                  height: 52,
-                  color: Colors.white,
-                  padding: SearchEmailViewStyle.getAppBarPadding(
-                    context,
-                    controller.responsiveUtils
-                  ),
-                  child: Obx(() {
-                    if (controller.selectionMode.value == SelectMode.ACTIVE) {
-                      return AppBarSelectionMode(
-                          controller.listResultSearch.listEmailSelected,
-                          controller.mailboxDashBoardController.mapMailboxById,
-                          onCancelSelection: controller.cancelSelectionMode,
-                          onHandleEmailAction: controller.handleSelectionEmailAction);
-                    } else {
-                      return _buildSearchInputForm(context);
-                    }
-                  })
-              ),
+            height: 52,
+            color: Colors.white,
+            padding: SearchEmailViewStyle.getAppBarPadding(
+              context,
+              controller.responsiveUtils
             ),
-            const Divider(color: AppColor.colorDividerComposer, height: 1),
-            _buildListSearchFilterAction(context),
-            Obx(() => SearchEmailLoadingBarWidget(
-              suggestionViewState: controller.suggestionSearchViewState.value,
-              resultSearchViewState: controller.resultSearchViewState.value,
-            )),
-            Expanded(child: Obx(() {
-              if (controller.searchIsRunning.isFalse) {
-                return SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: Column(children: [
-                    if (controller.currentSearchText.value.isNotEmpty)
-                      _buildShowAllResultSearchButton(context, controller.currentSearchText.value),
-                    if (controller.listContactSuggestionSearch.isNotEmpty
-                        && controller.currentSearchText.isNotEmpty)
-                      _buildListContactSuggestionSearch(context, controller.listContactSuggestionSearch),
-                    if (controller.listContactSuggestionSearch.isNotEmpty
-                        && controller.listSuggestionSearch.isNotEmpty)
-                      const Divider(),
-                    if (controller.listSuggestionSearch.isNotEmpty && controller.currentSearchText.isNotEmpty)
-                      _buildListSuggestionSearch(context, controller.listSuggestionSearch)
-                    else if (controller.listRecentSearch.isNotEmpty && controller.listSuggestionSearch.isEmpty)
-                      _buildListRecentSearch(context, controller.listRecentSearch)
-                  ]),
-                );
+            child: Obx(() {
+              if (controller.selectionMode.value == SelectMode.ACTIVE) {
+                return AppBarSelectionMode(
+                    controller.listResultSearch.listEmailSelected,
+                    controller.mailboxDashBoardController.mapMailboxById,
+                    onCancelSelection: controller.cancelSelectionMode,
+                    onHandleEmailAction: controller.handleSelectionEmailAction);
               } else {
-                if (controller.listResultSearch.isNotEmpty) {
-                  return _buildListEmailBody(
-                    context,
-                    controller.listResultSearch
-                  );
-                } else {
-                  return Obx(() => EmptySearchEmailWidget(
-                    suggestionViewState: controller.suggestionSearchViewState.value,
-                    resultSearchViewState: controller.resultSearchViewState.value,
-                    isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
-                  ));
-                }
+                return _buildSearchInputForm(context);
               }
-            })),
-            _buildLoadingViewLoadMore(),
-          ]),
+            })
         ),
       ),
-    );
+      const Divider(color: AppColor.colorDividerComposer, height: 1),
+      _buildListSearchFilterAction(context),
+      Obx(() => SearchEmailLoadingBarWidget(
+        suggestionViewState: controller.suggestionSearchViewState.value,
+        resultSearchViewState: controller.resultSearchViewState.value,
+      )),
+      Expanded(child: Obx(() {
+        if (controller.searchIsRunning.isFalse) {
+          return SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Column(children: [
+              if (controller.currentSearchText.value.isNotEmpty)
+                _buildShowAllResultSearchButton(context, controller.currentSearchText.value),
+              if (controller.listContactSuggestionSearch.isNotEmpty
+                  && controller.currentSearchText.isNotEmpty)
+                _buildListContactSuggestionSearch(context, controller.listContactSuggestionSearch),
+              if (controller.listContactSuggestionSearch.isNotEmpty
+                  && controller.listSuggestionSearch.isNotEmpty)
+                const Divider(),
+              if (controller.listSuggestionSearch.isNotEmpty && controller.currentSearchText.isNotEmpty)
+                _buildListSuggestionSearch(context, controller.listSuggestionSearch)
+              else if (controller.listRecentSearch.isNotEmpty && controller.listSuggestionSearch.isEmpty)
+                _buildListRecentSearch(context, controller.listRecentSearch)
+            ]),
+          );
+        } else {
+          if (controller.listResultSearch.isNotEmpty) {
+            return _buildListEmailBody(
+              context,
+              controller.listResultSearch
+            );
+          } else {
+            return Obx(() => EmptySearchEmailWidget(
+              suggestionViewState: controller.suggestionSearchViewState.value,
+              resultSearchViewState: controller.resultSearchViewState.value,
+              isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
+            ));
+          }
+        }
+      })),
+      _buildLoadingViewLoadMore(),
+    ]);
+
+    if (PlatformInfo.isWeb && controller.keyboardFocusNode != null) {
+      return KeyboardHandlerWrapper(
+        onKeyDownEventAction: controller.onKeyDownEventAction,
+        focusNode: controller.keyboardFocusNode!,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: bodyWidget,
+        ),
+      );
+    } else {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: GestureDetector(
+          onTap: controller.textInputSearchFocus.unfocus,
+          child: bodyWidget,
+        ),
+      );
+    }
   }
 
   Widget _buildSearchInputForm(BuildContext context) {

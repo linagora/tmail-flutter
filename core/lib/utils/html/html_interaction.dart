@@ -60,7 +60,7 @@ class HtmlInteraction {
   ''';
 
   static const String scriptsHandleContentSizeChanged = '''
-    <script>
+    <script type="text/javascript">
       const bodyResizeObserver = new ResizeObserver(entries => {
         window.flutter_inappwebview.callHandler('$contentSizeChangedEventJSChannelName', '');
       })
@@ -70,7 +70,7 @@ class HtmlInteraction {
   ''';
 
   static const String scriptsHandleLazyLoadingBackgroundImage = '''
-    <script>
+    <script type="text/javascript">
       const lazyImages = document.querySelectorAll('[lazy]');
       const lazyImageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach((entry) => {
@@ -286,7 +286,13 @@ class HtmlInteraction {
       }, {
         passive: false,
       });
-      window.addEventListener('keydown', function(e) {
+      window.addEventListener('keydown', disableZoomControl);
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('keydown', disableZoomControl);
+      });
+      
+      function disableZoomControl(event) {
         if (event.metaKey || event.ctrlKey) {
           switch (event.key) {
             case '=':
@@ -295,7 +301,47 @@ class HtmlInteraction {
               break;
           }
         }
+      }
+    </script>
+  ''';
+
+  static String scriptHandleIframeKeyboardListener(String viewId) => '''
+    <script type="text/javascript">
+      window.addEventListener('keydown', handleIframeKeydown);
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('keydown', handleIframeKeydown);
       });
+      
+      function handleIframeKeydown(event) {
+        const payload = {
+          view: '$viewId',
+          type: 'toDart: iframeKeydown',
+          key: event.key,
+          code: event.code,
+          shift: event.shiftKey
+        };
+        window.parent.postMessage(JSON.stringify(payload), "*");
+      }
+    </script>
+  ''';
+
+  static String scriptHandleIframeScrollingListener(String viewId) => '''
+    <script type="text/javascript">
+      window.addEventListener('wheel', handleIframeScrolling);
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('wheel', handleIframeScrolling);
+      });
+      
+      function handleIframeScrolling(event) {
+        const payload = {
+          view: '$viewId',
+          type: 'toDart: iframeScrolling',
+          deltaY: event.deltaY,
+        };
+        window.parent.postMessage(JSON.stringify(payload), "*");
+      }
     </script>
   ''';
 }
