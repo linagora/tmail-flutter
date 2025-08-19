@@ -6,46 +6,15 @@
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var J, A, B, E,
-  C = {
-    ElevatedButton_ElevatedButton$icon(icon, label, onPressed, style) {
-      var _null = null;
-      return new C._ElevatedButtonWithIcon(onPressed, _null, _null, _null, style, B.Clip_0, _null, false, _null, true, _null, new C._ElevatedButtonWithIconChild(label, icon, style, B.IconAlignment_0, _null), _null);
-    },
-    _ElevatedButtonWithIcon: function _ElevatedButtonWithIcon(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) {
-      var _ = this;
-      _.onPressed = t0;
-      _.onLongPress = t1;
-      _.onHover = t2;
-      _.onFocusChange = t3;
-      _.style = t4;
-      _.clipBehavior = t5;
-      _.focusNode = t6;
-      _.autofocus = t7;
-      _.statesController = t8;
-      _.isSemanticButton = t9;
-      _.tooltip = t10;
-      _.child = t11;
-      _.key = t12;
-    },
-    _ElevatedButtonWithIconChild: function _ElevatedButtonWithIconChild(t0, t1, t2, t3, t4) {
-      var _ = this;
-      _.label = t0;
-      _.icon = t1;
-      _.buttonStyle = t2;
-      _.iconAlignment = t3;
-      _.key = t4;
-    },
-    CircleLoadingWidget0: function CircleLoadingWidget0(t0, t1, t2) {
+  C = {CircleLoadingWidget0: function CircleLoadingWidget0(t0, t1, t2) {
       this.strokeWidth = t0;
       this.margin = t1;
       this.key = t2;
-    },
-    LinkBrowserWidget: function LinkBrowserWidget(t0, t1, t2) {
+    }, LinkBrowserWidget: function LinkBrowserWidget(t0, t1, t2) {
       this.uri = t0;
       this.child = t1;
       this.key = t2;
-    },
-    LinkBrowserWidget_build_closure: function LinkBrowserWidget_build_closure(t0) {
+    }, LinkBrowserWidget_build_closure: function LinkBrowserWidget_build_closure(t0) {
       this.$this = t0;
     },
     MaterialTextButton$(borderRadius, customStyle, label, onLongPress, onTap, overflow, padding, softWrap) {
@@ -302,51 +271,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   E = holdersList[11];
   C = hunkHelpers.updateHolder(holdersList[10], C);
   D = holdersList[18];
-  C._ElevatedButtonWithIcon.prototype = {
-    defaultStyleOf$1(context) {
-      var buttonStyle, t1, defaultFontSize, scaledPadding;
-      A.Theme_of(context);
-      buttonStyle = this.super$ElevatedButton$defaultStyleOf(context);
-      t1 = buttonStyle.get$textStyle();
-      if (t1 == null)
-        defaultFontSize = null;
-      else {
-        t1 = t1.resolve$1(B.Set_empty);
-        t1 = t1 == null ? null : t1.fontSize;
-        defaultFontSize = t1;
-      }
-      if (defaultFontSize == null)
-        defaultFontSize = 14;
-      t1 = A.MediaQuery__maybeOf(context, B._MediaQueryAspect_4);
-      t1 = t1 == null ? null : t1.get$textScaler();
-      scaledPadding = A.ButtonStyleButton_scaledPadding(B.EdgeInsetsDirectional_16_0_24_0, D.EdgeInsetsDirectional_8_0_12_0, D.EdgeInsetsDirectional_4_0_6_0, (t1 == null ? B._LinearTextScaler_1 : t1).scale$1(0, defaultFontSize) / 14);
-      return buttonStyle.copyWith$1$padding(new A.WidgetStatePropertyAll(scaledPadding, type$.WidgetStatePropertyAll_EdgeInsetsGeometry));
-    }
-  };
-  C._ElevatedButtonWithIconChild.prototype = {
-    build$1(context) {
-      var defaultFontSize, t3, t4, _this = this, _null = null,
-        t1 = _this.buttonStyle.textStyle,
-        t2 = _null;
-      if (t1 == null)
-        t1 = t2;
-      else {
-        t1 = t1.resolve$1(B.Set_empty);
-        t1 = t1 == null ? _null : t1.fontSize;
-      }
-      defaultFontSize = t1;
-      if (defaultFontSize == null)
-        defaultFontSize = 14;
-      t1 = A.MediaQuery__maybeOf(context, B._MediaQueryAspect_4);
-      t1 = t1 == null ? _null : t1.get$textScaler();
-      t1 = A.lerpDouble(8, 4, A.clampDouble((t1 == null ? B._LinearTextScaler_1 : t1).scale$1(0, defaultFontSize) / 14, 1, 2) - 1);
-      t1.toString;
-      t2 = type$.JSArray_Widget;
-      t3 = _this.icon;
-      t4 = _this.label;
-      return A.Row$(_this.iconAlignment === B.IconAlignment_0 ? A._setArrayType([t3, new A.SizedBox(t1, _null, _null, _null), new A.Flexible(1, B.FlexFit_1, t4, _null)], t2) : A._setArrayType([new A.Flexible(1, B.FlexFit_1, t4, _null), new A.SizedBox(t1, _null, _null, _null), t3], t2), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_0, _null);
-    }
-  };
   C.CircleLoadingWidget0.prototype = {
     build$1(context) {
       var _null = null,
@@ -722,7 +646,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1922
+    $signature: 1928
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -738,7 +662,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_9Sx, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 390
+    $signature: 409
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -777,7 +701,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.push(new C.ProfileSettingIcon(t2.ownEmailAddress, t2.settingActionTypes, t2.onProfileSettingActionTypeClick, false, _null));
       return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 599
+    $signature: 358
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -858,7 +782,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t4, t7, new C.ProfileSettingMenuOverlay(t5, t6, t1._profile_setting_icon$_imagePaths, new C._ProfileSettingIconState_build__closure0(t1, context), new C._ProfileSettingIconState_build__closure1(t1), t2, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 390
+    $signature: 409
   };
   C._ProfileSettingIconState_build__closure0.prototype = {
     call$0() {
@@ -886,7 +810,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this._isExpandedNotifier;
       t1.set$value(0, !t1._change_notifier$_value);
     },
-    $signature: 119
+    $signature: 131
   };
   C.ProfileSettingMenuOverlay_build_closure.prototype = {
     call$1(actionType) {
@@ -902,7 +826,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(menuAction) {
       this.$this.onProfileSettingActionTypeClick.call$1(menuAction.action);
     },
-    $signature: 77
+    $signature: 75
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -919,10 +843,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   })();
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
-      _inherit = hunkHelpers.inherit,
-      _inheritMany = hunkHelpers.inheritMany;
-    _inherit(C._ElevatedButtonWithIcon, A.ElevatedButton);
-    _inheritMany(A.StatelessWidget, [C._ElevatedButtonWithIconChild, C.CircleLoadingWidget0, C.LinkBrowserWidget, C.MaterialTextButton, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, C.AppDashboardOverlay, C.NavigationBarWidget, C.ProfileLabelWidget, C.ProfileSettingMenuOverlay, C.VacationNotificationMessageWidget, C.Link, C.DefaultLinkDelegate]);
+      _inheritMany = hunkHelpers.inheritMany,
+      _inherit = hunkHelpers.inherit;
+    _inheritMany(A.StatelessWidget, [C.CircleLoadingWidget0, C.LinkBrowserWidget, C.MaterialTextButton, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, C.AppDashboardOverlay, C.NavigationBarWidget, C.ProfileLabelWidget, C.ProfileSettingMenuOverlay, C.VacationNotificationMessageWidget, C.Link, C.DefaultLinkDelegate]);
     _inheritMany(A.Closure2Args, [C.LinkBrowserWidget_build_closure, C.NavigationBarWidget_build_closure]);
     _inherit(C.PopupMenuItemProfileSettingTypeAction, A.PopupMenuItemActionRequiredIcon);
     _inherit(C.ProfileSettingActionType, A._Enum);
@@ -935,7 +858,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixin(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, A.LauncherApplicationMixin);
     _mixin(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin, E.ImageLoaderMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CircleLoadingWidget0":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuItemProfileSettingTypeAction":{"PopupMenuItemAction":["ProfileSettingActionType"],"EquatableMixin":[]},"AppGridDashboardIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AppGridDashboardIconState":{"State0":["AppGridDashboardIcon"]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NavigationBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfileLabelWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfileSettingIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ProfileSettingIconState":{"State0":["ProfileSettingIcon"]},"ProfileSettingMenuOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"CircleLoadingWidget0":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuItemProfileSettingTypeAction":{"PopupMenuItemAction":["ProfileSettingActionType"],"EquatableMixin":[]},"AppGridDashboardIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AppGridDashboardIconState":{"State0":["AppGridDashboardIcon"]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NavigationBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfileLabelWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ProfileSettingIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ProfileSettingIconState":{"State0":["ProfileSettingIcon"]},"ProfileSettingMenuOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
@@ -947,7 +870,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ResponsiveUtils: findType("ResponsiveUtils0"),
       ValueListenableBuilder_bool: findType("ValueListenableBuilder<bool>"),
       ValueNotifier_bool: findType("ValueNotifier<bool>"),
-      WidgetStatePropertyAll_EdgeInsetsGeometry: findType("WidgetStatePropertyAll<EdgeInsetsGeometry>"),
       _LocalizationsScope: findType("_LocalizationsScope"),
       void: findType("~")
     };
@@ -956,25 +878,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     var makeConstList = hunkHelpers.makeConstList;
     D.Aligned_43h = new A.Aligned(1, null, B.Alignment_1_m1, B.Alignment_1_1, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, null);
     D.Aligned_wEo = new A.Aligned(1, null, B.Alignment_1_m1, B.Alignment_1_1, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, D.Aligned_43h);
-    D.BorderSide_xw80 = new A.BorderSide(B.Color_gkc0, 0.5, B.BorderStyle_1, -1);
-    D.Color_zLN = new A.Color(1, 1, 0.9607843137254902, 0.7607843137254902, B.ColorSpace_0);
+    D.Color_esZ = new A.Color(1, 0.9176470588235294, 0.9294117647058824, 0.9490196078431372, B.ColorSpace_0);
     D.Offset_UrS1 = new A.Offset(0, 0.5);
     D.BoxShadow_vU6 = new A.BoxShadow(1, B.BlurStyle_0, B.Color_cO5, D.Offset_UrS1, 1);
-    D.Color_esZ = new A.Color(1, 0.9176470588235294, 0.9294117647058824, 0.9490196078431372, B.ColorSpace_0);
+    D.Color_zLN = new A.Color(1, 1, 0.9607843137254902, 0.7607843137254902, B.ColorSpace_0);
     D.EdgeInsetsDirectional_10_0_0_0 = new A.EdgeInsetsDirectional(10, 0, 0, 0);
     D.EdgeInsetsDirectional_10_14_10_14 = new A.EdgeInsetsDirectional(10, 14, 10, 14);
-    D.EdgeInsetsDirectional_12_12_12_0 = new A.EdgeInsetsDirectional(12, 12, 12, 0);
-    D.EdgeInsetsDirectional_12_8_12_0 = new A.EdgeInsetsDirectional(12, 8, 12, 0);
     D.EdgeInsetsDirectional_30_0_30_0 = new A.EdgeInsetsDirectional(30, 0, 30, 0);
     D.EdgeInsetsDirectional_40_0_40_0 = new A.EdgeInsetsDirectional(40, 0, 40, 0);
-    D.EdgeInsetsDirectional_4_0_6_0 = new A.EdgeInsetsDirectional(4, 0, 6, 0);
-    D.EdgeInsetsDirectional_8_0_12_0 = new A.EdgeInsetsDirectional(8, 0, 12, 0);
-    D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
     D.EdgeInsetsDirectional_8_0_8_0 = new A.EdgeInsetsDirectional(8, 0, 8, 0);
     D.EdgeInsetsDirectional_8_4_8_0 = new A.EdgeInsetsDirectional(8, 4, 8, 0);
+    D.EdgeInsets_0_0_0_16 = new A.EdgeInsets(0, 0, 0, 16);
+    D.EdgeInsets_0_6_0_6 = new A.EdgeInsets(0, 6, 0, 6);
     D.EdgeInsets_12_5_12_5 = new A.EdgeInsets(12, 5, 12, 5);
     D.EdgeInsets_16_12_16_12 = new A.EdgeInsets(16, 12, 16, 12);
     D.EdgeInsets_8_12_8_12 = new A.EdgeInsets(8, 12, 8, 12);
+    D.EdgeInsets_8_3_8_3 = new A.EdgeInsets(8, 3, 8, 3);
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
     D.ProfileSettingActionType_0 = new C.ProfileSettingActionType(0, "manageAccount");
     D.ProfileSettingActionType_1 = new C.ProfileSettingActionType(1, "signOut");
@@ -990,5 +909,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "sW/Tbz6BhgGQiAedbnt2sa52cxc=");
+})($__dart_deferred_initializers__, "gPMq53biRSaV1EVgNor01ksJljA=");
 ;
