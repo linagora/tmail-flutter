@@ -8,6 +8,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/identity_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -80,12 +81,18 @@ extension ComposerPrintDraftExtension on ComposerController {
         pattern: currentTime.toPatternForPrinting(locale.toLanguageTag()),
       );
     }
+    String accountDisplayName = ownEmailAddress;
+    if (accountDisplayName.trim().isEmpty) {
+      accountDisplayName = mailboxDashBoardController
+        .sessionCurrent
+        ?.getOwnEmailAddressOrUsername() ?? '';
+    }
     log('ComposerPrintDraftExtension::_showPrintDraftsDialog:receiveTime = $receiveTime | emailActionType = $emailActionType');
     final childWidget = PointerInterceptor(
       child: PrintDraftDialogView(
         emailPrint: DraftEmailPrint(
           appName: appLocalizations.app_name,
-          userName: mailboxDashBoardController.ownEmailAddress.value,
+          userName: accountDisplayName,
           attachments: uploadController.allAttachmentsUploaded,
           emailContent: emailContent,
           fromPrefix: appLocalizations.from_email_address_prefix,

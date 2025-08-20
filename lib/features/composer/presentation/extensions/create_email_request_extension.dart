@@ -10,7 +10,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mail_priority_header.dart';
 import 'package:model/extensions/email_address_extension.dart';
-import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/identity_extension.dart';
@@ -26,8 +25,8 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
   Set<EmailAddress> createSenders() {
     if (identity?.email?.isNotEmpty == true) {
       return { identity!.toEmailAddress() };
-    } else if (session.getOwnEmailAddressOrEmpty().isNotEmpty) {
-      return { EmailAddress(null, session.getOwnEmailAddressOrEmpty()) };
+    } else if (ownEmailAddress.isNotEmpty) {
+      return { EmailAddress(null, ownEmailAddress) };
     } else {
       return {};
     }
@@ -36,8 +35,8 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
   String createMdnEmailAddress() {
     if (emailActionType == EmailActionType.editDraft && fromSender?.isNotEmpty == true) {
       return fromSender!.first.emailAddress;
-    } else if (session.getOwnEmailAddressOrEmpty().isNotEmpty) {
-      return session.getOwnEmailAddressOrEmpty();
+    } else if (ownEmailAddress.isNotEmpty) {
+      return ownEmailAddress;
     } else {
       return '';
     }
@@ -52,8 +51,8 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
 
     return identity?.replyTo?.isNotEmpty == true
       ? identity!.replyTo!
-      : session.getOwnEmailAddressOrEmpty().isNotEmpty
-        ? {EmailAddress(null, session.getOwnEmailAddressOrEmpty())}
+      : ownEmailAddress.isNotEmpty
+        ? {EmailAddress(null, ownEmailAddress)}
         : null;
   }
 

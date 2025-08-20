@@ -86,7 +86,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         position: position,
                         responsiveUtils: controller.responsiveUtils,
                         imagePaths: controller.imagePaths,
-                        username: controller.session?.username,
+                        ownEmailAddress: controller.ownEmailAddress,
                         handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
@@ -160,7 +160,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   responsiveUtils: controller.responsiveUtils,
                   emailLoaded: emailLoaded,
                   presentationEmail: currentEmail,
-                  userName: controller.getOwnEmailAddress(),
+                  userName: controller.ownEmailAddress,
                   emailActionCallback: controller.pressEmailAction,
                 );
               }),
@@ -260,7 +260,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 position: position,
                 responsiveUtils: controller.responsiveUtils,
                 imagePaths: controller.imagePaths,
-                username: controller.session?.username,
+                ownEmailAddress: controller.ownEmailAddress,
                 handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
                 additionalActions: [
                   EmailActionType.forward,
@@ -312,10 +312,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   ),
                 calendarEventReplying: controller.calendarEventProcessing,
                 attendanceStatus: controller.attendanceStatus.value,
-                ownEmailAddress: controller
-                    .mailboxDashBoardController
-                    .ownEmailAddress
-                    .value,
+                ownEmailAddress: controller.ownEmailAddress,
                 onMailtoAttendeesAction: controller.handleMailToAttendees,
                 openEmailAddressDetailAction: (_, emailAddress) => controller.openEmailAddressDialog(emailAddress),
                 isFree: controller.isCalendarEventFree,

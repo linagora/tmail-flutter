@@ -7,7 +7,6 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:model/extensions/session_extension.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -43,7 +42,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             isSearchRunning: controller.isSearchRunning,
             closeThreadDetailAction: controller.closeThreadDetailAction,
             lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
-            ownUserName: controller.session?.getOwnEmailAddress() ?? '',
+            ownUserName: controller.ownEmailAddress,
             isThreadDetailEnabled: controller.isThreadDetailEnabled,
             mailboxContain: _getMailboxContain(),
             onEmailActionClick: isLoading
@@ -59,7 +58,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               position: position,
               responsiveUtils: controller.responsiveUtils,
               imagePaths: controller.imagePaths,
-              username: controller.session?.username,
+              ownEmailAddress: controller.ownEmailAddress,
               handleEmailAction: controller.threadDetailOnEmailActionClick,
               additionalActions: [
                 if (controller.responsiveUtils.isMobile(context)) ...[
@@ -194,7 +193,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             responsiveUtils: controller.responsiveUtils,
             emailLoaded: currentEmailLoaded,
             presentationEmail: expandedPresentationEmail,
-            userName: controller.session?.getOwnEmailAddress() ?? '',
+            userName: controller.ownEmailAddress,
             emailActionCallback: (action, email) {
               controller.mailboxDashBoardController
                 ..dispatchEmailUIAction(PerformEmailActionInThreadDetailAction(

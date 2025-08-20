@@ -21,7 +21,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -527,7 +526,7 @@ class EmailActionReactor with MessageDialogActionMixin {
     required RelativeRect? position,
     required ResponsiveUtils responsiveUtils,
     required ImagePaths imagePaths,
-    required UserName? username,
+    required String ownEmailAddress,
     required void Function(
       PresentationEmail presentationEmail,
       EmailActionType action,
@@ -542,7 +541,7 @@ class EmailActionReactor with MessageDialogActionMixin {
     final moreActions = [
       if (additionalActions.contains(EmailActionType.forward))
         EmailActionType.forward,
-      if (presentationEmail.getCountMailAddressWithoutMe(username?.value ?? '') > 1 &&
+      if (presentationEmail.getCountMailAddressWithoutMe(ownEmailAddress) > 1 &&
           additionalActions.contains(EmailActionType.replyAll))
         EmailActionType.replyAll,
       if (EmailUtils.isReplyToListEnabled(presentationEmail.listPost ?? '') &&

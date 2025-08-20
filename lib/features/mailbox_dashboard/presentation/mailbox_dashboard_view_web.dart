@@ -81,15 +81,20 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
                         return Obx(() {
                           final accountId = controller.accountId.value;
-                          final ownEmailAddress = controller.ownEmailAddress.value;
+                          String accountDisplayName = controller.ownEmailAddress.value;
                           final contactSupportCapability = accountId != null
                             ? controller.sessionCurrent?.getContactSupportCapability(accountId)
                             : null;
+                          if (accountDisplayName.trim().isEmpty) {
+                            accountDisplayName = controller
+                              .sessionCurrent
+                              ?.getOwnEmailAddressOrUsername() ?? '';
+                          }
 
                           return NavigationBarWidget(
                             imagePaths: controller.imagePaths,
                             accountId: accountId,
-                            ownEmailAddress: ownEmailAddress,
+                            ownEmailAddress: accountDisplayName,
                             contactSupportCapability: contactSupportCapability,
                             searchForm: SearchInputFormWidget(),
                             appGridController:
@@ -151,8 +156,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                                   ),
                                   const Spacer(),
                                   Obx(() {
+                                    String accountDisplayName =
+                                        controller.ownEmailAddress.value;
+                                    if (accountDisplayName.trim().isEmpty) {
+                                      accountDisplayName = controller
+                                        .sessionCurrent
+                                        ?.getOwnEmailAddressOrUsername() ?? '';
+                                    }
                                     return ProfileSettingIcon(
-                                      ownEmailAddress: controller.ownEmailAddress.value,
+                                      ownEmailAddress: accountDisplayName,
                                       settingActionTypes: ProfileSettingActionType.values,
                                       onProfileSettingActionTypeClick: (actionType) =>
                                         controller.handleProfileSettingActionTypeClick(
