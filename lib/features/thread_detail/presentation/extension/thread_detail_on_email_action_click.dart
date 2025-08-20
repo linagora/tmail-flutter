@@ -264,9 +264,13 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
   }
   
   void _printEmail(PresentationEmail presentationEmail) {
+    String accountDisplayName = ownEmailAddress;
+    if (accountDisplayName.trim().isEmpty) {
+      accountDisplayName = session?.getOwnEmailAddressOrUsername() ?? '';
+    }
     consumeState(emailActionReactor.printEmail(
       presentationEmail,
-      ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
+      ownEmailAddress: accountDisplayName,
       emailLoaded: null,
       session: session,
       accountId: accountId,

@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_i
 class IdentityCreatorArguments with EquatableMixin {
   final AccountId accountId;
   final Session session;
+  final String ownerEmailAddress;
   final IdentityActionType actionType;
   final PublicAssetsInIdentityArguments? publicAssetsInIdentityArguments;
   final bool? isDefault;
@@ -17,6 +18,7 @@ class IdentityCreatorArguments with EquatableMixin {
   IdentityCreatorArguments(
     this.accountId,
     this.session,
+    this.ownerEmailAddress,
     {
       this.identity,
       this.publicAssetsInIdentityArguments,
