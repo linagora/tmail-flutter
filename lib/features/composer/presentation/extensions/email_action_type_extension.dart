@@ -46,7 +46,6 @@ extension EmailActionTypeExtension on EmailActionType {
     switch(this) {
       case EmailActionType.archiveMessage:
       case EmailActionType.moveToMailbox:
-      case EmailActionType.archiveMessage:
         return AppLocalizations.of(context).movedToFolder(destinationPath ?? '');
       case EmailActionType.moveToTrash:
         return AppLocalizations.of(context).moved_to_trash;

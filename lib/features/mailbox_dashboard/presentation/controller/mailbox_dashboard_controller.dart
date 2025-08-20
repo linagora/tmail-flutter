@@ -1605,7 +1605,7 @@ class MailboxDashBoardController extends ReloadableController
       ),
     );
 
-    _moveSelectedEmailMultipleToMailboxAction(
+    moveSelectedEmailMultipleToMailboxAction(
       sessionCurrent!,
       accountId.value!,
       moveRequest,
