@@ -71,7 +71,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1925
+    $signature: 1937
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit;
@@ -85,6 +85,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     String: A.findType("String")
   };
   (function constants() {
+    D.EdgeInsetsDirectional_0_0_4_0 = new A.EdgeInsetsDirectional(0, 0, 4, 0);
     D.EdgeInsetsDirectional_24_0_24_16 = new A.EdgeInsetsDirectional(24, 0, 24, 16);
   })();
 };
@@ -92,5 +93,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "XZImSyi21pCYvAy5qpFzTiCO9B4=");
+})($__dart_deferred_initializers__, "SZSIf4E4F4zSeXawPZlwS9uVRlo=");
 ;
