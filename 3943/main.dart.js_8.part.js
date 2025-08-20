@@ -7,8 +7,8 @@
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var J, A, C,
   B = {
-    HtmlContentViewerOnWeb$(allowResizeToDocumentSize, autoAdjustHeight, contentHtml, contentPadding, direction, disableScrolling, enableQuoteToggle, heightContent, htmlContentMinHeight, htmlContentMinWidth, keepAlive, key, mailtoDelegate, offsetHtmlContentHeight, onClickHyperLinkAction, scrollController, useDefaultFont, viewMaxHeight, widthContent) {
-      return new B.HtmlContentViewerOnWeb(contentHtml, widthContent, heightContent, direction, contentPadding, useDefaultFont, mailtoDelegate, onClickHyperLinkAction, allowResizeToDocumentSize, scrollController, enableQuoteToggle, disableScrolling, keepAlive, htmlContentMinHeight, htmlContentMinWidth, offsetHtmlContentHeight, viewMaxHeight, autoAdjustHeight, key);
+    HtmlContentViewerOnWeb$(allowResizeToDocumentSize, autoAdjustHeight, contentHtml, contentPadding, direction, disableScrolling, enableQuoteToggle, heightContent, htmlContentMinHeight, htmlContentMinWidth, keepAlive, key, mailtoDelegate, offsetHtmlContentHeight, onClickHyperLinkAction, scrollController, useDefaultFontStyle, viewMaxHeight, widthContent) {
+      return new B.HtmlContentViewerOnWeb(contentHtml, widthContent, heightContent, direction, contentPadding, useDefaultFontStyle, mailtoDelegate, onClickHyperLinkAction, allowResizeToDocumentSize, scrollController, enableQuoteToggle, disableScrolling, keepAlive, htmlContentMinHeight, htmlContentMinWidth, offsetHtmlContentHeight, viewMaxHeight, autoAdjustHeight, key);
     },
     HtmlContentViewerOnWeb: function HtmlContentViewerOnWeb(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18) {
       var _ = this;
@@ -17,7 +17,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.heightContent = t2;
       _.direction = t3;
       _.contentPadding = t4;
-      _.useDefaultFont = t5;
+      _.useDefaultFontStyle = t5;
       _.mailtoDelegate = t6;
       _.onClickHyperLinkAction = t7;
       _.allowResizeToDocumentSize = t8;
@@ -303,13 +303,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t2.htmlContentMinWidth;
       t4 = t2.direction;
       t5 = t2.contentPadding;
-      t2 = t2.useDefaultFont;
-      t2;
-      t6 = "";
-      t2 = t2 ? "          body {\n            font-family: 'Inter', sans-serif;\n            font-weight: 500;\n            font-size: 16px;\n            line-height: 24px;\n          }\n        " : "";
+      t2 = t2.useDefaultFontStyle ? "    body {\n      font-weight: 400;\n      font-size: 16px;\n      line-height: 24px;\n      letter-spacing: -0.01em; /* -1% */\n    }\n  " : "";
       t4 = t4 === C.TextDirection_0 ? 'dir="rtl"' : "";
       t5 = t5 != null ? "margin: " + A.S(t5) + ";" : "";
-      _this._html_content_viewer_on_web_widget$_htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      ' + t6 + "\n      <style>\n        " + t2 + "\n        .tmail-content {\n          min-height: " + A.S(t1) + "px;\n          min-width: " + t3 + "px;\n          overflow: auto;\n          overflow-wrap: break-word;\n          word-break: break-word;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n        \n        pre {\n          white-space: pre-wrap;\n        }\n        \n        table {\n          white-space: normal !important;\n        }\n        \n        " + combinedCss + "\n      </style>\n      </head>\n      <body " + t4 + ' style = "overflow-x: hidden; ' + t5 + '";>\n      <div class="tmail-content">' + processedContent + "</div>\n      " + combinedScripts + "\n      </body>\n      </html> \n    ";
+      _this._html_content_viewer_on_web_widget$_htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n            @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Regular.ttf") format("truetype");\n      font-weight: 400;\n      font-style: normal;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Medium.ttf") format("truetype");\n      font-weight: 500;\n      font-style: medium;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-SemiBold.ttf") format("truetype");\n      font-weight: 600;\n      font-style: semi-bold;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Bold.ttf") format("truetype");\n      font-weight: 700;\n      font-style: bold;\n    }\n    \n    body {\n      font-family: \'Inter\', sans-serif;\n    }\n  \n        \n        ' + t2 + "\n        \n        .tmail-content {\n          min-height: " + A.S(t1) + "px;\n          min-width: " + t3 + "px;\n          overflow: auto;\n          overflow-wrap: break-word;\n          word-break: break-word;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n        \n        pre {\n          white-space: pre-wrap;\n        }\n        \n        table {\n          white-space: normal !important;\n        }\n        \n        " + combinedCss + "\n      </style>\n      </head>\n      <body " + t4 + ' style = "overflow-x: hidden; ' + t5 + '";>\n      <div class="tmail-content">' + processedContent + "</div>\n      " + combinedScripts + "\n      </body>\n      </html> \n    ";
       t1 = document.createElement("iframe");
       t1.toString;
       t2 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
@@ -412,7 +409,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 726
+    $signature: 711
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
@@ -428,7 +425,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.___HtmlContentViewerOnWebState_minHeight_A = Math.min(constraint.maxHeight, t2);
       return t1._buildHtmlElementView$0();
     },
-    $signature: 292
+    $signature: 273
   };
   B._HtmlContentViewerOnWebState__buildHtmlElementView_closure.prototype = {
     call$2(_, snapshot) {
@@ -455,7 +452,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 192
+    $signature: 229
   };
   (function aliases() {
     var _ = B.__HtmlContentViewerOnWebState_State_AutomaticKeepAliveClientMixin.prototype;
@@ -497,5 +494,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "fOyW5nh8Bz7tXaO7+xyaCgL7lyU=");
+})($__dart_deferred_initializers__, "AoWj7uQKEYSFn81VuD4jlTVEtd8=");
 ;
