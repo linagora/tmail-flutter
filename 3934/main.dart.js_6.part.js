@@ -810,7 +810,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this._isExpandedNotifier;
       t1.set$value(0, !t1._change_notifier$_value);
     },
-    $signature: 122
+    $signature: 121
   };
   C.ProfileSettingMenuOverlay_build_closure.prototype = {
     call$1(actionType) {
@@ -826,7 +826,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(menuAction) {
       this.$this.onProfileSettingActionTypeClick.call$1(menuAction.action);
     },
-    $signature: 70
+    $signature: 71
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -909,5 +909,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "C+EwmTouV2FY+tZoTUasBsoTPTA=");
+})($__dart_deferred_initializers__, "nponA4CjcfZe8x4TposS5e3uc8o=");
 ;
