@@ -18,8 +18,14 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
     final mailboxContain = presentationEmail.mailboxContain;
     final isDrafts = mailboxContain?.isDrafts ?? false;
     final isSpam = mailboxContain?.isSpam ?? false;
+    final isRead = presentationEmail.hasRead;
+    final isTrash = mailboxContain?.isTrash ?? false;
+    final canPermanentlyDelete = isDrafts || isSpam || isTrash;
 
     final listEmailActions = [
+      isRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
+      EmailActionType.moveToMailbox,
+      canPermanentlyDelete ? EmailActionType.deletePermanently : EmailActionType.moveToTrash,
       isSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,
       if (!isDrafts) EmailActionType.editAsNewEmail,
     ];

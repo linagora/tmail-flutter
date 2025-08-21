@@ -158,6 +158,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icOpenInNewTab;
       case EmailActionType.printAll:
         return imagePaths.icPrinter;
+      case EmailActionType.reply:
+        return imagePaths.icReply;
       case EmailActionType.forward:
         return imagePaths.icForward;
       case EmailActionType.replyAll:
@@ -202,6 +204,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return appLocalizations.openInNewTab;
       case EmailActionType.printAll:
         return appLocalizations.print;
+      case EmailActionType.reply:
+        return appLocalizations.reply;
       case EmailActionType.forward:
         return appLocalizations.forward;
       case EmailActionType.replyAll:
