@@ -6,6 +6,8 @@ import 'package:html/dom.dart';
 class NormalizeLineHeightInStyleTransformer extends DomTransformer {
   const NormalizeLineHeightInStyleTransformer();
 
+  static const _removableLineHeights = ['1px', '100%'];
+
   @override
   Future<void> process({
     required Document document,
@@ -13,19 +15,28 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
     Map<String, String>? mapUrlDownloadCID,
   }) async {
     try {
+      final pattern = RegExp(
+        r'line-height\s*:\s*(?:' + _removableLineHeights.join('|') + r')\s*;?',
+        caseSensitive: false,
+      );
+
       final elements = document.querySelectorAll('[style*="line-height"]');
 
       for (final element in elements) {
         final originalStyle = element.attributes['style'];
         if (originalStyle == null) continue;
 
-        final updatedStyle = originalStyle.replaceAllMapped(
-          RegExp(r'line-height\s*:\s*1px\s*;?', caseSensitive: false),
-          (match) => '',
-        );
+        var updatedStyle = originalStyle.replaceAll(pattern, '').trim();
+
+        // Remove extra spaces (>=2 spaces → 1 space)
+        updatedStyle = updatedStyle.replaceAll(RegExp(r'\s{2,}'), ' ');
 
         if (updatedStyle != originalStyle) {
-          element.attributes['style'] = updatedStyle;
+          if (updatedStyle.isEmpty) {
+            element.attributes.remove('style');
+          } else {
+            element.attributes['style'] = updatedStyle;
+          }
         }
       }
     } catch (e) {
