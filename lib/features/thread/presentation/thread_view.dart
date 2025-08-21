@@ -619,8 +619,14 @@ class ThreadView extends GetWidget<ThreadController>
     final isSpam = mailboxContain?.isSpam ?? false;
     final isArchive = mailboxContain?.isArchive ?? false;
     final isTemplates = mailboxContain?.isTemplates ?? false;
+    final isRead = presentationEmail.hasRead;
+    final isTrash = mailboxContain?.isTrash ?? false;
+    final canPermanentlyDelete = isDrafts || isSpam || isTrash;
 
     final listEmailActions = [
+      isRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
+      EmailActionType.moveToMailbox,
+      canPermanentlyDelete ? EmailActionType.deletePermanently : EmailActionType.moveToTrash,
       EmailActionType.openInNewTab,
       if (!isDrafts && !isChildOfTeamMailboxes)
         isSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,

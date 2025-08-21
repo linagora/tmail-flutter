@@ -540,6 +540,8 @@ class EmailActionReactor with MessageDialogActionMixin {
     if (currentContext == null) return;
 
     final moreActions = [
+      if (additionalActions.contains(EmailActionType.reply))
+        EmailActionType.reply,
       if (additionalActions.contains(EmailActionType.forward))
         EmailActionType.forward,
       if (presentationEmail.getCountMailAddressWithoutMe(username?.value ?? '') > 1 &&
