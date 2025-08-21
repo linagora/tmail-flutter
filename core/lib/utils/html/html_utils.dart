@@ -49,6 +49,7 @@ class HtmlUtils {
       <style>
         .note-frame, .note-tooltip-content, .note-popover {
           font-family: 'Inter', sans-serif;
+          color: #222222;
         }
         
         .note-editable {
