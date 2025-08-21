@@ -17,14 +17,14 @@ class HtmlUtils {
   static final random = Random();
   static final htmlUnescape = HtmlUnescape();
 
-  static const lineHeight100Percent = (
+  static const removeLineHeight1px = (
     script: '''
-      document.querySelectorAll("*")
-        .forEach((element) => {
-          if (element.style.lineHeight !== "normal")
-            element.style.lineHeight = "100%";
-        });''',
-    name: 'lineHeight100Percent');
+      document.querySelectorAll('[style*="line-height"]').forEach(el => {
+        if (el.style.lineHeight === "1px") {
+          el.style.removeProperty("line-height");
+        }
+      });''',
+    name: 'removeLineHeight1px');
 
   static const registerDropListener = (
     script: '''

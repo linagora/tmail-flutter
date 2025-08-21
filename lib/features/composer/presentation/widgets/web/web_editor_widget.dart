@@ -89,7 +89,7 @@ class _WebEditorState extends State<WebEditorWidget> {
     _dropListener = (event) {
       if (event is MessageEvent) {
         if (jsonDecode(event.data)['name'] == HtmlUtils.registerDropListener.name) {
-          _editorController.evaluateJavascriptWeb(HtmlUtils.lineHeight100Percent.name);
+          _editorController.evaluateJavascriptWeb(HtmlUtils.removeLineHeight1px.name);
         }
       }
     };
@@ -143,8 +143,8 @@ class _WebEditorState extends State<WebEditorWidget> {
         normalizeHtmlTextWhenPasting: true,
         webInitialScripts: UnmodifiableListView([
           WebScript(
-            name: HtmlUtils.lineHeight100Percent.name,
-            script: HtmlUtils.lineHeight100Percent.script,
+            name: HtmlUtils.removeLineHeight1px.name,
+            script: HtmlUtils.removeLineHeight1px.script,
           ),
           WebScript(
             name: HtmlUtils.registerDropListener.name,
@@ -181,7 +181,7 @@ class _WebEditorState extends State<WebEditorWidget> {
         onChangeCodeview: widget.onChangeContent,
         onTextFontSizeChanged: widget.onEditorTextSizeChanged,
         onPaste: () => _editorController.evaluateJavascriptWeb(
-          HtmlUtils.lineHeight100Percent.name
+          HtmlUtils.removeLineHeight1px.name
         ),
         onDragEnter: widget.onDragEnter,
         onDragOver: widget.onDragOver,
