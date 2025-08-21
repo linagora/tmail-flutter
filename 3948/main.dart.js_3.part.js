@@ -5,32 +5,11 @@
   s[d][e].push({p: "main.dart.js_3", e: "beginPart"});
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
-  var J, B, C,
-  A = {
-    HttpRequest_request(url, requestHeaders) {
-      var t3,
-        t1 = new B._Future($.Zone__current, type$._Future_HttpRequest),
-        completer = new B._AsyncCompleter(t1, type$._AsyncCompleter_HttpRequest),
-        t2 = new XMLHttpRequest();
-      t2.toString;
-      C.HttpRequest_methods.open$3$async(t2, "GET", url, true);
-      t3 = type$.ProgressEvent;
-      B._EventStreamSubscription$(t2, "load", new A.HttpRequest_request_closure(t2, completer), false, t3);
-      B._EventStreamSubscription$(t2, "error", completer.get$completeError(), false, t3);
-      t2.send();
-      return t1;
-    },
-    HttpRequest_request_closure: function HttpRequest_request_closure(t0, t1) {
-      this.xhr = t0;
-      this.completer = t1;
-    },
-    ImageLoaderMixin: function ImageLoaderMixin() {
-    },
-    ImageLoaderMixin_buildImage_closure: function ImageLoaderMixin_buildImage_closure() {
-    },
-    ImageLoaderMixin_buildImage_closure0: function ImageLoaderMixin_buildImage_closure0() {
-    },
-    ImageLoaderMixin_buildImage_closure1: function ImageLoaderMixin_buildImage_closure1(t0, t1) {
+  var J, A, C,
+  B = {ImageLoaderMixin: function ImageLoaderMixin() {
+    }, ImageLoaderMixin_buildImage_closure: function ImageLoaderMixin_buildImage_closure() {
+    }, ImageLoaderMixin_buildImage_closure0: function ImageLoaderMixin_buildImage_closure0() {
+    }, ImageLoaderMixin_buildImage_closure1: function ImageLoaderMixin_buildImage_closure1(t0, t1) {
       this.$this = t0;
       this.imageSize = t1;
     },
@@ -54,7 +33,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.chunkEvents = t0;
     },
     NetworkImageLoadException$(statusCode, uri) {
-      return new A.NetworkImageLoadException("HTTP request failed, statusCode: " + statusCode + ", " + uri.toString$0(0));
+      return new B.NetworkImageLoadException("HTTP request failed, statusCode: " + statusCode + ", " + uri.toString$0(0));
     },
     NetworkImageLoadException: function NetworkImageLoadException(t0) {
       this._image_provider$_message = t0;
@@ -65,12 +44,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _ImageChunkEvent_Object_Diagnosticable: function _ImageChunkEvent_Object_Diagnosticable() {
     },
-    SvgNetworkLoader: function SvgNetworkLoader(t0, t1, t2, t3) {
+    SvgNetworkLoader: function SvgNetworkLoader(t0, t1, t2, t3, t4) {
       var _ = this;
       _.url = t0;
       _.headers = t1;
-      _.theme = t2;
-      _.colorMapper = t3;
+      _._loaders$_httpClient = t2;
+      _.theme = t3;
+      _.colorMapper = t4;
     },
     ApplicationLogoWidthTextWidget$(iconSize, onTapAction) {
       var t1;
@@ -78,7 +58,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new A.ApplicationLogoWidthTextWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), onTapAction, iconSize, null);
+      return new B.ApplicationLogoWidthTextWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), onTapAction, iconSize, null);
     },
     ApplicationLogoWidthTextWidget: function ApplicationLogoWidthTextWidget(t0, t1, t2, t3) {
       var _ = this;
@@ -86,114 +66,86 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onTapAction = t1;
       _.iconSize = t2;
       _.key = t3;
-    },
-    httpGet(url, headers) {
-      var $async$goto = 0,
-        $async$completer = B._makeAsyncAwaitCompleter(type$.Uint8List),
-        $async$returnValue, t1;
-      var $async$httpGet = B._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return B._asyncRethrow($async$result, $async$completer);
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              $async$goto = 3;
-              return B._asyncAwait(A.HttpRequest_request(url, headers), $async$httpGet);
-            case 3:
-              // returning from await.
-              t1 = $async$result.responseText;
-              t1.toString;
-              $async$returnValue = new Uint8Array(B._ensureNativeList(C.C_Utf8Encoder.convert$1(t1)));
-              // goto return
-              $async$goto = 1;
-              break;
-            case 1:
-              // return
-              return B._asyncReturn($async$returnValue, $async$completer);
-          }
-      });
-      return B._asyncStartSync($async$httpGet, $async$completer);
     }
   },
   D;
   J = holdersList[1];
-  B = holdersList[0];
+  A = holdersList[0];
   C = holdersList[2];
-  A = hunkHelpers.updateHolder(holdersList[11], A);
+  B = hunkHelpers.updateHolder(holdersList[11], B);
   D = holdersList[19];
-  A.ImageLoaderMixin.prototype = {
+  B.ImageLoaderMixin.prototype = {
     buildImage$2$imagePath$imageSize(imagePath, imageSize) {
       var _null = null;
       if (this.isImageNetworkLink$1(imagePath) && C.JSString_methods.endsWith$1(imagePath, "svg"))
-        return new B.SvgPicture(imageSize, imageSize, C.BoxFit_0, C.Alignment_0_0, new A.SvgNetworkLoader(imagePath, _null, _null, _null), new A.ImageLoaderMixin_buildImage_closure(), _null, _null);
+        return new A.SvgPicture(imageSize, imageSize, C.BoxFit_0, C.Alignment_0_0, new B.SvgNetworkLoader(imagePath, _null, _null, _null, _null), new B.ImageLoaderMixin_buildImage_closure(), _null, _null);
       else if (this.isImageNetworkLink$1(imagePath))
-        return new B.Image(B.ResizeImage_resizeIfNeeded(_null, _null, new A.NetworkImage(imagePath, 1, _null)), new A.ImageLoaderMixin_buildImage_closure0(), new A.ImageLoaderMixin_buildImage_closure1(this, imageSize), imageSize, imageSize, C.BoxFit_0, _null);
+        return new A.Image(A.ResizeImage_resizeIfNeeded(_null, _null, new B.NetworkImage(imagePath, 1, _null)), new B.ImageLoaderMixin_buildImage_closure0(), new B.ImageLoaderMixin_buildImage_closure1(this, imageSize), imageSize, imageSize, C.BoxFit_0, _null);
       else if (C.JSString_methods.endsWith$1(imagePath, "svg"))
-        return B.SvgPicture$asset(imagePath, C.Alignment_0_0, _null, C.BoxFit_1, imageSize, _null, _null, imageSize);
+        return A.SvgPicture$asset(imagePath, C.Alignment_0_0, _null, C.BoxFit_1, imageSize, _null, _null, imageSize);
       else
-        return new B.Image(B.ResizeImage_resizeIfNeeded(_null, _null, new B.AssetImage(imagePath, _null, _null)), _null, _null, imageSize, imageSize, C.BoxFit_0, _null);
+        return new A.Image(A.ResizeImage_resizeIfNeeded(_null, _null, new A.AssetImage(imagePath, _null, _null)), _null, _null, imageSize, imageSize, C.BoxFit_0, _null);
     },
     isImageNetworkLink$1(imagePath) {
       return C.JSString_methods.startsWith$1(imagePath, "http") || C.JSString_methods.startsWith$1(imagePath, "https");
     }
   };
-  A.NetworkImage.prototype = {
+  B.NetworkImage.prototype = {
     obtainKey$1(configuration) {
-      return new B.SynchronousFuture(this, type$.SynchronousFuture_NetworkImage);
+      return new A.SynchronousFuture(this, type$.SynchronousFuture_NetworkImage);
     },
     loadBuffer$2(key, decode) {
       var _null = null,
-        chunkEvents = B.StreamController_StreamController(_null, _null, _null, _null, false, type$.ImageChunkEvent);
-      return B.MultiFrameImageStreamCompleter$(new B._ControllerStream(chunkEvents, B._instanceType(chunkEvents)._eval$1("_ControllerStream<1>")), this.__network_image_web$_loadAsync$3(key, decode, chunkEvents), key.url, _null, key.scale);
+        chunkEvents = A.StreamController_StreamController(_null, _null, _null, _null, false, type$.ImageChunkEvent);
+      return A.MultiFrameImageStreamCompleter$(new A._ControllerStream(chunkEvents, A._instanceType(chunkEvents)._eval$1("_ControllerStream<1>")), this.__network_image_web$_loadAsync$3(key, decode, chunkEvents), key.url, _null, key.scale);
     },
     loadImage$2(key, decode) {
       var _null = null,
-        chunkEvents = B.StreamController_StreamController(_null, _null, _null, _null, false, type$.ImageChunkEvent);
-      return B.MultiFrameImageStreamCompleter$(new B._ControllerStream(chunkEvents, B._instanceType(chunkEvents)._eval$1("_ControllerStream<1>")), this.__network_image_web$_loadAsync$3(key, decode, chunkEvents), key.url, _null, key.scale);
+        chunkEvents = A.StreamController_StreamController(_null, _null, _null, _null, false, type$.ImageChunkEvent);
+      return A.MultiFrameImageStreamCompleter$(new A._ControllerStream(chunkEvents, A._instanceType(chunkEvents)._eval$1("_ControllerStream<1>")), this.__network_image_web$_loadAsync$3(key, decode, chunkEvents), key.url, _null, key.scale);
     },
     __network_image_web$_loadAsync$3(key, decode, chunkEvents) {
       return this._loadAsync$body$NetworkImage(key, decode, chunkEvents);
     },
     _loadAsync$body$NetworkImage(key, decode, chunkEvents) {
       var $async$goto = 0,
-        $async$completer = B._makeAsyncAwaitCompleter(type$.Codec),
+        $async$completer = A._makeAsyncAwaitCompleter(type$.Codec),
         $async$returnValue, completer, request, bytes, t1, resolved, t2, $async$temp1;
-      var $async$__network_image_web$_loadAsync$3 = B._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
+      var $async$__network_image_web$_loadAsync$3 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
-          return B._asyncRethrow($async$result, $async$completer);
+          return A._asyncRethrow($async$result, $async$completer);
         while (true)
           switch ($async$goto) {
             case 0:
               // Function start
               t1 = key.url;
-              resolved = B.Uri_base().resolve$1(t1);
+              resolved = A.Uri_base().resolve$1(t1);
               t2 = self;
               t2 = t2.window.flutterCanvasKit != null || t2.window._flutter_skwasmInstance != null;
               $async$goto = t2 ? 3 : 5;
               break;
             case 3:
               // then
-              t2 = new B._Future($.Zone__current, type$._Future_JSObject);
-              completer = new B._AsyncCompleter(t2, type$._AsyncCompleter_JSObject);
-              request = A._httpClient();
+              t2 = new A._Future($.Zone__current, type$._Future_JSObject);
+              completer = new A._AsyncCompleter(t2, type$._AsyncCompleter_JSObject);
+              request = B._httpClient();
               request.open("GET", t1, true);
               request.responseType = "arraybuffer";
-              request.addEventListener("load", B._functionToJS1(new A.NetworkImage__loadAsync_closure(request, completer, resolved)));
-              request.addEventListener("error", B._functionToJS1(new A.NetworkImage__loadAsync_closure0(completer)));
+              request.addEventListener("load", A._functionToJS1(new B.NetworkImage__loadAsync_closure(request, completer, resolved)));
+              request.addEventListener("error", A._functionToJS1(new B.NetworkImage__loadAsync_closure0(completer)));
               request.send();
               $async$goto = 6;
-              return B._asyncAwait(t2, $async$__network_image_web$_loadAsync$3);
+              return A._asyncAwait(t2, $async$__network_image_web$_loadAsync$3);
             case 6:
               // returning from await.
               t1 = request.response;
               t1.toString;
-              bytes = B.NativeUint8List_NativeUint8List$view(type$.NativeByteBuffer._as(t1), 0, null);
+              bytes = A.NativeUint8List_NativeUint8List$view(type$.NativeByteBuffer._as(t1), 0, null);
               if (bytes.byteLength === 0)
-                throw B.wrapException(A.NetworkImageLoadException$(B.getProperty(request, "status"), resolved));
+                throw A.wrapException(B.NetworkImageLoadException$(A.getProperty(request, "status"), resolved));
               $async$temp1 = decode;
               $async$goto = 7;
-              return B._asyncAwait(B.ImmutableBuffer_fromUint8List(bytes), $async$__network_image_web$_loadAsync$3);
+              return A._asyncAwait(A.ImmutableBuffer_fromUint8List(bytes), $async$__network_image_web$_loadAsync$3);
             case 7:
               // returning from await.
               $async$returnValue = $async$temp1.call$1($async$result);
@@ -205,7 +157,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               break;
             case 5:
               // else
-              $async$returnValue = $.$get$_renderer().instantiateImageCodecFromUrl$2$chunkCallback(resolved, new A.NetworkImage__loadAsync_closure1(chunkEvents));
+              $async$returnValue = $.$get$_renderer().instantiateImageCodecFromUrl$2$chunkCallback(resolved, new B.NetworkImage__loadAsync_closure1(chunkEvents));
               // goto return
               $async$goto = 1;
               break;
@@ -213,36 +165,69 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               // join
             case 1:
               // return
-              return B._asyncReturn($async$returnValue, $async$completer);
+              return A._asyncReturn($async$returnValue, $async$completer);
           }
       });
-      return B._asyncStartSync($async$__network_image_web$_loadAsync$3, $async$completer);
+      return A._asyncStartSync($async$__network_image_web$_loadAsync$3, $async$completer);
     },
     $eq(_, other) {
       if (other == null)
         return false;
-      if (J.get$runtimeType$(other) !== B.getRuntimeTypeOfDartObject(this))
+      if (J.get$runtimeType$(other) !== A.getRuntimeTypeOfDartObject(this))
         return false;
-      return other instanceof A.NetworkImage && other.url === this.url && other.scale === this.scale;
+      return other instanceof B.NetworkImage && other.url === this.url && other.scale === this.scale;
     },
     get$hashCode(_) {
-      return B.Object_hash(this.url, this.scale, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue);
+      return A.Object_hash(this.url, this.scale, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue);
     },
     toString$0(_) {
       return 'NetworkImage("' + this.url + '", scale: ' + C.JSInt_methods.toStringAsFixed$1(this.scale, 1) + ")";
     }
   };
-  A.NetworkImageLoadException.prototype = {
+  B.NetworkImageLoadException.prototype = {
     toString$0(_) {
       return this._image_provider$_message;
     },
     $isException: 1
   };
-  A.ImageChunkEvent.prototype = {};
-  A._ImageChunkEvent_Object_Diagnosticable.prototype = {};
-  A.SvgNetworkLoader.prototype = {
+  B.ImageChunkEvent.prototype = {};
+  B._ImageChunkEvent_Object_Diagnosticable.prototype = {};
+  B.SvgNetworkLoader.prototype = {
     prepareMessage$1(context) {
-      return A.httpGet(this.url, this.headers);
+      return this.prepareMessage$body$SvgNetworkLoader(context);
+    },
+    prepareMessage$body$SvgNetworkLoader(context) {
+      var $async$goto = 0,
+        $async$completer = A._makeAsyncAwaitCompleter(type$.nullable_Uint8List),
+        $async$returnValue, $async$self = this, response, client, t1;
+      var $async$prepareMessage$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
+        if ($async$errorCode === 1)
+          return A._asyncRethrow($async$result, $async$completer);
+        while (true)
+          switch ($async$goto) {
+            case 0:
+              // Function start
+              client = $async$self._loaders$_httpClient;
+              t1 = A.zoneClient();
+              client = t1 == null ? new A.BrowserClient(new self.AbortController()) : t1;
+              $async$goto = 3;
+              return A._asyncAwait(client._sendUnstreamed$3("GET", A.Uri_parse($async$self.url, 0, null), $async$self.headers), $async$prepareMessage$1);
+            case 3:
+              // returning from await.
+              response = $async$result;
+              client._browser_client$_isClosed = true;
+              t1 = client._abortController;
+              t1.abort();
+              $async$returnValue = response.bodyBytes;
+              // goto return
+              $async$goto = 1;
+              break;
+            case 1:
+              // return
+              return A._asyncReturn($async$returnValue, $async$completer);
+          }
+      });
+      return A._asyncStartSync($async$prepareMessage$1, $async$completer);
     },
     provideSvg$1(message) {
       message.toString;
@@ -250,13 +235,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     get$hashCode(_) {
       var _this = this;
-      return B.Object_hash(_this.url, _this.headers, _this.theme, _this.colorMapper, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue);
+      return A.Object_hash(_this.url, _this.headers, _this.theme, _this.colorMapper, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue, C.C_SentinelValue);
     },
     $eq(_, other) {
       var t1;
       if (other == null)
         return false;
-      if (other instanceof A.SvgNetworkLoader)
+      if (other instanceof B.SvgNetworkLoader)
         t1 = other.url === this.url;
       else
         t1 = false;
@@ -266,7 +251,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return "SvgNetworkLoader(" + this.url + ")";
     }
   };
-  A.ApplicationLogoWidthTextWidget.prototype = {
+  B.ApplicationLogoWidthTextWidget.prototype = {
     build$1(context) {
       var _null = null,
         value = $.$get$dotenv().maybeGet$2$fallback("PLATFORM", "other"),
@@ -274,34 +259,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.iconSize;
       if (t2 == null)
         t2 = 33;
-      return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_9Sx, 20, _null, C.Color_9Sx, t1, _null, t2, _null, _null, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null, _null);
+      return A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_9Sx, 20, _null, C.Color_9Sx, t1, _null, t2, _null, _null, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null, _null);
     }
   };
   var typesOffset = hunkHelpers.updateTypes([]);
-  A.HttpRequest_request_closure.prototype = {
-    call$1(e) {
-      var accepted, unknownRedirect, t3,
-        t1 = this.xhr,
-        t2 = t1.status;
-      t2.toString;
-      accepted = t2 >= 200 && t2 < 300;
-      unknownRedirect = t2 > 307 && t2 < 400;
-      t2 = accepted || t2 === 0 || t2 === 304 || unknownRedirect;
-      t3 = this.completer;
-      if (t2)
-        t3.complete$1(0, t1);
-      else
-        t3.completeError$1(e);
-    },
-    $signature: 340
-  };
-  A.ImageLoaderMixin_buildImage_closure.prototype = {
+  B.ImageLoaderMixin_buildImage_closure.prototype = {
     call$1(_) {
       return C.CupertinoActivityIndicator_null_true_1_null;
     },
-    $signature: 1865
+    $signature: 1926
   };
-  A.ImageLoaderMixin_buildImage_closure0.prototype = {
+  B.ImageLoaderMixin_buildImage_closure0.prototype = {
     call$3(_, child, loadingProgress) {
       if (loadingProgress != null && loadingProgress.cumulativeBytesLoaded !== loadingProgress.expectedTotalBytes)
         return D.Center_IFX;
@@ -309,18 +277,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 1866
+    $signature: 1927
   };
-  A.ImageLoaderMixin_buildImage_closure1.prototype = {
+  B.ImageLoaderMixin_buildImage_closure1.prototype = {
     call$3(context, error, stackTrace) {
       var t1, _null = null;
-      B.log("ImageLoaderMixin::buildImage:Exception = " + B.S(error), C.Level_1);
+      A.log("ImageLoaderMixin::buildImage:Exception = " + A.S(error), C.Level_1);
       t1 = this.imageSize;
-      return B.Container$(C.Alignment_0_0, D.Icon_MYE, C.Clip_0, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, t1);
+      return A.Container$(C.Alignment_0_0, D.Icon_MYE, C.Clip_0, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, t1);
     },
-    $signature: 1867
+    $signature: 1928
   };
-  A.NetworkImage__loadAsync_closure.prototype = {
+  B.NetworkImage__loadAsync_closure.prototype = {
     call$1(e) {
       var t1 = this.request,
         $status = t1.status,
@@ -332,61 +300,55 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.complete$1(0, t1);
       else {
         t2.completeError$1(e);
-        throw B.wrapException(A.NetworkImageLoadException$($status, this.resolved));
+        throw A.wrapException(B.NetworkImageLoadException$($status, this.resolved));
       }
     },
-    $signature: 87
+    $signature: 82
   };
-  A.NetworkImage__loadAsync_closure0.prototype = {
+  B.NetworkImage__loadAsync_closure0.prototype = {
     call$1(e) {
       return this.completer.completeError$1(e);
     },
-    $signature: 81
+    $signature: 84
   };
-  A.NetworkImage__loadAsync_closure1.prototype = {
+  B.NetworkImage__loadAsync_closure1.prototype = {
     call$2(bytes, total) {
-      this.chunkEvents.add$1(0, new A.ImageChunkEvent(bytes, total));
+      this.chunkEvents.add$1(0, new B.ImageChunkEvent(bytes, total));
     },
-    $signature: 284
+    $signature: 235
   };
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
-    _inheritMany(B.Closure, [A.HttpRequest_request_closure, A.ImageLoaderMixin_buildImage_closure, A.ImageLoaderMixin_buildImage_closure0, A.ImageLoaderMixin_buildImage_closure1, A.NetworkImage__loadAsync_closure, A.NetworkImage__loadAsync_closure0]);
-    _inheritMany(B.Object, [A.ImageLoaderMixin, A.NetworkImageLoadException, A._ImageChunkEvent_Object_Diagnosticable]);
-    _inherit(A.NetworkImage, B.ImageProvider);
-    _inherit(A.NetworkImage__loadAsync_closure1, B.Closure2Args);
-    _inherit(A.ImageChunkEvent, A._ImageChunkEvent_Object_Diagnosticable);
-    _inherit(A.SvgNetworkLoader, B.SvgLoader);
-    _inherit(A.ApplicationLogoWidthTextWidget, B.StatelessWidget);
-    _mixin(A._ImageChunkEvent_Object_Diagnosticable, B.Diagnosticable);
+    _inheritMany(A.Object, [B.ImageLoaderMixin, B.NetworkImageLoadException, B._ImageChunkEvent_Object_Diagnosticable]);
+    _inheritMany(A.Closure, [B.ImageLoaderMixin_buildImage_closure, B.ImageLoaderMixin_buildImage_closure0, B.ImageLoaderMixin_buildImage_closure1, B.NetworkImage__loadAsync_closure, B.NetworkImage__loadAsync_closure0]);
+    _inherit(B.NetworkImage, A.ImageProvider);
+    _inherit(B.NetworkImage__loadAsync_closure1, A.Closure2Args);
+    _inherit(B.ImageChunkEvent, B._ImageChunkEvent_Object_Diagnosticable);
+    _inherit(B.SvgNetworkLoader, A.SvgLoader);
+    _inherit(B.ApplicationLogoWidthTextWidget, A.StatelessWidget);
+    _mixin(B._ImageChunkEvent_Object_Diagnosticable, A.Diagnosticable);
   })();
-  B._Universe_addRules(init.typeUniverse, JSON.parse('{"NetworkImage":{"ImageProvider":["NetworkImage0"],"ImageProvider.T":"NetworkImage0"},"NetworkImage0":{"ImageProvider":["NetworkImage0"]},"NetworkImageLoadException":{"Exception":[]},"SvgNetworkLoader":{"SvgLoader":["Uint8List"],"BytesLoader":[],"SvgLoader.T":"Uint8List"},"ApplicationLogoWidthTextWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
-  var type$ = (function rtii() {
-    var findType = B.findType;
-    return {
-      Codec: findType("Codec"),
-      ImageChunkEvent: findType("ImageChunkEvent"),
-      ImagePaths: findType("ImagePaths0"),
-      NativeByteBuffer: findType("NativeByteBuffer"),
-      ProgressEvent: findType("ProgressEvent"),
-      SynchronousFuture_NetworkImage: findType("SynchronousFuture<NetworkImage>"),
-      Uint8List: findType("Uint8List"),
-      _AsyncCompleter_HttpRequest: findType("_AsyncCompleter<HttpRequest>"),
-      _AsyncCompleter_JSObject: findType("_AsyncCompleter<JSObject>"),
-      _Future_HttpRequest: findType("_Future<HttpRequest>"),
-      _Future_JSObject: findType("_Future<JSObject>")
-    };
-  })();
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"NetworkImage":{"ImageProvider":["NetworkImage0"],"ImageProvider.T":"NetworkImage0"},"NetworkImage0":{"ImageProvider":["NetworkImage0"]},"NetworkImageLoadException":{"Exception":[]},"SvgNetworkLoader":{"SvgLoader":["Uint8List"],"BytesLoader":[],"SvgLoader.T":"Uint8List"},"ApplicationLogoWidthTextWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  var type$ = {
+    Codec: A.findType("Codec"),
+    ImageChunkEvent: A.findType("ImageChunkEvent"),
+    ImagePaths: A.findType("ImagePaths0"),
+    NativeByteBuffer: A.findType("NativeByteBuffer"),
+    SynchronousFuture_NetworkImage: A.findType("SynchronousFuture<NetworkImage>"),
+    _AsyncCompleter_JSObject: A.findType("_AsyncCompleter<JSObject>"),
+    _Future_JSObject: A.findType("_Future<JSObject>"),
+    nullable_Uint8List: A.findType("Uint8List?")
+  };
   (function constants() {
-    D.Center_IFX = new B.Center(C.Alignment_0_0, null, null, C.CupertinoActivityIndicator_null_true_1_null, null);
-    D.Icon_MYE = new B.Icon(C.IconData_57912_false, null, null, null, null);
+    D.Center_IFX = new A.Center(C.Alignment_0_0, null, null, C.CupertinoActivityIndicator_null_true_1_null, null);
+    D.Icon_MYE = new A.Icon(C.IconData_57912_false, null, null, null, null);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "7m73wK9kff5OfrJJQWeAbb/p/tA=");
+})($__dart_deferred_initializers__, "ifZvHmtx6FunPYasJptO3nayYbo=");
 ;
