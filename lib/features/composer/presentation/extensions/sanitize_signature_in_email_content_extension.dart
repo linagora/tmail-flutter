@@ -13,7 +13,7 @@ extension SanitizeSignatureInEmailContentExtension on ComposerController {
       final existedSignatureButton = emailDocument.querySelector('.tmail-signature-button');
       if (existedSignatureButton != null) return;
 
-      final signature = emailDocument.querySelector('div.tmail-signature');
+      final signature = emailDocument.querySelector('.tmail-signature');
       if (signature == null) return;
 
       restoringSignatureButton = true;
