@@ -101,7 +101,9 @@ _flutter.buildConfig = {"engineRevision":"82bd5b7209295a5b7ff8cae0df96e7870171e3
           }
           _flutter.loader.load({
             onEntrypointLoaded: async function(engineInitializer) {
-              const appRunner = await engineInitializer.initializeEngine();
+              const appRunner = await engineInitializer.initializeEngine({
+                fontFallbackBaseUrl: ''
+              });
               await setTimeout( async function () {
                 await appRunner.runApp();
               }, 2000);
@@ -111,7 +113,9 @@ _flutter.buildConfig = {"engineRevision":"82bd5b7209295a5b7ff8cae0df96e7870171e3
     } else {
       _flutter.loader.load({
         onEntrypointLoaded: async function(engineInitializer) {
-          const appRunner = await engineInitializer.initializeEngine();
+          const appRunner = await engineInitializer.initializeEngine({
+            fontFallbackBaseUrl: ''
+          });
           await setTimeout( async function () {
             await appRunner.runApp();
           }, 2000);
