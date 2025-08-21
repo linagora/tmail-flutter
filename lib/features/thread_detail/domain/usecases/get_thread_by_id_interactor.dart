@@ -21,6 +21,7 @@ class GetThreadByIdInteractor {
     AccountId accountId,
     MailboxId sentMailboxId,
     String ownEmailAddress, {
+    required bool isSentMailbox,
     bool updateCurrentThreadDetail = false,
   }) async* {
     try {
@@ -36,7 +37,7 @@ class GetThreadByIdInteractor {
       );
 
       yield Right(GetThreadByIdSuccess(
-        result.emailIdsToDisplay,
+        result.emailIdsToDisplay(isSentMailbox),
         threadId: threadId,
         updateCurrentThreadDetail: updateCurrentThreadDetail,
         emailsInThreadDetailInfo: result,
@@ -51,6 +52,8 @@ class GetThreadByIdInteractor {
           accountId,
           sentMailboxId,
           ownEmailAddress,
+          isSentMailbox: isSentMailbox,
+          updateCurrentThreadDetail: updateCurrentThreadDetail,
         ),
         updateCurrentThreadDetail: updateCurrentThreadDetail,
       ));

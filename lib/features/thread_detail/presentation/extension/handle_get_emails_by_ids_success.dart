@@ -1,4 +1,6 @@
 import 'package:core/utils/platform_info.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:model/email/email_in_thread_status.dart';
@@ -24,8 +26,14 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
       
       if (isThreadDetailEnabled && isInternetConnected) {
         loadThreadOnThreadChanged = false;
+        final mailboxContain = email.findMailboxContain(
+          mailboxDashBoardController.mapMailboxById,
+        );
         mailboxDashBoardController.dispatchThreadDetailUIAction(
-          LoadThreadDetailAfterSelectedEmailAction(email.threadId!),
+          LoadThreadDetailAfterSelectedEmailAction(
+            email.threadId!,
+            isSentMailbox: mailboxContain?.isSent == true,
+          ),
         );
       } else {
         emailIdsPresentation[emailId] = emailIdsPresentation[emailId]?.copyWith(

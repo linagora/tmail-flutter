@@ -41,10 +41,14 @@ class EmailMovedAction extends ThreadDetailUIAction {
 }
 
 class LoadThreadDetailAfterSelectedEmailAction extends ThreadDetailUIAction {
-  LoadThreadDetailAfterSelectedEmailAction(this.threadId);
+  LoadThreadDetailAfterSelectedEmailAction(
+    this.threadId, {
+    required this.isSentMailbox,
+  });
 
   final ThreadId threadId;
+  final bool isSentMailbox;
 
   @override
-  List<Object?> get props => [threadId];
+  List<Object?> get props => [threadId, isSentMailbox];
 }

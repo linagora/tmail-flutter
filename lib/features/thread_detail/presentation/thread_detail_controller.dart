@@ -96,18 +96,19 @@ class ThreadDetailController extends BaseController {
     EmailProperty.messageId,
   });
   final cachedEmailLoaded = <EmailId, EmailLoaded>{};
-  late final _threadGetDebouncer = Debouncer<ThreadId?>(
+  late final _threadGetDebouncer = Debouncer<({ThreadId? threadId, bool isSentMailbox})?>(
     const Duration(milliseconds: 500),
     initialValue: null,
     checkEquality: false,
-    onChanged: (threadId) {
-      if (_validateLoadThread(threadId)) {
+    onChanged: (value) {
+      if (_validateLoadThread(value?.threadId)) {
         consumeState(_getEmailIdsByThreadIdInteractor.execute(
-          threadId!,
+          value!.threadId!,
           session!,
           accountId!,
           sentMailboxId!,
           ownEmailAddress!,
+          isSentMailbox: value.isSentMailbox,
         ));
       }
     },
@@ -189,7 +190,10 @@ class ThreadDetailController extends BaseController {
       } else if (action is EmailMovedAction) {
         handleEmailMovedAction(action);
       } else if (action is LoadThreadDetailAfterSelectedEmailAction) {
-        _threadGetDebouncer.value = action.threadId;
+        _threadGetDebouncer.value = (
+          threadId: action.threadId,
+          isSentMailbox: action.isSentMailbox,
+        );
       }
       // Reset [threadDetailUIAction] to original value
       mailboxDashBoardController.dispatchThreadDetailUIAction(
