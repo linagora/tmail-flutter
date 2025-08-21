@@ -68,7 +68,7 @@ cozy-stack instances add tmail.localhost:8080 --passphrase cozy --apps home,stor
 - Apply patchs/cozy-dev-config.patch
 - Edit session url in jmap-dart-client to /jmap/session
 - isInsideCozy will be `false` if run on localhost, so in cozy_config_web.dart, return true on isInsideCozy
-- in `env.file`, COZY_INTEGRATION=true and COZY_EXTERNAL_BRIDGE_VERSION=x.x.x (where x.x.x is the version of cozy-external-bridge)
+- in `env.file`, COZY_INTEGRATION=true
 - `flutter run -d chrome --web-port 2023 --web-browser-flag "--disable-web-security" --profile`
 
 3. Access Cozy

@@ -39,7 +39,7 @@ dependencies:
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
 
-  flutter_svg: 2.1.0
+  flutter_svg: 2.0.9
 
   dio: 5.0.0
 
