@@ -1,4 +1,8 @@
 ## [0.18.1] - 2025-08-22
+### Fixed
+- Hot fix pod.lock to build iOS
+
+## [0.18.1] - 2025-08-22
 #### Changed
 - Revert `Build gz files during build, not during startup (Closes: #3920)` to find better solution to have also correct env files in build
 
