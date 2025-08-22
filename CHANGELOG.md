@@ -1,3 +1,7 @@
+## [0.18.1] - 2025-08-22
+#### Changed
+- Revert `Build gz files during build, not during startup (Closes: #3920)` to find better solution to have also correct env files in build
+
 ## [0.18.0] - 2025-08-22
 ### Added
 - #3834 Remember user sort
