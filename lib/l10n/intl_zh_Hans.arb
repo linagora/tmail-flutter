@@ -4736,5 +4736,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "archiveMessagesFailed": "归档邮件失败",
+  "@archiveMessagesFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
