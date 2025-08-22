@@ -4742,5 +4742,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "archiveMessagesFailed": "Theip ar theachtaireachtaí a chartlannú",
+  "@archiveMessagesFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
