@@ -53,16 +53,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.docWidth = t1;
     },
-    _HtmlContentViewerOnWebState__setUpWeb_closure: function _HtmlContentViewerOnWebState__setUpWeb_closure(t0) {
-      this.iframe = t0;
-    },
-    _HtmlContentViewerOnWebState__setUpWeb_closure0: function _HtmlContentViewerOnWebState__setUpWeb_closure0(t0) {
-      this.$this = t0;
-    },
     _HtmlContentViewerOnWebState_build_closure: function _HtmlContentViewerOnWebState_build_closure(t0) {
       this.$this = t0;
     },
     _HtmlContentViewerOnWebState__buildHtmlElementView_closure: function _HtmlContentViewerOnWebState__buildHtmlElementView_closure(t0) {
+      this.$this = t0;
+    },
+    _HtmlContentViewerOnWebState__buildHtmlElementView__closure: function _HtmlContentViewerOnWebState__buildHtmlElementView__closure(t0) {
       this.$this = t0;
     },
     __HtmlContentViewerOnWebState_State_AutomaticKeepAliveClientMixin: function __HtmlContentViewerOnWebState_State_AutomaticKeepAliveClientMixin() {
@@ -303,33 +300,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t2.htmlContentMinWidth;
       t4 = t2.direction;
       t5 = t2.contentPadding;
-      t2 = t2.useDefaultFontStyle ? "    body {\n      font-weight: 400;\n      font-size: 16px;\n      line-height: 24px;\n      letter-spacing: -0.01em; /* -1% */\n    }\n  " : "";
+      t2 = t2.useDefaultFontStyle ? "    div, p, span, th, td, tr, ul, ol, li, a, button {\n      font-weight: 400;\n      font-size: 16px;\n      line-height: 24px;\n      letter-spacing: -0.01em; /* -1% */\n    }\n    \n    p {\n      margin: 0px;\n    }\n  " : "";
       t4 = t4 === C.TextDirection_0 ? 'dir="rtl"' : "";
       t5 = t5 != null ? "margin: " + A.S(t5) + ";" : "";
       _this._html_content_viewer_on_web_widget$_htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n            @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Regular.ttf") format("truetype");\n      font-weight: 400;\n      font-style: normal;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Medium.ttf") format("truetype");\n      font-weight: 500;\n      font-style: medium;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-SemiBold.ttf") format("truetype");\n      font-weight: 600;\n      font-style: semi-bold;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Bold.ttf") format("truetype");\n      font-weight: 700;\n      font-style: bold;\n    }\n    \n    body {\n      font-family: \'Inter\', sans-serif;\n    }\n  \n        \n        ' + t2 + "\n        \n        .tmail-content {\n          min-height: " + A.S(t1) + "px;\n          min-width: " + t3 + "px;\n          overflow: auto;\n          overflow-wrap: break-word;\n          word-break: break-word;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n        \n        pre {\n          white-space: pre-wrap;\n        }\n        \n        table {\n          white-space: normal !important;\n        }\n        \n        " + combinedCss + "\n      </style>\n      </head>\n      <body " + t4 + ' style = "overflow-x: hidden; ' + t5 + '";>\n      <div class="tmail-content">' + processedContent + "</div>\n      " + combinedScripts + "\n      </body>\n      </html> \n    ";
-      t1 = document.createElement("iframe");
-      t1.toString;
-      t2 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
-      t2 === $ && A.throwUnnamedLateFieldNI();
-      t1.width = C.JSNumber_methods.toString$0(t2);
-      t2 = _this.___HtmlContentViewerOnWebState__actualHeight_A;
-      t2 === $ && A.throwUnnamedLateFieldNI();
-      t1.height = C.JSNumber_methods.toString$0(t2);
-      t2 = _this._html_content_viewer_on_web_widget$_htmlData;
-      t1.srcdoc = t2 == null ? "" : t2;
-      t2 = t1.style;
-      t2.border = "none";
-      t2 = t1.style;
-      t2.overflow = "hidden";
-      t2 = t1.style;
-      t2.width = "100%";
-      t2 = t1.style;
-      t2.height = "100%";
-      $.$get$platformViewRegistry();
-      t2 = _this.___HtmlContentViewerOnWebState__createdViewId_A;
-      $.$get$PlatformViewManager_instance().registerFactory$3$isVisible(t2, new B._HtmlContentViewerOnWebState__setUpWeb_closure(t1), true);
-      if (_this._framework$_element != null)
-        _this.setState$1(new B._HtmlContentViewerOnWebState__setUpWeb_closure0(_this));
+      _this._webInit = A.Future_Future$value(true, type$.bool);
     },
     build$1(context) {
       var _this = this;
@@ -405,18 +380,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
-  B._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
-    call$1(viewId) {
-      return this.iframe;
-    },
-    $signature: 503
-  };
-  B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
-    call$0() {
-      this.$this._webInit = A.Future_Future$value(true, type$.bool);
-    },
-    $signature: 0
-  };
   B._HtmlContentViewerOnWebState_build_closure.prototype = {
     call$2(_, constraint) {
       var t1 = this.$this,
@@ -425,18 +388,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.___HtmlContentViewerOnWebState_minHeight_A = Math.min(constraint.maxHeight, t2);
       return t1._buildHtmlElementView$0();
     },
-    $signature: 287
+    $signature: 254
   };
   B._HtmlContentViewerOnWebState__buildHtmlElementView_closure.prototype = {
     call$2(_, snapshot) {
-      var t1, t2, t3, t4, htmlView, _null = null;
+      var t1, htmlView, t2, t3, _null = null;
       if (snapshot.data != null) {
         t1 = this.$this;
-        t2 = t1._html_content_viewer_on_web_widget$_htmlData;
-        t3 = A.S(t1._widget.key);
-        t4 = t1.___HtmlContentViewerOnWebState__createdViewId_A;
-        t4 === $ && A.throwUnnamedLateFieldNI();
-        htmlView = new A.HtmlElementView(t4, _null, _null, new A.ValueKey(A.S(t2) + "-" + t3, type$.ValueKey_String));
+        htmlView = A.HtmlElementViewImpl_createFromTagName(true, new A.ValueKey(A.S(t1._html_content_viewer_on_web_widget$_htmlData) + "-" + A.S(t1._widget.key), type$.ValueKey_String), new B._HtmlContentViewerOnWebState__buildHtmlElementView__closure(t1), "iframe");
         t2 = t1._widget.viewMaxHeight;
         t3 = t1.___HtmlContentViewerOnWebState__actualHeight_A;
         t1 = t1.___HtmlContentViewerOnWebState__actualWidth_A;
@@ -452,7 +411,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 188
+    $signature: 187
+  };
+  B._HtmlContentViewerOnWebState__buildHtmlElementView__closure.prototype = {
+    call$1(element) {
+      var t1, t2;
+      type$.IFrameElement._as(element);
+      t1 = this.$this;
+      t2 = t1.___HtmlContentViewerOnWebState__actualWidth_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      element.width = C.JSNumber_methods.toString$0(t2);
+      t2 = t1.___HtmlContentViewerOnWebState__actualHeight_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      element.height = C.JSNumber_methods.toString$0(t2);
+      t1 = t1._html_content_viewer_on_web_widget$_htmlData;
+      element.srcdoc = t1 == null ? "" : t1;
+      t1 = element.style;
+      t1.border = "none";
+      t1 = element.style;
+      t1.overflow = "hidden";
+      t1 = element.style;
+      t1.width = "100%";
+      t1 = element.style;
+      t1.height = "100%";
+    },
+    $signature: 730
   };
   (function aliases() {
     var _ = B.__HtmlContentViewerOnWebState_State_AutomaticKeepAliveClientMixin.prototype;
@@ -469,13 +452,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(B.HtmlContentViewerOnWeb, A.StatefulWidget);
     _inherit(B.__HtmlContentViewerOnWebState_State_AutomaticKeepAliveClientMixin, A.State0);
     _inherit(B._HtmlContentViewerOnWebState, B.__HtmlContentViewerOnWebState_State_AutomaticKeepAliveClientMixin);
-    _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure, B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure0, B._HtmlContentViewerOnWebState__handleContentWidthEvent_closure, B._HtmlContentViewerOnWebState__setUpWeb_closure0]);
-    _inherit(B._HtmlContentViewerOnWebState__setUpWeb_closure, A.Closure);
+    _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure, B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure0, B._HtmlContentViewerOnWebState__handleContentWidthEvent_closure]);
     _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState_build_closure, B._HtmlContentViewerOnWebState__buildHtmlElementView_closure]);
+    _inherit(B._HtmlContentViewerOnWebState__buildHtmlElementView__closure, A.Closure);
     _mixinHard(B.__HtmlContentViewerOnWebState_State_AutomaticKeepAliveClientMixin, A.AutomaticKeepAliveClientMixin);
   })();
   A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]}}'));
   var type$ = {
+    IFrameElement: A.findType("IFrameElement"),
     JSArray_String: A.findType("JSArray<String>"),
     JSArray_Widget: A.findType("JSArray<Widget>"),
     MessageEvent: A.findType("MessageEvent"),
@@ -494,5 +478,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "iRCH9r549TLNj7KkdrxacAJ8T8k=");
+})($__dart_deferred_initializers__, "/USvOK0Ih0du96afL93TTpQ9Vqw=");
 ;
