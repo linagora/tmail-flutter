@@ -1,3 +1,63 @@
+## [0.17.3] - 2025-08-22
+### Added
+- #3834 Remember user sort
+- #3912 [Thread Detail] Real time update issue
+- #3914 Apply new style for action on hover in list
+- #3919 Change logo for `Download Twake Mail application` banner on web mobile app
+- #2948 Apply New Identity view
+- #2666 Edit one recipient in cc, bcc, to
+- Update Cozy integration doc (#3905)
+- Build gz files during build, not during startup (Closes: #3920)
+- Auto create email address tag for input field
+- Apply new design for recover deleted emails
+- Support vertical scrolling email view when cursor is over calendar event description
+- Support vertical scrolling of all information between app bar and bottom bar in email view
+- Translated using Weblate (Chinese (Simplified Han script))
+- Translated using Weblate (French)
+- Translated using Weblate (Irish)
+- Translated using Weblate (Russian)
+- Translated using Weblate (Vietnamese)
+
+### Changed
+- #3586 [Bug] Can not open links on mail in mobile device after taking a scroll action
+- Change order of attachment and mail body on desktop and mobile
+- Update Thread Detail Reply toggle design
+- Update toast message when start download all attachment
+
+### Fixed
+- #3963 Context menu actions
+- #3964 [BUG] Text is not well displayed when preview email
+- #3953 Close modal when user clicks out of modal
+- #3944 Update new style for  Composer
+- #3924 [Thread Detail] Blinking when loading thread
+- #3947 [Thread Detail] [Part 2] Thread level actions
+- #3941 [Thread Detail] [Part-1] Thread level actions
+- #3940 Browser back button doesn't work as expected when inside Cozy dashboard
+- #3939 Display minor action on '…' menu in mobile view
+- #3936 [Thread Detail] Hide app bar icons when thread is disabled
+- #3933 Avoid load fonts from `https://fonts.gstatic.com`
+- #3956 Adjust UI for Vacation section in setting
+- #3952 Change new UI/UX for Forwarding section in setting
+- #3950 Apply new style for Folder visibility
+- #3945 Change style for Signature Composer
+- #3918 Email text be overlapped in body
+- #3889 Phone: Cannot see input when typing email body with attachments
+- #3864 [MANAGEMENT] Pasting address with display name
+- #3833 Failed to keep mobile app connect after network issue
+- #3294 BLUE-BAR mail to attentees: duplicated recipients
+- HOTFIX Thread Detail show actions when setting enabled
+- HOTFIX Compile error
+- HOTFIX Update flutter docker image for 3.27.4
+- Hot fix green background signature in profile setting
+- Fix attachments cannot be export multiple times in mobile
+- Remove files are not used
+- Apply new style for create identity view on mobile
+- Apply new style for create identity view on desktop
+- Set padding for email address tag in input field
+- Reuse widgets for advanced search form view
+- Use common `FilterField` & `EmailReceiveTimeType` objects for the entire app
+- Avoid calling `getMinInputLengthAutocomplete` multiple times from session
+
 ## [0.17.2] - 2025-07-24
 ### Fixed
 - Safari long email content be clipped
