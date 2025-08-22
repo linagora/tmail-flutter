@@ -1,4 +1,4 @@
-## [0.17.3] - 2025-08-22
+## [0.18.0] - 2025-08-22
 ### Added
 - #3834 Remember user sort
 - #3912 [Thread Detail] Real time update issue
