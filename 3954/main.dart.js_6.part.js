@@ -775,7 +775,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1935
+    $signature: 1937
   };
   B._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -855,7 +855,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new B.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 4
+    $signature: 5
   };
   B.NavigationBarWidget_build_closure0.prototype = {
     call$0() {
@@ -880,7 +880,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new B.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 4
+    $signature: 5
   };
   B._ProfileSettingIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -939,7 +939,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this._isExpandedNotifier;
       t1.set$value(0, !t1._change_notifier$_value);
     },
-    $signature: 115
+    $signature: 124
   };
   B.ProfileSettingMenuOverlay_build_closure.prototype = {
     call$1(actionType) {
@@ -955,7 +955,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(menuAction) {
       this.$this.onProfileSettingActionTypeClick.call$1(menuAction.action);
     },
-    $signature: 70
+    $signature: 66
   };
   B.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -1047,5 +1047,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "C5L/iP8hqXCRcbl0oscm8e9JPnY=");
+})($__dart_deferred_initializers__, "cDLP4WtZvA+nhPvYTBTCEs+XTFU=");
 ;
