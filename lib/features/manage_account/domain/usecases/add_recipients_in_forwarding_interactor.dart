@@ -20,7 +20,14 @@ class AddRecipientsInForwardingInteractor {
     try {
       yield Right<Failure, Success>(LoadingState());
       final result = await _forwardingRepository.addRecipientsInForwarding(accountId, addRequest);
-      yield Right<Failure, Success>(AddRecipientsInForwardingSuccess(result));
+      if (result.$2 == null) {
+        yield Right<Failure, Success>(AddRecipientsInForwardingSuccess(result.$1));
+      } else {
+        yield Right<Failure, Success>(AddRecipientsInForwardingWithSomeFailure(
+          result.$1,
+          result.$2!,
+        ));
+      }
     } catch (exception) {
       yield Left<Failure, Success>(AddRecipientsInForwardingFailure(exception));
     }

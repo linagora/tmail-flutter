@@ -22,7 +22,14 @@ class DeleteRecipientInForwardingInteractor {
       final result = await _forwardingRepository.deleteRecipientInForwarding(
           accountId,
           deleteRequest);
-      yield Right<Failure, Success>(DeleteRecipientInForwardingSuccess(result));
+      if (result.$2 == null) {
+        yield Right<Failure, Success>(DeleteRecipientInForwardingSuccess(result.$1));
+      } else {
+        yield Right<Failure, Success>(DeleteRecipientInForwardingWithSomeFailure(
+          result.$1,
+          result.$2!,
+        ));
+      }
     } catch (exception) {
       yield Left<Failure, Success>(DeleteRecipientInForwardingFailure(exception));
     }

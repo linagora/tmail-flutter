@@ -90,13 +90,28 @@ class ForwardController extends BaseController {
     if (success is GetForwardSuccess) {
       currentForward.value = success.forward;
       listRecipientForward.value = currentForward.value!.listRecipientForward;
-      _updateForwardWarningBannerState();
+      updateForwardWarningBannerState();
     } else if (success is DeleteRecipientInForwardingSuccess) {
       _handleDeleteRecipientSuccess(success);
     } else if (success is AddRecipientsInForwardingSuccess) {
       _handleAddRecipientsSuccess(success);
     } else if (success is EditLocalCopyInForwardingSuccess) {
       _handleEditLocalCopySuccess(success);
+    } else if (success is AddRecipientsInForwardingWithSomeFailure) {
+      handleUpdateRecipientsSuccessWithSomeFailure(
+        forward: success.forward,
+        exception: success.exception,
+      );
+    } else if (success is EditLocalCopyInForwardingWithSomeFailure) {
+      handleUpdateRecipientsSuccessWithSomeFailure(
+        forward: success.forward,
+        exception: success.exception,
+      );
+    } else if (success is DeleteRecipientInForwardingWithSomeFailure) {
+      handleUpdateRecipientsSuccessWithSomeFailure(
+        forward: success.forward,
+        exception: success.exception,
+      );
     } else {
       super.handleSuccessViewState(success);
     }
@@ -158,7 +173,7 @@ class ForwardController extends BaseController {
     currentForward.value = success.forward;
     listRecipientForward.value = currentForward.value!.listRecipientForward;
     selectionMode.value = SelectMode.INACTIVE;
-    _updateForwardWarningBannerState();
+    updateForwardWarningBannerState();
   }
 
   List<RecipientForward> get listRecipientForwardSelected =>
@@ -266,7 +281,7 @@ class ForwardController extends BaseController {
 
     recipientController.clearAll();
 
-    _updateForwardWarningBannerState();
+    updateForwardWarningBannerState();
   }
 
   void handleEditLocalCopy() {
@@ -296,7 +311,7 @@ class ForwardController extends BaseController {
     currentForward.value = success.forward;
     listRecipientForward.value = currentForward.value!.listRecipientForward;
 
-    _updateForwardWarningBannerState();
+    updateForwardWarningBannerState();
   }
 
   void registerListenerWorker() {
@@ -323,11 +338,11 @@ class ForwardController extends BaseController {
     }
   }
 
-  void _updateForwardWarningBannerState() {
+  void updateForwardWarningBannerState() {
     forwardWarningBannerState.value = _isExistRecipientSameServerDomain
       ? BannerState.enabled
       : BannerState.disabled;
-    log('ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${forwardWarningBannerState.value}');
+    log('ForwardController::updateForwardWarningBannerState: forwardWarningBannerState = ${forwardWarningBannerState.value}');
   }
 
   void clearInputFocus() {

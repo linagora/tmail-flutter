@@ -19,7 +19,14 @@ class EditLocalCopyInForwardingInteractor {
   ) async* {
     try {
       final result = await _forwardingRepository.editLocalCopyInForwarding(accountId, editRequest);
-      yield Right<Failure, Success>(EditLocalCopyInForwardingSuccess(result));
+      if (result.$2 == null) {
+        yield Right<Failure, Success>(EditLocalCopyInForwardingSuccess(result.$1));
+      } else {
+        yield Right<Failure, Success>(EditLocalCopyInForwardingWithSomeFailure(
+          result.$1,
+          result.$2!,
+        ));
+      }
     } catch (exception) {
       yield Left<Failure, Success>(EditLocalCopyInForwardingFailure(exception));
     }

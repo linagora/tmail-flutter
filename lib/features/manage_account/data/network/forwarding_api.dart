@@ -43,7 +43,7 @@ class ForwardingAPI with HandleSetErrorMixin {
     return tMailForwardResult;
   }
 
-  Future<TMailForward> updateForward(AccountId accountId, TMailForward forward) async {
+  Future<(TMailForward, SetMethodException?)> updateForward(AccountId accountId, TMailForward forward) async {
     log('ForwardingAPI::updateForward: ${forward.toJson()}');
     final setForwardMethod = SetForwardMethod(accountId)
       ..addUpdatesSingleton({
@@ -69,25 +69,23 @@ class ForwardingAPI with HandleSetErrorMixin {
     );
 
     final mapErrors = handleSetResponse([setForwardResponse]);
-    if (mapErrors.isNotEmpty) {
-      throw SetMethodException(mapErrors);
-    }
-
-    final updatedForward = setForwardResponse?.updated;
-    if (updatedForward?.isNotEmpty != true) {
-      throw UpdateForwardException();
-    }
-
     final getForwardResponse = response.parse<GetForwardResponse>(
       getForwardInvocation.methodCallId,
       GetForwardResponse.deserialize,
     );
 
     final newForward = getForwardResponse?.list.firstOrNull;
-    if (newForward == null) {
-      throw NotFoundForwardException();
+    if (newForward != null) {
+      return (
+        newForward,
+        mapErrors.isNotEmpty ? SetMethodException(mapErrors) : null,
+      );
     }
 
-    return newForward;
+    if (mapErrors.isNotEmpty) {
+      throw SetMethodException(mapErrors);
+    }
+
+    throw NotFoundForwardException();
   }
 }
