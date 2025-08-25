@@ -1,5 +1,6 @@
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/forwarding_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/add_recipients_in_forwarding_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_recipient_in_forwarding_request.dart';
@@ -12,17 +13,26 @@ class ForwardingRepositoryImpl extends ForwardingRepository {
   ForwardingRepositoryImpl(this.dataSource);
 
   @override
-  Future<TMailForward> addRecipientsInForwarding(AccountId accountId, AddRecipientInForwardingRequest addRequest) {
+  Future<(TMailForward, SetMethodException?)> addRecipientsInForwarding(
+    AccountId accountId,
+    AddRecipientInForwardingRequest addRequest,
+  ) {
     return dataSource.addRecipientsInForwarding(accountId, addRequest);
   }
 
   @override
-  Future<TMailForward> deleteRecipientInForwarding(AccountId accountId, DeleteRecipientInForwardingRequest deleteRequest) {
+  Future<(TMailForward, SetMethodException?)> deleteRecipientInForwarding(
+    AccountId accountId,
+    DeleteRecipientInForwardingRequest deleteRequest,
+  ) {
     return dataSource.deleteRecipientInForwarding(accountId, deleteRequest);
   }
 
   @override
-  Future<TMailForward> editLocalCopyInForwarding(AccountId accountId, EditLocalCopyInForwardingRequest editRequest) {
+  Future<(TMailForward, SetMethodException?)> editLocalCopyInForwarding(
+    AccountId accountId,
+    EditLocalCopyInForwardingRequest editRequest,
+  ) {
     return dataSource.editLocalCopyInForwarding(accountId, editRequest);
   }
 

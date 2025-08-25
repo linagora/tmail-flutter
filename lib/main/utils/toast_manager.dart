@@ -169,12 +169,15 @@ class ToastManager {
           message ?? AppLocalizations.of(context).previewEmailFromEMLFileFailed;
     } else if (failure is ExportTraceLogFailure) {
       message = message ?? AppLocalizations.of(context).exportTraceLogFailed;
-    } else if (failure is AddRecipientsInForwardingFailure) {
+    } else if (failure is AddRecipientsInForwardingFailure ||
+        failure is AddRecipientsInForwardingSuccessWithSomeCaseFailure) {
       message = message ?? AppLocalizations.of(context).addRecipientsFailed;
-    } else if (failure is EditLocalCopyInForwardingFailure) {
+    } else if (failure is EditLocalCopyInForwardingFailure ||
+        failure is EditLocalCopyInForwardingSuccessWithSomeCaseFailure) {
       message =
           message ?? AppLocalizations.of(context).editLocalCopyInForwardFailed;
-    } else if (failure is DeleteRecipientInForwardingFailure) {
+    } else if (failure is DeleteRecipientInForwardingFailure ||
+        failure is DeleteRecipientInForwardingSuccessWithSomeCaseFailure) {
       message = message ?? AppLocalizations.of(context).deleteRecipientsFailed;
     } else if (failure is CreateNewRuleFilterFailure) {
       message = message ?? AppLocalizations.of(context).createFilterRuleFailed;

@@ -1,5 +1,3 @@
-import 'dart:core';
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
@@ -20,9 +18,17 @@ class DeleteRecipientInForwardingInteractor {
     try {
       yield Right<Failure, Success>(StartDeleteRecipientInForwarding());
       final result = await _forwardingRepository.deleteRecipientInForwarding(
-          accountId,
-          deleteRequest);
-      yield Right<Failure, Success>(DeleteRecipientInForwardingSuccess(result));
+        accountId,
+        deleteRequest,
+      );
+      if (result.$2 == null) {
+        yield Right(DeleteRecipientInForwardingSuccess(result.$1));
+      } else {
+        yield Left(DeleteRecipientInForwardingSuccessWithSomeCaseFailure(
+          result.$1,
+          result.$2!,
+        ));
+      }
     } catch (exception) {
       yield Left<Failure, Success>(DeleteRecipientInForwardingFailure(exception));
     }
