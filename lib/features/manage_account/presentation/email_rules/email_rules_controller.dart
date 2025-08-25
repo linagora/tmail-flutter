@@ -160,6 +160,7 @@ class EmailRulesController extends BaseController {
         ..onCancelAction(AppLocalizations.of(context).cancel, () =>
             popBack())
         ..onConfirmAction(AppLocalizations.of(context).delete, () {
+          popBack();
           _handleDeleteEmailRuleAction(emailRule);
         }))
       .show();
@@ -171,15 +172,12 @@ class EmailRulesController extends BaseController {
         AppLocalizations.of(context).delete,
         cancelTitle: AppLocalizations.of(context).cancel,
         onConfirmAction: () => _handleDeleteEmailRuleAction(emailRule),
-        onCancelAction: popBack,
         onCloseButtonAction: popBack,
       );
     }
   }
 
   void _handleDeleteEmailRuleAction(TMailRule emailRule) {
-    popBack();
-
     if (emailRule.conditionGroup != null) {
       emailRule = TMailRule(
         id: emailRule.id,
