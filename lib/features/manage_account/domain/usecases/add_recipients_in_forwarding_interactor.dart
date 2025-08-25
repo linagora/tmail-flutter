@@ -1,5 +1,3 @@
-import 'dart:core';
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
@@ -19,8 +17,19 @@ class AddRecipientsInForwardingInteractor {
   ) async* {
     try {
       yield Right<Failure, Success>(LoadingState());
-      final result = await _forwardingRepository.addRecipientsInForwarding(accountId, addRequest);
-      yield Right<Failure, Success>(AddRecipientsInForwardingSuccess(result));
+      final result = await _forwardingRepository.addRecipientsInForwarding(
+        accountId,
+        addRequest,
+      );
+
+      if (result.$2 == null) {
+        yield Right(AddRecipientsInForwardingSuccess(result.$1));
+      } else {
+        yield Left(AddRecipientsInForwardingSuccessWithSomeCaseFailure(
+          result.$1,
+          result.$2!,
+        ));
+      }
     } catch (exception) {
       yield Left<Failure, Success>(AddRecipientsInForwardingFailure(exception));
     }

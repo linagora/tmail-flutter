@@ -1,5 +1,3 @@
-import 'dart:core';
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
@@ -18,8 +16,19 @@ class EditLocalCopyInForwardingInteractor {
       EditLocalCopyInForwardingRequest editRequest,
   ) async* {
     try {
-      final result = await _forwardingRepository.editLocalCopyInForwarding(accountId, editRequest);
-      yield Right<Failure, Success>(EditLocalCopyInForwardingSuccess(result));
+      final result = await _forwardingRepository.editLocalCopyInForwarding(
+        accountId,
+        editRequest,
+      );
+
+      if (result.$2 == null) {
+        yield Right(EditLocalCopyInForwardingSuccess(result.$1));
+      } else {
+        yield Left(EditLocalCopyInForwardingSuccessWithSomeCaseFailure(
+          result.$1,
+          result.$2!,
+        ));
+      }
     } catch (exception) {
       yield Left<Failure, Success>(EditLocalCopyInForwardingFailure(exception));
     }
