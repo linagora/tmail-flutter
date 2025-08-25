@@ -299,7 +299,6 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       outsideDialogPadding: EdgeInsets.only(bottom: PlatformInfo.isWeb ? 42 : 16),
       title: appLocalizations.delete_identity,
       cancelTitle: appLocalizations.cancel,
-      onCancelAction: popBack,
       onCloseButtonAction: popBack,
       onConfirmAction: () => _dereferencePublicAssets(identity),
     );
@@ -318,8 +317,6 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   Future<void> _dereferencePublicAssets(
     Identity identity
   ) async {
-    popBack();
-
     final session = accountDashBoardController.sessionCurrent;
     final accountId = accountDashBoardController.accountId.value;
     final identityId = identity.id;
