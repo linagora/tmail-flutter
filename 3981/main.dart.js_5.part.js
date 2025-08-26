@@ -10739,7 +10739,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.Obx(new B.SearchInputFormWidget_build_closure(this, context), null);
     },
     _invokeSearchEmailAction$1(queryString) {
-      var t1, t2, t3, _null = null;
+      var t1, t2, t3;
       A.log("SearchInputFormWidget::_invokeSearchEmailAction:QueryString = " + queryString, C.Level_3);
       t1 = this._searchController;
       t1.searchFocus.unfocus$0();
@@ -10756,9 +10756,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = true;
       t3 = this._search_input_form_widget$_dashBoardController;
       if (t2) {
-        t1.searchEmailFilter.set$value(0, A.SearchEmailFilter$(_null, _null, _null, _null, _null, _null, _null, _null, _null, t3.currentSortOrder, _null, _null, _null, _null));
+        t1.clearSearchFilter$1$sortOrderType(t3.currentSortOrder);
         t2 = t3.sessionCurrent;
-        t1.applyFilterSuggestionToSearchFilter$1(t2 == null ? _null : A.SessionExtension_getOwnEmailAddressOrEmpty(t2));
+        t1.applyFilterSuggestionToSearchFilter$1(t2 == null ? null : A.SessionExtension_getOwnEmailAddressOrEmpty(t2));
         t3.searchEmailByQueryString$1(queryString);
       } else {
         t1 = new A.ClearSearchEmailAction();
@@ -10793,7 +10793,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._search_input_form_widget$_dashBoardController.dashBoardAction.set$value(0, t1);
     },
     _invokeSelectRecentItem$1(recent) {
-      var t3, t4, _null = null,
+      var t3, t4,
         t1 = this._searchController,
         t2 = recent.value;
       t1.searchInputController.set$text(0, t2);
@@ -10802,9 +10802,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3.get$value(0);
       t3.set$value(0, new A.SearchState(C.SearchStatus_0));
       t3 = this._search_input_form_widget$_dashBoardController;
-      t1.searchEmailFilter.set$value(0, A.SearchEmailFilter$(_null, _null, _null, _null, _null, _null, _null, _null, _null, t3.currentSortOrder, _null, _null, _null, _null));
+      t1.clearSearchFilter$1$sortOrderType(t3.currentSortOrder);
       t4 = t3.sessionCurrent;
-      t1.applyFilterSuggestionToSearchFilter$1(t4 == null ? _null : A.SessionExtension_getOwnEmailAddressOrEmpty(t4));
+      t1.applyFilterSuggestionToSearchFilter$1(t4 == null ? null : A.SessionExtension_getOwnEmailAddressOrEmpty(t4));
       t3.searchEmailByQueryString$1(t2);
     },
     _buildShowAllResultButton$2(context, keyword) {
@@ -20100,5 +20100,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "HMD2M+ppHSFhu59WqaxA/D32PIM=");
+})($__dart_deferred_initializers__, "vprsNlgQr6LeBiK6Y2sVJrnPNLM=");
 ;
