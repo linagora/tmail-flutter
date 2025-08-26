@@ -1030,7 +1030,12 @@ class SearchEmailController extends BaseController
 
   void _deleteSortOrderSearchFilter(BuildContext context) {
     emailSortOrderType.value = SearchEmailFilter.defaultSortOrder;
-    _updateSimpleSearchFilter(sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder));
+    _updateSimpleSearchFilter(
+      sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder),
+    );
+    mailboxDashBoardController.storeEmailSortOrder(
+      SearchEmailFilter.defaultSortOrder,
+    );
     _searchEmailAction(context);
   }
 

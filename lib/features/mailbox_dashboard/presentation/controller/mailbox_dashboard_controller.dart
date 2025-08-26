@@ -2191,6 +2191,7 @@ class MailboxDashBoardController extends ReloadableController
   void _deleteSortOrderSearchFilter() {
     searchController.updateFilterEmail(
       sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder));
+    storeEmailSortOrder(SearchEmailFilter.defaultSortOrder);
     dispatchAction(StartSearchEmailAction());
   }
 
