@@ -468,8 +468,8 @@ void main() {
         getLatestChanges: anyNamed('getLatestChanges'),
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated')));
-      expect(searchController.sortOrderFiltered, SearchEmailFilter.defaultSortOrder);
-      expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
+      expect(searchController.searchEmailFilter.value, SearchEmailFilter.withSortOrder(EmailSortOrderType.oldest));
       verify(getEmailsInMailboxInteractor.execute(
         testSession, testAccountId,
         limit: ThreadConstants.defaultLimit,
