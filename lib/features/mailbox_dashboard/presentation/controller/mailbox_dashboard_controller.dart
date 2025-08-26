@@ -1681,14 +1681,13 @@ class MailboxDashBoardController extends ReloadableController
         actionType.getConfirmActionName(context),
         cancelTitle: AppLocalizations.of(context).cancel,
         onConfirmAction: () {
-            onConfirm?.call();
-            _deleteSelectionEmailsPermanentlyAction(
+          onConfirm?.call();
+          _deleteSelectionEmailsPermanentlyAction(
             actionType,
             listEmails: listEmails,
             onCancelSelectionEmail: onCancelSelectionEmail,
           );
-          },
-        onCancelAction: popBack,
+        },
         onCloseButtonAction: popBack,
       );
     }
@@ -2745,7 +2744,6 @@ class MailboxDashBoardController extends ReloadableController
             );
           }
         },
-        onCancelAction: popBack,
         onCloseButtonAction: popBack,
       );
     }

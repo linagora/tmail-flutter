@@ -216,10 +216,9 @@ class EmailActionReactor {
         currentContext!,
         title: DeleteActionType.single.getTitleDialog(currentContext!),
         DeleteActionType.single.getContentDialog(currentContext!),
-        cancelTitle: DeleteActionType.single.getConfirmActionName(currentContext!),
-        AppLocalizations.of(currentContext!).cancel,
-        onCancelAction: () => onDeleteEmailRequest.call(presentationEmail),
-        onConfirmAction: popBack,
+        DeleteActionType.single.getConfirmActionName(currentContext!),
+        cancelTitle: AppLocalizations.of(currentContext!).cancel,
+        onConfirmAction: () => onDeleteEmailRequest.call(presentationEmail),
         onCloseButtonAction: popBack,
       );
     }

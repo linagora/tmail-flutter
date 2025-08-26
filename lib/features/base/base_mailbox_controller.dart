@@ -456,7 +456,6 @@ abstract class BaseMailboxController extends BaseController {
         title: AppLocalizations.of(context).deleteFolders,
         cancelTitle: AppLocalizations.of(context).cancel,
         onConfirmAction: () => onDeleteMailboxAction(presentationMailbox),
-        onCancelAction: popBack,
         onCloseButtonAction: popBack,
       );
     }

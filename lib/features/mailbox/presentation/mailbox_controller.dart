@@ -1063,7 +1063,6 @@ class MailboxController extends BaseMailboxController
         AppLocalizations.of(context).messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length),
         cancelTitle: AppLocalizations.of(context).cancel,
         AppLocalizations.of(context).delete,
-        onCancelAction: popBack,
         onConfirmAction: () => _deleteMultipleMailboxAction(selectedMailboxList),
         onCloseButtonAction: popBack,
       );

@@ -94,7 +94,6 @@ mixin MailboxActionHandlerMixin {
             );
           }
         },
-        onCancelAction: popBack,
       );
     }
   }
@@ -147,7 +146,6 @@ mixin MailboxActionHandlerMixin {
             );
           }
         },
-        onCancelAction: popBack
       );
     }
   }
