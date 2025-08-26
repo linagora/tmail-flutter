@@ -14,6 +14,7 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
@@ -529,9 +530,12 @@ class EmailView extends GetWidget<SingleEmailController> {
             ),
           ),
           Obx(() {
-            if (controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
+            bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
                 MessageDialogActionManager().isDialogOpened ||
-                EmailActionReactor.isDialogOpened) {
+                EmailActionReactor.isDialogOpened ||
+                ColorDialogPicker().isOpened.isTrue;
+
+            if (isOverlayEnabled) {
               return Positioned.fill(
                 child: PointerInterceptor(
                   child: const SizedBox.expand(),

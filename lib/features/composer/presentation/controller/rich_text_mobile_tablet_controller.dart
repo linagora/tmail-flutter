@@ -5,13 +5,13 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
-import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class RichTextMobileTabletController extends BaseRichTextController {
+class RichTextMobileTabletController extends GetxController {
   HtmlEditorApi? htmlEditorApi;
 
   final RichTextController richTextController = RichTextController();

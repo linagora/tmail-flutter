@@ -9,7 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/code_view_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/dropdown_menu_font_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/font_name_type.dart';
@@ -21,7 +21,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/paragraph_typ
 import 'package:tmail_ui_user/features/composer/presentation/model/rich_text_style_type.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class RichTextWebController extends BaseRichTextController {
+class RichTextWebController extends GetxController {
 
   static const List<int> fontSizeList = [10, 12, 14, 15, 16, 18, 24, 36, 48, 64];
   static const int fontSizeDefault = 16;
@@ -140,7 +140,7 @@ class RichTextWebController extends BaseRichTextController {
   void applyRichTextStyle(BuildContext context, RichTextStyleType textStyleType) {
     switch(textStyleType) {
       case RichTextStyleType.textColor:
-        openMenuSelectColor(
+        ColorDialogPicker().showTwakeColorPicker(
           context,
           selectedTextColor.value,
           onResetToDefault: () => _applyForegroundColor(Colors.black),
@@ -148,7 +148,7 @@ class RichTextWebController extends BaseRichTextController {
         );
         break;
       case RichTextStyleType.textBackgroundColor:
-        openMenuSelectColor(
+        ColorDialogPicker().showTwakeColorPicker(
           context,
           selectedTextBackgroundColor.value,
           onResetToDefault: () => applyBackgroundColor(Colors.white),

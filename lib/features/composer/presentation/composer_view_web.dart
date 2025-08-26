@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
@@ -42,8 +43,11 @@ class ComposerView extends GetWidget<ComposerController> {
   @override
   Widget build(BuildContext context) {
     final iframeOverlay = Obx(() {
-      if (controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
-          MessageDialogActionManager().isDialogOpened) {
+      bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
+          MessageDialogActionManager().isDialogOpened ||
+          ColorDialogPicker().isOpened.isTrue;
+
+      if (isOverlayEnabled) {
         return Positioned.fill(
           key: const ValueKey('tap-to-close'),
           child: PointerInterceptor(
