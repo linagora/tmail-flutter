@@ -191,14 +191,15 @@ class SendingQueueController extends BaseController {
   }
 
   void _deleteListSendingEmailAction(BuildContext context, List<SendingEmail> listSendingEmails) {
+    final appLocalizations = AppLocalizations.of(context);
     MessageDialogActionManager().showConfirmDialogAction(
       context,
-      AppLocalizations.of(context).messageDialogDeleteSendingEmail,
-      AppLocalizations.of(context).cancel,
-      title: AppLocalizations.of(context).deleteOfflineEmail,
+      appLocalizations.messageDialogDeleteSendingEmail,
+      appLocalizations.delete,
+      title: appLocalizations.deleteOfflineEmail,
       alignCenter: true,
-      cancelTitle: AppLocalizations.of(context).delete,
-      onCancelAction: () => _handleDeleteListSendingEmail(listSendingEmails),
+      cancelTitle: appLocalizations.cancel,
+      onConfirmAction: () => _handleDeleteListSendingEmail(listSendingEmails),
     );
   }
 

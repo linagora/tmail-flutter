@@ -382,14 +382,15 @@ class UploadController extends BaseController {
     required BuildContext context,
     VoidCallback? confirmAction,
   }) {
+    final appLocalizations = AppLocalizations.of(context);
     MessageDialogActionManager().showConfirmDialogAction(
       context,
       title: '',
-      AppLocalizations.of(context).warningMessageWhenExceedGenerallySizeInComposer,
-      AppLocalizations.of(context).cancel,
-      cancelTitle: AppLocalizations.of(context).continueAction,
+      appLocalizations.warningMessageWhenExceedGenerallySizeInComposer,
+      appLocalizations.continueAction,
+      cancelTitle: appLocalizations.cancel,
       alignCenter: true,
-      onCancelAction: confirmAction,
+      onConfirmAction: confirmAction,
     );
   }
 

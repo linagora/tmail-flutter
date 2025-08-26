@@ -85,7 +85,6 @@ extension HandleMailboxActionTypeExtension on BaseMailboxController {
           currentRights,
           MailboxActions.allowSubaddressing,
         ),
-        onCancelAction: popBack,
         onCloseButtonAction: popBack,
       );
     }

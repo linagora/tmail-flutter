@@ -250,7 +250,6 @@ mixin EmailActionController {
         DeleteActionType.single.getConfirmActionName(context),
         cancelTitle: AppLocalizations.of(context).cancel,
         onConfirmAction: () => _deleteEmailPermanentlyAction(context, email),
-        onCancelAction: popBack,
         onCloseButtonAction: popBack,
       );
     }
