@@ -939,6 +939,8 @@ class MailboxDashBoardController extends ReloadableController
     clearFilterMessageOption();
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
+      _closeEmailDetailedView();
     }
     _unSelectedMailbox();
     searchController.clearAllFilterSearch();
