@@ -118,6 +118,8 @@ class _CardWithSmartInteractionOverlayViewState
   }
 
   void _togglePopup() {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     widget.onClearFocusAction?.call();
     
     if (_overlayEntry == null) {
