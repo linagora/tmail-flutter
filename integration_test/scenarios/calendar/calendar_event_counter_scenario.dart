@@ -45,7 +45,7 @@ class CalendarEventCounterScenario extends BaseTestScenario {
   }
 
   Future<void> _expectEmailViewVisible() async {
-    await expectViewVisible($(EmailView));
+    await expectViewVisible($(EmailView), alignment: Alignment.topCenter);
   }
   
   Future<void> _expectYesButtonVisible(

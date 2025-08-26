@@ -404,7 +404,11 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
   void dispose() {
     _loadingBarNotifier.dispose();
     _htmlData = null;
-    _webViewController.dispose();
+    try {
+      _webViewController.dispose();
+    } catch (e) {
+      logError('_HtmlContentViewState:dispose:_webViewController.dispose: $e');
+    }
     super.dispose();
   }
   

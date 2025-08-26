@@ -209,7 +209,9 @@ class SearchEmailController extends BaseController
 
   void _setUpDefaultSortOrder(EmailSortOrderType sortOrderType) {
     emailSortOrderType.value = sortOrderType;
-    searchEmailFilter.value = SearchEmailFilter.withSortOrder(sortOrderType);
+    searchEmailFilter.value = searchEmailFilter.value.copyWith(
+      sortOrderTypeOption: Some(sortOrderType),
+    );
   }
 
   void _initializeDebounceTimeTextSearchChange() {

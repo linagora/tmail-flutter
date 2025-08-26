@@ -13,7 +13,7 @@ class EmailRobot extends CoreRobot {
   }
 
   Future<void> tapDownloadAllButton() async {
-    await $(AppLocalizations().downloadAll).tap();
+    await $(AppLocalizations().archiveAndDownload).tap();
     await $.pumpAndSettle();
   }
 
