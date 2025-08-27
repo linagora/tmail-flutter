@@ -15,6 +15,7 @@ import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
@@ -383,7 +384,9 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   bool _onBackButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo routeInfo) {
     log('ManageAccountDashBoardController::_onBackButtonInterceptor:currentRoute: ${Get.currentRoute} | _isDialogViewOpen: $_isDialogViewOpen');
-    if (_isDialogViewOpen || DateTimeDialogPicker().isOpened.isTrue) {
+    if (_isDialogViewOpen ||
+        DateTimeDialogPicker().isOpened.isTrue ||
+        ColorDialogPicker().isOpened.isTrue) {
       popBack();
       _replaceBrowserHistory();
       return true;
