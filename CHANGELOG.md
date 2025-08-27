@@ -1,4 +1,14 @@
-## [0.18.1] - 2025-08-22
+## [0.18.3] - 2025-08-27
+### Fixed
+- Translation Portuguese, French, Irish, Chinese, Vietnamese, Russian
+- Safari input
+- Sort order in advanced search
+- Close color picker
+- Integration tests
+- Icons in editing rule
+- Handle popback in deleting identity, email rule
+
+## [0.18.2] - 2025-08-22
 ### Fixed
 - Hot fix pod.lock to build iOS
 
