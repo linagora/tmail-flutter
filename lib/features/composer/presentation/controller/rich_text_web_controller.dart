@@ -63,10 +63,12 @@ class RichTextWebController extends GetxController {
     _updateBackgroundTextColor(settings);
     _updateOrderList(settings);
     _updateParagraph(settings);
+    editorController.setFocus();
   }
 
   void onEditorTextSizeChanged(int? size) {
     _updateFontSize(size);
+    editorController.setFocus();
   }
 
   void _updateTextStyle(EditorSettings settings) {

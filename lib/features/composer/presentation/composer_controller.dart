@@ -465,6 +465,11 @@ class ComposerController extends BaseController
         mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
       }
     });
+
+    // https://github.com/flutter/flutter/issues/155265#issuecomment-2417101524
+    html.window.onBlur.listen((event) {
+      html.document.activeElement?.blur();
+    });
   }
 
   Future<void> _saveComposerCacheOnWebAction() async {
