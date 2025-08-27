@@ -209,7 +209,7 @@ class SearchEmailController extends BaseController
 
   void _setUpDefaultSortOrder(EmailSortOrderType sortOrderType) {
     emailSortOrderType.value = sortOrderType;
-    searchEmailFilter.value = SearchEmailFilter.withSortOrder(sortOrderType);
+    _updateSimpleSearchFilter(sortOrderTypeOption: Some(sortOrderType));
   }
 
   void _initializeDebounceTimeTextSearchChange() {

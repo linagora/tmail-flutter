@@ -181,6 +181,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         children: [
           buildIconWeb(
               icon: SvgPicture.asset(
+                key: const ValueKey('search_email_back_button'),
                 DirectionUtils.isDirectionRTLByLanguage(context) ? controller.imagePaths.icCollapseFolder : controller.imagePaths.icBack,
                 colorFilter: AppColor.colorTextButton.asFilter(),
                 fit: BoxFit.fill
