@@ -15,6 +15,7 @@ import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/label_border_button_field.dart';
 import 'package:tmail_ui_user/features/base/widget/switch_label_button_widget.dart';
@@ -376,6 +377,21 @@ class VacationView extends GetWidget<VacationController> {
   }
 
   Widget _buildVacationMessage(BuildContext context) {
+    Widget overlayWidget = Obx(() {
+      bool isOverlayEnabled = DateTimeDialogPicker().isOpened.isTrue ||
+          ColorDialogPicker().isOpened.isTrue;
+
+      if (isOverlayEnabled) {
+        return Positioned.fill(
+          child: PointerInterceptor(
+            child: const SizedBox.expand(),
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
+
     if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -405,17 +421,7 @@ class VacationView extends GetWidget<VacationController> {
                       child: Stack(
                         children: [
                           _buildMessageHtmlTextEditor(context),
-                          Obx(() {
-                            if (DateTimeDialogPicker().isOpened.isTrue) {
-                              return Positioned.fill(
-                                child: PointerInterceptor(
-                                  child: const SizedBox.expand(),
-                                ),
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
+                          overlayWidget,
                         ],
                       ),
                     ),
@@ -467,17 +473,7 @@ class VacationView extends GetWidget<VacationController> {
                         child: Stack(
                           children: [
                             _buildMessageHtmlTextEditor(context),
-                            Obx(() {
-                              if (DateTimeDialogPicker().isOpened.isTrue) {
-                                return Positioned.fill(
-                                  child: PointerInterceptor(
-                                    child: const SizedBox.expand(),
-                                  ),
-                                );
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            }),
+                            overlayWidget,
                           ],
                         ),
                       ),
