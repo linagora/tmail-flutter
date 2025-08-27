@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/toolbar_rich_text_builder_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/local_file_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_widget.dart';
@@ -79,6 +80,19 @@ class IdentitySignatureInputFieldWidget extends StatelessWidget {
               return InsertImageLoadingIndicator(
                 isInserting: isUploading || isCompressingInlineImage,
               );
+            }),
+            Obx(() {
+              bool isOverlayEnabled = ColorDialogPicker().isOpened.isTrue;
+
+              if (isOverlayEnabled) {
+                return Positioned.fill(
+                  child: PointerInterceptor(
+                    child: const SizedBox.expand(),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
             }),
           ],
         );
