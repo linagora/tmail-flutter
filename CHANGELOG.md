@@ -1,3 +1,8 @@
+## [0.18.4] - 2025-08-28
+### Fixed
+- Handle color picker in vacation, identity
+- Cursor jumping in composer
+
 ## [0.18.3] - 2025-08-27
 ### Fixed
 - Translation Portuguese, French, Irish, Chinese, Vietnamese, Russian
