@@ -211,6 +211,7 @@ class ComposerController extends BaseController
   StreamSubscription<html.Event>? _subscriptionOnDragOver;
   StreamSubscription<html.Event>? _subscriptionOnDragLeave;
   StreamSubscription<html.Event>? _subscriptionOnDrop;
+  StreamSubscription<html.Event>? _subscriptionOnBlur;
   StreamSubscription<String>? _composerCacheListener;
 
   RichTextMobileTabletController? richTextMobileTabletController;
@@ -325,6 +326,7 @@ class ComposerController extends BaseController
     _subscriptionOnDragOver?.cancel();
     _subscriptionOnDragLeave?.cancel();
     _subscriptionOnDrop?.cancel();
+    _subscriptionOnBlur?.cancel();
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
     _beforeReconnectManager.removeListener(onBeforeReconnect);
@@ -464,6 +466,11 @@ class ComposerController extends BaseController
       if (event.dataTransfer.types.validateFilesTransfer) {
         mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
       }
+    });
+
+    // https://github.com/flutter/flutter/issues/155265#issuecomment-2417101524
+    _subscriptionOnBlur = html.window.onBlur.listen((event) {
+      html.document.activeElement?.blur();
     });
   }
 
