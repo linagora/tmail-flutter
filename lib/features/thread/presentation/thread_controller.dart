@@ -636,7 +636,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
     try {
-      if (searchController.isSearchEmailRunning) {
+      if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {
         await _refreshChangeSearchEmail();
       } else {
         await _refreshChangeListEmail();
