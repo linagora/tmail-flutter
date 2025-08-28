@@ -4,6 +4,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/application_manager.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -278,6 +279,7 @@ void main() {
         'AND `mailboxDashBoardController.emailsInCurrentMailbox` should not be cleared',
       () async {
         // Arrange
+        PlatformInfo.isTestingForWeb = true;
         final emailList = [
           PresentationEmail(
             id: EmailId(Id('email1')),
@@ -360,6 +362,7 @@ void main() {
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty, isTrue);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.length, emailList.length);
         expect(threadController.isListEmailScrollViewJumping, isFalse);
+        PlatformInfo.isTestingForWeb = false;
       });
 
       test(
