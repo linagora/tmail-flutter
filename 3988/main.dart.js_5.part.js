@@ -14066,11 +14066,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             t4 = t5;
         }
         A.Expando__checkType(t1);
-        t2 = t3._as(t2.get(t1)).get$openMailToLink();
-        t3 = A.Directionality_maybeOf(_this.context);
-        if (t3 == null)
-          t3 = C.TextDirection_1;
-        return new A.Padding(D.EdgeInsetsDirectional_16_8_16_0, K.HtmlContentViewerOnWeb$(true, false, allEmailContents, 0, t3, false, t1.isInsideThreadDetailView, 200, 150, 300, false, t4, t2, 30, _null, _this.scrollController, true, _null, _this.bodyConstraints.maxWidth), _null);
+        t1 = t3._as(t2.get(t1)).get$openMailToLink();
+        t2 = A.Directionality_maybeOf(_this.context);
+        if (t2 == null)
+          t2 = C.TextDirection_1;
+        return new A.Padding(D.EdgeInsetsDirectional_16_8_16_0, K.HtmlContentViewerOnWeb$(true, false, allEmailContents, 0, t2, false, true, 200, 150, 300, false, t4, t1, 30, _null, _this.scrollController, true, _null, _this.bodyConstraints.maxWidth), _null);
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -20101,5 +20101,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "nkFp/Fzr1M/nBrz3Rx9o0bv+Yb0=");
+})($__dart_deferred_initializers__, "iubaomPxXBZivldHyt8Gpj+GS1M=");
 ;
