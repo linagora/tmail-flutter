@@ -357,7 +357,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     contentPadding: 0,
                     useDefaultFontStyle: true,
                     scrollController: scrollController,
-                    enableQuoteToggle: isInsideThreadDetailView,
+                    enableQuoteToggle: true,
                   ),
                 );
               } else if (PlatformInfo.isIOS) {
@@ -385,8 +385,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                             onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                             onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                             keepAlive: isInsideThreadDetailView,
-                            // TODO: Change this to [enableQuoteToggle: isInsideThreadDetailView,] when upgrade to Flutter 3.27.4
-                            enableQuoteToggle: false,
+                            enableQuoteToggle: true,
                           ),
                         ),
                         Obx(() {
@@ -422,7 +421,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     useDefaultFontStyle: true,
                     onMailtoDelegateAction: controller.openMailToLink,
                     keepAlive: isInsideThreadDetailView,
-                    enableQuoteToggle: isInsideThreadDetailView,
+                    enableQuoteToggle: true,
                     onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                   )
                 );
