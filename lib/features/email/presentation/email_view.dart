@@ -357,7 +357,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     contentPadding: 0,
                     useDefaultFontStyle: true,
                     scrollController: scrollController,
-                    enableQuoteToggle: isInsideThreadDetailView,
+                    enableQuoteToggle: true,
                   ),
                 );
               } else if (PlatformInfo.isIOS) {
@@ -385,7 +385,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                             onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                             onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                             keepAlive: isInsideThreadDetailView,
-                            enableQuoteToggle: isInsideThreadDetailView,
+                            enableQuoteToggle: true,
                           ),
                         ),
                         Obx(() {
@@ -421,7 +421,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     useDefaultFontStyle: true,
                     onMailtoDelegateAction: controller.openMailToLink,
                     keepAlive: isInsideThreadDetailView,
-                    enableQuoteToggle: isInsideThreadDetailView,
+                    enableQuoteToggle: true,
                     onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                   )
                 );
