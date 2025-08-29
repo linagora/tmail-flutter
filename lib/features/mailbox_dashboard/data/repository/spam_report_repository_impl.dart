@@ -37,11 +37,6 @@ class SpamReportRepositoryImpl extends SpamReportRepository {
   }
   
   @override
-  Future<void> deleteSpamReportState() {
-    return mapDataSource[DataSourceType.local]!.deleteSpamReportState();
-  }
-
-  @override
   Future<Mailbox> getSpamMailboxCached(AccountId accountId, UserName userName) {
     return mapDataSource[DataSourceType.hiveCache]!.getSpamMailboxCached(accountId, userName);
   }

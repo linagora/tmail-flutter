@@ -1,16 +1,16 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/preferences_root.dart';
 
 class GettingLocalSettingsState extends LoadingState {}
 
 class GetLocalSettingsSuccess extends UIState {
-  GetLocalSettingsSuccess(this.localSettings);
+  GetLocalSettingsSuccess(this.preferencesRoot);
 
-  final Map<SupportedLocalSetting, LocalSettingOptions?> localSettings;
+  final PreferencesRoot preferencesRoot;
 
   @override
-  List<Object?> get props => [localSettings];
+  List<Object?> get props => [preferencesRoot];
 }
 
 class GetLocalSettingsFailure extends FeatureFailure {
