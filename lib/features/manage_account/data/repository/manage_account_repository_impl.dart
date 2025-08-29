@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/preferences_root.dart';
 
 class ManageAccountRepositoryImpl extends ManageAccountRepository {
 
@@ -16,16 +16,12 @@ class ManageAccountRepositoryImpl extends ManageAccountRepository {
   }
 
   @override
-  Future<void> updateLocalSettings(
-    Map<SupportedLocalSetting, LocalSettingOptions?> localSettings,
-  ) {
-    return dataSource.updateLocalSettings(localSettings);
+  Future<void> updateLocalSettings(PreferencesRoot preferencesRoot) {
+    return dataSource.updateLocalSettings(preferencesRoot);
   }
 
   @override
-  Future<Map<SupportedLocalSetting, LocalSettingOptions?>> getLocalSettings(
-    List<SupportedLocalSetting> supportedLocalSettings,
-  ) {
-    return dataSource.getLocalSettings(supportedLocalSettings);
+  Future<PreferencesRoot> getLocalSettings() {
+    return dataSource.getLocalSettings();
   }
 }

@@ -5124,4 +5124,25 @@ class AppLocalizations {
       args: [keyword],
     );
   }
+
+  String get spamReports {
+    return Intl.message(
+      'Spam reports',
+      name: 'spamReports',
+    );
+  }
+
+  String get spamReportsSettingExplanation {
+    return Intl.message(
+      'Reminds you that you need to moderate your spam emails recurringly',
+      name: 'spamReportsSettingExplanation',
+    );
+  }
+
+  String get spamReportToggleDescription {
+    return Intl.message(
+      'Enable spam report',
+      name: 'spamReportToggleDescription',
+    );
+  }
 }

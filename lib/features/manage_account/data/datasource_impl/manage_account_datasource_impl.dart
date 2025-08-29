@@ -2,19 +2,19 @@ import 'dart:ui';
 
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/data/local/local_setting_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/preferences_root.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class ManageAccountDataSourceImpl extends ManageAccountDataSource {
 
   final LanguageCacheManager _languageCacheManager;
-  final LocalSettingCacheManager _localSettingCacheManager;
+  final PreferencesSettingManager _preferencesSettingManager;
   final ExceptionThrower _exceptionThrower;
 
   ManageAccountDataSourceImpl(
     this._languageCacheManager,
-    this._localSettingCacheManager,
+    this._preferencesSettingManager,
     this._exceptionThrower
   );
 
@@ -26,20 +26,16 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   }
 
   @override
-  Future<void> updateLocalSettings(
-    Map<SupportedLocalSetting, LocalSettingOptions?> localSettings,
-  ) {
+  Future<void> updateLocalSettings(PreferencesRoot preferencesRoot) {
     return Future.sync(() async {
-      return await _localSettingCacheManager.update(localSettings);
+      return await _preferencesSettingManager.savePreferences(preferencesRoot);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<Map<SupportedLocalSetting, LocalSettingOptions?>> getLocalSettings(
-    List<SupportedLocalSetting> supportedLocalSettings,
-  ) {
+  Future<PreferencesRoot> getLocalSettings() {
     return Future.sync(() async {
-      return await _localSettingCacheManager.get(supportedLocalSettings);
+      return await _preferencesSettingManager.loadPreferences();
     }).catchError(_exceptionThrower.throwException);
   }
 }

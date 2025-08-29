@@ -69,7 +69,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/lo
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_sort_order_manager.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/linagora_ecosystem_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/app_grid_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
@@ -100,6 +99,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/identity_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_interactors_bindings.dart';
@@ -278,7 +278,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<HtmlTransform>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => LocalSpamReportDataSourceImpl(
-      Get.find<LocalSpamReportManager>(),
+      Get.find<PreferencesSettingManager>(),
       Get.find<CacheExceptionThrower>(),
     ));
     Get.lazyPut(() => HiveSpamReportDataSourceImpl(
