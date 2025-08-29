@@ -6,25 +6,27 @@ import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/base/widget/default_switch_icon_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/setting_option_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/preferences_setting.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences_option_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnTapSettingOptionAction = Function(SettingOptionType optionType, bool isEnabled);
+typedef OnTapPreferencesOptionAction = Function(PreferencesOptionType optionType, bool isEnabled);
 
-class SettingOptionItem extends StatelessWidget {
+class PreferencesOptionItem extends StatelessWidget {
 
   final ImagePaths imagePaths;
   final TMailServerSettingOptions? settingOption;
-  final Map<SupportedLocalSetting, LocalSettingOptions?> localSettings;
-  final SettingOptionType optionType;
-  final OnTapSettingOptionAction onTapSettingOptionAction;
+  final PreferencesSetting preferencesSetting;
+  final PreferencesOptionType optionType;
+  final OnTapPreferencesOptionAction onTapPreferencesOptionAction;
 
-  const SettingOptionItem({
+  const PreferencesOptionItem({
     super.key,
     required this.imagePaths,
     required this.settingOption,
-    required this.localSettings,
+    required this.preferencesSetting,
     required this.optionType,
-    required this.onTapSettingOptionAction,
+    required this.onTapPreferencesOptionAction,
   });
 
   @override
@@ -60,18 +62,18 @@ class SettingOptionItem extends StatelessWidget {
           children: [
             InkWell(
               key: ValueKey(optionType.getTitle(appLocalizations)),
-              onTap: () => onTapSettingOptionAction(
+              onTap: () => onTapPreferencesOptionAction(
                 optionType,
-                optionType.isEnabled(settingOption, localSettings),
+                optionType.isEnabled(settingOption, preferencesSetting),
               ),
               child: DefaultSwitchIconWidget(
                 key: ValueKey(
-                  optionType.isEnabled(settingOption, localSettings)
+                  optionType.isEnabled(settingOption, preferencesSetting)
                       ? 'setting_option_switch_on'
                       : 'setting_option_switch_off',
                 ),
                 imagePaths: imagePaths,
-                isEnabled: optionType.isEnabled(settingOption, localSettings),
+                isEnabled: optionType.isEnabled(settingOption, preferencesSetting),
               ),
             ),
             const SizedBox(width: 12),

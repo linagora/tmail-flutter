@@ -4851,5 +4851,23 @@
     "placeholders": {
       "keyword": {}
     }
+  },
+  "spamReports": "Spam reports",
+  "@spamReports": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamReportsSettingExplanation": "Reminds you that you need to moderate your spam emails recurringly",
+  "@spamReportsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamReportToggleDescription": "Enable spam report",
+  "@spamReportToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

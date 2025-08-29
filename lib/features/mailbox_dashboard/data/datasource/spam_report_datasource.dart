@@ -8,11 +8,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_repor
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/unread_spam_emails_response.dart';
 
 abstract class SpamReportDataSource {
-  Future<bool> storeLastTimeDismissedSpamReported(DateTime lastTimeDismissedSpamReported);
+  Future<void> storeLastTimeDismissedSpamReported(DateTime lastTimeDismissedSpamReported);
 
   Future<DateTime> getLastTimeDismissedSpamReported();
 
-  Future<bool> deleteLastTimeDismissedSpamReported();
+  Future<void> deleteLastTimeDismissedSpamReported();
 
   Future<UnreadSpamEmailsResponse> findNumberOfUnreadSpamEmails(
     Session session,
@@ -26,8 +26,6 @@ abstract class SpamReportDataSource {
   Future<SpamReportState> getSpamReportState();
 
   Future<void> storeSpamReportState(SpamReportState spamReportState);
-
-  Future<void> deleteSpamReportState();
 
   Future<Mailbox> getSpamMailboxCached(AccountId accountId, UserName userName);
 }

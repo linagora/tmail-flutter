@@ -4,9 +4,9 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/setting_option_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences_option_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/preferences/widgets/setting_option_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/preferences/widgets/preferences_option_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 
 class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMixin {
@@ -57,31 +57,33 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                     ),
                   Obx(() {
                     final settingOption = controller.settingOption.value;
-                    final localSettingOption = controller.localSettings;
+                    final localSettingOption = controller.localSettings.value;
 
-                    if (settingOption == null && (localSettingOption.value?.isEmpty ?? true)) {
+                    if (settingOption == null && localSettingOption == null) {
                       return const SizedBox.shrink();
                     }
 
                     final availableSettingOptions = [
-                      if (settingOption != null) ...SettingOptionType.values.where(
-                        (optionType) => !optionType.isLocal,
-                      ),
-                      ...SettingOptionType.values.where(
-                        (optionType) => optionType.isLocal,
-                      ),
+                      if (settingOption != null)
+                        ...PreferencesOptionType.values.where(
+                          (optionType) => !optionType.isLocal,
+                        ),
+                      if (localSettingOption != null)
+                        ...PreferencesOptionType.values.where(
+                          (optionType) => optionType.isLocal,
+                        ),
                     ];
 
                     return Expanded(
                       child: ListView.separated(
                         itemCount: availableSettingOptions.length,
                         itemBuilder: (context, index) {
-                          return SettingOptionItem(
+                          return PreferencesOptionItem(
                             imagePaths: controller.imagePaths,
                             settingOption: settingOption,
-                            localSettings: localSettingOption.value ?? {},
+                            preferencesSetting: localSettingOption!.setting,
                             optionType: availableSettingOptions[index],
-                            onTapSettingOptionAction: controller.updateStateSettingOption,
+                            onTapPreferencesOptionAction: controller.updateStateSettingOption,
                           );
                         },
                         separatorBuilder: (_, __) => const SizedBox(height: 49),

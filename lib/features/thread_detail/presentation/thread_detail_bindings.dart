@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/data/local/local_setting_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_data_source.dart';
@@ -57,7 +57,7 @@ class ThreadDetailBindings extends BaseBindings {
       Get.find<RemoteExceptionThrower>(),
     ));
     Get.lazyPut(() => ThreadDetailLocalDataSourceImpl(
-      Get.find<LocalSettingCacheManager>(),
+      Get.find<PreferencesSettingManager>(),
       Get.find<CacheExceptionThrower>(),
     ));
   }
