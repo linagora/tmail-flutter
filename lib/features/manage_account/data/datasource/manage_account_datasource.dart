@@ -1,15 +1,11 @@
 import 'dart:ui';
 
-import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/preferences_root.dart';
 
 abstract class ManageAccountDataSource {
   Future<void> persistLanguage(Locale localeCurrent);
 
-  Future<void> updateLocalSettings(
-    Map<SupportedLocalSetting, LocalSettingOptions?> localSettings,
-  );
+  Future<void> updateLocalSettings(PreferencesRoot preferencesRoot);
 
-  Future<Map<SupportedLocalSetting, LocalSettingOptions?>> getLocalSettings(
-    List<SupportedLocalSetting> supportedLocalSettings,
-  );
+  Future<PreferencesRoot> getLocalSettings();
 }
