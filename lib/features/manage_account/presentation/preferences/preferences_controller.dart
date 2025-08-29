@@ -10,9 +10,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/update_local_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_detail/thread_detail_local_setting_detail.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/setting_option_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/preferences_root.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences_option_type.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/update_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
@@ -34,7 +33,7 @@ class PreferencesController extends BaseController {
   final UpdateLocalSettingsInteractor _updateLocalSettingsInteractor;
 
   final settingOption = Rxn<TMailServerSettingOptions>();
-  final localSettings = Rxn(<SupportedLocalSetting, LocalSettingOptions?>{});
+  final localSettings = Rxn<PreferencesRoot>();
 
   bool get isLoading => viewState.value.fold(
     (failure) => false, 
@@ -55,13 +54,9 @@ class PreferencesController extends BaseController {
     } else if (success is UpdateServerSettingSuccess) {
       _updateSettingOptionValue(newSettingOption: success.settingOption);
     } else if (success is GetLocalSettingsSuccess) {
-      _updateLocalSettingOptionValue(
-        newLocalSettings: success.localSettings,
-      );
+      _updateLocalSettingOptionValue(success.preferencesRoot);
     } else if (success is UpdateLocalSettingsSuccess) {
-      _updateLocalSettingOptionValue(
-        newLocalSettings: success.localSettings,
-      );
+      _updateLocalSettingOptionValue(success.preferencesRoot);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -90,49 +85,68 @@ class PreferencesController extends BaseController {
     settingOption.value = newSettingOption;
   }
 
-  void _updateLocalSettingOptionValue({
-    required Map<SupportedLocalSetting, LocalSettingOptions?> newLocalSettings
-  }) {
-    localSettings.value = newLocalSettings;
+  void _updateLocalSettingOptionValue(PreferencesRoot preferencesRoot) {
+    localSettings.value = preferencesRoot;
   }
 
   void _getSettingOption() {
-    consumeState(_getLocalSettingInteractor.execute(SupportedLocalSetting.values));
+    consumeState(_getLocalSettingInteractor.execute());
     final accountId = _manageAccountDashBoardController.accountId.value;
     if (accountId != null) {
       consumeState(_getServerSettingInteractor.execute(accountId));
     } else {
       consumeState(Stream.value(Left(GetServerSettingFailure(NotFoundAccountIdException()))));
-      consumeState(Stream.value(Left(GetLocalSettingsFailure(
-        exception: NotFoundAccountIdException(),
-      ))));
     }
   }
 
-  void updateStateSettingOption(SettingOptionType optionType, bool isEnabled) {
+  void updateStateSettingOption(
+    PreferencesOptionType optionType,
+    bool isEnabled,
+  ) {
     if (optionType.isLocal) {
-      Map<SupportedLocalSetting, LocalSettingOptions?> newLocalSettings = {};
-      switch(optionType) {
-        case SettingOptionType.thread:
-          var currentLocalSettings = Map<SupportedLocalSetting, LocalSettingOptions?>.from(localSettings.value ?? {});
-          currentLocalSettings[SupportedLocalSetting.threadDetail] = LocalSettingOptions(setting: ThreadDetailLocalSettingDetail(!isEnabled));
-          newLocalSettings = currentLocalSettings;
-          break;
-        default:
-          break;
-      }
-      consumeState(_updateLocalSettingsInteractor.execute(newLocalSettings));
-      return;
+      _updateLocalPreferencesSetting(optionType, isEnabled);
+    } else {
+      _updateServerPreferencesSetting(optionType, isEnabled);
+    }
+  }
+
+  void _updateLocalPreferencesSetting(
+    PreferencesOptionType optionType,
+    bool isEnabled,
+  ) {
+    PreferencesRoot? preferencesRoot;
+    switch(optionType) {
+      case PreferencesOptionType.thread:
+        preferencesRoot = localSettings.value?.updateThreadDetail(
+          !isEnabled,
+        );
+        break;
+      case PreferencesOptionType.spamReport:
+        preferencesRoot = localSettings.value?.updateSpamReport(
+          isEnabled: !isEnabled,
+        );
+        break;
+      default:
+        break;
     }
 
+    if (preferencesRoot != null) {
+      consumeState(_updateLocalSettingsInteractor.execute(preferencesRoot));
+    }
+  }
+
+  void _updateServerPreferencesSetting(
+    PreferencesOptionType optionType,
+    bool isEnabled,
+  ) {
     TMailServerSettingOptions? newSettingOption;
     switch(optionType) {
-      case SettingOptionType.readReceipt:
+      case PreferencesOptionType.readReceipt:
         newSettingOption = settingOption.value?.copyWith(
           alwaysReadReceipts: !isEnabled,
         );
         break;
-      case SettingOptionType.senderPriority:
+      case PreferencesOptionType.senderPriority:
         newSettingOption = settingOption.value?.copyWith(
           displaySenderPriority: !isEnabled,
         );
@@ -143,12 +157,18 @@ class PreferencesController extends BaseController {
 
     final accountId = _manageAccountDashBoardController.accountId.value;
     if (accountId != null && newSettingOption != null) {
-      consumeState(_updateServerSettingInteractor.execute(
-        accountId,
-        newSettingOption,
-      ));
+      consumeState(
+        _updateServerSettingInteractor.execute(
+          accountId,
+          newSettingOption,
+        ),
+      );
     } else {
-      consumeState(Stream.value(Left(UpdateServerSettingFailure(NotFoundAccountIdException()))));
+      consumeState(
+        Stream.value(
+          Left(UpdateServerSettingFailure(NotFoundAccountIdException())),
+        ),
+      );
     }
   }
 }

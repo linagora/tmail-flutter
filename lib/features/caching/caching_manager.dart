@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
@@ -45,7 +44,6 @@ class CachingManager {
   final FileUtils _fileUtils;
   final SendingEmailCacheManager _sendingEmailCacheManager;
   final SessionCacheManager _sessionCacheManager;
-  final LocalSpamReportManager _localSpamReportManager;
   final KeychainSharingManager _keychainSharingManager;
   final TokenOidcCacheManager _tokenOidcCacheManager;
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
@@ -67,7 +65,6 @@ class CachingManager {
     this._fileUtils,
     this._sendingEmailCacheManager,
     this._sessionCacheManager,
-    this._localSpamReportManager,
     this._keychainSharingManager,
     this._tokenOidcCacheManager,
     this._oidcConfigurationCacheManager,
@@ -82,7 +79,6 @@ class CachingManager {
       _emailCacheManager.clear(),
       _fcmCacheManager.clear(),
       _accountCacheManager.clear(),
-      _localSpamReportManager.clear(),
       if (PlatformInfo.isMobile)
         ...[
           _sessionCacheManager.clear(),
