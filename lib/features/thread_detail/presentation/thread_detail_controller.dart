@@ -16,7 +16,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
-import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
@@ -107,7 +106,7 @@ class ThreadDetailController extends BaseController {
           session!,
           accountId!,
           sentMailboxId!,
-          ownEmailAddress!,
+          ownEmailAddress,
           isSentMailbox: value.isSentMailbox,
         ));
       }
@@ -130,7 +129,10 @@ class ThreadDetailController extends BaseController {
   MailboxId? get sentMailboxId => mailboxDashBoardController.getMailboxIdByRole(
     PresentationMailbox.roleSent,
   );
-  String? get ownEmailAddress => session?.getOwnEmailAddress();
+
+  String get ownEmailAddress =>
+      mailboxDashBoardController.ownEmailAddress.value;
+
   bool get isSearchRunning {
     final isWebSearchRunning = mailboxDashBoardController
       .searchController
@@ -217,7 +219,7 @@ class ThreadDetailController extends BaseController {
         session != null &&
         accountId != null &&
         sentMailboxId != null &&
-        ownEmailAddress != null &&
+        ownEmailAddress.isNotEmpty &&
         networkConnected &&
         isThreadDetailEnabled;
   }

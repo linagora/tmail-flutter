@@ -17,7 +17,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
-import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/date_range_picker_mixin.dart';
@@ -91,6 +90,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   Future<List<PresentationEmail>> quickSearchEmails({
     required Session session,
     required AccountId accountId,
+    required String ownEmailAddress,
     required String query,
   }) async {
     currentSearchText = query;
@@ -102,7 +102,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
         EmailComparator(EmailComparatorProperty.receivedAt)
           ..setIsAscending(false)),
       filter: _mappingToFilterOnSuggestionForm(
-        currentUserEmail: session.getOwnEmailAddressOrEmpty(),
+        currentUserEmail: ownEmailAddress,
         query: query,
       ),
       properties: EmailUtils.getPropertiesForEmailGetMethod(session, accountId),
@@ -127,7 +127,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       hasAttachment: listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment)
         ? true
         : null,
-      from: listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)
+      from: listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe) && currentUserEmail.isNotEmpty
         ? currentUserEmail
         : null,
       hasKeyword: listFilterOnSuggestionForm.contains(QuickSearchFilter.starred)
@@ -140,7 +140,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       : null;
   }
 
-  void applyFilterSuggestionToSearchFilter(String? currentUserEmail) {
+  void applyFilterSuggestionToSearchFilter(String currentUserEmail) {
     final receiveTime = listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
       ? EmailReceiveTimeType.last7Days
       : EmailReceiveTimeType.allTime;
@@ -148,7 +148,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     final hasAttachment = listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment) ? true : false;
 
     var listFromAddress = searchEmailFilter.value.from;
-    if (currentUserEmail != null) {
+    if (currentUserEmail.isNotEmpty) {
       if (listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)) {
         listFromAddress.add(currentUserEmail);
       } else {

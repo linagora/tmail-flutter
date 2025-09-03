@@ -31,6 +31,7 @@ import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/mixin/own_email_address_mixin.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
@@ -126,7 +127,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_own_email_address_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -203,7 +203,7 @@ import 'package:server_settings/server_settings/tmail_server_settings_extension.
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
-    with ContactSupportMixin {
+    with ContactSupportMixin, OwnEmailAddressMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -285,9 +285,7 @@ class MailboxDashBoardController extends ReloadableController
   final isDrawerOpened = RxBool(false);
   final isContextMenuOpened = RxBool(false);
   final isPopupMenuOpened = RxBool(false);
-  final ownEmailAddress = RxString('');
 
-  Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};
   final emailsInCurrentMailbox = <PresentationEmail>[].obs;
@@ -1986,6 +1984,7 @@ class MailboxDashBoardController extends ReloadableController
       return searchController.quickSearchEmails(
         session: sessionCurrent!,
         accountId: accountId.value!,
+        ownEmailAddress: ownEmailAddress.value,
         query: query
       );
     } else {
@@ -3226,7 +3225,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void _handleGetAllIdentitiesFailure() {
     _identities = null;
-    synchronizeOwnEmailAddress(sessionCurrent?.getUserDisplayName() ?? '');
+    updateOwnEmailAddressFromIdentities([]);
   }
 
   List<Identity> get listIdentities => _identities ?? [];

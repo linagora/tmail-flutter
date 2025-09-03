@@ -121,6 +121,8 @@ class SearchEmailController extends BaseController
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
 
+  String get ownEmailAddress => mailboxDashBoardController.ownEmailAddress.value;
+
   SearchQuery? get searchQuery => searchEmailFilter.value.text;
 
   RxList<PresentationEmail> get listResultSearch => mailboxDashBoardController.listResultSearch;

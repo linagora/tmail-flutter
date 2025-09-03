@@ -124,8 +124,8 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
       return true;
     }
 
-    return ownEmailAddress != null &&
-        (!email.fromMe(ownEmailAddress!) ||
-            !email.recipientsHasMe(ownEmailAddress!));
+    return ownEmailAddress.isNotEmpty &&
+        (!email.fromMe(ownEmailAddress) ||
+            !email.recipientsHasMe(ownEmailAddress));
   }
 }

@@ -307,7 +307,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       final searchEmailFilter = controller.searchEmailFilter.value;
       final sortOrderType = controller.emailSortOrderType.value;
       final listAddressOfFrom = controller.listAddressOfFromFiltered;
-      final currentUserEmail = controller.session?.getOwnEmailAddressOrEmpty();
+      final currentUserEmail = controller.ownEmailAddress;
       final startDate = controller.startDateFiltered;
       final endDate = controller.endDateFiltered;
       final receiveTimeType = controller.receiveTimeFiltered;

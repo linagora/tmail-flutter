@@ -11,7 +11,6 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/extensions/identity_request_dto_extension.dart';
-import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
@@ -40,7 +39,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_list_signature_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/update_own_email_address_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/list_identity_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
@@ -142,6 +140,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   void handleFailureViewState(Failure failure) {
     if (failure is GetAllIdentitiesFailure) {
       identitiesViewState.value = Left(failure);
+      accountDashBoardController.updateOwnEmailAddressFromIdentities([]);
     } else if (failure is DeleteIdentityFailure) {
       _deleteIdentityFailure(failure);
     } else if (failure is RemoveIdentityFromPublicAssetsFailureState) {
@@ -150,10 +149,6 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       _deleteIdentityAction(failure.identityId);
     } else if (failure is GetIdentityCacheOnWebFailure) {
       _removeIdentityCache();
-    } else if (failure is GetAllIdentitiesFailure) {
-      accountDashBoardController.synchronizeOwnEmailAddress(
-        accountDashBoardController.sessionCurrent?.getUserDisplayName() ?? '',
-      );
     } else if (failure is TransformListSignatureFailure) {
       signatureViewState.value = Left(failure);
       _syncMapIdentitySignatures(failure.identitySignatures);
@@ -204,7 +199,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
 
     _transformSignature();
   }
-  
+
   bool _validateIdentity(Identity identity) {
     return identity.mayDelete == true &&
         identity.name?.trim().isNotEmpty == true;
@@ -228,7 +223,11 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     final accountId = accountDashBoardController.accountId.value;
     final session = accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
-      final arguments = IdentityCreatorArguments(accountId, session);
+      final arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        accountDashBoardController.ownEmailAddress.value,
+      );
 
       newIdentityArguments = PlatformInfo.isWeb
         ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
@@ -378,6 +377,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       final arguments = IdentityCreatorArguments(
         accountId,
         session,
+        accountDashBoardController.ownEmailAddress.value,
         identity: identity,
         actionType: IdentityActionType.edit);
 
@@ -474,6 +474,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     final arguments = IdentityCreatorArguments(
       accountId,
       session,
+      accountDashBoardController.ownEmailAddress.value,
       identity: identityCache.identity,
       isDefault: identityCache.isDefault,
       publicAssetsInIdentityArguments: identityCache.publicAssetsInIdentityArguments,
