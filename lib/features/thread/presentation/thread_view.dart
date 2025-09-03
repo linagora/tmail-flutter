@@ -640,6 +640,7 @@ class ThreadView extends GetWidget<ThreadController>
                 action,
                 AppLocalizations.of(context),
                 controller.imagePaths,
+                category: action.category,
               ))
           .toList();
 
@@ -654,6 +655,7 @@ class ThreadView extends GetWidget<ThreadController>
             mailboxContain: presentationEmail.mailboxContain,
           );
         },
+        useGroupedActions: true,
       );
     } else {
       final popupMenuItems = listEmailActions.map((actionType) {

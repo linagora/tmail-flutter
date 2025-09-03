@@ -70,6 +70,7 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
               action,
               AppLocalizations.of(context),
               imagePaths,
+              category: action.category,
             ))
         .toList();
 
@@ -80,6 +81,7 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
         popBack();
         pressEmailSelectionAction(menuAction.action, emails);
       },
+      useGroupedActions: true,
     );
   }
 
