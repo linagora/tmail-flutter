@@ -77,6 +77,7 @@ typedef OpenBottomSheetContextMenuAction = Future<void> Function({
   required List<ContextMenuItemAction> itemActions,
   required OnContextMenuActionClick onContextMenuActionClick,
   Key? key,
+  bool useGroupedActions,
 });
 
 typedef OpenPopUpContextMenuAction = Future<void> Function(
@@ -592,6 +593,7 @@ class EmailActionReactor {
                 AppLocalizations.of(currentContext!),
                 imagePaths,
                 key: '${action.name}_action',
+                category: action.category,
               ),
             )
             .toList(),
@@ -599,6 +601,7 @@ class EmailActionReactor {
           popBack();
           handleEmailAction(presentationEmail, action.action);
         },
+        useGroupedActions: true,
       );
     } else {
       openPopupMenu(

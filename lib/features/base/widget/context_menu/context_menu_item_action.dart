@@ -7,11 +7,12 @@ typedef OnContextMenuActionClick = void Function(ContextMenuItemAction action);
 abstract class ContextMenuItemAction<T> with EquatableMixin {
   final T action;
   final String? key;
+  final int category;
 
-  ContextMenuItemAction(this.action, {this.key});
+  ContextMenuItemAction(this.action, {this.key, this.category = -1});
 
   @override
-  List<Object?> get props => [action, key];
+  List<Object?> get props => [action, key, category];
 
   String get actionName;
 
@@ -34,7 +35,7 @@ mixin OptionalSelectedIcon<T> {
 
 abstract class ContextMenuItemActionRequiredIcon<T>
     extends ContextMenuItemAction<T> with OptionalIcon {
-  ContextMenuItemActionRequiredIcon(super.action, {super.key});
+  ContextMenuItemActionRequiredIcon(super.action, {super.key, super.category});
 }
 
 abstract class ContextMenuItemActionRequiredSelectedIcon<T>
@@ -42,12 +43,17 @@ abstract class ContextMenuItemActionRequiredSelectedIcon<T>
 
   final T? selectedAction;
 
-  ContextMenuItemActionRequiredSelectedIcon(super.action, this.selectedAction, {super.key});
+  ContextMenuItemActionRequiredSelectedIcon(
+    super.action,
+    this.selectedAction, {
+    super.key,
+    super.category,
+  });
 }
 
 abstract class ContextMenuItemActionRequiredFull<T>
     extends ContextMenuItemAction<T> with OptionalIcon, OptionalSelectedIcon<T> {
   final T selectedAction;
 
-  ContextMenuItemActionRequiredFull(super.action, this.selectedAction, {super.key});
+  ContextMenuItemActionRequiredFull(super.action, this.selectedAction, {super.key, super.category,});
 }

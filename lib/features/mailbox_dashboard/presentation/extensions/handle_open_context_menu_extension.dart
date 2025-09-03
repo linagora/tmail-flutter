@@ -9,6 +9,7 @@ extension HandleOpenContextMenuExtension on MailboxDashBoardController {
     required List<ContextMenuItemAction> itemActions,
     required OnContextMenuActionClick onContextMenuActionClick,
     Key? key,
+    bool useGroupedActions = false,
   }) {
     if (PlatformInfo.isWeb) {
       isContextMenuOpened.value = true;
@@ -18,6 +19,7 @@ extension HandleOpenContextMenuExtension on MailboxDashBoardController {
      itemActions: itemActions,
      onContextMenuActionClick: onContextMenuActionClick,
      key: key,
+     useGroupedActions: useGroupedActions,
    ).whenComplete(() {
      if (PlatformInfo.isWeb) {
        isContextMenuOpened.value = false;
