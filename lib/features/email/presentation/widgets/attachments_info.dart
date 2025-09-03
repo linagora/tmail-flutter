@@ -14,6 +14,7 @@ class AttachmentsInfo extends StatelessWidget {
     required this.numberOfAttachments,
     required this.totalSizeInfo,
     required this.responsiveUtils,
+    this.displayShowAll = false,
     this.onTapShowAllAttachmentFile,
     this.onTapDownloadAllButton,
   });
@@ -22,6 +23,7 @@ class AttachmentsInfo extends StatelessWidget {
   final int numberOfAttachments;
   final String totalSizeInfo;
   final ResponsiveUtils responsiveUtils;
+  final bool displayShowAll;
   final VoidCallback? onTapShowAllAttachmentFile;
   final VoidCallback? onTapDownloadAllButton;
 
@@ -49,19 +51,6 @@ class AttachmentsInfo extends StatelessWidget {
       ),
     );
 
-    final showAllButton = TMailButtonWidget.fromText(
-      text: AppLocalizations.of(context).showAll,
-      backgroundColor: Colors.transparent,
-      textStyle: ThemeUtils.textStyleBodyBody1().copyWith(
-        color: AppColor.steelGray400,
-      ),
-      borderRadius: 5,
-      maxLines: 1,
-      maxWidth: 120,
-      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-      onTapActionCallback: onTapShowAllAttachmentFile,
-    );
-
     if (responsiveUtils.isMobile(context)) {
       return Row(
         children: [
@@ -72,7 +61,8 @@ class AttachmentsInfo extends StatelessWidget {
               child: titleHeaderAttachment,
             ),
           ),
-          if (numberOfAttachments > 3) showAllButton,
+          if (displayShowAll && numberOfAttachments > 3)
+            _buildShowAllButton(context),
         ],
       );
     } else {
@@ -89,7 +79,8 @@ class AttachmentsInfo extends StatelessWidget {
                     child: titleHeaderAttachment,
                   ),
                 ),
-                if (numberOfAttachments > 4) showAllButton,
+                if (displayShowAll && numberOfAttachments > 4)
+                  _buildShowAllButton(context),
               ],
             ),
           ),
@@ -115,5 +106,20 @@ class AttachmentsInfo extends StatelessWidget {
         ],
       );
     }
+  }
+
+  Widget _buildShowAllButton(BuildContext context) {
+    return TMailButtonWidget.fromText(
+      text: AppLocalizations.of(context).showAll,
+      backgroundColor: Colors.transparent,
+      textStyle: ThemeUtils.textStyleBodyBody1().copyWith(
+        color: AppColor.steelGray400,
+      ),
+      borderRadius: 5,
+      maxLines: 1,
+      maxWidth: 120,
+      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+      onTapActionCallback: onTapShowAllAttachmentFile,
+    );
   }
 }
