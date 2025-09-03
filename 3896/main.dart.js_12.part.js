@@ -77,7 +77,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.context;
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).emlContentViewState.get$value(0).fold$2(0, new B.EmailPreviewerView_build__closure(t3), new B.EmailPreviewerView_build__closure0(t1, t3));
     },
-    $signature: 5
+    $signature: 4
   };
   B.EmailPreviewerView_build__closure.prototype = {
     call$1(failure) {
@@ -85,7 +85,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.Center$(A.Text$(A.Intl__message("Cannot preview this eml file", _null, "previewEmailFromEMLFileFailed", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null);
     },
-    $signature: 1942
+    $signature: 1953
   };
   B.EmailPreviewerView_build__closure0.prototype = {
     call$1(success) {
@@ -97,9 +97,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else if (success instanceof A.PreviewEmailFromEmlFileSuccess)
         return _this.$this._buildEMLPreviewerWidget$2(_this.context, success.emlPreviewer);
       else
-        return D.Center_OaN;
+        return E.Center_OaN;
     },
-    $signature: 64
+    $signature: 70
   };
   B.EmailPreviewerView_build_closure0.prototype = {
     call$0() {
@@ -125,7 +125,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     MediaQuery: A.findType("MediaQuery")
   };
   (function constants() {
-    D.Center_OaN = new A.Center(C.Alignment_0_0, null, null, E.CupertinoLoadingWidget_null_null_null_null, null);
     D.LinearProgressIndicator_EyN = new A.LinearProgressIndicator(5, C.BorderRadius_ww8, null, C.Color_wPs, C.Color_0ND, null, null, null, null);
   })();
 };
@@ -133,5 +132,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_12", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "qVI5ETZx8djzWQDuNCSTGXXHgak=");
+})($__dart_deferred_initializers__, "1C1m/XPEHsmpyyqXoVPm03GH5EI=");
 ;
