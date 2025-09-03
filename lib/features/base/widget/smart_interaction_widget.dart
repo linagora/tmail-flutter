@@ -146,6 +146,7 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
           },
           child: GestureDetector(
             onDoubleTap: _handleDoubleTap,
+            onTap: _handleOnTapAction,
             child: widget.child,
           ),
         );
@@ -154,6 +155,7 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
           key: _childKey,
           behavior: HitTestBehavior.opaque,
           onDoubleTap: _handleDoubleTap,
+          onTap: _handleOnTapAction,
           child: widget.child,
         );
       }
