@@ -26,6 +26,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
   final ImagePaths imagePaths;
   final OnTapActionCallback? onTapShowAllAttachmentFile;
   final bool showDownloadAllAttachmentsButton;
+  final bool isDisplayAllAttachments;
   final OnTapActionCallback? onTapDownloadAllButton;
   final String? singleEmailControllerTag;
 
@@ -40,6 +41,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
     this.viewAttachmentAction,
     this.onTapShowAllAttachmentFile,
     this.showDownloadAllAttachmentsButton = false,
+    this.isDisplayAllAttachments = true,
     this.onTapDownloadAllButton,
     this.singleEmailControllerTag,
   });
@@ -230,6 +232,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
                   ),
                   child: Wrap(
                     spacing: 8,
+                    runSpacing: isDisplayAllAttachments ? 8 : 0,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       ...displayedAttachments.map((attachment) {
@@ -282,6 +285,10 @@ class EmailAttachmentsWidget extends StatelessWidget {
 
   ({List<Attachment> displayedAttachments, int hiddenItemsCount})
       _getDisplayedAndHiddenAttachment(BuildContext context, double maxWidth) {
+    if (isDisplayAllAttachments) {
+      return (displayedAttachments: attachments, hiddenItemsCount: 0);
+    }
+
     final displayedAttachments = EmailUtils.getAttachmentDisplayed(
       maxWidth: maxWidth,
       attachments: attachments,
