@@ -1020,11 +1020,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       switch (actionType.index) {
         case 1:
           if (B.JSString_methods.trim$0(_this.OwnEmailAddressMixin_ownEmailAddress.get$value(0)).length === 0) {
-            t1 = _this.ManageAccountDashBoardController_sessionCurrent;
+            t1 = _this.OwnEmailAddressMixin_sessionCurrent;
             if (t1 != null)
               A.SessionExtension_getOwnEmailAddressOrUsername(t1);
           }
-          _this._handleLogoutAction$2(_this.ManageAccountDashBoardController_sessionCurrent, _this.accountId.get$value(0));
+          _this._handleLogoutAction$2(_this.OwnEmailAddressMixin_sessionCurrent, _this.accountId.get$value(0));
           break;
         default:
           break;
@@ -1431,7 +1431,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t2._as(t1.get(_this)).__ForwardController_recipientController_A;
       t3 === $ && A.throwUnnamedLateFieldNI();
       A.Expando__checkType(_this);
-      t4 = t2._as(t1.get(_this)).accountDashBoardController.ManageAccountDashBoardController_sessionCurrent;
+      t4 = t2._as(t1.get(_this)).accountDashBoardController.OwnEmailAddressMixin_sessionCurrent;
       t4 = t4 == null ? null : A.SessionExtensions_get_internalDomain(t4);
       if (t4 == null)
         t4 = "";
@@ -3263,7 +3263,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t6 = J.$index$asx(t3._as(t2.get(t1)).listRecipientForward.get$value(0), index);
       A.Expando__checkType(t1);
-      t7 = t3._as(t2.get(t1)).accountDashBoardController.ManageAccountDashBoardController_sessionCurrent;
+      t7 = t3._as(t2.get(t1)).accountDashBoardController.OwnEmailAddressMixin_sessionCurrent;
       t7 = t7 == null ? null : A.SessionExtensions_get_internalDomain(t7);
       if (t7 == null)
         t7 = "";
@@ -3814,7 +3814,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       accountDisplayName = t3._as(t2.get(t1)).OwnEmailAddressMixin_ownEmailAddress.get$value(0);
       if (B.JSString_methods.trim$0(accountDisplayName).length === 0) {
         A.Expando__checkType(t1);
-        t4 = t3._as(t2.get(t1)).ManageAccountDashBoardController_sessionCurrent;
+        t4 = t3._as(t2.get(t1)).OwnEmailAddressMixin_sessionCurrent;
         accountDisplayName = t4 == null ? _null : A.SessionExtension_getOwnEmailAddressOrUsername(t4);
         if (accountDisplayName == null)
           accountDisplayName = "";
@@ -4036,7 +4036,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId == null)
         return B.SizedBox_0_0_null_null;
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).dashBoardController.ManageAccountDashBoardController_sessionCurrent;
+      t4 = t3._as(t2.get(t1)).dashBoardController.OwnEmailAddressMixin_sessionCurrent;
       contactSupportCapability = t4 == null ? null : F.SessionExtensions_getContactSupportCapability(t4, accountId);
       if ((contactSupportCapability == null ? null : contactSupportCapability.get$isAvailable()) !== true)
         return B.SizedBox_0_0_null_null;
@@ -4079,7 +4079,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       accountDisplayName = t3._as(t2.get(t1)).manageAccountDashboardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
       if (B.JSString_methods.trim$0(accountDisplayName).length === 0) {
         A.Expando__checkType(t1);
-        t4 = t3._as(t2.get(t1)).manageAccountDashboardController.ManageAccountDashBoardController_sessionCurrent;
+        t4 = t3._as(t2.get(t1)).manageAccountDashboardController.OwnEmailAddressMixin_sessionCurrent;
         accountDisplayName = t4 == null ? null : A.SessionExtension_getOwnEmailAddressOrUsername(t4);
         if (accountDisplayName == null)
           accountDisplayName = "";
@@ -4305,7 +4305,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId == null)
         return B.SizedBox_0_0_null_null;
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).manageAccountDashboardController.ManageAccountDashBoardController_sessionCurrent;
+      t4 = t3._as(t2.get(t1)).manageAccountDashboardController.OwnEmailAddressMixin_sessionCurrent;
       contactSupportCapability = t4 == null ? _null : F.SessionExtensions_getContactSupportCapability(t4, accountId);
       if ((contactSupportCapability == null ? _null : contactSupportCapability.get$isAvailable()) !== true)
         return B.SizedBox_0_0_null_null;
@@ -5177,5 +5177,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Gxw+PZAGusQMS0Z+S+oAoxeQDs8=");
+})($__dart_deferred_initializers__, "TVIX8z2Lc38SZpM9Yc/VBEcOvOY=");
 ;
