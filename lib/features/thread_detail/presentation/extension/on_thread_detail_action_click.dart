@@ -145,6 +145,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
                 action,
                 AppLocalizations.of(currentContext!),
                 imagePaths,
+                category: action.category,
               ),
             )
             .toList(),
@@ -152,6 +153,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
           popBack();
           onThreadDetailActionClick(action.action);
         },
+        useGroupedActions: true,
       );
     } else {
       mailboxDashBoardController.openPopupMenu(

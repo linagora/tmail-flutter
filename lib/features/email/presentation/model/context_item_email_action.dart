@@ -15,6 +15,7 @@ class ContextItemEmailAction
     this.appLocalizations,
     this.imagePaths, {
     super.key,
+    super.category,
   });
 
   @override
