@@ -252,6 +252,9 @@ class ComposerController extends BaseController
 
   TransformHtmlEmailContentInteractor get transformHtmlEmailContentInteractor => _transformHtmlEmailContentInteractor;
 
+  String get ownEmailAddress =>
+      mailboxDashBoardController.ownEmailAddress.value;
+
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
   late bool _isEmailBodyLoaded;
@@ -521,6 +524,7 @@ class ComposerController extends BaseController
       session: session,
       accountId: accountId,
       emailActionType: arguments.emailActionType,
+      ownEmailAddress: ownEmailAddress,
       subject: subjectEmail.value ?? '',
       emailContent: emailContent,
       fromSender: arguments.presentationEmail?.from ?? {},
@@ -698,7 +702,7 @@ class ComposerController extends BaseController
     required EmailActionType actionType,
     String? listPost,
   }) {
-    final senderEmailAddress = mailboxDashBoardController.sessionCurrent?.getOwnEmailAddressOrEmpty();
+    final senderEmailAddress = ownEmailAddress;
     final isSender = presentationEmail.from
       .asList()
       .any((element) => element.emailAddress.isNotEmpty && element.emailAddress == senderEmailAddress);
@@ -946,6 +950,7 @@ class ComposerController extends BaseController
           session: session,
           accountId: accountId,
           emailActionType: arguments.emailActionType,
+          ownEmailAddress: ownEmailAddress,
           subject: subjectEmail.value ?? '',
           emailContent: emailContent,
           fromSender: arguments.presentationEmail?.from ?? {},
@@ -2121,6 +2126,7 @@ class ComposerController extends BaseController
           session: session,
           accountId: accountId,
           emailActionType: arguments.emailActionType,
+          ownEmailAddress: ownEmailAddress,
           subject: subjectEmail.value ?? '',
           emailContent: emailContent,
           fromSender: arguments.presentationEmail?.from ?? {},
@@ -2171,6 +2177,7 @@ class ComposerController extends BaseController
           session: mailboxDashBoardController.sessionCurrent!,
           accountId: mailboxDashBoardController.accountId.value!,
           emailActionType: composerArguments.value!.emailActionType,
+          ownEmailAddress: ownEmailAddress,
           subject: subjectEmail.value ?? '',
           emailContent: emailContent,
           fromSender: composerArguments.value!.presentationEmail?.from ?? {},

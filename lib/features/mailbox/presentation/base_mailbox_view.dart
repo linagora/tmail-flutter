@@ -4,6 +4,7 @@ import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
@@ -34,7 +35,10 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
       final dashboardController = controller.mailboxDashBoardController;
       final accountId = dashboardController.accountId.value;
       final session = dashboardController.sessionCurrent;
-      final username = dashboardController.ownEmailAddress.value;
+      String username = dashboardController.ownEmailAddress.value;
+      if (username.trim().isEmpty) {
+        username = session?.getOwnEmailAddressOrUsername() ?? '';
+      }
 
       final linagoraApps = dashboardController
           .appGridDashboardController

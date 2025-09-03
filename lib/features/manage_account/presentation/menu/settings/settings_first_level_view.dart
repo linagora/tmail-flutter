@@ -2,8 +2,11 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/setting_first_level_tile_builder.dart';
@@ -19,17 +22,27 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
     return SingleChildScrollView(
       key: const Key('setting_menu'),
       child: Column(children: [
-        Obx(() => UserInformationWidget(
-          ownEmailAddress: controller
+        Obx(() {
+          String accountDisplayName = controller
             .manageAccountDashboardController
             .ownEmailAddress
-            .value,
-          padding: SettingsUtils.getPaddingInFirstLevel(
-            context,
-            controller.responsiveUtils,
-          ),
-          titlePadding: const EdgeInsetsDirectional.only(start: 16),
-        )),
+            .value;
+
+          if (accountDisplayName.trim().isEmpty) {
+            accountDisplayName = controller
+              .manageAccountDashboardController
+              .sessionCurrent
+              ?.getOwnEmailAddressOrUsername() ?? '';
+          }
+          return UserInformationWidget(
+            ownEmailAddress: accountDisplayName,
+            padding: SettingsUtils.getPaddingInFirstLevel(
+              context,
+              controller.responsiveUtils,
+            ),
+            titlePadding: const EdgeInsetsDirectional.only(start: 16),
+          );
+        }),
         Divider(
           color: AppColor.colorDividerHorizontal,
           height: 1,
@@ -222,10 +235,12 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         SettingFirstLevelTileBuilder(
           AppLocalizations.of(context).sign_out,
           controller.imagePaths.icSignOut,
-          () => controller.manageAccountDashboardController.logout(
-              context,
-              controller.manageAccountDashboardController.sessionCurrent,
-              controller.manageAccountDashboardController.accountId.value)
+          () => controller
+            .manageAccountDashboardController
+            .handleProfileSettingActionTypeClick(
+              context: context,
+              actionType: ProfileSettingActionType.signOut,
+            )
         ),
       ]),
     );

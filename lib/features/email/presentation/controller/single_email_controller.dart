@@ -1513,7 +1513,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    final receiverEmailAddress = _getReceiverEmailAddress(currentEmail!) ?? session!.getOwnEmailAddressOrEmpty();
+    String receiverEmailAddress = _getReceiverEmailAddress(currentEmail!)
+        ?? ownEmailAddress;
+    if (receiverEmailAddress.trim().isEmpty) {
+      receiverEmailAddress = session!.getOwnEmailAddressOrUsername();
+    }
     log('SingleEmailController::_handleSendReceiptToSenderAction():receiverEmailAddress: $receiverEmailAddress');
     final mdnToSender = _generateMDN(context, currentEmail!, receiverEmailAddress);
     final sendReceiptRequest = SendReceiptToSenderRequest(
@@ -1821,10 +1825,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
 
     _printEmailButtonState = ButtonState.disabled;
-
+    String accountDisplayName = ownEmailAddress;
+    if (accountDisplayName.trim().isEmpty) {
+      accountDisplayName = session?.getOwnEmailAddressOrUsername() ?? '';
+    }
     consumeState(emailActionReactor.printEmail(
       email,
-      ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
+      ownEmailAddress: accountDisplayName,
       emailLoaded: currentEmailLoaded.value!,
     ));
   }
@@ -2324,8 +2331,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     listEmailAddressAttendees.addAll(listEmailAddress);
 
-    final currentUserEmail = mailboxDashBoardController.ownEmailAddress.value;
-    final listEmailAddressMailTo = listEmailAddressAttendees.removeInvalidEmails(currentUserEmail);
+    final listEmailAddressMailTo =
+        listEmailAddressAttendees.removeInvalidEmails(ownEmailAddress);
     log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
     mailboxDashBoardController.openComposer(
       ComposerArguments.fromMailtoUri(listEmailAddress: listEmailAddressMailTo)
@@ -2340,8 +2347,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         AppLocalizations.of(currentContext!).thisHtmlAttachmentCannotBePreviewed);
     }
   }
-
-  String getOwnEmailAddress() => session?.getOwnEmailAddressOrEmpty() ?? '';
 
   void onHtmlContentClippedAction(bool isClipped) {
     log('SingleEmailController::onHtmlContentClippedAction:isClipped = $isClipped');
