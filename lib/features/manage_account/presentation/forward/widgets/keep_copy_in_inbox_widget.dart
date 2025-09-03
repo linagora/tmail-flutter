@@ -2,7 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tmail_ui_user/features/base/widget/default_switch_icon_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -35,11 +35,9 @@ class KeepCopyInInboxWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: InkWell(
               onTap: onToggleLocalCopy,
-              child: SvgPicture.asset(
-                localCopyState ? imagePaths.icSwitchOn : imagePaths.icSwitchOff,
-                fit: BoxFit.fill,
-                width: 52,
-                height: 32,
+              child: DefaultSwitchIconWidget(
+                imagePaths: imagePaths,
+                isEnabled: localCopyState,
               ),
             ),
           ),
