@@ -1,14 +1,10 @@
-
-import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/base/mixin/expand_folder_trigger_scrollable_mixin.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
@@ -20,27 +16,24 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class MailboxCreatorController extends BaseController {
+class MailboxCreatorController extends BaseController
+    with ExpandFolderTriggerScrollableMixin {
 
   final VerifyNameInteractor _verifyNameInteractor;
 
   final selectedMailbox = Rxn<PresentationMailbox>();
   final newNameMailbox = Rxn<String>();
+  final isFolderModalEnabled = RxBool(false);
   bool _createdMailbox = false;
+
+  final personalMailboxTree = MailboxTree(MailboxNode.root()).obs;
+  final defaultMailboxTree = MailboxTree(MailboxNode.root()).obs;
 
   final FocusNode nameInputFocusNode = FocusNode();
   final TextEditingController nameInputController = TextEditingController();
-
-  MailboxCreatorArguments? arguments;
-  AccountId? accountId;
-  Session? _session;
-  MailboxTree? defaultMailboxTree;
-  MailboxTree? personalMailboxTree;
-  MailboxTree? teamMailboxesTre;
+  final ScrollController listFolderScrollController = ScrollController();
 
   List<String> listMailboxNameAsStringExist = <String>[];
 
@@ -51,47 +44,35 @@ class MailboxCreatorController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    log('MailboxCreatorController::onInit():arguments: ${Get.arguments}');
-    arguments = Get.arguments;
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-    log('MailboxCreatorController::onReady():');
+    MailboxCreatorArguments? arguments = Get.arguments;
     if (arguments != null) {
-      personalMailboxTree = arguments!.personalMailboxTree;
-      defaultMailboxTree = arguments!.defaultMailboxTree;
-      teamMailboxesTre = arguments!.teamMailboxesTree;
-      accountId = arguments!.accountId;
-      _session = arguments!.session;
-      if (arguments!.selectedMailbox != null) {
-        selectedMailbox.value = arguments!.selectedMailbox;
-      }
+      personalMailboxTree.value = arguments.personalMailboxTree;
+      defaultMailboxTree.value = arguments.defaultMailboxTree;
+      selectedMailbox.value = arguments.selectedMailbox;
       _createListMailboxNameAsStringInMailboxLocation();
     }
   }
 
   @override
   void onClose() {
-    log('MailboxCreatorController::onClose():');
+    listMailboxNameAsStringExist = [];
+    _createdMailbox = false;
     nameInputFocusNode.dispose();
     nameInputController.dispose();
+    listFolderScrollController.dispose();
     super.onClose();
   }
 
   MailboxNode? _findMailboxNodeById(MailboxId mailboxId) {
-    final mailboxNode = defaultMailboxTree?.findNode((node) => node.item.id == mailboxId)
-     ?? personalMailboxTree?.findNode((node) => node.item.id == mailboxId)
-     ?? teamMailboxesTre?.findNode((node) => node.item.id == mailboxId);
+    final mailboxNode = defaultMailboxTree.value.findNode((node) => node.item.id == mailboxId)
+     ?? personalMailboxTree.value.findNode((node) => node.item.id == mailboxId);
     return mailboxNode;
   }
 
   void _createListMailboxNameAsStringInMailboxLocation() {
     if (selectedMailbox.value == null) {
-      final allChildrenAtMailboxLocation = (defaultMailboxTree?.root.childrenItems ?? <MailboxNode>[]) 
-        + (personalMailboxTree?.root.childrenItems ?? <MailboxNode>[])
-        + (teamMailboxesTre?.root.childrenItems ?? <MailboxNode>[]);
+      final allChildrenAtMailboxLocation = (defaultMailboxTree.value.root.childrenItems ?? <MailboxNode>[])
+        + (personalMailboxTree.value.root.childrenItems ?? <MailboxNode>[]);
       if (allChildrenAtMailboxLocation.isNotEmpty) {
         listMailboxNameAsStringExist = allChildrenAtMailboxLocation
             .where((mailboxNode) => mailboxNode.nameNotEmpty)
@@ -140,33 +121,22 @@ class MailboxCreatorController extends BaseController {
     );
   }
 
-  void selectMailboxLocation(BuildContext context) async {
-    KeyboardUtils.hideKeyboard(context);
+  void openFolderModal(BuildContext context) {
+    nameInputFocusNode.unfocus();
 
-    if (accountId != null) {
-      final arguments = DestinationPickerArguments(
-        accountId!,
-        MailboxActions.create,
-        _session,
-        mailboxIdSelected: selectedMailbox.value?.id);
-
-      final destinationMailbox = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
-        : await push(AppRoutes.destinationPicker, arguments: arguments);
-
-      if (destinationMailbox is PresentationMailbox) {
-        final mailboxDestination = destinationMailbox == PresentationMailbox.unifiedMailbox
-          ? null
-          : destinationMailbox;
-
-        selectedMailbox.value = mailboxDestination;
-        _createListMailboxNameAsStringInMailboxLocation();
-      }
+    if (!responsiveUtils.isMobile(context)) {
+      isFolderModalEnabled.value = true;
     }
   }
 
+  void selectMailboxLocation(MailboxNode? mailboxDestination) {
+    isFolderModalEnabled.value = false;
+    selectedMailbox.value = mailboxDestination?.item;
+    _createListMailboxNameAsStringInMailboxLocation();
+  }
+
   void createNewMailbox(BuildContext context) {
-    KeyboardUtils.hideKeyboard(context);
+    nameInputFocusNode.unfocus();
 
     final nameMailbox = newNameMailbox.value;
     final nameValidated = getErrorInputNameString(context);
@@ -180,11 +150,35 @@ class MailboxCreatorController extends BaseController {
         MailboxName(nameMailbox),
         mailboxLocation: selectedMailbox.value);
       popBack(result: newMailboxArguments);
+    } else {
+      newNameMailbox.refresh();
     }
   }
 
-  void closeMailboxCreator(BuildContext context) {
-    KeyboardUtils.hideKeyboard(context);
+  void toggleFolder(MailboxNode selectedMailboxNode, GlobalKey itemKey) {
+    final newExpandMode = selectedMailboxNode.expandMode.toggle();
+
+    if (defaultMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
+      defaultMailboxTree.refresh();
+      triggerScrollWhenExpandFolder(
+        selectedMailboxNode.expandMode,
+        itemKey,
+        listFolderScrollController,
+      );
+    }
+
+    if (personalMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
+      personalMailboxTree.refresh();
+      triggerScrollWhenExpandFolder(
+        selectedMailboxNode.expandMode,
+        itemKey,
+        listFolderScrollController,
+      );
+    }
+  }
+
+  void closeView() {
+    nameInputFocusNode.unfocus();
     popBack();
   }
 }

@@ -756,12 +756,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   void goToCreateNewMailboxView(BuildContext context, {PresentationMailbox? parentMailbox}) async {
     if (session != null && accountId != null) {
       final arguments = MailboxCreatorArguments(
-          accountId!,
           defaultMailboxTree.value,
           personalMailboxTree.value,
-          teamMailboxesTree.value,
-          session!,
-          parentMailbox
+          parentMailbox,
         );
 
       final result = PlatformInfo.isWeb

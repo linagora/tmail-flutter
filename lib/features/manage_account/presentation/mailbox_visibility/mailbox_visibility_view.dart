@@ -272,7 +272,6 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
     return parentNode.childrenItems
       ?.map((mailboxNode) => mailboxNode.hasChildren()
         ? TreeViewChild(
-            context,
             key: const Key('children_tree_mailbox_child'),
             isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
             paddingChild: const EdgeInsetsDirectional.only(start: 10),

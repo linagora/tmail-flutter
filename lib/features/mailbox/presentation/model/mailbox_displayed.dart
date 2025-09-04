@@ -1,5 +1,6 @@
 
 enum MailboxDisplayed {
   mailbox,
-  destinationPicker
+  destinationPicker,
+  modalFolder;
 }
