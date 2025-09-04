@@ -27,6 +27,7 @@ mixin PopupContextMenuActionMixin {
     required List<ContextMenuItemAction> itemActions,
     required OnContextMenuActionClick onContextMenuActionClick,
     Key? key,
+    bool useGroupedActions = false,
   }) async {
     return await showModalBottomSheet(
       context: context,
@@ -50,6 +51,7 @@ mixin PopupContextMenuActionMixin {
             child: ContextMenuDialogView(
               actions: itemActions,
               onContextMenuActionClick: onContextMenuActionClick,
+              useGroupedActions: useGroupedActions,
             ),
           ),
         );

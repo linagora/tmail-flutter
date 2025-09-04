@@ -70,6 +70,7 @@ extension HandlePressEmailSelectionActionExtension on SearchEmailController {
               action,
               AppLocalizations.of(context),
               imagePaths,
+              category: action.category,
             ))
         .toList();
 
@@ -80,6 +81,7 @@ extension HandlePressEmailSelectionActionExtension on SearchEmailController {
         popBack();
         handleSelectionEmailAction(menuAction.action, emails);
       },
+      useGroupedActions: true,
     );
   }
 
