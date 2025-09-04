@@ -1977,6 +1977,7 @@ class MailboxDashBoardController extends ReloadableController
     _getAllIdentities();
     notifyThreadDetailSettingUpdated();
     getServerSetting();
+    spamReportController.getSpamReportStateAction();
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
@@ -2047,6 +2048,7 @@ class MailboxDashBoardController extends ReloadableController
     _getAllIdentities();
     notifyThreadDetailSettingUpdated();
     getServerSetting();
+    spamReportController.getSpamReportStateAction();
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {

@@ -30,7 +30,7 @@ class ThreadDetailManager extends ReloadableController {
 
   final threadDetailSettingStatus = ThreadDetailSettingStatus.loading.obs;
   AppLifecycleListener? appLifecycleListener;
-  bool threadDetailWasEnabled = true;
+  bool threadDetailWasEnabled = false;
 
   bool get isSearchingOnMobile =>
       mailboxDashBoardController.searchController.isSearchEmailRunning &&
@@ -110,7 +110,7 @@ class ThreadDetailManager extends ReloadableController {
   @override
   void handleFailureViewState(Failure failure) {
     if (failure is GetThreadDetailStatusFailure) {
-      threadDetailSettingStatus.value = ThreadDetailSettingStatus.enabled;
+      threadDetailSettingStatus.value = ThreadDetailSettingStatus.disabled;
       refreshThreadDetailOnSettingChanged();
     } else {
       super.handleFailureViewState(failure);

@@ -23,11 +23,6 @@ class HiveSpamReportDataSourceImpl extends SpamReportDataSource {
   }
 
   @override
-  Future<void> deleteSpamReportState() {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<UnreadSpamEmailsResponse> findNumberOfUnreadSpamEmails(Session session, AccountId accountId, {MailboxFilterCondition? mailboxFilterCondition, UnsignedInt? limit}) {
     throw UnimplementedError();
   }
