@@ -199,7 +199,9 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           .selectedMailbox
           .value,
         onOpenMailboxFolderClick: (mailboxNode) =>
-          controller.openMailbox(context, mailboxNode.item),
+            mailboxNode != null
+                ? controller.openMailbox(context, mailboxNode.item)
+                : null,
         onExpandFolderActionClick: mailboxNode.hasChildren()
           ? (mailboxNode, itemKey) => controller.toggleMailboxFolder(
               mailboxNode,
@@ -228,7 +230,6 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
       if (mailboxNode.hasChildren()) {
         return TreeViewChild(
-          context,
           key: const Key('children_tree_mailbox_child'),
           isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
           paddingChild: const EdgeInsetsDirectional.only(start: 12),

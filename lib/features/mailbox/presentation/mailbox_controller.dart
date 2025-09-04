@@ -843,15 +843,12 @@ class MailboxController extends BaseMailboxController
   }
 
   void goToCreateNewMailboxView(BuildContext context, {PresentationMailbox? parentMailbox}) async {
-    if (session !=null && accountId != null) {
+    if (session != null && accountId != null) {
       final arguments = MailboxCreatorArguments(
-          accountId!,
-          defaultMailboxTree.value,
-          personalMailboxTree.value,
-          teamMailboxesTree.value,
-          mailboxDashBoardController.sessionCurrent!,
-          parentMailbox
-        );
+        defaultMailboxTree.value,
+        personalMailboxTree.value,
+        parentMailbox,
+      );
 
       final result = PlatformInfo.isWeb
         ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.mailboxCreator, arguments: arguments)

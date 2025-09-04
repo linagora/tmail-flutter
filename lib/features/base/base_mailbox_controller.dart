@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_act
 import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_action/update_mailbox_total_emails_count_action.dart';
 import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_action/update_mailbox_unread_count_action.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/expand_folder_trigger_scrollable_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
@@ -55,7 +56,8 @@ typedef MovingMailboxActionCallback = void Function(PresentationMailbox mailboxS
 typedef DeleteMailboxActionCallback = void Function(PresentationMailbox mailbox);
 typedef AllowSubaddressingActionCallback = void Function(MailboxId, Map<String, List<String>?>?, MailboxActions);
 
-abstract class BaseMailboxController extends BaseController {
+abstract class BaseMailboxController extends BaseController
+    with ExpandFolderTriggerScrollableMixin {
   final TreeBuilder _treeBuilder;
   final VerifyNameInteractor verifyNameInteractor;
   final GetAllMailboxInteractor? getAllMailboxInteractor;
@@ -155,44 +157,6 @@ abstract class BaseMailboxController extends BaseController {
         selectedMailboxNode.expandMode,
         itemKey,
         scrollController,
-      );
-    }
-  }
-
-  void triggerScrollWhenExpandFolder(
-    ExpandMode expandMode,
-    GlobalKey itemKey,
-    ScrollController scrollController,
-  ) {
-    if (expandMode == ExpandMode.COLLAPSE) return;
-
-    final context = itemKey.currentContext;
-    if (context == null) return;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToSelfIfNeeded(context, scrollController);
-    });
-  }
-
-  void _scrollToSelfIfNeeded(
-    BuildContext context,
-    ScrollController scrollController,
-  ) {
-    final renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-
-    final position = renderBox.localToGlobal(Offset.zero);
-    final screenHeight = MediaQuery.of(context).size.height;
-    const offsetY = 200;
-    final bottomY = position.dy + renderBox.size.height + offsetY;
-    log('BaseMailboxController::_scrollToSelfIfNeeded:position = $position |screenHeight = $screenHeight | bottomY = $bottomY');
-    if (bottomY > screenHeight) {
-      final scrollOffset = scrollController.offset + bottomY - screenHeight + 40;
-      log('BaseMailboxController::_scrollToSelfIfNeeded:scrollOffset = $scrollOffset:');
-      scrollController.animateTo(
-        scrollOffset,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
       );
     }
   }

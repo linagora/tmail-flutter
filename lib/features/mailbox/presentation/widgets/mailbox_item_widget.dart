@@ -25,6 +25,7 @@ class MailboxItemWidget extends StatefulWidget {
   final PresentationMailbox? mailboxNodeSelected;
   final MailboxActions? mailboxActions;
   final MailboxId? mailboxIdAlreadySelected;
+  final Color? hoverColor;
 
   final OnClickExpandMailboxNodeAction? onExpandFolderActionClick;
   final OnClickOpenMailboxNodeAction? onOpenMailboxFolderClick;
@@ -41,6 +42,7 @@ class MailboxItemWidget extends StatefulWidget {
     this.mailboxNodeSelected,
     this.mailboxActions,
     this.mailboxIdAlreadySelected,
+    this.hoverColor,
     this.onExpandFolderActionClick,
     this.onOpenMailboxFolderClick,
     this.onSelectMailboxFolderClick,
@@ -229,11 +231,11 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => !_isSelectActionNoValid
-                  ? widget.onOpenMailboxFolderClick?.call(widget.mailboxNode)
+                onTap: !isSelectedFolderInModal
+                  ? () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode)
                   : null,
                 customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-                hoverColor: AppColor.colorMailboxHovered,
+                hoverColor: widget.hoverColor ?? AppColor.colorMailboxHovered,
                 child: Container(
                   padding: const EdgeInsetsDirectional.symmetric(
                     horizontal: MailboxItemWidgetStyles.itemPadding,
@@ -255,14 +257,17 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                           showTrailing: false,
                           isSelected: _isSelected,
                           isItemHovered: _isItemHovered,
+                          isSelectedFolderInModal: isSelectedFolderInModal,
                           onMenuActionClick: widget.onMenuActionClick,
                           onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
                           onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
                         )
                       ),
-                      if (_isSelectActionNoValid)
+                      if (isSelectedFolderInModal)
                         SvgPicture.asset(
-                          _imagePaths.icSelectedSB,
+                          isFolderModalActive
+                            ? _imagePaths.icCheck
+                            : _imagePaths.icSelectedSB,
                           width: MailboxItemWidgetStyles.selectionIconSize,
                           height: MailboxItemWidgetStyles.selectionIconSize,
                           fit: BoxFit.fill
@@ -282,24 +287,25 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
       widget.mailboxNodeSelected?.id == widget.mailboxNode.item.id;
 
   Color get backgroundColorItem {
-    if (widget.mailboxDisplayed == MailboxDisplayed.destinationPicker) {
-      return Colors.white;
-    } else {
-      if (_isSelected) {
-        return AppColor.blue100;
-      } else {
-        return Colors.transparent;
-      }
+    if (widget.mailboxDisplayed == MailboxDisplayed.mailbox) {
+      return _isSelected ? AppColor.blue100 : Colors.transparent;
     }
+    return Colors.white;
   }
 
-  bool get _isSelectActionNoValid => widget.mailboxNode.item.id == widget.mailboxIdAlreadySelected &&
-    widget.mailboxDisplayed == MailboxDisplayed.destinationPicker &&
-    (
-      widget.mailboxActions == MailboxActions.select ||
-      widget.mailboxActions == MailboxActions.create ||
-      widget.mailboxActions == MailboxActions.moveEmail
-    );
+  bool get isFolderModalActive =>
+      widget.mailboxDisplayed == MailboxDisplayed.modalFolder;
+
+  bool get isSelectedFolderInModal {
+    final isDestinationPickerActive =
+        widget.mailboxDisplayed == MailboxDisplayed.destinationPicker &&
+            (widget.mailboxActions == MailboxActions.select ||
+                widget.mailboxActions == MailboxActions.create ||
+                widget.mailboxActions == MailboxActions.moveEmail);
+
+    return widget.mailboxNode.item.id == widget.mailboxIdAlreadySelected &&
+        (isDestinationPickerActive || isFolderModalActive);
+  }
 
   bool get _isIconDisplayed =>
       widget.mailboxNode.item.isPersonal ||

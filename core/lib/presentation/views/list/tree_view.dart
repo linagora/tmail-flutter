@@ -52,24 +52,20 @@ class _TreeViewData extends StatelessWidget {
 }
 
 class TreeViewChild {
-  final BuildContext context;
   final bool? isExpanded;
   final Widget parent;
   final List<Widget> children;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? paddingChild;
 
-  TreeViewChild(
-    this.context,
-    {
-      required this.parent,
-      required this.children,
-      this.isExpanded,
-      this.onTap,
-      this.paddingChild,
-      Key? key,
-    }
-  );
+  TreeViewChild({
+    required this.parent,
+    required this.children,
+    this.isExpanded,
+    this.onTap,
+    this.paddingChild,
+    Key? key,
+  });
 
   Widget build() {
     return Column(

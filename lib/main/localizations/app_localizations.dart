@@ -5059,4 +5059,47 @@ class AppLocalizations {
       name: 'actions',
     );
   }
+
+  String get createANewFolder {
+    return Intl.message(
+      'Create a New Folder',
+      name: 'createANewFolder',
+    );
+  }
+
+  String subtitleDisplayTheFolderNameLocationInFolderCreationModal(String folderName) {
+    return Intl.message(
+      'New folder will be created inside $folderName',
+      name: 'subtitleDisplayTheFolderNameLocationInFolderCreationModal',
+      args: [folderName]
+    );
+  }
+
+  String get folderName {
+    return Intl.message(
+      'Folder Name',
+      name: 'folderName',
+    );
+  }
+
+  String get enterTheFolderName {
+    return Intl.message(
+      'Enter the folder name',
+      name: 'enterTheFolderName',
+    );
+  }
+
+  String get selectTheFolderLocation {
+    return Intl.message(
+      'Select the folder location',
+      name: 'selectTheFolderLocation',
+    );
+  }
+
+  String get createFolder {
+    return Intl.message(
+      'Create folder',
+      name: 'createFolder',
+    );
+  }
 }
