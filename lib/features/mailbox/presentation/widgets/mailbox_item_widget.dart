@@ -26,6 +26,10 @@ class MailboxItemWidget extends StatefulWidget {
   final MailboxActions? mailboxActions;
   final MailboxId? mailboxIdAlreadySelected;
   final Color? hoverColor;
+  final TextStyle? textStyle;
+  final Color? iconColor;
+  final double? itemHeight;
+  final String? iconSelected;
 
   final OnClickExpandMailboxNodeAction? onExpandFolderActionClick;
   final OnClickOpenMailboxNodeAction? onOpenMailboxFolderClick;
@@ -43,6 +47,10 @@ class MailboxItemWidget extends StatefulWidget {
     this.mailboxActions,
     this.mailboxIdAlreadySelected,
     this.hoverColor,
+    this.iconColor,
+    this.textStyle,
+    this.itemHeight,
+    this.iconSelected,
     this.onExpandFolderActionClick,
     this.onOpenMailboxFolderClick,
     this.onSelectMailboxFolderClick,
@@ -88,9 +96,9 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: MailboxItemWidgetStyles.itemPadding,
                 ),
-                height: widget.mailboxNode.item.isTeamMailboxes
+                height: widget.itemHeight ?? (widget.mailboxNode.item.isTeamMailboxes
                     ? MailboxItemWidgetStyles.teamMailboxHeight
-                    : MailboxItemWidgetStyles.height,
+                    : MailboxItemWidgetStyles.height),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: widget.mailboxNode.item.isTeamMailboxes
@@ -98,13 +106,17 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     : CrossAxisAlignment.center,
                   children: [
                     if (_isIconDisplayed)
-                      MailboxIconWidget(icon: _iconMailbox),
+                      MailboxIconWidget(
+                        icon: _iconMailbox,
+                        color: widget.iconColor,
+                      ),
                     Expanded(
                       child: LabelMailboxItemWidget(
                         itemKey: _key,
                         mailboxNode: widget.mailboxNode,
                         isItemHovered: _isItemHovered,
                         isSelected: _isSelected,
+                        textStyle: widget.textStyle,
                         onMenuActionClick: widget.onMenuActionClick,
                         onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
                         onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
@@ -143,9 +155,9 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: MailboxItemWidgetStyles.itemPadding,
                 ),
-                height: widget.mailboxNode.item.isTeamMailboxes
+                height: widget.itemHeight ?? (widget.mailboxNode.item.isTeamMailboxes
                     ? MailboxItemWidgetStyles.teamMailboxHeight
-                    : MailboxItemWidgetStyles.mobileHeight,
+                    : MailboxItemWidgetStyles.mobileHeight),
                 child: Row(
                   children: [
                     if (_isIconDisplayed)
@@ -154,7 +166,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         padding: const EdgeInsetsDirectional.only(
                           end: MailboxItemWidgetStyles.mobileLabelIconSpace,
                         ),
-                        color: AppColor.iconFolder,
+                        color: widget.iconColor ?? AppColor.iconFolder,
                       ),
                     Expanded(
                       child: LabelMailboxItemWidget(
@@ -162,6 +174,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         mailboxNode: widget.mailboxNode,
                         isItemHovered: _isItemHovered,
                         isSelected: _isSelected,
+                        textStyle: widget.textStyle,
                         onMenuActionClick: widget.onMenuActionClick,
                         onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
                         onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
@@ -192,9 +205,9 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: MailboxItemWidgetStyles.mobileItemPadding,
                 ),
-                height: widget.mailboxNode.item.isTeamMailboxes
+                height: widget.itemHeight ?? (widget.mailboxNode.item.isTeamMailboxes
                     ? MailboxItemWidgetStyles.teamMailboxHeight
-                    : MailboxItemWidgetStyles.mobileHeight,
+                    : MailboxItemWidgetStyles.mobileHeight),
                 child: Row(
                   children: [
                     if (_isIconDisplayed)
@@ -203,7 +216,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         padding: const EdgeInsetsDirectional.only(
                           end: MailboxItemWidgetStyles.mobileLabelIconSpace,
                         ),
-                        color: AppColor.iconFolder,
+                        color: widget.iconColor ?? AppColor.iconFolder,
                       ),
                     Expanded(
                       child: LabelMailboxItemWidget(
@@ -211,6 +224,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         mailboxNode: widget.mailboxNode,
                         isItemHovered: _isItemHovered,
                         isSelected: _isSelected,
+                        textStyle: widget.textStyle,
                         onMenuActionClick: widget.onMenuActionClick,
                         onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
                         onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
@@ -240,16 +254,19 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   padding: const EdgeInsetsDirectional.symmetric(
                     horizontal: MailboxItemWidgetStyles.itemPadding,
                   ),
-                  height: widget.mailboxNode.item.isTeamMailboxes
+                  height: widget.itemHeight ?? (widget.mailboxNode.item.isTeamMailboxes
                       ? MailboxItemWidgetStyles.teamMailboxHeight
-                      : MailboxItemWidgetStyles.height,
+                      : MailboxItemWidgetStyles.height),
                   color: widget.mailboxNode.isSelected
                       ? AppColor.colorItemSelected
                       : Colors.transparent,
                   child: Row(
                     children: [
                       if (_isIconDisplayed)
-                        MailboxIconWidget(icon: _iconMailbox),
+                        MailboxIconWidget(
+                          icon: _iconMailbox,
+                          color: widget.iconColor,
+                        ),
                       Expanded(
                         child: LabelMailboxItemWidget(
                           itemKey: _key,
@@ -257,6 +274,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                           showTrailing: false,
                           isSelected: _isSelected,
                           isItemHovered: _isItemHovered,
+                          textStyle: widget.textStyle,
                           isSelectedFolderInModal: isSelectedFolderInModal,
                           onMenuActionClick: widget.onMenuActionClick,
                           onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
@@ -265,9 +283,9 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                       ),
                       if (isSelectedFolderInModal)
                         SvgPicture.asset(
-                          isFolderModalActive
-                            ? _imagePaths.icCheck
-                            : _imagePaths.icSelectedSB,
+                          widget.iconSelected ?? (isFolderModalActive
+                              ? _imagePaths.icCheck
+                              : _imagePaths.icSelectedSB),
                           width: MailboxItemWidgetStyles.selectionIconSize,
                           height: MailboxItemWidgetStyles.selectionIconSize,
                           fit: BoxFit.fill

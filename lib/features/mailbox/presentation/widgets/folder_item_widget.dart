@@ -10,6 +10,9 @@ class FolderItemWidget extends StatelessWidget {
   final ImagePaths imagePaths;
   final String folderName;
   final bool isSelected;
+  final Color? iconColor;
+  final String? iconSelected;
+  final TextStyle? textStyle;
   final VoidCallback? onTapAction;
 
   const FolderItemWidget({
@@ -17,6 +20,9 @@ class FolderItemWidget extends StatelessWidget {
     required this.imagePaths,
     required this.folderName,
     this.isSelected = false,
+    this.iconColor,
+    this.iconSelected,
+    this.textStyle,
     this.onTapAction,
   });
 
@@ -33,7 +39,8 @@ class FolderItemWidget extends StatelessWidget {
             imagePaths.icFolderMailbox,
             width: MailboxIconWidgetStyles.iconSize,
             height: MailboxIconWidgetStyles.iconSize,
-            colorFilter: AppColor.primaryLinShare.asFilter(),
+            colorFilter:
+                iconColor?.asFilter() ?? AppColor.primaryLinShare.asFilter(),
             fit: BoxFit.fill,
           ),
           const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
@@ -42,23 +49,23 @@ class FolderItemWidget extends StatelessWidget {
               folderName,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: isSelected
-                  ? ThemeUtils.textStyleInter700(
-                      color: Colors.black,
-                      fontSize: 14,
-                    )
-                  : ThemeUtils.textStyleBodyBody3(
-                      color: Colors.black,
-                    ),
+              style: textStyle ??
+                  (isSelected
+                      ? ThemeUtils.textStyleInter700(
+                          color: Colors.black,
+                          fontSize: 14,
+                        )
+                      : ThemeUtils.textStyleBodyBody3(
+                          color: Colors.black,
+                        )),
             ),
           ),
           const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
           if (isSelected)
             SvgPicture.asset(
-              imagePaths.icCheck,
+              iconSelected ?? imagePaths.icCheck,
               width: MailboxIconWidgetStyles.iconSize,
               height: MailboxIconWidgetStyles.iconSize,
-              colorFilter: AppColor.primaryLinShare.asFilter(),
               fit: BoxFit.fill,
             ),
         ],
