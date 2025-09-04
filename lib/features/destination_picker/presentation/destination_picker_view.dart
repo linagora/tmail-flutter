@@ -32,7 +32,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_icon_
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -413,7 +413,6 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       ?.map((mailboxNode) {
         if (mailboxNode.hasChildren()) {
           return TreeViewChild(
-            context,
             key: const Key('children_tree_mailbox_child'),
             isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
             paddingChild: const EdgeInsetsDirectional.only(start: 14),
@@ -422,7 +421,9 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               mailboxActions: actions,
               mailboxIdAlreadySelected: mailboxIdSelected,
               mailboxDisplayed: MailboxDisplayed.destinationPicker,
-              onOpenMailboxFolderClick: (node) => _pickMailboxNode(context, node),
+              onOpenMailboxFolderClick: (node) => node != null
+                  ? _pickMailboxNode(context, node)
+                  : null,
               onExpandFolderActionClick: (mailboxNode, itemKey) =>
                   controller.toggleMailboxFolder(
                       mailboxNode,
@@ -443,7 +444,9 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             mailboxDisplayed: MailboxDisplayed.destinationPicker,
             mailboxIdAlreadySelected: mailboxIdSelected,
             mailboxActions: actions,
-            onOpenMailboxFolderClick: (node) => _pickMailboxNode(context, node),
+            onOpenMailboxFolderClick: (node) => node != null
+                ? _pickMailboxNode(context, node)
+                : null,
           );
         }})
       .toList() ?? <Widget>[];
