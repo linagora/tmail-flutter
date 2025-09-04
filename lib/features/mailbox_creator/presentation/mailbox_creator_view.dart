@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_button_arrow_down_field_widget.dart';
@@ -159,10 +160,9 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                                 defaultTree: controller.defaultMailboxTree.value,
                                 personalTree: controller.personalMailboxTree.value,
                                 imagePaths: controller.imagePaths,
-                                listScrollController:
-                                controller.listFolderScrollController,
+                                listScrollController: controller.listFolderScrollController,
                                 mailboxIdSelected: selectedMailbox?.id,
-                                onSelectFolderAction: controller.selectMailboxLocation,
+                                onSelectFolderAction: (node) => controller.selectMailboxLocation(context, node),
                                 onToggleFolderAction: controller.toggleFolder,
                               )),
                             )
@@ -197,6 +197,21 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
       ),
     );
 
-    return Center(child: bodyWidget);
+    bodyWidget = Center(child: bodyWidget);
+
+    if (PlatformInfo.isMobile) {
+      bodyWidget = GestureDetector(
+        onTap: controller.closeView,
+        child: Scaffold(
+          backgroundColor: AppColor.blackAlpha20,
+          body: GestureDetector(
+            onTap: controller.nameInputFocusNode.unfocus,
+            child: bodyWidget,
+          ),
+        ),
+      );
+    }
+
+    return bodyWidget;
   }
 }

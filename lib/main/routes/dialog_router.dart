@@ -29,7 +29,7 @@ class DialogRouter {
       barrierDismissible: true,
       barrierLabel: routeName,
       routeSettings: RouteSettings(arguments: arguments),
-      pageBuilder: (_, __, ___) => _generateView(routeName: routeName, arguments: arguments)
+      pageBuilder: (_, __, ___) => _generateView(routeName: routeName)
     );
 
     _isDialogOpened.value = false;
@@ -69,8 +69,7 @@ class DialogRouter {
     }
   }
 
-  static Widget _generateView({required String routeName, required Object? arguments}) {
-    log('DialogRouter::_generateView():routeName: $routeName | arguments: $arguments');
+  static Widget _generateView({required String routeName}) {
     switch(routeName) {
       case AppRoutes.mailboxCreator:
         return MailboxCreatorView();

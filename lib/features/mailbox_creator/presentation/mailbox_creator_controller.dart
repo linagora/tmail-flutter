@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -14,8 +14,11 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/bottom_modal_folder_tree_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/bottom_modal/bottom_modal_folder_tree_list_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/bottom_modal/bottom_modal_folder_tree_list_widget.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxCreatorController extends BaseController
@@ -124,13 +127,20 @@ class MailboxCreatorController extends BaseController
   void openFolderModal(BuildContext context) {
     nameInputFocusNode.unfocus();
 
-    if (!responsiveUtils.isMobile(context)) {
+    if (responsiveUtils.isMobile(context)) {
+      _showFolderListBottomModal(context);
+    } else {
       isFolderModalEnabled.value = true;
     }
   }
 
-  void selectMailboxLocation(MailboxNode? mailboxDestination) {
-    isFolderModalEnabled.value = false;
+  void selectMailboxLocation(
+    BuildContext context,
+    MailboxNode? mailboxDestination,
+  ) {
+    if (!responsiveUtils.isMobile(context)) {
+      isFolderModalEnabled.value = false;
+    }
     selectedMailbox.value = mailboxDestination?.item;
     _createListMailboxNameAsStringInMailboxLocation();
   }
@@ -176,6 +186,41 @@ class MailboxCreatorController extends BaseController
       );
     }
   }
+
+  Future<void> _showFolderListBottomModal(BuildContext context) async {
+    BottomModalFolderTreeListBindings().dependencies();
+
+    final result = await showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16.0),
+          topRight: Radius.circular(16.0),
+        ),
+      ),
+      backgroundColor: Colors.white,
+      routeSettings: RouteSettings(
+        arguments: BottomModalFolderTreeArguments(
+          defaultMailboxTree.value,
+          personalMailboxTree.value,
+          selectedMailbox.value,
+        ),
+      ),
+      builder: (_) => const BottomModalFolderTreeListWidget(),
+    ).whenComplete(BottomModalFolderTreeListBindings().dispose);
+
+    if (result is PresentationMailbox) {
+      if (result.id == MailboxNode.root().item.id) {
+        selectedMailbox.value = null;
+      } else {
+        selectedMailbox.value = result;
+      }
+      _createListMailboxNameAsStringInMailboxLocation();
+    }
+  }
+
 
   void closeView() {
     nameInputFocusNode.unfocus();
