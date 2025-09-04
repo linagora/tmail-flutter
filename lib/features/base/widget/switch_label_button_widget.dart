@@ -1,7 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tmail_ui_user/features/base/widget/default_switch_icon_widget.dart';
 
 class SwitchLabelButtonWidget extends StatelessWidget {
   final ImagePaths imagePaths;
@@ -25,11 +25,9 @@ class SwitchLabelButtonWidget extends StatelessWidget {
       children: [
         InkWell(
           onTap: onSwitchAction,
-          child: SvgPicture.asset(
-            isActive ? imagePaths.icSwitchOn : imagePaths.icSwitchOff,
-            fit: BoxFit.fill,
-            width: 52,
-            height: 32,
+          child: DefaultSwitchIconWidget(
+            imagePaths: imagePaths,
+            isEnabled: isActive,
           ),
         ),
         const SizedBox(width: 16),

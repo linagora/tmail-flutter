@@ -1,3 +1,4 @@
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_notification_setting_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_notification_setting_interactor.dart';
@@ -14,6 +15,7 @@ class NotificationController extends FullLifeCycleController with FullLifeCycleM
 
   final notificationSettingEnabled = Rxn<bool>();
   final settingsController = Get.find<SettingsController>();
+  final imagePaths = Get.find<ImagePaths>();
 
   @override
   Future<void> onInit() async {

@@ -1,3 +1,4 @@
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -39,6 +40,7 @@ void main() {
 
   setUpAll(() {
     Get.put<SettingsController>(settingsController);
+    Get.put(ImagePaths());
   });
 
   setUp(() {
