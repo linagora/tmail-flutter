@@ -4942,13 +4942,6 @@ class AppLocalizations {
     );
   }
 
-  String get nameOfRules {
-    return Intl.message(
-      'Name of Rules',
-      name: 'nameOfRules',
-    );
-  }
-
   String get noRulesConfigured {
     return Intl.message(
       'No Rules Configured',
