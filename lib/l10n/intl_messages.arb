@@ -4706,12 +4706,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameOfRules": "Name of Rules",
-  "@nameOfRules": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "noRulesConfigured": "No Rules Configured",
   "@noRulesConfigured": {
     "type": "text",
