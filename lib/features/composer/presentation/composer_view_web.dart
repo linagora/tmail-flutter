@@ -47,7 +47,8 @@ class ComposerView extends GetWidget<ComposerController> {
       bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
           MessageDialogActionManager().isDialogOpened ||
           ColorDialogPicker().isOpened.isTrue ||
-          DialogRouter.isRuleFilterDialogOpened.isTrue;
+          DialogRouter.isRuleFilterDialogOpened.isTrue ||
+          DialogRouter.isDialogOpened;
 
       if (isOverlayEnabled) {
         return Positioned.fill(
