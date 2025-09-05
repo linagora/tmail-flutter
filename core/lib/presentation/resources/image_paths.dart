@@ -241,6 +241,7 @@ class ImagePaths {
   String get icExpandArrows => _getImagePath('ic_expand_arrows.svg');
   String get icPremium => _getImagePath('ic_premium.svg');
   String get icCloud => _getImagePath('ic_cloud.svg');
+  String get icNoRules => _getImagePath('ic_no_rules.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
