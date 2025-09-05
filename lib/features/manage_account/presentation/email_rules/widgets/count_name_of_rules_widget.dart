@@ -23,7 +23,7 @@ class CountNameOfRulesWidget extends StatelessWidget {
         children: [
           Flexible(
             child: Text(
-              AppLocalizations.of(context).nameOfRules,
+              AppLocalizations.of(context).headerNameOfRules,
               style: ThemeUtils.textStyleInter600().copyWith(
                 fontSize: 14,
                 height: 20 / 14,

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-05T14:36:24.792776",
+  "@@last_modified": "2025-09-05T16:08:51.236166",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4680,12 +4680,6 @@
   },
   "addARule": "Add a rule",
   "@addARule": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "nameOfRules": "Name of Rules",
-  "@nameOfRules": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

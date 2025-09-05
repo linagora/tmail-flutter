@@ -5,9 +5,11 @@ import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/add_rule_button_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/count_name_of_rules_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/list_email_rules_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/no_rules_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/email_rule_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 
@@ -81,18 +83,49 @@ class EmailRulesView extends GetWidget<EmailRulesController> {
                 ),
               ),
             ],
-            Obx(() => CountNameOfRulesWidget(
-              countRules: controller.listEmailRule.length,
-                  margin: EdgeInsetsDirectional.only(
-                    start: isDesktop ? 0 : 16,
-                    top: 24,
-                  ),
-            )),
-            NoRulesWidget(
-              imagePaths: controller.imagePaths,
-              responsiveUtils: controller.responsiveUtils,
-              onAddRuleAction: controller.goToCreateNewRule,
+            Obx(
+              () => CountNameOfRulesWidget(
+                countRules: controller.listEmailRule.length,
+                margin: EdgeInsetsDirectional.only(
+                  start: isDesktop ? 0 : 16,
+                  top: 24,
+                ),
+              ),
             ),
+            Obx(() {
+              if (controller.listEmailRule.isEmpty) {
+                return NoRulesWidget(
+                  imagePaths: controller.imagePaths,
+                  responsiveUtils: controller.responsiveUtils,
+                  onAddRuleAction: controller.goToCreateNewRule,
+                );
+              } else {
+                return Expanded(
+                  child: ListEmailRulesWidget(
+                    listEmailRule: controller.listEmailRule,
+                    imagePaths: controller.imagePaths,
+                    responsiveUtils: controller.responsiveUtils,
+                    onDeleteEmailRuleAction: (rule) =>
+                      controller.handleRuleFilterActionType(
+                        context,
+                        rule,
+                        EmailRuleActionType.delete,
+                      ),
+                    onEditEmailRuleAction: (rule) =>
+                      controller.handleRuleFilterActionType(
+                        context,
+                        rule,
+                        EmailRuleActionType.edit,
+                      ),
+                    onMoreEmailRuleAction: (rule) =>
+                      controller.openEditRuleMenuAction(
+                        context,
+                        rule,
+                      ),
+                  ),
+                );
+              }
+            }),
           ],
         ),
       ),

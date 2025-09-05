@@ -10,6 +10,8 @@ class RuleId with EquatableMixin {
     required this.id,
   });
 
+  factory RuleId.fromString(String id) => RuleId(id: Id(id));
+
   @override
   List<Object?> get props => [id];
 }
