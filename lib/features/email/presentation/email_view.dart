@@ -537,7 +537,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                 MessageDialogActionManager().isDialogOpened ||
                 EmailActionReactor.isDialogOpened ||
                 ColorDialogPicker().isOpened.isTrue ||
-                DialogRouter.isRuleFilterDialogOpened.isTrue;
+                DialogRouter.isRuleFilterDialogOpened.isTrue ||
+                DialogRouter.isDialogOpened;
 
             if (isOverlayEnabled) {
               return Positioned.fill(
