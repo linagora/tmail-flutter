@@ -4934,4 +4934,39 @@ class AppLocalizations {
       name: 'archiveMessagesFailed',
     );
   }
+
+  String get addARule {
+    return Intl.message(
+      'Add a rule',
+      name: 'addARule',
+    );
+  }
+
+  String get nameOfRules {
+    return Intl.message(
+      'Name of Rules',
+      name: 'nameOfRules',
+    );
+  }
+
+  String get noRulesConfigured {
+    return Intl.message(
+      'No Rules Configured',
+      name: 'noRulesConfigured',
+    );
+  }
+
+  String get messageExplanationNoRulesConfigured {
+    return Intl.message(
+      'Start by creating your first rule to automate\n email management.',
+      name: 'messageExplanationNoRulesConfigured',
+    );
+  }
+
+  String get createMyFirstRule {
+    return Intl.message(
+      'Create My First Rule',
+      name: 'createMyFirstRule',
+    );
+  }
 }

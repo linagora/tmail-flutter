@@ -106,7 +106,7 @@ class SettingsView extends GetWidget<SettingsController> {
           }
         case AccountMenuItem.emailRules:
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
-            return EmailRulesView();
+            return const EmailRulesView();
           } else {
             return const SizedBox.shrink();
           }

@@ -75,7 +75,7 @@ class EmailRulesController extends BaseController {
     }
   }
 
-  void goToCreateNewRule(BuildContext context) async {
+  Future<void> goToCreateNewRule() async {
     final accountId = _accountDashBoardController.accountId.value;
     final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {

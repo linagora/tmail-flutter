@@ -1,11 +1,14 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ConfirmDialogButton extends StatelessWidget {
   final String label;
   final Color? backgroundColor;
   final Color? textColor;
   final Color? borderColor;
+  final String? icon;
   final VoidCallback? onTapAction;
 
   const ConfirmDialogButton({
@@ -14,6 +17,7 @@ class ConfirmDialogButton extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.borderColor,
+    this.icon,
     this.onTapAction,
   });
 
@@ -36,12 +40,32 @@ class ConfirmDialogButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
       ),
       onPressed: onTapAction,
-      child: Text(
-        label,
-        style: ThemeUtils.textStyleM3LabelLarge(color: textColor),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      child: icon == null
+        ? Text(
+            label,
+            style: ThemeUtils.textStyleM3LabelLarge(color: textColor),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          )
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(
+                icon!,
+                width: 14,
+                height: 14,
+                fit: BoxFit.fill,
+                colorFilter: AppColor.primaryMain.asFilter(),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: ThemeUtils.textStyleM3LabelLarge(color: textColor),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )
+            ],
+          ),
     );
   }
 }
