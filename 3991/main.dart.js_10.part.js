@@ -1016,9 +1016,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return t1.formatTimeOfDay$1(_this);
     },
     HandleProfileSettingActionTypeClickExtension_handleProfileSettingActionTypeClick(_this, actionType, context) {
+      var t1;
       switch (actionType.index) {
         case 1:
-          _this._handleLogoutAction$2(_this.sessionCurrent, _this.accountId.get$value(0));
+          if (B.JSString_methods.trim$0(_this.OwnEmailAddressMixin_ownEmailAddress.get$value(0)).length === 0) {
+            t1 = _this.OwnEmailAddressMixin_sessionCurrent;
+            if (t1 != null)
+              A.SessionExtension_getOwnEmailAddressOrUsername(t1);
+          }
+          _this._handleLogoutAction$2(_this.OwnEmailAddressMixin_sessionCurrent, _this.accountId.get$value(0));
           break;
         default:
           break;
@@ -1425,7 +1431,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t2._as(t1.get(_this)).__ForwardController_recipientController_A;
       t3 === $ && A.throwUnnamedLateFieldNI();
       A.Expando__checkType(_this);
-      t4 = t2._as(t1.get(_this)).accountDashBoardController.sessionCurrent;
+      t4 = t2._as(t1.get(_this)).accountDashBoardController.OwnEmailAddressMixin_sessionCurrent;
       t4 = t4 == null ? null : A.SessionExtensions_get_internalDomain(t4);
       if (t4 == null)
         t4 = "";
@@ -3257,7 +3263,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t6 = J.$index$asx(t3._as(t2.get(t1)).listRecipientForward.get$value(0), index);
       A.Expando__checkType(t1);
-      t7 = t3._as(t2.get(t1)).accountDashBoardController.sessionCurrent;
+      t7 = t3._as(t2.get(t1)).accountDashBoardController.OwnEmailAddressMixin_sessionCurrent;
       t7 = t7 == null ? null : A.SessionExtensions_get_internalDomain(t7);
       if (t7 == null)
         t7 = "";
@@ -3797,18 +3803,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.ManageAccountDashBoardView_build__closure0.prototype = {
     call$0() {
-      var t3, t4, t5, t6, _null = null,
+      var t3, accountId, accountDisplayName, t4, _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      t4 = t3._as(t2.get(t1)).imagePaths;
+      accountId = t3._as(t2.get(t1)).accountId.get$value(0);
       A.Expando__checkType(t1);
-      t5 = t3._as(t2.get(t1)).accountId.get$value(0);
+      accountDisplayName = t3._as(t2.get(t1)).OwnEmailAddressMixin_ownEmailAddress.get$value(0);
+      if (B.JSString_methods.trim$0(accountDisplayName).length === 0) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1)).OwnEmailAddressMixin_sessionCurrent;
+        accountDisplayName = t4 == null ? _null : A.SessionExtension_getOwnEmailAddressOrUsername(t4);
+        if (accountDisplayName == null)
+          accountDisplayName = "";
+      }
       A.Expando__checkType(t1);
-      t6 = this.context;
-      return F.NavigationBarWidget$(t5, _null, _null, t4, new C.ManageAccountDashBoardView_build___closure(t1, t6), new C.ManageAccountDashBoardView_build___closure0(t1, t6), _null, t3._as(t2.get(t1)).ownEmailAddress.get$value(0), _null, D.List_ProfileSettingActionType_1);
+      t4 = this.context;
+      return F.NavigationBarWidget$(accountId, _null, _null, t3._as(t2.get(t1)).imagePaths, new C.ManageAccountDashBoardView_build___closure(t1, t4), new C.ManageAccountDashBoardView_build___closure0(t1, t4), _null, accountDisplayName, _null, D.List_ProfileSettingActionType_1);
     },
     $signature: typesOffset + 13
   };
@@ -4023,7 +4036,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId == null)
         return B.SizedBox_0_0_null_null;
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).dashBoardController.sessionCurrent;
+      t4 = t3._as(t2.get(t1)).dashBoardController.OwnEmailAddressMixin_sessionCurrent;
       contactSupportCapability = t4 == null ? null : F.SessionExtensions_getContactSupportCapability(t4, accountId);
       if ((contactSupportCapability == null ? null : contactSupportCapability.get$isAvailable()) !== true)
         return B.SizedBox_0_0_null_null;
@@ -4048,31 +4061,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.ManageAccountMenuView_build_closure2.prototype = {
     call$1(_) {
-      var t3, t4, t5,
-        t1 = this.$this,
+      var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      t2 = t2._jsWeakMap;
-      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      t4 = t3._as(t2.get(t1)).dashBoardController;
-      A.Expando__checkType(t1);
-      t5 = t3._as(t2.get(t1)).dashBoardController.sessionCurrent;
-      A.Expando__checkType(t1);
-      t4._handleLogoutAction$2(t5, t3._as(t2.get(t1)).dashBoardController.accountId.get$value(0));
+      C.HandleProfileSettingActionTypeClickExtension_handleProfileSettingActionTypeClick(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).dashBoardController, E.ProfileSettingActionType_1, this.context);
     },
     $signature: 382
   };
   C.SettingsFirstLevelView_build_closure1.prototype = {
     call$0() {
-      var t3, t4,
+      var t3, accountDisplayName, t4,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      t4 = t3._as(t2.get(t1)).manageAccountDashboardController.ownEmailAddress.get$value(0);
+      accountDisplayName = t3._as(t2.get(t1)).manageAccountDashboardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
+      if (B.JSString_methods.trim$0(accountDisplayName).length === 0) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1)).manageAccountDashboardController.OwnEmailAddressMixin_sessionCurrent;
+        accountDisplayName = t4 == null ? null : A.SessionExtension_getOwnEmailAddressOrUsername(t4);
+        if (accountDisplayName == null)
+          accountDisplayName = "";
+      }
       A.Expando__checkType(t1);
-      return new C.UserInformationWidget(t4, C.SettingsUtils_getPaddingInFirstLevel(this.context, t3._as(t2.get(t1)).responsiveUtils), null);
+      return new C.UserInformationWidget(accountDisplayName, C.SettingsUtils_getPaddingInFirstLevel(this.context, t3._as(t2.get(t1)).responsiveUtils), null);
     },
     $signature: typesOffset + 16
   };
@@ -4292,7 +4305,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId == null)
         return B.SizedBox_0_0_null_null;
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).manageAccountDashboardController.sessionCurrent;
+      t4 = t3._as(t2.get(t1)).manageAccountDashboardController.OwnEmailAddressMixin_sessionCurrent;
       contactSupportCapability = t4 == null ? _null : F.SessionExtensions_getContactSupportCapability(t4, accountId);
       if ((contactSupportCapability == null ? _null : contactSupportCapability.get$isAvailable()) !== true)
         return B.SizedBox_0_0_null_null;
@@ -4323,18 +4336,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.SettingsFirstLevelView_build_closure9.prototype = {
     call$0() {
-      var t3, t4, t5,
-        t1 = this.$this,
+      var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      t2 = t2._jsWeakMap;
-      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      t4 = t3._as(t2.get(t1)).manageAccountDashboardController;
-      A.Expando__checkType(t1);
-      t5 = t3._as(t2.get(t1)).manageAccountDashboardController.sessionCurrent;
-      A.Expando__checkType(t1);
-      t4._handleLogoutAction$2(t5, t3._as(t2.get(t1)).manageAccountDashboardController.accountId.get$value(0));
-      return null;
+      return C.HandleProfileSettingActionTypeClickExtension_handleProfileSettingActionTypeClick(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).manageAccountDashboardController, E.ProfileSettingActionType_1, this.context);
     },
     $signature: 0
   };
@@ -5172,5 +5177,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "7D7yzspLnHKoilIbDret+LuFrX4=");
+})($__dart_deferred_initializers__, "TVIX8z2Lc38SZpM9Yc/VBEcOvOY=");
 ;
