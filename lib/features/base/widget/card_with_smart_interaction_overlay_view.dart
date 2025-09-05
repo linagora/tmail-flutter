@@ -111,6 +111,7 @@ class _CardWithSmartInteractionOverlayViewState
       child: SmartInteractionWidget(
         onRightMouseClickAction: ({RelativeRect? position}) => _togglePopup(),
         onDoubleClickAction: ({RelativeRect? position}) => _togglePopup(),
+        onLongPressAction: _togglePopup,
         onTapAction: _togglePopup,
         child: widget.child,
       ),

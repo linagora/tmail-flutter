@@ -7,6 +7,7 @@ import 'package:universal_html/html.dart' as html;
 
 typedef OnRightMouseClickAction = void Function({RelativeRect? position});
 typedef OnDoubleClickAction = void Function({RelativeRect? position});
+typedef OnLongPressAction = void Function();
 typedef OnTapAction = void Function();
 
 class SmartInteractionWidget extends StatefulWidget {
@@ -14,6 +15,7 @@ class SmartInteractionWidget extends StatefulWidget {
   final bool usePosition;
   final OnRightMouseClickAction onRightMouseClickAction;
   final OnDoubleClickAction onDoubleClickAction;
+  final OnLongPressAction onLongPressAction;
   final OnTapAction onTapAction;
 
   const SmartInteractionWidget({
@@ -21,6 +23,7 @@ class SmartInteractionWidget extends StatefulWidget {
     required this.child,
     required this.onRightMouseClickAction,
     required this.onDoubleClickAction,
+    required this.onLongPressAction,
     required this.onTapAction,
     this.usePosition = false,
   });
@@ -130,6 +133,8 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
     }
   }
 
+  void _handleLongPress() => widget.onLongPressAction();
+
   void _handleOnTapAction() => widget.onTapAction();
 
   @override
@@ -161,6 +166,7 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
       }
     } else {
       return GestureDetector(
+        onLongPress: _handleLongPress,
         onTap: _handleOnTapAction,
         child: widget.child,
       );
