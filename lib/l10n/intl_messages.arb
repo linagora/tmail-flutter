@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-08-18T13:21:17.206262",
+  "@@last_modified": "2025-09-05T16:08:51.236166",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4674,6 +4674,30 @@
   },
   "archiveMessagesFailed": "Archive messages failed",
   "@archiveMessagesFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addARule": "Add a rule",
+  "@addARule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noRulesConfigured": "No Rules Configured",
+  "@noRulesConfigured": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageExplanationNoRulesConfigured": "Start by creating your first rule to automate\n email management.",
+  "@messageExplanationNoRulesConfigured": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createMyFirstRule": "Create My First Rule",
+  "@createMyFirstRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

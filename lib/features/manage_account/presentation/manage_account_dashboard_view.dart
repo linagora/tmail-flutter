@@ -144,7 +144,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           }
         case AccountMenuItem.emailRules:
           if (controller.isRuleFilterCapabilitySupported){
-            return EmailRulesView();
+            return const EmailRulesView();
           } else {
             return const SizedBox.shrink();
           }
