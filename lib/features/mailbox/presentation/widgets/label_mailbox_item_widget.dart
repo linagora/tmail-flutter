@@ -24,6 +24,8 @@ class LabelMailboxItemWidget extends StatefulWidget {
   final bool showTrailing;
   final bool isItemHovered;
   final bool isSelected;
+  final bool isSelectedFolderInModal;
+  final TextStyle? textStyle;
   final OnClickOpenMenuMailboxNodeAction? onMenuActionClick;
   final OnEmptyMailboxActionCallback? onEmptyMailboxActionCallback;
   final OnClickExpandMailboxNodeAction? onClickExpandMailboxNodeAction;
@@ -35,6 +37,8 @@ class LabelMailboxItemWidget extends StatefulWidget {
     this.showTrailing = true,
     this.isItemHovered = false,
     this.isSelected = false,
+    this.isSelectedFolderInModal = false,
+    this.textStyle,
     this.onMenuActionClick,
     this.onEmptyMailboxActionCallback,
     this.onClickExpandMailboxNodeAction,
@@ -56,7 +60,7 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
   Widget build(BuildContext context) {
     final displayNameWidget = TextOverflowBuilder(
       widget.mailboxNode.item.getDisplayName(context),
-      style: _displayNameTextStyle,
+      style: widget.textStyle ?? _displayNameTextStyle,
     );
 
     final nameWithExpandIcon = Row(
@@ -217,6 +221,11 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
     if (widget.isSelected) {
       return ThemeUtils.textStyleInter700(
         color: _responsiveUtils.isDesktop(context) ? null : AppColor.iconFolder,
+        fontSize: 14,
+      );
+    } else if (widget.isSelectedFolderInModal) {
+      return ThemeUtils.textStyleInter700(
+        color: Colors.black,
         fontSize: 14,
       );
     } else {

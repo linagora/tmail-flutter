@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-08-18T13:21:17.206262",
+  "@@last_modified": "2025-09-04T14:19:02.411506",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4674,6 +4674,46 @@
   },
   "archiveMessagesFailed": "Archive messages failed",
   "@archiveMessagesFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewFolder": "Create a New Folder",
+  "@createANewFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subtitleDisplayTheFolderNameLocationInFolderCreationModal": "New folder will be created inside {folderName}",
+  "@subtitleDisplayTheFolderNameLocationInFolderCreationModal": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName"
+    ],
+    "placeholders": {
+      "folderName": {}
+    }
+  },
+  "folderName": "Folder Name",
+  "@folderName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterTheFolderName": "Enter the folder name",
+  "@enterTheFolderName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectTheFolderLocation": "Select the folder location",
+  "@selectTheFolderLocation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFolder": "Create folder",
+  "@createFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
