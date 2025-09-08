@@ -4,10 +4,11 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class RuleFilterActionDetailed extends StatelessWidget {
+  final ImagePaths imagePaths;
   final EmailRuleFilterAction? actionType;
   final PresentationMailbox? mailboxSelected;
   final String? errorValue;
@@ -18,6 +19,7 @@ class RuleFilterActionDetailed extends StatelessWidget {
 
   const RuleFilterActionDetailed({
     Key? key,
+    required this.imagePaths,
     this.actionType,
     this.mailboxSelected,
     this.errorValue,
@@ -34,8 +36,9 @@ class RuleFilterActionDetailed extends StatelessWidget {
       case EmailRuleFilterAction.moveMessage:
         return RuleFilterButtonField<PresentationMailbox>(
           value: mailboxSelected,
+          imagePaths: imagePaths,
           borderColor: borderColor,
-          tapActionCallback: (value) {
+          onTapActionCallback: (value) {
             tapActionDetailedCallback!();
           },
         );

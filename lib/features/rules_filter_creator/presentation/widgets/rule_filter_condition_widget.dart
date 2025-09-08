@@ -1,20 +1,20 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_condition_type.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_row_builder.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
-import 'package:core/presentation/resources/image_paths.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
+
+typedef OnChangeFilterInputAction = Function(String? value);
 
 class RuleFilterConditionWidget extends StatelessWidget {
-  final RuleFilterConditionScreenType? ruleFilterConditionScreenType;
+  final bool isMobile;
   final RuleCondition ruleCondition;
   final TextEditingController textEditingController;
-  final Function(Field?)? tapRuleConditionFieldCallback;
-  final Function(Comparator?)? tapRuleConditionComparatorCallback;
+  final OnRuleTapActionCallback tapRuleConditionFieldCallback;
+  final OnRuleTapActionCallback tapRuleConditionComparatorCallback;
   final String? conditionValueErrorText;
   final FocusNode? conditionValueFocusNode;
   final OnChangeFilterInputAction? conditionValueOnChangeAction;
@@ -23,13 +23,13 @@ class RuleFilterConditionWidget extends StatelessWidget {
 
   const RuleFilterConditionWidget({
     super.key,
-    this.ruleFilterConditionScreenType,
+    required this.isMobile,
     required this.ruleCondition,
     required this.imagePaths,
     required this.textEditingController,
     required this.onDeleteRuleConditionAction,
-    this.tapRuleConditionFieldCallback,
-    this.tapRuleConditionComparatorCallback,
+    required this.tapRuleConditionFieldCallback,
+    required this.tapRuleConditionComparatorCallback,
     this.conditionValueErrorText,
     this.conditionValueFocusNode,
     this.conditionValueOnChangeAction,
@@ -37,59 +37,89 @@ class RuleFilterConditionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget bodyWidget = Container(
-      padding: const EdgeInsetsDirectional.symmetric(vertical: 12),
-      margin: const EdgeInsetsDirectional.only(top: 8),
-      decoration: const BoxDecoration(
-        color: AppColor.lightGrayF9FAFB,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      alignment: Alignment.center,
-      child: RuleFilterConditionRow(
-        ruleFilterConditionScreenType: ruleFilterConditionScreenType,
-        ruleCondition: ruleCondition,
-        tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
-        tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
-        conditionValueErrorText: conditionValueErrorText,
-        textEditingController: textEditingController,
-        conditionValueFocusNode: conditionValueFocusNode,
-        conditionValueOnChangeAction: conditionValueOnChangeAction,
-        onDeleteRuleConditionAction: onDeleteRuleConditionAction,
-        imagePaths: imagePaths,
-      ),
-    );
-
-    if (ruleFilterConditionScreenType != RuleFilterConditionScreenType.mobile) {
-      return bodyWidget;
-    }
-
-    return Slidable(
-      enabled: ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile ? true : false,
-      endActionPane: ActionPane(
-        extentRatio: 0.1,
-        motion: const BehindMotion(),
-        children: [
-          CustomSlidableAction(
-            padding: const EdgeInsets.only(right: 12),
-            borderRadius: const BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12)),
-            onPressed: (_) => onDeleteRuleConditionAction(),
-            backgroundColor: AppColor.colorBackgroundFieldConditionRulesFilter,
-            child: CircleAvatar(
-              backgroundColor: AppColor.colorRemoveRuleFilterConditionButton,
-              radius: 110,
-              child: SvgPicture.asset(
-                imagePaths.icMinimize,
-                fit: BoxFit.fill,
-                colorFilter: AppColor.colorDeletePermanentlyButton.asFilter(),
+    if (isMobile) {
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(top: 8),
+        child: Slidable(
+          endActionPane: ActionPane(
+            extentRatio: 0.15,
+            motion: const BehindMotion(),
+            children: [
+              CustomSlidableAction(
+                padding: const EdgeInsets.only(right: 12),
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                ),
+                onPressed: (_) => onDeleteRuleConditionAction(),
+                backgroundColor: AppColor.lightGrayF9FAFB,
+                child: RuleFilterDeleteButtonWidget(
+                  imagePaths: imagePaths,
+                  onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+                ),
               ),
-            )
-          )
-        ]
-      ),
-      child: ValueListenableBuilder<int>(
-        valueListenable: Slidable.of(context)?.direction ?? ValueNotifier<int>(0),
-        builder: (_, __, ___) => bodyWidget,
-      ),
-    );
+            ],
+          ),
+          child: Builder(
+            builder: (context) {
+              SlidableController? slideController = Slidable.of(context);
+              return ValueListenableBuilder<int>(
+                valueListenable: slideController?.direction ?? ValueNotifier<int>(0),
+                builder: (context, value, _) {
+                  final borderRadius = value != -1
+                      ? BorderRadius.circular(10)
+                      : const BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          topLeft: Radius.circular(10),
+                        );
+                  return Container(
+                    padding: const EdgeInsetsDirectional.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColor.lightGrayF9FAFB,
+                      borderRadius: borderRadius,
+                    ),
+                    alignment: Alignment.center,
+                    child: RuleFilterConditionRow(
+                      isMobile: isMobile,
+                      ruleCondition: ruleCondition,
+                      tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
+                      tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
+                      conditionValueErrorText: conditionValueErrorText,
+                      textEditingController: textEditingController,
+                      conditionValueFocusNode: conditionValueFocusNode,
+                      conditionValueOnChangeAction: conditionValueOnChangeAction,
+                      onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+                      imagePaths: imagePaths,
+                    ),
+                  );
+                }
+              );
+            }
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 12),
+        margin: const EdgeInsetsDirectional.only(top: 8),
+        decoration: const BoxDecoration(
+          color: AppColor.lightGrayF9FAFB,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        alignment: Alignment.center,
+        child: RuleFilterConditionRow(
+          isMobile: isMobile,
+          ruleCondition: ruleCondition,
+          tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
+          tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
+          conditionValueErrorText: conditionValueErrorText,
+          textEditingController: textEditingController,
+          conditionValueFocusNode: conditionValueFocusNode,
+          conditionValueOnChangeAction: conditionValueOnChangeAction,
+          onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+          imagePaths: imagePaths,
+        ),
+      );
+    }
   }
 }

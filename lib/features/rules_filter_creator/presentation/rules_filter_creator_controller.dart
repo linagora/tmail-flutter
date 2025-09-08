@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_ru
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_rules_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/list_rule_filter_action_argument_extension.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/select_rule_action_field_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_action_arguments.dart';
@@ -618,10 +619,25 @@ class RulesFilterCreatorController extends BaseMailboxController {
     listRuleConditionValueArguments.removeAt(ruleConditionIndex);
   }
 
-  void selectConditionCombiner(ConditionCombiner? combinerType) {
-    if (combinerType != null) {
-      conditionCombinerType.value = combinerType;
+  void selectConditionCombiner({
+    required BuildContext context,
+    ConditionCombiner? combinerType,
+    bool isMobile = false,
+  }) {
+    FocusScope.of(context).unfocus();
+
+    if (isMobile) {
+      selectRuleConditionCombinerAction(
+        context,
+        conditionCombinerType.value ?? ConditionCombiner.AND,
+      );
+    } else if (combinerType != null) {
+      updateConditionCombiner(combinerType);
     }
+  }
+
+  void updateConditionCombiner(ConditionCombiner? newConditionCombiner) {
+    conditionCombinerType.value = newConditionCombiner;
   }
 
   void tapAddAction() {

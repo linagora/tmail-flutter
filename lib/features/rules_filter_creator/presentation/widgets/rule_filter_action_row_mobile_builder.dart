@@ -2,13 +2,13 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/styles/rule_filter_action_styles.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_detailed_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class RuleFilterActionRowMobile extends StatelessWidget {
+  final ImagePaths imagePaths;
   final EmailRuleFilterAction? actionSelected;
   final Function()? tapActionCallback;
   final PresentationMailbox? mailboxSelected;
@@ -20,6 +20,7 @@ class RuleFilterActionRowMobile extends StatelessWidget {
 
   const RuleFilterActionRowMobile({
     Key? key,
+    required this.imagePaths,
     this.actionSelected,
     this.tapActionCallback,
     this.mailboxSelected,
@@ -37,7 +38,8 @@ class RuleFilterActionRowMobile extends StatelessWidget {
       children: [
         RuleFilterButtonField<EmailRuleFilterAction>(
           value: actionSelected,
-          tapActionCallback: (value) {
+          imagePaths: imagePaths,
+          onTapActionCallback: (value) {
             tapActionCallback!();
           },
           hintText: AppLocalizations.of(context).selectAction,
@@ -45,7 +47,7 @@ class RuleFilterActionRowMobile extends StatelessWidget {
         actionSelected == EmailRuleFilterAction.moveMessage
           ? Container(
               alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(vertical: RuleFilterActionStyles.mainPadding),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
                 AppLocalizations.of(context).toFolder,
                 overflow: TextOverflow.ellipsis,
@@ -58,9 +60,10 @@ class RuleFilterActionRowMobile extends StatelessWidget {
               ),
             )
           : SizedBox(
-              height: actionSelected == EmailRuleFilterAction.forwardTo ? RuleFilterActionStyles.itemDistance : 0,
+              height: actionSelected == EmailRuleFilterAction.forwardTo ? 12 : 0,
             ),
         RuleFilterActionDetailed(
+          imagePaths: imagePaths,
           actionType: actionSelected,
           mailboxSelected: mailboxSelected,
           errorValue: errorValue,

@@ -7,8 +7,8 @@ import 'package:tmail_ui_user/features/base/widget/default_field/default_input_f
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class RuleFilterActionRow extends StatelessWidget {
@@ -81,10 +81,11 @@ class RuleFilterActionRow extends StatelessWidget {
             Expanded(
               child: RuleFilterButtonField<PresentationMailbox>(
                 value: mailboxSelected,
+                imagePaths: imagePaths,
                 borderColor: errorValue?.isNotEmpty == true
                   ? AppColor.redFF3347
                   : AppColor.m3Neutral90,
-                tapActionCallback: (_) => tapActionDetailedCallback?.call(),
+                onTapActionCallback: (_) => tapActionDetailedCallback?.call(),
               ),
             ),
           ]
@@ -102,7 +103,7 @@ class RuleFilterActionRow extends StatelessWidget {
         RuleFilterDeleteButtonWidget(
           imagePaths: imagePaths,
           onDeleteRuleConditionAction: onDeleteRuleConditionAction,
-        )
+        ),
       ],
     );
   }

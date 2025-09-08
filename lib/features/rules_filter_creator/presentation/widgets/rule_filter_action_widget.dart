@@ -3,14 +3,12 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/styles/rule_filter_action_styles.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_row_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_row_mobile_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 
 class RuleFilterActionWidget extends StatelessWidget {
   final ResponsiveUtils responsiveUtils;
@@ -46,118 +44,90 @@ class RuleFilterActionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = responsiveUtils.isMobile(context);
 
-    Widget bodyWidget = Container(
-      padding: const EdgeInsetsDirectional.only(start: 12),
-      margin: const EdgeInsetsDirectional.only(top: 8),
-      decoration: const BoxDecoration(
-        color: AppColor.lightGrayF9FAFB,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      height: 72,
-      alignment: Alignment.center,
-      child: isMobile
-          ? RuleFilterActionRowMobile(
-              actionSelected: actionSelected,
-              mailboxSelected: mailboxSelected,
-              errorValue: errorValue,
-              tapActionDetailedCallback: tapActionDetailedCallback,
-              forwardEmailEditingController: forwardEmailEditingController,
-              forwardEmailFocusNode: forwardEmailFocusNode,
-              onChangeForwardEmail: onChangeForwardEmail,
-              tapActionCallback: onActionChangeMobile,
-            )
-          : RuleFilterActionRow(
-              actionList: EmailRuleFilterAction.values,
-              actionSelected: actionSelected,
-              onActionChanged: onActionChanged,
-              mailboxSelected: mailboxSelected,
-              errorValue: errorValue,
-              tapActionDetailedCallback: tapActionDetailedCallback,
-              imagePaths: imagePaths,
-              onDeleteRuleConditionAction: onDeleteRuleConditionAction,
-              forwardEmailEditingController: forwardEmailEditingController,
-              forwardEmailFocusNode: forwardEmailFocusNode,
-              onChangeForwardEmail: onChangeForwardEmail,
-            ),
-    );
-
     if (!isMobile) {
-      return bodyWidget;
-    }
-
-    return Slidable(
-      enabled: responsiveUtils.isMobile(context) ? true : false,
-      endActionPane: ActionPane(
-        extentRatio: RuleFilterActionStyles.extentRatio,
-        motion: const BehindMotion(),
-        children: [
-          CustomSlidableAction(
-            padding: const EdgeInsets.only(right: RuleFilterActionStyles.mainPadding),
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(RuleFilterActionStyles.mainBorderRadius),
-              bottomRight: Radius.circular(RuleFilterActionStyles.mainBorderRadius),
-            ),
-            onPressed: (_) => onDeleteRuleConditionAction(),
-            backgroundColor: AppColor.colorBackgroundFieldConditionRulesFilter,
-            child: CircleAvatar(
-              backgroundColor: AppColor.colorRemoveRuleFilterConditionButton,
-              radius: RuleFilterActionStyles.removeButtonRadius,
-              child: SvgPicture.asset(
-                imagePaths.icMinimize,
-                fit: BoxFit.fill,
-                colorFilter: AppColor.colorDeletePermanentlyButton.asFilter(),
-              ),
-            ),
-          )
-        ],
-      ),
-      child: Builder(
-        builder: (context) {
-          SlidableController? slideController = Slidable.of(context);
-          return ValueListenableBuilder<int>(
-            valueListenable: slideController?.direction ?? ValueNotifier<int>(0),
-            builder: (context, value, _) {
-              var borderRadius = value != -1 
-                ? BorderRadius.circular(RuleFilterActionStyles.mainBorderRadius)
-                : const BorderRadius.only(
-                    bottomLeft: Radius.circular(RuleFilterActionStyles.mainBorderRadius),
-                    topLeft: Radius.circular(RuleFilterActionStyles.mainBorderRadius),  
-                  );
-              return Container(
-                padding: const EdgeInsets.all(RuleFilterActionStyles.mainPadding),
-                decoration: BoxDecoration(
-                  color: AppColor.colorBackgroundFieldConditionRulesFilter,
-                  borderRadius: borderRadius,
+      return Container(
+        padding: const EdgeInsetsDirectional.only(start: 12),
+        margin: const EdgeInsetsDirectional.only(top: 8),
+        decoration: const BoxDecoration(
+          color: AppColor.lightGrayF9FAFB,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        height: 72,
+        alignment: Alignment.center,
+        child: RuleFilterActionRow(
+          actionList: EmailRuleFilterAction.values,
+          actionSelected: actionSelected,
+          onActionChanged: onActionChanged,
+          mailboxSelected: mailboxSelected,
+          errorValue: errorValue,
+          tapActionDetailedCallback: tapActionDetailedCallback,
+          imagePaths: imagePaths,
+          onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+          forwardEmailEditingController: forwardEmailEditingController,
+          forwardEmailFocusNode: forwardEmailFocusNode,
+          onChangeForwardEmail: onChangeForwardEmail,
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(top: 8),
+        child: Slidable(
+          endActionPane: ActionPane(
+            extentRatio: 0.15,
+            motion: const BehindMotion(),
+            children: [
+              CustomSlidableAction(
+                padding: const EdgeInsets.only(right: 12),
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
                 ),
-                child: responsiveUtils.isMobile(context)
-                  ? RuleFilterActionRowMobile(
-                      actionSelected: actionSelected,
-                      mailboxSelected: mailboxSelected,
-                      errorValue: errorValue,
-                      tapActionDetailedCallback: tapActionDetailedCallback,
-                      forwardEmailEditingController: forwardEmailEditingController,
-                      forwardEmailFocusNode: forwardEmailFocusNode,
-                      onChangeForwardEmail: onChangeForwardEmail,
-                      tapActionCallback: onActionChangeMobile,
-                    )
-                  : RuleFilterActionRow(
-                      actionList: EmailRuleFilterAction.values,
-                      actionSelected: actionSelected,
-                      onActionChanged: onActionChanged,
-                      mailboxSelected: mailboxSelected,
-                      errorValue: errorValue,
-                      tapActionDetailedCallback: tapActionDetailedCallback,
-                      imagePaths: imagePaths,
-                      onDeleteRuleConditionAction: onDeleteRuleConditionAction,
-                      forwardEmailEditingController: forwardEmailEditingController,
-                      forwardEmailFocusNode: forwardEmailFocusNode,
-                      onChangeForwardEmail: onChangeForwardEmail,
-                    )
-              );
-            },
-          );
-        }
-      ),
-    );
+                onPressed: (_) => onDeleteRuleConditionAction(),
+                backgroundColor: AppColor.lightGrayF9FAFB,
+                child: RuleFilterDeleteButtonWidget(
+                  imagePaths: imagePaths,
+                  onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+                ),
+              )
+            ],
+          ),
+          child: Builder(
+              builder: (context) {
+                SlidableController? slideController = Slidable.of(context);
+                return ValueListenableBuilder<int>(
+                  valueListenable: slideController?.direction ?? ValueNotifier<int>(0),
+                  builder: (context, value, _) {
+                    final borderRadius = value != -1
+                        ? BorderRadius.circular(10)
+                        : const BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      topLeft: Radius.circular(10),
+                    );
+                    return Container(
+                      padding: const EdgeInsetsDirectional.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColor.lightGrayF9FAFB,
+                        borderRadius: borderRadius,
+                      ),
+                      alignment: Alignment.center,
+                      child: RuleFilterActionRowMobile(
+                        imagePaths: imagePaths,
+                        actionSelected: actionSelected,
+                        mailboxSelected: mailboxSelected,
+                        errorValue: errorValue,
+                        tapActionDetailedCallback: tapActionDetailedCallback,
+                        forwardEmailEditingController: forwardEmailEditingController,
+                        forwardEmailFocusNode: forwardEmailFocusNode,
+                        onChangeForwardEmail: onChangeForwardEmail,
+                        tapActionCallback: onActionChangeMobile,
+                      ),
+                    );
+                  },
+                );
+              }
+          ),
+        ),
+      );
+    }
   }
 }

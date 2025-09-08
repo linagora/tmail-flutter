@@ -6,7 +6,6 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/c
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/context_menu/context_item_rule_condition_field_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/context_menu/context_item_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_condition_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -37,7 +36,7 @@ extension SelectRuleActionFieldExtension on RulesFilterCreatorController {
       itemActions: contextMenuActions,
       onContextMenuActionClick: (menuAction) {
         popBack();
-        selectConditionCombiner(menuAction.action);
+        updateConditionCombiner(menuAction.action);
       },
     );
   }
@@ -46,10 +45,10 @@ extension SelectRuleActionFieldExtension on RulesFilterCreatorController {
     BuildContext context,
     Field? currentField,
     Field selectedField,
-    RuleFilterConditionScreenType screenType,
+    bool isMobile,
     int index,
   ) {
-    if (screenType == RuleFilterConditionScreenType.mobile) {
+    if (isMobile) {
       unFocusAllInputField();
 
       final contextMenuActions = Field.values.map((field) {
@@ -78,10 +77,10 @@ extension SelectRuleActionFieldExtension on RulesFilterCreatorController {
     BuildContext context,
     Comparator? currentComparator,
     Comparator selectedComparator,
-    RuleFilterConditionScreenType screenType,
+    bool isMobile,
     int index,
   ) {
-    if (screenType == RuleFilterConditionScreenType.mobile) {
+    if (isMobile) {
       unFocusAllInputField();
 
       final contextMenuActions = Comparator.values.map((comparator) {
