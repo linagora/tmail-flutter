@@ -4765,5 +4765,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "preview": "Preview",
+  "@preview": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterConditionPreviewMessage": "{conditionCombinerName} of the conditions: {conditionValue}",
+  "@ruleFilterConditionPreviewMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "conditionCombinerName",
+      "conditionValue"
+    ],
+    "placeholders": {
+      "conditionCombinerName": {},
+      "conditionValue": {}
+    }
+  },
+  "actions": "Actions",
+  "@actions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

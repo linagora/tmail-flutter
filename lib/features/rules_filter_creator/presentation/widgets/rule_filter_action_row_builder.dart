@@ -7,22 +7,23 @@ import 'package:tmail_ui_user/features/base/widget/default_field/default_input_f
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+typedef OnActionChanged = Function(EmailRuleFilterAction? action);
 
 class RuleFilterActionRow extends StatelessWidget {
   final List<EmailRuleFilterAction> actionList;
   final ImagePaths imagePaths;
   final OnDeleteRuleConditionAction onDeleteRuleConditionAction;
   final EmailRuleFilterAction? actionSelected;
-  final Function(EmailRuleFilterAction?)? onActionChanged;
+  final OnActionChanged? onActionChanged;
   final PresentationMailbox? mailboxSelected;
   final String? errorValue;
-  final Function()? tapActionDetailedCallback;
   final TextEditingController? forwardEmailEditingController;
   final FocusNode? forwardEmailFocusNode;
-  final OnChangeFilterInputAction? onChangeForwardEmail;
+  final OnTextChange? onChangeForwardEmail;
+  final VoidCallback? onTapActionDetailedCallback;
 
   const RuleFilterActionRow({
     Key? key,
@@ -33,7 +34,7 @@ class RuleFilterActionRow extends StatelessWidget {
     this.onActionChanged,
     this.mailboxSelected,
     this.errorValue,
-    this.tapActionDetailedCallback,
+    this.onTapActionDetailedCallback,
     this.forwardEmailEditingController,
     this.forwardEmailFocusNode,
     this.onChangeForwardEmail,
@@ -41,15 +42,11 @@ class RuleFilterActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final supportedAction = actionList
-      .where((action) => action.isSupported)
-      .toList();
-
     return Row(
       children: [
         Expanded(
           child: DropDownButtonWidget<EmailRuleFilterAction>(
-            items: supportedAction,
+            items: actionList,
             itemSelected: actionSelected,
             onChanged: (newAction) => onActionChanged!(newAction),
             supportSelectionIcon: true,
@@ -57,6 +54,7 @@ class RuleFilterActionRow extends StatelessWidget {
             labelTextStyle: ThemeUtils.textStyleBodyBody3(
               color: Colors.black,
             ),
+            heightItem: 40,
             hintTextStyle: ThemeUtils.textStyleBodyBody3(
               color: AppColor.steelGray400,
             ),
@@ -85,11 +83,11 @@ class RuleFilterActionRow extends StatelessWidget {
                 borderColor: errorValue?.isNotEmpty == true
                   ? AppColor.redFF3347
                   : AppColor.m3Neutral90,
-                onTapActionCallback: (_) => tapActionDetailedCallback?.call(),
+                onTapActionCallback: (_) => onTapActionDetailedCallback?.call(),
               ),
             ),
           ]
-        else if (actionSelected == EmailRuleFilterAction.forwardTo)
+        else if (actionSelected?.isForwardTo == true)
           Expanded(
             child: DefaultInputFieldWidget(
               errorText: errorValue,

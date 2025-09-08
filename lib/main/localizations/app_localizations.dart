@@ -5034,4 +5034,29 @@ class AppLocalizations {
       name: 'createRule',
     );
   }
+
+  String get preview {
+    return Intl.message(
+      'Preview',
+      name: 'preview',
+    );
+  }
+
+  String ruleFilterConditionPreviewMessage(String conditionCombinerName, String conditionValue) {
+    return Intl.message(
+      '$conditionCombinerName of the conditions: $conditionValue',
+      name: 'ruleFilterConditionPreviewMessage',
+      args: [
+        conditionCombinerName,
+        conditionValue,
+      ],
+    );
+  }
+
+  String get actions {
+    return Intl.message(
+      'Actions',
+      name: 'actions',
+    );
+  }
 }
