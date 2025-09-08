@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class EmailView extends GetWidget<SingleEmailController> {
@@ -535,7 +536,8 @@ class EmailView extends GetWidget<SingleEmailController> {
             bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
                 MessageDialogActionManager().isDialogOpened ||
                 EmailActionReactor.isDialogOpened ||
-                ColorDialogPicker().isOpened.isTrue;
+                ColorDialogPicker().isOpened.isTrue ||
+                DialogRouter.isRuleFilterDialogOpened.isTrue;
 
             if (isOverlayEnabled) {
               return Positioned.fill(
