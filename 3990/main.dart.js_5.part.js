@@ -2233,8 +2233,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var contextMenuActions,
         t1 = _this.mailboxDashBoardController,
         t2 = t1.accountId,
-        deletedMessageVaultSupported = B.MailboxUtils_isDeletedMessageVaultSupported(t1.sessionCurrent, t2.get$value(0)),
-        t3 = t1.sessionCurrent;
+        deletedMessageVaultSupported = B.MailboxUtils_isDeletedMessageVaultSupported(t1.OwnEmailAddressMixin_sessionCurrent, t2.get$value(0)),
+        t3 = t1.OwnEmailAddressMixin_sessionCurrent;
       t2 = t3 == null ? null : B.SessionExtensions_isSubAddressingSupported(t3, t2.get$value(0));
       t1 = t1.spamReportController.spamReportState.get$value(0);
       t3 = A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
@@ -2251,8 +2251,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var popupMenuActions,
         t1 = _this.mailboxDashBoardController,
         t2 = t1.accountId,
-        deletedMessageVaultSupported = B.MailboxUtils_isDeletedMessageVaultSupported(t1.sessionCurrent, t2.get$value(0)),
-        t3 = t1.sessionCurrent;
+        deletedMessageVaultSupported = B.MailboxUtils_isDeletedMessageVaultSupported(t1.OwnEmailAddressMixin_sessionCurrent, t2.get$value(0)),
+        t3 = t1.OwnEmailAddressMixin_sessionCurrent;
       t2 = t3 == null ? null : B.SessionExtensions_isSubAddressingSupported(t3, t2.get$value(0));
       t3 = A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t3.toString;
@@ -3583,7 +3583,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               // Function start
               t1 = _this.EmailActionController_mailboxDashBoardController;
               accountId = t1.accountId.get$value(0);
-              session = t1.sessionCurrent;
+              session = t1.OwnEmailAddressMixin_sessionCurrent;
               if (accountId == null || session == null) {
                 _this.consumeState$1(A.Stream_Stream$value(new A.Left(new A.CleanAndGetAllEmailFailure(new A.NotFoundSessionException(), null), type$.Left_Failure_Success), type$.Either_Failure_Success));
                 // goto return
@@ -4217,14 +4217,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             case 6:
               // case
               t1 = _this.mailboxDashBoardController;
-              if (t1.sessionCurrent == null || t1.accountId.get$value(0) == null) {
+              if (t1.OwnEmailAddressMixin_sessionCurrent == null || t1.accountId.get$value(0) == null) {
                 t1 = threadDetailActionType === C.EmailActionType_5 ? C.ReadActions_0 : C.ReadActions_1;
                 _this.consumeState$1(A.Stream_Stream$value(new A.Left(new A.MarkAsMultipleEmailReadFailure(t1, new A.NotFoundSessionException(), null), type$.Left_Failure_Success), type$.Either_Failure_Success));
                 // goto return
                 $async$goto = 1;
                 break;
               }
-              t2 = t1.sessionCurrent;
+              t2 = t1.OwnEmailAddressMixin_sessionCurrent;
               t2.toString;
               t1 = t1.accountId.get$value(0);
               t1.toString;
@@ -4241,14 +4241,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             case 8:
               // case
               t1 = _this.mailboxDashBoardController;
-              if (t1.sessionCurrent == null || t1.accountId.get$value(0) == null) {
+              if (t1.OwnEmailAddressMixin_sessionCurrent == null || t1.accountId.get$value(0) == null) {
                 t1 = threadDetailActionType === C.EmailActionType_7 ? C.MarkStarAction_0 : C.MarkStarAction_1;
                 _this.consumeState$1(A.Stream_Stream$value(new A.Left(new A.MarkAsStarMultipleEmailFailure(t1, new A.NotFoundSessionException(), null), type$.Left_Failure_Success), type$.Either_Failure_Success));
                 // goto return
                 $async$goto = 1;
                 break;
               }
-              t2 = t1.sessionCurrent;
+              t2 = t1.OwnEmailAddressMixin_sessionCurrent;
               t2.toString;
               t1 = t1.accountId.get$value(0);
               t1.toString;
@@ -4402,7 +4402,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             case 0:
               // Function start
               t1 = _this.mailboxDashBoardController;
-              if (t1.sessionCurrent == null || t1.accountId.get$value(0) == null) {
+              if (t1.OwnEmailAddressMixin_sessionCurrent == null || t1.accountId.get$value(0) == null) {
                 $async$returnValue = null;
                 // goto return
                 $async$goto = 1;
@@ -4415,7 +4415,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               t2 = t1.accountId.get$value(0);
               t2.toString;
               $async$goto = 3;
-              return A._asyncAwait(A.DialogRouter_pushGeneralDialog(new A.DestinationPickerArguments(t2, C.MailboxActions_1, mailboxIdSelected, t1.sessionCurrent), "/destination_picker"), $async$OnThreadDetailActionClick__pickDestinationMailboxId);
+              return A._asyncAwait(A.DialogRouter_pushGeneralDialog(new A.DestinationPickerArguments(t2, C.MailboxActions_1, mailboxIdSelected, t1.OwnEmailAddressMixin_sessionCurrent), "/destination_picker"), $async$OnThreadDetailActionClick__pickDestinationMailboxId);
             case 3:
               // returning from await.
               destinationMailbox = $async$result;
@@ -4558,8 +4558,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1;
       _this.currentMobilePageViewIndex.set$value(0, index);
       t1 = _this.pageController;
-      if (t1 != null)
-        t1.jumpToPage$1(index);
+      (t1 == null ? _this.pageController = A.PageController$(index) : t1).jumpToPage$1(index);
     },
     ThreadDetailNextPreviousActions__goToPageWithEmail(_this, presentationEmail) {
       var t1, t2;
@@ -4620,11 +4619,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     ThreadDetailOnEmailActionClick__markRead(_this, presentationEmail) {
       var t2, t3,
         t1 = _this.mailboxDashBoardController;
-      if (t1.sessionCurrent == null || t1.accountId.get$value(0) == null || presentationEmail.get$hasRead())
+      if (t1.OwnEmailAddressMixin_sessionCurrent == null || t1.accountId.get$value(0) == null || presentationEmail.get$hasRead())
         return;
       t2 = _this.__ThreadDetailController_emailActionReactor_F;
       t2 === $ && A.throwUnnamedLateFieldNI();
-      t3 = t1.sessionCurrent;
+      t3 = t1.OwnEmailAddressMixin_sessionCurrent;
       t3.toString;
       t1 = t1.accountId.get$value(0);
       t1.toString;
@@ -4643,11 +4642,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     ThreadDetailOpenEmailAddressDetailAction_openEmailAddressDetailAction(_this, emailAddress) {
       var t2, t3,
         t1 = _this.mailboxDashBoardController;
-      if (t1.sessionCurrent == null || t1.accountId.get$value(0) == null)
+      if (t1.OwnEmailAddressMixin_sessionCurrent == null || t1.accountId.get$value(0) == null)
         return;
       t2 = _this.__ThreadDetailController_emailActionReactor_F;
       t2 === $ && A.throwUnnamedLateFieldNI();
-      t3 = t1.sessionCurrent;
+      t3 = t1.OwnEmailAddressMixin_sessionCurrent;
       t3.toString;
       t1 = t1.accountId.get$value(0);
       t1.toString;
@@ -5126,9 +5125,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.CapabilityIdentifierExtension_isSupported($.$get$capabilityDeletedMessagesVault(), session, accountId);
     },
     HandleProfileSettingActionTypeClickExtension_handleProfileSettingActionTypeClick0(_this, actionType, context) {
+      var t1;
       switch (actionType.index) {
         case 1:
-          _this._handleLogoutAction$2(_this.sessionCurrent, _this.accountId.get$value(0));
+          if (C.JSString_methods.trim$0(_this.OwnEmailAddressMixin_ownEmailAddress.get$value(0)).length === 0) {
+            t1 = _this.OwnEmailAddressMixin_sessionCurrent;
+            if (t1 != null)
+              A.SessionExtension_getOwnEmailAddressOrUsername(t1);
+          }
+          _this._handleLogoutAction$2(_this.OwnEmailAddressMixin_sessionCurrent, _this.accountId.get$value(0));
           break;
         case 0:
           _this.goToSettings$0();
@@ -5487,7 +5492,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t3, currentExpandedEmailIndex, t4, emailIdsToLoadMetaData,
         t1 = _this.mailboxDashBoardController,
         t2 = t1.accountId;
-      if (t2.get$value(0) == null || t1.sessionCurrent == null) {
+      if (t2.get$value(0) == null || t1.OwnEmailAddressMixin_sessionCurrent == null) {
         _this.consumeState$1(A.Stream_Stream$value(new A.Left(new A.GetEmailsByIdsFailure(false, new A.NotFoundSessionException(), null), type$.Left_Failure_Success), type$.Either_Failure_Success));
         return;
       }
@@ -5504,11 +5509,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       emailIdsToLoadMetaData = B.ThreadDetailPresentationUtils_getLoadMoreEmailIds(J.sublist$2$ax(J.toList$0$ax(J.get$keys$x(t3.get$value(0))), loadMoreIndex, Math.min(loadMoreIndex + loadMoreCount, J.get$length$asx(t3.get$keys(0)))), loadMoreIndex > currentExpandedEmailIndex);
       if (emailIdsToLoadMetaData.length === 0)
         return;
-      t3 = t1.sessionCurrent;
+      t3 = t1.OwnEmailAddressMixin_sessionCurrent;
       t3.toString;
       t4 = t2.get$value(0);
       t4.toString;
-      t1 = t1.sessionCurrent;
+      t1 = t1.OwnEmailAddressMixin_sessionCurrent;
       t1.toString;
       t2 = t2.get$value(0);
       t2.toString;
@@ -10756,8 +10761,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this._search_input_form_widget$_dashBoardController;
       if (t2) {
         t1.clearSearchFilter$1$sortOrderType(t3.currentSortOrder);
-        t2 = t3.sessionCurrent;
-        t1.applyFilterSuggestionToSearchFilter$1(t2 == null ? null : A.SessionExtension_getOwnEmailAddressOrEmpty(t2));
+        t1.applyFilterSuggestionToSearchFilter$1(t3.OwnEmailAddressMixin_ownEmailAddress.get$value(0));
         t3.searchEmailByQueryString$1(queryString);
       } else {
         t1 = new A.ClearSearchEmailAction();
@@ -10777,7 +10781,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var userName,
         t1 = this._search_input_form_widget$_dashBoardController,
         accountId = t1.accountId.get$value(0);
-      t1 = t1.sessionCurrent;
+      t1 = t1.OwnEmailAddressMixin_sessionCurrent;
       userName = t1 == null ? null : t1.username;
       if (accountId == null || userName == null) {
         A.log("SearchInputFormWidget::_saveRecentSearch: accountId or userName is null", C.Level_1);
@@ -10792,7 +10796,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._search_input_form_widget$_dashBoardController.dashBoardAction.set$value(0, t1);
     },
     _invokeSelectRecentItem$1(recent) {
-      var t3, t4,
+      var t3,
         t1 = this._searchController,
         t2 = recent.value;
       t1.searchInputController.set$text(0, t2);
@@ -10802,8 +10806,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3.set$value(0, new A.SearchState(C.SearchStatus_0));
       t3 = this._search_input_form_widget$_dashBoardController;
       t1.clearSearchFilter$1$sortOrderType(t3.currentSortOrder);
-      t4 = t3.sessionCurrent;
-      t1.applyFilterSuggestionToSearchFilter$1(t4 == null ? null : A.SessionExtension_getOwnEmailAddressOrEmpty(t4));
+      t1.applyFilterSuggestionToSearchFilter$1(t3.OwnEmailAddressMixin_ownEmailAddress.get$value(0));
       t3.searchEmailByQueryString$1(t2);
     },
     _buildShowAllResultButton$2(context, keyword) {
@@ -11303,7 +11306,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      session = t2._as(t1.get(_this)).dashboardController.sessionCurrent;
+      session = t2._as(t1.get(_this)).dashboardController.OwnEmailAddressMixin_sessionCurrent;
       A.Expando__checkType(_this);
       accountId = t2._as(t1.get(_this)).dashboardController.accountId.get$value(0);
       deletedMessageVaultSupported = B.MailboxUtils_isDeletedMessageVaultSupported(session, accountId);
@@ -11334,7 +11337,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      session = t2._as(t1.get(_this)).dashboardController.sessionCurrent;
+      session = t2._as(t1.get(_this)).dashboardController.OwnEmailAddressMixin_sessionCurrent;
       A.Expando__checkType(_this);
       accountId = t2._as(t1.get(_this)).dashboardController.accountId.get$value(0);
       deletedMessageVaultSupported = B.MailboxUtils_isDeletedMessageVaultSupported(session, accountId);
@@ -13763,14 +13766,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t7 = t3._as(t2.get(t1)).imagePaths;
       A.Expando__checkType(t1);
-      t8 = t3._as(t2.get(t1)).mailboxDashBoardController.sessionCurrent;
-      t8 = t8 == null ? null : t8.username;
+      t8 = t3._as(t2.get(t1)).mailboxDashBoardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
       t9 = A._setArrayType([], type$.JSArray_EmailActionType);
       t10 = presentationEmail.get$hasRead();
       A.Expando__checkType(t1);
       t11 = B.HandleOpenContextMenuExtension_get_openBottomSheetContextMenu(t3._as(t2.get(t1)).mailboxDashBoardController);
       A.Expando__checkType(t1);
-      return t4.handleMoreEmailAction$11$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$openBottomSheetContextMenu$openPopupMenu$position$presentationEmail$responsiveUtils$username(t9, t10, new B.EmailView_build____closure(t1, this.context), t7, t5, t11, B.HandleOpenContextMenuExtension_get_openPopupMenu(t3._as(t2.get(t1)).mailboxDashBoardController), position, presentationEmail, t6, t8);
+      return t4.handleMoreEmailAction$11$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$openBottomSheetContextMenu$openPopupMenu$ownEmailAddress$position$presentationEmail$responsiveUtils(t9, t10, new B.EmailView_build____closure(t1, this.context), t7, t5, t11, B.HandleOpenContextMenuExtension_get_openPopupMenu(t3._as(t2.get(t1)).mailboxDashBoardController), t8, position, presentationEmail, t6);
     },
     $signature: 716
   };
@@ -13844,10 +13846,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t5 = t3._as(t2.get(t1)).responsiveUtils;
       A.Expando__checkType(t1);
-      t6 = t3._as(t2.get(t1)).mailboxDashBoardController.sessionCurrent;
-      t6 = t6 == null ? null : A.SessionExtension_getOwnEmailAddressOrEmpty(t6);
-      if (t6 == null)
-        t6 = "";
+      t6 = t3._as(t2.get(t1)).mailboxDashBoardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
       A.Expando__checkType(t1);
       return new B.EmailViewBottomBarWidget(t4, t5, this.currentEmail, emailLoaded, t6, t3._as(t2.get(t1)).get$pressEmailAction(), null, null, D.ValueKey_email_view_button_bar);
     },
@@ -13919,14 +13918,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t7 = t3._as(t2.get(t1)).imagePaths;
       A.Expando__checkType(t1);
-      t8 = t3._as(t2.get(t1)).mailboxDashBoardController.sessionCurrent;
-      t8 = t8 == null ? null : t8.username;
+      t8 = t3._as(t2.get(t1)).mailboxDashBoardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
       t9 = A._setArrayType([C.EmailActionType_0, C.EmailActionType_2, C.EmailActionType_3, C.EmailActionType_1, C.EmailActionType_29, C.EmailActionType_9, C.EmailActionType_7, C.EmailActionType_8, C.EmailActionType_18, C.EmailActionType_19], type$.JSArray_EmailActionType);
       t10 = presentationEmail.get$hasRead();
       A.Expando__checkType(t1);
       t11 = B.HandleOpenContextMenuExtension_get_openBottomSheetContextMenu(t3._as(t2.get(t1)).mailboxDashBoardController);
       A.Expando__checkType(t1);
-      return t4.handleMoreEmailAction$11$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$openBottomSheetContextMenu$openPopupMenu$position$presentationEmail$responsiveUtils$username(t9, t10, new B.EmailView__buildEmailMessage___closure(t1, this.context), t7, t5, t11, B.HandleOpenContextMenuExtension_get_openPopupMenu(t3._as(t2.get(t1)).mailboxDashBoardController), position, presentationEmail, t6, t8);
+      return t4.handleMoreEmailAction$11$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$openBottomSheetContextMenu$openPopupMenu$ownEmailAddress$position$presentationEmail$responsiveUtils(t9, t10, new B.EmailView__buildEmailMessage___closure(t1, this.context), t7, t5, t11, B.HandleOpenContextMenuExtension_get_openPopupMenu(t3._as(t2.get(t1)).mailboxDashBoardController), t8, position, presentationEmail, t6);
     },
     $signature: 716
   };
@@ -13978,7 +13976,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t7 = t3._as(t2.get(t1)).attendanceStatus.get$value(0);
       A.Expando__checkType(t1);
-      t8 = t3._as(t2.get(t1)).mailboxDashBoardController.ownEmailAddress.get$value(0);
+      t8 = t3._as(t2.get(t1)).mailboxDashBoardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
       A.Expando__checkType(t1);
       t9 = t3._as(t2.get(t1)).get$handleMailToAttendees();
       A.Expando__checkType(t1);
@@ -14065,11 +14063,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             t4 = t5;
         }
         A.Expando__checkType(t1);
-        t2 = t3._as(t2.get(t1)).get$openMailToLink();
-        t3 = A.Directionality_maybeOf(_this.context);
-        if (t3 == null)
-          t3 = C.TextDirection_1;
-        return new A.Padding(D.EdgeInsetsDirectional_16_8_16_0, K.HtmlContentViewerOnWeb$(true, false, allEmailContents, 0, t3, false, t1.isInsideThreadDetailView, 200, 150, 300, false, t4, t2, 30, _null, _this.scrollController, true, _null, _this.bodyConstraints.maxWidth), _null);
+        t1 = t3._as(t2.get(t1)).get$openMailToLink();
+        t2 = A.Directionality_maybeOf(_this.context);
+        if (t2 == null)
+          t2 = C.TextDirection_1;
+        return new A.Padding(D.EdgeInsetsDirectional_16_8_16_0, K.HtmlContentViewerOnWeb$(true, false, allEmailContents, 0, t2, false, true, 200, 150, 300, false, t4, t1, 30, _null, _this.scrollController, true, _null, _this.bodyConstraints.maxWidth), _null);
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -14796,8 +14794,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       dashboardController = t3._as(t2.get(t1)).mailboxDashBoardController;
       accountId = dashboardController.accountId.get$value(0);
-      session = dashboardController.sessionCurrent;
-      username = dashboardController.ownEmailAddress.get$value(0);
+      session = dashboardController.OwnEmailAddressMixin_sessionCurrent;
+      username = dashboardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
+      if (C.JSString_methods.trim$0(username).length === 0) {
+        username = session == null ? _null : A.SessionExtension_getOwnEmailAddressOrUsername(session);
+        if (username == null)
+          username = "";
+      }
       linagoraApps = dashboardController.appGridDashboardController.listLinagoraApp;
       contactSupportCapability = accountId != null && session != null ? F.SessionExtensions_getContactSupportCapability(session, accountId) : _null;
       A.Expando__checkType(t1);
@@ -15130,7 +15133,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId == null)
         return C.SizedBox_0_0_null_null;
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).mailboxDashBoardController.sessionCurrent;
+      t4 = t3._as(t2.get(t1)).mailboxDashBoardController.OwnEmailAddressMixin_sessionCurrent;
       contactSupportCapability = t4 == null ? _null : F.SessionExtensions_getContactSupportCapability(t4, accountId);
       if ((contactSupportCapability == null ? _null : contactSupportCapability.get$isAvailable()) !== true)
         return C.SizedBox_0_0_null_null;
@@ -15394,7 +15397,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.MailboxDashBoardView_build__closure2.prototype = {
     call$0() {
-      var t3, accountId, ownEmailAddress, t4, contactSupportCapability, t5, t6,
+      var t3, accountId, accountDisplayName, t4, contactSupportCapability, t5, t6,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -15402,20 +15405,27 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       accountId = t3._as(t2.get(t1)).accountId.get$value(0);
       A.Expando__checkType(t1);
-      ownEmailAddress = t3._as(t2.get(t1)).ownEmailAddress.get$value(0);
+      accountDisplayName = t3._as(t2.get(t1)).OwnEmailAddressMixin_ownEmailAddress.get$value(0);
       if (accountId != null) {
         A.Expando__checkType(t1);
-        t4 = t3._as(t2.get(t1)).sessionCurrent;
+        t4 = t3._as(t2.get(t1)).OwnEmailAddressMixin_sessionCurrent;
         contactSupportCapability = t4 == null ? null : F.SessionExtensions_getContactSupportCapability(t4, accountId);
       } else
         contactSupportCapability = null;
+      if (C.JSString_methods.trim$0(accountDisplayName).length === 0) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1)).OwnEmailAddressMixin_sessionCurrent;
+        accountDisplayName = t4 == null ? null : A.SessionExtension_getOwnEmailAddressOrUsername(t4);
+        if (accountDisplayName == null)
+          accountDisplayName = "";
+      }
       A.Expando__checkType(t1);
       t4 = t3._as(t2.get(t1)).imagePaths;
       t5 = B.SearchInputFormWidget$(C.EdgeInsets_0_0_0_0, 16);
       A.Expando__checkType(t1);
       t6 = t3._as(t2.get(t1)).appGridDashboardController;
       A.Expando__checkType(t1);
-      return F.NavigationBarWidget$(accountId, t6, contactSupportCapability, t4, new B.MailboxDashBoardView_build___closure0(t1, this.context), t3._as(t2.get(t1)).get$redirectToInboxAction(), new B.MailboxDashBoardView_build___closure1(t1), ownEmailAddress, t5, D.List_8OB);
+      return F.NavigationBarWidget$(accountId, t6, contactSupportCapability, t4, new B.MailboxDashBoardView_build___closure0(t1, this.context), t3._as(t2.get(t1)).get$redirectToInboxAction(), new B.MailboxDashBoardView_build___closure1(t1), accountDisplayName, t5, D.List_8OB);
     },
     $signature: typesOffset + 24
   };
@@ -15470,10 +15480,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.MailboxDashBoardView_build__closure1.prototype = {
     call$0() {
-      var t1 = this.$this,
+      var t3, accountDisplayName,
+        t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      return new F.ProfileSettingIcon(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).ownEmailAddress.get$value(0), D.List_8OB, new B.MailboxDashBoardView_build___closure(t1, this.context), true, null);
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      accountDisplayName = t3._as(t2.get(t1)).OwnEmailAddressMixin_ownEmailAddress.get$value(0);
+      if (C.JSString_methods.trim$0(accountDisplayName).length === 0) {
+        A.Expando__checkType(t1);
+        t2 = t3._as(t2.get(t1)).OwnEmailAddressMixin_sessionCurrent;
+        accountDisplayName = t2 == null ? null : A.SessionExtension_getOwnEmailAddressOrUsername(t2);
+        if (accountDisplayName == null)
+          accountDisplayName = "";
+      }
+      return new F.ProfileSettingIcon(accountDisplayName, D.List_8OB, new B.MailboxDashBoardView_build___closure(t1, this.context), true, null);
     },
     $signature: typesOffset + 26
   };
@@ -16082,7 +16103,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       listAddressOfFrom = t3._as(t2.get(t1)).searchController.searchEmailFilter.get$value(0).from;
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).sessionCurrent;
+      t4 = t3._as(t2.get(t1)).OwnEmailAddressMixin_sessionCurrent;
       currentUserEmail = t4 == null ? null : A.SessionExtension_getOwnEmailAddressOrEmpty(t4);
       A.Expando__checkType(t1);
       startDate = t3._as(t2.get(t1)).searchController.get$startDateFiltered();
@@ -16593,7 +16614,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.$this,
         t2 = t1._search_input_form_widget$_dashBoardController,
         accountId = t2.accountId.get$value(0);
-      t2 = t2.sessionCurrent;
+      t2 = t2.OwnEmailAddressMixin_sessionCurrent;
       userName = t2 == null ? null : t2.username;
       if (accountId == null || userName == null) {
         A.log("SearchInputFormWidget::fetchRecentActionCallback: accountId or userName is null", C.Level_1);
@@ -17118,7 +17139,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__buildSearchFilterButton_closure.prototype = {
     call$0() {
-      var t3, searchEmailFilter, sortOrderType, listAddressOfFrom, t4, currentUserEmail, startDate, endDate, receiveTimeType, mailbox, listAddressOfTo, t5, isSelected, t6, _null = null,
+      var t3, searchEmailFilter, sortOrderType, listAddressOfFrom, t4, t5, startDate, endDate, receiveTimeType, mailbox, listAddressOfTo, t6, isSelected,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -17130,28 +17151,27 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       listAddressOfFrom = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).from;
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.sessionCurrent;
-      currentUserEmail = t4 == null ? _null : A.SessionExtension_getOwnEmailAddressOrEmpty(t4);
+      t4 = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).startDate;
-      startDate = t4 == null ? _null : t4.value.toLocal$0();
+      t5 = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).startDate;
+      startDate = t5 == null ? null : t5.value.toLocal$0();
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).endDate;
-      endDate = t4 == null ? _null : t4.value.toLocal$0();
+      t5 = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).endDate;
+      endDate = t5 == null ? null : t5.value.toLocal$0();
       A.Expando__checkType(t1);
       receiveTimeType = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).emailReceiveTimeType;
       A.Expando__checkType(t1);
       mailbox = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).mailbox;
       A.Expando__checkType(t1);
       listAddressOfTo = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).to;
-      t4 = this.searchFilter;
-      t5 = this.context;
-      isSelected = t4.isSelected$4(t5, searchEmailFilter, sortOrderType, currentUserEmail);
+      t5 = this.searchFilter;
+      t6 = this.context;
+      isSelected = t5.isSelected$4(t6, searchEmailFilter, sortOrderType, t4);
       A.Expando__checkType(t1);
-      t6 = t3._as(t2.get(t1)).EmailActionController_imagePaths;
+      t4 = t3._as(t2.get(t1)).EmailActionController_imagePaths;
       A.Expando__checkType(t1);
       t2 = t3._as(t2.get(t1)).EmailActionController_responsiveUtils;
-      return B.SearchFilterButton$(t4.getMobileBackgroundColor$1$isSelected(isSelected), _null, endDate, t6, true, isSelected, new A.ValueKey("mobile_" + t4._name + "_search_filter_button", type$.ValueKey_String), listAddressOfFrom, listAddressOfTo, mailbox, new B.SearchEmailView__buildSearchFilterButton__closure(t1, t5), t1.get$_onSelectSearchFilterAction(), receiveTimeType, t2, t4, sortOrderType, startDate);
+      return B.SearchFilterButton$(t5.getMobileBackgroundColor$1$isSelected(isSelected), null, endDate, t4, true, isSelected, new A.ValueKey("mobile_" + t5._name + "_search_filter_button", type$.ValueKey_String), listAddressOfFrom, listAddressOfTo, mailbox, new B.SearchEmailView__buildSearchFilterButton__closure(t1, t6), t1.get$_onSelectSearchFilterAction(), receiveTimeType, t2, t5, sortOrderType, startDate);
     },
     $signature: typesOffset + 3
   };
@@ -17395,7 +17415,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 === $ && A.throwUnnamedLateFieldNI();
         if (t2) {
           t2 = t1.EmailActionController_mailboxDashBoardController;
-          t2 = t2.sessionCurrent != null && t2.accountId.get$value(0) != null;
+          t2 = t2.OwnEmailAddressMixin_sessionCurrent != null && t2.accountId.get$value(0) != null;
         } else
           t2 = false;
         if (t2) {
@@ -17415,7 +17435,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               t1._updateSimpleSearchFilter$1$beforeOption(A.optionOf(t6, t5));
           }
           t3 = t1._search_email_controller$_searchMoreEmailInteractor;
-          t5 = t2.sessionCurrent;
+          t5 = t2.OwnEmailAddressMixin_sessionCurrent;
           t5.toString;
           t6 = t2.accountId;
           t7 = t6.get$value(0);
@@ -17424,7 +17444,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t9 = t4.get$value(0).sortOrderType.getSortOrder$0().toNullable$0();
           t10 = t4.get$value(0).position;
           t4 = t4.get$value(0).mappingToEmailFilterCondition$0();
-          t2 = t2.sessionCurrent;
+          t2 = t2.OwnEmailAddressMixin_sessionCurrent;
           t2.toString;
           t6 = t6.get$value(0);
           t6.toString;
@@ -19256,11 +19276,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t5 = t3._as(t2.get(t1)).responsiveUtils;
       A.Expando__checkType(t1);
-      t2 = t3._as(t2.get(t1)).mailboxDashBoardController.sessionCurrent;
-      t2 = t2 == null ? null : A.SessionExtension_getOwnEmailAddress(t2);
-      if (t2 == null)
-        t2 = "";
-      return new B.EmailViewBottomBarWidget(t4, t5, expandedPresentationEmail, currentEmailLoaded, t2, new B.ThreadDetailView_build__closure(t1), D.BoxDecoration_so3, C.EdgeInsets_0_0_0_0, D.ValueKey_email_view_button_bar);
+      return new B.EmailViewBottomBarWidget(t4, t5, expandedPresentationEmail, currentEmailLoaded, t3._as(t2.get(t1)).mailboxDashBoardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0), new B.ThreadDetailView_build__closure(t1), D.BoxDecoration_so3, C.EdgeInsets_0_0_0_0, D.ValueKey_email_view_button_bar);
     },
     $signature: 4
   };
@@ -20100,5 +20116,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ejeIP9+LzF8WetT6wAiZPZlUfyo=");
+})($__dart_deferred_initializers__, "4vyhaszpGzWB97As55hxdJi6sBs=");
 ;
