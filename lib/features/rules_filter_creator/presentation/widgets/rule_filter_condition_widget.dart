@@ -3,11 +3,10 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart';
+import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_row_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
-
-typedef OnChangeFilterInputAction = Function(String? value);
 
 class RuleFilterConditionWidget extends StatelessWidget {
   final bool isMobile;
@@ -17,7 +16,7 @@ class RuleFilterConditionWidget extends StatelessWidget {
   final OnRuleTapActionCallback tapRuleConditionComparatorCallback;
   final String? conditionValueErrorText;
   final FocusNode? conditionValueFocusNode;
-  final OnChangeFilterInputAction? conditionValueOnChangeAction;
+  final OnTextChange? conditionValueOnChangeAction;
   final ImagePaths imagePaths;
   final OnDeleteRuleConditionAction onDeleteRuleConditionAction;
 
@@ -37,6 +36,19 @@ class RuleFilterConditionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final conditionRowWidget = RuleFilterConditionRow(
+      isMobile: isMobile,
+      ruleCondition: ruleCondition,
+      tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
+      tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
+      conditionValueErrorText: conditionValueErrorText,
+      textEditingController: textEditingController,
+      conditionValueFocusNode: conditionValueFocusNode,
+      conditionValueOnChangeAction: conditionValueOnChangeAction,
+      onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+      imagePaths: imagePaths,
+    );
+
     if (isMobile) {
       return Padding(
         padding: const EdgeInsetsDirectional.only(top: 8),
@@ -66,35 +78,23 @@ class RuleFilterConditionWidget extends StatelessWidget {
               return ValueListenableBuilder<int>(
                 valueListenable: slideController?.direction ?? ValueNotifier<int>(0),
                 builder: (context, value, _) {
-                  final borderRadius = value != -1
-                      ? BorderRadius.circular(10)
-                      : const BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
-                          topLeft: Radius.circular(10),
-                        );
                   return Container(
                     padding: const EdgeInsetsDirectional.all(8),
                     decoration: BoxDecoration(
                       color: AppColor.lightGrayF9FAFB,
-                      borderRadius: borderRadius,
+                      borderRadius: value != -1
+                          ? BorderRadius.circular(10)
+                          : const BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              topLeft: Radius.circular(10),
+                            ),
                     ),
                     alignment: Alignment.center,
-                    child: RuleFilterConditionRow(
-                      isMobile: isMobile,
-                      ruleCondition: ruleCondition,
-                      tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
-                      tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
-                      conditionValueErrorText: conditionValueErrorText,
-                      textEditingController: textEditingController,
-                      conditionValueFocusNode: conditionValueFocusNode,
-                      conditionValueOnChangeAction: conditionValueOnChangeAction,
-                      onDeleteRuleConditionAction: onDeleteRuleConditionAction,
-                      imagePaths: imagePaths,
-                    ),
+                    child: conditionRowWidget,
                   );
                 }
               );
-            }
+            },
           ),
         ),
       );
@@ -107,18 +107,7 @@ class RuleFilterConditionWidget extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         alignment: Alignment.center,
-        child: RuleFilterConditionRow(
-          isMobile: isMobile,
-          ruleCondition: ruleCondition,
-          tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
-          tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
-          conditionValueErrorText: conditionValueErrorText,
-          textEditingController: textEditingController,
-          conditionValueFocusNode: conditionValueFocusNode,
-          conditionValueOnChangeAction: conditionValueOnChangeAction,
-          onDeleteRuleConditionAction: onDeleteRuleConditionAction,
-          imagePaths: imagePaths,
-        ),
+        child: conditionRowWidget,
       );
     }
   }

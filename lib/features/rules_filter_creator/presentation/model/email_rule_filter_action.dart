@@ -26,4 +26,6 @@ enum EmailRuleFilterAction {
   }
 
   bool get isSupported => this != EmailRuleFilterAction.forwardTo;
+
+  bool get isForwardTo => this == EmailRuleFilterAction.forwardTo;
 }

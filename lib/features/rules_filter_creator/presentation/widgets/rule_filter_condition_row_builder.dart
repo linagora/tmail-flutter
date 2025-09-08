@@ -7,7 +7,6 @@ import 'package:rule_filter/rule_filter/rule_condition.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -21,7 +20,7 @@ class RuleFilterConditionRow extends StatelessWidget {
   final String? conditionValueErrorText;
   final TextEditingController textEditingController;
   final FocusNode? conditionValueFocusNode;
-  final OnChangeFilterInputAction? conditionValueOnChangeAction;
+  final OnTextChange? conditionValueOnChangeAction;
 
   const RuleFilterConditionRow({
     Key? key,

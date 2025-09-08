@@ -1,4 +1,0 @@
-enum RuleFilterConditionScreenType {
-  mobile,
-  desktop
-}

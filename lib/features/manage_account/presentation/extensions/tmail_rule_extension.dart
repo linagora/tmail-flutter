@@ -17,4 +17,14 @@ extension RuleConditionExtension on RuleCondition {
   String getPreview(AppLocalizations appLocalizations) {
     return '${field.getTitle(appLocalizations)}, ${comparator.getTitle(appLocalizations).toLowerCase()}: $value';
   }
+
+  String getPreviewWhenEditing(AppLocalizations appLocalizations) {
+    return '${field.getTitle(appLocalizations)} ${comparator.getTitle(appLocalizations).toLowerCase()} "$value"';
+  }
+}
+
+extension ListRuleConditionExtension on List<RuleCondition> {
+  String getPreviewWhenEditing(AppLocalizations appLocalizations) {
+    return map((e) => e.getPreviewWhenEditing(appLocalizations)).join(', ');
+  }
 }

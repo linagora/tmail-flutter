@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-08T14:29:15.045535",
+  "@@last_modified": "2025-09-09T03:47:54.564515",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4740,6 +4740,30 @@
   },
   "createRule": "Create Rule",
   "@createRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preview": "Preview",
+  "@preview": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterConditionPreviewMessage": "{conditionCombinerName} of the conditions: {conditionValue}",
+  "@ruleFilterConditionPreviewMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "conditionCombinerName",
+      "conditionValue"
+    ],
+    "placeholders": {
+      "conditionCombinerName": {},
+      "conditionValue": {}
+    }
+  },
+  "actions": "Actions",
+  "@actions": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
