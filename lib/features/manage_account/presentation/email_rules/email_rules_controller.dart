@@ -1,6 +1,8 @@
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -39,6 +41,11 @@ class EmailRulesController extends BaseController {
 
   final listEmailRule = <TMailRule>[].obs;
 
+  bool get isLoading => viewState.value.fold(
+    (failure) => false,
+    (success) => success is GettingAllRules,
+  );
+
   @override
   void onInit() {
     super.onInit();
@@ -72,6 +79,15 @@ class EmailRulesController extends BaseController {
       _editEmailRuleFilterSuccess(success);
     } else {
       super.handleSuccessViewState(success);
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    if (failure is GetAllRulesFailure) {
+      listEmailRule.clear();
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
@@ -216,6 +232,8 @@ class EmailRulesController extends BaseController {
   void _getAllRules() {
     if (_getAllRulesInteractor != null) {
       consumeState(_getAllRulesInteractor!.execute(_accountDashBoardController.accountId.value!));
+    } else {
+      consumeState(Stream.value(Left(GetAllRulesFailure(null))));
     }
   }
 
