@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/widgets.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_manager.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -39,6 +40,7 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
 
   void _preparePageWithIndex(int index) {
     currentMobilePageViewIndex.value = index;
+    pageController ??= PageController(initialPage: index);
     pageController?.jumpToPage(index);
   }
 
