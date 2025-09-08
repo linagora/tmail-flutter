@@ -6,14 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_close_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/handle_toggle_preview_rule_filter_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/select_rule_action_field_extension.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_action_arguments.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_list_action_widget.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_title_with_preview_button.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_title_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_preview_banner.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
@@ -25,10 +27,8 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
 
   @override
   Widget build(BuildContext context) {
-    final responsiveUtil = controller.responsiveUtils;
-    final isMobile = responsiveUtil.isMobile(context);
-    final currentScreenHeight = responsiveUtil.getSizeScreenHeight(context);
-    final currentScreenWidth = responsiveUtil.getSizeScreenWidth(context);
+    final responsiveUtils = controller.responsiveUtils;
+    final isMobile = responsiveUtils.isMobile(context);
 
     Widget bodyWidget = Container(
       decoration: BoxDecoration(
@@ -49,23 +49,19 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                 blurRadius: 2,
               ),
             ],
-        ),
-      width: isMobile
-        ? double.infinity :
-          math.min(
-            currentScreenWidth,
-            612,
-          ),
+      ),
+      width: _getViewWidth(
+        isMobile,
+        responsiveUtils.getSizeScreenWidth(context),
+      ),
       constraints: BoxConstraints(
-        maxHeight: isMobile
-          ? double.infinity
-          : math.min(
-            currentScreenHeight - 100,
-            674,
-          ),
+        maxHeight: _getViewMaxHeight(
+          isMobile,
+          responsiveUtils.getSizeScreenHeight(context),
+        ),
       ),
       clipBehavior: isMobile ? Clip.none : Clip.antiAlias,
-      child: _buildRulesFilterForm(context, isMobile),
+      child: _buildRulesFilterForm(context, isMobile, responsiveUtils),
     );
 
     if (isMobile) {
@@ -83,7 +79,11 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
     return bodyWidget;
   }
 
-  Widget _buildRulesFilterForm(BuildContext context, bool isMobile) {
+  Widget _buildRulesFilterForm(
+    BuildContext context,
+    bool isMobile,
+    ResponsiveUtils responsiveUtils,
+  ) {
     final appLocalizations = AppLocalizations.of(context);
 
     Widget formWidget = Column(
@@ -91,7 +91,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
       children: [
         if (!isMobile)
           Container(
-            padding: const EdgeInsets.only(top: 24, bottom: 12),
+            padding: const EdgeInsets.only(top: 24, bottom: 16),
             alignment: Alignment.center,
             child: Obx(
               () => Text(
@@ -106,7 +106,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         else
           Container(
             height: 64,
-            padding: _getPadding(context),
+            padding: const EdgeInsetsDirectional.only(start: 8, end: 16),
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -140,18 +140,15 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
           child: SingleChildScrollView(
             physics: const ClampingScrollPhysics(),
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile ? 16 : 32,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Obx(
-                        () => LabelInputFieldBuilder(
+                    () => LabelInputFieldBuilder(
                       label: appLocalizations.ruleName,
                       hintText: appLocalizations.rulesNameHintTextInput,
-                      textEditingController:
-                      controller.inputRuleNameController,
+                      textEditingController: controller.inputRuleNameController,
                       focusNode: controller.inputRuleNameFocusNode,
                       errorText: controller.errorRuleName.value,
                       arrangeHorizontally: false,
@@ -163,41 +160,111 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       ),
                       runSpacing: 16,
                       inputFieldMaxWidth: double.infinity,
-                      onTextChange: (value) =>
-                          controller.updateRuleName(context, value),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 24,
-                    ),
-                    child: Text(
-                      appLocalizations.condition,
-                      style: ThemeUtils.textStyleInter600().copyWith(
-                        fontSize: 14,
-                        height: 18 / 14,
-                        color: Colors.black,
+                      onTextChange: (value) => controller.updateRuleName(
+                        appLocalizations,
+                        value,
                       ),
                     ),
                   ),
+                  if (!isMobile)
+                    Obx(() => RuleFilterTitleWithPreviewButton(
+                      imagePaths: controller.imagePaths,
+                      isPreviewEnabled: controller.isPreviewEnabled.value,
+                      onTogglePreviewAction:
+                        controller.handleTogglePreviewRuleFilter,
+                    ))
+                  else
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        appLocalizations.condition,
+                        style: ThemeUtils.textStyleInter600().copyWith(
+                          fontSize: 14,
+                          height: 18 / 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  if (!isMobile)
+                    Obx(() {
+                      if (controller.isPreviewEnabled.isTrue) {
+                        return RulePreviewBanner(
+                          imagePaths: controller.imagePaths,
+                          message: controller.getConditionPreview(
+                            appLocalizations,
+                          ),
+                          isAction: false,
+                          margin: const EdgeInsetsDirectional.only(bottom: 16),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }),
                   Obx(
-                        () => RuleFilterTitle(
-                      conditionCombinerType: controller.conditionCombinerType.value,
+                    () => RuleFilterTitle(
+                      conditionCombinerType: controller
+                        .conditionCombinerType
+                        .value,
                       imagePaths: controller.imagePaths,
                       isMobile: isMobile,
                       onTapActionCallback: (value) =>
-                          controller.selectConditionCombiner(
-                            context: context,
-                            combinerType: value,
-                            isMobile: isMobile,
-                          ),
+                        controller.selectConditionCombiner(
+                          context: context,
+                          combinerType: value,
+                          isMobile: isMobile,
+                        ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _buildListRuleFilterConditionList(
-                    context: context,
-                    isMobile: isMobile,
-                  ),
+                  Obx(() {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      itemCount: controller.listRuleCondition.length,
+                      itemBuilder: (context, index) {
+                        final conditionItem = controller
+                            .listRuleConditionValueArguments[index];
+
+                        return RuleFilterConditionWidget(
+                          key: ValueKey(conditionItem.focusNode),
+                          isMobile: isMobile,
+                          ruleCondition: controller.listRuleCondition[index],
+                          imagePaths: controller.imagePaths,
+                          conditionValueErrorText: conditionItem.errorText,
+                          conditionValueFocusNode: conditionItem.focusNode,
+                          textEditingController: conditionItem.controller,
+                          tapRuleConditionFieldCallback: (value) {
+                            controller.selectRuleConditionFieldAction(
+                              context,
+                              value,
+                              controller.listRuleCondition[index].field,
+                              isMobile,
+                              index,
+                            );
+                          },
+                          tapRuleConditionComparatorCallback: (value) {
+                            controller.selectRuleConditionComparatorAction(
+                              context,
+                              value,
+                              controller.listRuleCondition[index].comparator,
+                              isMobile,
+                              index,
+                            );
+                          },
+                          conditionValueOnChangeAction: (value) {
+                            controller.updateConditionValue(
+                              appLocalizations,
+                              value,
+                              index,
+                            );
+                          },
+                          onDeleteRuleConditionAction: () {
+                            controller.tapRemoveCondition(index);
+                          },
+                        );
+                      },
+                    );
+                  }),
                   Container(
                     constraints: const BoxConstraints(minWidth: 161),
                     height: 36,
@@ -225,7 +292,88 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       ),
                     ),
                   ),
-                  _buildListRuleFilterActionList(context),
+                  if (!isMobile)
+                    Obx(() {
+                      if (controller.isPreviewEnabled.isTrue) {
+                        return RulePreviewBanner(
+                          imagePaths: controller.imagePaths,
+                          message: controller.getActionPreview(context),
+                          isAction: true,
+                          margin: const EdgeInsetsDirectional.only(
+                            top: 8,
+                            bottom: 8,
+                          ),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }),
+                  Obx(() {
+                    final listActions = controller
+                        .listEmailRuleFilterActionSelected;
+
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      itemCount: listActions.length,
+                      padding: const EdgeInsetsDirectional.only(bottom: 8),
+                      itemBuilder: (context, index) {
+                        final action = listActions[index];
+                        final isForwardTo =
+                            action.action?.isForwardTo == true;
+
+                        final errorValue = action is ForwardActionArguments
+                          ? controller.errorForwardEmailValue.value
+                          : controller.errorMailboxSelectedValue.value;
+
+                        return RuleFilterActionWidget(
+                          isMobile: isMobile,
+                          mailboxSelected: action is MoveMessageActionArguments
+                              ? action.mailbox
+                              : null,
+                          errorValue: errorValue,
+                          onActionChangeMobile: () {
+                            controller.selectRuleFilterAction(
+                              context,
+                              action.action,
+                              index,
+                            );
+                          },
+                          onActionChanged: (newAction) {
+                            if (newAction != action.action) {
+                              controller.updateEmailRuleFilterAction(
+                                context,
+                                newAction,
+                                index,
+                              );
+                            }
+                          },
+                          forwardEmailEditingController: isForwardTo
+                              ? controller.forwardEmailController
+                              : null,
+                          forwardEmailFocusNode: isForwardTo
+                              ? controller.forwardEmailFocusNode
+                              : null,
+                          onChangeForwardEmail: (value) {
+                            controller.updateForwardEmailValue(
+                              appLocalizations,
+                              value,
+                              index,
+                            );
+                          },
+                          actionSelected: action.action,
+                          onTapActionDetailedCallback: () {
+                            FocusScope.of(context).unfocus();
+                            controller.selectMailbox(context, index);
+                          },
+                          onDeleteRuleConditionAction: () {
+                            controller.tapRemoveAction(index);
+                          },
+                          imagePaths: controller.imagePaths,
+                        );
+                      },
+                    );
+                  }),
                   Obx(() {
                     if (controller.isShowAddAction.value == true) {
                       return Container(
@@ -257,7 +405,10 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             vertical: 25,
             horizontal: isMobile ? 16 : 32,
           ),
-          onPositiveAction: () => controller.createNewRuleFilter(context),
+          onPositiveAction: () {
+            FocusScope.of(context).unfocus();
+            controller.createNewRuleFilter(context);
+          },
           onNegativeAction: () => controller.closeView(context),
         ),
       ],
@@ -278,117 +429,16 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
     }
   }
 
-  Widget _buildListRuleFilterConditionList({
-    required BuildContext context,
-    required bool isMobile,
-  }) {
-    return Obx(() {
-      return ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        itemCount: controller.listRuleCondition.length,
-        itemBuilder: (context, index) {
-          final conditionItem =
-            controller.listRuleConditionValueArguments[index];
-          return RuleFilterConditionWidget(
-            key: ValueKey(conditionItem.focusNode),
-            isMobile: isMobile,
-            ruleCondition: controller.listRuleCondition[index],
-            imagePaths: controller.imagePaths,
-            conditionValueErrorText: conditionItem.errorText,
-            conditionValueFocusNode: conditionItem.focusNode,
-            textEditingController: conditionItem.controller,
-            tapRuleConditionFieldCallback: (value) =>
-                controller.selectRuleConditionFieldAction(
-                  context,
-                  value,
-                  controller.listRuleCondition[index].field,
-                  isMobile,
-                  index,
-                ),
-            tapRuleConditionComparatorCallback: (value) =>
-                controller.selectRuleConditionComparatorAction(
-                  context,
-                  value,
-                  controller.listRuleCondition[index].comparator,
-                  isMobile,
-                  index,
-                ),
-            conditionValueOnChangeAction: (value) =>
-              controller.updateConditionValue(context, value, index),
-            onDeleteRuleConditionAction: () =>
-                controller.tapRemoveCondition(index),
-          );
-        },
-      );
-    });
+  double _getViewWidth(bool isMobile, double screenWidth) {
+    return isMobile ? double.infinity : math.min(screenWidth, 612);
   }
 
-  Widget _buildListRuleFilterActionList(BuildContext context) {
-    return Obx(() {
-      return ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        itemCount: controller.listEmailRuleFilterActionSelected.length,
-        padding: const EdgeInsetsDirectional.only(bottom: 8),
-        itemBuilder: (context, index) {
-          final currentAction = controller.listEmailRuleFilterActionSelected[index];
-          String? errorValue;
-          if (currentAction is ForwardActionArguments) {
-            errorValue = controller.errorForwardEmailValue.value;
-          } else {
-            errorValue = controller.errorMailboxSelectedValue.value;
-          }
-          return RuleFilterActionWidget(
-            responsiveUtils: controller.responsiveUtils,
-            mailboxSelected: currentAction is MoveMessageActionArguments
-              ? currentAction.mailbox
-              : null,
-            errorValue: errorValue,
-            onActionChangeMobile: () {
-              controller.selectRuleFilterAction(
-                context,
-                currentAction.action,
-                index,
-              );
-            },
-            onActionChanged: (newAction) {
-              if (newAction != currentAction.action) {
-                controller.updateEmailRuleFilterAction(
-                  context,
-                  newAction,
-                  index,
-                );
-              }
-            },
-            forwardEmailEditingController: currentAction.action == EmailRuleFilterAction.forwardTo
-                ? controller.forwardEmailController
-                : null,
-            forwardEmailFocusNode: currentAction.action == EmailRuleFilterAction.forwardTo
-              ? controller.forwardEmailFocusNode
-              : null,
-            onChangeForwardEmail: (value) => controller.updateForwardEmailValue(context, value, index),
-            actionSelected: currentAction.action,
-            tapActionDetailedCallback: () {
-              KeyboardUtils.hideKeyboard(context);
-              controller.selectMailbox(context, index);
-            },
-            onDeleteRuleConditionAction: () =>
-                controller.tapRemoveAction(index),
-            imagePaths: controller.imagePaths,
-          );
-        },
-      );
-    });
-  }
+  double _getViewMaxHeight(bool isMobile, double screenHeight) {
+    final screenHeightWithoutPadding =
+        screenHeight > 100 ? screenHeight - 100 : screenHeight;
 
-  EdgeInsetsGeometry _getPadding(BuildContext context) {
-    if (controller.responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsetsDirectional.only(start: 8, end: 16);
-    } else if (controller.responsiveUtils.isLandscapeMobile(context)) {
-      return const EdgeInsetsDirectional.symmetric(horizontal: 24);
-    } else {
-      return const EdgeInsetsDirectional.symmetric(horizontal: 32);
-    }
+    return isMobile
+        ? double.infinity
+        : math.min(screenHeightWithoutPadding, 674);
   }
 }

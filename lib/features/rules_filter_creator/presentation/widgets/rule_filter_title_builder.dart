@@ -25,6 +25,24 @@ class RuleFilterTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
 
+    final titleBeforeWidget = Text(
+      appLocalizations.conditionTitleRulesFilterBeforeCombiner,
+      style: ThemeUtils.textStyleInter400.copyWith(
+        fontSize: 14,
+        height: 18 / 14,
+        color: Colors.black,
+      ),
+    );
+
+    final titleAfterWidget = Text(
+      appLocalizations.conditionTitleRulesFilterAfterCombiner,
+      style: ThemeUtils.textStyleInter400.copyWith(
+        fontSize: 14,
+        height: 18 / 14,
+        color: Colors.black,
+      ),
+    );
+
     if (isMobile) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,14 +50,7 @@ class RuleFilterTitle extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(
-                appLocalizations.conditionTitleRulesFilterBeforeCombiner,
-                style: ThemeUtils.textStyleInter400.copyWith(
-                  fontSize: 14,
-                  height: 18 / 14,
-                  color: Colors.black,
-                ),
-              ),
+              titleBeforeWidget,
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -54,14 +65,7 @@ class RuleFilterTitle extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            appLocalizations.conditionTitleRulesFilterAfterCombiner,
-            style: ThemeUtils.textStyleInter400.copyWith(
-              fontSize: 14,
-              height: 18 / 14,
-              color: Colors.black,
-            ),
-          )
+          titleAfterWidget,
         ],
       );
     }
@@ -71,14 +75,7 @@ class RuleFilterTitle extends StatelessWidget {
       runAlignment: WrapAlignment.center,
       runSpacing: 8,
       children: [
-        Text(
-          appLocalizations.conditionTitleRulesFilterBeforeCombiner,
-          style: ThemeUtils.textStyleInter400.copyWith(
-            fontSize: 14,
-            height: 18 / 14,
-            color: Colors.black,
-          ),
-        ),
+        titleBeforeWidget,
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           width: 158,
@@ -86,6 +83,7 @@ class RuleFilterTitle extends StatelessWidget {
             items: ConditionCombiner.values,
             itemSelected: conditionCombinerType,
             supportSelectionIcon: true,
+            heightItem: 40,
             labelTextStyle: ThemeUtils.textStyleBodyBody3(
               color: Colors.black,
             ),
@@ -95,14 +93,7 @@ class RuleFilterTitle extends StatelessWidget {
             onChanged: onTapActionCallback,
           ),
         ),
-        Text(
-          appLocalizations.conditionTitleRulesFilterAfterCombiner,
-          style: ThemeUtils.textStyleInter400.copyWith(
-            fontSize: 14,
-            height: 18 / 14,
-            color: Colors.black,
-          ),
-        )
+        titleAfterWidget,
       ],
     );
   }

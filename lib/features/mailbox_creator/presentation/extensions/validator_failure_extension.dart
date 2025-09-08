@@ -39,11 +39,11 @@ extension ValicatorFailureExtension on VerifyNameFailure {
     }
   }
 
-  String getMessageRulesFilter(BuildContext context) {
+  String getMessageRulesFilter(AppLocalizations appLocalizations) {
     if (exception is EmptyNameException) {
-      return AppLocalizations.of(context).this_field_cannot_be_blank;
+      return appLocalizations.this_field_cannot_be_blank;
     } else if (exception is NameWithSpaceOnlyException) {
-      return AppLocalizations.of(context).thisFieldCannotContainOnlySpaces;
+      return appLocalizations.thisFieldCannotContainOnlySpaces;
     } else {
       return '';
     }
