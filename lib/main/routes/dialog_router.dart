@@ -33,10 +33,15 @@ class DialogRouter {
     );
 
     _isDialogOpened.value = false;
+    if (routeName == AppRoutes.rulesFilterCreator) {
+      isRuleFilterDialogOpened.value = false;
+    }
     return returnedValue;
   }
 
   static final RxBool _isDialogOpened = false.obs;
+  static final RxBool isRuleFilterDialogOpened = false.obs;
+
   static bool get isDialogOpened => _isDialogOpened.value;
 
   static void _bindingDI(String routeName) {
@@ -46,6 +51,7 @@ class DialogRouter {
         MailboxCreatorBindings().dependencies();
         break;
       case AppRoutes.rulesFilterCreator:
+        isRuleFilterDialogOpened.value = true;
         RulesFilterCreatorBindings().dependencies();
         break;
       case AppRoutes.identityCreator:
