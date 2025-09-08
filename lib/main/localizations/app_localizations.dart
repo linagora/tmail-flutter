@@ -4985,4 +4985,53 @@ class AppLocalizations {
       name: 'createMyFirstRule',
     );
   }
+
+  String get createANewRule {
+    return Intl.message(
+      'Create a New Rule',
+      name: 'createANewRule',
+    );
+  }
+
+  String get ruleName {
+    return Intl.message(
+      'Rule Name',
+      name: 'ruleName',
+    );
+  }
+
+  String get condition {
+    return Intl.message(
+      'Condition',
+      name: 'condition',
+    );
+  }
+
+  String get addACondition {
+    return Intl.message(
+      'Add a condition',
+      name: 'addACondition',
+    );
+  }
+
+  String get actionsToPerform {
+    return Intl.message(
+      'Actions to Perform',
+      name: 'actionsToPerform',
+    );
+  }
+
+  String get addAnAction {
+    return Intl.message(
+      'Add an action',
+      name: 'addAnAction',
+    );
+  }
+
+  String get createRule {
+    return Intl.message(
+      'Create Rule',
+      name: 'createRule',
+    );
+  }
 }

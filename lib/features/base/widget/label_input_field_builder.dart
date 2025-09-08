@@ -7,8 +7,12 @@ class LabelInputFieldBuilder extends StatelessWidget {
   final TextEditingController textEditingController;
   final String? errorText;
   final String? hintText;
+  final TextStyle? labelStyle;
   final FocusNode? focusNode;
+  final double? runSpacing;
+  final double? inputFieldMaxWidth;
   final bool arrangeHorizontally;
+  final bool isLabelHasColon;
   final OnTextChange? onTextChange;
 
   const LabelInputFieldBuilder({
@@ -16,19 +20,24 @@ class LabelInputFieldBuilder extends StatelessWidget {
     required this.label,
     required this.textEditingController,
     this.arrangeHorizontally = true,
+    this.isLabelHasColon = true,
     this.hintText,
     this.errorText,
     this.focusNode,
+    this.labelStyle,
+    this.runSpacing,
+    this.inputFieldMaxWidth,
     this.onTextChange,
   });
 
   @override
   Widget build(BuildContext context) {
     Widget bodyWidget = ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 565),
+      constraints: BoxConstraints(maxWidth: inputFieldMaxWidth ?? 565),
       child: DefaultInputFieldWidget(
         textEditingController: textEditingController,
         hintText: hintText,
+        errorText: errorText,
         focusNode: focusNode,
         onTextChange: onTextChange,
       ),
@@ -41,7 +50,7 @@ class LabelInputFieldBuilder extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(minWidth: 83),
             child: Text(
-              '$label:',
+              isLabelHasColon ? '$label:' : label,
               style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
             ),
           ),
@@ -54,10 +63,10 @@ class LabelInputFieldBuilder extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '$label:',
-            style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
+            isLabelHasColon ? '$label:' : label,
+            style: labelStyle ?? ThemeUtils.textStyleBodyBody3(color: Colors.black),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: runSpacing ?? 10),
           bodyWidget,
         ],
       );

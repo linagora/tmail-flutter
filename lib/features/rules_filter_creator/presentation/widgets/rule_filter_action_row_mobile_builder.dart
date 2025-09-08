@@ -48,10 +48,13 @@ class RuleFilterActionRowMobile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: RuleFilterActionStyles.mainPadding),
               child: Text(
                 AppLocalizations.of(context).toFolder,
-                overflow: CommonTextStyle.defaultTextOverFlow,
-                softWrap: CommonTextStyle.defaultSoftWrap,
-                maxLines: RuleFilterActionStyles.maxLines,
-                style: RuleFilterActionStyles.textStyle,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: ThemeUtils.textStyleInter400.copyWith(
+                  fontSize: 14,
+                  height: 18 / 14,
+                  color: Colors.black,
+                ),
               ),
             )
           : SizedBox(

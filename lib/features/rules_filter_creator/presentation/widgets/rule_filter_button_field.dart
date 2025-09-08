@@ -50,10 +50,7 @@ class RuleFilterButtonField<T> extends StatelessWidget {
         child: Row(children: [
           Expanded(child: Text(
             _getName(context, value),
-            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-                color: textColor),
+            style: ThemeUtils.textStyleBodyBody3(color: textColor),
             maxLines: 1,
             softWrap: CommonTextStyle.defaultSoftWrap,
             overflow: CommonTextStyle.defaultTextOverFlow,
