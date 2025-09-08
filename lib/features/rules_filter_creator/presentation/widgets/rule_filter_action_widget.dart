@@ -9,12 +9,13 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/e
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/styles/rule_filter_action_styles.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_row_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_row_mobile_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 
 class RuleFilterActionWidget extends StatelessWidget {
   final ResponsiveUtils responsiveUtils;
-  final Function()? tapRemoveCallback;
-  final ImagePaths? imagePaths;
+  final ImagePaths imagePaths;
+  final OnDeleteRuleConditionAction onDeleteRuleConditionAction;
   final EmailRuleFilterAction? actionSelected;
   final Function(EmailRuleFilterAction?)? onActionChanged;
   final Function()? onActionChangeMobile;
@@ -28,8 +29,8 @@ class RuleFilterActionWidget extends StatelessWidget {
   const RuleFilterActionWidget({
     Key? key,
     required this.responsiveUtils,
-    this.tapRemoveCallback,
-    this.imagePaths,
+    required this.imagePaths,
+    required this.onDeleteRuleConditionAction,
     this.actionSelected,
     this.onActionChanged,
     this.mailboxSelected,
@@ -43,6 +44,47 @@ class RuleFilterActionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = responsiveUtils.isMobile(context);
+
+    Widget bodyWidget = Container(
+      padding: const EdgeInsetsDirectional.only(start: 12),
+      margin: const EdgeInsetsDirectional.only(top: 8),
+      decoration: const BoxDecoration(
+        color: AppColor.lightGrayF9FAFB,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      height: 72,
+      alignment: Alignment.center,
+      child: isMobile
+          ? RuleFilterActionRowMobile(
+              actionSelected: actionSelected,
+              mailboxSelected: mailboxSelected,
+              errorValue: errorValue,
+              tapActionDetailedCallback: tapActionDetailedCallback,
+              forwardEmailEditingController: forwardEmailEditingController,
+              forwardEmailFocusNode: forwardEmailFocusNode,
+              onChangeForwardEmail: onChangeForwardEmail,
+              tapActionCallback: onActionChangeMobile,
+            )
+          : RuleFilterActionRow(
+              actionList: EmailRuleFilterAction.values,
+              actionSelected: actionSelected,
+              onActionChanged: onActionChanged,
+              mailboxSelected: mailboxSelected,
+              errorValue: errorValue,
+              tapActionDetailedCallback: tapActionDetailedCallback,
+              imagePaths: imagePaths,
+              onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+              forwardEmailEditingController: forwardEmailEditingController,
+              forwardEmailFocusNode: forwardEmailFocusNode,
+              onChangeForwardEmail: onChangeForwardEmail,
+            ),
+    );
+
+    if (!isMobile) {
+      return bodyWidget;
+    }
+
     return Slidable(
       enabled: responsiveUtils.isMobile(context) ? true : false,
       endActionPane: ActionPane(
@@ -55,13 +97,13 @@ class RuleFilterActionWidget extends StatelessWidget {
               topRight: Radius.circular(RuleFilterActionStyles.mainBorderRadius),
               bottomRight: Radius.circular(RuleFilterActionStyles.mainBorderRadius),
             ),
-            onPressed: (_) => tapRemoveCallback!(),
+            onPressed: (_) => onDeleteRuleConditionAction(),
             backgroundColor: AppColor.colorBackgroundFieldConditionRulesFilter,
             child: CircleAvatar(
               backgroundColor: AppColor.colorRemoveRuleFilterConditionButton,
               radius: RuleFilterActionStyles.removeButtonRadius,
               child: SvgPicture.asset(
-                imagePaths!.icMinimize,
+                imagePaths.icMinimize,
                 fit: BoxFit.fill,
                 colorFilter: AppColor.colorDeletePermanentlyButton.asFilter(),
               ),
@@ -106,7 +148,7 @@ class RuleFilterActionWidget extends StatelessWidget {
                       errorValue: errorValue,
                       tapActionDetailedCallback: tapActionDetailedCallback,
                       imagePaths: imagePaths,
-                      tapRemoveActionCallback: tapRemoveCallback,
+                      onDeleteRuleConditionAction: onDeleteRuleConditionAction,
                       forwardEmailEditingController: forwardEmailEditingController,
                       forwardEmailFocusNode: forwardEmailFocusNode,
                       onChangeForwardEmail: onChangeForwardEmail,

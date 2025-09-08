@@ -35,6 +35,8 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final double? dropdownWidth;
   final double? dropdownMaxHeight;
   final String? hintText;
+  final TextStyle? labelTextStyle;
+  final TextStyle? hintTextStyle;
 
   const DropDownButtonWidget({
     Key? key,
@@ -54,6 +56,8 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     this.colorButton = Colors.white,
     this.tooltip = '',
     this.hintText,
+    this.labelTextStyle,
+    this.hintTextStyle,
   }) : super(key: key);
 
   @override
@@ -68,7 +72,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
               ? Row(children: [
                   Expanded(child: Text(
                     _getTextItemDropdown(context, item: itemSelected),
-                    style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 16,
+                    style: hintTextStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 16,
                         fontWeight: FontWeight.normal,
                         color: Colors.black.withValues(alpha: opacity)),
                     maxLines: 1,
@@ -86,7 +90,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                         height: heightItem,
                         child: Row(children: [
                           Expanded(child: Text(_getTextItemDropdown(context, item: item),
-                            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+                            style: labelTextStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
                                 fontSize: 16,
                                 fontWeight: FontWeight.normal,
                                 color: Colors.black),
@@ -122,7 +126,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                   child: Row(children: [
                     Expanded(child: Text(
                       _getTextItemDropdown(context, item: itemSelected),
-                      style: ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 16,
+                      style: labelTextStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(fontSize: 16,
                           fontWeight: FontWeight.normal,
                           color: itemSelected != null ? Colors.black.withValues(alpha: opacity) : AppColor.textFieldHintColor),
                       maxLines: 1,
