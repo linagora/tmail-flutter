@@ -1,6 +1,7 @@
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/add_rule_button_widget.dart';
@@ -13,7 +14,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/email_r
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 
-class EmailRulesView extends GetWidget<EmailRulesController> {
+class EmailRulesView extends GetWidget<EmailRulesController>
+    with AppLoaderMixin {
   const EmailRulesView({Key? key}) : super(key: key);
 
   @override
@@ -92,13 +94,25 @@ class EmailRulesView extends GetWidget<EmailRulesController> {
                 ),
               ),
             ),
+            Obx(
+              () => controller.isLoading
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: loadingWidget,
+                    )
+                  : const SizedBox.shrink(),
+            ),
             Obx(() {
               if (controller.listEmailRule.isEmpty) {
-                return NoRulesWidget(
-                  imagePaths: controller.imagePaths,
-                  responsiveUtils: controller.responsiveUtils,
-                  onAddRuleAction: controller.goToCreateNewRule,
-                );
+                if (controller.isLoading) {
+                  return const SizedBox.shrink();
+                } else {
+                  return NoRulesWidget(
+                    imagePaths: controller.imagePaths,
+                    responsiveUtils: controller.responsiveUtils,
+                    onAddRuleAction: controller.goToCreateNewRule,
+                  );
+                }
               } else {
                 return Expanded(
                   child: ListEmailRulesWidget(

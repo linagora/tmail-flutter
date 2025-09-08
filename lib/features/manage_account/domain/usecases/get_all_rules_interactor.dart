@@ -13,7 +13,7 @@ class GetAllRulesInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId) async* {
     try {
-      yield Right<Failure, Success>(LoadingState());
+      yield Right(GettingAllRules());
       final rulesResponse = await _ruleFilterRepository.getAllTMailRule(accountId);
       yield Right(GetAllRulesSuccess(rulesResponse));
     } catch (exception) {
