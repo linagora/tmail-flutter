@@ -166,7 +166,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
         listRuleCondition.add(newRuleCondition);
         RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
           focusNode: FocusNode(),
-          errorText: '',
           controller: TextEditingController(),
         );
         listRuleConditionValueArguments.add(newRuleConditionValueArguments);
@@ -207,7 +206,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
             listRuleCondition.add(condition);
             RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
               focusNode: FocusNode(),
-              errorText: '',
               controller: TextEditingController(),
             );
             listRuleConditionValueArguments.add(newRuleConditionValueArguments);
@@ -300,7 +298,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     String? errorString = _getErrorStringByInputValue(context, listRuleCondition[ruleConditionIndex].value);
     RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
       focusNode: listRuleConditionValueArguments[ruleConditionIndex].focusNode,
-      errorText: errorString ?? '',
+      errorText: errorString,
       controller: listRuleConditionValueArguments[ruleConditionIndex].controller,
     );
     if (listRuleConditionValueArguments.length > ruleConditionIndex) {
@@ -611,7 +609,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
     listRuleCondition.add(newRuleCondition);
     listRuleConditionValueArguments.add(RulesFilterInputFieldArguments(
       focusNode: FocusNode(),
-      errorText: '',
       controller: TextEditingController(),
     ));
   }

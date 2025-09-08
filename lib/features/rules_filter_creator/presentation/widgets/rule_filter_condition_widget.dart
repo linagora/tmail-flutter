@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_condition_type.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_row_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -11,31 +12,57 @@ import 'package:core/presentation/resources/image_paths.dart';
 class RuleFilterConditionWidget extends StatelessWidget {
   final RuleFilterConditionScreenType? ruleFilterConditionScreenType;
   final RuleCondition ruleCondition;
+  final TextEditingController textEditingController;
   final Function(Field?)? tapRuleConditionFieldCallback;
   final Function(Comparator?)? tapRuleConditionComparatorCallback;
   final String? conditionValueErrorText;
-  final TextEditingController? conditionValueEditingController;
   final FocusNode? conditionValueFocusNode;
   final OnChangeFilterInputAction? conditionValueOnChangeAction;
-  final ImagePaths? imagePaths;
-  final Function()? tapRemoveRuleFilterConditionCallback;
+  final ImagePaths imagePaths;
+  final OnDeleteRuleConditionAction onDeleteRuleConditionAction;
 
   const RuleFilterConditionWidget({
     super.key,
     this.ruleFilterConditionScreenType,
     required this.ruleCondition,
+    required this.imagePaths,
+    required this.textEditingController,
+    required this.onDeleteRuleConditionAction,
     this.tapRuleConditionFieldCallback,
     this.tapRuleConditionComparatorCallback,
     this.conditionValueErrorText,
-    this.conditionValueEditingController,
     this.conditionValueFocusNode,
     this.conditionValueOnChangeAction,
-    this.imagePaths,
-    this.tapRemoveRuleFilterConditionCallback,
   });
 
   @override
   Widget build(BuildContext context) {
+    Widget bodyWidget = Container(
+      padding: const EdgeInsetsDirectional.symmetric(vertical: 12),
+      margin: const EdgeInsetsDirectional.only(top: 8),
+      decoration: const BoxDecoration(
+        color: AppColor.lightGrayF9FAFB,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      alignment: Alignment.center,
+      child: RuleFilterConditionRow(
+        ruleFilterConditionScreenType: ruleFilterConditionScreenType,
+        ruleCondition: ruleCondition,
+        tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
+        tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
+        conditionValueErrorText: conditionValueErrorText,
+        textEditingController: textEditingController,
+        conditionValueFocusNode: conditionValueFocusNode,
+        conditionValueOnChangeAction: conditionValueOnChangeAction,
+        onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+        imagePaths: imagePaths,
+      ),
+    );
+
+    if (ruleFilterConditionScreenType != RuleFilterConditionScreenType.mobile) {
+      return bodyWidget;
+    }
+
     return Slidable(
       enabled: ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile ? true : false,
       endActionPane: ActionPane(
@@ -45,13 +72,13 @@ class RuleFilterConditionWidget extends StatelessWidget {
           CustomSlidableAction(
             padding: const EdgeInsets.only(right: 12),
             borderRadius: const BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12)),
-            onPressed: (_) => tapRemoveRuleFilterConditionCallback!(),
+            onPressed: (_) => onDeleteRuleConditionAction(),
             backgroundColor: AppColor.colorBackgroundFieldConditionRulesFilter,
             child: CircleAvatar(
               backgroundColor: AppColor.colorRemoveRuleFilterConditionButton,
               radius: 110,
               child: SvgPicture.asset(
-                imagePaths!.icMinimize,
+                imagePaths.icMinimize,
                 fit: BoxFit.fill,
                 colorFilter: AppColor.colorDeletePermanentlyButton.asFilter(),
               ),
@@ -59,40 +86,10 @@ class RuleFilterConditionWidget extends StatelessWidget {
           )
         ]
       ),
-      child: Builder(builder: (context) {
-        SlidableController? slideController = Slidable.of(context);
-        return ValueListenableBuilder<int>(
-          valueListenable: slideController?.direction ?? ValueNotifier<int>(0),
-          builder: (context, value, _) {
-            var borderRadius = value != -1 ? 
-              BorderRadius.circular(12) : 
-              const BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                topLeft: Radius.circular(12)
-              );
-            return Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColor.colorBackgroundFieldConditionRulesFilter,
-                borderRadius: borderRadius,
-              ),
-              child: RuleFilterConditionRow(
-                ruleFilterConditionScreenType: ruleFilterConditionScreenType,
-                ruleCondition: ruleCondition,
-                tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
-                tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
-                conditionValueErrorText: conditionValueErrorText,
-                conditionValueEditingController: conditionValueEditingController,
-                conditionValueFocusNode: conditionValueFocusNode,
-                conditionValueOnChangeAction: conditionValueOnChangeAction,
-                tapRemoveRuleFilterConditionCallback: tapRemoveRuleFilterConditionCallback,
-                imagePaths: imagePaths,
-              )
-            );
-          }
-        );
-      })
+      child: ValueListenableBuilder<int>(
+        valueListenable: Slidable.of(context)?.direction ?? ValueNotifier<int>(0),
+        builder: (_, __, ___) => bodyWidget,
+      ),
     );
-    
   }
 }

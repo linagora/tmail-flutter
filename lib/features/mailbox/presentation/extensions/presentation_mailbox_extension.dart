@@ -10,31 +10,35 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 extension PresentationMailboxExtension on PresentationMailbox {
 
-  String getDisplayName(BuildContext context) {
+  String getDisplayNameByLocalizations(AppLocalizations appLocalizations) {
     if (isDefault) {
       switch(role!.value.toLowerCase()) {
         case PresentationMailbox.inboxRole:
-          return AppLocalizations.of(context).inboxMailboxDisplayName;
+          return appLocalizations.inboxMailboxDisplayName;
         case PresentationMailbox.archiveRole:
-          return AppLocalizations.of(context).archiveMailboxDisplayName;
+          return appLocalizations.archiveMailboxDisplayName;
         case PresentationMailbox.draftsRole:
-          return AppLocalizations.of(context).draftsMailboxDisplayName;
+          return appLocalizations.draftsMailboxDisplayName;
         case PresentationMailbox.sentRole:
-          return AppLocalizations.of(context).sentMailboxDisplayName;
+          return appLocalizations.sentMailboxDisplayName;
         case PresentationMailbox.outboxRole:
-          return AppLocalizations.of(context).outboxMailboxDisplayName;
+          return appLocalizations.outboxMailboxDisplayName;
         case PresentationMailbox.trashRole:
-          return AppLocalizations.of(context).trashMailboxDisplayName;
+          return appLocalizations.trashMailboxDisplayName;
         case PresentationMailbox.spamRole:
         case PresentationMailbox.junkRole:
-          return AppLocalizations.of(context).spamMailboxDisplayName;
+          return appLocalizations.spamMailboxDisplayName;
         case PresentationMailbox.templatesRole:
-          return AppLocalizations.of(context).templatesMailboxDisplayName;
+          return appLocalizations.templatesMailboxDisplayName;
         case PresentationMailbox.recoveredRole:
-          return AppLocalizations.of(context).recoveredMailboxDisplayName;
+          return appLocalizations.recoveredMailboxDisplayName;
       }
     }
     return name?.name ?? '';
+  }
+
+  String getDisplayName(BuildContext context) {
+    return getDisplayNameByLocalizations(AppLocalizations.of(context));
   }
 
   String getMailboxIcon(ImagePaths imagePaths) {
