@@ -28,8 +28,8 @@ class ThreadDetailLocalDataSourceImpl implements ThreadDetailDataSource {
   @override
   Future<bool> getThreadDetailStatus() {
     return Future.sync(() async {
-      final preferencesRoot = await _preferencesSettingManager.loadPreferences();
-      return preferencesRoot.setting.threadDetail.isEnabled;
+      final threadConfig = await _preferencesSettingManager.getThreadConfig();
+      return threadConfig.isEnabled;
     }).catchError(_exceptionThrower.throwException);
   }
 }
