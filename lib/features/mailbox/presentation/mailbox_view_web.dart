@@ -40,14 +40,17 @@ class MailboxView extends BaseMailboxView {
             Obx(() {
               final isPremiumAvailable =
                   controller.mailboxDashBoardController.isPremiumAvailable;
+              final isDesktop = controller.responsiveUtils.isDesktop(context);
 
               if (isPremiumAvailable) {
                 return IncreaseSpaceButtonWidget(
                   imagePaths: controller.imagePaths,
-                  margin: const EdgeInsetsDirectional.only(
-                    start: 26,
+                  margin: EdgeInsetsDirectional.only(
+                    start: isDesktop ? 26 : 24,
                     bottom: 8,
+                    end: isDesktop ? 0 : 24,
                   ),
+                  isDesktop: isDesktop,
                   onTapAction: () {},
                 );
               } else {

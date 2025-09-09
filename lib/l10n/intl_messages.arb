@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-09T13:12:15.883838",
+  "@@last_modified": "2025-09-09T13:40:24.145761",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4683,5 +4683,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "quotaAvailableLabel": "{count} available",
+  "@quotaAvailableLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
   }
 }

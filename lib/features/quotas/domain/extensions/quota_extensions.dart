@@ -15,6 +15,15 @@ extension QuotasExtensions on Quota {
 
   String get hardLimitStorageAsString => presentationHardLimit != null ? filesize(presentationHardLimit!.value) : '';
 
+  String get quotaAvailableStorageAsString {
+    if (used != null &&
+        presentationHardLimit != null &&
+        presentationHardLimit!.value > used!.value) {
+      return filesize(presentationHardLimit!.value - used!.value);
+    }
+    return '0 B';
+  }
+
   bool get isWarnLimitReached {
     if (used != null && warnLimit != null) {
       return used!.value >= warnLimit!.value * 0.9;
@@ -48,7 +57,7 @@ extension QuotasExtensions on Quota {
       return '${AppLocalizations.of(context).textQuotasOutOfStorage}'
         '\n${AppLocalizations.of(context).quotaStateLabel(usedStorageAsString, hardLimitStorageAsString)}';
     } else {
-      return AppLocalizations.of(context).quotaStateLabel(usedStorageAsString, hardLimitStorageAsString);
+      return AppLocalizations.of(context).quotaAvailableLabel(quotaAvailableStorageAsString);
     }
   }
 

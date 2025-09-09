@@ -4941,4 +4941,12 @@ class AppLocalizations {
       name: 'increaseYourSpace',
     );
   }
+
+  String quotaAvailableLabel(String count) {
+    return Intl.message(
+      '$count available',
+      name: 'quotaAvailableLabel',
+      args: [count],
+    );
+  }
 }
