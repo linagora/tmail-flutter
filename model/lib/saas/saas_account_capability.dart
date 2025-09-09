@@ -19,6 +19,8 @@ class SaaSAccountCapability extends CapabilityProperties {
     return SaaSAccountCapability.fromJson(json);
   }
 
+  bool get isPremiumAvailable => canUpgrade;
+
   @override
   List<Object?> get props => [isPaying, canUpgrade];
 }
