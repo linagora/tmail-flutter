@@ -6,7 +6,11 @@
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var J, A, B,
-  C = {
+  C = {DefaultSwitchIconWidget: function DefaultSwitchIconWidget(t0, t1, t2) {
+      this.imagePaths = t0;
+      this.isEnabled = t1;
+      this.key = t2;
+    },
     LabelBorderButtonField$(arrangeHorizontally, hintText, horizontalSpacing, isEmpty, label, minWidth, onSelectValueAction, value, $T) {
       return new C.LabelBorderButtonField(value, isEmpty, arrangeHorizontally, label, hintText, horizontalSpacing, minWidth, onSelectValueAction, null, $T._eval$1("LabelBorderButtonField<0>"));
     },
@@ -1016,9 +1020,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return t1.formatTimeOfDay$1(_this);
     },
     HandleProfileSettingActionTypeClickExtension_handleProfileSettingActionTypeClick(_this, actionType, context) {
+      var t1;
       switch (actionType.index) {
         case 1:
-          _this._handleLogoutAction$2(_this.sessionCurrent, _this.accountId.get$value(0));
+          if (B.JSString_methods.trim$0(_this.OwnEmailAddressMixin_ownEmailAddress.get$value(0)).length === 0) {
+            t1 = _this.OwnEmailAddressMixin_sessionCurrent;
+            if (t1 != null)
+              A.SessionExtension_getOwnEmailAddressOrUsername(t1);
+          }
+          _this._handleLogoutAction$2(_this.OwnEmailAddressMixin_sessionCurrent, _this.accountId.get$value(0));
           break;
         default:
           break;
@@ -1111,6 +1121,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   F = holdersList[10];
   E = holdersList[18];
   H = holdersList[12];
+  C.DefaultSwitchIconWidget.prototype = {
+    build$1(context) {
+      var t1 = this.isEnabled ? "assets/images/ic_switch_on.svg" : "assets/images/ic_switch_off.svg";
+      return A.SvgPicture$asset(t1, B.Alignment_0_0, null, B.BoxFit_0, 28, this.key, null, 44);
+    }
+  };
   C.LabelBorderButtonField.prototype = {
     build$1(context) {
       var t2, t3, buttonField, _this = this, _null = null,
@@ -1157,7 +1173,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C.SwitchLabelButtonWidget.prototype = {
     build$1(context) {
       var _this = this, _null = null,
-        bodyWidget = A.Row$(A._setArrayType([A.InkWell$(false, _null, true, A.SvgPicture$asset(_this.isActive ? "assets/images/ic_switch_on.svg" : "assets/images/ic_switch_off.svg", B.Alignment_0_0, _null, B.BoxFit_0, 32, _null, _null, 52), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onSwitchAction, _null, _null, _null, _null, _null, _null, _null), B.SizedBox_16_null_null_null, A.Expanded$(A.Text$(_this.label, _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody2(_null, B.Color_9Sx1, _null), _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null),
+        bodyWidget = A.Row$(A._setArrayType([A.InkWell$(false, _null, true, new C.DefaultSwitchIconWidget(_this.imagePaths, _this.isActive, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onSwitchAction, _null, _null, _null, _null, _null, _null, _null), B.SizedBox_16_null_null_null, A.Expanded$(A.Text$(_this.label, _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody2(_null, B.Color_9Sx1, _null), _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null),
         t1 = _this.padding;
       if (t1 != null)
         return new A.Padding(t1, bodyWidget, _null);
@@ -1425,7 +1441,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t2._as(t1.get(_this)).__ForwardController_recipientController_A;
       t3 === $ && A.throwUnnamedLateFieldNI();
       A.Expando__checkType(_this);
-      t4 = t2._as(t1.get(_this)).accountDashBoardController.sessionCurrent;
+      t4 = t2._as(t1.get(_this)).accountDashBoardController.OwnEmailAddressMixin_sessionCurrent;
       t4 = t4 == null ? null : A.SessionExtensions_get_internalDomain(t4);
       if (t4 == null)
         t4 = "";
@@ -1788,10 +1804,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.KeepCopyInInboxWidget.prototype = {
     build$1(context) {
-      var t1, t2, t3, _null = null;
-      if (this.recipientForwards.get$length(0) === 0)
+      var t1, t2, t3, _this = this, _null = null;
+      if (_this.recipientForwards.get$length(0) === 0)
         return B.SizedBox_0_0_null_null;
-      t1 = A.InkWell$(false, _null, true, A.SvgPicture$asset(this.localCopyState ? "assets/images/ic_switch_on.svg" : "assets/images/ic_switch_off.svg", B.Alignment_0_0, _null, B.BoxFit_0, 32, _null, _null, 52), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, this.onToggleLocalCopy, _null, _null, _null, _null, _null, _null, _null);
+      t1 = A.InkWell$(false, _null, true, new C.DefaultSwitchIconWidget(_this.imagePaths, _this.localCopyState, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onToggleLocalCopy, _null, _null, _null, _null, _null, _null, _null);
       t2 = type$.AppLocalizations;
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, t2).toString;
       t3 = A.Text$(A.Intl__message("Keep a copy in Inbox", _null, "keepACopyInInbox", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody2(_null, B.Color_9Sx1, _null), _null, _null, _null, _null, _null);
@@ -2483,7 +2499,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C._PreferencesView_GetWidget_AppLoaderMixin.prototype = {};
   C.PreferencesOptionItem.prototype = {
     build$1(context) {
-      var t2, t3, t4, t5, t6, t7, t8, t9, _this = this, _null = null,
+      var t2, t3, t4, t5, t6, t7, t8, t9, t10, _this = this, _null = null,
         t1 = A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
       t2 = _this.optionType;
@@ -2494,9 +2510,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = _this.settingOption;
       t8 = _this.preferencesSetting;
       t9 = t2.isEnabled$2(0, t7, t8) ? "setting_option_switch_on" : "setting_option_switch_off";
-      t7 = t2.isEnabled$2(0, t7, t8) ? "assets/images/ic_switch_on.svg" : "assets/images/ic_switch_off.svg";
-      t8 = type$.JSArray_Widget;
-      return A.Column$(A._setArrayType([t3, new A.Padding(B.EdgeInsets_0_12_0_12, t4, _null), A.Row$(A._setArrayType([A.InkWell$(false, _null, true, A.SvgPicture$asset(t7, B.Alignment_0_0, _null, B.BoxFit_0, 28, new A.ValueKey(t9, t6), _null, 44), _null, true, _null, _null, _null, _null, new A.ValueKey(t5, t6), _null, _null, _null, _null, _null, _null, new C.PreferencesOptionItem_build_closure(_this), _null, _null, _null, _null, _null, _null, _null), B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(t2.getToggleDescription$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody2(_null, _null, _null).copyWith$1$color(B.Color_9Sx1), _null, _null, _null, _null, _null), 1)], t8), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null)], t8), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
+      t10 = type$.JSArray_Widget;
+      return A.Column$(A._setArrayType([t3, new A.Padding(B.EdgeInsets_0_12_0_12, t4, _null), A.Row$(A._setArrayType([A.InkWell$(false, _null, true, new C.DefaultSwitchIconWidget(_this.imagePaths, t2.isEnabled$2(0, t7, t8), new A.ValueKey(t9, t6)), _null, true, _null, _null, _null, _null, new A.ValueKey(t5, t6), _null, _null, _null, _null, _null, _null, new C.PreferencesOptionItem_build_closure(_this), _null, _null, _null, _null, _null, _null, _null), B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(t2.getToggleDescription$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody2(_null, _null, _null).copyWith$1$color(B.Color_9Sx1), _null, _null, _null, _null, _null), 1)], t10), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null)], t10), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
     }
   };
   C.VacationView.prototype = {
@@ -2898,7 +2913,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId != null)
         t1._handleAddRecipients$2(accountId, listRecipientsSelected);
     },
-    $signature: 1939
+    $signature: 1941
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure0.prototype = {
     call$1(exception) {
@@ -2918,7 +2933,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.showToastErrorMessage$2(t2, A.Intl__message("Incorrect email format", _null, "incorrectEmailFormat", _null, _null));
       }
     },
-    $signature: 1940
+    $signature: 1942
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure1.prototype = {
     call$1(focused) {
@@ -3003,7 +3018,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return new A.Padding(B.EdgeInsets_12_0_12_0, new C.ContactSuggestionBoxItem(t1._autocomplete_contact_text_field_with_tags$_imagePaths, suggestionEmailAddress, new C._AutocompleteContactTextFieldWithTagsState_build__closure0(t1, context, tagEditorState), B.RoundedRectangleBorder_RoN7, null), null);
     },
-    $signature: 1941
+    $signature: 1943
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure0.prototype = {
     call$1(contact) {
@@ -3241,7 +3256,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.ListView$builder(_null, new C.ListEmailForwardsWidget_build___closure(t1, constraints), J.get$length$asx(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).listRecipientForward.get$value(0)), _null, _null, D.EdgeInsets_0_0_0_30, _null, false, B.Axis_1, true);
     },
-    $signature: 1942
+    $signature: 1944
   };
   C.ListEmailForwardsWidget_build___closure.prototype = {
     call$2(context, index) {
@@ -3257,7 +3272,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t6 = J.$index$asx(t3._as(t2.get(t1)).listRecipientForward.get$value(0), index);
       A.Expando__checkType(t1);
-      t7 = t3._as(t2.get(t1)).accountDashBoardController.sessionCurrent;
+      t7 = t3._as(t2.get(t1)).accountDashBoardController.OwnEmailAddressMixin_sessionCurrent;
       t7 = t7 == null ? null : A.SessionExtensions_get_internalDomain(t7);
       if (t7 == null)
         t7 = "";
@@ -3279,7 +3294,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = "";
       t1.deleteRecipients$2(this.context, t2);
     },
-    $signature: 1943
+    $signature: 1945
   };
   C.ListEmailForwardsWidget__buildTitleHeader_closure.prototype = {
     call$0() {
@@ -3328,7 +3343,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.push(t2._buildDeleteAllButton$1(_this.context));
       return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 1944
+    $signature: 1946
   };
   C.ListEmailForwardsWidget__buildDeleteAllButton_closure.prototype = {
     call$0() {
@@ -3428,7 +3443,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).goToEditIdentity$2(this.context, identitySelected);
     },
-    $signature: 726
+    $signature: 728
   };
   C.IdentitiesView_build____closure0.prototype = {
     call$1(identitySelected) {
@@ -3437,7 +3452,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openConfirmationDialogDeleteIdentityAction$2(this.context, identitySelected);
     },
-    $signature: 726
+    $signature: 728
   };
   C.IdentitiesView_build__closure0.prototype = {
     call$2(_, index) {
@@ -3530,7 +3545,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._languageMenuIsVisibleNotifier.set$value(0, false);
       t1._languageAndRegionController.selectLanguage$1(language);
     },
-    $signature: 1946
+    $signature: 1948
   };
   C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure0.prototype = {
     call$0() {
@@ -3797,18 +3812,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.ManageAccountDashBoardView_build__closure0.prototype = {
     call$0() {
-      var t3, t4, t5, t6, _null = null,
+      var t3, accountId, accountDisplayName, t4, _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      t4 = t3._as(t2.get(t1)).imagePaths;
+      accountId = t3._as(t2.get(t1)).accountId.get$value(0);
       A.Expando__checkType(t1);
-      t5 = t3._as(t2.get(t1)).accountId.get$value(0);
+      accountDisplayName = t3._as(t2.get(t1)).OwnEmailAddressMixin_ownEmailAddress.get$value(0);
+      if (B.JSString_methods.trim$0(accountDisplayName).length === 0) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1)).OwnEmailAddressMixin_sessionCurrent;
+        accountDisplayName = t4 == null ? _null : A.SessionExtension_getOwnEmailAddressOrUsername(t4);
+        if (accountDisplayName == null)
+          accountDisplayName = "";
+      }
       A.Expando__checkType(t1);
-      t6 = this.context;
-      return F.NavigationBarWidget$(t5, _null, _null, t4, new C.ManageAccountDashBoardView_build___closure(t1, t6), new C.ManageAccountDashBoardView_build___closure0(t1, t6), _null, t3._as(t2.get(t1)).ownEmailAddress.get$value(0), _null, D.List_ProfileSettingActionType_1);
+      t4 = this.context;
+      return F.NavigationBarWidget$(accountId, _null, _null, t3._as(t2.get(t1)).imagePaths, new C.ManageAccountDashBoardView_build___closure(t1, t4), new C.ManageAccountDashBoardView_build___closure0(t1, t4), _null, accountDisplayName, _null, D.List_ProfileSettingActionType_1);
     },
     $signature: typesOffset + 13
   };
@@ -4023,7 +4045,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId == null)
         return B.SizedBox_0_0_null_null;
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).dashBoardController.sessionCurrent;
+      t4 = t3._as(t2.get(t1)).dashBoardController.OwnEmailAddressMixin_sessionCurrent;
       contactSupportCapability = t4 == null ? null : F.SessionExtensions_getContactSupportCapability(t4, accountId);
       if ((contactSupportCapability == null ? null : contactSupportCapability.get$isAvailable()) !== true)
         return B.SizedBox_0_0_null_null;
@@ -4048,31 +4070,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.ManageAccountMenuView_build_closure2.prototype = {
     call$1(_) {
-      var t3, t4, t5,
-        t1 = this.$this,
+      var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      t2 = t2._jsWeakMap;
-      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      t4 = t3._as(t2.get(t1)).dashBoardController;
-      A.Expando__checkType(t1);
-      t5 = t3._as(t2.get(t1)).dashBoardController.sessionCurrent;
-      A.Expando__checkType(t1);
-      t4._handleLogoutAction$2(t5, t3._as(t2.get(t1)).dashBoardController.accountId.get$value(0));
+      C.HandleProfileSettingActionTypeClickExtension_handleProfileSettingActionTypeClick(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).dashBoardController, E.ProfileSettingActionType_1, this.context);
     },
     $signature: 382
   };
   C.SettingsFirstLevelView_build_closure1.prototype = {
     call$0() {
-      var t3, t4,
+      var t3, accountDisplayName, t4,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      t4 = t3._as(t2.get(t1)).manageAccountDashboardController.ownEmailAddress.get$value(0);
+      accountDisplayName = t3._as(t2.get(t1)).manageAccountDashboardController.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
+      if (B.JSString_methods.trim$0(accountDisplayName).length === 0) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1)).manageAccountDashboardController.OwnEmailAddressMixin_sessionCurrent;
+        accountDisplayName = t4 == null ? null : A.SessionExtension_getOwnEmailAddressOrUsername(t4);
+        if (accountDisplayName == null)
+          accountDisplayName = "";
+      }
       A.Expando__checkType(t1);
-      return new C.UserInformationWidget(t4, C.SettingsUtils_getPaddingInFirstLevel(this.context, t3._as(t2.get(t1)).responsiveUtils), null);
+      return new C.UserInformationWidget(accountDisplayName, C.SettingsUtils_getPaddingInFirstLevel(this.context, t3._as(t2.get(t1)).responsiveUtils), null);
     },
     $signature: typesOffset + 16
   };
@@ -4292,7 +4314,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId == null)
         return B.SizedBox_0_0_null_null;
       A.Expando__checkType(t1);
-      t4 = t3._as(t2.get(t1)).manageAccountDashboardController.sessionCurrent;
+      t4 = t3._as(t2.get(t1)).manageAccountDashboardController.OwnEmailAddressMixin_sessionCurrent;
       contactSupportCapability = t4 == null ? _null : F.SessionExtensions_getContactSupportCapability(t4, accountId);
       if ((contactSupportCapability == null ? _null : contactSupportCapability.get$isAvailable()) !== true)
         return B.SizedBox_0_0_null_null;
@@ -4323,18 +4345,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.SettingsFirstLevelView_build_closure9.prototype = {
     call$0() {
-      var t3, t4, t5,
-        t1 = this.$this,
+      var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      t2 = t2._jsWeakMap;
-      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      t4 = t3._as(t2.get(t1)).manageAccountDashboardController;
-      A.Expando__checkType(t1);
-      t5 = t3._as(t2.get(t1)).manageAccountDashboardController.sessionCurrent;
-      A.Expando__checkType(t1);
-      t4._handleLogoutAction$2(t5, t3._as(t2.get(t1)).manageAccountDashboardController.accountId.get$value(0));
-      return null;
+      return C.HandleProfileSettingActionTypeClickExtension_handleProfileSettingActionTypeClick(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).manageAccountDashboardController, E.ProfileSettingActionType_1, this.context);
     },
     $signature: 0
   };
@@ -4534,11 +4548,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return t1;
     },
-    $signature: 1947
+    $signature: 1949
   };
   C.NotificationView_build_closure.prototype = {
     call$0() {
-      var t3, t4, t5, t6, _null = null,
+      var t3, t4, t5, t6, t7, _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -4556,21 +4570,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4 = t3._as(t2.get(t1)).get$toggleNotificationSetting();
       A.Expando__checkType(t1);
-      t1 = t3._as(t2.get(t1)).notificationSettingEnabled.get$value(0);
-      t1.toString;
-      t2 = type$.ImagePaths;
-      if (t1) {
-        $.$get$Get();
-        t1 = $.GetInstance__getInstance;
-        (t1 == null ? $.GetInstance__getInstance = B.C_GetInstance : t1).find$1$1$tag(0, _null, t2);
-        t1 = "assets/images/ic_switch_on.svg";
-      } else {
-        $.$get$Get();
-        t1 = $.GetInstance__getInstance;
-        (t1 == null ? $.GetInstance__getInstance = B.C_GetInstance : t1).find$1$1$tag(0, _null, t2);
-        t1 = "assets/images/ic_switch_off.svg";
-      }
-      return A.Row$(A._setArrayType([t6, B.SizedBox_12_null_null_null, A.InkWell$(false, _null, true, new A.Padding(B.EdgeInsets_4_4_4_4, A.SvgPicture$asset(t1, B.Alignment_0_0, _null, B.BoxFit_1, 32, _null, _null, 52), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null, _null, _null, _null, _null)], t5), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+      t7 = t3._as(t2.get(t1)).imagePaths;
+      A.Expando__checkType(t1);
+      return A.Row$(A._setArrayType([t6, B.SizedBox_12_null_null_null, A.InkWell$(false, _null, true, new A.Padding(B.EdgeInsets_4_4_4_4, new C.DefaultSwitchIconWidget(t7, J.$eq$(t3._as(t2.get(t1)).notificationSettingEnabled.get$value(0), true), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null, _null, _null, _null, _null)], t5), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
     $signature: 69
   };
@@ -4601,12 +4603,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       localSettingOption = t3._as(t2.get(t1)).localSettings.get$value(0);
       t2 = settingOption == null;
-      if (t2 && localSettingOption == null)
+      if (t2 && localSettingOption.configs.length === 0)
         return B.SizedBox_0_0_null_null;
       t3 = A._setArrayType([], type$.JSArray_PreferencesOptionType);
       if (!t2)
         B.JSArray_methods.addAll$1(t3, new A.WhereIterable(D.List_IAl, new C.PreferencesView_build__closure(), type$.WhereIterable_PreferencesOptionType));
-      if (localSettingOption != null)
+      if (localSettingOption.configs.length !== 0)
         B.JSArray_methods.addAll$1(t3, new A.WhereIterable(D.List_IAl, new C.PreferencesView_build__closure0(), type$.WhereIterable_PreferencesOptionType));
       return A.Expanded$(A.ListView$separated(_null, new C.PreferencesView_build__closure1(t1, settingOption, localSettingOption, t3), t3.length, _null, B.ScrollViewKeyboardDismissBehavior_0, _null, _null, _null, false, B.Axis_1, new C.PreferencesView_build__closure2(), false), 1);
     },
@@ -4616,27 +4618,26 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(optionType) {
       return !optionType.isLocal;
     },
-    $signature: 727
+    $signature: 729
   };
   C.PreferencesView_build__closure0.prototype = {
     call$1(optionType) {
       return optionType.isLocal;
     },
-    $signature: 727
+    $signature: 729
   };
   C.PreferencesView_build__closure1.prototype = {
     call$2(context, index) {
-      var t3, t4, t5, t6, _this = this,
+      var t3, t4, t5, _this = this,
         t1 = _this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).imagePaths;
-      t5 = _this.localSettingOption.setting;
-      t6 = _this.availableSettingOptions[index];
+      t5 = _this.availableSettingOptions[index];
       A.Expando__checkType(t1);
-      return new C.PreferencesOptionItem(t4, _this.settingOption, t5, t6, t3._as(t2.get(t1)).get$updateStateSettingOption(), null);
+      return new C.PreferencesOptionItem(t4, _this.settingOption, _this.localSettingOption, t5, t3._as(t2.get(t1)).get$updateStateSettingOption(), null);
     },
     $signature: typesOffset + 18
   };
@@ -4999,7 +5000,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     var _mixin = hunkHelpers.mixin,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
-    _inheritMany(A.StatelessWidget, [C.LabelBorderButtonField, C.LabelInputFieldBuilder, C.SwitchLabelButtonWidget, C.TMailDropDownWidget, C.ContactInputTagItem, C.ContactSuggestionBoxItem, C.UserInformationWidget, C.SettingDetailViewBuilder, C.EmailRulesItemWidget, C.EmailRulesHeaderWidget, C.EmailForwardItemWidget, C.ForwardWarningBanner, C.KeepCopyInInboxWidget, C.NumberOfRecipientWidget, C.CreateNewIdentityButtonWidget, C.IdentityListTileBuilder, C.IdentityLoadingWidget, C.ListIdentityItemActionsWidget, C.SignatureBuilder, C.SignatureLoadingWidget, C.LanguageRegionOverlay, C.LanguageItemWidget, C.LabelMailboxVisibilityItemWidget, C.MailboxSubscribeButton, C.MailboxVisibilityFoldersBarWidget, C.SettingAppBar, C.SettingFirstLevelAppBar, C.UniversalSettingAppBar, C.AccountMenuItemTileBuilder, C.SettingFirstLevelTileBuilder, C.PreferencesOptionItem, C.VacationListActionWidget, C.SettingExplanationWidget, C.SettingHeaderWidget]);
+    _inheritMany(A.StatelessWidget, [C.DefaultSwitchIconWidget, C.LabelBorderButtonField, C.LabelInputFieldBuilder, C.SwitchLabelButtonWidget, C.TMailDropDownWidget, C.ContactInputTagItem, C.ContactSuggestionBoxItem, C.UserInformationWidget, C.SettingDetailViewBuilder, C.EmailRulesItemWidget, C.EmailRulesHeaderWidget, C.EmailForwardItemWidget, C.ForwardWarningBanner, C.KeepCopyInInboxWidget, C.NumberOfRecipientWidget, C.CreateNewIdentityButtonWidget, C.IdentityListTileBuilder, C.IdentityLoadingWidget, C.ListIdentityItemActionsWidget, C.SignatureBuilder, C.SignatureLoadingWidget, C.LanguageRegionOverlay, C.LanguageItemWidget, C.LabelMailboxVisibilityItemWidget, C.MailboxSubscribeButton, C.MailboxVisibilityFoldersBarWidget, C.SettingAppBar, C.SettingFirstLevelAppBar, C.UniversalSettingAppBar, C.AccountMenuItemTileBuilder, C.SettingFirstLevelTileBuilder, C.PreferencesOptionItem, C.VacationListActionWidget, C.SettingExplanationWidget, C.SettingHeaderWidget]);
     _inheritMany(A.Closure0Args, [C.LabelBorderButtonField_build_closure, C.ContactInputTagItem_build_closure, C.ContactSuggestionBoxItem_build_closure, C.EmailRulesView_build_closure, C.EmailRulesView__buildLoadingView_closure, C.EmailRulesItemWidget_build_closure, C.EmailRulesItemWidget_build_closure0, C.EmailRulesItemWidget_build_closure1, C.ListEmailRulesWidget_build_closure, C.ListEmailRulesWidget_build_closure0, C.ForwardView_build_closure3, C.ForwardView_build_closure, C.ForwardView_build_closure0, C.ForwardView_build_closure1, C.ForwardView_build_closure2, C.ForwardView__buildLoadingView_closure, C._AutocompleteContactTextFieldWithTagsState_build__closure1, C._AutocompleteContactTextFieldWithTagsState_build_closure0, C._AutocompleteContactTextFieldWithTagsState_build__closure2, C._AutocompleteContactTextFieldWithTagsState_build___closure, C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure0, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure2, C._AutocompleteContactTextFieldWithTagsState__handleAddRecipientAction_closure1, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure0, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure0, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure2, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction__closure, C._AutocompleteContactTextFieldWithTagsState__addEmailAddressToInputFieldAction_closure1, C._AutocompleteContactTextFieldWithTagsState__showWarningDialogWithExternalDomain_closure, C.EmailForwardItemWidget_build_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure, C.EmailForwardItemWidget__buildAvatarIcon_closure0, C.ListEmailForwardsWidget_build_closure, C.ListEmailForwardsWidget__buildTitleHeader_closure, C.ListEmailForwardsWidget__buildDeleteAllButton_closure, C.IdentitiesView_build_closure, C.IdentitiesView_build_closure0, C.IdentitiesView_build_closure1, C.IdentitiesView_build_closure2, C.IdentitiesView_build___closure, C.ListIdentityItemActionsWidget_build_closure, C.ListIdentityItemActionsWidget_build_closure0, C.SignatureBuilder_build_closure, C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure, C._ChangeLanguageButtonWidgetState__buildLanguageMenu__closure0, C._ChangeLanguageButtonWidgetState__buildMobileLanguageMenu_closure, C._ChangeLanguageButtonWidgetState__buildMobileLanguageMenu__closure, C.LanguageItemWidget_build_closure, C.ToggleExpandFoldersExtension_get_toggleExpandFolders_closure, C.MailboxVisibilityView__buildLoadingView_closure, C.MailboxVisibilityView__buildListMailbox_closure, C.MailboxVisibilityView__buildListMailbox_closure0, C.MailboxVisibilityView__buildListMailbox_closure1, C.MailboxVisibilityView_buildFolders_closure, C.MailboxVisibilityView_buildFolders_closure0, C.MailboxVisibilityView__buildMailboxCategory_closure, C.MailboxVisibilityView__buildMailboxCategory_closure0, C.MailboxSubscribeButton_build_closure, C._MailBoxVisibilityFolderTileBuilderState_build_closure, C.ManageAccountDashBoardView_build_closure1, C.ManageAccountDashBoardView_build__closure0, C.ManageAccountDashBoardView_build___closure0, C.ManageAccountDashBoardView_build_closure0, C.ManageAccountDashBoardView_build__closure, C.ManageAccountDashBoardView__viewDisplayedOfAccountMenuItem_closure, C.ManageAccountMenuView_build_closure, C.ManageAccountMenuView_build_closure0, C.ManageAccountMenuView_build___closure, C.ManageAccountMenuView_build_closure1, C.SettingsFirstLevelView_build_closure1, C.SettingsFirstLevelView_build_closure, C.SettingsFirstLevelView_build_closure2, C.SettingsFirstLevelView_build__closure4, C.SettingsFirstLevelView_build_closure3, C.SettingsFirstLevelView_build__closure3, C.SettingsFirstLevelView_build_closure4, C.SettingsFirstLevelView_build__closure2, C.SettingsFirstLevelView_build_closure5, C.SettingsFirstLevelView_build__closure1, C.SettingsFirstLevelView_build_closure0, C.SettingsFirstLevelView_build_closure6, C.SettingsFirstLevelView_build__closure0, C.SettingsFirstLevelView_build_closure7, C.SettingsFirstLevelView_build_closure8, C.SettingsFirstLevelView_build__closure, C.SettingsFirstLevelView_build_closure9, C.SettingsView_build_closure, C.SettingsView_build__closure0, C.SettingsView_build__closure1, C.SettingsView_build_closure0, C.SettingsView_build__closure, C.SettingsView__bodySettingsScreen_closure, C.SettingsView__viewDisplayedOfAccountMenuItem_closure, C.AccountMenuItemTileBuilder_build_closure, C.NotificationView_build_closure, C.PreferencesView_build_closure0, C.PreferencesView_build_closure, C.PreferencesOptionItem_build_closure, C.VacationView_build_closure, C.VacationView_build__closure4, C.VacationView_build_closure0, C.VacationView_build_closure1, C.VacationView_build__closure1, C.VacationView_build___closure, C.VacationView_build_closure2, C.VacationView_build_closure3, C.VacationView_build_closure4, C.VacationView_build_closure6, C.VacationView_build_closure5, C.VacationView__buildVacationMessage_closure, C.VacationView__buildMessageHtmlTextEditor_closure, C.VacationView__buildMessageHtmlTextEditor__closure]);
     _inheritMany(A.Object, [C.RecipientListIsEmptyException, C.RecipientListWithInvalidEmailsException]);
     _inheritMany(A.GetWidget, [C._EmailRulesView_GetWidget_AppLoaderMixin, C.ListEmailRulesWidget, C._ForwardView_GetWidget_AppLoaderMixin, C.ListEmailForwardsWidget, C.IdentitiesView, C.LanguageAndRegionView, C._MailboxVisibilityView_GetWidget_AppLoaderMixin, C.ManageAccountDashBoardView, C.ManageAccountMenuView, C.SettingsFirstLevelView, C.SettingsView, C.NotificationView, C._PreferencesView_GetWidget_AppLoaderMixin, C.VacationView]);
@@ -5018,7 +5019,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixin(C._MailboxVisibilityView_GetWidget_AppLoaderMixin_MailboxWidgetMixin, A.MailboxWidgetMixin);
     _mixin(C._PreferencesView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"LabelBorderButtonField":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LabelInputFieldBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SwitchLabelButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TMailDropDownWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactInputTagItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactSuggestionBoxItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientListIsEmptyException":{"Exception":[]},"RecipientListWithInvalidEmailsException":{"Exception":[]},"SettingDetailViewBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesView":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"EmailRulesItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailRulesWidget":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"ForwardView":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"AutocompleteContactTextFieldWithTags":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AutocompleteContactTextFieldWithTagsState":{"State0":["AutocompleteContactTextFieldWithTags"]},"EmailForwardItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ForwardWarningBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"KeepCopyInInboxWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailForwardsWidget":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"NumberOfRecipientWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentitiesView":{"GetWidget":["IdentitiesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"IdentitiesController"},"CreateNewIdentityButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityListTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityLoadingWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListIdentityItemActionsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SignatureBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SignatureLoadingWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageAndRegionView":{"GetWidget":["LanguageAndRegionController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LanguageAndRegionController"},"ChangeLanguageButtonWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChangeLanguageButtonWidgetState":{"State0":["ChangeLanguageButtonWidget"]},"LanguageRegionOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxVisibilityView":{"GetWidget":["MailboxVisibilityController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxVisibilityController"},"LabelMailboxVisibilityItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxSubscribeButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailBoxVisibilityFolderTileBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_MailBoxVisibilityFolderTileBuilderState":{"State0":["MailBoxVisibilityFolderTileBuilder"]},"MailboxVisibilityFoldersBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ManageAccountDashBoardView":{"GetWidget":["ManageAccountDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountDashBoardController"},"ManageAccountMenuView":{"GetWidget":["ManageAccountMenuController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountMenuController"},"SettingAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingsFirstLevelView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"SettingsView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"UniversalSettingAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AccountMenuItemTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NotificationView":{"GetWidget":["NotificationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"NotificationController"},"PreferencesView":{"GetWidget":["PreferencesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"PreferencesController"},"PreferencesOptionItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationView":{"GetWidget":["VacationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"VacationController"},"VacationListActionWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingExplanationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"DefaultSwitchIconWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LabelBorderButtonField":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LabelInputFieldBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SwitchLabelButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TMailDropDownWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactInputTagItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactSuggestionBoxItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientListIsEmptyException":{"Exception":[]},"RecipientListWithInvalidEmailsException":{"Exception":[]},"SettingDetailViewBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesView":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"EmailRulesItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailRulesHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailRulesWidget":{"GetWidget":["EmailRulesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailRulesController"},"ForwardView":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"AutocompleteContactTextFieldWithTags":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AutocompleteContactTextFieldWithTagsState":{"State0":["AutocompleteContactTextFieldWithTags"]},"EmailForwardItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ForwardWarningBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"KeepCopyInInboxWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListEmailForwardsWidget":{"GetWidget":["ForwardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ForwardController"},"NumberOfRecipientWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentitiesView":{"GetWidget":["IdentitiesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"IdentitiesController"},"CreateNewIdentityButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityListTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IdentityLoadingWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ListIdentityItemActionsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SignatureBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SignatureLoadingWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageAndRegionView":{"GetWidget":["LanguageAndRegionController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LanguageAndRegionController"},"ChangeLanguageButtonWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ChangeLanguageButtonWidgetState":{"State0":["ChangeLanguageButtonWidget"]},"LanguageRegionOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LanguageItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxVisibilityView":{"GetWidget":["MailboxVisibilityController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxVisibilityController"},"LabelMailboxVisibilityItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailboxSubscribeButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailBoxVisibilityFolderTileBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_MailBoxVisibilityFolderTileBuilderState":{"State0":["MailBoxVisibilityFolderTileBuilder"]},"MailboxVisibilityFoldersBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ManageAccountDashBoardView":{"GetWidget":["ManageAccountDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountDashBoardController"},"ManageAccountMenuView":{"GetWidget":["ManageAccountMenuController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ManageAccountMenuController"},"SettingAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingsFirstLevelView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"SettingsView":{"GetWidget":["SettingsController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SettingsController"},"UniversalSettingAppBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AccountMenuItemTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingFirstLevelTileBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NotificationView":{"GetWidget":["NotificationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"NotificationController"},"PreferencesView":{"GetWidget":["PreferencesController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"PreferencesController"},"PreferencesOptionItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationView":{"GetWidget":["VacationController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"VacationController"},"VacationListActionWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingExplanationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SettingHeaderWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var string$ = {
     ______x22: '^(([^<>()[\\]\\\\.,;:\\s@"]+(\\.[^<>()[\\]\\\\.,;:\\s@"]+)*)|(".+"))@localhost$',
     ______x5c: '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$'
@@ -5163,5 +5164,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "JqZGjHFK9d0joKL9AbEEhzMJ1b4=");
+})($__dart_deferred_initializers__, "/QtfJcq6rUJAgxMUzCnd1CYkz2Y=");
 ;
