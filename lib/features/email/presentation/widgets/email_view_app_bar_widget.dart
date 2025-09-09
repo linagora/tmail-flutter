@@ -162,7 +162,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
   );
 
   Widget _getMoveEmailButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
-    key: const Key('email_detailed_move_email_button'),
     icon: _imagePaths.icMoveEmail,
     iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
@@ -177,7 +176,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
   );
 
   Widget _getMarkStarButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
-    key: const Key('email_detailed_star_button'),
     icon: presentationEmail.hasStarred
       ? _imagePaths.icStar
       : _imagePaths.icUnStar,
@@ -200,7 +198,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
   );
 
   Widget _getDeleteButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
-    key: const Key('email_detailed_delete_email_button'),
     icon: _imagePaths.icDeleteComposer,
     iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,

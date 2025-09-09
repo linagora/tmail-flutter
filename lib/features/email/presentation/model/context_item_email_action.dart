@@ -13,8 +13,9 @@ class ContextItemEmailAction
   ContextItemEmailAction(
     super.action,
     this.appLocalizations,
-    this.imagePaths,
-  );
+    this.imagePaths, {
+    super.key,
+  });
 
   @override
   String get actionIcon => action.getIcon(imagePaths);

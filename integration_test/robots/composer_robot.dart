@@ -10,6 +10,7 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
@@ -33,13 +34,6 @@ class ComposerRobot extends CoreRobot {
   }) async {
     final finder = $(RecipientComposerWidget).which<RecipientComposerWidget>(
         (widget) => widget.prefix == prefixEmailAddress);
-    final isTextFieldFocused = finder
-        .which<RecipientComposerWidget>(
-            (view) => view.focusNode?.hasFocus ?? false)
-        .exists;
-    if (!isTextFieldFocused) {
-      await finder.tap();
-    }
     await finder.enterTextWithoutTapAction(email);
 
     await $(RecipientSuggestionItemWidget)
@@ -163,6 +157,10 @@ class ComposerRobot extends CoreRobot {
       fileSize: await file.length(),
       fileName: file.path.split('/').last,
     )));
+    await controller.viewState.stream.firstWhere((state) => state.fold(
+      (failure) => false,
+      (success) => success is DownloadImageAsBase64Success,
+    ));
   }
 
   Future<void> toggleReadReceipt() async {

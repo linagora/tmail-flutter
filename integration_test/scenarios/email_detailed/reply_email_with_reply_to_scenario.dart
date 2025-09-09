@@ -79,12 +79,15 @@ class ReplyEmailWithReplyToScenario extends BaseTestScenario {
   }
 
   Future<void> _expectToFieldContainReplyToEmailAddress() async {
-    expect(
-      $(RecipientComposerWidget).which<RecipientComposerWidget>((widget) =>
-        widget.prefix == PrefixEmailAddress.to &&
-        isMatchingEmailList(widget.listEmailAddress, {'emma-reply-to@example.com'})
-      ).visible,
-      isTrue,
+    await expectViewVisible(
+      $(RecipientComposerWidget).which<RecipientComposerWidget>(
+        (widget) =>
+            widget.prefix == PrefixEmailAddress.to &&
+            isMatchingEmailList(
+              widget.listEmailAddress,
+              {'emma-reply-to@example.com'},
+            ),
+      ),
     );
   }
 }

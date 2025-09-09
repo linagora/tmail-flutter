@@ -18,6 +18,7 @@ class ContextMenuDialogView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: actions.map((menuAction) => ContextMenuDialogItem(
+          key: menuAction.key != null ? Key(menuAction.key!) : null,
           menuAction: menuAction,
           onContextMenuActionClick: onContextMenuActionClick,
         )).toList(),

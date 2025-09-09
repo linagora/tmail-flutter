@@ -2,7 +2,7 @@
 
 # Define users and folders
 users=("alice" "bob" "brian" "charlotte" "david" "emma")
-bobFolders=("Search Emails" "Forward Emails" "Disposition" "MailBase64" "Calendar" "Reply Emails" "Reply Emails")
+bobFolders=("Search Emails" "Forward Emails" "Disposition" "MailBase64" "Calendar" "Reply Emails")
 
 # Add users
 for user in "${users[@]}"; do

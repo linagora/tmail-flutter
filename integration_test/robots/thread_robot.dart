@@ -57,14 +57,14 @@ class ThreadRobot extends CoreRobot {
   }
 
   Future<void> selectAttachmentFilter() async {
-    await $(#filter_email_attachments).tap();
+    await $(#attachments_filter).tap();
   }
 
   Future<void> selectUnreadFilter() async {
-    await $(#filter_email_unread).tap();
+    await $(#unread_filter).tap();
   }
 
   Future<void> selectStarredFilter() async {
-    await $(#filter_email_starred).tap();
+    await $(#starred_filter).tap();
   }
 }

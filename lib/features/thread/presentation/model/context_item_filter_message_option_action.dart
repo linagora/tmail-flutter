@@ -12,8 +12,9 @@ class ContextItemFilterMessageOptionAction
     super.action,
     super.selectedAction,
     this.appLocalizations,
-    this.imagePaths,
-  );
+    this.imagePaths, {
+    super.key,
+  });
 
   @override
   String get actionIcon => action.getContextMenuIcon(imagePaths);

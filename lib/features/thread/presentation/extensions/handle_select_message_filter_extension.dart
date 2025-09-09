@@ -20,6 +20,7 @@ extension HandleSelectMessageFilterExtension on ThreadController {
         selectedOption,
         AppLocalizations.of(context),
         imagePaths,
+        key: '${filter.name}_filter',
       );
     }).toList();
 

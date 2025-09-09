@@ -2,7 +2,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
@@ -71,11 +70,7 @@ class MailboxMenuRobot extends CoreRobot {
   }
 
   Future<void> closeMenu() async {
-    await $(IconButton)
-      .which<IconButton>((widget) {
-        return widget.tooltip == AppLocalizations().close;
-      })
-      .tap();
+    await $.native.swipe(from: const Offset(0.9, 0.5), to: const Offset(0, 0.5));
   }
 
   int getCurrentInboxCount() {

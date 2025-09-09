@@ -42,12 +42,15 @@ class ThreadDetailReplyRealTimeUpdateScenario extends BaseTestScenario {
     await composerRobot.grantContactPermission();
     await composerRobot.addContent(replyContent);
     await composerRobot.sendEmail(imagePaths);
-    await $.waitUntilVisible($(ThreadDetailCollapsedEmail));
-    expect(
-      $(ThreadDetailCollapsedEmail).which<ThreadDetailCollapsedEmail>((widget) {
-        return widget.preview.contains(replyContent);
-      }),
-      findsOneWidget,
-    );
+
+    await _expectNewCollapsedEmail(replyContent);
+  }
+
+  Future<void> _expectNewCollapsedEmail(String replyContent) async {
+    final collapsedEmail = $(ThreadDetailCollapsedEmail)
+        .which<ThreadDetailCollapsedEmail>((widget) {
+      return widget.preview.contains(replyContent);
+    });
+    await expectViewVisible(collapsedEmail);
   }
 }
