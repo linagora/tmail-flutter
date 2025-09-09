@@ -85,3 +85,5 @@ export 'upload/file_info.dart';
 export 'upload/upload_response.dart';
 // Support
 export 'support/contact_support_capability.dart';
+// SaaS
+export 'saas/saas_account_capability.dart';

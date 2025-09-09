@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 extension SessionExtensions on Session {
   static final CapabilityIdentifier linagoraContactSupportCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:jmap:contact:support'));
   static final CapabilityIdentifier linagoraDownloadAllCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:downloadAll'));
+  static final CapabilityIdentifier linagoraSaaSCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:saas'));
 
   static final Map<CapabilityIdentifier, CapabilityProperties Function(Map<String, dynamic>)> customMapCapabilitiesConverter = {
     linagoraContactSupportCapability: ContactSupportCapability.deserialize,
@@ -148,5 +149,19 @@ extension SessionExtensions on Session {
       capabilityServerSettings,
     );
     return settingsCapability?.readOnlyProperties?.contains('language') == true;
+  }
+
+  SaaSAccountCapability? getSaaSAccountCapability(AccountId accountId) {
+    try {
+      final saaSAccountCapability = getCapabilityProperties<SaaSAccountCapability>(
+        accountId,
+        linagoraSaaSCapability,
+      );
+      log('SessionExtensions::getSaaSAccountCapability:saaSAccountCapability = $saaSAccountCapability');
+      return saaSAccountCapability;
+    } catch (e) {
+      logError('SessionExtensions::getSaaSAccountCapability():[Exception] $e');
+      return null;
+    }
   }
 }
