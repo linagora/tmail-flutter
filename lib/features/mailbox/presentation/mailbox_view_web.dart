@@ -51,7 +51,9 @@ class MailboxView extends BaseMailboxView {
                     end: isDesktop ? 0 : 24,
                   ),
                   isDesktop: isDesktop,
-                  onTapAction: () {},
+                  onTapAction: () => controller
+                      .mailboxDashBoardController
+                      .navigateToPaywall(context),
                 );
               } else {
                 return const SizedBox.shrink();

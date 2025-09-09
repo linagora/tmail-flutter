@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-09T13:40:24.145761",
+  "@@last_modified": "2025-09-09T15:28:33.596868",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4693,5 +4693,11 @@
     "placeholders": {
       "count": {}
     }
+  },
+  "paywallUrlNotAvailable": "Paywall url not available",
+  "@paywallUrlNotAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
