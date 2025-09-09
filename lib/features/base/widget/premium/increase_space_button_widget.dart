@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class IncreaseSpaceButtonWidget extends StatelessWidget {
   final ImagePaths imagePaths;
+  final bool isDesktop;
   final VoidCallback onTapAction;
   final EdgeInsetsGeometry? margin;
 
@@ -14,6 +15,7 @@ class IncreaseSpaceButtonWidget extends StatelessWidget {
     super.key,
     required this.imagePaths,
     required this.onTapAction,
+    this.isDesktop = false,
     this.margin,
   });
 
@@ -22,6 +24,7 @@ class IncreaseSpaceButtonWidget extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minWidth: 193),
       height: 44,
+      width: !isDesktop ? double.infinity : null,
       margin: margin,
       child: ConfirmDialogButton(
         label: AppLocalizations.of(context).increaseYourSpace,

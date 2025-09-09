@@ -9,7 +9,7 @@ class QuotasViewStyles {
   static const double space = 8;
   static const double progressBarHeight = 3;
   static const double progressBarMaxWidth = 193;
+  static const double progressBarBorderRadius = 5;
 
-  static const Color progressBarBackgroundColor = AppColor.colorDivider;
-  static const Color topLineColor = AppColor.colorDividerHorizontal;
+  static const Color progressBarBackgroundColor = AppColor.steelGray80;
 }

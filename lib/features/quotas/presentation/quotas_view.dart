@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -31,8 +32,8 @@ class QuotasView extends GetWidget<QuotasController> {
               : const EdgeInsets.symmetric(vertical: 16),
           margin: isDesktop
             ? const EdgeInsetsDirectional.only(start: 16)
-            : const EdgeInsetsDirectional.only(start: 24),
-          width: isDesktop ? 224 : 196,
+            : const EdgeInsetsDirectional.symmetric(horizontal: 24),
+          width: isDesktop ? 224 : double.infinity,
           alignment: AlignmentDirectional.centerStart,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -51,8 +52,11 @@ class QuotasView extends GetWidget<QuotasController> {
                   Expanded(
                     child: Text(
                       AppLocalizations.of(context).storageQuotas,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      style: ThemeUtils.textStyleInter500().copyWith(
                         color: AppColor.steelGray400,
+                        fontSize: 12,
+                        height: 15.76 / 12,
+                        letterSpacing: 0.5,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -75,21 +79,31 @@ class QuotasView extends GetWidget<QuotasController> {
               ),
               const SizedBox(height: QuotasViewStyles.space),
               SizedBox(
-                width: QuotasViewStyles.progressBarMaxWidth,
+                width: isDesktop
+                    ? QuotasViewStyles.progressBarMaxWidth
+                    : double.infinity,
                 child: LinearProgressIndicator(
                   color: octetQuota.getQuotasStateProgressBarColor(),
                   minHeight: QuotasViewStyles.progressBarHeight,
                   backgroundColor: QuotasViewStyles.progressBarBackgroundColor,
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(
+                      QuotasViewStyles.progressBarBorderRadius,
+                    ),
+                  ),
                   value: octetQuota.usedStoragePercent,
                 ),
               ),
               const SizedBox(height: QuotasViewStyles.space),
               Text(
                 octetQuota.getQuotasStateTitle(context),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: ThemeUtils.textStyleInter500().copyWith(
                   color: octetQuota.getQuotasStateTitleColor(),
+                  fontSize: 12,
+                  height: 15.76 / 12,
+                  letterSpacing: 0.5,
                 ),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               )
             ],

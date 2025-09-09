@@ -231,6 +231,7 @@ extension AppColor on Color {
   static const colorContactViewClearFilterButton = Color(0x001C3D0D);
   static const steelGrayA540 = Color(0xFF55687D);
   static const steelGray200 = Color(0xFFAEB7C2);
+  static const steelGray80 = Color(0xFFE7E8EC);
   static const blue700 = Color(0xFF208BFF);
   static const steelGray400 = Color(0xFF818C99);
   static const steelGray600 = Color(0xFF4E5966);
