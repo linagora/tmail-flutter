@@ -32,6 +32,7 @@ extension SessionExtensions on Session {
     tmailContactCapabilityIdentifier: AutocompleteCapability.deserialize,
     linagoraDownloadAllCapability: DownloadAllCapability.deserialize,
     capabilityServerSettings: SettingsCapability.deserialize,
+    linagoraSaaSCapability: SaaSAccountCapability.deserialize,
   };
 
   Map<String, dynamic> toJson() {

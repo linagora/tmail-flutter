@@ -127,6 +127,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_saas_premium_available_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -152,6 +153,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
+import 'package:tmail_ui_user/features/paywall/domain/state/get_paywall_url_state.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
@@ -302,6 +305,7 @@ class MailboxDashBoardController extends ReloadableController
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailSortOrderType currentSortOrder = SearchEmailFilter.defaultSortOrder;
+  PaywallUrlPattern? paywallUrlPattern;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -497,6 +501,8 @@ class MailboxDashBoardController extends ReloadableController
       );
     } else if (success is GetStoredEmailSortOrderSuccess) {
       setUpDefaultEmailSortOrder(success.emailSortOrderType);
+    } else if (success is GetPaywallUrlSuccess) {
+      loadPaywallUrlSuccess(success.paywallUrlPattern);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -830,6 +836,8 @@ class MailboxDashBoardController extends ReloadableController
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
       _storeSessionAction(session);
+    } else {
+      loadPaywallUrl();
     }
   }
 

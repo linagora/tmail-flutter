@@ -22,8 +22,6 @@ import 'package:model/principals/capability_principals.dart';
 import 'package:uri/uri.dart';
 
 extension SessionExtension on Session {
-  static const String saaSCapabilityProperties = 'com:linagora:params:saas';
-
   String getDownloadUrl({String? jmapUrl}) {
     final Uri downloadUrlValid;
     if (jmapUrl != null) {

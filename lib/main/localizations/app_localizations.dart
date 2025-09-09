@@ -4943,4 +4943,11 @@ class AppLocalizations {
       args: [count],
     );
   }
+
+  String get paywallUrlNotAvailable {
+    return Intl.message(
+      'Paywall url not available',
+      name: 'paywallUrlNotAvailable',
+    );
+  }
 }
