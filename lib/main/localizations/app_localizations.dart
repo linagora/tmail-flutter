@@ -4934,4 +4934,11 @@ class AppLocalizations {
       name: 'archiveMessagesFailed',
     );
   }
+
+  String get increaseYourSpace {
+    return Intl.message(
+      'Increase your space',
+      name: 'increaseYourSpace',
+    );
+  }
 }

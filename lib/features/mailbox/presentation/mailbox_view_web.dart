@@ -5,8 +5,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/premium/increase_space_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_saas_premium_available_extension.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -35,6 +37,23 @@ class MailboxView extends BaseMailboxView {
                 : _buildListMailbox(context),
             ),
             const QuotasView(),
+            Obx(() {
+              final isPremiumAvailable =
+                  controller.mailboxDashBoardController.isPremiumAvailable;
+
+              if (isPremiumAvailable) {
+                return IncreaseSpaceButtonWidget(
+                  imagePaths: controller.imagePaths,
+                  margin: const EdgeInsetsDirectional.only(
+                    start: 26,
+                    bottom: 8,
+                  ),
+                  onTapAction: () {},
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
             Container(
               alignment: isDesktop
                 ? AlignmentDirectional.center

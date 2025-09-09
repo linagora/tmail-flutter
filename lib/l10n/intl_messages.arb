@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-08-18T13:21:17.206262",
+  "@@last_modified": "2025-09-09T13:12:15.883838",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4674,6 +4674,12 @@
   },
   "archiveMessagesFailed": "Archive messages failed",
   "@archiveMessagesFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "increaseYourSpace": "Increase your space",
+  "@increaseYourSpace": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
