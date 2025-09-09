@@ -27,10 +27,11 @@ class ComposerUploadAttachmentAndInlineImageScenario extends BaseTestScenario {
     final png = await preparingPngWithName(pngName);
 
     await composerRobot.addAttachment(png);
+    await $.pumpAndSettle();
+    await _expectAttachment(pngName);
+
     await composerRobot.addInline(png);
     await $.pumpAndSettle();
-
-    _expectAttachment(pngName);
     await _expectInline();
 
     await composerRobot.addAttachment(png);
@@ -50,13 +51,11 @@ class ComposerUploadAttachmentAndInlineImageScenario extends BaseTestScenario {
     );
   }
 
-  void _expectAttachment(String pngName) {
-    return expect(
-      $(AttachmentItemComposerWidget)
-        .which<AttachmentItemComposerWidget>(
-         (widget) => widget.fileName.contains(pngName)
-        ),
-      findsOneWidget,
+  Future<void> _expectAttachment(String pngName) async {
+    await expectViewVisible(
+      $(AttachmentItemComposerWidget).which<AttachmentItemComposerWidget>(
+        (widget) => widget.fileName.contains(pngName),
+      ),
     );
   }
 

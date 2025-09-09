@@ -14,7 +14,7 @@ import '../robots/thread_robot.dart';
 
 class ForwardEmailScenario extends BaseTestScenario {
 
-  static const String queryString = 'Fwd: Forward email to Bob';
+  static const String queryString = 'Forward email';
 
   const ForwardEmailScenario(super.$);
 

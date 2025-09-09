@@ -794,12 +794,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copy_email_address": "Copy email address",
-  "@copy_email_address": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "compose_email": "Compose email",
   "@compose_email": {
     "type": "text",

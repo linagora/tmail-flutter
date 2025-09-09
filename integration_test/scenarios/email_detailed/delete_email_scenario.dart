@@ -37,8 +37,9 @@ class DeleteEmailScenario extends BaseTestScenario {
     await threadRobot.openEmailWithSubject(subject);
     await $.pumpAndSettle();
 
+    await emailRobot.tapEmailDetailedMoreButton();
     await emailRobot.tapEmailDetailedDeleteEmailButton();
-    await $.pumpAndSettle(duration: const Duration(seconds: 3));
+    await $.pumpAndSettle(duration: const Duration(seconds: 1));
 
     _expectEmailViewInvisible();
 

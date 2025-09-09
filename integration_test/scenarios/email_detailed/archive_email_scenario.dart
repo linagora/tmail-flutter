@@ -38,10 +38,10 @@ class ArchiveEmailScenario extends BaseTestScenario {
     _expectEmailDetailedMoreButtonVisible();
 
     await emailRobot.tapEmailDetailedMoreButton();
-    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+    await $.pumpAndSettle(duration: const Duration(seconds: 1));
 
     await emailRobot.tapArchiveMessageOptionInContextMenu();
-    await $.pumpAndSettle(duration: const Duration(seconds: 3));
+    await $.pumpAndSettle(duration: const Duration(seconds: 1));
 
     await emailRobot.onTapBackButton();
     await $.pumpAndSettle();

@@ -38,6 +38,7 @@ class MoveEmailToFolderScenario extends BaseTestScenario {
     await threadRobot.openEmailWithSubject(subject);
     await $.pumpAndSettle();
 
+    await emailRobot.tapEmailDetailedMoreButton();
     await emailRobot.tapEmailDetailedMoveEmailButton();
     await $.pumpAndSettle(duration: const Duration(seconds: 2));
 

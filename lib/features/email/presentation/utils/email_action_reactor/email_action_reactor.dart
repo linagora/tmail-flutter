@@ -591,6 +591,7 @@ class EmailActionReactor {
                 action,
                 AppLocalizations.of(currentContext!),
                 imagePaths,
+                key: '${action.name}_action',
               ),
             )
             .toList(),

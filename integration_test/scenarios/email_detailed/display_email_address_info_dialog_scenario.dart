@@ -52,7 +52,7 @@ class DisplayEmailAddressInfoDialogScenario extends BaseTestScenario {
   Future<void> _expectEmailAddressInfoDialogVisible(
     AppLocalizations appLocalizations,
   ) async {
-    await expectViewVisible($(appLocalizations.copy_email_address));
+    await expectViewVisible($(#copy_email_address));
     await expectViewVisible($(appLocalizations.quickCreatingRule));
     await expectViewVisible($(appLocalizations.compose_email));
   }

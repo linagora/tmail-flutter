@@ -1,7 +1,6 @@
-import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -40,47 +39,42 @@ class EmailRobot extends CoreRobot {
   }
 
   Future<void> tapMarkAsUnreadOptionInContextMenu() async {
-    await $(#markAsUnread_action).tap();
+    await $(AppLocalizations().mark_as_unread).tap();
   }
 
   Future<void> tapEmailDetailedStarButton() async {
-    await $(#email_detailed_star_button).tap();
+    await $(AppLocalizations().starred).tap();
+  }
+
+  Future<void> tapEmailDetailedUnstarButton() async {
+    await $(AppLocalizations().not_starred).tap();
   }
 
   Future<void> tapEmailDetailedMoveEmailButton() async {
-    await $(#email_detailed_move_email_button).tap();
+    await $(AppLocalizations().moveMessage).tap();
   }
 
   Future<void> tapEmailDetailedDeleteEmailButton() async {
-    await $(#email_detailed_delete_email_button).tap();
+    await $(AppLocalizations().move_to_trash).tap();
   }
 
   Future<void> tapMarkAsSpamOptionInContextMenu() async {
-    await $(#moveToSpam_action).tap();
+    await $(AppLocalizations().markAsSpam).tap();
   }
 
   Future<void> tapArchiveMessageOptionInContextMenu() async {
-    await $(#archiveMessage_action).tap();
+    await $(AppLocalizations().archiveMessage).tap();
   }
 
   Future<void> tapSenderEmailAddress(String email) async {
-    await $(MaterialTextButton)
-        .which<MaterialTextButton>((widget) => widget.label.contains(email))
-        .first
-        .tap();
+    await $(InformationSenderAndReceiverBuilder).$(email).tap();
   }
 
   Future<void> tapRecipientEmailAddress(String email) async {
-    await $(TMailButtonWidget)
-        .which<TMailButtonWidget>((widget) => widget.text.contains(email))
-        .first
-        .tap();
+    await $(InformationSenderAndReceiverBuilder).$(email).tap();
   }
 
   Future<void> longPressSenderEmailAddress(String email) async {
-    await $(MaterialTextButton)
-        .which<MaterialTextButton>((widget) => widget.label.contains(email))
-        .first
-        .longPress();
+    await $(InformationSenderAndReceiverBuilder).$(email).longPress();
   }
 }

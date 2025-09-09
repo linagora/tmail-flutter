@@ -805,12 +805,6 @@ class AppLocalizations {
         name: 'hide');
   }
 
-  String get copy_email_address {
-    return Intl.message(
-        'Copy email address',
-        name: 'copy_email_address');
-  }
-
   String get compose_email {
     return Intl.message(
         'Compose email',

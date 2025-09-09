@@ -12,7 +12,7 @@ class EmailAddressDialogRobot extends CoreRobot {
   }
 
   Future<void> tapCopyEmailAddressButton(AppLocalizations appLocalizations) async {
-    await $(appLocalizations.copy_email_address).tap();
+    await $(#copy_email_address).tap();
   }
 
   Future<void> tapComposeEmailButton(AppLocalizations appLocalizations) async {

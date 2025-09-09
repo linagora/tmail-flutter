@@ -13,7 +13,6 @@ User-Agent: Twake-Mail/0.13.2 Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15;
  rv:131.0) Gecko/20100101 Firefox/131.0
 Content-Type: multipart/alternative;
  boundary="-=Part.4f.450e1cfbcd355387.192d67ae03d.c367d8042fea24dd=-"
-List-Post: <mailto:emma-reply-to-list@example.com>
 
 ---=Part.4f.450e1cfbcd355387.192d67ae03d.c367d8042fea24dd=-
 Content-Type: text/plain; charset=UTF-8

@@ -1,6 +1,3 @@
-
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -18,7 +15,6 @@ class MarkAsStarEmailScenario extends BaseTestScenario {
     const emailUser = String.fromEnvironment('BASIC_AUTH_EMAIL');
     final threadRobot = ThreadRobot($);
     final emailRobot = EmailRobot($);
-    final imagePaths = ImagePaths();
 
     await provisionEmail(
       [
@@ -34,32 +30,29 @@ class MarkAsStarEmailScenario extends BaseTestScenario {
 
     await threadRobot.openEmailWithSubject(subject);
     await $.pumpAndSettle();
-    _expectEmailDetailedStarButtonVisible();
+    await emailRobot.tapEmailDetailedMoreButton();
+    await _expectEmailDetailedStarButtonVisible();
 
     await emailRobot.tapEmailDetailedStarButton();
-    await $.pumpAndSettle(duration: const Duration(seconds: 2));
-    await _expectDisplayedStarIcon(imagePaths);
+    await $.pumpAndSettle(duration: const Duration(seconds: 1));
+    await emailRobot.tapEmailDetailedMoreButton();
+    await _expectDisplayedUnStarIcon();
 
-    await emailRobot.tapEmailDetailedStarButton();
-    await $.pumpAndSettle(duration: const Duration(seconds: 2));
-    await _expectDisplayedUnStarIcon(imagePaths);
+    await emailRobot.tapEmailDetailedUnstarButton();
+    await $.pumpAndSettle(duration: const Duration(seconds: 1));
+    await emailRobot.tapEmailDetailedMoreButton();
+    await _expectDisplayedStarIcon();
   }
 
-  void _expectEmailDetailedStarButtonVisible() {
-    expect($(#email_detailed_star_button), findsOneWidget);
+  Future<void> _expectEmailDetailedStarButtonVisible() async {
+    await expectViewVisible($(#markAsStarred_action));
   }
 
-  Future<void> _expectDisplayedStarIcon(ImagePaths imagePaths) async {
-    await expectViewVisible(
-      $(#email_detailed_star_button).which<TMailButtonWidget>(
-          (widget) => widget.icon == imagePaths.icStar),
-    );
+  Future<void> _expectDisplayedStarIcon() async {
+    await expectViewVisible($(#markAsStarred_action));
   }
 
-  Future<void> _expectDisplayedUnStarIcon(ImagePaths imagePaths) async {
-    await expectViewVisible(
-      $(#email_detailed_star_button).which<TMailButtonWidget>(
-          (widget) => widget.icon == imagePaths.icUnStar),
-    );
+  Future<void> _expectDisplayedUnStarIcon() async {
+    await expectViewVisible($(#unMarkAsStarred_action));
   }
 }
