@@ -1,16 +1,21 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/preferences_root.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences_option_type.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/update_server_setting_state.dart';
@@ -33,7 +38,10 @@ class PreferencesController extends BaseController {
   final UpdateLocalSettingsInteractor _updateLocalSettingsInteractor;
 
   final settingOption = Rxn<TMailServerSettingOptions>();
-  final localSettings = Rxn<PreferencesRoot>();
+  final localSettings = Rx<PreferencesSetting>(PreferencesSetting.initial());
+
+  AppLifecycleListener? _appLifecycleListener;
+  LoaderStatus _localSettingLoaderStatus = LoaderStatus.idle;
 
   bool get isLoading => viewState.value.fold(
     (failure) => false, 
@@ -45,6 +53,15 @@ class PreferencesController extends BaseController {
   void onInit() {
     super.onInit();
     _getSettingOption();
+
+    _appLifecycleListener ??= AppLifecycleListener(
+      onResume: () {
+        if (_localSettingLoaderStatus == LoaderStatus.loading) {
+          return;
+        }
+        consumeState(_getLocalSettingInteractor.execute());
+      },
+    );
   }
 
   @override
@@ -54,9 +71,12 @@ class PreferencesController extends BaseController {
     } else if (success is UpdateServerSettingSuccess) {
       _updateSettingOptionValue(newSettingOption: success.settingOption);
     } else if (success is GetLocalSettingsSuccess) {
-      _updateLocalSettingOptionValue(success.preferencesRoot);
+      _localSettingLoaderStatus = LoaderStatus.completed;
+      _updateLocalSettingOptionValue(success.preferencesSetting);
     } else if (success is UpdateLocalSettingsSuccess) {
-      _updateLocalSettingOptionValue(success.preferencesRoot);
+      _updateLocalSettingOptionValue(success.preferencesSetting);
+    } else if (success is GettingLocalSettingsState) {
+      _localSettingLoaderStatus = LoaderStatus.loading;
     } else {
       super.handleSuccessViewState(success);
     }
@@ -66,11 +86,19 @@ class PreferencesController extends BaseController {
   void handleFailureViewState(Failure failure) {
     if (failure is GetServerSettingFailure) {
       _updateSettingOptionValue(newSettingOption: null);
+    } else if (failure is GetLocalSettingsFailure) {
+      _localSettingLoaderStatus = LoaderStatus.completed;
     } else if (failure is UpdateServerSettingFailure) {
       _handleUpdateServerSettingFailure();
     } else {
       super.handleFailureViewState(failure);
     }
+  }
+
+  @override
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    super.handleErrorViewState(error, stackTrace);
+    _localSettingLoaderStatus = LoaderStatus.completed;
   }
 
   void _handleUpdateServerSettingFailure() {
@@ -85,8 +113,8 @@ class PreferencesController extends BaseController {
     settingOption.value = newSettingOption;
   }
 
-  void _updateLocalSettingOptionValue(PreferencesRoot preferencesRoot) {
-    localSettings.value = preferencesRoot;
+  void _updateLocalSettingOptionValue(PreferencesSetting preferencesSetting) {
+    localSettings.value = preferencesSetting;
   }
 
   void _getSettingOption() {
@@ -114,24 +142,20 @@ class PreferencesController extends BaseController {
     PreferencesOptionType optionType,
     bool isEnabled,
   ) {
-    PreferencesRoot? preferencesRoot;
+    PreferencesConfig? config;
     switch(optionType) {
       case PreferencesOptionType.thread:
-        preferencesRoot = localSettings.value?.updateThreadDetail(
-          !isEnabled,
-        );
+        config = ThreadDetailConfig(isEnabled: !isEnabled);
         break;
       case PreferencesOptionType.spamReport:
-        preferencesRoot = localSettings.value?.updateSpamReport(
-          isEnabled: !isEnabled,
-        );
+        config = SpamReportConfig(isEnabled: !isEnabled);
         break;
       default:
         break;
     }
 
-    if (preferencesRoot != null) {
-      consumeState(_updateLocalSettingsInteractor.execute(preferencesRoot));
+    if (config != null) {
+      consumeState(_updateLocalSettingsInteractor.execute(config));
     }
   }
 
@@ -170,5 +194,12 @@ class PreferencesController extends BaseController {
         ),
       );
     }
+  }
+
+
+  @override
+  void onClose() {
+    _appLifecycleListener?.dispose();
+    super.onClose();
   }
 }

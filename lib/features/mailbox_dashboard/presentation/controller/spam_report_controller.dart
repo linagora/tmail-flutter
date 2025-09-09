@@ -19,7 +19,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spa
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/spam_report_loader_status.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SpamReportController extends BaseController {
@@ -32,7 +32,7 @@ class SpamReportController extends BaseController {
   final spamReportState = Rx<SpamReportState>(SpamReportState.enabled);
 
   AppLifecycleListener? _appLifecycleListener;
-  SpamReportLoaderStatus _spamReportLoaderStatus = SpamReportLoaderStatus.idle;
+  LoaderStatus _spamReportLoaderStatus = LoaderStatus.idle;
 
   SpamReportController(
     this._storeSpamReportInteractor,
@@ -46,7 +46,7 @@ class SpamReportController extends BaseController {
     super.onInit();
     _appLifecycleListener ??= AppLifecycleListener(
       onResume: () {
-        if (_spamReportLoaderStatus == SpamReportLoaderStatus.loading) {
+        if (_spamReportLoaderStatus == LoaderStatus.loading) {
           return;
         }
         getSpamReportStateAction();
@@ -59,7 +59,7 @@ class SpamReportController extends BaseController {
     if (success is StoreLastTimeDismissedSpamReportSuccess) {
       presentationSpamMailbox.value = null;
     } else if (success is GetSpamReportStateLoading) {
-      _spamReportLoaderStatus = SpamReportLoaderStatus.loading;
+      _spamReportLoaderStatus = LoaderStatus.loading;
     } else if (success is GetSpamReportStateSuccess) {
       _loadSpamReportConfigSuccess(success.spamReportState);
     } else if (success is StoreSpamReportStateSuccess) {
@@ -77,7 +77,7 @@ class SpamReportController extends BaseController {
     if (failure is GetSpamMailboxCachedFailure) {
       presentationSpamMailbox.value = null;
     } else if (failure is GetSpamReportStateFailure) {
-      _spamReportLoaderStatus = SpamReportLoaderStatus.completed;
+      _spamReportLoaderStatus = LoaderStatus.completed;
     } else {
       super.handleFailureViewState(failure);
     }
@@ -86,12 +86,12 @@ class SpamReportController extends BaseController {
   @override
   void handleErrorViewState(Object error, StackTrace stackTrace) {
     super.handleErrorViewState(error, stackTrace);
-    _spamReportLoaderStatus = SpamReportLoaderStatus.completed;
+    _spamReportLoaderStatus = LoaderStatus.completed;
   }
 
   void _loadSpamReportConfigSuccess(SpamReportState newState) {
     spamReportState.value = newState;
-    _spamReportLoaderStatus = SpamReportLoaderStatus.completed;
+    _spamReportLoaderStatus = LoaderStatus.completed;
     getBinding<MailboxDashBoardController>()?.refreshSpamReportBanner();
   }
 

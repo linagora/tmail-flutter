@@ -1,10 +1,10 @@
-import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 
 part 'thread_detail_config.g.dart';
 
 @JsonSerializable()
-class ThreadDetailConfig with EquatableMixin {
+class ThreadDetailConfig extends PreferencesConfig {
   final bool isEnabled;
 
   ThreadDetailConfig({this.isEnabled = false});
@@ -18,6 +18,7 @@ class ThreadDetailConfig with EquatableMixin {
   factory ThreadDetailConfig.fromJson(Map<String, dynamic> json) =>
       _$ThreadDetailConfigFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$ThreadDetailConfigToJson(this);
 
   @override

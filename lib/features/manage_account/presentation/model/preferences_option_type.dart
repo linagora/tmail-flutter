@@ -1,7 +1,7 @@
 
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/preferences_setting.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum PreferencesOptionType {
@@ -63,9 +63,9 @@ enum PreferencesOptionType {
       case PreferencesOptionType.senderPriority:
         return settingOption?.isDisplaySenderPriority ?? false;
       case PreferencesOptionType.thread:
-        return preferencesSetting.threadDetail.isEnabled;
+        return preferencesSetting.threadConfig.isEnabled;
       case PreferencesOptionType.spamReport:
-        return preferencesSetting.spamReport.isEnabled;
+        return preferencesSetting.spamReportConfig.isEnabled;
     }
   }
 }

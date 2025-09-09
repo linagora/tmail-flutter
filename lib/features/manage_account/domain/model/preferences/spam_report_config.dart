@@ -1,11 +1,11 @@
-import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 
 part 'spam_report_config.g.dart';
 
 @JsonSerializable()
-class SpamReportConfig with EquatableMixin {
+class SpamReportConfig extends PreferencesConfig {
   final bool isEnabled;
   final int lastTimeDismissedMilliseconds;
 
@@ -24,6 +24,7 @@ class SpamReportConfig with EquatableMixin {
   factory SpamReportConfig.fromJson(Map<String, dynamic> json) =>
       _$SpamReportConfigFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$SpamReportConfigToJson(this);
 
   @override

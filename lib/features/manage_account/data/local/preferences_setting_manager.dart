@@ -1,55 +1,113 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/preferences_root.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences/spam_report_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 
 class PreferencesSettingManager {
   static const String _preferencesSettingKey = 'PREFERENCES_SETTING';
+  static const String _preferencesSettingThreadKey =
+      '${_preferencesSettingKey}_THREAD';
+  static const String _preferencesSettingSpamReportKey =
+      '${_preferencesSettingKey}_SPAM_REPORT';
 
   const PreferencesSettingManager(this._sharedPreferences);
 
   final SharedPreferences _sharedPreferences;
 
-  Future<PreferencesRoot> loadPreferences() async {
+  Future<PreferencesSetting> loadPreferences() async {
     await _sharedPreferences.reload();
 
-    final jsonString = _sharedPreferences.getString(_preferencesSettingKey);
+    final keys = _sharedPreferences.getKeys();
+    final preferencesKeys =
+        keys.where((key) => key.startsWith(_preferencesSettingKey)).toList();
 
-    if (jsonString != null) {
-      return PreferencesRoot.fromJson(jsonDecode(jsonString));
+    final listConfigs = preferencesKeys.map((key) {
+      final jsonString = _sharedPreferences.getString(key);
+      if (jsonString != null) {
+        final jsonDecoded = jsonDecode(jsonString);
+
+        switch (key) {
+          case _preferencesSettingThreadKey:
+            return ThreadDetailConfig.fromJson(jsonDecoded);
+          case _preferencesSettingSpamReportKey:
+            return SpamReportConfig.fromJson(jsonDecoded);
+          default:
+            return DefaultPreferencesConfig.fromJson(jsonDecoded);
+        }
+      }
+      return EmptyPreferencesConfig();
+    }).toList();
+
+    if (listConfigs.isEmpty) {
+      return PreferencesSetting.initial();
     }
 
-    return PreferencesRoot.initial();
+    return PreferencesSetting(listConfigs);
   }
 
-  Future<void> savePreferences(PreferencesRoot root) async {
-    await _sharedPreferences.setString(
-      _preferencesSettingKey,
-      jsonEncode(root.toJson()),
-    );
+  Future<void> savePreferences(PreferencesConfig config) async {
+    if (config is ThreadDetailConfig) {
+      await _sharedPreferences.setString(
+        _preferencesSettingThreadKey,
+        jsonEncode(config.toJson()),
+      );
+    } else if (config is SpamReportConfig) {
+      await _sharedPreferences.setString(
+        _preferencesSettingSpamReportKey,
+        jsonEncode(config.toJson()),
+      );
+    } else {
+      await _sharedPreferences.setString(
+        _preferencesSettingKey,
+        jsonEncode(config.toJson()),
+      );
+    }
   }
 
-  Future<void> updateThread(bool enabled) async {
-    final current = await loadPreferences();
-    final updated = current.updateThreadDetail(enabled);
-    await savePreferences(updated);
+  Future<void> updateThread(bool isEnabled) async {
+    final currentConfig = await getThreadConfig();
+    final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
+    await savePreferences(updatedConfig);
   }
 
   Future<void> updateSpamReport({
     bool? isEnabled,
     int? lastTimeDismissedMilliseconds,
   }) async {
-    final current = await loadPreferences();
-    final updated = current.updateSpamReport(
+    final currentConfig = await getSpamReportConfig();
+    final updatedConfig = currentConfig.copyWith(
       isEnabled: isEnabled,
       lastTimeDismissedMilliseconds: lastTimeDismissedMilliseconds,
     );
-    await savePreferences(updated);
+    await savePreferences(updatedConfig);
   }
 
   Future<SpamReportConfig> getSpamReportConfig() async {
-    final preferences = await loadPreferences();
-    return preferences.setting.spamReport;
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingSpamReportKey,
+    );
+
+    return jsonString == null
+        ? SpamReportConfig.initial()
+        : SpamReportConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<ThreadDetailConfig> getThreadConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingThreadKey,
+    );
+
+    return jsonString == null
+        ? ThreadDetailConfig.initial()
+        : ThreadDetailConfig.fromJson(jsonDecode(jsonString));
   }
 }
