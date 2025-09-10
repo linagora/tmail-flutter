@@ -7,12 +7,14 @@ class DefaultButtonArrowDownFieldWidget extends StatelessWidget {
   final String text;
   final String iconArrowDown;
   final VoidCallback onTap;
+  final Widget? icon;
 
   const DefaultButtonArrowDownFieldWidget({
     super.key,
     required this.text,
     required this.iconArrowDown,
     required this.onTap,
+    this.icon,
   });
 
   @override
@@ -35,6 +37,7 @@ class DefaultButtonArrowDownFieldWidget extends StatelessWidget {
           padding: const EdgeInsetsDirectional.only(start: 12, end: 8),
           child: Row(
             children: [
+              if (icon != null) icon!,
               Expanded(
                 child: Text(
                   text,
