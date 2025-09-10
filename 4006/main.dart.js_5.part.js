@@ -5127,17 +5127,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return false;
       return A.CapabilityIdentifierExtension_isSupported($.$get$capabilityDeletedMessagesVault(), session, accountId);
     },
-    ValidateSaasPremiumAvailableExtension_validatePremiumIsAvailable(_this) {
+    HandlePaywallExtension_validatePremiumIsAvailable(_this) {
       var t1 = _this.accountId;
       if (t1.get$value(0) == null || _this.OwnEmailAddressMixin_sessionCurrent == null)
         return false;
       return _this.isPremiumAvailable$2$accountId$session(t1.get$value(0), _this.OwnEmailAddressMixin_sessionCurrent);
     },
-    ValidateSaasPremiumAvailableExtension_navigateToPaywall(_this, context) {
+    HandlePaywallExtension_navigateToPaywall(_this, context) {
       var t2, t3, mailAddress, t4,
         t1 = _this.paywallUrlPattern;
       if (t1 == null) {
-        A.ValidateSaasPremiumAvailableExtension__showMessagePaywallUrlNotAvailable(_this, context);
+        A.HandlePaywallExtension__showMessagePaywallUrlNotAvailable(_this, context);
         return;
       }
       t2 = _this.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
@@ -15290,7 +15290,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      isPremiumAvailable = B.ValidateSaasPremiumAvailableExtension_validatePremiumIsAvailable(t3._as(t2.get(t1)).mailboxDashBoardController);
+      isPremiumAvailable = B.HandlePaywallExtension_validatePremiumIsAvailable(t3._as(t2.get(t1)).mailboxDashBoardController);
       A.Expando__checkType(t1);
       t3._as(t2.get(t1)).toString;
       t4 = this.context;
@@ -15311,7 +15311,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      return B.ValidateSaasPremiumAvailableExtension_navigateToPaywall(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).mailboxDashBoardController, this.context);
+      return B.HandlePaywallExtension_navigateToPaywall(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).mailboxDashBoardController, this.context);
     },
     $signature: 0
   };
@@ -20190,5 +20190,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ij9MLtIYNlqPg5DRnDE+/rLL/U4=");
+})($__dart_deferred_initializers__, "GwuQsXzR7z849taW7vZ1glIXAFY=");
 ;
