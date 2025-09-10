@@ -4574,9 +4574,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1;
       _this.currentMobilePageViewIndex.set$value(0, index);
       t1 = _this.pageController;
-      if (t1 != null)
-        t1.dispose$0();
-      _this.pageController = A.PageController$(index);
+      (t1 == null ? _this.pageController = A.PageController$(index) : t1).jumpToPage$1(index);
     },
     ThreadDetailNextPreviousActions__goToPageWithEmail(_this, presentationEmail) {
       var t1, t2;
@@ -5124,22 +5122,30 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return false;
       }
     },
-    SessionExtensions_getSaaSAccountCapability(_this, accountId) {
-      var saaSAccountCapability, e, exception;
-      try {
-        saaSAccountCapability = A.SessionExtension_getCapabilityProperties(_this, accountId, $.$get$SessionExtensions_linagoraSaaSCapability(), type$.SaaSAccountCapability);
-        A.log("SessionExtensions::getSaaSAccountCapability:saaSAccountCapability = " + A.S(saaSAccountCapability), C.Level_3);
-        return saaSAccountCapability;
-      } catch (exception) {
-        e = A.unwrapException(exception);
-        A.log("SessionExtensions::getSaaSAccountCapability():[Exception] " + A.S(e), C.Level_1);
-        return null;
-      }
-    },
     MailboxUtils_isDeletedMessageVaultSupported(session, accountId) {
       if (session == null || accountId == null)
         return false;
       return A.CapabilityIdentifierExtension_isSupported($.$get$capabilityDeletedMessagesVault(), session, accountId);
+    },
+    ValidateSaasPremiumAvailableExtension_validatePremiumIsAvailable(_this) {
+      var t1 = _this.accountId;
+      if (t1.get$value(0) == null || _this.OwnEmailAddressMixin_sessionCurrent == null)
+        return false;
+      return _this.isPremiumAvailable$2$accountId$session(t1.get$value(0), _this.OwnEmailAddressMixin_sessionCurrent);
+    },
+    ValidateSaasPremiumAvailableExtension_navigateToPaywall(_this, context) {
+      var mailAddress, t2, t3, _null = null,
+        t1 = _this.paywallUrlPattern;
+      if (t1 == null) {
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        _this.appToast.showToastErrorMessage$2(context, A.Intl__message("Paywall url not available", _null, "paywallUrlNotAvailable", _null, _null));
+        return;
+      }
+      mailAddress = t1._getMailAddress$1$ownerEmail(_this.OwnEmailAddressMixin_ownEmailAddress.get$value(0));
+      t1 = t1.pattern;
+      t2 = mailAddress == null;
+      t3 = t2 ? _null : mailAddress.localPart;
+      A.AppUtils_launchLink(A.PaywallUtils_buildPaywallUrlFromTemplate(t2 ? _null : mailAddress.domain.domainName, t3, t1));
     },
     HandleProfileSettingActionTypeClickExtension_handleProfileSettingActionTypeClick0(_this, actionType, context) {
       var t1;
@@ -5156,36 +5162,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           _this.goToSettings$0();
           break;
       }
-    },
-    ValidateSaasPremiumAvailableExtension_get_isPremiumAvailable(_this) {
-      var t2, saasAccount,
-        t1 = _this.accountId;
-      if (t1.get$value(0) == null || _this.OwnEmailAddressMixin_sessionCurrent == null)
-        return false;
-      t2 = _this.OwnEmailAddressMixin_sessionCurrent;
-      if (t2 == null)
-        saasAccount = null;
-      else {
-        t1 = t1.get$value(0);
-        t1.toString;
-        saasAccount = B.SessionExtensions_getSaaSAccountCapability(t2, t1);
-      }
-      t1 = saasAccount == null ? null : saasAccount.canUpgrade;
-      return t1 === true;
-    },
-    ValidateSaasPremiumAvailableExtension_navigateToPaywall(_this, context) {
-      var mailAddress, t2, t3, _null = null,
-        t1 = _this.paywallUrlPattern;
-      if (t1 == null) {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        _this.appToast.showToastErrorMessage$2(context, A.Intl__message("Paywall url not available", _null, "paywallUrlNotAvailable", _null, _null));
-        return;
-      }
-      mailAddress = t1._getMailAddress$1$ownerEmail(_this.OwnEmailAddressMixin_ownEmailAddress.get$value(0));
-      t1 = t1.pattern;
-      t2 = mailAddress == null;
-      t3 = t2 ? _null : mailAddress.localPart;
-      A.AppUtils_launchLink(A.PaywallUtils_buildPaywallUrlFromTemplate(t2 ? _null : mailAddress.domain.domainName, t3, t1));
     },
     FilterMessageButtonStyle_getButtonPadding(isSelected) {
       if (isSelected)
@@ -15297,7 +15273,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      isPremiumAvailable = B.ValidateSaasPremiumAvailableExtension_get_isPremiumAvailable(t3._as(t2.get(t1)).mailboxDashBoardController);
+      isPremiumAvailable = B.ValidateSaasPremiumAvailableExtension_validatePremiumIsAvailable(t3._as(t2.get(t1)).mailboxDashBoardController);
       A.Expando__checkType(t1);
       t3._as(t2.get(t1)).toString;
       t4 = this.context;
@@ -19828,7 +19804,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ResponsiveUtils: findType("ResponsiveUtils0"),
       RestorableProperty_nullable_Object: findType("RestorableProperty<Object?>"),
       Right_Failure_Success: findType("Right<Failure,Success>"),
-      SaaSAccountCapability: findType("SaaSAccountCapability"),
       SearchController: findType("SearchController"),
       SingleEmailController: findType("SingleEmailController"),
       SliverConstraints: findType("SliverConstraints"),
@@ -20198,5 +20173,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "5ZugoUKZbL3csAGlu/JvDanCoEI=");
+})($__dart_deferred_initializers__, "t+mneg961rGv4nks9aNyi2MRNyQ=");
 ;
