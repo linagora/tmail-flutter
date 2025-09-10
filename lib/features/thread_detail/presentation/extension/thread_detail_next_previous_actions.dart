@@ -40,8 +40,8 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
 
   void _preparePageWithIndex(int index) {
     currentMobilePageViewIndex.value = index;
-    pageController?.dispose();
-    pageController = PageController(initialPage: index);
+    pageController ??= PageController(initialPage: index);
+    pageController?.jumpToPage(index);
   }
 
   void _goToPageWithEmail(PresentationEmail? presentationEmail) {
