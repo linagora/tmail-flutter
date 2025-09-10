@@ -309,6 +309,7 @@ class MailboxDashBoardController extends ReloadableController
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailSortOrderType currentSortOrder = SearchEmailFilter.defaultSortOrder;
   PaywallUrlPattern? paywallUrlPattern;
+  bool isRetryGetPaywallUrl = false;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -551,6 +552,8 @@ class MailboxDashBoardController extends ReloadableController
       tryGetAuthenticatedAccountToUseApp();
     } else if (isGetTokenOIDCFailure(failure)) {
       backToHomeScreen();
+    } else if (failure is GetPaywallUrlFailure) {
+      loadPaywallUrlFailure();
     } else {
       super.handleFailureViewState(failure);
     }
