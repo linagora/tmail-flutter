@@ -264,4 +264,20 @@ abstract class RouteUtils {
   static String generateMailtoLink(String mailAddress) {
     return '$baseOriginUrl/$mailtoPrefix/?uri=$mailtoPrefix:$mailAddress';
   }
+
+  static String? getRootDomain({String? hostname}) {
+    final host = hostname ?? html.window.location.hostname;
+
+    if (host == null || host.isEmpty) {
+      return null;
+    }
+
+    final parts = host.split('.');
+
+    if (parts.length >= 2) {
+      return '${parts[parts.length - 2]}.${parts.last}';
+    }
+
+    return host;
+  }
 }
