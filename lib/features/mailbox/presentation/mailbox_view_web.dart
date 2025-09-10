@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/features/base/widget/application_version_widget.da
 import 'package:tmail_ui_user/features/base/widget/premium/increase_space_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_saas_premium_available_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_paywall_extension.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -38,8 +38,9 @@ class MailboxView extends BaseMailboxView {
             ),
             const QuotasView(),
             Obx(() {
-              final isPremiumAvailable =
-                  controller.mailboxDashBoardController.isPremiumAvailable;
+              final isPremiumAvailable = controller
+                .mailboxDashBoardController
+                .validatePremiumIsAvailable();
               final isDesktop = controller.responsiveUtils.isDesktop(context);
 
               if (isPremiumAvailable) {

@@ -127,7 +127,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_saas_premium_available_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_paywall_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -155,6 +155,7 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
 import 'package:tmail_ui_user/features/paywall/domain/state/get_paywall_url_state.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/saas_premium_mixin.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
@@ -206,7 +207,9 @@ import 'package:server_settings/server_settings/tmail_server_settings_extension.
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
-    with ContactSupportMixin, OwnEmailAddressMixin {
+    with ContactSupportMixin,
+        OwnEmailAddressMixin,
+        SaaSPremiumMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
