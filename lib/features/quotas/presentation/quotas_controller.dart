@@ -1,10 +1,13 @@
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_saas_premium_available_extension.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/list_quotas_extensions.dart';
 import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
@@ -17,6 +20,7 @@ class QuotasController extends BaseController {
   final GetQuotasInteractor _getQuotasInteractor;
 
   final octetsQuota = Rxn<Quota>();
+  final isBannerEnabled = RxBool(false);
 
   late Worker accountIdListener;
 
@@ -28,6 +32,7 @@ class QuotasController extends BaseController {
 
   void _handleGetQuotasSuccess(GetQuotasSuccess success) {
     octetsQuota.value = success.quotas.octetsQuota;
+    isBannerEnabled.value = true;
   }
 
   void _initWorker() {
@@ -62,9 +67,32 @@ class QuotasController extends BaseController {
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is GetQuotasSuccess) {
       _handleGetQuotasSuccess(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    if (failure is GetQuotasFailure) {
+      isBannerEnabled.value = true;
+    } else {
+      super.handleFailureViewState(failure);
+    }
+  }
+
+  bool get isManageMyStorageIsEnabled {
+    return mailboxDashBoardController.isPremiumAvailable &&
+        !mailboxDashBoardController.isAlreadyHighestSubscription;
+  }
+
+  void handleManageMyStorage(BuildContext context) {
+    mailboxDashBoardController.navigateToPaywall(context);
+  }
+
+  void closeBanner() {
+    isBannerEnabled.value = false;
   }
 }

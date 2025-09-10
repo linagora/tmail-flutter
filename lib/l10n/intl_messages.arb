@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-09T15:28:33.596868",
+  "@@last_modified": "2025-09-10T11:45:56.814190",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3176,24 +3176,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaWarningBannerTitle": "You are running out of storage (90%).",
-  "@quotaWarningBannerTitle": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "quotaWarningBannerMessage": "Soon you won't be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.",
-  "@quotaWarningBannerMessage": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "quotaErrorBannerMessage": "Soon you won't be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.",
-  "@quotaErrorBannerMessage": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "createFolderSuccessfullyMessage": "You successfully created {folderName} folder",
   "@createFolderSuccessfullyMessage": {
     "type": "text",
@@ -4690,6 +4672,30 @@
   },
   "paywallUrlNotAvailable": "Paywall url not available",
   "@paywallUrlNotAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaBannerWarningTitle": "You are running low on storage (90%)",
+  "@quotaBannerWarningTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaBannerWarningSubtitleWithPremium": "To keep sending messages and enjoying all Twake Mail features, please consider cleaning up or upgrading your storage.",
+  "@quotaBannerWarningSubtitleWithPremium": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaBannerWarningSubtitleWithoutPremium": "To keep sending messages and enjoying all Twake Mail features, please consider cleaning up.",
+  "@quotaBannerWarningSubtitleWithoutPremium": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageMyStorage": "Manage my storage",
+  "@manageMyStorage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
