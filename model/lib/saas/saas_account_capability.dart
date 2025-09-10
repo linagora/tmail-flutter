@@ -21,6 +21,8 @@ class SaaSAccountCapability extends CapabilityProperties {
 
   bool get isPremiumAvailable => canUpgrade;
 
+  bool get isAlreadyHighestSubscription => isPaying && !canUpgrade;
+
   @override
   List<Object?> get props => [isPaying, canUpgrade];
 }

@@ -240,6 +240,7 @@ class ImagePaths {
   String get animLottieTmail => _getAnimationPath('lottie-tmail.json');
   String get icExpandArrows => _getImagePath('ic_expand_arrows.svg');
   String get icPremium => _getImagePath('ic_premium.svg');
+  String get icCloud => _getImagePath('ic_cloud.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
