@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.
 import 'package:tmail_ui_user/features/paywall/domain/usecases/get_paywall_url_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 extension ValidateSaasPremiumAvailableExtension on MailboxDashBoardController {
@@ -43,6 +44,7 @@ extension ValidateSaasPremiumAvailableExtension on MailboxDashBoardController {
 
     final qualifiedPaywall = paywallUrlPattern!.getQualifiedUrl(
       ownerEmail: ownEmailAddress.value,
+      domainName: RouteUtils.getRootDomain(),
     );
 
     AppUtils.launchLink(qualifiedPaywall);

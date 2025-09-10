@@ -14,7 +14,7 @@ class PaywallUrlPattern with EquatableMixin {
     return PaywallUtils.buildPaywallUrlFromTemplate(
       template: pattern,
       localPart: mailAddress?.localPart,
-      domainName: mailAddress?.domain.domainName,
+      domainName: domainName ?? mailAddress?.domain.domainName,
     );
   }
 
