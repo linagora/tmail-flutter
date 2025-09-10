@@ -5134,18 +5134,23 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return _this.isPremiumAvailable$2$accountId$session(t1.get$value(0), _this.OwnEmailAddressMixin_sessionCurrent);
     },
     ValidateSaasPremiumAvailableExtension_navigateToPaywall(_this, context) {
-      var mailAddress, t2, t3, _null = null,
+      var t2, t3, mailAddress, t4,
         t1 = _this.paywallUrlPattern;
       if (t1 == null) {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        _this.appToast.showToastErrorMessage$2(context, A.Intl__message("Paywall url not available", _null, "paywallUrlNotAvailable", _null, _null));
+        A.ValidateSaasPremiumAvailableExtension__showMessagePaywallUrlNotAvailable(_this, context);
         return;
       }
-      mailAddress = t1._getMailAddress$1$ownerEmail(_this.OwnEmailAddressMixin_ownEmailAddress.get$value(0));
+      t2 = _this.OwnEmailAddressMixin_ownEmailAddress.get$value(0);
+      t3 = B.RouteUtils_getRootDomain();
+      mailAddress = t1._getMailAddress$1$ownerEmail(t2);
       t1 = t1.pattern;
       t2 = mailAddress == null;
-      t3 = t2 ? _null : mailAddress.localPart;
-      A.AppUtils_launchLink(A.PaywallUtils_buildPaywallUrlFromTemplate(t2 ? _null : mailAddress.domain.domainName, t3, t1));
+      t4 = t2 ? null : mailAddress.localPart;
+      if (t3 == null)
+        t2 = t2 ? null : mailAddress.domain.domainName;
+      else
+        t2 = t3;
+      A.AppUtils_launchLink(A.PaywallUtils_buildPaywallUrlFromTemplate(t2, t4, t1));
     },
     HandleProfileSettingActionTypeClickExtension_handleProfileSettingActionTypeClick0(_this, actionType, context) {
       var t1;
@@ -5579,6 +5584,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return C.JSArray_methods.sublist$2(emailIds, 0, Math.min(emailIds.length, 20));
       t1 = emailIds.length;
       return C.JSArray_methods.sublist$2(emailIds, t1 - Math.min(20, t1), t1);
+    },
+    RouteUtils_getRootDomain() {
+      var parts,
+        t1 = window.location,
+        host = t1.hostname;
+      if (host == null || host.length === 0)
+        return null;
+      parts = A._setArrayType(host.split("."), type$.JSArray_String);
+      t1 = parts.length;
+      if (t1 >= 2)
+        return parts[t1 - 2] + "." + A.S(C.JSArray_methods.get$last(parts));
+      return host;
     }
   },
   D, F, E, G, K;
@@ -20173,5 +20190,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "t+mneg961rGv4nks9aNyi2MRNyQ=");
+})($__dart_deferred_initializers__, "ij9MLtIYNlqPg5DRnDE+/rLL/U4=");
 ;
