@@ -1,121 +1,131 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/styles/rule_filter_action_styles.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_row_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_row_mobile_builder.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
 
 class RuleFilterActionWidget extends StatelessWidget {
-  final ResponsiveUtils responsiveUtils;
-  final Function()? tapRemoveCallback;
-  final ImagePaths? imagePaths;
+  final ImagePaths imagePaths;
+  final bool isMobile;
+  final OnDeleteRuleConditionAction onDeleteRuleConditionAction;
   final EmailRuleFilterAction? actionSelected;
-  final Function(EmailRuleFilterAction?)? onActionChanged;
-  final Function()? onActionChangeMobile;
   final PresentationMailbox? mailboxSelected;
   final String? errorValue;
-  final Function()? tapActionDetailedCallback;
+  final VoidCallback? onTapActionDetailedCallback;
   final TextEditingController? forwardEmailEditingController;
   final FocusNode? forwardEmailFocusNode;
-  final OnChangeFilterInputAction? onChangeForwardEmail;
+  final OnTextChange? onChangeForwardEmail;
+  final OnActionChanged? onActionChanged;
+  final VoidCallback? onActionChangeMobile;
 
   const RuleFilterActionWidget({
     Key? key,
-    required this.responsiveUtils,
-    this.tapRemoveCallback,
-    this.imagePaths,
+    required this.imagePaths,
+    required this.isMobile,
+    required this.onDeleteRuleConditionAction,
     this.actionSelected,
-    this.onActionChanged,
     this.mailboxSelected,
     this.errorValue,
-    this.tapActionDetailedCallback,
     this.forwardEmailEditingController,
     this.forwardEmailFocusNode,
     this.onChangeForwardEmail,
     this.onActionChangeMobile,
+    this.onTapActionDetailedCallback,
+    this.onActionChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Slidable(
-      enabled: responsiveUtils.isMobile(context) ? true : false,
-      endActionPane: ActionPane(
-        extentRatio: RuleFilterActionStyles.extentRatio,
-        motion: const BehindMotion(),
-        children: [
-          CustomSlidableAction(
-            padding: const EdgeInsets.only(right: RuleFilterActionStyles.mainPadding),
-            borderRadius: const BorderRadius.only(
-              topRight: Radius.circular(RuleFilterActionStyles.mainBorderRadius),
-              bottomRight: Radius.circular(RuleFilterActionStyles.mainBorderRadius),
-            ),
-            onPressed: (_) => tapRemoveCallback!(),
-            backgroundColor: AppColor.colorBackgroundFieldConditionRulesFilter,
-            child: CircleAvatar(
-              backgroundColor: AppColor.colorRemoveRuleFilterConditionButton,
-              radius: RuleFilterActionStyles.removeButtonRadius,
-              child: SvgPicture.asset(
-                imagePaths!.icMinimize,
-                fit: BoxFit.fill,
-                colorFilter: AppColor.colorDeletePermanentlyButton.asFilter(),
-              ),
-            ),
-          )
-        ],
-      ),
-      child: Builder(
-        builder: (context) {
-          SlidableController? slideController = Slidable.of(context);
-          return ValueListenableBuilder<int>(
-            valueListenable: slideController?.direction ?? ValueNotifier<int>(0),
-            builder: (context, value, _) {
-              var borderRadius = value != -1 
-                ? BorderRadius.circular(RuleFilterActionStyles.mainBorderRadius)
-                : const BorderRadius.only(
-                    bottomLeft: Radius.circular(RuleFilterActionStyles.mainBorderRadius),
-                    topLeft: Radius.circular(RuleFilterActionStyles.mainBorderRadius),  
-                  );
-              return Container(
-                padding: const EdgeInsets.all(RuleFilterActionStyles.mainPadding),
-                decoration: BoxDecoration(
-                  color: AppColor.colorBackgroundFieldConditionRulesFilter,
-                  borderRadius: borderRadius,
+    if (!isMobile) {
+      return Container(
+        padding: const EdgeInsetsDirectional.only(start: 12),
+        margin: const EdgeInsetsDirectional.only(top: 8),
+        decoration: const BoxDecoration(
+          color: AppColor.lightGrayF9FAFB,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        height: 72,
+        alignment: Alignment.center,
+        child: RuleFilterActionRow(
+          actionList: EmailRuleFilterAction.values
+              .where((action) => action.isSupported)
+              .toList(),
+          actionSelected: actionSelected,
+          onActionChanged: onActionChanged,
+          mailboxSelected: mailboxSelected,
+          errorValue: errorValue,
+          imagePaths: imagePaths,
+          onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+          forwardEmailEditingController: forwardEmailEditingController,
+          forwardEmailFocusNode: forwardEmailFocusNode,
+          onChangeForwardEmail: onChangeForwardEmail,
+          onTapActionDetailedCallback: onTapActionDetailedCallback,
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(top: 8),
+        child: Slidable(
+          endActionPane: ActionPane(
+            extentRatio: 0.15,
+            motion: const BehindMotion(),
+            children: [
+              CustomSlidableAction(
+                padding: const EdgeInsets.only(right: 12),
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
                 ),
-                child: responsiveUtils.isMobile(context)
-                  ? RuleFilterActionRowMobile(
-                      actionSelected: actionSelected,
-                      mailboxSelected: mailboxSelected,
-                      errorValue: errorValue,
-                      tapActionDetailedCallback: tapActionDetailedCallback,
-                      forwardEmailEditingController: forwardEmailEditingController,
-                      forwardEmailFocusNode: forwardEmailFocusNode,
-                      onChangeForwardEmail: onChangeForwardEmail,
-                      tapActionCallback: onActionChangeMobile,
-                    )
-                  : RuleFilterActionRow(
-                      actionList: EmailRuleFilterAction.values,
-                      actionSelected: actionSelected,
-                      onActionChanged: onActionChanged,
-                      mailboxSelected: mailboxSelected,
-                      errorValue: errorValue,
-                      tapActionDetailedCallback: tapActionDetailedCallback,
+                onPressed: (_) => onDeleteRuleConditionAction(),
+                backgroundColor: AppColor.lightGrayF9FAFB,
+                child: RuleFilterDeleteButtonWidget(
+                  imagePaths: imagePaths,
+                  onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+                ),
+              )
+            ],
+          ),
+          child: Builder(
+            builder: (context) {
+              SlidableController? slideController = Slidable.of(context);
+              return ValueListenableBuilder<int>(
+                valueListenable: slideController?.direction ?? ValueNotifier<int>(0),
+                builder: (context, value, _) {
+                  return Container(
+                    padding: const EdgeInsetsDirectional.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColor.lightGrayF9FAFB,
+                      borderRadius: value != -1
+                          ? BorderRadius.circular(10)
+                          : const BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              topLeft: Radius.circular(10),
+                            ),
+                    ),
+                    alignment: Alignment.center,
+                    child: RuleFilterActionRowMobile(
                       imagePaths: imagePaths,
-                      tapRemoveActionCallback: tapRemoveCallback,
+                      actionSelected: actionSelected,
+                      mailboxSelected: mailboxSelected,
+                      errorValue: errorValue,
                       forwardEmailEditingController: forwardEmailEditingController,
                       forwardEmailFocusNode: forwardEmailFocusNode,
                       onChangeForwardEmail: onChangeForwardEmail,
-                    )
+                      onTapActionCallback: onActionChangeMobile,
+                      onTapActionDetailedCallback: onTapActionDetailedCallback,
+                    ),
+                  );
+                },
               );
             },
-          );
-        }
-      ),
-    );
+          ),
+        ),
+      );
+    }
   }
 }

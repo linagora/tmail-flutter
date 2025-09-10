@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-08-18T13:21:17.206262",
+  "@@last_modified": "2025-09-09T03:47:54.564515",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4674,6 +4674,96 @@
   },
   "archiveMessagesFailed": "Archive messages failed",
   "@archiveMessagesFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addARule": "Add a rule",
+  "@addARule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noRulesConfigured": "No Rules Configured",
+  "@noRulesConfigured": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageExplanationNoRulesConfigured": "Start by creating your first rule to automate\n email management.",
+  "@messageExplanationNoRulesConfigured": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createMyFirstRule": "Create My First Rule",
+  "@createMyFirstRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewRule": "Create a New Rule",
+  "@createANewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleName": "Rule Name",
+  "@ruleName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "condition": "Condition",
+  "@condition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addACondition": "Add a condition",
+  "@addACondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionsToPerform": "Actions to Perform",
+  "@actionsToPerform": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAnAction": "Add an action",
+  "@addAnAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createRule": "Create Rule",
+  "@createRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preview": "Preview",
+  "@preview": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterConditionPreviewMessage": "{conditionCombinerName} of the conditions: {conditionValue}",
+  "@ruleFilterConditionPreviewMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "conditionCombinerName",
+      "conditionValue"
+    ],
+    "placeholders": {
+      "conditionCombinerName": {},
+      "conditionValue": {}
+    }
+  },
+  "actions": "Actions",
+  "@actions": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -1,98 +1,114 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_condition_type.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart';
+import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_row_builder.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
-import 'package:core/presentation/resources/image_paths.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_delete_button_widget.dart';
 
 class RuleFilterConditionWidget extends StatelessWidget {
-  final RuleFilterConditionScreenType? ruleFilterConditionScreenType;
+  final bool isMobile;
   final RuleCondition ruleCondition;
-  final Function(Field?)? tapRuleConditionFieldCallback;
-  final Function(Comparator?)? tapRuleConditionComparatorCallback;
+  final TextEditingController textEditingController;
+  final OnRuleTapActionCallback tapRuleConditionFieldCallback;
+  final OnRuleTapActionCallback tapRuleConditionComparatorCallback;
   final String? conditionValueErrorText;
-  final TextEditingController? conditionValueEditingController;
   final FocusNode? conditionValueFocusNode;
-  final OnChangeFilterInputAction? conditionValueOnChangeAction;
-  final ImagePaths? imagePaths;
-  final Function()? tapRemoveRuleFilterConditionCallback;
+  final OnTextChange? conditionValueOnChangeAction;
+  final ImagePaths imagePaths;
+  final OnDeleteRuleConditionAction onDeleteRuleConditionAction;
 
   const RuleFilterConditionWidget({
     super.key,
-    this.ruleFilterConditionScreenType,
+    required this.isMobile,
     required this.ruleCondition,
-    this.tapRuleConditionFieldCallback,
-    this.tapRuleConditionComparatorCallback,
+    required this.imagePaths,
+    required this.textEditingController,
+    required this.onDeleteRuleConditionAction,
+    required this.tapRuleConditionFieldCallback,
+    required this.tapRuleConditionComparatorCallback,
     this.conditionValueErrorText,
-    this.conditionValueEditingController,
     this.conditionValueFocusNode,
     this.conditionValueOnChangeAction,
-    this.imagePaths,
-    this.tapRemoveRuleFilterConditionCallback,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Slidable(
-      enabled: ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile ? true : false,
-      endActionPane: ActionPane(
-        extentRatio: 0.1,
-        motion: const BehindMotion(),
-        children: [
-          CustomSlidableAction(
-            padding: const EdgeInsets.only(right: 12),
-            borderRadius: const BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12)),
-            onPressed: (_) => tapRemoveRuleFilterConditionCallback!(),
-            backgroundColor: AppColor.colorBackgroundFieldConditionRulesFilter,
-            child: CircleAvatar(
-              backgroundColor: AppColor.colorRemoveRuleFilterConditionButton,
-              radius: 110,
-              child: SvgPicture.asset(
-                imagePaths!.icMinimize,
-                fit: BoxFit.fill,
-                colorFilter: AppColor.colorDeletePermanentlyButton.asFilter(),
-              ),
-            )
-          )
-        ]
-      ),
-      child: Builder(builder: (context) {
-        SlidableController? slideController = Slidable.of(context);
-        return ValueListenableBuilder<int>(
-          valueListenable: slideController?.direction ?? ValueNotifier<int>(0),
-          builder: (context, value, _) {
-            var borderRadius = value != -1 ? 
-              BorderRadius.circular(12) : 
-              const BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                topLeft: Radius.circular(12)
-              );
-            return Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColor.colorBackgroundFieldConditionRulesFilter,
-                borderRadius: borderRadius,
-              ),
-              child: RuleFilterConditionRow(
-                ruleFilterConditionScreenType: ruleFilterConditionScreenType,
-                ruleCondition: ruleCondition,
-                tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
-                tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
-                conditionValueErrorText: conditionValueErrorText,
-                conditionValueEditingController: conditionValueEditingController,
-                conditionValueFocusNode: conditionValueFocusNode,
-                conditionValueOnChangeAction: conditionValueOnChangeAction,
-                tapRemoveRuleFilterConditionCallback: tapRemoveRuleFilterConditionCallback,
-                imagePaths: imagePaths,
-              )
-            );
-          }
-        );
-      })
+    final conditionRowWidget = RuleFilterConditionRow(
+      isMobile: isMobile,
+      ruleCondition: ruleCondition,
+      tapRuleConditionFieldCallback: tapRuleConditionFieldCallback,
+      tapRuleConditionComparatorCallback: tapRuleConditionComparatorCallback,
+      conditionValueErrorText: conditionValueErrorText,
+      textEditingController: textEditingController,
+      conditionValueFocusNode: conditionValueFocusNode,
+      conditionValueOnChangeAction: conditionValueOnChangeAction,
+      onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+      imagePaths: imagePaths,
     );
-    
+
+    if (isMobile) {
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(top: 8),
+        child: Slidable(
+          endActionPane: ActionPane(
+            extentRatio: 0.15,
+            motion: const BehindMotion(),
+            children: [
+              CustomSlidableAction(
+                padding: const EdgeInsets.only(right: 12),
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
+                ),
+                onPressed: (_) => onDeleteRuleConditionAction(),
+                backgroundColor: AppColor.lightGrayF9FAFB,
+                child: RuleFilterDeleteButtonWidget(
+                  imagePaths: imagePaths,
+                  onDeleteRuleConditionAction: onDeleteRuleConditionAction,
+                ),
+              ),
+            ],
+          ),
+          child: Builder(
+            builder: (context) {
+              SlidableController? slideController = Slidable.of(context);
+              return ValueListenableBuilder<int>(
+                valueListenable: slideController?.direction ?? ValueNotifier<int>(0),
+                builder: (context, value, _) {
+                  return Container(
+                    padding: const EdgeInsetsDirectional.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColor.lightGrayF9FAFB,
+                      borderRadius: value != -1
+                          ? BorderRadius.circular(10)
+                          : const BorderRadius.only(
+                              bottomLeft: Radius.circular(10),
+                              topLeft: Radius.circular(10),
+                            ),
+                    ),
+                    alignment: Alignment.center,
+                    child: conditionRowWidget,
+                  );
+                }
+              );
+            },
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 12),
+        margin: const EdgeInsetsDirectional.only(top: 8),
+        decoration: const BoxDecoration(
+          color: AppColor.lightGrayF9FAFB,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        alignment: Alignment.center,
+        child: conditionRowWidget,
+      );
+    }
   }
 }

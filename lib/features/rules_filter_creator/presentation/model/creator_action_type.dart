@@ -7,12 +7,12 @@ enum CreatorActionType {
   create,
   edit;
 
-  String getTitle(BuildContext context) {
+  String getTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case CreatorActionType.create:
-        return AppLocalizations.of(context).createNewRule.inCaps;
+        return appLocalizations.createANewRule;
       case CreatorActionType.edit:
-        return AppLocalizations.of(context).editRule.inCaps;
+        return appLocalizations.editRule.capitalizeFirstEach;
     }
   }
 

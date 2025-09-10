@@ -1,7 +1,8 @@
+import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -40,6 +41,11 @@ class EmailRulesController extends BaseController {
 
   final listEmailRule = <TMailRule>[].obs;
 
+  bool get isLoading => viewState.value.fold(
+    (failure) => false,
+    (success) => success is GettingAllRules,
+  );
+
   @override
   void onInit() {
     super.onInit();
@@ -61,7 +67,6 @@ class EmailRulesController extends BaseController {
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is GetAllRulesSuccess) {
       if (success.rules?.isNotEmpty == true) {
         listEmailRule.addAll(success.rules!);
@@ -72,10 +77,21 @@ class EmailRulesController extends BaseController {
       _createNewRuleFilterSuccess(success);
     } else if (success is EditEmailRuleFilterSuccess) {
       _editEmailRuleFilterSuccess(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
-  void goToCreateNewRule(BuildContext context) async {
+  @override
+  void handleFailureViewState(Failure failure) {
+    if (failure is GetAllRulesFailure) {
+      listEmailRule.clear();
+    } else {
+      super.handleFailureViewState(failure);
+    }
+  }
+
+  Future<void> goToCreateNewRule() async {
     final accountId = _accountDashBoardController.accountId.value;
     final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
@@ -153,28 +169,16 @@ class EmailRulesController extends BaseController {
     }
   }
 
-  void deleteEmailRule(BuildContext context, TMailRule emailRule) {
-    if (responsiveUtils.isMobile(context)) {
-      (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name))
-        ..onCancelAction(AppLocalizations.of(context).cancel, () =>
-            popBack())
-        ..onConfirmAction(AppLocalizations.of(context).delete, () {
-          popBack();
-          _handleDeleteEmailRuleAction(emailRule);
-        }))
-      .show();
-    } else {
-      MessageDialogActionManager().showConfirmDialogAction(
-        context,
-        title: AppLocalizations.of(context).deleteEmailRule,
-        AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name),
-        AppLocalizations.of(context).delete,
-        cancelTitle: AppLocalizations.of(context).cancel,
-        onConfirmAction: () => _handleDeleteEmailRuleAction(emailRule),
-        onCloseButtonAction: popBack,
-      );
-    }
+  void _deleteEmailRule(BuildContext context, TMailRule emailRule) {
+    MessageDialogActionManager().showConfirmDialogAction(
+      context,
+      title: AppLocalizations.of(context).deleteEmailRule,
+      AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name),
+      AppLocalizations.of(context).delete,
+      cancelTitle: AppLocalizations.of(context).cancel,
+      onConfirmAction: () => _handleDeleteEmailRuleAction(emailRule),
+      onCloseButtonAction: popBack,
+    );
   }
 
   void _handleDeleteEmailRuleAction(TMailRule emailRule) {
@@ -228,6 +232,8 @@ class EmailRulesController extends BaseController {
   void _getAllRules() {
     if (_getAllRulesInteractor != null) {
       consumeState(_getAllRulesInteractor!.execute(_accountDashBoardController.accountId.value!));
+    } else {
+      consumeState(Stream.value(Left(GetAllRulesFailure(null))));
     }
   }
 
@@ -248,12 +254,12 @@ class EmailRulesController extends BaseController {
       itemActions: contextMenuActions,
       onContextMenuActionClick: (action) {
         popBack();
-        _handleRuleFilterActionType(context, rule, action.action);
+        handleRuleFilterActionType(context, rule, action.action);
       },
     );
   }
 
-  void _handleRuleFilterActionType(
+  void handleRuleFilterActionType(
     BuildContext context,
     TMailRule rule,
     EmailRuleActionType actionType,
@@ -263,7 +269,7 @@ class EmailRulesController extends BaseController {
         editEmailRule(context, rule);
         break;
       case EmailRuleActionType.delete:
-        deleteEmailRule(context, rule);
+        _deleteEmailRule(context, rule);
         break;
       case EmailRuleActionType.add:
         break;

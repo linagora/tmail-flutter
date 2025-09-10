@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_ru
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_rules_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/list_rule_filter_action_argument_extension.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/select_rule_action_field_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_action_arguments.dart';
@@ -55,6 +56,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final mailboxSelected = Rxn<PresentationMailbox>();
   final actionType = CreatorActionType.create.obs;
   final listRuleCondition = RxList<RuleCondition>();
+  final isPreviewEnabled = RxBool(false);
 
   final TextEditingController inputRuleNameController = TextEditingController();
   final FocusNode inputRuleNameFocusNode = FocusNode();
@@ -123,17 +125,17 @@ class RulesFilterCreatorController extends BaseMailboxController {
 
   @override
   void handleSuccessViewState(Success success) async {
-    super.handleSuccessViewState(success);
     if (success is GetAllMailboxSuccess) {
       await buildTree(success.mailboxList);
       if (currentContext != null) {
         syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is GetAllRulesSuccess) {
-      log('RulesFilterCreatorController::handleSuccessViewState():GetAllRulesSuccess: ${success.rules}');
       if (success.rules?.isNotEmpty == true) {
         _listEmailRule = success.rules!;
       }
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
@@ -166,7 +168,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
         listRuleCondition.add(newRuleCondition);
         RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
           focusNode: FocusNode(),
-          errorText: '',
           controller: TextEditingController(),
         );
         listRuleConditionValueArguments.add(newRuleConditionValueArguments);
@@ -207,7 +208,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
             listRuleCondition.add(condition);
             RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
               focusNode: FocusNode(),
-              errorText: '',
               controller: TextEditingController(),
             );
             listRuleConditionValueArguments.add(newRuleConditionValueArguments);
@@ -284,23 +284,33 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
   }
 
-  void updateRuleName(BuildContext context, String? value) {
+  void updateRuleName(AppLocalizations appLocalizations, String? value) {
     _newRuleName = value;
-    errorRuleName.value = _getErrorStringByInputValue(context, _newRuleName);
+    errorRuleName.value = _getErrorStringByInputValue(
+      appLocalizations,
+      _newRuleName,
+    );
   }
 
-  void updateConditionValue(BuildContext context, String? value, int ruleConditionIndex) {
-    RuleCondition newRuleCondition = RuleCondition(
+  void updateConditionValue(
+    AppLocalizations appLocalizations,
+    String value,
+    int ruleConditionIndex,
+  ) {
+    final newRuleCondition = RuleCondition(
       field: listRuleCondition[ruleConditionIndex].field,
       comparator: listRuleCondition[ruleConditionIndex].comparator,
-      value: value!,
+      value: value,
     );
     listRuleCondition[ruleConditionIndex] = newRuleCondition;
     listRuleCondition.refresh();
-    String? errorString = _getErrorStringByInputValue(context, listRuleCondition[ruleConditionIndex].value);
-    RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
+    final errorString = _getErrorStringByInputValue(
+      appLocalizations,
+      listRuleCondition[ruleConditionIndex].value,
+    );
+    final newRuleConditionValueArguments = RulesFilterInputFieldArguments(
       focusNode: listRuleConditionValueArguments[ruleConditionIndex].focusNode,
-      errorText: errorString ?? '',
+      errorText: errorString,
       controller: listRuleConditionValueArguments[ruleConditionIndex].controller,
     );
     if (listRuleConditionValueArguments.length > ruleConditionIndex) {
@@ -311,7 +321,10 @@ class RulesFilterCreatorController extends BaseMailboxController {
     listRuleConditionValueArguments.refresh();
   }
 
-  String? _getErrorStringByInputValue(BuildContext context, String? inputValue) {
+  String? _getErrorStringByInputValue(
+    AppLocalizations appLocalizations,
+    String? inputValue,
+  ) {
     return verifyNameInteractor.execute(
       inputValue,
       [
@@ -321,7 +334,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     ).fold(
       (failure) {
           if (failure is VerifyNameFailure) {
-            return failure.getMessageRulesFilter(context);
+            return failure.getMessageRulesFilter(appLocalizations);
           } else {
             return null;
           }
@@ -417,7 +430,10 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
   }
 
-  void selectMailbox(BuildContext context, int ruleFilterActionIndex) async {
+  Future<void> selectMailbox(
+    BuildContext context,
+    int ruleFilterActionIndex,
+  ) async {
     if (_accountId != null) {
       final arguments = DestinationPickerArguments(
         _accountId!,
@@ -431,8 +447,9 @@ class RulesFilterCreatorController extends BaseMailboxController {
       if (destinationMailbox is PresentationMailbox && context.mounted) {
         mailboxSelected.value = destinationMailbox;
         errorMailboxSelectedValue.value = _getErrorStringByInputValue(
-          context,
-          mailboxSelected.value?.getDisplayName(context));
+          AppLocalizations.of(context),
+          destinationMailbox.getDisplayName(context),
+        );
         RuleFilterActionArguments newRuleFilterAction = MoveMessageActionArguments(mailbox: mailboxSelected.value);
         listEmailRuleFilterActionSelected[ruleFilterActionIndex] = newRuleFilterAction;
       }
@@ -440,29 +457,30 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   void createNewRuleFilter(BuildContext context) {
-    KeyboardUtils.hideKeyboard(context);
-
-    final errorName = _getErrorStringByInputValue(context, _newRuleName);
-    log('RulesFilterCreatorController::createNewRuleFilter:errorName: $errorName');
+    final appLocalizations = AppLocalizations.of(context);
+    final errorName = _getErrorStringByInputValue(
+      appLocalizations,
+      _newRuleName,
+    );
     if (errorName?.isNotEmpty == true) {
       errorRuleName.value = errorName;
       inputRuleNameFocusNode.requestFocus();
       return;
     }
 
-    if (listRuleCondition.isEmpty
-        && currentOverlayContext != null
-        && currentContext != null
-    ) {
+    if (listRuleCondition.isEmpty) {
       appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).youHaveNotAddedConditionToRule);
+        context,
+        appLocalizations.youHaveNotAddedConditionToRule,
+      );
       return;
     }
 
     for (var ruleCondition in listRuleCondition) {
-      final errorConditionString = _getErrorStringByInputValue(context, ruleCondition.value);
-      log('RulesFilterCreatorController::createNewRuleFilter:errorConditionString: $errorConditionString');
+      final errorConditionString = _getErrorStringByInputValue(
+        appLocalizations,
+        ruleCondition.value,
+      );
       if (errorConditionString != null) {
         int ruleConditionIndex = listRuleCondition.indexOf(ruleCondition);
         RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
@@ -476,50 +494,51 @@ class RulesFilterCreatorController extends BaseMailboxController {
       }
     }
 
-    if (listEmailRuleFilterActionSelected.isEmpty
-        && currentOverlayContext != null
-        && currentContext != null
-    ) {
+    if (listEmailRuleFilterActionSelected.isEmpty) {
       appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).youHaveNotAddedActionToRule);
+        context,
+        appLocalizations.youHaveNotAddedActionToRule,
+      );
       return;
     }
 
-    if (listEmailRuleFilterActionSelected.isEmptySelectedRuleAction()
-        && currentOverlayContext != null
-        && currentContext != null
-    ) {
+    if (listEmailRuleFilterActionSelected.isEmptySelectedRuleAction()) {
       appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).youHaveNotSelectedAnyActionForRule);
+        context,
+        appLocalizations.youHaveNotSelectedAnyActionForRule,
+      );
       return;
     }
 
     for (var ruleFilterAction in listEmailRuleFilterActionSelected) {
       if (ruleFilterAction is MoveMessageActionArguments) {
-        final errorAction = _getErrorStringByInputValue(context, mailboxSelected.value?.getDisplayName(context));
-        log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
+        final errorAction = _getErrorStringByInputValue(
+          appLocalizations,
+          mailboxSelected.value?.getDisplayName(context),
+        );
         if (errorAction?.isNotEmpty == true) {
           appToast.showToastErrorMessage(
             context,
-            AppLocalizations.of(context).notSelectedMailboxToMoveMessage);
+            appLocalizations.notSelectedMailboxToMoveMessage,
+          );
           return;
         }
       }
       if (ruleFilterAction is MarkAsSpamActionArguments) {
         final spamMailboxId = getSpamMailboxId();
-        log('RulesFilterCreatorController::createNewRuleFilter:spamMailboxId: ${spamMailboxId?.asString}');
         if (spamMailboxId == null) {
           appToast.showToastErrorMessage(
             context,
-            AppLocalizations.of(context).spamFolderNotFound);
+            appLocalizations.spamFolderNotFound,
+          );
           return;
         }
       }
       if (ruleFilterAction is ForwardActionArguments) {
-        final errorAction = _getErrorStringByInputValue(context, ruleFilterAction.forwardEmail);
-        log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
+        final errorAction = _getErrorStringByInputValue(
+          appLocalizations,
+          ruleFilterAction.forwardEmail,
+        );
         if (errorAction?.isNotEmpty == true) {
           errorForwardEmailValue.value = errorAction;
           forwardEmailFocusNode.requestFocus();
@@ -611,7 +630,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
     listRuleCondition.add(newRuleCondition);
     listRuleConditionValueArguments.add(RulesFilterInputFieldArguments(
       focusNode: FocusNode(),
-      errorText: '',
       controller: TextEditingController(),
     ));
   }
@@ -621,10 +639,25 @@ class RulesFilterCreatorController extends BaseMailboxController {
     listRuleConditionValueArguments.removeAt(ruleConditionIndex);
   }
 
-  void selectConditionCombiner(ConditionCombiner? combinerType) {
-    if (combinerType != null) {
-      conditionCombinerType.value = combinerType;
+  void selectConditionCombiner({
+    required BuildContext context,
+    ConditionCombiner? combinerType,
+    bool isMobile = false,
+  }) {
+    FocusScope.of(context).unfocus();
+
+    if (isMobile) {
+      selectRuleConditionCombinerAction(
+        context,
+        conditionCombinerType.value ?? ConditionCombiner.AND,
+      );
+    } else if (combinerType != null) {
+      updateConditionCombiner(combinerType);
     }
+  }
+
+  void updateConditionCombiner(ConditionCombiner? newConditionCombiner) {
+    conditionCombinerType.value = newConditionCombiner;
   }
 
   void tapAddAction() {
@@ -648,12 +681,17 @@ class RulesFilterCreatorController extends BaseMailboxController {
     listEmailRuleFilterActionSelected.removeAt(ruleFilterActionIndex);
   }
 
-  void updateForwardEmailValue(BuildContext context, String? value, int ruleActionIndex) {
-    String? errorAction = _getErrorStringByInputValue(context, value);
-    log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
-    RuleFilterActionArguments newRuleFilterAction = ForwardActionArguments(forwardEmail: value);
-    errorForwardEmailValue.value = errorAction;
-    listEmailRuleFilterActionSelected[ruleActionIndex] = newRuleFilterAction;
+  void updateForwardEmailValue(
+    AppLocalizations appLocalizations,
+    String? value,
+    int ruleActionIndex,
+  ) {
+    errorForwardEmailValue.value = _getErrorStringByInputValue(
+      appLocalizations,
+      value,
+    );
+    listEmailRuleFilterActionSelected[ruleActionIndex] =
+        ForwardActionArguments(forwardEmail: value);
     listEmailRuleFilterActionSelected.refresh();
   }
 }
