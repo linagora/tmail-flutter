@@ -3097,19 +3097,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._this = t0;
       this.emails = t1;
     },
-    ContextItemReceiveTimeTypeAction: function ContextItemReceiveTimeTypeAction(t0, t1, t2, t3) {
+    ContextItemReceiveTimeTypeAction: function ContextItemReceiveTimeTypeAction(t0, t1, t2, t3, t4) {
       var _ = this;
       _.appLocalizations = t0;
       _.imagePaths = t1;
       _.selectedAction = t2;
       _.action = t3;
+      _.key = t4;
     },
-    ContextItemSortOrderTypeAction: function ContextItemSortOrderTypeAction(t0, t1, t2, t3) {
+    ContextItemSortOrderTypeAction: function ContextItemSortOrderTypeAction(t0, t1, t2, t3, t4) {
       var _ = this;
       _.appLocalizations = t0;
       _.imagePaths = t1;
       _.selectedAction = t2;
       _.action = t3;
+      _.key = t4;
     },
     PopupMenuItemDateFilterAction: function PopupMenuItemDateFilterAction(t0, t1, t2, t3) {
       var _ = this;
@@ -3632,12 +3634,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     BaseEmailItemTile: function BaseEmailItemTile() {
     },
-    ContextItemFilterMessageOptionAction: function ContextItemFilterMessageOptionAction(t0, t1, t2, t3) {
+    ContextItemFilterMessageOptionAction: function ContextItemFilterMessageOptionAction(t0, t1, t2, t3, t4) {
       var _ = this;
       _.appLocalizations = t0;
       _.imagePaths = t1;
       _.selectedAction = t2;
       _.action = t3;
+      _.key = t4;
     },
     EmailSelectionActionType: function EmailSelectionActionType(t0, t1) {
       this.index = t0;
@@ -4558,9 +4561,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1;
       _this.currentMobilePageViewIndex.set$value(0, index);
       t1 = _this.pageController;
-      if (t1 != null)
-        t1.dispose$0();
-      _this.pageController = A.PageController$(index);
+      (t1 == null ? _this.pageController = A.PageController$(index) : t1).jumpToPage$1(index);
     },
     ThreadDetailNextPreviousActions__goToPageWithEmail(_this, presentationEmail) {
       var t1, t2;
@@ -16833,7 +16834,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(action) {
       var t1 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
-      return new A.ContextItemEmailAction(t1, this._this.EmailActionController_imagePaths, action);
+      return new A.ContextItemEmailAction(t1, this._this.EmailActionController_imagePaths, action, null);
     },
     $signature: 279
   };
@@ -17200,7 +17201,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t5.toString;
       A.Expando__checkType(t1);
-      return new B.ContextItemReceiveTimeTypeAction(t5, t3._as(t2.get(t1)).EmailActionController_imagePaths, t4, timeType);
+      return new B.ContextItemReceiveTimeTypeAction(t5, t3._as(t2.get(t1)).EmailActionController_imagePaths, t4, timeType, null);
     },
     $signature: typesOffset + 45
   };
@@ -17255,7 +17256,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t5.toString;
       A.Expando__checkType(t1);
-      return new B.ContextItemSortOrderTypeAction(t5, t3._as(t2.get(t1)).EmailActionController_imagePaths, t4, orderType);
+      return new B.ContextItemSortOrderTypeAction(t5, t3._as(t2.get(t1)).EmailActionController_imagePaths, t4, orderType, null);
     },
     $signature: typesOffset + 46
   };
@@ -17841,7 +17842,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(action) {
       var t1 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
-      return new A.ContextItemEmailAction(t1, this._this.EmailActionController_imagePaths, action);
+      return new A.ContextItemEmailAction(t1, this._this.EmailActionController_imagePaths, action, null);
     },
     $signature: 279
   };
@@ -17868,7 +17869,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(filter) {
       var t1 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
-      return new B.ContextItemFilterMessageOptionAction(t1, this._this.EmailActionController_imagePaths, this.selectedOption, filter);
+      return new B.ContextItemFilterMessageOptionAction(t1, this._this.EmailActionController_imagePaths, this.selectedOption, filter, filter._name + "_filter");
     },
     $signature: typesOffset + 51
   };
@@ -18972,7 +18973,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       t1 = A.Localizations_of(t1, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
-      return new A.ContextItemEmailAction(t1, this._this.imagePaths, action);
+      return new A.ContextItemEmailAction(t1, this._this.imagePaths, action, null);
     },
     $signature: 279
   };
@@ -20093,5 +20094,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "5z5ebN2gBb675nxsz9H7MvebPfw=");
+})($__dart_deferred_initializers__, "zGCYNCnymEDwat7dUie64BsFdYE=");
 ;
