@@ -10,4 +10,12 @@ mixin SaaSPremiumMixin {
     final saasAccount = session.getSaaSAccountCapability(accountId);
     return saasAccount?.isPremiumAvailable ?? false;
   }
+
+  bool isAlreadyHighestSubscription({Session? session, AccountId? accountId}) {
+    if (accountId == null || session == null) {
+      return false;
+    }
+    final saasAccount = session.getSaaSAccountCapability(accountId);
+    return saasAccount?.isAlreadyHighestSubscription ?? false;
+  }
 }

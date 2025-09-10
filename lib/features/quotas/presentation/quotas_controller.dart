@@ -7,7 +7,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_saas_premium_available_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_paywall_extension.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/list_quotas_extensions.dart';
 import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
@@ -83,9 +83,9 @@ class QuotasController extends BaseController {
     }
   }
 
-  bool get isManageMyStorageIsEnabled {
-    return mailboxDashBoardController.isPremiumAvailable &&
-        !mailboxDashBoardController.isAlreadyHighestSubscription;
+  bool get isManageMyStorageIsDisabled {
+    return !mailboxDashBoardController.validatePremiumIsAvailable() ||
+      mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
   }
 
   void handleManageMyStorage(BuildContext context) {

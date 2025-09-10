@@ -20,6 +20,16 @@ extension HandlePaywallExtension on MailboxDashBoardController {
     );
   }
 
+  bool validateUserHasIsAlreadyHighestSubscription() {
+    if (accountId.value == null || sessionCurrent == null) {
+      return false;
+    }
+    return isAlreadyHighestSubscription(
+      accountId: accountId.value,
+      session: sessionCurrent,
+    );
+  }
+
   void loadPaywallUrl() {
     final getPaywallUrlInteractor = getBinding<GetPaywallUrlInteractor>();
     final jmapUrl = dynamicUrlInterceptors.jmapUrl;
@@ -37,6 +47,14 @@ extension HandlePaywallExtension on MailboxDashBoardController {
 
   void loadPaywallUrlSuccess(PaywallUrlPattern newPattern) {
     paywallUrlPattern = newPattern;
+    if (isRetryGetPaywallUrl) {
+      isRetryGetPaywallUrl = false;
+      final qualifiedPaywall = paywallUrlPattern!.getQualifiedUrl(
+        ownerEmail: ownEmailAddress.value,
+        domainName: RouteUtils.getRootDomain(),
+      );
+      AppUtils.launchLink(qualifiedPaywall);
+    }
   }
 
   void loadPaywallUrlFailure() {

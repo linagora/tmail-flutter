@@ -59,7 +59,7 @@ class QuotasBannerWidget extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           if (!PlatformInfo.isWeb ||
-                              !_quotasController.isManageMyStorageIsEnabled)
+                              _quotasController.isManageMyStorageIsDisabled)
                             Text(
                               appLocalizations.quotaBannerWarningSubtitleWithoutPremium,
                               style: QuotasBannerStyles.subTitleTextStyle,

@@ -376,6 +376,7 @@ class MailboxDashBoardController extends ReloadableController
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController = ScrollController();
       twakeAppManager.setExecutingBeforeReconnect(false);
+      isRetryGetPaywallUrl = false;
     }
     if (PlatformInfo.isIOS) {
       _registerPendingCurrentEmailIdInNotification();
@@ -557,6 +558,18 @@ class MailboxDashBoardController extends ReloadableController
     } else {
       super.handleFailureViewState(failure);
     }
+  }
+
+  @override
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    super.handleErrorViewState(error, stackTrace);
+    isRetryGetPaywallUrl = false;
+  }
+
+  @override
+  void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
+    super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
+    isRetryGetPaywallUrl = false;
   }
 
   @override

@@ -17,6 +17,7 @@ import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -98,6 +99,7 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_paywall_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
@@ -997,27 +999,50 @@ class ComposerController extends BaseController
     required BuildContext context,
     required FeatureFailure failure
   }) async {
-    final errorMessage = getMessageFailure(
+    final messageRecord = getMessageFailure(
       appLocalizations: AppLocalizations.of(context),
       exception: failure.exception,
     );
+
+    final isIncreaseMySpaceIsDisabled =
+        !mailboxDashBoardController.validatePremiumIsAvailable() ||
+            mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
+
+    final isPaywallActive = !isIncreaseMySpaceIsDisabled &&
+        messageRecord.errorType == SetError.overQuota;
+
     await MessageDialogActionManager().showConfirmDialogAction(
       context,
       title: '',
-      errorMessage,
-      AppLocalizations.of(context).edit,
-      cancelTitle: AppLocalizations.of(context).closeAnyway,
+      messageRecord.message,
+      isPaywallActive
+        ? AppLocalizations.of(context).increaseYourSpace
+        : AppLocalizations.of(context).edit,
+      cancelTitle: isPaywallActive
+        ? AppLocalizations.of(context).edit
+        : AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
       outsideDismissible: false,
       autoPerformPopBack: false,
       onConfirmAction: () {
         _sendButtonState = ButtonState.enabled;
         popBack();
-        _autoFocusFieldWhenLauncher();
+
+        if (isPaywallActive) {
+          mailboxDashBoardController.navigateToPaywall(context);
+        } else {
+          _autoFocusFieldWhenLauncher();
+        }
       },
       onCancelAction: () {
         _sendButtonState = ButtonState.enabled;
-        _closeComposerAction(closeOverlays: true);
+
+        if (isPaywallActive) {
+          popBack();
+          _autoFocusFieldWhenLauncher();
+        } else {
+          _closeComposerAction(closeOverlays: true);
+        }
       },
     );
   }
@@ -1282,14 +1307,25 @@ class ComposerController extends BaseController
         await _showConfirmDialogWhenSaveMessageToDraftsFailure(
           context: context,
           failure: resultState,
-          onConfirmAction: () {
+          onConfirmAction: (isPaywallActive) {
             _saveToDraftButtonState = ButtonState.enabled;
             popBack();
-            _autoFocusFieldWhenLauncher();
+
+            if (isPaywallActive) {
+              mailboxDashBoardController.navigateToPaywall(context);
+            } else {
+              _autoFocusFieldWhenLauncher();
+            }
           },
-          onCancelAction: () {
+          onCancelAction: (isPaywallActive) {
             _saveToDraftButtonState = ButtonState.enabled;
-            _closeComposerAction(closeOverlays: true);
+
+            if (isPaywallActive) {
+              popBack();
+              _autoFocusFieldWhenLauncher();
+            } else {
+              _closeComposerAction(closeOverlays: true);
+            }
           },
         );
       } else {
@@ -2222,31 +2258,62 @@ class ComposerController extends BaseController
   Future<void> _showConfirmDialogWhenSaveMessageToDraftsFailure({
     required BuildContext context,
     required FeatureFailure failure,
-    VoidCallback? onConfirmAction,
-    VoidCallback? onCancelAction,
+    Function(bool)? onConfirmAction,
+    Function(bool)? onCancelAction,
   }) async {
-    final errorMessage = getMessageFailure(
+    final messageRecord = getMessageFailure(
       appLocalizations: AppLocalizations.of(context),
       exception: failure.exception,
       isDraft: true,
     );
+
+    final isIncreaseMySpaceIsDisabled =
+        !mailboxDashBoardController.validatePremiumIsAvailable() ||
+            mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
+
+    final isPaywallActive = !isIncreaseMySpaceIsDisabled &&
+        messageRecord.errorType == SetError.overQuota;
+
     await MessageDialogActionManager().showConfirmDialogAction(
       context,
       title: '',
-      errorMessage,
-      AppLocalizations.of(context).edit,
-      cancelTitle: AppLocalizations.of(context).closeAnyway,
+      messageRecord.message,
+      isPaywallActive
+        ? AppLocalizations.of(context).increaseYourSpace
+        : AppLocalizations.of(context).edit,
+      cancelTitle: isPaywallActive
+        ? AppLocalizations.of(context).edit
+        : AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
       outsideDismissible: false,
       autoPerformPopBack: false,
-      onConfirmAction: onConfirmAction ?? () {
-        _closeComposerButtonState = ButtonState.enabled;
-        popBack();
-        _autoFocusFieldWhenLauncher();
+      onConfirmAction: () {
+        if (onConfirmAction != null) {
+          onConfirmAction(isPaywallActive);
+        } else {
+          _closeComposerButtonState = ButtonState.enabled;
+          popBack();
+
+          if (isPaywallActive) {
+            mailboxDashBoardController.navigateToPaywall(context);
+          } else {
+            _autoFocusFieldWhenLauncher();
+          }
+        }
       },
-      onCancelAction: onCancelAction ?? () {
-        _closeComposerButtonState = ButtonState.enabled;
-        _closeComposerAction(closeOverlays: true);
+      onCancelAction: () {
+        if (onCancelAction != null) {
+          onCancelAction(isPaywallActive);
+        } else {
+          _closeComposerButtonState = ButtonState.enabled;
+
+          if (isPaywallActive) {
+            popBack();
+            _autoFocusFieldWhenLauncher();
+          } else {
+            _closeComposerAction(closeOverlays: true);
+          }
+        }
       },
     );
   }
