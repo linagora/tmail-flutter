@@ -38,6 +38,7 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
                 action,
                 AppLocalizations.of(context),
                 imagePaths,
+                category: action.category,
               ))
           .toList();
 
@@ -53,6 +54,7 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
             mailboxContain: mailboxContain,
           );
         },
+        useGroupedActions: true,
       );
     } else {
       final popupMenuItems = listEmailActions.map((actionType) {
