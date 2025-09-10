@@ -5,35 +5,49 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_filter_condition.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/unread_spam_emails_response.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
-  final LocalSpamReportManager _localSpamReportManager;
+  final PreferencesSettingManager _preferencesSettingManager;
   final ExceptionThrower _exceptionThrower;
 
-  LocalSpamReportDataSourceImpl(this._localSpamReportManager, this._exceptionThrower);
+  LocalSpamReportDataSourceImpl(
+    this._preferencesSettingManager,
+    this._exceptionThrower,
+  );
 
   @override
   Future<DateTime> getLastTimeDismissedSpamReported() async {
     return Future.sync(() async {
-      return await _localSpamReportManager.getLastTimeDismissedSpamReported();
+      final spamReportConfig = await _preferencesSettingManager.getSpamReportConfig();
+      return DateTime.fromMillisecondsSinceEpoch(
+        spamReportConfig.lastTimeDismissedMilliseconds,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<bool> storeLastTimeDismissedSpamReported(DateTime lastTimeDismissedSpamReported) async {
+  Future<void> storeLastTimeDismissedSpamReported(
+    DateTime lastTimeDismissedSpamReported,
+  ) async {
     return Future.sync(() async {
-      return await _localSpamReportManager.storeLastTimeDismissedSpamReported(lastTimeDismissedSpamReported);
+      return await _preferencesSettingManager.updateSpamReport(
+        lastTimeDismissedMilliseconds:
+            lastTimeDismissedSpamReported.millisecondsSinceEpoch,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
-  
+
   @override
-  Future<bool> deleteLastTimeDismissedSpamReported() {
+  Future<void> deleteLastTimeDismissedSpamReported() {
     return Future.sync(() async {
-      return await _localSpamReportManager.deleteLastTimeDismissedSpamReported();
+      return await _preferencesSettingManager.updateSpamReport(
+        lastTimeDismissedMilliseconds: 0,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -50,23 +64,20 @@ class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
   }
 
   @override
-  Future<void> deleteSpamReportState() {
-    return Future.sync(() async {
-      return await _localSpamReportManager.deleteLastTimeDismissedSpamReported();
-    }).catchError(_exceptionThrower.throwException);
-  }
-
-  @override
   Future<SpamReportState> getSpamReportState() {
     return Future.sync(() async {
-      return await _localSpamReportManager.getSpamReportState();
+      final spamReportConfig =
+        await _preferencesSettingManager.getSpamReportConfig();
+      return spamReportConfig.spamReportState;
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> storeSpamReportState(SpamReportState spamReportState) {
     return Future.sync(() async {
-      return await _localSpamReportManager.storeSpamReportState(spamReportState);
+      return await _preferencesSettingManager.updateSpamReport(
+        isEnabled: spamReportState == SpamReportState.enabled,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 

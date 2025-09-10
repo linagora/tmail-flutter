@@ -19,6 +19,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spa
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SpamReportController extends BaseController {
   final StoreSpamReportInteractor _storeSpamReportInteractor;
@@ -29,6 +31,9 @@ class SpamReportController extends BaseController {
   final presentationSpamMailbox = Rxn<PresentationMailbox>();
   final spamReportState = Rx<SpamReportState>(SpamReportState.enabled);
 
+  AppLifecycleListener? _appLifecycleListener;
+  LoaderStatus _spamReportLoaderStatus = LoaderStatus.idle;
+
   SpamReportController(
     this._storeSpamReportInteractor,
     this._storeSpamReportStateInteractor,
@@ -37,25 +42,57 @@ class SpamReportController extends BaseController {
   );
 
   @override
+  void onInit() {
+    super.onInit();
+    _appLifecycleListener ??= AppLifecycleListener(
+      onResume: () {
+        if (_spamReportLoaderStatus == LoaderStatus.loading) {
+          return;
+        }
+        getSpamReportStateAction();
+      },
+    );
+  }
+
+  @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is StoreLastTimeDismissedSpamReportSuccess) {
       presentationSpamMailbox.value = null;
+    } else if (success is GetSpamReportStateLoading) {
+      _spamReportLoaderStatus = LoaderStatus.loading;
     } else if (success is GetSpamReportStateSuccess) {
-      spamReportState.value = success.spamReportState;
+      _loadSpamReportConfigSuccess(success.spamReportState);
     } else if (success is StoreSpamReportStateSuccess) {
       spamReportState.value = success.spamReportState;
+      getBinding<MailboxDashBoardController>()?.refreshSpamReportBanner();
     } else if (success is GetSpamMailboxCachedSuccess) {
       presentationSpamMailbox.value = success.spamMailbox.toPresentationMailbox();
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
     if (failure is GetSpamMailboxCachedFailure) {
       presentationSpamMailbox.value = null;
+    } else if (failure is GetSpamReportStateFailure) {
+      _spamReportLoaderStatus = LoaderStatus.completed;
+    } else {
+      super.handleFailureViewState(failure);
     }
+  }
+
+  @override
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    super.handleErrorViewState(error, stackTrace);
+    _spamReportLoaderStatus = LoaderStatus.completed;
+  }
+
+  void _loadSpamReportConfigSuccess(SpamReportState newState) {
+    spamReportState.value = newState;
+    _spamReportLoaderStatus = LoaderStatus.completed;
+    getBinding<MailboxDashBoardController>()?.refreshSpamReportBanner();
   }
 
   void dismissSpamReportAction(BuildContext context) {
@@ -108,5 +145,11 @@ class SpamReportController extends BaseController {
 
   void setSpamPresentationMailbox(PresentationMailbox? spamMailbox) {
     presentationSpamMailbox.value = spamMailbox;
+  }
+
+  @override
+  void onClose() {
+    _appLifecycleListener?.dispose();
+    super.onClose();
   }
 }
