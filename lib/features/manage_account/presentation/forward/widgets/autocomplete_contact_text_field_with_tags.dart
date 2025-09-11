@@ -67,7 +67,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
 
   late List<EmailAddress> listEmailAddress;
 
-  bool lastTagFocused = false;
+  int _tagIndexFocused = -1;
 
   @override
   void initState() {
@@ -107,15 +107,17 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       suggestionsBoxBackgroundColor: Colors.white,
       suggestionsBoxRadius: 16,
       suggestionsBoxMaxHeight: 350,
-      onFocusTagAction: (focused) {
+      onFocusTagAction: (index) {
         setState(() {
-          lastTagFocused = focused;
+          _tagIndexFocused = index;
         });
       },
-      onDeleteTagAction: () {
-        if (listEmailAddress.isNotEmpty) {
+      onDeleteTagAction: (index) {
+        if (listEmailAddress.isNotEmpty &&
+            index >= 0 &&
+            index < listEmailAddress.length) {
           setState(() {
-            listEmailAddress.removeLast();
+            listEmailAddress.removeAt(index);
           });
         }
       },
@@ -136,8 +138,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       ),
       tagBuilder: (context, index) => ContactInputTagItem(
         listEmailAddress[index],
-        isLastContact: index == listEmailAddress.length - 1,
-        lastTagFocused: lastTagFocused,
+        isTagFocused: _tagIndexFocused == index,
         deleteContactCallbackAction: (contact) {
           setState(() => listEmailAddress.remove(contact));
         }

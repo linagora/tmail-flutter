@@ -18,16 +18,14 @@ typedef DeleteContactCallbackAction = Function(EmailAddress contactDeleted);
 class ContactInputTagItem extends StatelessWidget {
 
   final EmailAddress contact;
-  final bool isLastContact;
-  final bool lastTagFocused;
+  final bool isTagFocused;
   final DeleteContactCallbackAction? deleteContactCallbackAction;
 
   const ContactInputTagItem(
     this.contact,
     {
       Key? key,
-      this.isLastContact = false,
-      this.lastTagFocused = false,
+      this.isTagFocused = false,
       this.deleteContactCallbackAction
     }
   ) : super(key: key);
@@ -97,7 +95,7 @@ class ContactInputTagItem extends StatelessWidget {
   bool _isValidEmailAddress(String value) => value.isEmail || AppUtils.isEmailLocalhost(value);
 
   Color _getTagBackgroundColor() {
-    if (lastTagFocused && isLastContact) {
+    if (isTagFocused) {
       return AppColor.colorItemRecipientSelected;
     } else {
       return _isValidEmailAddress(contact.emailAddress)
@@ -107,7 +105,7 @@ class ContactInputTagItem extends StatelessWidget {
   }
 
   BorderSide _getTagBorderSide() {
-    if (lastTagFocused && isLastContact) {
+    if (isTagFocused) {
       return const BorderSide(
       width: 1,
       color: AppColor.primaryColor);

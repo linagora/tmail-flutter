@@ -126,7 +126,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   Timer? _gapBetweenTagChangedAndFindSuggestion;
-  bool _lastTagFocused = false;
+  int _tagIndexFocused = -1;
   bool _isDragging = false;
   late List<EmailAddress> _currentListEmailAddress;
 
@@ -204,8 +204,8 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           suggestionItemHeight: RecipientComposerWidgetStyle.suggestionBoxItemHeight,
                           suggestionBoxWidth: _getSuggestionBoxWidth(widget.maxWidth),
                           textStyle: RecipientComposerWidgetStyle.inputTextStyle,
-                          onFocusTagAction: (focused) => _handleFocusTagAction.call(focused, stateSetter),
-                          onDeleteTagAction: () => _handleDeleteLatestTagAction.call(stateSetter),
+                          onFocusTagAction: (index) => _handleFocusTagAction.call(index, stateSetter),
+                          onDeleteTagAction: (index) => _handleDeleteLatestTagAction.call(index, stateSetter),
                           onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
                           onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
                           onTapOutside: (_) {},
@@ -217,7 +217,6 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           inputDecoration: const InputDecoration(border: InputBorder.none),
                           tagBuilder: (context, index) {
                             final currentEmailAddress = _currentListEmailAddress[index];
-                            final isLatestEmail = currentEmailAddress == _currentListEmailAddress.last;
 
                             return RecipientTagItemWidget(
                               index: index,
@@ -227,9 +226,8 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               currentEmailAddress: currentEmailAddress,
                               currentListEmailAddress: _currentListEmailAddress,
                               collapsedListEmailAddress: _collapsedListEmailAddress,
-                              isLatestEmail: isLatestEmail,
                               isCollapsed: _isCollapse,
-                              isLatestTagFocused: _lastTagFocused,
+                              isTagFocused: _tagIndexFocused == index,
                               maxWidth: widget.maxWidth,
                               isMobile: _responsiveUtils.isMobile(context),
                               onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
@@ -299,8 +297,8 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                       suggestionItemHeight: RecipientComposerWidgetStyle.suggestionBoxItemHeight,
                       suggestionBoxWidth: _getSuggestionBoxWidth(widget.maxWidth),
                       textStyle: RecipientComposerWidgetStyle.inputTextStyle,
-                      onFocusTagAction: (focused) => _handleFocusTagAction.call(focused, stateSetter),
-                      onDeleteTagAction: () => _handleDeleteLatestTagAction.call(stateSetter),
+                      onFocusTagAction: (index) => _handleFocusTagAction.call(index, stateSetter),
+                      onDeleteTagAction: (index) => _handleDeleteLatestTagAction.call(index, stateSetter),
                       onSelectOptionAction: (item) => _handleSelectOptionAction.call(item, stateSetter),
                       onSubmitted: (value) => _handleSubmitTagAction.call(value, stateSetter),
                       onTapOutside: (_) {},
@@ -312,7 +310,6 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                       inputDecoration: const InputDecoration(border: InputBorder.none),
                       tagBuilder: (context, index) {
                         final currentEmailAddress = _currentListEmailAddress[index];
-                        final isLatestEmail = currentEmailAddress == _currentListEmailAddress.last;
 
                         return RecipientTagItemWidget(
                           index: index,
@@ -322,9 +319,8 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           currentEmailAddress: currentEmailAddress,
                           currentListEmailAddress: _currentListEmailAddress,
                           collapsedListEmailAddress: _collapsedListEmailAddress,
-                          isLatestEmail: isLatestEmail,
                           isCollapsed: _isCollapse,
-                          isLatestTagFocused: _lastTagFocused,
+                          isTagFocused: _tagIndexFocused == index,
                           maxWidth: widget.maxWidth,
                           isMobile: _responsiveUtils.isMobile(context),
                           onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
@@ -525,13 +521,17 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     );
   }
 
-  void _handleFocusTagAction(bool focused, StateSetter stateSetter) {
-    stateSetter(() => _lastTagFocused = focused);
+  void _handleFocusTagAction(int index, StateSetter stateSetter) {
+    stateSetter(() => _tagIndexFocused = index);
   }
 
-  void _handleDeleteLatestTagAction(StateSetter stateSetter) {
-    if (_currentListEmailAddress.isNotEmpty) {
-      stateSetter(_currentListEmailAddress.removeLast);
+  void _handleDeleteLatestTagAction(int index, StateSetter stateSetter) {
+    if (_currentListEmailAddress.isNotEmpty &&
+        index >= 0 &&
+        index < _currentListEmailAddress.length) {
+      stateSetter(() {
+        _currentListEmailAddress.removeAt(index);
+      });
       _updateListEmailAddressAction();
     }
   }
