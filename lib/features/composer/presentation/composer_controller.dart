@@ -56,6 +56,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_in
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/attachment_detection_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outbox_mailbox_id_for_composer_extension.dart';
@@ -835,7 +836,7 @@ class ComposerController extends BaseController
         appLocalizations.message_dialog_send_email_without_a_subject,
         appLocalizations.send_anyway,
         cancelTitle: appLocalizations.cancel,
-        onConfirmAction: () => _handleSendMessages(context),
+        onConfirmAction: () => _prepareToSendMessages(context),
         onCancelAction: popBack,
         autoPerformPopBack: false,
         title: appLocalizations.empty_subject,
@@ -871,7 +872,7 @@ class ComposerController extends BaseController
       return;
     }
 
-    _handleSendMessages(context);
+    _prepareToSendMessages(context);
   }
 
   Future<String> getContentInEditor() async {
@@ -888,7 +889,7 @@ class ComposerController extends BaseController
     }
   }
 
-  void _handleSendMessages(BuildContext context) async {
+  Future<void> _prepareToSendMessages(BuildContext context) async {
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
@@ -905,6 +906,51 @@ class ComposerController extends BaseController
     }
 
     final emailContent = await getContentInEditor();
+    if (!context.mounted) {
+      _sendButtonState = ButtonState.enabled;
+      return;
+    }
+    final attachmentKeywords = validateAttachmentReminder(
+      emailSubject: subjectEmail.value ?? '',
+      emailContent: emailContent,
+    );
+    if (attachmentKeywords.isNotEmpty &&
+        uploadController.attachmentsUploaded.isEmpty) {
+      showAttachmentReminderModal(
+        context: context,
+        keywords: attachmentKeywords,
+        onConfirmAction: () {
+          _sendMessageToServer(
+            context: context,
+            session: session,
+            accountId: accountId,
+            arguments: arguments,
+            emailContent: emailContent,
+          );
+        },
+        onCancelAction: () {
+          _sendButtonState = ButtonState.enabled;
+        }
+      );
+      return;
+    }
+
+    _sendMessageToServer(
+      context: context,
+      session: session,
+      accountId: accountId,
+      arguments: arguments,
+      emailContent: emailContent,
+    );
+  }
+
+  Future<void> _sendMessageToServer({
+    required BuildContext context,
+    required Session session,
+    required AccountId accountId,
+    required ComposerArguments arguments,
+    required String emailContent,
+  }) async {
     final uploadUri = _getUploadUriFromSession(session, accountId);
     final cancelToken = CancelToken();
     final resultState = await _showSendingMessageDialog(
@@ -913,15 +959,19 @@ class ComposerController extends BaseController
       arguments: arguments,
       emailContent: emailContent,
       uploadUri: uploadUri,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
     );
-    log('ComposerController::_handleSendMessages: resultState = $resultState');
-    if (resultState is SendEmailSuccess || mailboxDashBoardController.validateSendingEmailFailedWhenNetworkIsLostOnMobile(resultState)) {
+
+    if (resultState is SendEmailSuccess ||
+        mailboxDashBoardController
+            .validateSendingEmailFailedWhenNetworkIsLostOnMobile(resultState)) {
       _sendButtonState = ButtonState.enabled;
       _closeComposerAction(result: resultState);
-    } else if (resultState is SendEmailFailure && resultState.exception is SendingEmailCanceledException) {
+    } else if (resultState is SendEmailFailure &&
+        resultState.exception is SendingEmailCanceledException) {
       _sendButtonState = ButtonState.enabled;
-    } else if (resultState is SendEmailFailure || resultState is GenerateEmailFailure) {
+    } else if (resultState is SendEmailFailure ||
+        resultState is GenerateEmailFailure) {
       if (resultState.exception is BadCredentialsException) {
         _sendButtonState = ButtonState.enabled;
         handleBadCredentialsException();

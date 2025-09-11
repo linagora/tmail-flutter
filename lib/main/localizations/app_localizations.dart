@@ -5102,4 +5102,26 @@ class AppLocalizations {
       name: 'createFolder',
     );
   }
+
+  String get sendMessage {
+    return Intl.message(
+      'Send message',
+      name: 'sendMessage',
+    );
+  }
+
+  String get attachmentReminderModalTitle {
+    return Intl.message(
+      'Forgot to attach a file?',
+      name: 'attachmentReminderModalTitle',
+    );
+  }
+
+  String attachmentReminderModalMessage(String keyword) {
+    return Intl.message(
+      'You wrote $keyword in your message but did not add any attachments. Do you still want to send?',
+      name: 'attachmentReminderModalMessage',
+      args: [keyword],
+    );
+  }
 }
