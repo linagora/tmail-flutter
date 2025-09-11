@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-10T11:45:56.814190",
+  "@@last_modified": "2025-09-11T12:24:54.969188",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4829,5 +4829,27 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "sendMessage": "Send message",
+  "@sendMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachmentReminderModalTitle": "Forgot to attach a file?",
+  "@attachmentReminderModalTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachmentReminderModalMessage": "You wrote {keyword} in your message but did not add any attachments. Do you still want to send ?",
+  "@attachmentReminderModalMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "keyword"
+    ],
+    "placeholders": {
+      "keyword": {}
+    }
   }
 }
