@@ -1008,17 +1008,17 @@ class ComposerController extends BaseController
         !mailboxDashBoardController.validatePremiumIsAvailable() ||
             mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
 
-    final isPaywallActive = !isIncreaseMySpaceIsDisabled &&
+    final needIncreaseMySpace = !isIncreaseMySpaceIsDisabled &&
         messageRecord.errorType == SetError.overQuota;
 
     await MessageDialogActionManager().showConfirmDialogAction(
       context,
       title: '',
       messageRecord.message,
-      isPaywallActive
+      needIncreaseMySpace
         ? AppLocalizations.of(context).increaseYourSpace
         : AppLocalizations.of(context).edit,
-      cancelTitle: isPaywallActive
+      cancelTitle: needIncreaseMySpace
         ? AppLocalizations.of(context).edit
         : AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
@@ -1028,7 +1028,7 @@ class ComposerController extends BaseController
         _sendButtonState = ButtonState.enabled;
         popBack();
 
-        if (isPaywallActive) {
+        if (needIncreaseMySpace) {
           mailboxDashBoardController.navigateToPaywall(context);
         } else {
           _autoFocusFieldWhenLauncher();
@@ -1037,7 +1037,7 @@ class ComposerController extends BaseController
       onCancelAction: () {
         _sendButtonState = ButtonState.enabled;
 
-        if (isPaywallActive) {
+        if (needIncreaseMySpace) {
           popBack();
           _autoFocusFieldWhenLauncher();
         } else {
@@ -1307,20 +1307,20 @@ class ComposerController extends BaseController
         await _showConfirmDialogWhenSaveMessageToDraftsFailure(
           context: context,
           failure: resultState,
-          onConfirmAction: (isPaywallActive) {
+          onConfirmAction: (needIncreaseMySpace) {
             _saveToDraftButtonState = ButtonState.enabled;
             popBack();
 
-            if (isPaywallActive) {
+            if (needIncreaseMySpace) {
               mailboxDashBoardController.navigateToPaywall(context);
             } else {
               _autoFocusFieldWhenLauncher();
             }
           },
-          onCancelAction: (isPaywallActive) {
+          onCancelAction: (needIncreaseMySpace) {
             _saveToDraftButtonState = ButtonState.enabled;
 
-            if (isPaywallActive) {
+            if (needIncreaseMySpace) {
               popBack();
               _autoFocusFieldWhenLauncher();
             } else {
@@ -2271,17 +2271,17 @@ class ComposerController extends BaseController
         !mailboxDashBoardController.validatePremiumIsAvailable() ||
             mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
 
-    final isPaywallActive = !isIncreaseMySpaceIsDisabled &&
+    final needIncreaseMySpace = !isIncreaseMySpaceIsDisabled &&
         messageRecord.errorType == SetError.overQuota;
 
     await MessageDialogActionManager().showConfirmDialogAction(
       context,
       title: '',
       messageRecord.message,
-      isPaywallActive
+      needIncreaseMySpace
         ? AppLocalizations.of(context).increaseYourSpace
         : AppLocalizations.of(context).edit,
-      cancelTitle: isPaywallActive
+      cancelTitle: needIncreaseMySpace
         ? AppLocalizations.of(context).edit
         : AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
@@ -2289,12 +2289,12 @@ class ComposerController extends BaseController
       autoPerformPopBack: false,
       onConfirmAction: () {
         if (onConfirmAction != null) {
-          onConfirmAction(isPaywallActive);
+          onConfirmAction(needIncreaseMySpace);
         } else {
           _closeComposerButtonState = ButtonState.enabled;
           popBack();
 
-          if (isPaywallActive) {
+          if (needIncreaseMySpace) {
             mailboxDashBoardController.navigateToPaywall(context);
           } else {
             _autoFocusFieldWhenLauncher();
@@ -2303,11 +2303,11 @@ class ComposerController extends BaseController
       },
       onCancelAction: () {
         if (onCancelAction != null) {
-          onCancelAction(isPaywallActive);
+          onCancelAction(needIncreaseMySpace);
         } else {
           _closeComposerButtonState = ButtonState.enabled;
 
-          if (isPaywallActive) {
+          if (needIncreaseMySpace) {
             popBack();
             _autoFocusFieldWhenLauncher();
           } else {
