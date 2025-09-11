@@ -3117,19 +3117,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._this = t0;
       this.emails = t1;
     },
-    ContextItemReceiveTimeTypeAction: function ContextItemReceiveTimeTypeAction(t0, t1, t2, t3) {
+    ContextItemReceiveTimeTypeAction: function ContextItemReceiveTimeTypeAction(t0, t1, t2, t3, t4) {
       var _ = this;
       _.appLocalizations = t0;
       _.imagePaths = t1;
       _.selectedAction = t2;
       _.action = t3;
+      _.key = t4;
     },
-    ContextItemSortOrderTypeAction: function ContextItemSortOrderTypeAction(t0, t1, t2, t3) {
+    ContextItemSortOrderTypeAction: function ContextItemSortOrderTypeAction(t0, t1, t2, t3, t4) {
       var _ = this;
       _.appLocalizations = t0;
       _.imagePaths = t1;
       _.selectedAction = t2;
       _.action = t3;
+      _.key = t4;
     },
     PopupMenuItemDateFilterAction: function PopupMenuItemDateFilterAction(t0, t1, t2, t3) {
       var _ = this;
@@ -3652,12 +3654,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     BaseEmailItemTile: function BaseEmailItemTile() {
     },
-    ContextItemFilterMessageOptionAction: function ContextItemFilterMessageOptionAction(t0, t1, t2, t3) {
+    ContextItemFilterMessageOptionAction: function ContextItemFilterMessageOptionAction(t0, t1, t2, t3, t4) {
       var _ = this;
       _.appLocalizations = t0;
       _.imagePaths = t1;
       _.selectedAction = t2;
       _.action = t3;
+      _.key = t4;
     },
     EmailSelectionActionType: function EmailSelectionActionType(t0, t1) {
       this.index = t0;
@@ -9752,7 +9755,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A.Intl__message("More", _null, "more", _null, _null),
         t3 = isScreenWithShortestSide ? new B.EmailViewAppBarWidget__getMoreButton_closure(_this) : _null,
         t4 = !isScreenWithShortestSide ? new B.EmailViewAppBarWidget__getMoreButton_closure0(_this) : _null;
-      return A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_9Sx, 20, _null, _null, "assets/images/ic_more_vertical.svg", C.Color_4F4, t1, _null, _this.iconMargin, 1 / 0, t4, t3, _this.iconPadding, t2, _null);
+      return A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_9Sx, 20, _null, _null, "assets/images/ic_more_vertical.svg", C.Color_4F4, t1, D.ValueKey_email_detailed_more_button, _this.iconMargin, 1 / 0, t4, t3, _this.iconPadding, t2, _null);
     },
     _email_view_app_bar_widget$_buildActionButtons$4$appLocalizations$isResponsiveDesktop$isResponsiveMobile$isScreenWithShortestSide(appLocalizations, isResponsiveDesktop, isResponsiveMobile, isScreenWithShortestSide) {
       var t1, t2, _this = this;
@@ -11579,6 +11582,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     buildIconAttachment$0() {
       return A.SvgPicture$asset("assets/images/ic_attachment.svg", C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_wsa), C.BoxFit_0, 16, null, null, 16);
     },
+    buildIconUnreadStatus$0() {
+      return A.SvgPicture$asset("assets/images/ic_unread_status.svg", C.Alignment_0_0, null, C.BoxFit_0, 9, D.ValueKey_unread_status_icon, null, 9);
+    },
     buildIconAvatarText$3$iconSize$textStyle(email, iconSize, textStyle) {
       var _null = null,
         t1 = B.PresentationEmailExtension_get_avatarColors(email),
@@ -12208,7 +12214,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._EmailTileBuilderState.prototype = {
     build$1(context) {
       var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, _this = this, _null = null,
-        _s34_ = "assets/images/ic_unread_status.svg",
         _s25_ = "assets/images/ic_star.svg",
         t1 = A.Theme_of(context).colorScheme,
         t2 = t1._outline;
@@ -12226,7 +12231,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = type$.JSArray_Widget;
       t6 = A._setArrayType([], t5);
       if (!_this._widget.presentationEmail.get$hasRead())
-        t6.push(new A.Padding(E.EdgeInsetsDirectional_0_0_5_0, A.SvgPicture$asset(_s34_, C.Alignment_0_0, _null, C.BoxFit_0, 9, _null, _null, 9), _null));
+        t6.push(new A.Padding(E.EdgeInsetsDirectional_0_0_5_0, _this.buildIconUnreadStatus$0(), _null));
       t7 = _this._widget;
       t6.push(A.Expanded$(_this.buildInformationSender$5(context, t7.presentationEmail, t7.mailboxContain, t7.isSearchEmailRunning, t7.searchQuery), 1));
       t6.push(_this.buildIconAnsweredOrForwarded$3$height$presentationEmail$width(16, _this._widget.presentationEmail, 16));
@@ -12296,7 +12301,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       t23 = A.buildIconWeb(_null, t22, C.EdgeInsets_0_0_0_0, _null, E.EdgeInsets_0_6_0_6, 28, new B._EmailTileBuilderState_build_closure4(_this), _null, t23);
       t22 = A.buildIconWeb(_null, _this.buildIconAnsweredOrForwarded$1$presentationEmail(_this._widget.presentationEmail), C.EdgeInsets_0_0_0_0, _null, E.EdgeInsets_0_6_0_6, 28, _null, 1, _this.messageToolTipForAnsweredOrForwarded$2(context, _this._widget.presentationEmail));
-      t24 = _this._widget.presentationEmail.get$hasRead() ? D.SizedBox_20_20_null_null : A.Container$(C.Alignment_0_0, A.SvgPicture$asset(_s34_, C.Alignment_0_0, _null, C.BoxFit_0, 9, _null, _null, 9), C.Clip_0, _null, _null, _null, _null, 20, _null, _null, _null, _null, _null, 20);
+      t24 = _this._widget.presentationEmail.get$hasRead() ? D.SizedBox_20_20_null_null : A.Container$(C.Alignment_0_0, _this.buildIconUnreadStatus$0(), C.Clip_0, _null, _null, _null, _null, 20, _null, _null, _null, _null, _null, 20);
       if (_this._widget.presentationEmail.get$hasRead())
         t20 = _null;
       else {
@@ -12501,7 +12506,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = type$.JSArray_Widget;
       t6 = A._setArrayType([], t5);
       if (!_this._widget.presentationEmail.get$hasRead())
-        t6.push(new A.Padding(E.EdgeInsetsDirectional_0_0_5_0, A.SvgPicture$asset("assets/images/ic_unread_status.svg", C.Alignment_0_0, _null, C.BoxFit_0, 9, _null, _null, 9), _null));
+        t6.push(new A.Padding(E.EdgeInsetsDirectional_0_0_5_0, _this.buildIconUnreadStatus$0(), _null));
       t7 = _this._widget;
       t6.push(A.Expanded$(_this.buildInformationSender$5(context, t7.presentationEmail, t7.mailboxContain, t7.isSearchEmailRunning, t7.searchQuery), 1));
       if (_this._web_tablet_body_email_item_widget$_isHover || _this._web_tablet_body_email_item_widget$_popupMenuVisible)
@@ -16878,7 +16883,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(action) {
       var t1 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
-      return new A.ContextItemEmailAction(t1, this._this.EmailActionController_imagePaths, action);
+      return new A.ContextItemEmailAction(t1, this._this.EmailActionController_imagePaths, action, null);
     },
     $signature: 257
   };
@@ -17245,7 +17250,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t5.toString;
       A.Expando__checkType(t1);
-      return new B.ContextItemReceiveTimeTypeAction(t5, t3._as(t2.get(t1)).EmailActionController_imagePaths, t4, timeType);
+      return new B.ContextItemReceiveTimeTypeAction(t5, t3._as(t2.get(t1)).EmailActionController_imagePaths, t4, timeType, null);
     },
     $signature: typesOffset + 45
   };
@@ -17300,7 +17305,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t5.toString;
       A.Expando__checkType(t1);
-      return new B.ContextItemSortOrderTypeAction(t5, t3._as(t2.get(t1)).EmailActionController_imagePaths, t4, orderType);
+      return new B.ContextItemSortOrderTypeAction(t5, t3._as(t2.get(t1)).EmailActionController_imagePaths, t4, orderType, null);
     },
     $signature: typesOffset + 46
   };
@@ -17886,7 +17891,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(action) {
       var t1 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
-      return new A.ContextItemEmailAction(t1, this._this.EmailActionController_imagePaths, action);
+      return new A.ContextItemEmailAction(t1, this._this.EmailActionController_imagePaths, action, null);
     },
     $signature: 257
   };
@@ -17913,7 +17918,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(filter) {
       var t1 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
-      return new B.ContextItemFilterMessageOptionAction(t1, this._this.EmailActionController_imagePaths, this.selectedOption, filter);
+      return new B.ContextItemFilterMessageOptionAction(t1, this._this.EmailActionController_imagePaths, this.selectedOption, filter, filter._name + "_filter");
     },
     $signature: typesOffset + 51
   };
@@ -19017,7 +19022,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       t1 = A.Localizations_of(t1, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
-      return new A.ContextItemEmailAction(t1, this._this.imagePaths, action);
+      return new A.ContextItemEmailAction(t1, this._this.imagePaths, action, null);
     },
     $signature: 257
   };
@@ -20082,6 +20087,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.ValueKey_7Re = new A.ValueKey("refresh_all_mailbox_and_email_button", type$.ValueKey_String);
     D.ValueKey_compose_email_button = new A.ValueKey("compose_email_button", type$.ValueKey_String);
     D.ValueKey_date_time_filter_context_menu = new A.ValueKey("date_time_filter_context_menu", type$.ValueKey_String);
+    D.ValueKey_email_detailed_more_button = new A.ValueKey("email_detailed_more_button", type$.ValueKey_String);
     D.ValueKey_email_search_bar_view = new A.ValueKey("email_search_bar_view", type$.ValueKey_String);
     D.ValueKey_email_view_app_bar_widget = new A.ValueKey("email_view_app_bar_widget", type$.ValueKey_String);
     D.ValueKey_email_view_button_bar = new A.ValueKey("email_view_button_bar", type$.ValueKey_String);
@@ -20107,6 +20113,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.ValueKey_suggestion_search_list_view = new A.ValueKey("suggestion_search_list_view", type$.ValueKey_String);
     D.ValueKey_swd = new A.ValueKey("search_email_list_notification_listener", type$.ValueKey_String);
     D.ValueKey_toggle_app_grid_button = new A.ValueKey("toggle_app_grid_button", type$.ValueKey_String);
+    D.ValueKey_unread_status_icon = new A.ValueKey("unread_status_icon", type$.ValueKey_String);
     D.ValueKey_user_avatar = new A.ValueKey("user_avatar", type$.ValueKey_String);
     D.VerticalDivider_Drw1 = new A.VerticalDivider(null, null, null, null, null, null);
     D.VerticalDivider_Drw0 = new A.VerticalDivider(1, null, null, null, null, null);
@@ -20143,5 +20150,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "9SSII4sVZx1g5cY0zTMULvWSYMw=");
+})($__dart_deferred_initializers__, "nkPubpik3B8slpMJKY0bGLrKrqg=");
 ;
