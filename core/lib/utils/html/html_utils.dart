@@ -14,6 +14,11 @@ import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
 
 class HtmlUtils {
+  static const validTags = [
+    'html','head','body','div','span','p','b','i','u','strong','em','a',
+    'img','blockquote','ul','ol','li','table','tr','td','th','thead','tbody',
+    'br','hr','h1','h2','h3','h4','h5','h6','pre','code'
+  ];
   static final random = Random();
   static final htmlUnescape = HtmlUnescape();
 
@@ -524,7 +529,6 @@ class HtmlUtils {
         .replaceAll('\t', '');
   }
 
-
   /// Returns true if the browser is Safari and its major version is less than 17.
   static bool isSafariBelow17() {
     try {
@@ -658,4 +662,36 @@ class HtmlUtils {
         });
       });
     </script>''';
+
+  static String extractPlainText(String html) {
+    var cleaned = html;
+    // Delete the blockquote and the content inside
+    final blockquoteRegex = RegExp(
+      r'<blockquote[\s\S]*?</blockquote>',
+      caseSensitive: false,
+    );
+    cleaned = html.replaceAll(blockquoteRegex, '');
+
+    // Decode HTML entities up to 5 times (&amp; → &, &nbsp; → space, &lt;div&gt; → <div>, ...)
+    int iterations = 0;
+    const maxIterations = 5;
+    String decoded;
+    do {
+      decoded = cleaned;
+      cleaned = htmlUnescape.convert(cleaned);
+      iterations++;
+    } while (decoded != cleaned && iterations < maxIterations);
+
+    // Delete all remaining HTML tags → replace tag with space to avoid text sticking
+    final tagRegex = RegExp(
+      '</?(${validTags.join('|')})(\\s+[^>]*)?>',
+      caseSensitive: false,
+    );
+    cleaned = cleaned.replaceAll(tagRegex, ' ');
+
+    // Normalize whitespace
+    cleaned = cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
+
+    return cleaned;
+  }
 }
