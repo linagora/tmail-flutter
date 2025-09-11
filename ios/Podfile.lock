@@ -186,7 +186,7 @@ PODS:
     - CocoaAsyncSocket (~> 7.6)
     - Flutter
     - FlutterMacOS
-  - pdfrx (0.0.3):
+  - pdfrx (0.0.6):
     - Flutter
     - FlutterMacOS
   - permission_handler_apple (9.1.1):
@@ -401,6 +401,7 @@ SPEC CHECKSUMS:
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
+<<<<<<< Updated upstream
   package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   patrol: 0564cee315ff6c86fb802b3647db05cc2d3d0624
@@ -409,6 +410,16 @@ SPEC CHECKSUMS:
   photo_manager: ff695c7a1dd5bc379974953a2b5c0a293f7c4c8a
   pointer_interceptor_ios: 9280618c0b2eeb80081a343924aa8ad756c21375
   printing: 233e1b73bd1f4a05615548e9b5a324c98588640b
+=======
+  package_info_plus: 580e9a5f1b6ca5594e7c9ed5f92d1dfb2a66b5e1
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  patrol: dd82ffedfee3aba87c1d0ed2daad0b77bfb8ee1f
+  pdfrx: 310e84d01e06fd2af26e16507a0e48c27e99195c
+  permission_handler_apple: 3787117e48f80715ff04a3830ca039283d6a4f29
+  photo_manager: d2fbcc0f2d82458700ee6256a15018210a81d413
+  pointer_interceptor_ios: 6c19a55ea369c3f64424c9a95441e2b0e8beb8f3
+  printing: 54ff03f28fe9ba3aa93358afb80a8595a071dd07
+>>>>>>> Stashed changes
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   ReachabilitySwift: 32793e867593cfc1177f5d16491e3a197d2fccda
   receive_sharing_intent: 79c848f5b045674ad60b9fea3bafea59962ad2c1
