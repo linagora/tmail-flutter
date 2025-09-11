@@ -117,21 +117,16 @@ extension AppColor on Color {
   static const colorShadowComposerButton = Color(0x99007AFF);
   static const colorBackgroundTagFilter = Color(0xFF6D7885);
   static const colorDefaultRichTextButton = Color(0xFF99A2AD);
-  static const colorFocusRichTextButton = Color(0x146D7885);
   static const colorStyleBlockQuote = Color(0xFFEEEEEE);
   static const colorBorderStyleCode = Color(0xFFCCCCCC);
   static const colorBackgroundStyleCode = Color(0xFFF5F5F5);
   static const colorBorderWrapIconStyleCode = Color(0xFFE4E4E4);
   static const colorBackgroundWrapIconStyleCode = Color(0xFFF2F3F5);
-  static const colorSelectedRichTextButton = Color(0x99EBEDF0);
-  static const colorShadowDestinationPicker = Color(0x33000000);
   static const colorBackgroundSnackBar = Color(0xFF343438);
   static const colorBackgroundHeaderListRuleFilter = Color(0xFFFAF7F7);
   static const colorBorderListRuleFilter = Color(0xFFE7E8EC);
   static const colorBackgroundFieldConditionRulesFilter = Color(0xFFF2F3F5);
   static const colorDeletePermanentlyButton = Color(0xffE64646);
-  static const colorVacationSettingExplanation = Color(0xFF686E76);
-  static const colorBackgroundVacationSettingField = Color(0xFFF2F3F5);
   static const colorBackgroundNotificationVacationSetting= Color(0xFFFFF5C2);
   static const colorDivider = Color(0xFFE7E8EC);
   static const colorCloseButton = Color(0xFF818C99);
@@ -236,6 +231,7 @@ extension AppColor on Color {
   static const colorContactViewClearFilterButton = Color(0x001C3D0D);
   static const steelGrayA540 = Color(0xFF55687D);
   static const steelGray200 = Color(0xFFAEB7C2);
+  static const steelGray80 = Color(0xFFE7E8EC);
   static const blue700 = Color(0xFF208BFF);
   static const steelGray400 = Color(0xFF818C99);
   static const steelGray600 = Color(0xFF4E5966);
@@ -248,6 +244,7 @@ extension AppColor on Color {
   static const m3Tertiary20 = Color(0xFF71767C);
   static const m3Neutral70 = Color(0xFFAEAAAE);
   static const m3Neutral90 = Color(0xFFE6E1E5);
+  static const m3SysLightSecondaryBlue = Color(0xFF5C9CE6);
   static const grayBackgroundColor = Color(0xFFF3F6F9);
   static const m3SurfaceBackground = Color(0xFF1C1B1F);
   static const warningColor = Color(0xFFFFC107);
@@ -273,6 +270,11 @@ extension AppColor on Color {
   static const lightGrayEAEDF2 = Color(0xFFEAEDF2);
   static const lightIconTertiary = Color(0xFFB8C1CC);
   static const gray6D7885 = Color(0xFF6D7885);
+  static const m3Primary = Color(0xFF0A84FF);
+  static const m3Primary95 = Color(0xFFE3F1FF);
+  static const gray49454F = Color(0xFF49454F);
+  static const lightGrayF9FAFB = Color(0xFFF9FAFB);
+  static const black4D4D4D = Color(0xFF4D4D4D);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

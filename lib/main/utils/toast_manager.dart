@@ -8,6 +8,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_appauth_web/authorization_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -23,6 +24,7 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
@@ -98,7 +100,7 @@ class ToastManager {
       return '[${exception.type.value}] ${exception.message}';
     } else if (exception is SetError) {
       return '[${exception.type.value}] ${exception.description}';
-    }else if (exception is PlatformException &&
+    } else if (exception is PlatformException &&
         exception.message?.isNotEmpty == true) {
       return exception.message!;
     } else if (exception is NotGrantedPermissionStorageException) {
@@ -114,6 +116,12 @@ class ToastManager {
         final firstError = mapErrors.values.first;
         return '[${firstError.type.value}] ${firstError.description}';
       }
+    } else if (exception is ServerError) {
+      return '[${exception.error}] ${exception.errorDescription}';
+    } else if (exception is TemporarilyUnavailable) {
+      return '[${exception.error}] ${exception.errorDescription}';
+    } else if (exception is AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException) {
+      return '';
     }
 
     if (useDefaultMessage) {
@@ -147,6 +155,8 @@ class ToastManager {
       message = message ?? AppLocalizations.of(context).emptyTrashFolderFailed;
     } else if (_isMarkAsSpamFailure(failure)) {
       message = message ?? AppLocalizations.of(context).markAsSpamFailed;
+    } else if (_isArchiveMessagesFailure(failure)) {
+      message = message ?? AppLocalizations.of(context).archiveMessagesFailed;
     } else if (failure is SignInTwakeWorkplaceFailure) {
       message = message ?? AppLocalizations.of(context).sigInSaasFailed;
     } else if (failure is SignUpTwakeWorkplaceFailure) {
@@ -159,12 +169,15 @@ class ToastManager {
           message ?? AppLocalizations.of(context).previewEmailFromEMLFileFailed;
     } else if (failure is ExportTraceLogFailure) {
       message = message ?? AppLocalizations.of(context).exportTraceLogFailed;
-    } else if (failure is AddRecipientsInForwardingFailure) {
+    } else if (failure is AddRecipientsInForwardingFailure ||
+        failure is AddRecipientsInForwardingSuccessWithSomeCaseFailure) {
       message = message ?? AppLocalizations.of(context).addRecipientsFailed;
-    } else if (failure is EditLocalCopyInForwardingFailure) {
+    } else if (failure is EditLocalCopyInForwardingFailure ||
+        failure is EditLocalCopyInForwardingSuccessWithSomeCaseFailure) {
       message =
           message ?? AppLocalizations.of(context).editLocalCopyInForwardFailed;
-    } else if (failure is DeleteRecipientInForwardingFailure) {
+    } else if (failure is DeleteRecipientInForwardingFailure ||
+        failure is DeleteRecipientInForwardingSuccessWithSomeCaseFailure) {
       message = message ?? AppLocalizations.of(context).deleteRecipientsFailed;
     } else if (failure is CreateNewRuleFilterFailure) {
       message = message ?? AppLocalizations.of(context).createFilterRuleFailed;
@@ -193,6 +206,12 @@ class ToastManager {
   bool _isMarkAsSpamFailure(FeatureFailure failure) {
     return failure is MoveMultipleEmailToMailboxFailure &&
         failure.emailActionType == EmailActionType.moveToSpam &&
+        failure.moveAction == MoveAction.moving;
+  }
+
+  bool _isArchiveMessagesFailure(FeatureFailure failure) {
+    return failure is MoveMultipleEmailToMailboxFailure &&
+        failure.emailActionType == EmailActionType.archiveMessage &&
         failure.moveAction == MoveAction.moving;
   }
 

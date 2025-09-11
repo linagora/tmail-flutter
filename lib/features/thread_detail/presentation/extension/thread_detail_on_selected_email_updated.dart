@@ -1,7 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -20,6 +23,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       return;
     }
 
+    emailIdsPresentation.clear();
     scrollController ??= ScrollController();
 
     if (currentExpandedEmailId.value == null) {
@@ -33,9 +37,13 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       _preloadSelectedEmail(selectedEmail);
 
       if (isThreadDetailEnabled && selectedEmail.threadId != null) {
+        final mailboxContain = selectedEmail.findMailboxContain(
+          mailboxDashBoardController.mapMailboxById,
+        );
         mailboxDashBoardController.dispatchThreadDetailUIAction(
           LoadThreadDetailAfterSelectedEmailAction(
             selectedEmail.threadId!,
+            isSentMailbox: mailboxContain?.isSent == true,
           )
         );
       }
@@ -56,6 +64,10 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       Right(PreloadEmailIdsInThreadSuccess(
         [selectedEmail.id!],
         threadId: selectedEmail.threadId,
+        emailsInThreadDetailInfo: [selectedEmail].toEmailsInThreadDetailInfo(
+          sentMailboxId: sentMailboxId,
+          ownEmailAddress: ownEmailAddress,
+        ),
       )),
       Right(PreloadEmailsByIdsSuccess([selectedEmail])),
     ]));

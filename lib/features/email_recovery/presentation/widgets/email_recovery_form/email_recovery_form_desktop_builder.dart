@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/base/widget/default_field/default_close_b
 import 'package:tmail_ui_user/features/base/widget/default_field/default_date_drop_down_field_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_with_tab_key_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_label_field_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/pop_back_barrier_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_controller.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/extension/handle_drag_email_tag_between_field_extension.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/limits_banner.dart';
@@ -26,11 +27,10 @@ class EmailRecoveryFormDesktopBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
 
-    return Scaffold(
-      backgroundColor: Colors.black.withValues(alpha: 0.20),
-      body: GestureDetector(
-        onTap: FocusScope.of(context).unfocus,
-        child: Center(
+    final child = PopBackBarrierWidget(
+      child: Center(
+        child: GestureDetector(
+          onTap: FocusScope.of(context).unfocus,
           child: Card(
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -263,6 +263,11 @@ class EmailRecoveryFormDesktopBuilder extends StatelessWidget {
           ),
         ),
       ),
+    );
+
+    return Scaffold(
+      backgroundColor: Colors.black.withValues(alpha: 0.20),
+      body: child,
     );
   }
 }

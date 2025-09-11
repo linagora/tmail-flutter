@@ -22,7 +22,6 @@ import 'package:model/principals/capability_principals.dart';
 import 'package:uri/uri.dart';
 
 extension SessionExtension on Session {
-
   String getDownloadUrl({String? jmapUrl}) {
     final Uri downloadUrlValid;
     if (jmapUrl != null) {
@@ -127,6 +126,26 @@ extension SessionExtension on Session {
       return null;
     }
     return null;
+  }
+
+  String generateOwnEmailAddressFromDomain(String domain) {
+    try {
+      final userName = username.value;
+      if (domain.trim().isEmpty || userName.trim().isEmpty) return '';
+
+      if (userName.endsWith(domain)) return userName;
+
+      return '$userName@$domain';
+    } catch (e) {
+      logError('$runtimeType::generateOwnEmailAddressFromDomain: Exception: $e');
+      return '';
+    }
+  }
+
+  String getOwnEmailAddressOrUsername() {
+    final emailAddress = getOwnEmailAddressOrEmpty();
+    if (emailAddress.isNotEmpty) return emailAddress;
+    return getUserDisplayName();
   }
 
   JmapAccount get personalAccount {

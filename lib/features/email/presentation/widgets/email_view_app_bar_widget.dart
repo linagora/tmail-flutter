@@ -35,7 +35,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
   final EdgeInsetsGeometry? iconPadding;
   final EdgeInsetsGeometry? iconMargin;
   final EdgeInsetsGeometry? padding;
-  final bool isOnlyEmailInThread;
 
   EmailViewAppBarWidget({
     Key? key,
@@ -53,7 +52,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
     this.iconPadding,
     this.iconMargin,
     this.padding,
-    this.isOnlyEmailInThread = false,
   }) : super(key: key);
 
   @override
@@ -167,7 +165,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     icon: _imagePaths.icMoveEmail,
     iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
-    tooltipMessage: appLocalizations.move_message,
+    tooltipMessage: appLocalizations.moveMessage,
     backgroundColor: Colors.transparent,
     onTapActionCallback: () => onEmailActionClick?.call(
       presentationEmail,
@@ -222,6 +220,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     AppLocalizations applocalizations,
     bool isScreenWithShortestSide,
   ) => TMailButtonWidget.fromIcon(
+    key: const Key('email_detailed_more_button'),
     icon: _imagePaths.icMoreVertical,
     iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
@@ -266,8 +265,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
         _getMarkStarButton(appLocalizations),
         _getDeleteButton(appLocalizations),
       ],
-      if (!isOnlyEmailInThread)
-        _getMoreButton(appLocalizations, isScreenWithShortestSide),
+      _getMoreButton(appLocalizations, isScreenWithShortestSide),
     ];
   }
 }

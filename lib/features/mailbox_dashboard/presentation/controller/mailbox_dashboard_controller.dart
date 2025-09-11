@@ -22,14 +22,16 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/mixin/own_email_address_mixin.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
@@ -113,6 +115,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_clear_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
@@ -124,7 +127,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_own_email_address_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_paywall_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -150,6 +153,9 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
+import 'package:tmail_ui_user/features/paywall/domain/state/get_paywall_url_state.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/saas_premium_mixin.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
@@ -180,6 +186,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
@@ -200,7 +207,9 @@ import 'package:server_settings/server_settings/tmail_server_settings_extension.
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
-    with ContactSupportMixin {
+    with ContactSupportMixin,
+        OwnEmailAddressMixin,
+        SaaSPremiumMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -282,9 +291,7 @@ class MailboxDashBoardController extends ReloadableController
   final isDrawerOpened = RxBool(false);
   final isContextMenuOpened = RxBool(false);
   final isPopupMenuOpened = RxBool(false);
-  final ownEmailAddress = RxString('');
 
-  Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};
   final emailsInCurrentMailbox = <PresentationEmail>[].obs;
@@ -301,6 +308,8 @@ class MailboxDashBoardController extends ReloadableController
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailSortOrderType currentSortOrder = SearchEmailFilter.defaultSortOrder;
+  PaywallUrlPattern? paywallUrlPattern;
+  bool isRetryGetPaywallUrl = false;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -496,6 +505,8 @@ class MailboxDashBoardController extends ReloadableController
       );
     } else if (success is GetStoredEmailSortOrderSuccess) {
       setUpDefaultEmailSortOrder(success.emailSortOrderType);
+    } else if (success is GetPaywallUrlSuccess) {
+      loadPaywallUrlSuccess(success.paywallUrlPattern);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -541,6 +552,8 @@ class MailboxDashBoardController extends ReloadableController
       tryGetAuthenticatedAccountToUseApp();
     } else if (isGetTokenOIDCFailure(failure)) {
       backToHomeScreen();
+    } else if (failure is GetPaywallUrlFailure) {
+      loadPaywallUrlFailure();
     } else {
       super.handleFailureViewState(failure);
     }
@@ -829,6 +842,8 @@ class MailboxDashBoardController extends ReloadableController
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
       _storeSessionAction(session);
+    } else {
+      loadPaywallUrl();
     }
   }
 
@@ -935,6 +950,8 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::handleClearAdvancedSearchFilterEmail:');
     clearFilterMessageOption();
     if (_searchInsideEmailDetailedViewIsActive()) {
+      _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
@@ -1263,16 +1280,16 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void moveSelectedMultipleEmailToMailbox(
-      List<PresentationEmail> listEmails,
-      PresentationMailbox currentMailbox
-  ) async {
+  Future<void> moveEmailsToMailbox(
+    List<PresentationEmail> listEmails, {
+    VoidCallback? onCallbackAction,
+  }) async {
     if (accountId.value != null) {
       final arguments = DestinationPickerArguments(
         accountId.value!,
         MailboxActions.moveEmail,
         sessionCurrent,
-        mailboxIdSelected: currentMailbox.mailboxId);
+      );
 
       final destinationMailbox = PlatformInfo.isWeb
         ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
@@ -1283,61 +1300,44 @@ class MailboxDashBoardController extends ReloadableController
           sessionCurrent != null &&
           accountId.value != null
       ) {
-        _dispatchMoveToMultipleAction(
-          accountId.value!,
-          sessionCurrent!,
-          listEmails.listEmailIds,
-          currentMailbox,
-          destinationMailbox,
-          Map.fromEntries(
-            listEmails
-              .where((email) => email.id != null)
-              .map((email) => MapEntry(email.id!, email.hasRead)),
-          ),
-        );
-      }
-    }
-  }
+        onCallbackAction?.call();
 
-  void _dispatchMoveToMultipleAction(
-      AccountId accountId,
-      Session session,
-      List<EmailId> listEmailIds,
-      PresentationMailbox currentMailbox,
-      PresentationMailbox destinationMailbox,
-      Map<EmailId, bool> emailIdsWithReadStatus,
-  ) {
-    if (destinationMailbox.isTrash) {
-      _moveSelectedEmailMultipleToMailboxAction(
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {currentMailbox.id: listEmailIds},
-          destinationMailbox.id,
-          MoveAction.moving,
-          EmailActionType.moveToTrash),
-        emailIdsWithReadStatus);
-    } else if (destinationMailbox.isSpam) {
-      _moveSelectedEmailMultipleToMailboxAction(
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {currentMailbox.id: listEmailIds},
-          destinationMailbox.id,
-          MoveAction.moving,
-          EmailActionType.moveToSpam),
-        emailIdsWithReadStatus);
+        if (destinationMailbox.isTrash) {
+          moveEmailsToFolder(
+            listEmails,
+            EmailActionType.moveToTrash,
+            selectedMailboxId: destinationMailbox.id,
+          );
+        } else if (destinationMailbox.isSpam) {
+          moveEmailsToFolder(
+            listEmails,
+            EmailActionType.moveToSpam,
+            selectedMailboxId: destinationMailbox.id,
+          );
+        } else if (destinationMailbox.isArchive) {
+          moveEmailsToFolder(
+            listEmails,
+            EmailActionType.archiveMessage,
+            selectedMailboxId: destinationMailbox.id,
+          );
+        } else {
+          moveEmailsToFolder(
+            listEmails,
+            EmailActionType.moveToMailbox,
+            selectedMailboxId: destinationMailbox.id,
+            destinationFolderPath: destinationMailbox.mailboxPath,
+          );
+        }
+      }
     } else {
-      _moveSelectedEmailMultipleToMailboxAction(
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {currentMailbox.id: listEmailIds},
-          destinationMailbox.id,
-          MoveAction.moving,
+      onCallbackAction?.call();
+      consumeState(
+        Stream.value(Left(MoveMultipleEmailToMailboxFailure(
           EmailActionType.moveToMailbox,
-          destinationPath: destinationMailbox.mailboxPath),
-        emailIdsWithReadStatus);
+          MoveAction.moving,
+          ParametersIsNullException(),
+        ))),
+      );
     }
   }
 
@@ -1424,7 +1424,7 @@ class MailboxDashBoardController extends ReloadableController
     dispatchAction(CancelSelectionAllEmailAction());
   }
 
-  void _moveSelectedEmailMultipleToMailboxAction(
+  void moveSelectedEmailMultipleToMailboxAction(
     Session session,
     AccountId accountId,
     MoveToMailboxRequest moveRequest,
@@ -1446,34 +1446,52 @@ class MailboxDashBoardController extends ReloadableController
     MoveAction? moveAction;
     EmailActionType? emailActionType;
     Map<EmailId, bool>? emailIdsWithReadStatus;
+    bool isUndoActionEnabled = false;
 
     if (success is MoveMultipleEmailToMailboxAllSuccess) {
       destinationPath = success.destinationPath;
       movedEmailIds = success.movedListEmailId;
-      currentMailboxId = success.currentMailboxId;
+      currentMailboxId = success.originalMailboxIdsWithEmailIds.keys.firstOrNull;
       destinationMailboxId = success.destinationMailboxId;
       moveAction = success.moveAction;
       emailActionType = success.emailActionType;
       emailIdsWithReadStatus = success.emailIdsWithReadStatus;
+      isUndoActionEnabled = success.originalMailboxIdsWithEmailIds.length == 1;
     } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
       destinationPath = success.destinationPath;
       movedEmailIds = success.movedListEmailId;
-      currentMailboxId = success.currentMailboxId;
+      currentMailboxId = success.originalMailboxIdsWithMoveSucceededEmailIds.keys.firstOrNull;
       destinationMailboxId = success.destinationMailboxId;
       moveAction = success.moveAction;
       emailActionType = success.emailActionType;
       emailIdsWithReadStatus = success.moveSucceededEmailIdsWithReadStatus;
+      isUndoActionEnabled = success.originalMailboxIdsWithMoveSucceededEmailIds.length == 1;
     }
 
-    if (currentContext != null &&
-        currentOverlayContext != null &&
-        emailActionType != null &&
-        moveAction == MoveAction.moving) {
+    if (currentMailboxId == null ||
+        currentOverlayContext == null ||
+        emailActionType == null ||
+        moveAction != MoveAction.moving) {
+      return;
+    }
+
+    if (!isUndoActionEnabled) {
+      appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        emailActionType.getToastMessageMoveToMailboxSuccess(
+          currentContext!,
+          destinationPath: destinationPath,
+        ),
+        leadingSVGIconColor: Colors.white,
+        leadingSVGIcon: imagePaths.icFolderMailbox,
+      );
+    } else {
       appToast.showToastMessage(
         currentOverlayContext!,
         emailActionType.getToastMessageMoveToMailboxSuccess(
           currentContext!,
-          destinationPath: destinationPath),
+          destinationPath: destinationPath,
+        ),
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () {
           final newCurrentMailboxId = destinationMailboxId;
@@ -1484,7 +1502,7 @@ class MailboxDashBoardController extends ReloadableController
               newDestinationMailboxId,
               MoveAction.undo,
               emailActionType!,
-              destinationPath: destinationPath
+              destinationPath: destinationPath,
             ), emailIdsWithReadStatus ?? {});
           }
         },
@@ -1508,65 +1526,6 @@ class MailboxDashBoardController extends ReloadableController
         newMoveRequest,
         emailIdsWithReadStatus));
     }
-  }
-
-  void moveSelectedMultipleEmailToTrash(List<PresentationEmail> listEmails, PresentationMailbox mailboxCurrent) {
-    final trashMailboxId = getMailboxIdByRole(PresentationMailbox.roleTrash);
-    if (accountId.value != null && trashMailboxId != null && sessionCurrent != null) {
-      _moveSelectedEmailMultipleToMailboxAction(
-        sessionCurrent!,
-        accountId.value!,
-        MoveToMailboxRequest(
-          {mailboxCurrent.id: listEmails.listEmailIds},
-          trashMailboxId,
-          MoveAction.moving,
-          EmailActionType.moveToTrash),
-        Map.fromEntries(
-          listEmails
-            .where((email) => email.id != null)
-            .map((email) => MapEntry(email.id!, email.hasRead)),
-        ),
-      );
-    }
-  }
-
-  void moveSelectedMultipleEmailToSpam(List<PresentationEmail> listEmail, PresentationMailbox mailboxCurrent) {
-    if (accountId.value == null || sessionCurrent == null) {
-      consumeState(Stream.value(
-        Left(MoveMultipleEmailToMailboxFailure(
-          EmailActionType.moveToSpam,
-          MoveAction.moving,
-          NotFoundSessionException()
-        ))
-      ));
-      return;
-    }
-
-    if (spamMailboxId == null) {
-      consumeState(Stream.value(
-        Left(MoveMultipleEmailToMailboxFailure(
-          EmailActionType.moveToSpam,
-          MoveAction.moving,
-          NotFoundSpamMailboxException()
-        ))
-      ));
-      return;
-    }
-
-    _moveSelectedEmailMultipleToMailboxAction(
-      sessionCurrent!,
-      accountId.value!,
-      MoveToMailboxRequest(
-        {mailboxCurrent.id: listEmail.listEmailIds},
-        spamMailboxId!,
-        MoveAction.moving,
-        EmailActionType.moveToSpam),
-      Map.fromEntries(
-        listEmail
-          .where((email) => email.id != null)
-          .map((email) => MapEntry(email.id!, email.hasRead)),
-      ),
-    );
   }
 
   void unSpamSelectedMultipleEmail(List<PresentationEmail> listEmail) {
@@ -1604,7 +1563,7 @@ class MailboxDashBoardController extends ReloadableController
       return;
     }
 
-    _moveSelectedEmailMultipleToMailboxAction(
+    moveSelectedEmailMultipleToMailboxAction(
       sessionCurrent!,
       accountId.value!,
       MoveToMailboxRequest(
@@ -1620,6 +1579,81 @@ class MailboxDashBoardController extends ReloadableController
     );
   }
 
+  void moveMultipleEmailInThreadDetail(
+    List<EmailInThreadDetailInfo> emailsInThreadDetailInfo, {
+    required MailboxId destinationMailboxId,
+    required EmailActionType emailActionType,
+  }) {
+    if (sessionCurrent == null || accountId.value == null) {
+      consumeState(Stream.value(
+        Left(MoveMultipleEmailToMailboxFailure(
+          emailActionType,
+          MoveAction.moving,
+          NotFoundSessionException()
+        ))
+      ));
+      return;
+    }
+    final currentMailboxes = <MailboxId, List<EmailId>>{};
+    for (final email in emailsInThreadDetailInfo) {
+      final mailboxIdContain = email.mailboxIdContain;
+      if (mailboxIdContain == null) continue;
+
+      currentMailboxes.putIfAbsent(mailboxIdContain, () => []).add(email.emailId);
+    }
+    final moveRequest = MoveToMailboxRequest(
+      currentMailboxes,
+      destinationMailboxId,
+      MoveAction.moving,
+      emailActionType,
+      destinationPath: currentContext == null
+          ? mapMailboxById[destinationMailboxId]?.name?.name
+          : mapMailboxById[destinationMailboxId]?.getDisplayName(currentContext!),
+    );
+    final emailIdsWithReadStatus = Map.fromEntries(
+      emailsInThreadDetailInfo.map(
+        (email) => MapEntry(
+          email.emailId,
+          email.keywords?[KeyWordIdentifier.emailSeen] == true,
+        ),
+      ),
+    );
+
+    moveSelectedEmailMultipleToMailboxAction(
+      sessionCurrent!,
+      accountId.value!,
+      moveRequest,
+      emailIdsWithReadStatus,
+    );
+  }
+
+  void permanentDeleteMultipleEmailInThreadDetail(
+    List<EmailInThreadDetailInfo> emailsInThreadDetailInfo, {
+    VoidCallback? onConfirm,
+  }) {
+    if (currentContext == null) return;
+
+    final mailboxContainId = emailsInThreadDetailInfo.firstOrNull?.mailboxIdContain;
+    final mailboxContain = mailboxContainId == null
+        ? null
+        : mapMailboxById[mailboxContainId];
+
+    deleteSelectionEmailsPermanently(
+      currentContext!,
+      DeleteActionType.multiple,
+      listEmails: emailsInThreadDetailInfo
+          .map(
+            (email) => PresentationEmail(
+              id: email.emailId,
+              mailboxContain: mailboxContain,
+            ),
+          )
+          .toList(),
+      mailboxCurrent: mailboxContain,
+      onConfirm: onConfirm,
+    );
+  }
+
   void deleteSelectionEmailsPermanently(
       BuildContext context,
       DeleteActionType actionType,
@@ -1627,6 +1661,7 @@ class MailboxDashBoardController extends ReloadableController
         List<PresentationEmail>? listEmails,
         PresentationMailbox? mailboxCurrent,
         Function? onCancelSelectionEmail,
+        VoidCallback? onConfirm,
       }
   ) {
     if (responsiveUtils.isScreenWithShortestSide(context)) {
@@ -1638,33 +1673,36 @@ class MailboxDashBoardController extends ReloadableController
         ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
         ..onConfirmAction(
             actionType.getConfirmActionName(context),
-            () => _deleteSelectionEmailsPermanentlyAction(
+            () {
+              onConfirm?.call();
+              _deleteSelectionEmailsPermanentlyAction(
                 actionType,
                 listEmails: listEmails,
-                onCancelSelectionEmail: onCancelSelectionEmail)))
+                onCancelSelectionEmail: onCancelSelectionEmail,
+              );
+            }))
       .show();
     } else {
-      Get.dialog(
-        PointerInterceptor(child: ConfirmationDialogBuilder(
-          key: const Key('confirm_dialog_delete_emails_permanently'),
-          imagePath: imagePaths,
-          title: actionType.getTitleDialog(context),
-          textContent: actionType.getContentDialog(
-            context,
-            count: listEmails?.length,
-            mailboxName: mailboxCurrent?.getDisplayName(context),
-          ),
-          confirmText: actionType.getConfirmActionName(context),
-          cancelText: AppLocalizations.of(context).cancel,
-          onConfirmButtonAction: () => _deleteSelectionEmailsPermanentlyAction(
+      MessageDialogActionManager().showConfirmDialogAction(
+        key: const Key('confirm_dialog_delete_emails_permanently'),
+        context,
+        title: actionType.getTitleDialog(context),
+        actionType.getContentDialog(
+          context,
+          count: listEmails?.length,
+          mailboxName: mailboxCurrent?.getDisplayName(context),
+        ),
+        actionType.getConfirmActionName(context),
+        cancelTitle: AppLocalizations.of(context).cancel,
+        onConfirmAction: () {
+          onConfirm?.call();
+          _deleteSelectionEmailsPermanentlyAction(
             actionType,
             listEmails: listEmails,
             onCancelSelectionEmail: onCancelSelectionEmail,
-          ),
-          onCancelButtonAction: popBack,
-          onCloseButtonAction: popBack,
-        )),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+          );
+        },
+        onCloseButtonAction: popBack,
       );
     }
   }
@@ -1960,6 +1998,7 @@ class MailboxDashBoardController extends ReloadableController
       return searchController.quickSearchEmails(
         session: sessionCurrent!,
         accountId: accountId.value!,
+        ownEmailAddress: ownEmailAddress.value,
         query: query
       );
     } else {
@@ -2165,6 +2204,7 @@ class MailboxDashBoardController extends ReloadableController
   void _deleteSortOrderSearchFilter() {
     searchController.updateFilterEmail(
       sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder));
+    storeEmailSortOrder(SearchEmailFilter.defaultSortOrder);
     dispatchAction(StartSearchEmailAction());
   }
 
@@ -2702,32 +2742,25 @@ class MailboxDashBoardController extends ReloadableController
         }))
           .show();
     } else {
-      Get.dialog(
-        PointerInterceptor(child: ConfirmationDialogBuilder(
-          key: const Key('confirm_dialog_empty_spam'),
-          imagePath: imagePaths,
-          title: AppLocalizations.of(context).emptySpamFolder,
-          textContent: AppLocalizations.of(context).emptySpamMessageDialog,
-          confirmText: AppLocalizations.of(context).delete_all,
-          cancelText: AppLocalizations.of(context).cancel,
-          onConfirmButtonAction: () {
-            popBack();
-            if (spamMailbox.countTotalEmails > 0) {
-              emptySpamFolderAction(
-                spamFolderId: spamMailbox.id,
-                totalEmails: spamMailbox.countTotalEmails,
-              );
-            } else {
-              appToast.showToastWarningMessage(
-                context,
-                AppLocalizations.of(context).noEmailInYourCurrentFolder,
-              );
-            }
-          },
-          onCancelButtonAction: popBack,
-          onCloseButtonAction: popBack,
-        )),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      MessageDialogActionManager().showConfirmDialogAction(
+        key: const Key('confirm_dialog_empty_spam'),
+        context,
+        title: AppLocalizations.of(context).emptySpamFolder,
+        AppLocalizations.of(context).emptySpamMessageDialog,
+        AppLocalizations.of(context).delete_all,
+        cancelTitle: AppLocalizations.of(context).cancel,
+        onConfirmAction: () {
+          popBack();
+          if (spamMailbox.countTotalEmails > 0) {
+            emptySpamFolderAction(spamFolderId: spamMailbox.id, totalEmails: spamMailbox.countTotalEmails);
+          } else {
+            appToast.showToastWarningMessage(
+              context,
+              AppLocalizations.of(context).noEmailInYourCurrentFolder
+            );
+          }
+        },
+        onCloseButtonAction: popBack,
       );
     }
   }
@@ -3206,7 +3239,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void _handleGetAllIdentitiesFailure() {
     _identities = null;
-    synchronizeOwnEmailAddress(sessionCurrent?.getUserDisplayName() ?? '');
+    updateOwnEmailAddressFromIdentities([]);
   }
 
   List<Identity> get listIdentities => _identities ?? [];

@@ -805,12 +805,6 @@ class AppLocalizations {
         name: 'hide');
   }
 
-  String get copy_email_address {
-    return Intl.message(
-        'Copy email address',
-        name: 'copy_email_address');
-  }
-
   String get compose_email {
     return Intl.message(
         'Compose email',
@@ -1164,13 +1158,6 @@ class AppLocalizations {
     return Intl.message(
         'Exchange',
         name: 'exchange'
-    );
-  }
-
-  String get move_message {
-    return Intl.message(
-      'Move message',
-      name: 'move_message',
     );
   }
 
@@ -2076,27 +2063,6 @@ class AppLocalizations {
     );
   }
 
-  String get noStartTime {
-    return Intl.message(
-      'No start time',
-      name: 'noStartTime',
-    );
-  }
-
-  String get noEndTime {
-    return Intl.message(
-      'No end time',
-      name: 'noEndTime',
-    );
-  }
-
-  String get noEndDate {
-    return Intl.message(
-      'No end date',
-      name: 'noEndDate',
-    );
-  }
-
   String get errorMessageWhenStartDateVacationIsEmpty {
     return Intl.message(
       'Please enter a valid start date',
@@ -2210,13 +2176,6 @@ class AppLocalizations {
     return Intl.message(
         'Keep local copy disable.',
         name: 'toastMessageLocalCopyDisable');
-  }
-
-  String get keepLocalCopyForwardLabel {
-    return Intl.message(
-      'Keep a copy of the email in Inbox',
-      name: 'keepLocalCopyForwardLabel',
-    );
   }
 
   String get emailRuleSettingExplanation {
@@ -3876,12 +3835,6 @@ class AppLocalizations {
     );
   }
 
-  String get doYouWantToProceed {
-    return Intl.message(
-      'Do you want to proceed?',
-      name: 'doYouWantToProceed');
-  }
-
   String get messageWarningDialogForForwardsToOtherDomains {
     return Intl.message(
       'You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.',
@@ -4917,6 +4870,84 @@ class AppLocalizations {
     return Intl.message(
       'Creating an archive for downloading',
       name: 'creatingAnArchiveForDownloading',
+    );
+  }
+
+  String get ok {
+    return Intl.message(
+      'OK',
+      name: 'ok',
+    );
+  }
+
+  String get keepACopyInInbox {
+    return Intl.message(
+      'Keep a copy in Inbox',
+      name: 'keepACopyInInbox',
+    );
+  }
+
+  String get keepACopyInInboxDescription {
+    return Intl.message(
+      'Store forwarded emails in your inbox as well as sending them to recipients',
+      name: 'keepACopyInInboxDescription',
+    );
+  }
+
+  String get dialogWarningTitleForForwardsToOtherDomains {
+    return Intl.message(
+      'You are redirecting emails to another domain.',
+      name: 'dialogWarningTitleForForwardsToOtherDomains',
+    );
+  }
+
+  String get dialogWarningMessageForForwardsToOtherDomains {
+    return Intl.message(
+      'This could be a security threat or considered illegal data extraction. Do you want to proceed?',
+      name: 'dialogWarningMessageForForwardsToOtherDomains',
+    );
+  }
+
+  String get hideSignature {
+    return Intl.message(
+      'Hide signature',
+      name: 'hideSignature',
+    );
+  }
+
+  String get showSignature {
+    return Intl.message(
+      'Show signature',
+      name: 'showSignature',
+    );
+  }
+
+  String get archiveMessagesFailed {
+    return Intl.message(
+      'Archive messages failed',
+      name: 'archiveMessagesFailed',
+    );
+  }
+
+  String get increaseYourSpace {
+    return Intl.message(
+      'Increase your space',
+      name: 'increaseYourSpace',
+    );
+  }
+
+  String quotaAvailableLabel(String count) {
+    return Intl.message(
+      '$count available',
+      name: 'quotaAvailableLabel',
+      args: [count],
+    );
+  }
+
+  String get paywallUrlNotAvailable {
+    return Intl.message(
+      'Paywall url not available',
+      name: 'paywallUrlNotAvailable',
     );
   }
 }

@@ -1,11 +1,13 @@
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +15,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
-import 'package:tmail_ui_user/features/base/widget/material_text_icon_button.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_input_tag_item.dart';
@@ -22,6 +23,7 @@ import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_sugg
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/exceptions/forward_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -56,7 +58,7 @@ class AutocompleteContactTextFieldWithTags extends StatefulWidget {
   State<AutocompleteContactTextFieldWithTags> createState() => _AutocompleteContactTextFieldWithTagsState();
 }
 
-class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteContactTextFieldWithTags> with MessageDialogActionMixin {
+class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteContactTextFieldWithTags> {
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -86,11 +88,12 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       length: listEmailAddress.length,
       controller: widget.controller,
       focusNodeKeyboard: _focusNodeKeyboard,
-      borderRadius: 12,
-      backgroundColor: AppColor.colorInputBackgroundCreateMailbox,
-      focusedBorderColor: AppColor.colorTextButton,
-      enableBorderColor: AppColor.colorInputBorderCreateMailbox,
-      cursorColor: AppColor.primaryColor,
+      borderRadius: 10,
+      backgroundColor: Colors.white,
+      enableBorder: true,
+      focusedBorderColor: AppColor.primaryMain,
+      enableBorderColor: AppColor.m3Neutral90,
+      cursorColor: AppColor.primaryMain,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       suggestionPadding: const EdgeInsets.symmetric(vertical: 12),
       suggestionMargin: const EdgeInsets.symmetric(vertical: 4),
@@ -125,18 +128,11 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         emailAddress: EmailAddress(null, value),
         isClearInput: true
       ),
-      textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-        color: Colors.black,
-        fontSize: 16,
-        fontWeight: FontWeight.w500),
+      textStyle: ThemeUtils.textStyleBodyBody3(color: Colors.black),
       inputDecoration: InputDecoration(
         border: InputBorder.none,
         hintText: AppLocalizations.of(context).hintInputAutocompleteContact,
-        hintStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-          fontWeight: FontWeight.w500,
-          color: AppColor.colorSettingExplanation,
-          fontSize: 16
-        )
+        hintStyle: ThemeUtils.textStyleBodyBody3(color: AppColor.steelGray400)
       ),
       tagBuilder: (context, index) => ContactInputTagItem(
         listEmailAddress[index],
@@ -184,15 +180,26 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
             children: [
               itemTagEditor,
               const SizedBox(height: 16),
-              _buildAddRecipientButton(context, maxWidth: double.infinity)
-            ],
-          )
-        : Row(
-            children: [
-              Expanded(child: itemTagEditor),
-              const SizedBox(width: 12),
               _buildAddRecipientButton(context)
             ],
+          )
+        : LayoutBuilder(
+            builder: (context, constraints) {
+              return Row(
+                children: [
+                  Flexible(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: min(404, constraints.maxWidth),
+                      ),
+                      child: itemTagEditor,
+                    )
+                  ),
+                  const SizedBox(width: 12),
+                  _buildAddRecipientButton(context)
+                ],
+              );
+            },
           );
     } else {
       return itemTagEditor;
@@ -264,16 +271,23 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
 
   bool _validateListEmailAddressIsValid(List<EmailAddress> listEmailAddress) => listEmailAddress.every(_validateEmailAddressIsValid);
 
-  Widget _buildAddRecipientButton(BuildContext context, {double? maxWidth}) {
-    return MaterialTextIconButton(
-      key: const Key('button_add_recipient'),
-      label: AppLocalizations.of(context).addRecipientButton,
+  Widget _buildAddRecipientButton(BuildContext context) {
+    return TMailButtonWidget(
+      text: AppLocalizations.of(context).addRecipientButton,
       icon: _imagePaths.icAddIdentity,
-      backgroundColor: AppColor.colorTextButton,
-      labelColor: Colors.white,
+      backgroundColor: AppColor.primaryMain,
       iconColor: Colors.white,
-      minimumSize: Size(maxWidth ?? 167, PlatformInfo.isMobile ? 44 : 54),
-      onTap: () => _handleAddRecipientAction(context)
+      iconSize: 18,
+      height: 48,
+      minWidth: 183,
+      width: _responsiveUtils.isScreenWithShortestSide(context)
+        ? double.infinity
+        : null,
+      iconSpace: 8,
+      borderRadius: 100,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      textStyle: ThemeUtils.textStyleM3LabelLarge(color: Colors.white),
+      onTapActionCallback: () => _handleAddRecipientAction(context),
     );
   }
 
@@ -439,15 +453,27 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     VoidCallback? confirmAction,
     VoidCallback? cancelAction
   }) async {
-    await showConfirmDialogAction(
+    final appLocalizations = AppLocalizations.of(context);
+    final forwardWarningMessage = AppConfig.forwardWarningMessage;
+    final title = forwardWarningMessage != null
+        ? null
+        : appLocalizations.dialogWarningTitleForForwardsToOtherDomains;
+    final message = forwardWarningMessage
+        ?? appLocalizations.dialogWarningMessageForForwardsToOtherDomains;
+
+    await MessageDialogActionManager().showConfirmDialogAction(
       context,
-      AppLocalizations.of(context).doYouWantToProceed,
-      AppLocalizations.of(context).no,
-      title: AppConfig.getForwardWarningMessage(context),
-      cancelTitle: AppLocalizations.of(context).yes,
+      message,
+      AppLocalizations.of(context).yes,
+      title: title,
+      cancelTitle: AppLocalizations.of(context).no,
       alignCenter: true,
-      onConfirmAction: cancelAction,
-      onCancelAction: confirmAction,
+      onConfirmAction: confirmAction,
+      onCancelAction: cancelAction,
+      onCloseButtonAction: () {
+        popBack();
+        cancelAction?.call();
+      },
     );
   }
 }

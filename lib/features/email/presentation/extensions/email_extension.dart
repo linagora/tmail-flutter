@@ -23,6 +23,16 @@ extension EmailExtension on Email {
     }
   }
 
+  bool checkEmailValidForThreadDetail(
+    MailboxId sentMailboxId,
+    String ownEmailAddress) {
+    return id != null && (
+      !inSentMailbox(sentMailboxId)
+      || !fromMe(ownEmailAddress)
+      || !recipientsHasMe(ownEmailAddress)
+    );
+  }
+
   bool inSentMailbox(MailboxId sentMailboxId) {
     return mailboxIds?[sentMailboxId] == true;
   }

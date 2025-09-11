@@ -27,6 +27,7 @@ class LinagoraEcosystemConverter {
         LinagoraEcosystemIdentifier.twakeSync: AppLinagoraEcosystem.deserialize,
         LinagoraEcosystemIdentifier.linShare: AppLinagoraEcosystem.deserialize,
         LinagoraEcosystemIdentifier.mobileApps: MobileAppsLinagoraEcosystemConverter.deserialize,
+        LinagoraEcosystemIdentifier.paywallURL: ApiUrlLinagoraEcosystem.deserialize,
       });
   }
 

@@ -76,3 +76,12 @@ for eml in "${replyEmailsEML[@]}"; do
   echo "Importing $eml into 'Reply Emails' folder for user bob"
   james-cli ImportEml \#private "bob@example.com" "Reply Emails" "/root/conf/integration_test/eml/reply_email/$eml"
 done
+
+# For test reply email
+# Import emails into 'Reply Emails' folder for user Bob
+replyEmailsEML=("reply-all.eml" "reply-to-list.eml" "with-reply-to.eml" "without-reply-to.eml")
+
+for eml in "${replyEmailsEML[@]}"; do
+  echo "Importing $eml into 'Reply Emails' folder for user bob"
+  james-cli ImportEml \#private "bob@example.com" "Reply Emails" "/root/conf/integration_test/eml/reply_email/$eml"
+done

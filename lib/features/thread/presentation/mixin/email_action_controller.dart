@@ -1,9 +1,7 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
-import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +15,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -25,6 +23,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -243,19 +242,15 @@ mixin EmailActionController {
             () => _deleteEmailPermanentlyAction(context, email)))
           .show();
     } else {
-      Get.dialog(
-        PointerInterceptor(child: ConfirmationDialogBuilder(
-          key: const Key('confirm_dialog_delete_email_permanently'),
-          imagePath: imagePaths,
-          title: DeleteActionType.single.getTitleDialog(context),
-          textContent: DeleteActionType.single.getContentDialog(context),
-          confirmText: DeleteActionType.single.getConfirmActionName(context),
-          cancelText: AppLocalizations.of(context).cancel,
-          onConfirmButtonAction: () => _deleteEmailPermanentlyAction(context, email),
-          onCancelButtonAction: popBack,
-          onCloseButtonAction: popBack,
-        )),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      MessageDialogActionManager().showConfirmDialogAction(
+        key: const Key('confirm_dialog_delete_email_permanently'),
+        context,
+        title: DeleteActionType.single.getTitleDialog(context),
+        DeleteActionType.single.getContentDialog(context),
+        DeleteActionType.single.getConfirmActionName(context),
+        cancelTitle: AppLocalizations.of(context).cancel,
+        onConfirmAction: () => _deleteEmailPermanentlyAction(context, email),
+        onCloseButtonAction: popBack,
       );
     }
   }
@@ -290,21 +285,35 @@ mixin EmailActionController {
     mailboxDashBoardController.markAsStarSelectedMultipleEmail(listEmails, markStarAction);
   }
 
-  void moveSelectedMultipleEmailToMailbox(
-    List<PresentationEmail> listEmails,
-    PresentationMailbox mailboxCurrent
-  ) {
-    mailboxDashBoardController.moveSelectedMultipleEmailToMailbox(
+  void moveEmailsToMailbox(
+    List<PresentationEmail> listEmails, {
+    VoidCallback? onCallbackAction,
+  }) {
+    mailboxDashBoardController.moveEmailsToMailbox(
       listEmails,
-      mailboxCurrent);
+      onCallbackAction: onCallbackAction,
+    );
   }
 
-  void moveSelectedMultipleEmailToTrash(List<PresentationEmail> listEmails, PresentationMailbox mailboxCurrent) {
-    mailboxDashBoardController.moveSelectedMultipleEmailToTrash(listEmails, mailboxCurrent);
+  void moveEmailsToTrash(List<PresentationEmail> listEmails) {
+    mailboxDashBoardController.moveEmailsToFolder(
+      listEmails,
+      EmailActionType.moveToTrash,
+    );
   }
 
-  void moveSelectedMultipleEmailToSpam(List<PresentationEmail> listEmails, PresentationMailbox mailboxCurrent) {
-    mailboxDashBoardController.moveSelectedMultipleEmailToSpam(listEmails, mailboxCurrent);
+  void moveEmailsToArchive(List<PresentationEmail> listEmails) {
+    mailboxDashBoardController.moveEmailsToFolder(
+      listEmails,
+      EmailActionType.archiveMessage,
+    );
+  }
+
+  void moveEmailsToSpam(List<PresentationEmail> listEmails) {
+    mailboxDashBoardController.moveEmailsToFolder(
+      listEmails,
+      EmailActionType.moveToSpam,
+    );
   }
 
   void unSpamSelectedMultipleEmail(List<PresentationEmail> listEmails) {

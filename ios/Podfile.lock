@@ -3,11 +3,11 @@ PODS:
     - Flutter
   - app_settings (5.1.1):
     - Flutter
-  - AppAuth (1.7.4):
-    - AppAuth/Core (= 1.7.4)
-    - AppAuth/ExternalUserAgent (= 1.7.4)
-  - AppAuth/Core (1.7.4)
-  - AppAuth/ExternalUserAgent (1.7.4):
+  - AppAuth (2.0.0):
+    - AppAuth/Core (= 2.0.0)
+    - AppAuth/ExternalUserAgent (= 2.0.0)
+  - AppAuth/Core (2.0.0)
+  - AppAuth/ExternalUserAgent (2.0.0):
     - AppAuth/Core
   - better_open_file (0.0.1):
     - Flutter
@@ -91,7 +91,7 @@ PODS:
     - Flutter
   - Flutter (1.0.0)
   - flutter_appauth (0.0.1):
-    - AppAuth (= 1.7.4)
+    - AppAuth (= 2.0.0)
     - Flutter
   - flutter_charset_detector_darwin (0.0.1):
     - Flutter
@@ -363,7 +363,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   app_links: e7a6750a915a9e161c58d91bc610e8cd1d4d0ad0
   app_settings: 017320c6a680cdc94c799949d95b84cb69389ebc
-  AppAuth: 182c5b88630569df5acb672720534756c29b3358
+  AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
   better_open_file: 03cf320415d4d3f46b6e00adc4a567d76c1a399d
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   connectivity_plus: 07c49e96d7fc92bc9920617b83238c4d178b446a
@@ -382,7 +382,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: ac9062bcc35ed56e15a0241d8fd317022499baf8
   fk_user_agent: 1f47ec39291e8372b1d692b50084b0d54103c545
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_appauth: 1ce438877bc111c5d8f42da47729909290624886
+  flutter_appauth: 88fcbc27871cbedac400db9d39b1363e4850179d
   flutter_charset_detector_darwin: fb3692d6d72cb6afcce7b0dd1a9516be6e78556e
   flutter_downloader: b7301ae057deadd4b1650dc7c05375f10ff12c39
   flutter_file_dialog: 4c014a45b105709a27391e266c277d7e588e9299

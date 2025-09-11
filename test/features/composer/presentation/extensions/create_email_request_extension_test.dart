@@ -13,6 +13,9 @@ void main() {
     session: SessionFixtures.aliceSession,
     accountId: AccountFixtures.aliceAccountId,
     emailActionType: EmailActionType.editDraft,
+    ownEmailAddress: SessionFixtures
+      .aliceSession
+      .getOwnEmailAddressOrEmpty(),
     subject: 'subject',
     emailContent: 'emailContent',
   );
@@ -67,6 +70,9 @@ void main() {
         session: SessionFixtures.aliceSession,
         accountId: AccountFixtures.aliceAccountId,
         emailActionType: EmailActionType.editDraft,
+        ownEmailAddress: SessionFixtures
+          .aliceSession
+          .getOwnEmailAddressOrEmpty(),
         subject: 'subject',
         emailContent: 'emailContent',
         hasRequestReadReceipt: true,

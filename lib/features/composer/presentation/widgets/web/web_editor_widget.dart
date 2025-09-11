@@ -6,6 +6,8 @@ import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/signature_tooltip_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
 
 typedef OnChangeContentEditorAction = Function(String? text);
@@ -74,6 +76,11 @@ class _WebEditorState extends State<WebEditorWidget> {
   late HtmlEditorController _editorController;
   bool _dropListenerRegistered = false;
   Function(Event)? _dropListener;
+  
+  OverlayEntry? _signatureTooltipEntry;
+  final GlobalKey _signatureTooltipKey = GlobalKey();
+  double _signatureTooltipLeft = 0;
+  bool _signatureTooltipReady = false;
 
   @override
   void initState() {
@@ -82,7 +89,7 @@ class _WebEditorState extends State<WebEditorWidget> {
     _dropListener = (event) {
       if (event is MessageEvent) {
         if (jsonDecode(event.data)['name'] == HtmlUtils.registerDropListener.name) {
-          _editorController.evaluateJavascriptWeb(HtmlUtils.lineHeight100Percent.name);
+          _editorController.evaluateJavascriptWeb(HtmlUtils.removeLineHeight1px.name);
         }
       }
     };
@@ -108,6 +115,7 @@ class _WebEditorState extends State<WebEditorWidget> {
       window.removeEventListener("message", _dropListener!);
       _dropListener = null;
     }
+    _hideSignatureTooltip();
     super.dispose();
   }
 
@@ -131,10 +139,12 @@ class _WebEditorState extends State<WebEditorWidget> {
         ),
         spellCheck: true,
         disableDragAndDrop: true,
+        normalizeHtmlTextWhenDropping: true,
+        normalizeHtmlTextWhenPasting: true,
         webInitialScripts: UnmodifiableListView([
           WebScript(
-            name: HtmlUtils.lineHeight100Percent.name,
-            script: HtmlUtils.lineHeight100Percent.script,
+            name: HtmlUtils.removeLineHeight1px.name,
+            script: HtmlUtils.removeLineHeight1px.script,
           ),
           WebScript(
             name: HtmlUtils.registerDropListener.name,
@@ -171,7 +181,7 @@ class _WebEditorState extends State<WebEditorWidget> {
         onChangeCodeview: widget.onChangeContent,
         onTextFontSizeChanged: widget.onEditorTextSizeChanged,
         onPaste: () => _editorController.evaluateJavascriptWeb(
-          HtmlUtils.lineHeight100Percent.name
+          HtmlUtils.removeLineHeight1px.name
         ),
         onDragEnter: widget.onDragEnter,
         onDragOver: widget.onDragOver,
@@ -179,7 +189,92 @@ class _WebEditorState extends State<WebEditorWidget> {
         onImageUpload: widget.onPasteImageSuccessAction,
         onImageUploadError: widget.onPasteImageFailureAction,
         onInitialTextLoadComplete: widget.onInitialContentLoadComplete,
+        onSignatureHoverIn: (position, isContentVisible) {
+          log('_WebEditorState::build: onSignatureHoverIn position: $position');
+          _showSignatureTooltipAtPosition(
+            position,
+            isContentVisible
+              ? AppLocalizations.of(context).hideSignature 
+              : AppLocalizations.of(context).showSignature,
+          );
+        },
+        onSignatureHoverOut: () {
+          log('_WebEditorState::build: onSignatureHoverOut');
+          _hideSignatureTooltip();
+        },
       ),
     );
+  }
+
+  void _showSignatureTooltipAtPosition(
+    SignaturePosition position,
+    String message,
+  ) {
+    try {
+      final overlay = Overlay.maybeOf(context);
+      _signatureTooltipEntry?.remove();
+
+      _signatureTooltipReady = false;
+      _signatureTooltipLeft = position.left;
+
+      _signatureTooltipEntry = OverlayEntry(
+        builder: (context) {
+          return Positioned(
+            top: position.top + position.height + 8,
+            left: _signatureTooltipLeft,
+            child: Material(
+              color: Colors.transparent,
+              child: Opacity(
+                opacity: _signatureTooltipReady ? 1 : 0,
+                child: SignatureTooltipWidget(
+                  key: _signatureTooltipKey,
+                  message: message,
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      overlay?.insert(_signatureTooltipEntry!);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        try {
+          final renderBox = _signatureTooltipKey.currentContext
+              ?.findRenderObject() as RenderBox?;
+          if (renderBox == null) return;
+
+          final tooltipWidth = renderBox.size.width;
+          final screenWidth = MediaQuery.of(context).size.width;
+
+          final centerLeft =
+              position.left + (position.width / 2) - (tooltipWidth / 2);
+          final leftAligned = position.left;
+          final rightAligned = position.left + position.width - tooltipWidth;
+
+          if (centerLeft < 8) {
+            _signatureTooltipLeft = leftAligned;
+          } else if (centerLeft + tooltipWidth > screenWidth - 8) {
+            _signatureTooltipLeft = rightAligned;
+          } else {
+            _signatureTooltipLeft = centerLeft;
+          }
+
+          _signatureTooltipReady = true;
+          _signatureTooltipEntry?.markNeedsBuild();
+        } catch (e) {
+          logError(
+            '_WebEditorState::_showTooltipAtPosition:addPostFrameCallback:Exception = $e',
+          );
+        }
+      });
+    } catch (e) {
+      logError('_WebEditorState::_showTooltipAtPosition:Exception = $e');
+    }
+  }
+
+  void _hideSignatureTooltip() {
+    _signatureTooltipEntry?.remove();
+    _signatureTooltipEntry = null;
   }
 }

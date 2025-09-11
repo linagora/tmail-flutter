@@ -14,7 +14,10 @@ import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/base/mixin/own_email_address_mixin.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
@@ -24,7 +27,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vac
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/update_own_email_address_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_bindings.dart';
@@ -44,7 +46,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
-class ManageAccountDashBoardController extends ReloadableController {
+class ManageAccountDashBoardController extends ReloadableController
+  with OwnEmailAddressMixin {
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -54,10 +57,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   final settingsPageLevel = SettingsPageLevel.universal.obs;
   final vacationResponse = Rxn<VacationResponse>();
   final dashboardSettingAction = Rxn<UIAction>();
-  final ownEmailAddress = Rx<String>('');
 
-  Session? sessionCurrent;
-  bool? isVacationDateDialogDisplayed;
   Uri? previousUri;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
 
@@ -383,7 +383,9 @@ class ManageAccountDashBoardController extends ReloadableController {
 
   bool _onBackButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo routeInfo) {
     log('ManageAccountDashBoardController::_onBackButtonInterceptor:currentRoute: ${Get.currentRoute} | _isDialogViewOpen: $_isDialogViewOpen');
-    if (_isDialogViewOpen || isVacationDateDialogDisplayed == true) {
+    if (_isDialogViewOpen ||
+        DateTimeDialogPicker().isOpened.isTrue ||
+        ColorDialogPicker().isOpened.isTrue) {
       popBack();
       _replaceBrowserHistory();
       return true;

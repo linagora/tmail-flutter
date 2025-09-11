@@ -13,11 +13,14 @@ import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
@@ -86,7 +89,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         position: position,
                         responsiveUtils: controller.responsiveUtils,
                         imagePaths: controller.imagePaths,
-                        username: controller.session?.username,
+                        ownEmailAddress: controller.ownEmailAddress,
                         handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
@@ -160,7 +163,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   responsiveUtils: controller.responsiveUtils,
                   emailLoaded: emailLoaded,
                   presentationEmail: currentEmail,
-                  userName: controller.getOwnEmailAddress(),
+                  userName: controller.ownEmailAddress,
                   emailActionCallback: controller.pressEmailAction,
                 );
               }),
@@ -252,40 +255,35 @@ class EmailView extends GetWidget<SingleEmailController> {
           onEmailActionClick: (presentationEmail, actionType) => controller.handleEmailAction(context, presentationEmail, actionType),
           isInsideThreadDetailView: isInsideThreadDetailView,
           emailLoaded: controller.currentEmailLoaded.value,
-          onMoreActionClick: controller.isOnlyEmailInThread
-            ? null
-            : (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
-                mailboxContain: controller.getMailboxContain(presentationEmail),
-                presentationEmail: presentationEmail,
-                position: position,
-                responsiveUtils: controller.responsiveUtils,
-                imagePaths: controller.imagePaths,
-                username: controller.session?.username,
-                handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
-                additionalActions: [
-                  EmailActionType.forward,
-                  EmailActionType.replyAll,
-                  EmailActionType.replyToList,
-                  EmailActionType.printAll,
-                  if (controller.responsiveUtils.isMobile(context))
-                    EmailActionType.moveToMailbox,
-                  if (!controller.responsiveUtils.isDesktop(context)) ...[
-                    EmailActionType.markAsStarred,
-                    EmailActionType.unMarkAsStarred,
-                    EmailActionType.moveToTrash,
-                    EmailActionType.deletePermanently,
-                  ],
-                ],
-                emailIsRead: presentationEmail.hasRead,
-                openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
-                openPopupMenu: controller.mailboxDashBoardController.openPopupMenu,
-              ),
+          onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
+            mailboxContain: controller.getMailboxContain(presentationEmail),
+            presentationEmail: presentationEmail,
+            position: position,
+            responsiveUtils: controller.responsiveUtils,
+            imagePaths: controller.imagePaths,
+            ownEmailAddress: controller.ownEmailAddress,
+            handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
+            additionalActions: [
+              EmailActionType.reply,
+              EmailActionType.forward,
+              EmailActionType.replyAll,
+              EmailActionType.replyToList,
+              EmailActionType.printAll,
+              EmailActionType.moveToMailbox,
+              EmailActionType.markAsStarred,
+              EmailActionType.unMarkAsStarred,
+              EmailActionType.moveToTrash,
+              EmailActionType.deletePermanently,
+            ],
+            emailIsRead: presentationEmail.hasRead,
+            openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
+            openPopupMenu: controller.mailboxDashBoardController.openPopupMenu,
+          ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,
           mailboxContain: presentationEmail.findMailboxContain(
             controller.mailboxDashBoardController.mapMailboxById,
           ),
-          isOnlyEmailInThread: controller.isOnlyEmailInThread,
         )),
         if (!controller.responsiveUtils.isMobile(context))
          const SizedBox(height: 24),
@@ -312,10 +310,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   ),
                 calendarEventReplying: controller.calendarEventProcessing,
                 attendanceStatus: controller.attendanceStatus.value,
-                ownEmailAddress: controller
-                    .mailboxDashBoardController
-                    .ownEmailAddress
-                    .value,
+                ownEmailAddress: controller.ownEmailAddress,
                 onMailtoAttendeesAction: controller.handleMailToAttendees,
                 openEmailAddressDetailAction: (_, emailAddress) => controller.openEmailAddressDialog(emailAddress),
                 isFree: controller.isCalendarEventFree,
@@ -351,7 +346,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 return Padding(
                   padding: EmailViewStyles.emailContentPadding,
                   child: HtmlContentViewerOnWeb(
-                    key: ValueKey(tag),
+                    key: controller.htmlViewKey,
                     widthContent: bodyConstraints.maxWidth,
                     contentHtml: allEmailContents,
                     mailtoDelegate: controller.openMailToLink,
@@ -359,7 +354,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     contentPadding: 0,
                     useDefaultFontStyle: true,
                     scrollController: scrollController,
-                    enableQuoteToggle: isInsideThreadDetailView,
+                    enableQuoteToggle: true,
                   ),
                 );
               } else if (PlatformInfo.isIOS) {
@@ -387,8 +382,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                             onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                             onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                             keepAlive: isInsideThreadDetailView,
-                            // TODO: Change this to [enableQuoteToggle: isInsideThreadDetailView,] when upgrade to Flutter 3.27.4
-                            enableQuoteToggle: false,
+                            enableQuoteToggle: true,
                           ),
                         ),
                         Obx(() {
@@ -424,7 +418,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     useDefaultFontStyle: true,
                     onMailtoDelegateAction: controller.openMailToLink,
                     keepAlive: isInsideThreadDetailView,
-                    enableQuoteToggle: isInsideThreadDetailView,
+                    enableQuoteToggle: true,
                     onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                   )
                 );
@@ -433,6 +427,12 @@ class EmailView extends GetWidget<SingleEmailController> {
               return const SizedBox.shrink();
             }
           }),
+        if (PlatformInfo.isIntegrationTesting)
+          const Divider(
+            key: Key('integration_testing_email_detailed_divider'),
+            height: 5,
+            color: Colors.transparent,
+          ),
         Obx(() {
           if (controller.attachments.isNotEmpty) {
             return EmailAttachmentsWidget(
@@ -532,7 +532,12 @@ class EmailView extends GetWidget<SingleEmailController> {
             ),
           ),
           Obx(() {
-            if (controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame) {
+            bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
+                MessageDialogActionManager().isDialogOpened ||
+                EmailActionReactor.isDialogOpened ||
+                ColorDialogPicker().isOpened.isTrue;
+
+            if (isOverlayEnabled) {
               return Positioned.fill(
                 child: PointerInterceptor(
                   child: const SizedBox.expand(),

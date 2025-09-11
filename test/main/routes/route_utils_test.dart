@@ -253,4 +253,34 @@ void main() {
       expect(result[RouteUtils.paramBody], equals(body));
     });
   });
+
+  group('getRootDomain', () {
+    test('should return null when hostname is empty', () {
+      expect(RouteUtils.getRootDomain(hostname: ''), isNull);
+    });
+
+    test('should return null when hostname is empty', () {
+      expect(RouteUtils.getRootDomain(hostname: ''), isNull);
+    });
+
+    test('should return root domain for simple domain', () {
+      expect(RouteUtils.getRootDomain(hostname: 'example.com'), 'example.com');
+    });
+
+    test('should return root domain and remove subdomains', () {
+      expect(RouteUtils.getRootDomain(hostname: 'mail.dev.example.com'), 'example.com');
+    });
+
+    test('should return root domain and remove www subdomain', () {
+      expect(RouteUtils.getRootDomain(hostname: 'www.google.com'), 'google.com');
+    });
+
+    test('should return localhost as is', () {
+      expect(RouteUtils.getRootDomain(hostname: 'localhost'), 'localhost');
+    });
+
+    test('should handle multi-level tld like co.uk (not fully accurate)', () {
+      expect(RouteUtils.getRootDomain(hostname: 'service.example.co.uk'), 'co.uk');
+    });
+  });
 }

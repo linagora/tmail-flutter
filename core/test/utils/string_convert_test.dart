@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:core/domain/exceptions/string_exception.dart';
+import 'package:core/utils/mail/named_address.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('StringConvert::decodeBase64ToString::test', () {
+  group('StringConvert.decodeBase64ToString', () {
     test('should decode a valid Base64 string to a normal string', () {
       // Arrange
       const base64Encoded = 'SGVsbG8gV29ybGQh';
@@ -41,7 +42,7 @@ void main() {
     });
   });
 
-  group('StringConvert::extractEmailAddress::', () {
+  group('StringConvert.extractEmailAddress', () {
     group('Basic Functionality', () {
       test('should not extract strings separated by spaces', () {
         const input = 'user1@example.com user2@example.com';
@@ -197,7 +198,7 @@ void main() {
     });
   });
 
-  group('string convert test:', () {
+  group('StringConvert.decodeFromBytes', () {
     const testText = 'Hello';
     test(
       'should use utf8 decoder '
@@ -284,7 +285,7 @@ void main() {
     });
   });
 
-  group('StringConvert::getMediaTypeFromBase64ImageTag::', () {
+  group('StringConvert.getMediaTypeFromBase64ImageTag', () {
     test('should return correct MediaType for valid JPEG base64 tag', () {
       const validJpegTag = 'data:image/jpeg;base64,/9j/4AAQSkZJRg==';
       final result = StringConvert.getMediaTypeFromBase64ImageTag(validJpegTag);
@@ -331,7 +332,7 @@ void main() {
     });
   });
 
-  group('StringConvert::isTextTable::', () {
+  group('StringConvert.isTextTable', () {
     // ---------------------------
     // Test cases cho Markdown tables
     // ---------------------------
@@ -514,6 +515,305 @@ void main() {
         +-----+-----+
       """;
       expect(StringConvert.isTextTable(text), isTrue);
+    });
+  });
+
+  group('StringConvert.extractNamedAddresses', () {
+    test('Extracts plain emails', () {
+      const input = 'user1@example.com, user2@example.com; user3@example.com';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'user1@example.com'),
+          NamedAddress(name: '', address: 'user2@example.com'),
+          NamedAddress(name: '', address: 'user3@example.com'),
+        ]),
+      );
+    });
+
+    test('Extracts quoted name and email', () {
+      const input = '"John Doe" <john@example.com>, "Jane" <jane@example.com>';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: 'John Doe', address: 'john@example.com'),
+          NamedAddress(name: 'Jane', address: 'jane@example.com'),
+        ]),
+      );
+    });
+
+    test('Extracts mixed quoted and plain emails', () {
+      const input =
+          '"Alex" <alex@example.com>, user@example.com, "Sara" <sara@example.com>';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: 'Alex', address: 'alex@example.com'),
+          NamedAddress(name: '', address: 'user@example.com'),
+          NamedAddress(name: 'Sara', address: 'sara@example.com'),
+        ]),
+      );
+    });
+
+    test('Handles URL-encoded input', () {
+      const input =
+          'user1%40example.com%2C%20%22User%202%22%20%3Cuser2%40example.com%3E';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'user1@example.com'),
+          NamedAddress(name: 'User 2', address: 'user2@example.com'),
+        ]),
+      );
+    });
+
+    test('Handles base64 encoded input', () {
+      const raw =
+          'user1@example.com user2@example.com "Name Three" <user3@example.com>';
+      final encoded = base64.encode(utf8.encode(raw));
+
+      final result = StringConvert.extractNamedAddresses(encoded);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'user1@example.com'),
+          NamedAddress(name: '', address: 'user2@example.com'),
+          NamedAddress(name: 'Name Three', address: 'user3@example.com'),
+        ]),
+      );
+    });
+
+    test('Parses even invalid-looking emails without filtering', () {
+      const input = 'user@example.com, , ; not-an-email, "Bad" <not-email>';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'user@example.com'),
+          NamedAddress(name: '', address: 'not-an-email'),
+          NamedAddress(name: 'Bad', address: 'not-email'),
+        ]),
+      );
+    });
+
+    test('Extracts duplicated emails without filtering', () {
+      const input =
+          '"A" <user@example.com>, user@EXAMPLE.com, "B" <USER@example.com>';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: 'A', address: 'user@example.com'),
+          NamedAddress(name: '', address: 'user@EXAMPLE.com'),
+          NamedAddress(name: 'B', address: 'USER@example.com'),
+        ]),
+      );
+    });
+
+    test('Handles single email', () {
+      const input = 'single@example.com';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'single@example.com'),
+        ]),
+      );
+    });
+
+    test('Handles input with newlines and spacing', () {
+      const input = '''
+        "John" <john@example.com>
+        user2@example.com ;
+        "Jane"   <jane@example.com>
+      ''';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: 'John', address: 'john@example.com'),
+          NamedAddress(name: '', address: 'user2@example.com'),
+          NamedAddress(name: 'Jane', address: 'jane@example.com'),
+        ]),
+      );
+    });
+
+    test('Parses mixed plain and quoted named emails', () {
+      const input =
+          'john.doe@example.com, jane.smith@example.com, alex.wilson@example.com, "ng van a" <ttnn@gmail.com>';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'john.doe@example.com'),
+          NamedAddress(name: '', address: 'jane.smith@example.com'),
+          NamedAddress(name: '', address: 'alex.wilson@example.com'),
+          NamedAddress(name: 'ng van a', address: 'ttnn@gmail.com'),
+        ]),
+      );
+    });
+
+    test('Parses multiple quoted named emails without delimiters', () {
+      const input =
+          '"ng van a" <ttnn@gmail.com> "ng van b" <ttnn1@gmail.com> "ng van c" <ttnn2@gmail.com> "ng van d" <ttnn3@gmail.com>';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: 'ng van a', address: 'ttnn@gmail.com'),
+          NamedAddress(name: 'ng van b', address: 'ttnn1@gmail.com'),
+          NamedAddress(name: 'ng van c', address: 'ttnn2@gmail.com'),
+          NamedAddress(name: 'ng van d', address: 'ttnn3@gmail.com'),
+        ]),
+      );
+    });
+
+    test('Handles semicolon after an email', () {
+      const input =
+          'john.doe@example.com;, jane.smith@example.com, alex.wilson@example.com';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'john.doe@example.com'),
+          NamedAddress(name: '', address: 'jane.smith@example.com'),
+          NamedAddress(name: '', address: 'alex.wilson@example.com'),
+        ]),
+      );
+    });
+
+    test('Handles completely empty string', () {
+      const input = '';
+      final result = StringConvert.extractNamedAddresses(input);
+      expect(result, isEmpty);
+    });
+
+    test('Handles only spaces and separators', () {
+      const inputs = [
+        '   ',
+        ',',
+        ';',
+        ',, ;;   ',
+        ' , ; ',
+        '   , ;  \n',
+        '\n',
+      ];
+
+      for (final input in inputs) {
+        final result = StringConvert.extractNamedAddresses(input);
+        expect(result, isEmpty, reason: 'Failed on input: "$input"');
+      }
+    });
+
+    test('Handles multiple delimiters between addresses', () {
+      const input = 'user1@example.com,,;  user2@example.com;;  user3@example.com';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'user1@example.com'),
+          NamedAddress(name: '', address: 'user2@example.com'),
+          NamedAddress(name: '', address: 'user3@example.com'),
+        ]),
+      );
+    });
+
+    test('Handles multiple delimiters and spaces', () {
+      const input =
+          'user1@example.com   ,   user2@example.com ;   user3@example.com';
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'user1@example.com'),
+          NamedAddress(name: '', address: 'user2@example.com'),
+          NamedAddress(name: '', address: 'user3@example.com'),
+        ]),
+      );
+    });
+
+    test('Handles a large number of addresses', () {
+      const base = 'user';
+      const domain = '@example.com';
+      final buffer = StringBuffer();
+
+      for (var i = 0; i < 1000; i++) {
+        buffer.write('$base$i$domain');
+        if (i != 999) buffer.write(', ');
+      }
+
+      final input = buffer.toString();
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(result.length, equals(1000));
+      expect(result.first, equals(NamedAddress(name: '', address: 'user0@example.com')));
+      expect(result.last, equals(NamedAddress(name: '', address: 'user999@example.com')));
+    });
+
+    test('Handles mixed valid, invalid, and named addresses correctly', () {
+      const input = '''
+        user@example.com, , ; not-an-email,
+        "Bad" <not-email>  "Bad-2" <not-email-2>,
+        'Bad-3' <not-email-3>;
+        'useb' <userb@example.com>
+      ''';
+
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'user@example.com'),
+          NamedAddress(name: '', address: 'not-an-email'),
+          NamedAddress(name: 'Bad', address: 'not-email'),
+          NamedAddress(name: 'Bad-2', address: 'not-email-2'),
+          NamedAddress(name: 'Bad-3', address: 'not-email-3'),
+          NamedAddress(name: 'useb', address: 'userb@example.com'),
+        ]),
+      );
+    });
+
+    test('Handles subaddressing with + and subfolders', () {
+      const input = '''
+        john.doe@example.com;
+        <userA+foldeA@example.com>;
+        <userA+folder Hello@exmaple.com>;
+        <userA+folderA.subFolderA@exmaple.com>;
+        <user+folder Hello.subFolder Hello@exmaple.com>;
+        alex.wilson@example.com
+      ''';
+
+      final result = StringConvert.extractNamedAddresses(input);
+
+      expect(
+        result,
+        equals([
+          NamedAddress(name: '', address: 'john.doe@example.com'),
+          NamedAddress(name: '', address: 'userA+foldeA@example.com'),
+          NamedAddress(name: '', address: 'userA+folder Hello@exmaple.com'),
+          NamedAddress(name: '', address: 'userA+folderA.subFolderA@exmaple.com'),
+          NamedAddress(name: '', address: 'user+folder Hello.subFolder Hello@exmaple.com'),
+          NamedAddress(name: '', address: 'alex.wilson@example.com'),
+        ]),
+      );
     });
   });
 }

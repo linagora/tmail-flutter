@@ -1,3 +1,4 @@
+import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -8,8 +9,11 @@ abstract class BaseScenario {
 
   Future<void> execute();
 
-  Future<void> expectViewVisible(PatrolFinder patrolFinder) async {
-    await $.waitUntilVisible(patrolFinder);
+  Future<void> expectViewVisible(
+    PatrolFinder patrolFinder, {
+    Alignment alignment = Alignment.center,
+  }) async {
+    await $.waitUntilVisible(patrolFinder, alignment: alignment);
     expect(patrolFinder, findsWidgets);
   }
 

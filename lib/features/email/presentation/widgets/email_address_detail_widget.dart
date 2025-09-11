@@ -104,6 +104,7 @@ class EmailAddressDetailWidget extends StatelessWidget {
           top: 0,
           end: 0,
           child: TMailButtonWidget.fromIcon(
+            key: const Key('email_address_dialog_close_button'),
             icon: imagePaths.icCloseDialog,
             iconSize: 24,
             iconColor: AppColor.m3Tertiary,

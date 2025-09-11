@@ -15,7 +15,7 @@ class SignatureTransformer extends DomTransformer {
     Map<String, String>? mapUrlDownloadCID,
   }) async {
     try {
-      final signatureElements = document.querySelectorAll('div.tmail-signature');
+      final signatureElements = document.querySelectorAll('.tmail-signature');
 
       if (signatureElements.isEmpty) return;
 

@@ -81,4 +81,8 @@ class SearchRobot extends CoreRobot {
     await email.tap();
     await $.pump(const Duration(seconds: 2));
   }
+
+  Future<void> tapBackButton() async {
+    await $(#search_email_back_button).tap();
+  }
 }

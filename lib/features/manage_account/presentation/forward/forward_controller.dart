@@ -1,7 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:get/get.dart';
@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
@@ -21,6 +22,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_local_copy_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_forward_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/update_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/add_recipients_in_forwarding_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_recipient_in_forwarding_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_local_copy_in_forwarding_interactor.dart';
@@ -28,7 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_forwar
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/tmail_forward_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/controller/forward_recipient_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/forward/extensions/handle_error_when_update_forward_fail_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/extensions/handle_update_forward_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -87,9 +89,7 @@ class ForwardController extends BaseController {
   @override
   void handleSuccessViewState(Success success) {
     if (success is GetForwardSuccess) {
-      currentForward.value = success.forward;
-      listRecipientForward.value = currentForward.value!.listRecipientForward;
-      _updateForwardWarningBannerState();
+      updateTMailForward(success.forward);
     } else if (success is DeleteRecipientInForwardingSuccess) {
       _handleDeleteRecipientSuccess(success);
     } else if (success is AddRecipientsInForwardingSuccess) {
@@ -107,6 +107,8 @@ class ForwardController extends BaseController {
         failure is DeleteRecipientInForwardingFailure ||
         failure is EditLocalCopyInForwardingFailure) {
       handleErrorWhenUpdateForwardFail(failure);
+    } else if (failure is UpdateForwardingCompleteWithSomeCaseFailure) {
+      handleUpdateForwardingCompleteWithSomeCaseFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -118,15 +120,24 @@ class ForwardController extends BaseController {
     }
   }
 
+  void updateTMailForward(TMailForward forward) {
+    currentForward.value = forward;
+    listRecipientForward.value = forward.listRecipientForward;
+    _updateForwardWarningBannerState();
+  }
+
   void deleteRecipients(BuildContext context, String emailAddress) {
-    showConfirmDialogAction(
+    clearInputFocus();
+
+    MessageDialogActionManager().showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
-      AppLocalizations.of(context).cancel,
-      cancelTitle: AppLocalizations.of(context).remove,
-      onCancelAction: () => _handleDeleteRecipientAction({emailAddress}),
-      showAsBottomSheet: true,
+      AppLocalizations.of(context).remove,
+      cancelTitle: AppLocalizations.of(context).cancel,
+      onCloseButtonAction: popBack,
+      onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
+      alignCenter: true,
       dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
     );
   }
@@ -150,11 +161,8 @@ class ForwardController extends BaseController {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMessageDeleteRecipientSuccessfully);
     }
-
-    currentForward.value = success.forward;
-    listRecipientForward.value = currentForward.value!.listRecipientForward;
     selectionMode.value = SelectMode.INACTIVE;
-    _updateForwardWarningBannerState();
+    updateTMailForward(success.forward);
   }
 
   List<RecipientForward> get listRecipientForwardSelected =>
@@ -179,6 +187,8 @@ class ForwardController extends BaseController {
     });
 
   void selectRecipientForward(RecipientForward recipientForward) {
+    clearInputFocus();
+
     if (selectionMode.value == SelectMode.INACTIVE) {
       selectionMode.value = SelectMode.ACTIVE;
     }
@@ -203,14 +213,17 @@ class ForwardController extends BaseController {
   }
 
   void deleteMultipleRecipients(BuildContext context, Set<String> listEmailAddress) {
-    showConfirmDialogAction(
+    clearInputFocus();
+
+    MessageDialogActionManager().showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward,
-      AppLocalizations.of(context).cancel,
-      cancelTitle: AppLocalizations.of(context).remove,
-      onCancelAction: () => _handleDeleteRecipientAction(listEmailAddress),
-      showAsBottomSheet: true,
+      AppLocalizations.of(context).remove,
+      cancelTitle: AppLocalizations.of(context).cancel,
+      onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
+      onCloseButtonAction: popBack,
+      alignCenter: true,
       dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
     );
   }
@@ -226,7 +239,7 @@ class ForwardController extends BaseController {
   }
 
   void addRecipientAction(BuildContext context, List<EmailAddress> listRecipientsSelected) {
-    KeyboardUtils.hideKeyboard(context);
+    clearInputFocus();
 
     final accountId = accountDashBoardController.accountId.value;
     if (accountId != null) {
@@ -251,16 +264,13 @@ class ForwardController extends BaseController {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).toastMessageAddRecipientsSuccessfully);
     }
-
-    currentForward.value = success.forward;
-    listRecipientForward.value = currentForward.value!.listRecipientForward;
-
     recipientController.clearAll();
-
-    _updateForwardWarningBannerState();
+    updateTMailForward(success.forward);
   }
 
   void handleEditLocalCopy() {
+    clearInputFocus();
+
     final accountId = accountDashBoardController.accountId.value;
     if (accountId != null &&
         currentForward.value != null &&
@@ -281,11 +291,7 @@ class ForwardController extends BaseController {
           ? AppLocalizations.of(currentContext!).toastMessageLocalCopyEnable
           : AppLocalizations.of(currentContext!).toastMessageLocalCopyDisable);
     }
-
-    currentForward.value = success.forward;
-    listRecipientForward.value = currentForward.value!.listRecipientForward;
-
-    _updateForwardWarningBannerState();
+    updateTMailForward(success.forward);
   }
 
   void registerListenerWorker() {
@@ -317,5 +323,11 @@ class ForwardController extends BaseController {
       ? BannerState.enabled
       : BannerState.disabled;
     log('ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${forwardWarningBannerState.value}');
+  }
+
+  void clearInputFocus() {
+    if (PlatformInfo.isMobile) {
+      FocusManager.instance.primaryFocus?.unfocus();
+    }
   }
 }

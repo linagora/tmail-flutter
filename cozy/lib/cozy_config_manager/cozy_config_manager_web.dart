@@ -5,8 +5,8 @@ import 'package:linagora_design_flutter/cozy_config_manager/cozy_config_manager.
 class CozyConfigManager {
   bool? _isInsideCozy;
 
-  Future<void> injectCozyScript() async {
-    await cozy.CozyConfigManager().injectCozyScript();
+  Future<void> injectCozyScript(String cozyExternalBridgeVersion) async {
+    await cozy.CozyConfigManager().injectCozyScript(cozyExternalBridgeVersion);
   }
 
   Future<void> initialize() async {
@@ -14,7 +14,11 @@ class CozyConfigManager {
   }
 
   Future<bool> get isInsideCozy async {
-    return _isInsideCozy ??= await _checkCozyEnvironment();
+    try {
+      return _isInsideCozy ??= await _checkCozyEnvironment();
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<bool> _checkCozyEnvironment() async {

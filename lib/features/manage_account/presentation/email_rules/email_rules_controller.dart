@@ -1,15 +1,13 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
-import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
@@ -162,31 +160,24 @@ class EmailRulesController extends BaseController {
         ..onCancelAction(AppLocalizations.of(context).cancel, () =>
             popBack())
         ..onConfirmAction(AppLocalizations.of(context).delete, () {
+          popBack();
           _handleDeleteEmailRuleAction(emailRule);
         }))
       .show();
     } else {
-      Get.dialog(
-        PointerInterceptor(
-          child: ConfirmationDialogBuilder(
-            imagePath: imagePaths,
-            title: AppLocalizations.of(context).deleteEmailRule,
-            textContent: AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name),
-            confirmText: AppLocalizations.of(context).delete,
-            cancelText: AppLocalizations.of(context).cancel,
-            onConfirmButtonAction: () => _handleDeleteEmailRuleAction(emailRule),
-            onCancelButtonAction: popBack,
-            onCloseButtonAction: popBack,
-          ),
-        ),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        title: AppLocalizations.of(context).deleteEmailRule,
+        AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name),
+        AppLocalizations.of(context).delete,
+        cancelTitle: AppLocalizations.of(context).cancel,
+        onConfirmAction: () => _handleDeleteEmailRuleAction(emailRule),
+        onCloseButtonAction: popBack,
       );
     }
   }
 
   void _handleDeleteEmailRuleAction(TMailRule emailRule) {
-    popBack();
-
     if (emailRule.conditionGroup != null) {
       emailRule = TMailRule(
         id: emailRule.id,

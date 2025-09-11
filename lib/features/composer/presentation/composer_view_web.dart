@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
@@ -26,7 +28,8 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/desktop
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/local_file_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
@@ -39,12 +42,29 @@ class ComposerView extends GetWidget<ComposerController> {
 
   @override
   Widget build(BuildContext context) {
+    final iframeOverlay = Obx(() {
+      bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
+          MessageDialogActionManager().isDialogOpened ||
+          ColorDialogPicker().isOpened.isTrue;
+
+      if (isOverlayEnabled) {
+        return Positioned.fill(
+          key: const ValueKey('tap-to-close'),
+          child: PointerInterceptor(
+            child: const SizedBox.expand(),
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
+
     return ResponsiveWidget(
       responsiveUtils: controller.responsiveUtils,
       mobile: MobileResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocus(context),
+            onTap: () => controller.clickOutsideComposer(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -268,13 +288,15 @@ class ComposerView extends GetWidget<ComposerController> {
                               }),
                               Obx(() {
                                 if (controller.richTextWebController!.isFormattingOptionsEnabled) {
-                                  return ToolbarRichTextWebBuilder(
-                                    richTextWebController: controller.richTextWebController!,
+                                  return ToolbarRichTextWidget(
+                                    richTextController: controller.richTextWebController!,
+                                    imagePaths: controller.imagePaths,
                                     padding: ComposerStyle.richToolbarPadding,
                                     decoration: const BoxDecoration(
                                       color: ComposerStyle.richToolbarColor,
-                                      boxShadow: ComposerStyle.richToolbarShadow
+                                      boxShadow: ComposerStyle.richToolbarShadow,
                                     ),
+                                    isMobile: controller.responsiveUtils.isMobile(context),
                                   );
                                 } else {
                                   return const SizedBox.shrink();
@@ -327,6 +349,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               return const SizedBox.shrink();
                             }
                           }),
+                          iframeOverlay,
                         ],
                       );
                     }
@@ -340,7 +363,7 @@ class ComposerView extends GetWidget<ComposerController> {
       desktop: Obx(() => DesktopResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocus(context),
+            onTap: () => controller.clickOutsideComposer(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 imagePaths: controller.imagePaths,
@@ -560,13 +583,15 @@ class ComposerView extends GetWidget<ComposerController> {
                                     }),
                                     Obx(() {
                                       if (controller.richTextWebController!.isFormattingOptionsEnabled) {
-                                        return ToolbarRichTextWebBuilder(
-                                          richTextWebController: controller.richTextWebController!,
+                                        return ToolbarRichTextWidget(
+                                          richTextController: controller.richTextWebController!,
+                                          imagePaths: controller.imagePaths,
                                           padding: ComposerStyle.richToolbarPadding,
                                           decoration: const BoxDecoration(
                                             color: ComposerStyle.richToolbarColor,
-                                            boxShadow: ComposerStyle.richToolbarShadow
+                                            boxShadow: ComposerStyle.richToolbarShadow,
                                           ),
+                                          isMobile: controller.responsiveUtils.isMobile(context),
                                         );
                                       } else {
                                         return const SizedBox.shrink();
@@ -643,6 +668,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
+                        iframeOverlay,
                       ],
                     );
                   }
@@ -662,7 +688,7 @@ class ComposerView extends GetWidget<ComposerController> {
       tablet: TabletResponsiveContainerView(
         childBuilder: (context, constraints) {
           return GestureDetector(
-            onTap: () => controller.clearFocus(context),
+            onTap: () => controller.clickOutsideComposer(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 imagePaths: controller.imagePaths,
@@ -878,13 +904,15 @@ class ComposerView extends GetWidget<ComposerController> {
                                     }),
                                     Obx(() {
                                       if (controller.richTextWebController!.isFormattingOptionsEnabled) {
-                                        return ToolbarRichTextWebBuilder(
-                                          richTextWebController: controller.richTextWebController!,
+                                        return ToolbarRichTextWidget(
+                                          richTextController: controller.richTextWebController!,
+                                          imagePaths: controller.imagePaths,
                                           padding: ComposerStyle.richToolbarPadding,
                                           decoration: const BoxDecoration(
                                             color: ComposerStyle.richToolbarColor,
-                                            boxShadow: ComposerStyle.richToolbarShadow
+                                            boxShadow: ComposerStyle.richToolbarShadow,
                                           ),
+                                          isMobile: controller.responsiveUtils.isMobile(context),
                                         );
                                       } else {
                                         return const SizedBox.shrink();
@@ -961,6 +989,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
+                        iframeOverlay,
                       ],
                     );
                   },

@@ -37,6 +37,7 @@ class EmailAddressWithCopyWidget extends StatelessWidget {
         ),
         if (label.isNotEmpty)
           TMailButtonWidget.fromIcon(
+            key: const ValueKey('copy_email_address'),
             icon: copyLabelIcon,
             backgroundColor: Colors.transparent,
             iconSize: 20,

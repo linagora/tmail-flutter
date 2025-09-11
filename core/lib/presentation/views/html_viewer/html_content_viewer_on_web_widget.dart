@@ -4,7 +4,6 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
@@ -370,22 +369,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     _createdViewId = _getRandString(10);
     _htmlData = _generateHtmlDocument(widget.contentHtml);
 
-    final iframe = html.IFrameElement()
-      ..width = _actualWidth.toString()
-      ..height = _actualHeight.toString()
-      ..srcdoc = _htmlData ?? ''
-      ..style.border = 'none'
-      ..style.overflow = 'hidden'
-      ..style.width = '100%'
-      ..style.height = '100%';
-
-    ui.platformViewRegistry.registerViewFactory(_createdViewId, (int viewId) => iframe);
-
-    if (mounted) {
-      setState(() {
-        _webInit = Future.value(true);
-      });
-    }
+    _webInit = Future.value(true);
   }
 
   @override
@@ -413,9 +397,19 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
             future: _webInit,
             builder: (_, snapshot) {
               if (snapshot.hasData) {
-                final htmlView = HtmlElementView(
+                final htmlView = HtmlElementView.fromTagName(
                   key: ValueKey('$_htmlData-${widget.key}'),
-                  viewType: _createdViewId,
+                  tagName: 'iframe',
+                  onElementCreated: (element) {
+                    (element as html.IFrameElement)
+                      ..width = _actualWidth.toString()
+                      ..height = _actualHeight.toString()
+                      ..srcdoc = _htmlData ?? ''
+                      ..style.border = 'none'
+                      ..style.overflow = 'hidden'
+                      ..style.width = '100%'
+                      ..style.height = '100%';
+                  },
                 );
 
                 if (widget.viewMaxHeight != null) {

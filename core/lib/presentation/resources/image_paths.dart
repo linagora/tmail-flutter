@@ -234,12 +234,12 @@ class ImagePaths {
   String get icArrowBack => _getImagePath('ic_arrow_back.svg');
   String get icRadio => _getImagePath('ic_radio.svg');
   String get icRadioSelected => _getImagePath('ic_radio_selected.svg');
-
+  String get icCheck => _getImagePath('ic_check.svg');
   String get icFileDownload => _getImagePath('ic_file_download.svg');
   String get icTwakeWorkplace => _getIconPath('icon_twp.png');
-
   String get animLottieTmail => _getAnimationPath('lottie-tmail.json');
   String get icExpandArrows => _getImagePath('ic_expand_arrows.svg');
+  String get icPremium => _getImagePath('ic_premium.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

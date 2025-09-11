@@ -1,9 +1,5 @@
 {
-<<<<<<< Updated upstream
-  "@@last_modified": "2025-07-25T12:21:42.514040",
-=======
-  "@@last_modified": "2025-08-13T12:58:55.935423",
->>>>>>> Stashed changes
+  "@@last_modified": "2025-09-09T15:28:33.596868",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -798,12 +794,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copy_email_address": "Copy email address",
-  "@copy_email_address": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "compose_email": "Compose email",
   "@compose_email": {
     "type": "text",
@@ -1154,12 +1144,6 @@
   },
   "exchange": "Exchange",
   "@exchange": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "move_message": "Move message",
-  "@move_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2038,24 +2022,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noStartTime": "No start time",
-  "@noStartTime": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "noEndTime": "No end time",
-  "@noEndTime": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "noEndDate": "No end date",
-  "@noEndDate": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "errorMessageWhenStartDateVacationIsEmpty": "Please enter a valid start date",
   "@errorMessageWhenStartDateVacationIsEmpty": {
     "type": "text",
@@ -2166,12 +2132,6 @@
   },
   "toastMessageLocalCopyDisable": "Keep local copy disable.",
   "@toastMessageLocalCopyDisable": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "keepLocalCopyForwardLabel": "Keep a copy of the email in Inbox",
-  "@keepLocalCopyForwardLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -3734,12 +3694,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doYouWantToProceed": "Do you want to proceed?",
-  "@doYouWantToProceed": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "messageWarningDialogForForwardsToOtherDomains": "You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.",
   "@messageWarningDialogForForwardsToOtherDomains": {
     "type": "text",
@@ -4666,6 +4620,76 @@
   },
   "creatingAnArchiveForDownloading": "Creating an archive for downloading",
   "@creatingAnArchiveForDownloading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ok": "OK",
+  "@ok": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepACopyInInbox": "Keep a copy in Inbox",
+  "@keepACopyInInbox": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keepACopyInInboxDescription": "Store forwarded emails in your inbox as well as sending them to recipients",
+  "@keepACopyInInboxDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogWarningTitleForForwardsToOtherDomains": "You are redirecting emails to another domain.",
+  "@dialogWarningTitleForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogWarningMessageForForwardsToOtherDomains": "This could be a security threat or considered illegal data extraction. Do you want to proceed?",
+  "@dialogWarningMessageForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hideSignature": "Hide signature",
+  "@hideSignature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showSignature": "Show signature",
+  "@showSignature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "archiveMessagesFailed": "Archive messages failed",
+  "@archiveMessagesFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "increaseYourSpace": "Increase your space",
+  "@increaseYourSpace": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaAvailableLabel": "{count} available",
+  "@quotaAvailableLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "paywallUrlNotAvailable": "Paywall url not available",
+  "@paywallUrlNotAvailable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

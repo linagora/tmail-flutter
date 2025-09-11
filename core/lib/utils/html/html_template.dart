@@ -25,8 +25,10 @@ class HtmlTemplate {
 
   static const String printDocumentCssStyle = '''
     <style> 
+      $fontFaceStyle 
+      
       body,td,div,p,a,input {
-        font-family: arial, sans-serif;
+        font-family: 'Inter', sans-serif;
       }
     
       body, td {
@@ -102,11 +104,26 @@ class HtmlTemplate {
   ''';
 
   static const String defaultFontStyle = '''
-    body {
+    div, p, span, th, td, tr, ul, ol, li, a, button {
       font-weight: 400;
       font-size: 16px;
       line-height: 24px;
       letter-spacing: -0.01em; /* -1% */
+    }
+    
+    p {
+      margin: 0px;
+    }
+  ''';
+
+  static const String defaultEditorFontStyle = '''
+   #editor, .note-editable, .note-frame {
+      font-size: 16px;
+      color: #222222;
+    }
+    
+    p {
+      margin: 0px;
     }
   ''';
 
@@ -271,7 +288,7 @@ class HtmlTemplate {
     <style>
       ${HtmlTemplate.fontFaceStyle}
       
-      ${useDefaultFontStyle ? HtmlTemplate.defaultFontStyle : ''}
+      ${useDefaultFontStyle ? HtmlTemplate.defaultEditorFontStyle : ''}
       
       ${customScrollbar ? '''
         html, .note-editable, .note-codable {
@@ -311,7 +328,7 @@ class HtmlTemplate {
   }) => '''
     ${HtmlTemplate.fontFaceStyle}
   
-    ${useDefaultFontStyle ? HtmlTemplate.defaultFontStyle : ''}
+    ${useDefaultFontStyle ? HtmlTemplate.defaultEditorFontStyle : ''}
       
     #editor {
       direction: ${direction.name};

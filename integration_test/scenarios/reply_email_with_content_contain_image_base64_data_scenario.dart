@@ -57,6 +57,7 @@ class ReplyEmailWithContentContainImageBase64DataScenario extends BaseTestScenar
 
     await emailRobot.onTapBackButton();
     await $.pumpAndSettle(duration: const Duration(seconds: 3));
+    await searchRobot.tapBackButton();
     await _expectEmailCidWithSubject(emailSubject);
 
     await threadRobot.openEmailWithSubject(
@@ -77,7 +78,7 @@ class ReplyEmailWithContentContainImageBase64DataScenario extends BaseTestScenar
   }
 
   Future<void> _expectEmailViewVisible() async {
-    await expectViewVisible($(EmailView));
+    await expectViewVisible($(EmailView), alignment: Alignment.topCenter);
   }
 
   Future<void> _expectReplyEmailButtonVisible() async {

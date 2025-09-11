@@ -10,7 +10,6 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
@@ -40,6 +39,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
@@ -93,6 +93,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sen
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
@@ -123,7 +124,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
@@ -229,6 +229,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   String get ownEmailAddress =>
       mailboxDashBoardController.ownEmailAddress.value;
 
+  GlobalObjectKey? get htmlViewKey => _threadDetailController?.expandedEmailHtmlViewKey;
+
   SingleEmailController(
     this._getEmailContentInteractor,
     this._markAsEmailReadInteractor,
@@ -271,6 +273,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
     emailScrollController.dispose();
+    CalendarEventInteractorBindings().dispose();
+    MdnInteractorBindings().dispose();
     super.onClose();
   }
 
@@ -710,7 +714,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailUnsubscribe.value = null;
       }
     }
-    _loadThreadOnGetEmailContentSuccess();
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
@@ -809,10 +812,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _handleReadReceipt() {
     if (currentContext != null) {
-      showConfirmDialogAction(
-        currentContext!,
-        AppLocalizations.of(currentContext!)
-            .subTitleReadReceiptRequestNotificationMessage,
+      MessageDialogActionManager().showConfirmDialogAction(currentContext!,
+        AppLocalizations.of(currentContext!).subTitleReadReceiptRequestNotificationMessage,
         AppLocalizations.of(currentContext!).yes,
         onConfirmAction: () =>
             _handleSendReceiptToSenderAction(currentContext!),
@@ -1585,8 +1586,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    final receiverEmailAddress = _getReceiverEmailAddress(currentEmail!) ??
-        session!.getOwnEmailAddressOrEmpty();
+    String receiverEmailAddress = _getReceiverEmailAddress(currentEmail!)
+        ?? ownEmailAddress;
+    if (receiverEmailAddress.trim().isEmpty) {
+      receiverEmailAddress = session!.getOwnEmailAddressOrUsername();
+    }
     log('SingleEmailController::_handleSendReceiptToSenderAction():receiverEmailAddress: $receiverEmailAddress');
     final mdnToSender =
         _generateMDN(context, currentEmail!, receiverEmailAddress);
@@ -1892,10 +1896,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
 
     _printEmailButtonState = ButtonState.disabled;
-
+    String accountDisplayName = ownEmailAddress;
+    if (accountDisplayName.trim().isEmpty) {
+      accountDisplayName = session?.getOwnEmailAddressOrUsername() ?? '';
+    }
     consumeState(emailActionReactor.printEmail(
       email,
-      ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
+      ownEmailAddress: accountDisplayName,
       emailLoaded: currentEmailLoaded.value!,
     ));
   }
@@ -2408,9 +2415,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     listEmailAddressAttendees.addAll(listEmailAddress);
 
-    final currentUserEmail = mailboxDashBoardController.ownEmailAddress.value;
     final listEmailAddressMailTo =
-        listEmailAddressAttendees.removeInvalidEmails(currentUserEmail);
+        listEmailAddressAttendees.removeInvalidEmails(ownEmailAddress);
     log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
     mailboxDashBoardController.openComposer(ComposerArguments.fromMailtoUri(
         listEmailAddress: listEmailAddressMailTo));
@@ -2426,8 +2432,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               .thisHtmlAttachmentCannotBePreviewed);
     }
   }
-
-  String getOwnEmailAddress() => session?.getOwnEmailAddressOrEmpty() ?? '';
 
   void onHtmlContentClippedAction(bool isClipped) {
     log('SingleEmailController::onHtmlContentClippedAction:isClipped = $isClipped');

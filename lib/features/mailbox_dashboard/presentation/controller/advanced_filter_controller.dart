@@ -83,6 +83,11 @@ class AdvancedFilterController extends BaseController {
     _memorySearchFilter = SearchEmailFilter.withSortOrder(emailSortOrderType);
   }
 
+  void _updateSortOrder(EmailSortOrderType emailSortOrderType) {
+    sortOrderType.value = emailSortOrderType;
+    _updateMemorySearchFilter(sortOrderTypeOption: Some(emailSortOrderType));
+  }
+
   void clearSearchFilter() {
     _memorySearchFilter = SearchEmailFilter.withSortOrder(sortOrderType.value);
     _resetAllToOriginalValue();
@@ -486,7 +491,7 @@ class AdvancedFilterController extends BaseController {
         } else if (action is ClearSearchFilterAppliedAction) {
           clearSearchFilter();
         } else if (action is SynchronizeEmailSortOrderAction) {
-          _setUpDefaultSortOrder(action.emailSortOrderType);
+          _updateSortOrder(action.emailSortOrderType);
         }
       }
     );

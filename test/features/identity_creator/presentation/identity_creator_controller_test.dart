@@ -196,6 +196,7 @@ void main() {
       {},
       {accountId: account},
       {}, UserName('value'), Uri(), Uri(), Uri(), Uri(), State('value'));
+    String ownEmailAddress = 'user@example.com';
 
     test(
       'should call deletePublicAssetsInteractor.execute() '
@@ -213,7 +214,11 @@ void main() {
         {}, 
         {accountId: account},
         {}, UserName('value'), Uri(), Uri(), Uri(), Uri(), State('value'));
-      identityCreatorController.arguments = IdentityCreatorArguments(accountId, session);
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+      );
 
       // act
       identityCreatorController.onReady();
@@ -242,7 +247,11 @@ void main() {
       'and user has not picked any image',
     () {
       // arrange
-      identityCreatorController.arguments = IdentityCreatorArguments(accountId, session);
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+      );
 
       // act
       identityCreatorController.onReady();
@@ -272,7 +281,11 @@ void main() {
       PlatformInfo.isTestingForWeb = true;
       const htmlContent = '<p>test</p>';
       const identityName = 'test';
-      identityCreatorController.arguments = IdentityCreatorArguments(accountId, session);
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+      );
       when(mockVerifyNameInteractor.execute(any, any)).thenAnswer((_) => Right(VerifyNameViewState()));
 
       // act
@@ -322,7 +335,11 @@ void main() {
       PlatformInfo.isTestingForWeb = true;
       const htmlContent = '<p>test</p>';
       const identityName = 'test';
-      identityCreatorController.arguments = IdentityCreatorArguments(accountId, session);
+      identityCreatorController.arguments = IdentityCreatorArguments(
+        accountId,
+        session,
+        ownEmailAddress,
+      );
       when(mockVerifyNameInteractor.execute(any, any)).thenAnswer((_) => Right(VerifyNameViewState()));
 
       // act

@@ -22,6 +22,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
@@ -107,6 +108,9 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   Session? get sessionCurrent => SessionFixtures.aliceSession;
 
   @override
+  RxString get ownEmailAddress => SessionFixtures.aliceSession.getOwnEmailAddressOrEmpty().obs;
+
+  @override
   Rxn<DraggableAppState> get attachmentDraggableAppState => Rxn(DraggableAppState.inActive);
   @override
   bool get isAttachmentDraggableAppActive => attachmentDraggableAppState.value == DraggableAppState.active;
@@ -127,6 +131,18 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   Map<MailboxId, PresentationMailbox> get mapMailboxById => {};
+
+  @override
+  RxBool get isAppGridDialogDisplayed => false.obs;
+
+  @override
+  RxBool get isDrawerOpened => false.obs;
+
+  @override
+  RxBool get isContextMenuOpened => false.obs;
+
+  @override
+  RxBool get isPopupMenuOpened => false.obs;
 }
 
 @GenerateNiceMocks([

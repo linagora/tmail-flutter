@@ -1,5 +1,5 @@
 class CozyConfigManager {
-  Future<void> injectCozyScript() async {
+  Future<void> injectCozyScript(String cozyExternalBridgeVersion) async {
     throw UnimplementedError('Cannot use injectCozyScript in non-web environment');
   }
 

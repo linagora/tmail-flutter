@@ -14,12 +14,12 @@ import '../robots/thread_robot.dart';
 
 class ForwardEmailScenario extends BaseTestScenario {
 
+  static const String queryString = 'Forward email';
+
   const ForwardEmailScenario(super.$);
 
   @override
   Future<void> runTestLogic() async {
-    const emailSubject = 'Forward email';
-
     final threadRobot = ThreadRobot($);
     final searchRobot = SearchRobot($);
     final emailRobot = EmailRobot($);
@@ -28,13 +28,11 @@ class ForwardEmailScenario extends BaseTestScenario {
     await threadRobot.openSearchView();
     await _expectSearchViewVisible();
 
-    await searchRobot.enterQueryString(emailSubject);
+    await searchRobot.enterQueryString(queryString);
     await searchRobot.tapOnShowAllResultsText();
     await _expectSearchResultEmailListVisible();
 
-    await $.pumpAndSettle(duration: const Duration(seconds: 2));
-
-    await searchRobot.openEmailWithSubject(emailSubject);
+    await searchRobot.openEmailWithSubject(queryString);
     await _expectForwardEmailButtonVisible();
 
     await emailRobot.onTapForwardEmail();

@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -8,12 +9,14 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/item_me
 
 class DropdownMenuFontSizeWidget extends StatelessWidget {
 
-  final Function(int?)? onChanged;
   final int selectedFontSize;
+  final ImagePaths imagePaths;
+  final Function(int?)? onChanged;
 
   const DropdownMenuFontSizeWidget({
     Key? key,
     required this.selectedFontSize,
+    required this.imagePaths,
     this.onChanged,
   }) : super(key: key);
 
@@ -31,7 +34,10 @@ class DropdownMenuFontSizeWidget extends StatelessWidget {
             )
           );
         }).toList(),
-        customButton: DropdownButtonFontSizeWidget(value: selectedFontSize),
+        customButton: DropdownButtonFontSizeWidget(
+          value: selectedFontSize,
+          imagePaths: imagePaths,
+        ),
         onChanged: onChanged,
         dropdownStyleData: const DropdownStyleData(
           maxHeight: DropdownMenuFontSizeWidgetStyle.menuMaxHeight,

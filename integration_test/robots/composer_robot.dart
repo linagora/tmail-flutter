@@ -1,9 +1,16 @@
+import 'dart:io';
+
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:model/extensions/session_extension.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
@@ -12,6 +19,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
+import 'package:tmail_ui_user/features/upload/domain/state/local_image_picker_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -24,26 +32,22 @@ class ComposerRobot extends CoreRobot {
     required PrefixEmailAddress prefixEmailAddress,
     required String email,
   }) async {
-    final finder = $(RecipientComposerWidget)
-      .which<RecipientComposerWidget>((widget) => widget.prefix == prefixEmailAddress);
-    final isTextFieldFocused = finder
-      .which<RecipientComposerWidget>((view) => view.focusNode?.hasFocus ?? false)
-      .exists;
-    if (!isTextFieldFocused) {
-      await finder.tap();
-    }
+    final finder = $(RecipientComposerWidget).which<RecipientComposerWidget>(
+        (widget) => widget.prefix == prefixEmailAddress);
     await finder.enterTextWithoutTapAction(email);
 
     await $(RecipientSuggestionItemWidget)
-      .which<RecipientSuggestionItemWidget>((widget) => widget.emailAddress.email?.contains(email) ?? false)
-      .tap();
+        .which<RecipientSuggestionItemWidget>(
+            (widget) => widget.emailAddress.email?.contains(email) ?? false)
+        .tap();
   }
 
   Future<void> addSubject(String subject) async {
     final finder = $(SubjectComposerWidget);
     final isTextFieldFocused = finder
-      .which<SubjectComposerWidget>((view) => view.focusNode?.hasFocus ?? false)
-      .exists;
+        .which<SubjectComposerWidget>(
+            (view) => view.focusNode?.hasFocus ?? false)
+        .exists;
     if (!isTextFieldFocused) {
       await finder.tap();
     }
@@ -53,38 +57,45 @@ class ComposerRobot extends CoreRobot {
   Future<void> addContent(String content) async {
     ComposerController? composerController;
     await $(ComposerView)
-      .which<ComposerView>((widget) {
-        composerController = widget.controller;
-        return true;
-      })
-      .$(MobileEditorView).$(HtmlEditor).$(InAppWebView).tap();
+        .which<ComposerView>((widget) {
+          composerController = widget.controller;
+          return true;
+        })
+        .$(MobileEditorView)
+        .$(HtmlEditor)
+        .$(InAppWebView)
+        .tap();
 
     await composerController?.htmlEditorApi?.requestFocusLastChild();
 
-    await composerController!.htmlEditorApi!.insertHtml('$content <br><br>'); 
+    await composerController!.htmlEditorApi!.insertHtml('$content <br><br>');
   }
 
   Future<void> sendEmail(ImagePaths imagePaths) async {
     await $(AppBarComposerWidget)
-      .$(TMailButtonWidget)
-      .which<TMailButtonWidget>((widget) => widget.icon == imagePaths.icSendMobile)
-      .tap();
+        .$(TMailButtonWidget)
+        .which<TMailButtonWidget>(
+            (widget) => widget.icon == imagePaths.icSendMobile)
+        .tap();
   }
 
   Future<void> grantContactPermission() async {
-    if (await $.native.isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
+    if (await $.native
+        .isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
       await $.native.grantPermissionWhenInUse();
     }
   }
 
   Future<void> tapCloseComposer(ImagePaths imagePaths) async {
     await $(AppBarComposerWidget)
-      .$(TMailButtonWidget)
-      .which<TMailButtonWidget>((widget) => widget.icon == imagePaths.icCancel)
-      .tap();
+        .$(TMailButtonWidget)
+        .which<TMailButtonWidget>(
+            (widget) => widget.icon == imagePaths.icCancel)
+        .tap();
   }
 
-  Future<void> tapSaveButtonOnSaveDraftConfirmDialog(AppLocalizations appLocalizations) async {
+  Future<void> tapSaveButtonOnSaveDraftConfirmDialog(
+      AppLocalizations appLocalizations) async {
     await $(find.text(appLocalizations.save)).tap();
   }
 
@@ -114,9 +125,47 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> saveAsTemplate() async {
     await $(AppBarComposerWidget)
-      .$(TMailButtonWidget)
-      .which<TMailButtonWidget>((widget) => widget.icon == ImagePaths().icMore)
-      .tap();
+        .$(TMailButtonWidget)
+        .which<TMailButtonWidget>(
+            (widget) => widget.icon == ImagePaths().icMore)
+        .tap();
     await $(AppLocalizations().saveAsTemplate).tap();
+  }
+
+  Future<void> addAttachment(File file) async {
+    final controller = Get.find<ComposerController>();
+    controller.uploadController.justUploadAttachmentsAction(
+      uploadFiles: [
+        FileInfo(
+          fileName: file.path.split('/').last,
+          fileSize: await file.length(),
+          filePath: file.path,
+        )
+      ],
+      uploadUri:
+          controller.mailboxDashBoardController.sessionCurrent!.getUploadUri(
+        controller.mailboxDashBoardController.accountId.value!,
+        jmapUrl: controller.dynamicUrlInterceptors.jmapUrl,
+      ),
+    );
+  }
+
+  Future<void> addInline(File file) async {
+    final controller = Get.find<ComposerController>();
+    controller.handleSuccessViewState(LocalImagePickerSuccess(FileInfo(
+      filePath: file.path,
+      fileSize: await file.length(),
+      fileName: file.path.split('/').last,
+    )));
+    await controller.viewState.stream.firstWhere((state) => state.fold(
+      (failure) => false,
+      (success) => success is DownloadImageAsBase64Success,
+    ));
+  }
+
+  Future<void> toggleReadReceipt() async {
+    await $(PopupItemWidget)
+      .which<PopupItemWidget>((widget) => widget.iconAction == ImagePaths().icReadReceipt)
+      .tap();
   }
 }

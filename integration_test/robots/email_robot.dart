@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -13,7 +14,7 @@ class EmailRobot extends CoreRobot {
   }
 
   Future<void> tapDownloadAllButton() async {
-    await $(AppLocalizations().downloadAll).tap();
+    await $(AppLocalizations().archiveAndDownload).tap();
     await $.pumpAndSettle();
   }
 
@@ -31,5 +32,49 @@ class EmailRobot extends CoreRobot {
 
   Future<void> onTapBackButton() async {
     await $(find.byType(EmailViewBackButton)).first.tap();
+  }
+
+  Future<void> tapEmailDetailedMoreButton() async {
+    await $(#email_detailed_more_button).tap();
+  }
+
+  Future<void> tapMarkAsUnreadOptionInContextMenu() async {
+    await $(AppLocalizations().mark_as_unread).tap();
+  }
+
+  Future<void> tapEmailDetailedStarButton() async {
+    await $(AppLocalizations().starred).tap();
+  }
+
+  Future<void> tapEmailDetailedUnstarButton() async {
+    await $(AppLocalizations().not_starred).tap();
+  }
+
+  Future<void> tapEmailDetailedMoveEmailButton() async {
+    await $(AppLocalizations().moveMessage).tap();
+  }
+
+  Future<void> tapEmailDetailedDeleteEmailButton() async {
+    await $(AppLocalizations().move_to_trash).tap();
+  }
+
+  Future<void> tapMarkAsSpamOptionInContextMenu() async {
+    await $(AppLocalizations().markAsSpam).tap();
+  }
+
+  Future<void> tapArchiveMessageOptionInContextMenu() async {
+    await $(AppLocalizations().archiveMessage).tap();
+  }
+
+  Future<void> tapSenderEmailAddress(String email) async {
+    await $(InformationSenderAndReceiverBuilder).$(email).tap();
+  }
+
+  Future<void> tapRecipientEmailAddress(String email) async {
+    await $(InformationSenderAndReceiverBuilder).$(email).tap();
+  }
+
+  Future<void> longPressSenderEmailAddress(String email) async {
+    await $(InformationSenderAndReceiverBuilder).$(email).longPress();
   }
 }

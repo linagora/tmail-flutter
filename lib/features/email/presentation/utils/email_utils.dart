@@ -264,4 +264,14 @@ class EmailUtils {
           : attachments.sublist(0, possibleDisplayedCount);
     }
   }
+
+  static String getDomainByEmailAddress(String emailAddress) {
+    try {
+      MailAddress mailAddress = MailAddress.validateAddress(emailAddress);
+      return mailAddress.domain.asString();
+    } catch (e) {
+      logError('EmailUtils::getDomainByEmailAddress:Exception is $e');
+      return '';
+    }
+  }
 }

@@ -11,7 +11,6 @@ import 'package:core/presentation/utils/html_transformer/transform_configuration
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
-import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -21,7 +20,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -36,8 +34,7 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -88,8 +85,8 @@ typedef OpenPopUpContextMenuAction = Future<void> Function(
   List<PopupMenuEntry> popupMenuItems,
 );
 
-class EmailActionReactor with MessageDialogActionMixin {
-  const EmailActionReactor(
+class EmailActionReactor {
+  EmailActionReactor(
     this._markAsEmailReadInteractor,
     this._markAsStarEmailInteractor,
     this._createNewEmailRuleFilterInteractor,
@@ -104,6 +101,9 @@ class EmailActionReactor with MessageDialogActionMixin {
   final PrintEmailInteractor _printEmailInteractor;
   final GetEmailContentInteractor _getEmailContentInteractor;
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
+
+  static final _isEmailAddressDialogOpened = false.obs;
+  static bool get isDialogOpened => _isEmailAddressDialogOpened.value;
 
   Stream<Either<Failure, Success>> markAsEmailRead(
     Session session,
@@ -210,19 +210,15 @@ class EmailActionReactor with MessageDialogActionMixin {
         )
       ).show();
     } else {
-      await Get.dialog(
-        PointerInterceptor(child: ConfirmationDialogBuilder(
-          key: const Key('confirm_dialog_delete_email_permanently'),
-          imagePath: imagePaths,
-          title: DeleteActionType.single.getTitleDialog(currentContext!),
-          textContent: DeleteActionType.single.getContentDialog(currentContext!),
-          cancelText: DeleteActionType.single.getConfirmActionName(currentContext!),
-          confirmText: AppLocalizations.of(currentContext!).cancel,
-          onCancelButtonAction: () => onDeleteEmailRequest.call(presentationEmail),
-          onConfirmButtonAction: popBack,
-          onCloseButtonAction: popBack,
-        )),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      await MessageDialogActionManager().showConfirmDialogAction(
+        key: const Key('confirm_dialog_delete_email_permanently'),
+        currentContext!,
+        title: DeleteActionType.single.getTitleDialog(currentContext!),
+        DeleteActionType.single.getContentDialog(currentContext!),
+        DeleteActionType.single.getConfirmActionName(currentContext!),
+        cancelTitle: AppLocalizations.of(currentContext!).cancel,
+        onConfirmAction: () => onDeleteEmailRequest.call(presentationEmail),
+        onCloseButtonAction: popBack,
       );
     }
   }
@@ -331,7 +327,7 @@ class EmailActionReactor with MessageDialogActionMixin {
   }) async {
     if (currentContext == null || !currentContext!.mounted) return;
 
-    await showConfirmDialogAction(
+    await MessageDialogActionManager().showConfirmDialogAction(
       currentContext!,
       '',
       AppLocalizations.of(currentContext!).unsubscribe,
@@ -527,7 +523,7 @@ class EmailActionReactor with MessageDialogActionMixin {
     required RelativeRect? position,
     required ResponsiveUtils responsiveUtils,
     required ImagePaths imagePaths,
-    required UserName? username,
+    required String ownEmailAddress,
     required void Function(
       PresentationEmail presentationEmail,
       EmailActionType action,
@@ -540,9 +536,11 @@ class EmailActionReactor with MessageDialogActionMixin {
     if (currentContext == null) return;
 
     final moreActions = [
+      if (additionalActions.contains(EmailActionType.reply))
+        EmailActionType.reply,
       if (additionalActions.contains(EmailActionType.forward))
         EmailActionType.forward,
-      if (presentationEmail.getCountMailAddressWithoutMe(username?.value ?? '') > 1 &&
+      if (presentationEmail.getCountMailAddressWithoutMe(ownEmailAddress) > 1 &&
           additionalActions.contains(EmailActionType.replyAll))
         EmailActionType.replyAll,
       if (EmailUtils.isReplyToListEnabled(presentationEmail.listPost ?? '') &&
@@ -593,6 +591,7 @@ class EmailActionReactor with MessageDialogActionMixin {
                 action,
                 AppLocalizations.of(currentContext!),
                 imagePaths,
+                key: '${action.name}_action',
               ),
             )
             .toList(),
@@ -656,7 +655,7 @@ class EmailActionReactor with MessageDialogActionMixin {
     }).toList();
   }
 
-  void openEmailAddressDialog(
+  Future<void> openEmailAddressDialog(
     Session session,
     AccountId accountId, {
     required EmailAddress emailAddress,
@@ -665,24 +664,25 @@ class EmailActionReactor with MessageDialogActionMixin {
     required AppToast appToast,
     required void Function(EmailAddress emailAddress) onComposeEmailFromEmailAddressRequest,
     required void Function(Stream<Either<Failure, Success>> quickCreateRuleStream) onQuickCreateRuleRequest,
-  }) {
+  }) async {
     if (currentContext?.mounted != true) return;
+    if (PlatformInfo.isWeb) {
+      _isEmailAddressDialogOpened.value = true;
+    }
 
     if (responsiveUtils.isScreenWithShortestSide(currentContext!)) {
-      Get.bottomSheet(
-        PointerInterceptor(
-          child: EmailAddressBottomSheetBuilder(
-            imagePaths: imagePaths,
-            emailAddress: emailAddress,
-            onCloseDialogAction: popBack,
-            onCopyEmailAddressAction: (emailAddress) =>
-                _copyEmailAddress(currentContext!, emailAddress, appToast),
-            onComposeEmailAction: (emailAddress) =>
-                onComposeEmailFromEmailAddressRequest(emailAddress),
-            onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
-                onQuickCreateRuleRequest(
-              quickCreateRule(session, accountId, emailAddress: emailAddress),
-            ),
+      await Get.bottomSheet(
+        EmailAddressBottomSheetBuilder(
+          imagePaths: imagePaths,
+          emailAddress: emailAddress,
+          onCloseDialogAction: popBack,
+          onCopyEmailAddressAction: (emailAddress) =>
+              _copyEmailAddress(currentContext!, emailAddress, appToast),
+          onComposeEmailAction: (emailAddress) =>
+              onComposeEmailFromEmailAddressRequest(emailAddress),
+          onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
+              onQuickCreateRuleRequest(
+            quickCreateRule(session, accountId, emailAddress: emailAddress),
           ),
         ),
         useRootNavigator: true,
@@ -697,25 +697,25 @@ class EmailActionReactor with MessageDialogActionMixin {
         backgroundColor: Colors.transparent,
       );
     } else {
-      Get.dialog(
-        PointerInterceptor(
-          child: EmailAddressDialogBuilder(
-            imagePaths: imagePaths,
-            emailAddress: emailAddress,
-            onCloseDialogAction: popBack,
-            onCopyEmailAddressAction: (emailAddress) =>
-                _copyEmailAddress(currentContext!, emailAddress, appToast),
-            onComposeEmailAction: (emailAddress) =>
-                onComposeEmailFromEmailAddressRequest(emailAddress),
-            onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
-                onQuickCreateRuleRequest(
-              quickCreateRule(session, accountId, emailAddress: emailAddress),
-            ),
+      await Get.dialog(
+        EmailAddressDialogBuilder(
+          imagePaths: imagePaths,
+          emailAddress: emailAddress,
+          onCloseDialogAction: popBack,
+          onCopyEmailAddressAction: (emailAddress) =>
+              _copyEmailAddress(currentContext!, emailAddress, appToast),
+          onComposeEmailAction: (emailAddress) =>
+              onComposeEmailFromEmailAddressRequest(emailAddress),
+          onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
+              onQuickCreateRuleRequest(
+            quickCreateRule(session, accountId, emailAddress: emailAddress),
           ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
+
+    _isEmailAddressDialogOpened.value = false;
   }
 
   void _copyEmailAddress(

@@ -8,15 +8,15 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 class DefaultWebAppBarThreadWidgetStyle {
   static const double buttonMaxWidth = 80;
   static const double titleOffset = 180;
-  static const double minHeight = 56;
+  static const double height = 56;
 
   static const Color backgroundColor = Colors.white;
 
   static EdgeInsetsGeometry getPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isMobile(context) || responsiveUtils.isTabletLarge(context)) {
-      return const EdgeInsets.symmetric(horizontal: 12, vertical: 8);
+      return const EdgeInsets.symmetric(horizontal: 12);
     } else {
-      return const EdgeInsets.symmetric(horizontal: 24, vertical: 8);
+      return const EdgeInsets.symmetric(horizontal: 24);
     }
   }
   static const EdgeInsetsGeometry mailboxMenuPadding = EdgeInsets.all(5);

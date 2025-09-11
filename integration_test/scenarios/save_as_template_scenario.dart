@@ -21,7 +21,7 @@ class SaveAsTemplateScenario extends BaseTestScenario {
     await _expectSaveToastSuccessVisible();
 
     await composerRobot.addSubject('test subject');
-    
+    await hideKeyboard();
     await composerRobot.saveAsTemplate();
 
     await _expectUpdateToastSuccessVisible();

@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
+import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
@@ -37,6 +38,7 @@ class MailboxVisibilityController extends BaseMailboxController {
   SubscribeMultipleMailboxInteractor? _subscribeMultipleMailboxInteractor;
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final mailboxListScrollController = ScrollController();
+  final foldersExpandMode = Rx(ExpandMode.EXPAND);
 
   MailboxVisibilityController(
     TreeBuilder treeBuilder,

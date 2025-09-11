@@ -1,6 +1,7 @@
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/html/html_template.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -8,20 +9,20 @@ import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:html_editor_enhanced/html_editor.dart' as html_editor_browser;
-import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/web/toolbar_rich_text_builder_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/local_file_drop_zone_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_widget.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/insert_image_loading_indicator.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class IdentitySignatureInputFieldWidget extends StatelessWidget
-    with RichTextButtonMixin {
+class IdentitySignatureInputFieldWidget extends StatelessWidget {
   final IdentityCreatorController controller;
 
-  IdentitySignatureInputFieldWidget({
+  const IdentitySignatureInputFieldWidget({
     super.key,
     required this.controller,
   });
@@ -80,6 +81,19 @@ class IdentitySignatureInputFieldWidget extends StatelessWidget
                 isInserting: isUploading || isCompressingInlineImage,
               );
             }),
+            Obx(() {
+              bool isOverlayEnabled = ColorDialogPicker().isOpened.isTrue;
+
+              if (isOverlayEnabled) {
+                return Positioned.fill(
+                  child: PointerInterceptor(
+                    child: const SizedBox.expand(),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
           ],
         );
       },
@@ -91,19 +105,27 @@ class IdentitySignatureInputFieldWidget extends StatelessWidget
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ToolbarRichTextWebBuilder(
-            richTextWebController: controller.richTextWebController!,
+          ToolbarRichTextWidget(
+            richTextController: controller.richTextWebController!,
+            imagePaths: controller.imagePaths,
             padding: const EdgeInsets.only(bottom: 12),
+            isMobile: controller.responsiveUtils.isMobile(context),
             extendedOption: [
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: 4.0),
-                child: buildWrapIconStyleText(
-                  icon: buildIconWithTooltip(
-                    path: controller.imagePaths.icAddPicture,
-                    tooltip: AppLocalizations.of(context).insertImage,
+              Container(
+                margin: ToolbarRichTextBuilderStyle.optionPadding,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: AppColor.m3Neutral90,
                   ),
-                  hasDropdown: false,
-                  onTap: () => controller.pickImage(context),
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                ),
+                height: 40,
+                child: TMailButtonWidget.fromIcon(
+                  icon: controller.imagePaths.icAddPicture,
+                  padding: const EdgeInsets.all(5),
+                  backgroundColor: Colors.transparent,
+                  tooltipMessage: AppLocalizations.of(context).insertImage,
+                  onTapActionCallback: () => controller.pickImage(context),
                 ),
               ),
             ],
@@ -144,6 +166,8 @@ class IdentitySignatureInputFieldWidget extends StatelessWidget
         initialText: initContent.isEmpty ? null : initContent,
         disableDragAndDrop: true,
         spellCheck: true,
+        normalizeHtmlTextWhenDropping: true,
+        normalizeHtmlTextWhenPasting: true,
         customBodyCssStyle: HtmlUtils.customInlineBodyCssStyleHtmlEditor(
           direction: AppUtils.getCurrentDirection(context),
         ),

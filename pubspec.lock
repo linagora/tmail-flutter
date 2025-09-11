@@ -679,27 +679,27 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_appauth
-      sha256: f2696d4cf437f627fa09bc4864afdd8c80273f2e293fde544b18202a627754b1
+      sha256: b09fa8e3eaba12ec341c69ec45063e06eb565304e24cc35caaf105bbae2e955c
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.6"
+    version: "9.0.1"
   flutter_appauth_platform_interface:
     dependency: "direct main"
     description:
       name: flutter_appauth_platform_interface
-      sha256: "44feaa7058191b5d3cd7c9ff195262725773643121bcada172d49c2ddcff71cb"
+      sha256: fd2920b853d09741aff2e1178e044ea2ade0c87799cd8e63f094ab35b00fdf70
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.0"
+    version: "9.0.0"
   flutter_appauth_web:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "39f9806f27f45da34bb86b2b9b22847be9153516"
-      url: "https://github.com/CarlosPacheco/flutter_appauth_web.git"
+      ref: upgrade-flutter-appauth
+      resolved-ref: "0952346bf781bd87b93b8c61619f81a264be52db"
+      url: "https://github.com/linagora/flutter_appauth_web.git"
     source: git
-    version: "0.0.3"
+    version: "1.0.0"
   flutter_charset_detector:
     dependency: transitive
     description:
@@ -761,10 +761,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "66e3713f0e7a22da911b360cef4d219fc30cee77"
+      resolved-ref: "6c929093a154a2d16fa414f7d9a907e13f15b0ea"
       url: "https://github.com/linagora/flutter-date-range-picker.git"
     source: git
-    version: "2.0.0"
+    version: "2.0.1"
   flutter_dotenv:
     dependency: "direct main"
     description:
@@ -922,7 +922,7 @@ packages:
     dependency: transitive
     description:
       name: flutter_keyboard_visibility_platform_interface
-      sha256: e43a89845873f7be10cb3884345ceb9aebf00a659f479d1c8f4293fcb37022a4
+      sha256: e43a89845873f7be10cb3884345ceb9aebf00a65f479d1c8f4293fcb37022a4
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
@@ -1258,10 +1258,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: ec1688f4dd165eff7bb97f3d668d4d81211e1561
+      resolved-ref: "05f78b3e2d4535ade646667db5d5602234fe7b5e"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "3.2.2"
+    version: "3.2.3"
   html_unescape:
     dependency: transitive
     description:
@@ -1420,7 +1420,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "2e050b911925e0608e1e43bbb68d0298cb587043"
+      resolved-ref: "17879a3de917152eb5473058ef2c3302d2c01f3e"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.0.1"

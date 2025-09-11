@@ -1,20 +1,50 @@
-import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
 extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
-  void handleGetEmailsByIdsSuccess(GetEmailsByIdsSuccess success) {
+  Future<void> handleGetEmailsByIdsSuccess(GetEmailsByIdsSuccess success) async {
     final currentRoute = mailboxDashBoardController.dashboardRoute.value;
     if (currentRoute != DashboardRoutes.threadDetailed) {
       return;
     }
 
+    if (success is PreloadEmailsByIdsSuccess &&
+        success.presentationEmails.isNotEmpty) {
+      final email = success.presentationEmails.first;
+      final emailId = email.id;
+      if (emailId == null) return;
+      EmailBindings(currentEmailId: emailId).dependencies();
+      currentExpandedEmailId.value = emailId;
+      final isInternetConnected = await networkConnectionController.hasInternetConnection();
+      
+      if (isThreadDetailEnabled && isInternetConnected) {
+        loadThreadOnThreadChanged = false;
+        final mailboxContain = email.findMailboxContain(
+          mailboxDashBoardController.mapMailboxById,
+        );
+        mailboxDashBoardController.dispatchThreadDetailUIAction(
+          LoadThreadDetailAfterSelectedEmailAction(
+            email.threadId!,
+            isSentMailbox: mailboxContain?.isSent == true,
+          ),
+        );
+      } else {
+        emailIdsPresentation[emailId] = emailIdsPresentation[emailId]?.copyWith(
+          emailInThreadStatus: EmailInThreadStatus.expanded,
+        );
+      }
+      return;
+    }
+
     final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
-    final isLoadMore = emailIdsPresentation.values.nonNulls.isNotEmpty;
+    if (selectedEmailId == null) return;
     
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;
@@ -27,53 +57,17 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
         continue;
       }
 
-      if (presentationEmail.id == selectedEmailId) {
-        EmailBindings(currentEmailId: presentationEmail.id).dependencies();
-        currentExpandedEmailId.value = presentationEmail.id;
-      }
       emailIdsPresentation[presentationEmail.id!] = presentationEmail.copyWith(
-        emailInThreadStatus: presentationEmail.id == selectedEmailId
-          ? EmailInThreadStatus.expanded
-          : EmailInThreadStatus.collapsed,
+        emailInThreadStatus: EmailInThreadStatus.collapsed,
       );
     }
-    threadDetailManager.currentMobilePageViewIndex.refresh();
-
-    if (_skipScrollJump(isLoadMore)) return;
-    
-    final currentExpandedEmailIndex = currentExpandedEmailId.value == null
-      ? -1
-      : emailIdsPresentation.keys.toList().indexOf(currentExpandedEmailId.value!);
-    final firstLoadedMoreEmailId = success.presentationEmails.firstOrNull?.id;
-    final firstLoadedMoreEmailIndex = firstLoadedMoreEmailId == null
-      ? -1
-      : emailIdsPresentation.keys.toList().indexOf(firstLoadedMoreEmailId);
-    if (currentExpandedEmailIndex == -1 || firstLoadedMoreEmailIndex == -1) {
-      return;
+    if (currentExpandedEmailId.value != null) {
+      emailIdsPresentation[currentExpandedEmailId.value!] = emailIdsPresentation[currentExpandedEmailId.value!]?.copyWith(
+        emailInThreadStatus: EmailInThreadStatus.expanded,
+      );
     }
-
-    if (scrollController?.hasClients == false) return;
-    final currentScrollPosition = scrollController?.position.pixels;
-    final maxScrollExtent = scrollController?.position.maxScrollExtent;
-    final currentBottomScrollPosition = currentScrollPosition != null
-        && maxScrollExtent != null
-      ? maxScrollExtent - currentScrollPosition
-      : null;
-    
-    if (currentBottomScrollPosition != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final newMaxScrollExtent = scrollController?.position.maxScrollExtent;
-        if (newMaxScrollExtent == null) return;
-
-        if (currentExpandedEmailIndex < firstLoadedMoreEmailIndex) {
-          return;
-        } else if (newMaxScrollExtent != maxScrollExtent!) {
-          scrollController?.jumpTo(newMaxScrollExtent - currentBottomScrollPosition);
-        }
-      });
+    if (PlatformInfo.isMobile) {
+      threadDetailManager.currentMobilePageViewIndex.refresh();
     }
   }
-
-  bool _skipScrollJump(bool isLoadMore) =>
-      !isLoadMore || emailIdsPresentation.length == 1;
 }

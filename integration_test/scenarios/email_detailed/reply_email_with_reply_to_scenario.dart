@@ -45,7 +45,7 @@ class ReplyEmailWithReplyToScenario extends BaseTestScenario {
     await composerRobot.grantContactPermission();
 
     await _expectComposerSubjectDisplayedCorrectly(appLocalizations);
-    await _expectToFieldContainReplyToAndFromEmailAddress();
+    await _expectToFieldContainReplyToEmailAddress();
   }
 
   Future<void> _expectSearchViewVisible() async {
@@ -78,13 +78,16 @@ class ReplyEmailWithReplyToScenario extends BaseTestScenario {
     );
   }
 
-  Future<void> _expectToFieldContainReplyToAndFromEmailAddress() async {
-    expect(
-      $(RecipientComposerWidget).which<RecipientComposerWidget>((widget) =>
-        widget.prefix == PrefixEmailAddress.to &&
-        isMatchingEmailList(widget.listEmailAddress, {'emma@example.com'})
-      ).visible,
-      isTrue,
+  Future<void> _expectToFieldContainReplyToEmailAddress() async {
+    await expectViewVisible(
+      $(RecipientComposerWidget).which<RecipientComposerWidget>(
+        (widget) =>
+            widget.prefix == PrefixEmailAddress.to &&
+            isMatchingEmailList(
+              widget.listEmailAddress,
+              {'emma-reply-to@example.com'},
+            ),
+      ),
     );
   }
 }

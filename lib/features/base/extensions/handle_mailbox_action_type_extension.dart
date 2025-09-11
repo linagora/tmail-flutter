@@ -1,12 +1,9 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
-import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/empty_folder_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/invalid_mail_format_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subaddressing_action.dart';
@@ -35,7 +32,7 @@ extension HandleMailboxActionTypeExtension on BaseMailboxController {
       throw InvalidMailFormatException(userEmail);
     }
 
-    return '${userEmail.substring(0, atIndex)}+$folderName@${userEmail.substring(atIndex + 1)}';
+    return '<${userEmail.substring(0, atIndex)}+$folderName@${userEmail.substring(atIndex + 1)}>';
   }
 
   void openConfirmationDialogSubAddressingAction(
@@ -67,34 +64,28 @@ extension HandleMailboxActionTypeExtension on BaseMailboxController {
             ))
       ).show();
     } else {
-      Get.dialog(
-        PointerInterceptor(
-          child: ConfirmationDialogBuilder(
-            key: const Key('confirm_dialog_subAddressing'),
-            imagePath: imagePaths,
-            title: AppLocalizations.of(context).allowSubaddressing,
-            textContent: AppLocalizations.of(context)
-                .message_confirmation_dialog_allow_subaddressing(mailboxName),
-            confirmText: AppLocalizations.of(context).allow,
-            cancelText: AppLocalizations.of(context).cancel,
-            additionalWidgetContent: CopySubaddressWidget(
-              imagePath: imagePaths,
-              subaddress: subAddress,
-              onCopyButtonAction: () => copySubAddressAction(
-                context,
-                subAddress,
-              ),
-            ),
-            onConfirmButtonAction: () => onAllowSubAddressingAction(
-              mailboxId,
-              currentRights,
-              MailboxActions.allowSubaddressing,
-            ),
-            onCancelButtonAction: popBack,
-            onCloseButtonAction: popBack,
+      MessageDialogActionManager().showConfirmDialogAction(
+        context,
+        AppLocalizations.of(context)
+            .message_confirmation_dialog_allow_subaddressing(mailboxName),
+        AppLocalizations.of(context).allow,
+        key: const Key('confirm_dialog_subAddressing'),
+        title: AppLocalizations.of(context).allowSubaddressing,
+        cancelTitle: AppLocalizations.of(context).cancel,
+        additionalWidgetContent: CopySubaddressWidget(
+          imagePath: imagePaths,
+          subaddress: subAddress,
+          onCopyButtonAction: () => copySubAddressAction(
+            context,
+            subAddress,
           ),
         ),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        onConfirmAction: () => onAllowSubAddressingAction(
+          mailboxId,
+          currentRights,
+          MailboxActions.allowSubaddressing,
+        ),
+        onCloseButtonAction: popBack,
       );
     }
   }

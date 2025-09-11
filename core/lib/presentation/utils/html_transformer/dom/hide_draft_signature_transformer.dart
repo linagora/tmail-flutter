@@ -14,7 +14,7 @@ class HideDraftSignatureTransformer extends DomTransformer {
     Map<String, String>? mapUrlDownloadCID
   }) async {
     try {
-      final signature = document.querySelector('div.tmail-signature');
+      final signature = document.querySelector('.tmail-signature');
       if (signature == null) return;
       final currentStyle = signature.attributes['style']?.trim();
       if (currentStyle == null) {
