@@ -2082,11 +2082,12 @@ packages:
   super_tag_editor:
     dependency: "direct main"
     description:
-      name: super_tag_editor
-      sha256: "291b4b5ef5c44d1d06dc0337f66b71f7afd77b8c98d0ad0f4f8baca6a6f3cbc4"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.2"
+      path: "."
+      ref: support-horizontal-arrow-keys
+      resolved-ref: "92901b671db83f1d1f7223a0d1a50981b5545f6f"
+      url: "https://github.com/dab246/super_tag_editor.git"
+    source: git
+    version: "0.3.3"
   syncfusion_flutter_core:
     dependency: transitive
     description:
