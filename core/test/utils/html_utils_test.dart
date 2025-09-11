@@ -140,4 +140,186 @@ void main() {
       );
     });
   });
+
+  group('HtmlUtils.extractPlainText', () {
+    test('removes blockquote and keeps other text', () {
+      const html = '''
+        <div>Hello <b>world</b></div>
+        <blockquote>
+          <p>should be removed</p>
+        </blockquote>
+        <div>Final</div>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), 'Hello world Final');
+    });
+
+    test('removes nested blockquotes', () {
+      const html = '''
+        <p>Keep this</p>
+        <blockquote>
+          <p>remove me</p>
+          <blockquote><p>nested remove</p></blockquote>
+        </blockquote>
+        <span>After</span>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), 'Keep this After');
+    });
+
+    test('removes multiple blockquotes at same level', () {
+      const html = '''
+        <p>Start</p>
+        <blockquote><p>first</p></blockquote>
+        <blockquote><p>second</p></blockquote>
+        <p>End</p>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), 'Start End');
+    });
+
+    test('removes all html tags outside blockquotes', () {
+      const html = '<div>Hello <b>bold</b> <i>italic</i></div>';
+      expect(HtmlUtils.extractPlainText(html), 'Hello bold italic');
+    });
+
+    test('normalizes whitespaces', () {
+      const html = '''
+        <p>Hello</p>     
+        <blockquote><p>remove</p></blockquote>
+        <p>   World   </p>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), 'Hello World');
+    });
+
+    test('returns empty string if only blockquote present', () {
+      const html = '<blockquote><p>everything removed</p></blockquote>';
+      expect(HtmlUtils.extractPlainText(html), '');
+    });
+
+    test('case insensitive blockquote tag', () {
+      const html = '''
+        <BLOCKQUOTE><p>Remove me</p></BLOCKQUOTE>
+        <p>Keep me</p>
+      ''';
+      expect(HtmlUtils.extractPlainText(html), 'Keep me');
+    });
+
+    test('handles text without any html', () {
+      const html = 'Just plain text already';
+      expect(HtmlUtils.extractPlainText(html), 'Just plain text already');
+    });
+
+    test('decodes HTML entities correctly', () {
+      const html = '''
+        <p>A &amp; B</p>
+        <p>5 &lt; 10 &gt; 3</p>
+        <p>Hello&nbsp;World</p>
+        <blockquote><p>remove &copy;</p></blockquote>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), 'A & B 5 < 10 > 3 Hello World');
+    });
+
+    test('handles double-encoded html entities with full decode', () {
+      const html = '''
+        <p>Before</p>
+        &amp;lt;div&amp;gt;Hello&amp;lt;/div&amp;gt;
+        <p>After</p>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), 'Before Hello After');
+    });
+
+
+    test('handles emoji correctly', () {
+      const html = '''
+        <p>Hello 🌍🚀</p>
+        <blockquote><p>😅 should be removed</p></blockquote>
+        <p>Done ✅</p>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), 'Hello 🌍🚀 Done ✅');
+    });
+
+    test('handles Cyrillic text', () {
+      const html = '''
+        <p>Привет мир</p>
+        <blockquote><p>Удалить это</p></blockquote>
+        <p>Отчёт завершён</p>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), 'Привет мир Отчёт завершён');
+    });
+
+    test('handles Japanese text', () {
+      const html = '''
+        <p>こんにちは 世界</p>
+        <blockquote><p>これは削除される</p></blockquote>
+        <p>完了しました</p>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), 'こんにちは 世界 完了しました');
+    });
+
+    test('handles Chinese text', () {
+      const html = '''
+        <p>你好，世界</p>
+        <blockquote><p>这部分要删除</p></blockquote>
+        <p>完成</p>
+      ''';
+
+      expect(HtmlUtils.extractPlainText(html), '你好，世界 完成');
+    });
+
+    test('returns empty string when input is empty', () {
+      expect(HtmlUtils.extractPlainText(''), '');
+    });
+
+    test('handles html without closing tags', () {
+      const html = '<p>Hello <b>World';
+      expect(HtmlUtils.extractPlainText(html), 'Hello World');
+    });
+
+    test('ignores numeric-like tags (e.g. <123>) as text', () {
+      const html = '<p>value is <123> not a tag</p>';
+      // <123> is not a valid HTML tag, so it should be kept
+      expect(HtmlUtils.extractPlainText(html), 'value is <123> not a tag');
+    });
+
+    test('keeps unknown HTML entities as-is', () {
+      const html = '<p>custom &unknown; entity</p>';
+      // if the entity cannot be decoded, keep it as is
+      expect(HtmlUtils.extractPlainText(html), 'custom &unknown; entity');
+    });
+
+    test('removes nested blockquote completely', () {
+      const html = '''
+        <p>Intro</p>
+        <blockquote>
+          <p>nested <blockquote>deep</blockquote></p>
+        </blockquote>
+        <p>Outro</p>
+      ''';
+      expect(HtmlUtils.extractPlainText(html), 'Intro Outro');
+    });
+
+    test('preserves spacing when multiple tags removed', () {
+      const html = '<div>Hello</div><span>World</span>';
+      expect(HtmlUtils.extractPlainText(html), 'Hello World');
+    });
+
+    test('decodes multiple levels of entities', () {
+      // &amp;lt; = &lt; → <
+      const html = '<p>&amp;lt;b&amp;gt;Bold&amp;lt;/b&amp;gt;</p>';
+      // Because <b> is decoded into a real tag and removed, only Bold remains
+      expect(HtmlUtils.extractPlainText(html), 'Bold');
+    });
+
+    test('keeps unknown tags as plain text', () {
+      const html = '<heloloasdadadadadsad>dab';
+      expect(HtmlUtils.extractPlainText(html), '<heloloasdadadadadsad>dab');
+    });
+  });
 }
