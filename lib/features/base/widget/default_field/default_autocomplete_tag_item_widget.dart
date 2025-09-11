@@ -16,8 +16,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 class DefaultAutocompleteTagItemWidget extends StatelessWidget {
 
   final bool isCollapsed;
-  final bool isLatestTagFocused;
-  final bool isLatestEmail;
+  final bool isTagFocused;
   final FilterField field;
   final EmailAddress currentEmailAddress;
   final String iconClose;
@@ -34,8 +33,7 @@ class DefaultAutocompleteTagItemWidget extends StatelessWidget {
     required this.collapsedListEmailAddress,
     required this.iconClose,
     this.isCollapsed = false,
-    this.isLatestTagFocused = false,
-    this.isLatestEmail = false,
+    this.isTagFocused = false,
     this.onDeleteTagAction,
     this.onShowFullAction,
   }) : super(key: key);
@@ -141,7 +139,7 @@ class DefaultAutocompleteTagItemWidget extends StatelessWidget {
   }
 
   Color _getTagBackgroundColor() {
-    if (isLatestTagFocused && isLatestEmail) {
+    if (isTagFocused) {
       return AppColor.colorItemRecipientSelected;
     } else {
       return AppColor.colorEmailAddressTag;
@@ -149,7 +147,7 @@ class DefaultAutocompleteTagItemWidget extends StatelessWidget {
   }
 
   BorderSide _getTagBorderSide() {
-    if (isLatestTagFocused && isLatestEmail) {
+    if (isTagFocused) {
       return const BorderSide(width: 1, color: AppColor.primaryColor);
     } else {
       return const BorderSide(width: 0, color: AppColor.colorEmailAddressTag);

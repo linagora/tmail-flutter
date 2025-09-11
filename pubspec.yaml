@@ -110,7 +110,7 @@ dependencies:
       ref: master
 
   ### Dependencies from pub.dev ###
-  super_tag_editor: 0.3.2
+  super_tag_editor: 0.3.3
 
   cupertino_icons: 1.0.6
 

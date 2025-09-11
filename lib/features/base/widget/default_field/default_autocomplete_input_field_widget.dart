@@ -83,7 +83,7 @@ class _DefaultAutocompleteInputFieldWidgetState
     extends State<DefaultAutocompleteInputFieldWidget> {
   final _imagePaths = Get.find<ImagePaths>();
 
-  bool _lastTagFocused = false;
+  int _tagIndexFocused = -1;
   bool _isDragging = false;
   late List<EmailAddress> _currentListEmailAddress;
   Timer? _gapBetweenTagChangedAndFindSuggestion;
@@ -157,17 +157,14 @@ class _DefaultAutocompleteInputFieldWidgetState
         onSubmitted: _handleSubmitTagAction,
         tagBuilder: (context, index) {
           final currentEmailAddress = _currentListEmailAddress.elementAt(index);
-          final isLatestEmail =
-              currentEmailAddress == _currentListEmailAddress.last;
           return DefaultAutocompleteTagItemWidget(
             field: widget.field,
             currentEmailAddress: currentEmailAddress,
             currentListEmailAddress: _currentListEmailAddress,
             collapsedListEmailAddress: _collapsedListEmailAddress,
             iconClose: _imagePaths.icClose,
-            isLatestEmail: isLatestEmail,
             isCollapsed: _isCollapse,
-            isLatestTagFocused: _lastTagFocused,
+            isTagFocused: _tagIndexFocused == index,
             onDeleteTagAction: _handleDeleteTagAction,
             onShowFullAction: widget.onShowFullListEmailAddressAction,
           );
@@ -335,13 +332,17 @@ class _DefaultAutocompleteInputFieldWidgetState
     );
   }
 
-  void _handleFocusTagAction(bool focused) {
-    _setStateSafety(() => _lastTagFocused = focused);
+  void _handleFocusTagAction(int index) {
+    _setStateSafety(() => _tagIndexFocused = index);
   }
 
-  void _handleDeleteLatestTagAction() {
-    if (_currentListEmailAddress.isNotEmpty) {
-      _setStateSafety(_currentListEmailAddress.removeLast);
+  void _handleDeleteLatestTagAction(int index) {
+    if (_currentListEmailAddress.isNotEmpty &&
+        index >= 0 &&
+        index < _currentListEmailAddress.length) {
+      _setStateSafety(() {
+        _currentListEmailAddress.removeAt(index);
+      });
       _updateListEmailAddressAction();
     }
   }

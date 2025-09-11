@@ -23,8 +23,7 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 class RecipientTagItemWidget extends StatelessWidget {
 
   final bool isCollapsed;
-  final bool isLatestTagFocused;
-  final bool isLatestEmail;
+  final bool isTagFocused;
   final ImagePaths imagePaths;
   final double? maxWidth;
   final int index;
@@ -50,8 +49,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     required this.imagePaths,
     @visibleForTesting this.isTestingForWeb = false,
     this.isCollapsed = false,
-    this.isLatestTagFocused = false,
-    this.isLatestEmail = false,
+    this.isTagFocused = false,
     this.isMobile = false,
     this.onShowFullAction,
     this.onDeleteTagAction,
@@ -195,7 +193,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   int get countRecipients => currentListEmailAddress.length - collapsedListEmailAddress.length;
 
   Color _getTagBackgroundColor() {
-    if (isLatestTagFocused && isLatestEmail) {
+    if (isTagFocused) {
       return AppColor.colorItemRecipientSelected;
     } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
       return AppColor.grayBackgroundColor;
@@ -205,7 +203,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   }
 
   BorderSide _getTagBorderSide() {
-    if (isLatestTagFocused && isLatestEmail) {
+    if (isTagFocused) {
       return const BorderSide(width: 1, color: AppColor.primaryColor);
     } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
       return const BorderSide(width: 1, color: AppColor.colorEmailAddressTag);
