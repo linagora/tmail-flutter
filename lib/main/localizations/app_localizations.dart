@@ -3261,27 +3261,6 @@ class AppLocalizations {
     );
   }
 
-  String get quotaWarningBannerTitle {
-    return Intl.message(
-      'You are running out of storage (90%).',
-      name: 'quotaWarningBannerTitle'
-    );
-  }
-
-  String get quotaWarningBannerMessage {
-    return Intl.message(
-      'Soon you won\'t be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.',
-      name: 'quotaWarningBannerMessage'
-    );
-  }
-
-  String get quotaErrorBannerMessage {
-    return Intl.message(
-      'Soon you won\'t be able to email in Tmail. Please clean your storage or upgrade your storage to get full features in Tmail.',
-      name: 'quotaErrorBannerMessage'
-    );
-  }
-
   String createFolderSuccessfullyMessage(String folderName) {
     return Intl.message(
       'You successfully created $folderName folder',
@@ -4948,6 +4927,34 @@ class AppLocalizations {
     return Intl.message(
       'Paywall url not available',
       name: 'paywallUrlNotAvailable',
+    );
+  }
+
+  String get quotaBannerWarningTitle {
+    return Intl.message(
+      'You are running low on storage (90%)',
+      name: 'quotaBannerWarningTitle',
+    );
+  }
+
+  String get quotaBannerWarningSubtitleWithPremium {
+    return Intl.message(
+      'To keep sending messages and enjoying all Twake Mail features, please consider cleaning up or upgrading your storage.',
+      name: 'quotaBannerWarningSubtitleWithPremium',
+    );
+  }
+
+  String get quotaBannerWarningSubtitleWithoutPremium {
+    return Intl.message(
+      'To keep sending messages and enjoying all Twake Mail features, please consider cleaning up.',
+      name: 'quotaBannerWarningSubtitleWithoutPremium',
+    );
+  }
+
+  String get manageMyStorage {
+    return Intl.message(
+      'Manage my storage',
+      name: 'manageMyStorage',
     );
   }
 }

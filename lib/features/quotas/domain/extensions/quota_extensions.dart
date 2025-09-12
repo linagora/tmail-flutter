@@ -1,6 +1,5 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
@@ -79,53 +78,13 @@ extension QuotasExtensions on Quota {
     }
   }
 
-  Color getQuotaBannerBackgroundColor() {
-    if (isHardLimitReached) {
-      return AppColor.colorQuotaError.withValues(alpha: 0.12);
-    } else if (isWarnLimitReached) {
-      return AppColor.colorBackgroundQuotasWarning.withValues(alpha: 0.12);
-    } else {
-      return AppColor.colorNetworkConnectionBannerBackground;
-    }
-  }
-
-  String getQuotaBannerIcon(ImagePaths imagePaths) {
-    if (isHardLimitReached) {
-      return imagePaths.icQuotasOutOfStorage;
-    } else if (isWarnLimitReached) {
-      return imagePaths.icQuotasWarning;
-    } else {
-      return '';
-    }
-  }
-
   String getQuotaBannerTitle(BuildContext context) {
     if (isHardLimitReached) {
       return AppLocalizations.of(context).quotaErrorBannerTitle;
     } else if (isWarnLimitReached) {
-      return AppLocalizations.of(context).quotaWarningBannerTitle;
+      return AppLocalizations.of(context).quotaBannerWarningTitle;
     } else {
       return '';
-    }
-  }
-
-  String getQuotaBannerMessage(BuildContext context) {
-    if (isHardLimitReached) {
-      return AppLocalizations.of(context).quotaErrorBannerMessage;
-    } else if (isWarnLimitReached) {
-      return AppLocalizations.of(context).quotaWarningBannerMessage;
-    } else {
-      return '';
-    }
-  }
-
-  Color getQuotaBannerTitleColor() {
-    if (isHardLimitReached) {
-      return AppColor.colorQuotaError;
-    } else if (isWarnLimitReached) {
-      return AppColor.colorQuotaWarning;
-    } else {
-      return Colors.black;
     }
   }
 
