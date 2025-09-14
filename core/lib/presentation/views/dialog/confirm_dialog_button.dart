@@ -70,12 +70,14 @@ class ConfirmDialogButton extends StatelessWidget {
                       : iconColor?.asFilter() ?? AppColor.primaryMain.asFilter(),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: textStyle ?? ThemeUtils.textStyleM3LabelLarge(color: textColor),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )
+                Flexible(
+                  child: Text(
+                    label,
+                    style: textStyle ?? ThemeUtils.textStyleM3LabelLarge(color: textColor),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
     );

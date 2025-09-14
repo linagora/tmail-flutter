@@ -26,6 +26,7 @@ class NoRulesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
     final isMobile = responsiveUtils.isMobile(context);
+    final isDesktop = responsiveUtils.isDesktop(context);
 
     return Expanded(
       child: Container(
@@ -63,6 +64,9 @@ class NoRulesWidget extends StatelessWidget {
               Container(
                 constraints: const BoxConstraints(minWidth: 230),
                 height: 48,
+                padding: EdgeInsetsDirectional.symmetric(
+                  horizontal: isDesktop ? 0 : 16,
+                ),
                 child: ConfirmDialogButton(
                   label: AppLocalizations.of(context).createMyFirstRule,
                   backgroundColor: Colors.white,
