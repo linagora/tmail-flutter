@@ -27,6 +27,7 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
     'nav',
     'main',
     'footer',
+    'supress_time_adjustment',
   ];
 
   const StandardizeHtmlSanitizingTransformers();
