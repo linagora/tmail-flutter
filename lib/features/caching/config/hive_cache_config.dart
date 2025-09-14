@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_st
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v18.dart';
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v19.dart';
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v20.dart';
+import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v21.dart';
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v7.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
@@ -97,6 +98,7 @@ class HiveCacheConfig {
     await UpgradeHiveDatabaseStepsV18(cachingManager).onUpgrade(oldVersion, newVersion);
     await UpgradeHiveDatabaseStepsV19(cachingManager).onUpgrade(oldVersion, newVersion);
     await UpgradeHiveDatabaseStepsV20(cachingManager).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV21(cachingManager).onUpgrade(oldVersion, newVersion);
 
     if (oldVersion != newVersion) {
       await cachingManager.storeCacheVersion(newVersion);
