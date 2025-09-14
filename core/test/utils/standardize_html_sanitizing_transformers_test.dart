@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'dart:convert';
 
 void main() {
-  group('StandardizeHtmlSanitizingTransformers::test', () {
+  group('StandardizeHtmlSanitizingTransformers.process', () {
     const transformer = StandardizeHtmlSanitizingTransformers();
     const htmlEscape = HtmlEscape();
     const listHTMLTags = [
@@ -19,6 +19,7 @@ void main() {
       'style',
       'section',
       'google-sheets-html-origin',
+      'supress_time_adjustment',
     ];
     const listOnEventAttributes = [
       'mousedown',
@@ -187,6 +188,16 @@ void main() {
       final result = transformer.process(inputHtml, htmlEscape);
 
       expect(result, equals('<footer></footer>'));
+    });
+
+    test(
+      'SHOULD persist supress_time_adjustment tag and remove href attribute of A tag '
+      'WHEN href is invalid',
+    () {
+      const inputHtml = '<supress_time_adjustment href="javascript:alert(1)"></supress_time_adjustment>';
+      final result = transformer.process(inputHtml, htmlEscape);
+
+      expect(result, equals('<supress_time_adjustment></supress_time_adjustment>'));
     });
   });
 }
