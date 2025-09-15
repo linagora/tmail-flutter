@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/base/mixin/expand_folder_trigger_scrollab
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
@@ -25,6 +26,7 @@ class MailboxCreatorController extends BaseController
     with ExpandFolderTriggerScrollableMixin {
 
   final VerifyNameInteractor _verifyNameInteractor;
+  final TreeBuilder _treeBuilder;
 
   final selectedMailbox = Rxn<PresentationMailbox>();
   final newNameMailbox = Rxn<String>();
@@ -40,7 +42,7 @@ class MailboxCreatorController extends BaseController
 
   List<String> listMailboxNameAsStringExist = <String>[];
 
-  MailboxCreatorController(this._verifyNameInteractor);
+  MailboxCreatorController(this._verifyNameInteractor, this._treeBuilder);
 
   void setNewNameMailbox(String newName) => newNameMailbox.value = newName;
 
@@ -49,10 +51,7 @@ class MailboxCreatorController extends BaseController
     super.onInit();
     MailboxCreatorArguments? arguments = Get.arguments;
     if (arguments != null) {
-      personalMailboxTree.value = arguments.personalMailboxTree;
-      defaultMailboxTree.value = arguments.defaultMailboxTree;
-      selectedMailbox.value = arguments.selectedMailbox;
-      _createListMailboxNameAsStringInMailboxLocation();
+      _buildMailboxTree(arguments);
     }
   }
 
@@ -64,6 +63,19 @@ class MailboxCreatorController extends BaseController
     nameInputController.dispose();
     listFolderScrollController.dispose();
     super.onClose();
+  }
+
+  Future<void> _buildMailboxTree(MailboxCreatorArguments arguments) async {
+    final recordTree = await _treeBuilder.generateMailboxTreeInUI(
+      allMailboxes: arguments.listMailboxes,
+      currentDefaultTree: defaultMailboxTree.value,
+      currentPersonalTree: personalMailboxTree.value,
+      currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+    );
+    personalMailboxTree.value = recordTree.personalTree;
+    defaultMailboxTree.value = recordTree.defaultTree;
+    selectedMailbox.value = arguments.selectedMailbox;
+    _createListMailboxNameAsStringInMailboxLocation();
   }
 
   MailboxNode? _findMailboxNodeById(MailboxId mailboxId) {
