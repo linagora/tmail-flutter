@@ -1,7 +1,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_view.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -42,8 +42,8 @@ class CreateRuleWithEmailAddressScenario extends BaseTestScenario {
     await $.pumpAndSettle();
 
     await emailAddressDialogRobot.tapCreateRuleWithThisEmailAddressButton(appLocalizations);
+    await $.pumpAndTrySettle();
     await _expectRuleFilterCreatorViewVisible();
-
     await _expectConditionFieldContainEmailAddressCorrectly(emailUser);
   }
 
@@ -53,10 +53,10 @@ class CreateRuleWithEmailAddressScenario extends BaseTestScenario {
 
   Future<void> _expectConditionFieldContainEmailAddressCorrectly(String emailAddress) async {
     expect(
-      $(RulesFilterInputField).which<RulesFilterInputField>((widget) =>
-        widget.editingController?.text.contains(emailAddress) == true
-      ).visible,
-      isTrue,
+      $(DefaultInputFieldWidget).which<DefaultInputFieldWidget>((widget) =>
+        widget.textEditingController.text.contains(emailAddress) == true
+      ),
+      findsOneWidget,
     );
   }
 }
