@@ -240,7 +240,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 ),
                 Expanded(
                   child: LayoutBuilder(
-                    builder: (context, constraintsEditor) {
+                    builder: (_, constraintsEditor) {
                       return Stack(
                         children: [
                           Column(
@@ -364,7 +364,7 @@ class ComposerView extends GetWidget<ComposerController> {
         }
       ),
       desktop: Obx(() => DesktopResponsiveContainerView(
-        childBuilder: (context, constraints) {
+        childBuilder: (_, constraints) {
           return GestureDetector(
             onTap: () => controller.clickOutsideComposer(context),
             child: Column(children: [
@@ -520,7 +520,7 @@ class ComposerView extends GetWidget<ComposerController> {
               ),
               Expanded(
                 child: LayoutBuilder(
-                  builder: (context, constraintsEditor) {
+                  builder: (_, constraintsEditor) {
                     return Stack(
                       children: [
                         Column(
@@ -689,7 +689,7 @@ class ComposerView extends GetWidget<ComposerController> {
         onChangeDisplayModeAction: controller.displayScreenTypeComposerAction,
       )),
       tablet: TabletResponsiveContainerView(
-        childBuilder: (context, constraints) {
+        childBuilder: (_, constraints) {
           return GestureDetector(
             onTap: () => controller.clickOutsideComposer(context),
             child: Column(children: [
@@ -843,7 +843,7 @@ class ComposerView extends GetWidget<ComposerController> {
               ),
               Expanded(
                 child: LayoutBuilder(
-                  builder: (context, constraintsBody) {
+                  builder: (_, constraintsBody) {
                     return Stack(
                       children: [
                         Column(
