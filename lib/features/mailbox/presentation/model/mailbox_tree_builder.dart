@@ -48,6 +48,7 @@ class TreeBuilder {
     required MailboxTree currentPersonalTree,
     required MailboxTree currentTeamMailboxTree,
     MailboxId? mailboxIdSelected,
+    MailboxId? mailboxIdExpanded,
   }) async {
     final Map<MailboxId, MailboxNode> mailboxDictionary = HashMap();
 
