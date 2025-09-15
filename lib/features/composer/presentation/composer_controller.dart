@@ -2338,7 +2338,7 @@ class ComposerController extends BaseController
     required BuildContext context,
     required double maxWidth
   }) {
-    if (responsiveUtils.isMobile(context)) {
+    if (context.mounted && responsiveUtils.isMobile(context)) {
       maxWithEditor = maxWidth - 40;
     } else {
       maxWithEditor = maxWidth - 70;
@@ -2368,6 +2368,8 @@ class ComposerController extends BaseController
     required UploadError uploadError
   }) {
     logError('ComposerController::handleOnPasteImageFailureAction: $uploadError');
+    if (!context.mounted) return;
+
     appToast.showToastErrorMessage(
       context,
       AppLocalizations.of(context).thisImageCannotBePastedIntoTheEditor);

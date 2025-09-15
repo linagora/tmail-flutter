@@ -15,7 +15,7 @@ class MobileResponsiveContainerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: MobileResponsiveContainerViewStyle.outSideBackgroundColor,
-      body: LayoutBuilder(builder: (context, constraints) =>
+      body: LayoutBuilder(builder: (_, constraints) =>
         PointerInterceptor(
           child: childBuilder.call(context, constraints)
         )

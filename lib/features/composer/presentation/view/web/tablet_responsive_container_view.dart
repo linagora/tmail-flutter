@@ -30,7 +30,7 @@ class TabletResponsiveContainerView extends StatelessWidget {
           child: Container(
             color: TabletResponsiveContainerViewStyle.backgroundColor,
             width: TabletResponsiveContainerViewStyle.getWidth(context, _responsiveUtils),
-            child: LayoutBuilder(builder: (context, constraints) =>
+            child: LayoutBuilder(builder: (_, constraints) =>
               PointerInterceptor(
                 child: childBuilder.call(context, constraints)
               )
