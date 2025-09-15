@@ -274,8 +274,10 @@ void main() {
 
       final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
 
-      expect(matches, containsAll(['attach', 'tài liệu', 'đính kèm', 'приложение']));
-      expect(matches.toSet().length, matches.length, reason: 'No duplicates allowed');
+      expect(matches,
+          containsAll(['attach', 'tài liệu', 'đính kèm', 'приложение']));
+      expect(matches.toSet().length, matches.length,
+          reason: 'No duplicates allowed');
     });
 
     test('should return unique matches even if repeated multiple times', () {
@@ -287,8 +289,10 @@ void main() {
 
       final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
 
-      expect(matches, containsAll(['file', 'attach', 'đính kèm', 'приложение']));
-      expect(matches.toSet().length, matches.length, reason: 'Duplicates must be removed');
+      expect(
+          matches, containsAll(['file', 'attach', 'đính kèm', 'приложение']));
+      expect(matches.toSet().length, matches.length,
+          reason: 'Duplicates must be removed');
     });
 
     test('should return empty list if no keywords present', () {
@@ -375,5 +379,287 @@ void main() {
         expect(matches.isNotEmpty, isTrue);
       });
     }
+  });
+
+  /// Test input validation and edge cases
+  group('AttachmentTextDetector Input Validation', () {
+    test('should handle empty input gracefully', () {
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword(''), isFalse);
+      expect(AttachmentTextDetector.matchedKeywordsUnique(''), isEmpty);
+      expect(AttachmentTextDetector.matchedKeywordsAll(''), isEmpty);
+    });
+
+    test('should handle special characters and symbols', () {
+      const email = "attach@#\$%^&*()_+ pièce jointe!@#\$%";
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
+      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      expect(matches, containsAll(['attach', 'pièce jointe']));
+    });
+
+    test('should handle whitespace-only input', () {
+      const email = "   \n\t\r   ";
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email), isFalse);
+      expect(AttachmentTextDetector.matchedKeywordsUnique(email), isEmpty);
+    });
+
+    test('should handle newlines and tabs in content', () {
+      const email = "Please\nsee\tthe\r\nattached\tdocument.";
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
+    });
+  });
+
+  /// Test language code edge cases and validation
+  group('AttachmentTextDetector Language Code Validation', () {
+    test('should handle invalid language codes', () {
+      expect(
+          AttachmentTextDetector.containsAttachmentKeyword("attach", lang: ""),
+          isFalse);
+      expect(
+          AttachmentTextDetector.containsAttachmentKeyword("attach",
+              lang: "invalid"),
+          isFalse);
+      expect(
+          AttachmentTextDetector.containsAttachmentKeyword("attach",
+              lang: "xyz"),
+          isFalse);
+    });
+
+    test('should handle language code case variations', () {
+      expect(
+          AttachmentTextDetector.containsAttachmentKeyword("attach",
+              lang: "EN"),
+          isTrue);
+      expect(
+          AttachmentTextDetector.containsAttachmentKeyword("attach",
+              lang: "En"),
+          isTrue);
+      expect(
+          AttachmentTextDetector.containsAttachmentKeyword("pièce jointe",
+              lang: "FR"),
+          isTrue);
+      expect(
+          AttachmentTextDetector.containsAttachmentKeyword("pièce jointe",
+              lang: "Fr"),
+          isTrue);
+    });
+
+    test('should return empty results for unsupported languages', () {
+      expect(AttachmentTextDetector.matchedKeywords("attach", lang: "de"),
+          isEmpty);
+      expect(AttachmentTextDetector.matchedKeywords("attach", lang: "es"),
+          isEmpty);
+      expect(AttachmentTextDetector.matchedKeywords("attach", lang: "ja"),
+          isEmpty);
+    });
+  });
+
+  /// Test boundary conditions and word matching
+  group('AttachmentTextDetector Boundary Conditions', () {
+    test('should handle keywords at text boundaries', () {
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("attach"),
+          isTrue);
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("attachment."),
+          isTrue);
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword(".attach"),
+          isTrue);
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword("(attachment)"),
+          isTrue);
+    });
+
+    test('should handle partial word matches correctly', () {
+      // Should NOT match "attach" in words where it's just a substring
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("detachment"),
+          isFalse);
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword("reattachment"),
+          isTrue); // contains "attachment"
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("attachments"),
+          isTrue); // contains "attachment"
+    });
+
+    test('should handle keywords with punctuation', () {
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("attach,"),
+          isTrue);
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("attach;"),
+          isTrue);
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("attach:"),
+          isTrue);
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("attach?"),
+          isTrue);
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("attach!"),
+          isTrue);
+    });
+
+    test('should handle single character boundaries', () {
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("a"), isFalse);
+      expect(AttachmentTextDetector.containsAnyAttachmentKeyword("file"),
+          isTrue); // Vietnamese keyword
+    });
+  });
+
+  /// Test Unicode and encoding edge cases
+  group('AttachmentTextDetector Unicode Handling', () {
+    test('should handle emoji and special Unicode characters', () {
+      const email = "📎 attachment 📄 file 🔗 pièce jointe";
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
+      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      expect(matches, containsAll(['attachment', 'file', 'pièce jointe']));
+    });
+
+    test('should handle mixed Unicode scripts', () {
+      const email = "文档 attachment документ pièce jointe تقرير";
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
+    });
+
+    test('should handle Unicode normalization variations', () {
+      // Test composed vs decomposed Unicode characters for French
+      const email1 = "pièce jointe"; // é as single character (NFC)
+      const email2 =
+          "pie\u0300ce jointe"; // é as e + combining grave accent (NFD)
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email1), isTrue);
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email2), isTrue);
+    });
+
+    test('should handle zero-width characters', () {
+      const email = "attach\u200Bment"; // Zero-width space
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
+    });
+  });
+
+  /// Test real-world scenarios and integration cases
+  group('AttachmentTextDetector Real-World Scenarios', () {
+    test('should handle common email signatures and footers', () {
+      const email = """
+        Please review the attached document.
+        
+        Best regards,
+        John Doe
+        
+        This email and any attachments are confidential and may be privileged.
+      """;
+      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      expect(matches, containsAll(['attach', 'attachment']));
+    });
+
+    test('should handle HTML-like content', () {
+      const email =
+          "Please see the <b>attached</b> document in the &lt;file&gt; section.";
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
+    });
+
+    test('should handle quoted email content', () {
+      const email = """
+        Hi John,
+        
+        Please find the attachment below.
+        
+        > On Mon, Jan 1, 2024, Jane wrote:
+        > I need the document attached to your previous email.
+        > Can you resend the file?
+        
+        Thanks!
+      """;
+      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      expect(matches, containsAll(['attachment', 'attach', 'file']));
+    });
+
+    test('should handle multiple languages in single email', () {
+      const email = """
+        English: Please see the attached file.
+        French: Veuillez voir le fichier joint.
+        Vietnamese: Vui lòng xem tài liệu đính kèm.
+        Russian: Пожалуйста, смотрите приложение.
+      """;
+      final matchesAll = AttachmentTextDetector.matchedKeywordsAll(email);
+      expect(matchesAll.keys, containsAll(['en', 'fr', 'vi', 'ru']));
+
+      final matchesUnique = AttachmentTextDetector.matchedKeywordsUnique(email);
+      expect(
+          matchesUnique,
+          containsAll([
+            'attach',
+            'file',
+            'fichier joint',
+            'joint',
+            'tài liệu',
+            'đính kèm',
+            'приложение'
+          ]));
+    });
+
+    test('should handle email threading and forwarding markers', () {
+      const email = """
+        FW: Important Document
+        
+        Please see attached report.
+        
+        -----Original Message-----
+        From: sender@example.com
+        The attachment contains sensitive information.
+      """;
+      expect(
+          AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
+    });
+  });
+
+  /// Test performance and memory edge cases
+  group('AttachmentTextDetector Performance Edge Cases', () {
+    test('should handle extremely large input without memory issues', () {
+      // Test with 5MB+ content
+      final hugeEmail = generateLongEmail(5000000, includeKeywords: false);
+      expect(
+          () => AttachmentTextDetector.containsAnyAttachmentKeyword(hugeEmail),
+          returnsNormally);
+    });
+
+    test('should handle repeated keyword patterns efficiently', () {
+      final email = "attach " * 10000; // 10K repetitions
+      final sw = Stopwatch()..start();
+      final result = AttachmentTextDetector.matchedKeywordsUnique(email);
+      sw.stop();
+
+      expect(result, equals(['attach']));
+      expect(sw.elapsedMilliseconds, lessThan(100)); // Should complete quickly
+    });
+
+    test('should handle very long single line efficiently', () {
+      final longLine = "word " * 100000 + "attachment"; // 100K words + keyword
+      final sw = Stopwatch()..start();
+      final result =
+          AttachmentTextDetector.containsAnyAttachmentKeyword(longLine);
+      sw.stop();
+
+      expect(result, isTrue);
+      expect(sw.elapsedMilliseconds,
+          lessThan(500)); // Should complete within 500ms
+    });
+
+    test('should handle many different keywords in large text', () {
+      final email = """
+        attach attachment file document report
+        pièce jointe fichier joint document joint
+        приложение документ файл отчёт вложение
+        đính kèm tài liệu tệp báo cáo
+      """ *
+          1000; // Repeat 1000 times
+
+      final sw = Stopwatch()..start();
+      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      sw.stop();
+
+      expect(matches.length, greaterThan(10));
+      expect(sw.elapsedMilliseconds,
+          lessThan(1000)); // Should complete within 1 second
+    });
   });
 }
