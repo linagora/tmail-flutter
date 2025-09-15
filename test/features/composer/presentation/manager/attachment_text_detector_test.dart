@@ -1,6 +1,7 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/attachment_text_detector.dart';
+import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
 
 /// Helper: generate email about [targetLength] characters long
 String generateLongEmail(int targetLength, {bool includeKeywords = true}) {
@@ -660,6 +661,118 @@ void main() {
       expect(matches.length, greaterThan(10));
       expect(sw.elapsedMilliseconds,
           lessThan(1000)); // Should complete within 1 second
+    });
+  });
+
+  /// Test edge cases in Arabic language
+  group('AttachmentTextDetector Arabic Tests', () {
+    const lang = LanguageCodeConstants.arabic;
+
+    test('containsAttachmentKeyword should return true when Arabic keyword exists', () {
+      const text = 'الرجاء مراجعة المستند المرفق';
+      final result = AttachmentTextDetector.containsAttachmentKeyword(text, lang: lang);
+      expect(result, isTrue);
+    });
+
+    test('containsAttachmentKeyword should return false when no Arabic keyword exists', () {
+      const text = 'مرحبا كيف حالك اليوم؟';
+      final result = AttachmentTextDetector.containsAttachmentKeyword(text, lang: lang);
+      expect(result, isFalse);
+    });
+
+    test('matchedKeywords should return matched Arabic keywords', () {
+      const text = 'تم إرسال ملف تقرير مرفق مع الرسالة';
+      final result = AttachmentTextDetector.matchedKeywords(text, lang: lang);
+      expect(result, containsAll(['ملف', 'تقرير', 'مرفق']));
+    });
+
+    test('matchedKeywords matches singular when plural form appears (e.g., مرفقات contains مرفق)', () {
+      const text = 'هذه مجرد رسالة عادية بدون أي مرفقات';
+      final result = AttachmentTextDetector.matchedKeywords(text, lang: LanguageCodeConstants.arabic);
+      expect(result, contains('مرفق'));
+      expect(result, isNotEmpty);
+    });
+
+    test('matchedKeywords should return empty list when no Arabic keywords exist', () {
+      const text = 'هذه رسالة للتجربة فقط بدون أي صور أو روابط.';
+      final result = AttachmentTextDetector.matchedKeywords(text, lang: LanguageCodeConstants.arabic);
+      expect(result, isEmpty);
+    });
+
+    test('containsAnyAttachmentKeyword should detect Arabic keyword among all languages', () {
+      const text = 'مرفق هام موجود في هذه الرسالة';
+      final result = AttachmentTextDetector.containsAnyAttachmentKeyword(text);
+      expect(result, isTrue);
+    });
+
+    test('matchedKeywordsAll should return only Arabic matches', () {
+      const text = 'إليك المستند مرفق للعرض';
+      final result = AttachmentTextDetector.matchedKeywordsAll(text);
+
+      expect(result.keys, contains(lang));
+      expect(result[lang], containsAll(['مستند', 'مرفق']));
+      // Make sure there are no other languages
+      expect(result.keys.length, equals(1));
+    });
+
+    test('matchedKeywordsUnique should return unique Arabic keywords only', () {
+      const text = 'مرفق ملف مرفق تقرير ملف';
+      final result = AttachmentTextDetector.matchedKeywordsUnique(text);
+
+      expect(result, containsAll(['مرفق', 'ملف', 'تقرير']));
+      // Ensure no duplicates
+      expect(result.length, equals(3));
+    });
+
+    test('containsAnyAttachmentKeyword detects keywords across multiple languages', () {
+      const text = 'Please see the attached document. '
+          'الرجاء مراجعة المستند المرفق. '
+          'Vui lòng xem tài liệu đính kèm.';
+
+      final result = AttachmentTextDetector.containsAnyAttachmentKeyword(text);
+      expect(result, isTrue);
+    });
+
+    test('matchedKeywordsAll should return matches grouped by language', () {
+      const text = 'Here is the attachment. '
+          'إليك ملف تقرير مرفق. '
+          'Vui lòng xem báo cáo đính kèm. '
+          'pièce jointe est incluse.';
+
+      final result = AttachmentTextDetector.matchedKeywordsAll(text);
+
+      expect(result.keys, containsAll([
+        LanguageCodeConstants.english,
+        LanguageCodeConstants.arabic,
+        LanguageCodeConstants.vietnamese,
+        LanguageCodeConstants.french,
+      ]));
+
+      expect(result[LanguageCodeConstants.english], contains('attachment'));
+      expect(result[LanguageCodeConstants.arabic], containsAll(['ملف', 'تقرير', 'مرفق']));
+      expect(result[LanguageCodeConstants.vietnamese], containsAll(['báo cáo', 'đính kèm']));
+      expect(result[LanguageCodeConstants.french], contains('pièce jointe'));
+    });
+
+    test('matchedKeywordsUnique should return unique keywords from all languages', () {
+      const text = 'Attached báo cáo مرفق pièce jointe file مستند attach đính kèm';
+
+      final result = AttachmentTextDetector.matchedKeywordsUnique(text);
+
+      expect(result, containsAll([
+        'attach',
+        'pièce jointe',
+        'jointe',
+        'joint',
+        'đính kèm',
+        'báo cáo',
+        'file',
+        'مرفق',
+        'مستند'
+      ]));
+
+      // Ensure no duplicates
+      expect(result.length, equals(result.toSet().length));
     });
   });
 }

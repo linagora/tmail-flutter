@@ -33,10 +33,18 @@ class AttachmentTextDetector {
       'attach',
       'attachment',
     ],
+    LanguageCodeConstants.arabic: [
+      "مرفق",
+      "مستند",
+      "ملف",
+      "تقرير",
+      "ملف",
+      "إرفاق",
+    ],
   };
 
   /// Detect if the text contains keywords suggesting there is an attachment.
-  /// [lang] is the language code (`en`, `fr`, `ru`, `vi`, ...).
+  /// [lang] is the language code (`en`, `fr`, `ru`, `vi`, `ar`, ...).
   static bool containsAttachmentKeyword(String text, {required String lang}) {
     final lowerText = text.toLowerCase();
     final keywords = _keywordsByLang[lang.toLowerCase()];
