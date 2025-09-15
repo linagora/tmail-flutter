@@ -777,7 +777,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1944
+    $signature: 1945
   };
   B._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -793,7 +793,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(C.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_9Sx, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, C.EdgeInsets_6_6_6_6, _null, _null), new B.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 400
+    $signature: 374
   };
   B.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -832,7 +832,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.push(new B.ProfileSettingIcon(t2.ownEmailAddress, t2.settingActionTypes, t2.onProfileSettingActionTypeClick, false, _null));
       return A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
-    $signature: 390
+    $signature: 380
   };
   B.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -913,7 +913,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.PortalTarget$(C.C_Filled, A.PortalTarget$(t4, t7, new B.ProfileSettingMenuOverlay(t5, t6, t1._profile_setting_icon$_imagePaths, new B._ProfileSettingIconState_build__closure0(t1, context), new B._ProfileSettingIconState_build__closure1(t1), t2, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 400
+    $signature: 374
   };
   B._ProfileSettingIconState_build__closure0.prototype = {
     call$0() {
@@ -941,7 +941,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this._isExpandedNotifier;
       t1.set$value(0, !t1._change_notifier$_value);
     },
-    $signature: 125
+    $signature: 124
   };
   B.ProfileSettingMenuOverlay_build_closure.prototype = {
     call$1(actionType) {
@@ -1019,6 +1019,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Aligned_43h = new A.Aligned(1, null, C.Alignment_1_m1, C.Alignment_1_1, C.Alignment_0_0, C.C_AxisFlag, C.C_AxisFlag, C.Offset_0_0, null);
     D.Aligned_wEo = new A.Aligned(1, null, C.Alignment_1_m1, C.Alignment_1_1, C.Alignment_0_0, C.C_AxisFlag, C.C_AxisFlag, C.Offset_0_0, D.Aligned_43h);
     D.Color_esZ = new A.Color(1, 0.9176470588235294, 0.9294117647058824, 0.9490196078431372, C.ColorSpace_0);
+    D.BoxDecoration_ivD = new A.BoxDecoration(D.Color_esZ, null, null, C.BorderRadius_ww83, null, null, null, C.BoxShape_0);
     D.Offset_UrS1 = new A.Offset(0, 0.5);
     D.BoxShadow_vU6 = new A.BoxShadow(1, C.BlurStyle_0, C.Color_cO5, D.Offset_UrS1, 1);
     D.Color_zLN = new A.Color(1, 1, 0.9607843137254902, 0.7607843137254902, C.ColorSpace_0);
@@ -1050,5 +1051,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "c+ePs2Vh5K2imjWVts+tYe6m8JA=");
+})($__dart_deferred_initializers__, "8zHZB4GjjGwu6lTmGwYhVVP9rM4=");
 ;
