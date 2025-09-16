@@ -189,6 +189,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final isEmailContentClipped = RxBool(false);
   final attendanceStatus = Rxn<AttendanceStatus>();
   final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
+  final isAttachmentsPinEnabled = RxBool(true);
 
   final ScrollController emailScrollController = ScrollController();
 
@@ -272,7 +273,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is GetEmailContentSuccess) {
       _getEmailContentSuccess(success);
     } else if (success is GetEmailContentFromCacheSuccess) {
@@ -327,12 +327,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       ));
     } else if (success is GettingHtmlContentFromAttachment) {
       _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
     if (failure is MarkAsEmailReadFailure) {
       _handleMarkAsEmailReadFailure(failure);
     } else if (failure is DownloadAttachmentsFailure) {
@@ -361,6 +362,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handleGetHtmlContentFromAttachmentFailure(failure);
     } else if (failure is PreviewPDFFileFailure) {
       _handlePreviewPDFFileFailure(failure);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
@@ -429,6 +432,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           worker.dispose();
         }
         Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
+      } else if (action is DownloadEmailAttachmentInThreadDetailAction &&
+          action.emailIdOpened == _currentEmailId) {
+        handleDownloadAttachmentAction(action.attachment);
+      } else if (action is ViewEmailAttachmentInThreadDetailAction &&
+          action.emailIdOpened == _currentEmailId) {
+        handleViewAttachmentAction(action.appLocalizations, action.attachment);
+      } else if (action is DownloadAllEmailAttachmentInThreadDetailAction &&
+          action.emailIdOpened == _currentEmailId) {
+        handleDownloadAllAttachmentsAction();
       }
     }));
 
@@ -1762,7 +1774,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController, tag)
         ..onCloseButtonAction(() => popBack())
         ..onDownloadAttachmentFileAction((attachment) => handleDownloadAttachmentAction(attachment))
-        ..onViewAttachmentFileAction((attachment) => handleViewAttachmentAction(context, attachment))
+        ..onViewAttachmentFileAction((attachment) =>
+            handleViewAttachmentAction(
+                AppLocalizations.of(context),
+                attachment,
+            )
+        )
         ..onDownloadAllButtonAction(isDownloadAllSupported()
           ? () => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}')
           : null
@@ -1779,7 +1796,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             backgroundColor: Colors.black.withAlpha(24),
             onCloseButtonAction: () => popBack(),
             onDownloadAttachmentFileAction: (attachment) => handleDownloadAttachmentAction(attachment),
-            onViewAttachmentFileAction: (attachment) => handleViewAttachmentAction(context, attachment),
+            onViewAttachmentFileAction: (attachment) =>
+                handleViewAttachmentAction(
+                    AppLocalizations.of(context),
+                    attachment,
+                ),
             onDownloadAllButtonAction: isDownloadAllSupported()
               ? () => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}')
               : null,
@@ -2034,7 +2055,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void handleDownloadAllAttachmentsAction(String outputFileName) {
+  void handleDownloadAllAttachmentsAction() {
+    final outputFileName = 'TwakeMail-${DateTime.now()}';
     if (PlatformInfo.isWeb) {
       downloadAllAttachmentsForWeb(outputFileName);
     } else if (PlatformInfo.isMobile) {
@@ -2044,11 +2066,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void handleViewAttachmentAction(BuildContext context, Attachment attachment) {
+  void handleViewAttachmentAction(
+    AppLocalizations appLocalizations,
+    Attachment attachment,
+  ) {
     if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit && attachment.isPDFFile) {
-      previewPDFFileAction(context, attachment);
+      previewPDFFileAction(attachment);
     } else if (attachment.isEMLFile) {
-      previewEMLFileAction(attachment.blobId, AppLocalizations.of(context));
+      previewEMLFileAction(attachment.blobId, appLocalizations);
     } else if (attachment.isHTMLFile) {
       final attachmentEvaluation = evaluateAttachment(attachment);
       if (!attachmentEvaluation.canDownloadAttachment) {
@@ -2117,11 +2142,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  Future<void> previewPDFFileAction(BuildContext context, Attachment attachment) async {
+  Future<void> previewPDFFileAction(Attachment attachment) async {
     if (accountId == null || session == null) {
-      appToast.showToastErrorMessage(
-        context,
-        AppLocalizations.of(context).noPreviewAvailable);
+      if (currentContext != null && currentOverlayContext != null) {
+        appToast.showToastErrorMessage(
+            currentOverlayContext!,
+            AppLocalizations.of(currentContext!).noPreviewAvailable,
+        );
+      }
       return;
     }
 

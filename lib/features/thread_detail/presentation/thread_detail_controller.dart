@@ -87,6 +87,7 @@ class ThreadDetailController extends BaseController {
   final currentExpandedEmailId = Rxn<EmailId>();
   final currentEmailLoaded = Rxn<EmailLoaded>();
   final emailsInThreadDetailInfo = RxList<EmailInThreadDetailInfo>();
+  final isAttachmentsPinEnabled = RxBool(true);
 
   late final EmailActionReactor emailActionReactor;
   final additionalProperties = Properties({

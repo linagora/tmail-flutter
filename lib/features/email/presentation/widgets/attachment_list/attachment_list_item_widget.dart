@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_list_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class AttachmentListItemWidget extends StatelessWidget {
 
@@ -35,12 +36,15 @@ class AttachmentListItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () {
-        final controller = Get.find<SingleEmailController>(tag: singleEmailControllerTag);
-        final attachmentsViewState = controller.attachmentsViewState;
+        final controller = getBinding<SingleEmailController>(
+          tag: singleEmailControllerTag,
+        );
+        final attachmentsViewState = controller?.attachmentsViewState;
         bool isLoading = false;
-        if (attachment.blobId != null) {
+        if (attachment.blobId != null &&
+            attachmentsViewState?.isNotEmpty == true) {
           isLoading = !EmailUtils.checkingIfAttachmentActionIsEnabled(
-            attachmentsViewState[attachment.blobId!]);
+            attachmentsViewState?[attachment.blobId!]);
         }
 
         return Material(

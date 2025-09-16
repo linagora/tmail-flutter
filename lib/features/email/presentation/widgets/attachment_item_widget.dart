@@ -13,6 +13,7 @@ import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef OnDownloadAttachmentFileAction = void Function(Attachment attachment);
 typedef OnViewAttachmentFileAction = void Function(Attachment attachment);
@@ -41,12 +42,16 @@ class AttachmentItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final controller = Get.find<SingleEmailController>(tag: singleEmailControllerTag);
-      final attachmentsViewState = controller.attachmentsViewState;
+      final controller = getBinding<SingleEmailController>(
+        tag: singleEmailControllerTag,
+      );
+      final attachmentsViewState = controller?.attachmentsViewState;
       bool isLoading = false;
-      if (attachment.blobId != null) {
+      if (attachment.blobId != null &&
+          attachmentsViewState?.isNotEmpty == true) {
         isLoading = !EmailUtils.checkingIfAttachmentActionIsEnabled(
-            attachmentsViewState[attachment.blobId!]);
+          attachmentsViewState?[attachment.blobId!],
+        );
       }
 
       const loadingIndicator = SizedBox(

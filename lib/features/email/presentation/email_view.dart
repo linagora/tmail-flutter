@@ -15,7 +15,6 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
-import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
@@ -24,6 +23,7 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_action_rea
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_pin/email_attachments_pin_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_attachments_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app_bar_widget.dart';
@@ -72,9 +72,18 @@ class EmailView extends GetWidget<SingleEmailController> {
         final currentEmailListener = Rxn(controller.currentEmail);
         final currentEmail = currentEmailListener.value;
         if (currentEmail != null) {
-          return Column(
-            children: [
-              if (!isInsideThreadDetailView)
+          if (isInsideThreadDetailView) {
+            return LayoutBuilder(builder: (_, constraints) {
+              return _buildBodyWidget(
+                context,
+                currentEmail,
+                constraints,
+                scrollController: scrollController,
+              );
+            });
+          } else {
+            return Column(
+              children: [
                 Obx(
                   () => EmailViewAppBarWidget(
                     key: const Key('email_view_app_bar_widget'),
@@ -112,7 +121,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                     isInsideThreadDetailView: isInsideThreadDetailView,
                   ),
                 ),
-              if (!isInsideThreadDetailView)
                 Obx(() {
                   final vacation = controller.mailboxDashBoardController.vacationResponse.value;
 
@@ -140,36 +148,63 @@ class EmailView extends GetWidget<SingleEmailController> {
                     return const SizedBox.shrink();
                   }
                 }),
-              OptionalExpanded(
-                expandedEnabled: !isInsideThreadDetailView,
-                child: LayoutBuilder(builder: (context, constraints) {
-                  return _buildBodyWidget(
-                    context,
-                    currentEmail,
-                    constraints,
-                    scrollController: scrollController,
+                Expanded(
+                  child: LayoutBuilder(builder: (_, constraints) {
+                    return _buildBodyWidget(
+                      context,
+                      currentEmail,
+                      constraints,
+                      scrollController: scrollController,
+                    );
+                  }),
+                ),
+                Obx(() {
+                  if (controller.attachments.isEmpty ||
+                      controller.isAttachmentsPinEnabled.isFalse) {
+                    return const SizedBox.shrink();
+                  }
+
+                  final dashboardController =
+                      controller.mailboxDashBoardController;
+
+                  return EmailAttachmentsPinWidget(
+                    attachments: controller.attachments,
+                    singleEmailControllerTag: tag,
+                    onDragStarted: dashboardController.enableAttachmentDraggableApp,
+                    onDragEnd: (_) =>
+                        dashboardController.disableAttachmentDraggableApp(),
+                    onDownloadAttachmentFileAction:
+                        controller.handleDownloadAttachmentAction,
+                    onViewAttachmentFileAction: (attachment) =>
+                        controller.handleViewAttachmentAction(
+                          AppLocalizations.of(context),
+                          attachment,
+                        ),
+                    onDownloadAllAttachmentsAction: controller.downloadAllButtonIsEnabled()
+                        ? controller.handleDownloadAllAttachmentsAction
+                        : null
                   );
                 }),
-              ),
-              Obx(() {
-                final emailLoaded = controller.currentEmailLoaded.value;
+                Obx(() {
+                  final emailLoaded = controller.currentEmailLoaded.value;
 
-                if (emailLoaded == null || isInsideThreadDetailView) {
-                  return const SizedBox.shrink();
-                }
+                  if (emailLoaded == null) {
+                    return const SizedBox.shrink();
+                  }
 
-                return EmailViewBottomBarWidget(
-                  key: const Key('email_view_button_bar'),
-                  imagePaths: controller.imagePaths,
-                  responsiveUtils: controller.responsiveUtils,
-                  emailLoaded: emailLoaded,
-                  presentationEmail: currentEmail,
-                  userName: controller.ownEmailAddress,
-                  emailActionCallback: controller.pressEmailAction,
-                );
-              }),
-            ],
-          );
+                  return EmailViewBottomBarWidget(
+                    key: const Key('email_view_button_bar'),
+                    imagePaths: controller.imagePaths,
+                    responsiveUtils: controller.responsiveUtils,
+                    emailLoaded: emailLoaded,
+                    presentationEmail: currentEmail,
+                    userName: controller.ownEmailAddress,
+                    emailActionCallback: controller.pressEmailAction,
+                  );
+                }),
+              ],
+            );
+          }
         } else {
           return const EmailViewEmptyWidget();
         }
@@ -435,7 +470,8 @@ class EmailView extends GetWidget<SingleEmailController> {
             color: Colors.transparent,
           ),
         Obx(() {
-          if (controller.attachments.isNotEmpty) {
+          if (controller.attachments.isNotEmpty &&
+              controller.isAttachmentsPinEnabled.isFalse) {
             return EmailAttachmentsWidget(
               responsiveUtils: controller.responsiveUtils,
               attachments: controller.attachments,
@@ -451,7 +487,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   controller.handleDownloadAttachmentAction(attachment),
               viewAttachmentAction: (attachment) =>
                   controller.handleViewAttachmentAction(
-                    context,
+                    AppLocalizations.of(context),
                     attachment,
                   ),
               onTapShowAllAttachmentFile: () => controller.openAttachmentList(
@@ -460,10 +496,8 @@ class EmailView extends GetWidget<SingleEmailController> {
               ),
               showDownloadAllAttachmentsButton:
                   controller.downloadAllButtonIsEnabled(),
-              onTapDownloadAllButton: () =>
-                  controller.handleDownloadAllAttachmentsAction(
-                'TwakeMail-${DateTime.now()}',
-              ),
+              onTapDownloadAllButton:
+                  controller.handleDownloadAllAttachmentsAction,
               singleEmailControllerTag: tag,
             );
           } else {
