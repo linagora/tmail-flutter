@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_pin/email_attachments_pin_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -37,8 +37,9 @@ class ExportAttachmentScenario extends BaseTestScenario {
 
     await threadRobot.openEmailWithSubject(subject);
     await $.pumpAndSettle();
-    _expectAttachmentVisible();
+    _expectAttachmentPinVisible();
 
+    await emailRobot.tapAttachmentPin();
     await emailRobot.onTapAttachmentItem();
     await $.pumpAndSettle();
 
@@ -47,8 +48,8 @@ class ExportAttachmentScenario extends BaseTestScenario {
     _expectExportDialogLoadingInvisible(appLocalizations);
   }
 
-  void _expectAttachmentVisible() {
-    expect($(AttachmentItemWidget), findsOneWidget);
+  void _expectAttachmentPinVisible() {
+    expect($(EmailAttachmentsPinWidget), findsOneWidget);
   }
 
   void _expectEmailViewVisible() {
