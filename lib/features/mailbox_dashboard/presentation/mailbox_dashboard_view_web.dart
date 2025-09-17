@@ -19,7 +19,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dar
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_drawer_changed_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
@@ -295,56 +294,31 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               ),
             ),
             tabletLarge: Obx(() {
-              switch(controller.dashboardRoute.value) {
+              switch (controller.dashboardRoute.value) {
                 case DashboardRoutes.searchEmail:
                   return SearchEmailView();
-                case DashboardRoutes.emailDetailed:
+                case DashboardRoutes.threadDetailed:
+                  return controller.searchController.isSearchEmailRunning
+                      ? const ThreadDetailView()
+                      : buildResponsiveWithDrawer(
+                          left: ThreadView(),
+                          right: const ThreadDetailView(),
+                          mobile: const ThreadDetailView(),
+                        );
+                default:
                   return controller.searchController.isSearchEmailRunning
                       ? const EmailView()
-                      : _buildScaffoldHaveDrawer(
-                        body: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                  width: ResponsiveUtils.defaultSizeLeftMenuMobile,
-                                  child: ThreadView()),
-                              const VerticalDivider(width: 1),
-                              const Expanded(child: EmailView()),
-                            ],
-                          ),
-                      );
-                case DashboardRoutes.threadDetailed:
-                  return _buildScaffoldHaveDrawer(
-                    body: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: ResponsiveUtils.defaultSizeLeftMenuMobile,
-                          child: ThreadView()),
-                        const VerticalDivider(width: 1),
-                        const Expanded(child: ThreadDetailView()),
-                      ],
-                    ),
-                  );
-                default:
-                  return _buildScaffoldHaveDrawer(
-                    body: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                            width: ResponsiveUtils.defaultSizeLeftMenuMobile,
-                            child: ThreadView()),
-                        const VerticalDivider(width: 1),
-                        const Expanded(child: EmailView()),
-                      ],
-                    ),
-                  );
+                      : buildResponsiveWithDrawer(
+                          left: ThreadView(),
+                          right: const EmailView(),
+                          mobile: const EmailView(),
+                        );
               }
             }),
             mobile: Obx(() {
               switch(controller.dashboardRoute.value) {
                 case DashboardRoutes.thread:
-                  return _buildScaffoldHaveDrawer(body: ThreadView());
+                  return buildScaffoldHaveDrawer(body: ThreadView());
                 case DashboardRoutes.threadDetailed:
                   return const ThreadDetailView();
                 case DashboardRoutes.emailDetailed:
@@ -352,7 +326,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 case DashboardRoutes.searchEmail:
                   return SearchEmailView();
                 default:
-                  return _buildScaffoldHaveDrawer(body: ThreadView());
+                  return buildScaffoldHaveDrawer(body: ThreadView());
               }
             }),
         ),
@@ -388,23 +362,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         ),
         _buildDownloadTaskStateWidget(AppLocalizations.of(context)),
       ]),
-    );
-  }
-
-  Widget _buildScaffoldHaveDrawer({required Widget body}) {
-    return Scaffold(
-      key: controller.scaffoldKey,
-      drawer: ResponsiveWidget(
-        responsiveUtils: controller.responsiveUtils,
-        mobile: SizedBox(
-          width: ResponsiveUtils.mobileLeftMenuSize,
-          child: MailboxView(),
-        ),
-        tabletLarge: SizedBox(width: ResponsiveUtils.defaultSizeLeftMenuMobile, child: MailboxView()),
-        desktop: const SizedBox.shrink()
-      ),
-      onDrawerChanged: controller.handleDrawerChanged,
-      body: body,
     );
   }
 
