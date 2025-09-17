@@ -315,6 +315,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               margin: ComposerStyle.insertImageLoadingBarMargin,
                             )),
                           ),
+                          iframeOverlay,
                           Obx(() {
                             if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive) {
                               return Positioned.fill(
@@ -352,7 +353,6 @@ class ComposerView extends GetWidget<ComposerController> {
                               return const SizedBox.shrink();
                             }
                           }),
-                          iframeOverlay,
                         ],
                       );
                     }
@@ -634,6 +634,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             margin: ComposerStyle.insertImageLoadingBarMargin,
                           )),
                         ),
+                        iframeOverlay,
                         Obx(() {
                           if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive) {
                             return Positioned.fill(
@@ -671,7 +672,6 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
-                        iframeOverlay,
                       ],
                     );
                   }
@@ -955,6 +955,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             margin: ComposerStyle.insertImageLoadingBarMargin,
                           )),
                         ),
+                        iframeOverlay,
                         Obx(() {
                           if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive) {
                             return Positioned.fill(
@@ -992,7 +993,6 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
-                        iframeOverlay,
                       ],
                     );
                   },
