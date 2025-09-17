@@ -32,7 +32,7 @@ class MobileContainerView extends StatelessWidget {
         child: Scaffold(
           backgroundColor: backgroundColor ?? MobileContainerViewStyle.outSideBackgroundColor,
           resizeToAvoidBottomInset: false,
-          body: LayoutBuilder(builder: (context, constraints) {
+          body: LayoutBuilder(builder: (_, constraints) {
             return childBuilder(context, constraints);
           })
         ),

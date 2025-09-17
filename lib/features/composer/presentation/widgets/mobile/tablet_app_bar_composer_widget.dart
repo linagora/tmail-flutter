@@ -1,7 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/title_composer_widget.dart';
@@ -10,6 +9,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class TabletAppBarComposerWidget extends StatelessWidget {
 
   final String emailSubject;
+  final ImagePaths imagePaths;
   final VoidCallback onCloseViewAction;
   final ScreenDisplayMode? displayMode;
   final BoxConstraints? constraints;
@@ -17,10 +17,9 @@ class TabletAppBarComposerWidget extends StatelessWidget {
   final VoidCallback insertImageAction;
   final bool isNetworkConnectionAvailable;
 
-  final _imagePaths = Get.find<ImagePaths>();
-
-  TabletAppBarComposerWidget({
+  const TabletAppBarComposerWidget({
     super.key,
+    required this.imagePaths,
     required this.emailSubject,
     required this.onCloseViewAction,
     required this.attachFileAction,
@@ -41,7 +40,7 @@ class TabletAppBarComposerWidget extends StatelessWidget {
           Center(
             child: Container(
               constraints: constraints != null
-                ? BoxConstraints(maxWidth: constraints!.maxWidth / 2)
+                ? BoxConstraints(maxWidth: constraints!.maxWidth / 2 - 80)
                 : null,
               child: TitleComposerWidget(emailSubject: emailSubject),
             ),
@@ -54,7 +53,7 @@ class TabletAppBarComposerWidget extends StatelessWidget {
                 if (isNetworkConnectionAvailable)
                   ...[
                     TMailButtonWidget.fromIcon(
-                      icon: _imagePaths.icAttachFile,
+                      icon: imagePaths.icAttachFile,
                       iconColor: AppBarComposerWidgetStyle.iconColor,
                       backgroundColor: Colors.transparent,
                       iconSize: AppBarComposerWidgetStyle.iconSize,
@@ -63,7 +62,7 @@ class TabletAppBarComposerWidget extends StatelessWidget {
                     ),
                     const SizedBox(width: AppBarComposerWidgetStyle.space),
                     TMailButtonWidget.fromIcon(
-                      icon: _imagePaths.icInsertImage,
+                      icon: imagePaths.icInsertImage,
                       iconColor: AppBarComposerWidgetStyle.iconColor,
                       backgroundColor: Colors.transparent,
                       iconSize: AppBarComposerWidgetStyle.iconSize,
@@ -73,7 +72,7 @@ class TabletAppBarComposerWidget extends StatelessWidget {
                     const SizedBox(width: AppBarComposerWidgetStyle.space),
                   ],
                 TMailButtonWidget.fromIcon(
-                  icon: _imagePaths.icCancel,
+                  icon: imagePaths.icCancel,
                   backgroundColor: Colors.transparent,
                   tooltipMessage: AppLocalizations.of(context).saveAndClose,
                   iconSize: AppBarComposerWidgetStyle.iconSize,

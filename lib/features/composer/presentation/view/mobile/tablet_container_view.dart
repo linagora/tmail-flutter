@@ -47,7 +47,7 @@ class TabletContainerView extends StatelessWidget {
           child: Scaffold(
             backgroundColor: TabletContainerViewStyle.outSideBackgroundColor,
             body: SafeArea(
-              child: LayoutBuilder(builder: (context, constraints) {
+              child: LayoutBuilder(builder: (_, constraints) {
                 return KeyboardRichText(
                   richTextController: keyboardRichTextController,
                   keyBroadToolbar: RichTextKeyboardToolBar(
