@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/pin_attachments_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -38,6 +39,10 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
       } else if (preferencesConfig is SpamReportConfig) {
         await _preferencesSettingManager.updateSpamReport(
           isEnabled: preferencesConfig.isEnabled,
+        );
+      } else if (preferencesConfig is PinAttachmentsConfig) {
+        await _preferencesSettingManager.updatePinAttachments(
+          preferencesConfig.isEnabled,
         );
       } else {
         await _preferencesSettingManager.savePreferences(

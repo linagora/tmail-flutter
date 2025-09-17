@@ -160,7 +160,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 ),
                 Obx(() {
                   if (controller.attachments.isEmpty ||
-                      controller.isAttachmentsPinEnabled.isFalse) {
+                      controller.threadDetailController?.isAttachmentsPinEnabled.value != true) {
                     return const SizedBox.shrink();
                   }
 
@@ -471,7 +471,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           ),
         Obx(() {
           if (controller.attachments.isNotEmpty &&
-              controller.isAttachmentsPinEnabled.isFalse) {
+              controller.threadDetailController?.isAttachmentsPinEnabled.value != true) {
             return EmailAttachmentsWidget(
               responsiveUtils: controller.responsiveUtils,
               attachments: controller.attachments,

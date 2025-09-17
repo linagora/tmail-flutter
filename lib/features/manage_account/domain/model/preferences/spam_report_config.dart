@@ -14,12 +14,7 @@ class SpamReportConfig extends PreferencesConfig {
     this.lastTimeDismissedMilliseconds = 0,
   });
 
-  factory SpamReportConfig.initial() {
-    return SpamReportConfig(
-      isEnabled: true,
-      lastTimeDismissedMilliseconds: 0,
-    );
-  }
+  factory SpamReportConfig.initial() => SpamReportConfig();
 
   factory SpamReportConfig.fromJson(Map<String, dynamic> json) =>
       _$SpamReportConfigFromJson(json);

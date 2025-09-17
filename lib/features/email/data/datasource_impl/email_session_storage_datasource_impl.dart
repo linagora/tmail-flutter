@@ -293,4 +293,9 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
   }) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool> isPinAttachmentEnabled() {
+    throw UnimplementedError();
+  }
 }

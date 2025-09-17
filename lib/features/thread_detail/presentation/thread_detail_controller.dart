@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -18,7 +19,9 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_pin_attachment_status_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_pin_attachment_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
@@ -30,6 +33,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
@@ -52,6 +56,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mark_multiple_emails_read_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_refresh_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/setup_pin_attachment_status_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_selected_email_updated.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -70,6 +75,7 @@ class ThreadDetailController extends BaseController {
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
   final MarkAsStarMultipleEmailInteractor markAsStarMultipleEmailInteractor;
   final MarkAsMultipleEmailReadInteractor markAsMultipleEmailReadInteractor;
+  final GetPinAttachmentStatusInteractor getPinAttachmentStatusInteractor;
 
   ThreadDetailController(
     this._getEmailIdsByThreadIdInteractor,
@@ -81,6 +87,7 @@ class ThreadDetailController extends BaseController {
     this._downloadAttachmentForWebInteractor,
     this.markAsStarMultipleEmailInteractor,
     this.markAsMultipleEmailReadInteractor,
+    this.getPinAttachmentStatusInteractor,
   );
 
   final emailIdsPresentation = <EmailId, PresentationEmail?>{}.obs;
@@ -124,6 +131,8 @@ class ThreadDetailController extends BaseController {
   ScrollController? scrollController;
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   bool loadThreadOnThreadChanged = false;
+  AppLifecycleListener? appLifecycleListener;
+  LoaderStatus pinAttachmentsLoaderStatus = LoaderStatus.idle;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -167,6 +176,8 @@ class ThreadDetailController extends BaseController {
         _getEmailContentInteractor,
         _downloadAttachmentForWebInteractor,
       );
+
+      getPinAttachmentsStatus();
     });
     downloadProgressState.stream.listen(handleDownloadProgressState);
     ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {
@@ -197,6 +208,8 @@ class ThreadDetailController extends BaseController {
           threadId: action.threadId,
           isSentMailbox: action.isSentMailbox,
         );
+      } else if (action is UpdatedThreadDetailSettingAction) {
+        getPinAttachmentsStatus();
       }
       // Reset [threadDetailUIAction] to original value
       mailboxDashBoardController.dispatchThreadDetailUIAction(
@@ -212,6 +225,10 @@ class ThreadDetailController extends BaseController {
         );
       }
     });
+
+    if (PlatformInfo.isWeb) {
+      triggerAppState();
+    }
   }
 
   bool _validateLoadThread(ThreadId? threadId) {
@@ -260,6 +277,13 @@ class ThreadDetailController extends BaseController {
       quickCreateRuleFromCollapsedEmailSuccess(success);
     } else if (success is DownloadAttachmentForWebSuccess) {
       handleDownloadSuccess(success);
+    } else if (success is GettingPinAttachmentStatus && PlatformInfo.isWeb) {
+      updatePinAttachmentsLoaderStatus(LoaderStatus.loading);
+    } else if (success is GetPinAttachmentStatusSuccess) {
+      updatePinAttachmentsStatus(success.isEnabled);
+      if (PlatformInfo.isWeb) {
+        updatePinAttachmentsLoaderStatus(LoaderStatus.completed);
+      }
     } else {
       super.handleSuccessViewState(success);
     }
@@ -269,29 +293,39 @@ class ThreadDetailController extends BaseController {
   void handleFailureViewState(failure) {
     if (failure is GetThreadByIdFailure) {
       handleGetThreadByIdFailure(failure);
-    }
-    if (failure is GetEmailsByIdsFailure) {
+    } else if (failure is GetEmailsByIdsFailure) {
       if (failure.updateCurrentThreadDetail) return;
       showRetryToast(failure);
-      return;
-    }
-    if (failure is DownloadAttachmentForWebFailure) {
+    } else if (failure is DownloadAttachmentForWebFailure) {
       handleDownloadFailure(failure);
-      return;
-    }
-    if (failure is PrintEmailFailure) {
+    } else if (failure is PrintEmailFailure) {
       if (currentOverlayContext != null && currentContext != null) {
         appToast.showToastErrorMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).unknownError,
         );
       }
-      return;
-    }
-    if (failure is MarkAsMultipleEmailReadFailure ||
+    } else if (failure is MarkAsMultipleEmailReadFailure ||
         failure is MarkAsStarMultipleEmailFailure) {
       toastManager.showMessageFailure(failure as FeatureFailure);
+    } else if (failure is GetPinAttachmentStatusFailure && PlatformInfo.isWeb) {
+      updatePinAttachmentsLoaderStatus(LoaderStatus.completed);
+    } else {
+      super.handleFailureViewState(failure);
     }
-    super.handleFailureViewState(failure);
+  }
+
+  @override
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    super.handleErrorViewState(error, stackTrace);
+    if (PlatformInfo.isWeb) {
+      updatePinAttachmentsLoaderStatus(LoaderStatus.completed);
+    }
+  }
+
+  @override
+  void onClose() {
+    appLifecycleListener?.dispose();
+    super.onClose();
   }
 }

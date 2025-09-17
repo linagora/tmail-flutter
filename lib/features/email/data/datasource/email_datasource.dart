@@ -235,4 +235,6 @@ abstract class EmailDataSource {
   );
 
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest);
+
+  Future<bool> isPinAttachmentEnabled();
 }

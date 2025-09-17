@@ -7,6 +7,7 @@ import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/pin_attachments_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -149,6 +150,9 @@ class PreferencesController extends BaseController {
         break;
       case PreferencesOptionType.spamReport:
         config = SpamReportConfig(isEnabled: !isEnabled);
+        break;
+      case PreferencesOptionType.pinAttachment:
+        config = PinAttachmentsConfig(isEnabled: !isEnabled);
         break;
       default:
         break;

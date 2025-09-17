@@ -189,7 +189,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final isEmailContentClipped = RxBool(false);
   final attendanceStatus = Rxn<AttendanceStatus>();
   final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
-  final isAttachmentsPinEnabled = RxBool(true);
 
   final ScrollController emailScrollController = ScrollController();
 
@@ -223,6 +222,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   String get ownEmailAddress => mailboxDashBoardController.ownEmailAddress.value;
 
   GlobalObjectKey? get htmlViewKey => _threadDetailController?.expandedEmailHtmlViewKey;
+
+  ThreadDetailController? get threadDetailController => _threadDetailController;
 
   SingleEmailController(
     this._getEmailContentInteractor,

@@ -5145,4 +5145,25 @@ class AppLocalizations {
       name: 'spamReportToggleDescription',
     );
   }
+
+  String get pinAttachments {
+    return Intl.message(
+      'Pin attachments',
+      name: 'pinAttachments',
+    );
+  }
+
+  String get pinAttachmentsSettingExplanation {
+    return Intl.message(
+      'Show pinned attachment list at the bottom of the Email View',
+      name: 'pinAttachmentsSettingExplanation',
+    );
+  }
+
+  String get pinAttachmentsToggleDescription {
+    return Intl.message(
+      'Enable pin attachments',
+      name: 'pinAttachmentsToggleDescription',
+    );
+  }
 }

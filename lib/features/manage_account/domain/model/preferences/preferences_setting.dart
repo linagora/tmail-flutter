@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/pin_attachments_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
@@ -13,6 +14,7 @@ class PreferencesSetting with EquatableMixin {
     return PreferencesSetting([
       ThreadDetailConfig.initial(),
       SpamReportConfig.initial(),
+      PinAttachmentsConfig.initial(),
     ]);
   }
 
@@ -33,6 +35,16 @@ class PreferencesSetting with EquatableMixin {
       return spamConfig as SpamReportConfig;
     } else {
       return SpamReportConfig.initial();
+    }
+  }
+
+  PinAttachmentsConfig get pinAttachmentsConfig {
+    final pinAttachmentConfig =
+        configs.firstWhereOrNull((config) => config is PinAttachmentsConfig);
+    if (pinAttachmentConfig != null) {
+      return pinAttachmentConfig as PinAttachmentsConfig;
+    } else {
+      return PinAttachmentsConfig.initial();
     }
   }
 

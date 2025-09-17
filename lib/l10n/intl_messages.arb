@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-11T12:24:54.969188",
+  "@@last_modified": "2025-09-17T13:26:24.972125",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4842,7 +4842,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachmentReminderModalMessage": "You wrote {keyword} in your message but did not add any attachments. Do you still want to send ?",
+  "attachmentReminderModalMessage": "You wrote {keyword} in your message but did not add any attachments. Do you still want to send?",
   "@attachmentReminderModalMessage": {
     "type": "text",
     "placeholders_order": [
@@ -4866,6 +4866,24 @@
   },
   "spamReportToggleDescription": "Enable spam report",
   "@spamReportToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pinAttachments": "Pin attachments",
+  "@pinAttachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pinAttachmentsSettingExplanation": "Show pinned attachment list at the bottom of the Email View",
+  "@pinAttachmentsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pinAttachmentsToggleDescription": "Enable pin attachments",
+  "@pinAttachmentsToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/pin_attachments_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -14,6 +15,8 @@ class PreferencesSettingManager {
       '${_preferencesSettingKey}_THREAD';
   static const String _preferencesSettingSpamReportKey =
       '${_preferencesSettingKey}_SPAM_REPORT';
+  static const String _preferencesSettingPinAttachmentsKey =
+      '${_preferencesSettingKey}_PIN_ATTACHMENTS';
 
   const PreferencesSettingManager(this._sharedPreferences);
 
@@ -36,6 +39,8 @@ class PreferencesSettingManager {
             return ThreadDetailConfig.fromJson(jsonDecoded);
           case _preferencesSettingSpamReportKey:
             return SpamReportConfig.fromJson(jsonDecoded);
+          case _preferencesSettingPinAttachmentsKey:
+            return PinAttachmentsConfig.fromJson(jsonDecoded);
           default:
             return DefaultPreferencesConfig.fromJson(jsonDecoded);
         }
@@ -59,6 +64,11 @@ class PreferencesSettingManager {
     } else if (config is SpamReportConfig) {
       await _sharedPreferences.setString(
         _preferencesSettingSpamReportKey,
+        jsonEncode(config.toJson()),
+      );
+    } else if (config is PinAttachmentsConfig) {
+      await _sharedPreferences.setString(
+        _preferencesSettingPinAttachmentsKey,
         jsonEncode(config.toJson()),
       );
     } else {
@@ -109,5 +119,23 @@ class PreferencesSettingManager {
     return jsonString == null
         ? ThreadDetailConfig.initial()
         : ThreadDetailConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<PinAttachmentsConfig> getPinAttachmentsConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingPinAttachmentsKey,
+    );
+
+    return jsonString == null
+        ? PinAttachmentsConfig.initial()
+        : PinAttachmentsConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updatePinAttachments(bool isEnabled) async {
+    final currentConfig = await getPinAttachmentsConfig();
+    final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
+    await savePreferences(updatedConfig);
   }
 }
