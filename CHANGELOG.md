@@ -1,3 +1,39 @@
+## [0.19.0] - 2025-09-17
+### Added
+- #4004 Rule filter: loading bar, preview/hide conditions, redesigned create rule view (web & mobile), new empty state
+- #4009 Attachment text detector
+- #3985 Premium capability for paywall when running in SaaS mode
+- #3977 Option for Disable/Enable Spam banner 
+- #3996 Group context menu actions
+
+### Changed
+- #4002 Change folder creation modal 
+
+### Fixed
+- Fix cannot drag & drop attachment from email detailed view to composer on web
+- Fix cannot open email on tablet/iPad
+- #4014 Fix copy & paste images broken after going full screen
+- #4011 Support arrow keys to regain focus after deleting a recipient
+- #3894 Fix blank email content when opening email (stalwart)
+- #4000 Improve attachment handling in detailed view (show all button hidden by default)
+- #3998 Reduce size of toggle in vacation settings
+- #3989 Open email modal with single click on mobile & web
+- HOTFIX: Enable reply toggle regardless of thread setting
+- HOTFIX: Enable iOS quote toggle
+- HOTFIX: Realtime update while searching on mobile
+- HOTFIX: Next/Previous navigation broken after realtime update (#3990)
+
+### Tests
+- Added numerous E2E and integration tests:
+  - Mailbox actions: switch, pull to refresh, toggle read/star/spam, mark unread, move/delete, quick filter, count real-time update, subfolder management
+  - Composer: read receipt, attachment & inline
+  - Email view: view inline images, download attachment, scroll long/short/XSS content, copy email address, display address info
+  - Rule creation: by email address, list redesign, no-content state
+  - Reply email with Reply-To
+  - Trash/Spam mailbox empty & recover
+  - Team mailbox receive email, quota view increase, search mailbox
+  - Logout flow
+
 ## [0.18.4] - 2025-08-28
 ### Fixed
 - Handle color picker in vacation, identity
