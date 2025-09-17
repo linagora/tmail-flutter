@@ -43,7 +43,7 @@ class ComposerView extends GetWidget<ComposerController> {
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onClearFocusAction: () => controller.clearFocus(context),
         backgroundColor: MobileAppBarComposerWidgetStyle.backgroundColor,
-        childBuilder: (context, constraints) => SafeArea(
+        childBuilder: (_, constraints) => SafeArea(
           left: !controller.responsiveUtils.isLandscapeMobile(context),
           right: !controller.responsiveUtils.isLandscapeMobile(context),
           child: Container(
@@ -297,11 +297,12 @@ class ComposerView extends GetWidget<ComposerController> {
         keyboardRichTextController: controller.richTextMobileTabletController!.richTextController,
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onClearFocusAction: () => controller.clearFocus(context),
-        childBuilder: (context, constraints) => Container(
+        childBuilder: (_, constraints) => ColoredBox(
           color: ComposerStyle.mobileBackgroundColor,
           child: Column(
             children: [
               Obx(() => TabletAppBarComposerWidget(
+                imagePaths: controller.imagePaths,
                 emailSubject: controller.subjectEmail.value ?? '',
                 onCloseViewAction: () => controller.handleClickCloseComposer(context),
                 constraints: constraints,
