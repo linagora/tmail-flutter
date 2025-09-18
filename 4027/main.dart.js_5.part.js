@@ -4583,14 +4583,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         B.ThreadDetailNextPreviousActions__navigateToEmail(_this, t2);
     },
     ThreadDetailNextPreviousActions__preparePageWithIndex(_this, index) {
-      var t1, t2;
-      _this.currentMobilePageViewIndex.set$value(0, index);
-      t1 = _this.pageController;
-      if (t1 == null)
-        t1 = _this.pageController = A.PageController$(index);
-      t2 = t1._positions.length;
-      if (t2 !== 0 === true)
-        t1.jumpToPage$1(index);
+      return;
     },
     ThreadDetailNextPreviousActions__goToPageWithEmail(_this, presentationEmail) {
       var t1, t2;
@@ -20091,5 +20084,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "63YlrPjEnK/3D/nQaujQhk+W/GY=");
+})($__dart_deferred_initializers__, "90wFgLrSxDOyqNWdjQJgD4gVKtk=");
 ;
