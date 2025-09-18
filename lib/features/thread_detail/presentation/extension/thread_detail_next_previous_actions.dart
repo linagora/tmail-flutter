@@ -39,6 +39,7 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
   }
 
   void _preparePageWithIndex(int index) {
+    if (!PlatformInfo.isMobile) return;
     currentMobilePageViewIndex.value = index;
     pageController ??= PageController(initialPage: index);
     if (pageController?.hasClients == true) {
