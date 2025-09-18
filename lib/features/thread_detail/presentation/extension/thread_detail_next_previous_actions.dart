@@ -55,7 +55,9 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
 
   void _navigateToEmail(int emailIndex) {
     final email = currentDisplayedEmails[emailIndex];
-    _preparePageWithIndex(emailIndex);
+    if (PlatformInfo.isMobile) {
+      _preparePageWithIndex(emailIndex);
+    }
     _goToPageWithEmail(email);
   }
 
@@ -64,7 +66,9 @@ extension ThreadDetailNextPreviousActions on ThreadDetailManager {
     final email = currentDisplayedEmails.firstWhereOrNull(
       (presentationEmail) => presentationEmail.threadId == threadId,
     );
-    _preparePageWithIndex(threadIndex);
+    if (PlatformInfo.isMobile) {
+      _preparePageWithIndex(threadIndex);
+    }
     _goToPageWithEmail(email);
   }
 
