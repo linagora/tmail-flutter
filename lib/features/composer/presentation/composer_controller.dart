@@ -931,7 +931,7 @@ class ComposerController extends BaseController
         onCancelAction: () {
           _sendButtonState = ButtonState.enabled;
         }
-      );
+      ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
 
@@ -1094,7 +1094,7 @@ class ComposerController extends BaseController
           _closeComposerAction(closeOverlays: true);
         }
       },
-    );
+    ).whenComplete(() => _sendButtonState = ButtonState.enabled);
   }
 
   void _checkContactPermission() async {
