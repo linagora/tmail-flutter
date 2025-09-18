@@ -28,7 +28,7 @@ extension AttachmentDetectionExtension on ComposerController {
     }
   }
 
-  void showAttachmentReminderModal({
+  Future<void> showAttachmentReminderModal({
     required BuildContext context,
     required List<String> keywords,
     required VoidCallback onConfirmAction,
@@ -37,7 +37,7 @@ extension AttachmentDetectionExtension on ComposerController {
     final appLocalizations = AppLocalizations.of(context);
     String formattedKeywords = keywords.map((k) => '"$k"').join(', ');
     log('$runtimeType::showAttachmentReminderModal:formattedKeywords = $formattedKeywords');
-    MessageDialogActionManager().showConfirmDialogAction(
+    return MessageDialogActionManager().showConfirmDialogAction(
       key: const Key('attachment_reminder_modal'),
       context,
       title: appLocalizations.attachmentReminderModalTitle,
