@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_pin_attachment_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
@@ -47,6 +48,7 @@ class ThreadDetailBindings extends BaseBindings {
       Get.find<DownloadAttachmentForWebInteractor>(),
       Get.find<MarkAsStarMultipleEmailInteractor>(),
       Get.find<MarkAsMultipleEmailReadInteractor>(),
+      Get.find<GetPinAttachmentStatusInteractor>(),
     ));
   }
 

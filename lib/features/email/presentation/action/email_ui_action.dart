@@ -1,10 +1,12 @@
 
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailUIAction extends UIAction {
   static final idle = EmailUIAction();
@@ -87,4 +89,41 @@ class CollapseEmailInThreadDetailAction extends EmailUIAction {
 
   @override
   List<Object?> get props => [emailId];
+}
+
+class DownloadEmailAttachmentInThreadDetailAction extends EmailUIAction {
+  final Attachment attachment;
+  final EmailId emailIdOpened;
+
+  DownloadEmailAttachmentInThreadDetailAction(
+    this.attachment,
+    this.emailIdOpened,
+  );
+
+  @override
+  List<Object?> get props => [attachment, emailIdOpened];
+}
+
+class ViewEmailAttachmentInThreadDetailAction extends EmailUIAction {
+  final AppLocalizations appLocalizations;
+  final Attachment attachment;
+  final EmailId emailIdOpened;
+
+  ViewEmailAttachmentInThreadDetailAction(
+    this.appLocalizations,
+    this.attachment,
+    this.emailIdOpened,
+  );
+
+  @override
+  List<Object?> get props => [appLocalizations, attachment, emailIdOpened];
+}
+
+class DownloadAllEmailAttachmentInThreadDetailAction extends EmailUIAction {
+  final EmailId emailIdOpened;
+
+  DownloadAllEmailAttachmentInThreadDetailAction(this.emailIdOpened);
+
+  @override
+  List<Object?> get props => [emailIdOpened];
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_pin/email_attachments_pin_header_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -16,7 +17,7 @@ class EmailRobot extends CoreRobot {
   }
 
   Future<void> tapDownloadAllButton() async {
-    await $(AppLocalizations().archiveAndDownload).tap();
+    await $(AppLocalizations().downloadAll).tap();
     await $.pumpAndSettle();
   }
 
@@ -78,6 +79,10 @@ class EmailRobot extends CoreRobot {
 
   Future<void> longPressSenderEmailAddress(String email) async {
     await $(InformationSenderAndReceiverBuilder).$(email).longPress();
+  }
+
+  Future<void> tapAttachmentPin() async {
+    await $(EmailAttachmentsPinHeaderWidget).$(InkWell).tap();
   }
 
   Future<void> onTapAttachmentItem() async {

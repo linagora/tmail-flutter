@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/attachment.dart';
@@ -236,7 +237,8 @@ class EmailAttachmentsWidget extends StatelessWidget {
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       ...displayedAttachments.map((attachment) {
-                        if (responsiveUtils.isDesktop(context)) {
+                        if (PlatformInfo.isWeb &&
+                            responsiveUtils.isDesktop(context)) {
                           return DraggableAttachmentItemWidget(
                             attachment: attachment,
                             imagePaths: imagePaths,

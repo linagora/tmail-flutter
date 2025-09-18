@@ -617,4 +617,9 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {
     return emailDataSource[DataSourceType.local]!.generateEntireMessageAsDocument(entireMessageRequest);
   }
+
+  @override
+  Future<bool> isPinAttachmentEnabled() {
+    return emailDataSource[DataSourceType.local]!.isPinAttachmentEnabled();
+  }
 }

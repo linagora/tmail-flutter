@@ -9,12 +9,14 @@ import 'package:get/get.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_pin/email_attachments_pin_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_action_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_details_email_views.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_download_attachment_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_detail_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_page_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -152,6 +154,58 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           }
 
           return nonPageViewThread;
+        }),
+        Obx(() {
+          final expandedEmailId = controller.currentExpandedEmailId.value;
+          if (expandedEmailId == null) {
+            return const SizedBox.shrink();
+          }
+          final expandedPresentationEmail = controller.emailIdsPresentation[expandedEmailId];
+          if (expandedPresentationEmail == null) {
+            return const SizedBox.shrink();
+          }
+
+          final currentEmailLoaded = controller.currentEmailLoaded.value;
+          if (currentEmailLoaded == null) {
+            return const SizedBox.shrink();
+          }
+
+          if (currentEmailLoaded.attachments.isEmpty ||
+              controller.isAttachmentsPinEnabled.isFalse) {
+            return const SizedBox.shrink();
+          }
+          final dashboardController =
+              controller.mailboxDashBoardController;
+
+          final isDownloadAllEnabled = controller.isDownloadAllEnabled(
+            currentEmailLoaded.attachments.length,
+          );
+
+          final emailIdOpened = expandedPresentationEmail.id!;
+
+          return EmailAttachmentsPinWidget(
+            attachments: currentEmailLoaded.attachments,
+            singleEmailControllerTag: tag,
+            onDragStarted: dashboardController.enableAttachmentDraggableApp,
+            onDragEnd: (_) =>
+                dashboardController.disableAttachmentDraggableApp(),
+            onDownloadAttachmentFileAction: (attachment) =>
+                controller.handleDownloadAttachment(
+                  attachment,
+                  emailIdOpened,
+                ),
+            onViewAttachmentFileAction: (attachment) =>
+                controller.handleViewAttachment(
+                  AppLocalizations.of(context),
+                  attachment,
+                  emailIdOpened,
+                ),
+            onDownloadAllAttachmentsAction: isDownloadAllEnabled
+                ? () => controller.handleDownloadAllAttachmentsAction(
+                    emailIdOpened,
+                  )
+                : null,
+          );
         }),
         Obx(() {
           final expandedEmailId = controller.currentExpandedEmailId.value;

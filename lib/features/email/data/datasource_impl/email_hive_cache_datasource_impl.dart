@@ -612,4 +612,9 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool> isPinAttachmentEnabled() {
+    throw UnimplementedError();
+  }
 }

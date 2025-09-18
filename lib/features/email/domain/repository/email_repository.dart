@@ -233,4 +233,6 @@ abstract class EmailRepository {
   );
 
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest);
+
+  Future<bool> isPinAttachmentEnabled();
 }
