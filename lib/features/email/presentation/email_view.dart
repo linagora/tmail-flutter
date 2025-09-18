@@ -372,7 +372,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                             horizontal: EmailViewStyles.mobileContentHorizontalMargin,
                           ),
                           child: HtmlContentViewer(
-                            key: controller.htmlContentViewKey,
+                            key: PlatformInfo.isIntegrationTesting
+                                ? controller.htmlContentViewKey
+                                : null,
                             contentHtml: allEmailContents,
                             initialWidth: bodyConstraints.maxWidth,
                             direction: AppUtils.getCurrentDirection(context),
@@ -411,7 +413,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                     horizontal: EmailViewStyles.mobileContentHorizontalMargin
                   ),
                   child: HtmlContentViewer(
-                    key: controller.htmlContentViewKey,
+                    key: PlatformInfo.isIntegrationTesting
+                        ? controller.htmlContentViewKey
+                        : null,
                     contentHtml: allEmailContents,
                     initialWidth: bodyConstraints.maxWidth,
                     direction: AppUtils.getCurrentDirection(context),

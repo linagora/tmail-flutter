@@ -69,7 +69,6 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         return Padding(
           padding: const EdgeInsetsDirectional.only(bottom: 16),
           child: EmailView(
-            key: GlobalObjectKey('${presentationEmail.id?.id.value ?? ''}firstInThread'),
             isInsideThreadDetailView: true,
             emailId: presentationEmail.id,
             isFirstEmailInThreadDetail: true,
@@ -85,7 +84,6 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       return Padding(
         padding: const EdgeInsetsDirectional.only(bottom: 16),
         child: EmailView(
-          key: GlobalObjectKey(presentationEmail.id?.id.value ?? ''),
           isInsideThreadDetailView: true,
           emailId: presentationEmail.id,
           onToggleThreadDetailCollapseExpand: () {
