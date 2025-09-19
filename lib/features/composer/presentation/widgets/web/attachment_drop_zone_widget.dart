@@ -28,28 +28,25 @@ class AttachmentDropZoneWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return DragTarget<Attachment>(
       builder: (context, _, __) {
-        return SizedBox(
-          width: width,
-          height: height,
-          child: Padding(
-            padding: DropZoneWidgetStyle.margin,
-            child: DottedBorder(
-              borderType: BorderType.RRect,
-              radius: const Radius.circular(DropZoneWidgetStyle.radius),
-              color: DropZoneWidgetStyle.borderColor,
-              strokeWidth: DropZoneWidgetStyle.borderWidth,
-              dashPattern: DropZoneWidgetStyle.dashSize,
-              child: Container(
-                clipBehavior: Clip.antiAlias,
-                decoration: ShapeDecoration(
-                  color: DropZoneWidgetStyle.backgroundColor,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(DropZoneWidgetStyle.radius)),
-                  ),
+        final childWidget = Padding(
+          padding: DropZoneWidgetStyle.margin,
+          child: DottedBorder(
+            borderType: BorderType.RRect,
+            radius: const Radius.circular(DropZoneWidgetStyle.radius),
+            color: DropZoneWidgetStyle.borderColor,
+            strokeWidth: DropZoneWidgetStyle.borderWidth,
+            dashPattern: DropZoneWidgetStyle.dashSize,
+            child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: ShapeDecoration(
+                color: DropZoneWidgetStyle.backgroundColor,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(DropZoneWidgetStyle.radius)),
                 ),
-                padding: DropZoneWidgetStyle.padding,
-                alignment: AlignmentDirectional.center,
-                child: Column(
+              ),
+              padding: DropZoneWidgetStyle.padding,
+              alignment: AlignmentDirectional.center,
+              child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SvgPicture.asset(imagePaths.icDropZoneIcon),
@@ -59,10 +56,19 @@ class AttachmentDropZoneWidget extends StatelessWidget {
                       style: DropZoneWidgetStyle.labelTextStyle,
                     )
                   ]
-                ),
               ),
             ),
           ),
+        );
+
+        if (width == null && height == null) {
+          return SizedBox.expand(child: childWidget);
+        }
+
+        return SizedBox(
+          width: width,
+          height: height,
+          child: childWidget,
         );
       },
       onAcceptWithDetails: (details) => onAttachmentDropZoneListener?.call(details.data),

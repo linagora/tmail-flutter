@@ -3,6 +3,8 @@ import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
+typedef OnMenuChanged = void Function(bool isShowing);
+
 class PopupMenuOverlayWidget extends StatelessWidget {
 
   final List<Widget> listButtonAction;
@@ -14,6 +16,7 @@ class PopupMenuOverlayWidget extends StatelessWidget {
   final bool arrangeAsList;
   final PreferredPosition? position;
   final EdgeInsetsGeometry? padding;
+  final OnMenuChanged? onMenuChanged;
 
   const PopupMenuOverlayWidget({
     Key? key,
@@ -26,6 +29,7 @@ class PopupMenuOverlayWidget extends StatelessWidget {
     this.position = PreferredPosition.bottom,
     this.arrangeAsList = false,
     this.padding,
+    this.onMenuChanged,
   }) : super(key: key);
 
   @override
@@ -59,6 +63,7 @@ class PopupMenuOverlayWidget extends StatelessWidget {
       barrierColor: Colors.transparent,
       arrowSize: 0.0,
       verticalMargin: 2.0,
+      menuOnChange: onMenuChanged,
       child: iconButton,
     );
   }
