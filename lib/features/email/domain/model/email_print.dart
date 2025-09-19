@@ -62,27 +62,3 @@ class EmailPrint with EquatableMixin {
     subject,
   ];
 }
-
-extension EmailPrintExtension on EmailPrint {
-  EmailPrint fromEmailContent(String newEmailContent) {
-    return EmailPrint(
-      appName: appName,
-      userName: userName,
-      emailContent: newEmailContent,
-      titleAttachment: titleAttachment,
-      receiveTime: receiveTime,
-      fromPrefix: fromPrefix,
-      toPrefix: toPrefix,
-      ccPrefix: ccPrefix,
-      bccPrefix: bccPrefix,
-      replyToPrefix: replyToPrefix,
-      attachments: attachments,
-      toAddress: toAddress,
-      ccAddress: ccAddress,
-      bccAddress: bccAddress,
-      replyToAddress: replyToAddress,
-      sender: sender,
-      subject: subject,
-    );
-  }
-}
