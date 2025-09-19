@@ -121,6 +121,7 @@ class _WebEditorState extends State<WebEditorWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final maxHeight = widget.height ?? _defaultHtmlEditorHeight;
     return HtmlEditor(
       controller: _editorController,
       htmlEditorOptions: HtmlEditorOptions(
@@ -153,16 +154,18 @@ class _WebEditorState extends State<WebEditorWidget> {
           WebScript(
             name: HtmlUtils.unregisterDropListener.name,
             script: HtmlUtils.unregisterDropListener.script,
-          )
+          ),
+          WebScript(
+            name: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).name,
+            script: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).script,
+          ),
         ])
       ),
       htmlToolbarOptions: const HtmlToolbarOptions(
         toolbarType: ToolbarType.hide,
         defaultToolbarButtons: [],
       ),
-      otherOptions: OtherOptions(
-        height: widget.height ?? _defaultHtmlEditorHeight,
-      ),
+      otherOptions: OtherOptions(height: maxHeight),
       callbacks: Callbacks(
         onBeforeCommand: widget.onChangeContent,
         onChangeContent: widget.onChangeContent,
