@@ -363,6 +363,18 @@
       "totalSize": {}
     }
   },
+  "singularAttachmentTitleHeader": "{count} Attachment ({totalSize})",
+  "@singularAttachmentTitleHeader": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
   "attach_file_prepare_text": "Preparing to attach file...",
   "@attach_file_prepare_text": {
     "type": "text",
@@ -783,6 +795,12 @@
   },
   "attachments": "Attachments",
   "@attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachment": "Attachment",
+  "@attachment": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

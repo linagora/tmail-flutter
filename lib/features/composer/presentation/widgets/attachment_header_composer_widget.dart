@@ -57,7 +57,9 @@ class AttachmentHeaderComposerWidget extends StatelessWidget {
             ),
             const SizedBox(width: AttachmentHeaderComposerWidgetStyle.space / 2),
             Text(
-              '${listFileUploaded.length} ${AppLocalizations.of(context).attachments}',
+                listFileUploaded.length > 1
+                  ? '${listFileUploaded.length} ${AppLocalizations.of(context).attachments}'
+                  : '${listFileUploaded.length} ${AppLocalizations.of(context).attachment}',
               style: AttachmentHeaderComposerWidgetStyle.labelTextSize
             ),
             const SizedBox(width: AttachmentHeaderComposerWidgetStyle.space),

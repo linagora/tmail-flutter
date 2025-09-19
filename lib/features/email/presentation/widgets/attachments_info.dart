@@ -38,10 +38,15 @@ class AttachmentsInfo extends StatelessWidget {
     );
 
     final titleHeaderAttachment = Text(
-      AppLocalizations.of(context).titleHeaderAttachment(
-        numberOfAttachments,
-        totalSizeInfo,
-      ),
+      numberOfAttachments > 1
+        ? AppLocalizations.of(context).titleHeaderAttachment(
+            numberOfAttachments,
+            totalSizeInfo,
+          )
+        : AppLocalizations.of(context).singularAttachmentTitleHeader(
+            numberOfAttachments,
+            totalSizeInfo,
+          ),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: ThemeUtils.textStyleInter400.copyWith(

@@ -503,7 +503,9 @@ class EmailDataSourceImpl extends EmailDataSource {
         ccPrefix: appLocalizations.cc_email_address_prefix,
         bccPrefix: appLocalizations.bcc_email_address_prefix,
         replyToPrefix: appLocalizations.replyToEmailAddressPrefix,
-        titleAttachment: appLocalizations.attachments.toLowerCase(),
+        titleAttachment: listPreviewAttachment.length > 1
+          ? appLocalizations.attachments.toLowerCase()
+          : appLocalizations.attachment.toLowerCase(),
         attachmentIcon: attachmentIconBase64Data,
         toAddress: email.to?.listEmailAddressToString(isFullEmailAddress: true),
         ccAddress: email.cc?.listEmailAddressToString(isFullEmailAddress: true),

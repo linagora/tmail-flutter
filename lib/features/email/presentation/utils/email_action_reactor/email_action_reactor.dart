@@ -408,7 +408,9 @@ class EmailActionReactor {
         ccPrefix: appLocalizations.cc_email_address_prefix,
         bccPrefix: appLocalizations.bcc_email_address_prefix,
         replyToPrefix: appLocalizations.replyToEmailAddressPrefix,
-        titleAttachment: appLocalizations.attachments.toLowerCase(),
+        titleAttachment: emailLoaded.attachments.length > 1
+          ? appLocalizations.attachments.toLowerCase()
+          : appLocalizations.attachment.toLowerCase(),
         toAddress: presentationEmail.to?.listEmailAddressToString(isFullEmailAddress: true),
         ccAddress: presentationEmail.cc?.listEmailAddressToString(isFullEmailAddress: true),
         bccAddress: presentationEmail.bcc?.listEmailAddressToString(isFullEmailAddress: true),
