@@ -1908,14 +1908,14 @@ class ComposerController extends BaseController
     if (mailboxDashBoardController.isPopupMenuOpened.isTrue) {
       popBack();
     }
+    if (PlatformInfo.isWeb) {
+      _hideCcBccReplyToRecipients();
+    }
   }
 
   void handleOnMouseDownHtmlEditorWeb() {
     _collapseAllRecipient();
     autoCreateEmailTag();
-    if (PlatformInfo.isWeb) {
-      _hideCcBccReplyToRecipients();
-    }
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {
