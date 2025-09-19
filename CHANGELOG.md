@@ -1,3 +1,12 @@
+## [0.19.1] - 2025-09-19
+### Fixed
+- Fix cannot send email after close attachment reminder dialog
+- Fix thread detail next/previous
+- Fix email content is broken when perform previous/next email then back to app
+- Fix click twice on the signature collapse button to view signature when composer has Cc or Bcc
+- TF-4029 Fix singular vs plural for attachments
+- Translated using Weblate (Ukrainian)
+
 ## [0.19.0] - 2025-09-17
 ### Added
 - #4004 Rule filter: loading bar, preview/hide conditions, redesigned create rule view (web & mobile), new empty state
