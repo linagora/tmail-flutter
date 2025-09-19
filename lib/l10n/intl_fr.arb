@@ -654,6 +654,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "attachment": "Pièce jointe",
+  "@attachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "show_all": "Tout afficher",
   "@show_all": {
     "type": "text",
@@ -2110,6 +2116,18 @@
   },
   "titleHeaderAttachment": "{count} Pièces jointes ({totalSize})",
   "@titleHeaderAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
+  "singularAttachmentTitleHeader": "{count} Pièce jointe ({totalSize})",
+  "@singularAttachmentTitleHeader": {
     "type": "text",
     "placeholders_order": [
       "count",

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-11T12:24:54.969188",
+  "@@last_modified": "2025-09-19T09:56:48.738620",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -380,6 +380,18 @@
   },
   "titleHeaderAttachment": "{count} Attachments ({totalSize})",
   "@titleHeaderAttachment": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
+  "singularAttachmentTitleHeader": "{count} Attachment ({totalSize})",
+  "@singularAttachmentTitleHeader": {
     "type": "text",
     "placeholders_order": [
       "count",
@@ -838,6 +850,12 @@
   },
   "attachments": "Attachments",
   "@attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachment": "Attachment",
+  "@attachment": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -4842,7 +4860,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachmentReminderModalMessage": "You wrote {keyword} in your message but did not add any attachments. Do you still want to send ?",
+  "attachmentReminderModalMessage": "You wrote {keyword} in your message but did not add any attachments. Do you still want to send?",
   "@attachmentReminderModalMessage": {
     "type": "text",
     "placeholders_order": [

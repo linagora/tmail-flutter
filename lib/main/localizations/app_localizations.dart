@@ -392,6 +392,14 @@ class AppLocalizations {
     );
   }
 
+  String singularAttachmentTitleHeader(int count, String totalSize) {
+    return Intl.message(
+        '$count Attachment ($totalSize)',
+        name: 'singularAttachmentTitleHeader',
+        args: [count, totalSize]
+    );
+  }
+
   String get attach_file_prepare_text {
     return Intl.message(
       'Preparing to attach file...',
@@ -851,6 +859,13 @@ class AppLocalizations {
     return Intl.message(
         'Attachments',
         name: 'attachments');
+  }
+
+  String get attachment {
+    return Intl.message(
+      'Attachment',
+      name: 'attachment',
+    );
   }
 
   String get showAll {

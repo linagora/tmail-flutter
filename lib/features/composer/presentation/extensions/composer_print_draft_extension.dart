@@ -100,7 +100,9 @@ extension ComposerPrintDraftExtension on ComposerController {
           ccPrefix: appLocalizations.cc_email_address_prefix,
           bccPrefix: appLocalizations.bcc_email_address_prefix,
           replyToPrefix: appLocalizations.replyToEmailAddressPrefix,
-          titleAttachment: appLocalizations.attachments.toLowerCase(),
+          titleAttachment: uploadController.allAttachmentsUploaded.length > 1
+              ? appLocalizations.attachments.toLowerCase()
+              : appLocalizations.attachment.toLowerCase(),
           toAddress: listToEmailAddress.toSet().listEmailAddressToString(
             isFullEmailAddress: true,
           ),
