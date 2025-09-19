@@ -136,9 +136,6 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                         ? manager.availableThreadIds.length
                         : manager.currentDisplayedEmails.length,
                     itemBuilder: (context, index) {
-                      if (index != currentIndex) {
-                        return const SizedBox.shrink();
-                      }
                       return SingleChildScrollView(child: threadBody);
                     },
                     onPageChanged: controller.onThreadPageChanged,
