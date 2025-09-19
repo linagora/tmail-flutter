@@ -1551,6 +1551,17 @@ class ComposerController extends BaseController
     replyToRecipientState.value = PrefixRecipientState.disabled;
   }
 
+  void clearFocusRecipients() {
+    toAddressFocusNode?.unfocus();
+    ccAddressFocusNode?.unfocus();
+    bccAddressFocusNode?.unfocus();
+    replyToAddressFocusNode?.unfocus();
+  }
+
+  void clearFocusSubject() {
+    subjectEmailInputFocusNode?.unfocus();
+  }
+
   void _closeSuggestionBox() {
     if (toEmailAddressController.text.isEmpty) {
       keyToEmailTagEditor.currentState?.closeSuggestionBox();
@@ -1899,8 +1910,12 @@ class ComposerController extends BaseController
   }
 
   void handleOnFocusHtmlEditorWeb() {
+    clearFocusRecipients();
+    clearFocusSubject();
     FocusManager.instance.primaryFocus?.unfocus();
-    richTextWebController?.editorController.setFocus();
+    if (richTextWebController?.codeViewEnabled != true) {
+      richTextWebController?.editorController.setFocus();
+    }
     richTextWebController?.closeAllMenuPopup();
     if (menuMoreOptionController?.menuIsShowing == true) {
       menuMoreOptionController?.hideMenu();
@@ -2427,5 +2442,12 @@ class ComposerController extends BaseController
 
   void onCompleteSetupComposer() {
     initEmailDraftHash();
+  }
+
+  void onPopupMenuChanged(bool isShowing) {
+    if (isShowing) {
+      clearFocusRecipients();
+      clearFocusSubject();
+    }
   }
 }

@@ -30,6 +30,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback printDraftAction;
   final VoidCallback toggleMarkAsImportantAction;
   final VoidCallback saveAsTemplateAction;
+  final OnMenuChanged? onPopupMenuChanged;
 
   const BottomBarComposerWidget({
     super.key,
@@ -51,6 +52,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.printDraftAction,
     required this.toggleMarkAsImportantAction,
     required this.saveAsTemplateAction,
+    this.onPopupMenuChanged,
   });
 
   @override
@@ -182,6 +184,7 @@ class BottomBarComposerWidget extends StatelessWidget {
             ],
             arrangeAsList: true,
             position: null,
+            onMenuChanged: onPopupMenuChanged,
           ),
           const Spacer(),
           TMailButtonWidget.fromIcon(
