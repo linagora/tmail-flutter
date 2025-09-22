@@ -1267,8 +1267,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "05f78b3e2d4535ade646667db5d5602234fe7b5e"
+      ref: "improve/allow-enable-disable-colllapsed-signature"
+      resolved-ref: "6d92ca57ea875308d3c336f6ea8bc07ec0db273b"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "3.2.3"
