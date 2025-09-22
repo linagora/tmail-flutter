@@ -5,7 +5,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -13,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -259,25 +259,13 @@ class _LocalEmailDraftListDialogBuilderState
     BuildContext context,
   ) {
     final appLocalizations = AppLocalizations.of(context);
-    Get.dialog(
-      PointerInterceptor(child: ConfirmationDialogBuilder(
-        imagePath: _imagePaths,
-        useIconAsBasicLogo: true,
-        textContent: appLocalizations.messageWarningDialogDiscardLocalDraft,
-        confirmText: appLocalizations.yes,
-        cancelText: appLocalizations.no,
-        cancelBackgroundButtonColor: AppColor.blue700,
-        cancelLabelButtonColor: Colors.white,
-        confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
-        confirmLabelButtonColor: AppColor.steelGray600,
-        onConfirmButtonAction: () {
-          popBack();
-          _removeLocalEmailDraft(context, emailDraft.id);
-        },
-        onCancelButtonAction: popBack,
-        onCloseButtonAction: popBack,
-      )),
-      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    MessageDialogActionManager().showConfirmDialogAction(
+      context,
+      appLocalizations.messageWarningDialogDiscardLocalDraft,
+      appLocalizations.yes,
+      cancelTitle: appLocalizations.no,
+      onConfirmAction: () => _removeLocalEmailDraft(context, emailDraft.id),
+      onCloseButtonAction: popBack,
     );
   }
 
@@ -384,25 +372,13 @@ class _LocalEmailDraftListDialogBuilderState
 
   void _handleDiscardAllLocalEmailDraftAction(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
-    Get.dialog(
-      PointerInterceptor(child: ConfirmationDialogBuilder(
-        imagePath: _imagePaths,
-        useIconAsBasicLogo: true,
-        textContent: appLocalizations.messageWarningDialogDiscardAllLocalDrafts,
-        confirmText: appLocalizations.yes,
-        cancelText: appLocalizations.no,
-        cancelBackgroundButtonColor: AppColor.blue700,
-        cancelLabelButtonColor: Colors.white,
-        confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
-        confirmLabelButtonColor: AppColor.steelGray600,
-        onConfirmButtonAction: () {
-          popBack();
-          _removeAllLocalEmailDrafts(context);
-        },
-        onCancelButtonAction: popBack,
-        onCloseButtonAction: popBack,
-      )),
-      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    MessageDialogActionManager().showConfirmDialogAction(
+      context,
+      appLocalizations.messageWarningDialogDiscardAllLocalDrafts,
+      appLocalizations.yes,
+      cancelTitle: appLocalizations.no,
+      onConfirmAction: () => _removeAllLocalEmailDrafts(context),
+      onCloseButtonAction: popBack,
     );
   }
 

@@ -1,7 +1,5 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:get/get.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_builder/dialog_builder_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
@@ -10,7 +8,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/local_email_draft_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/presentation_local_email_draft.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/local_email_draft/local_email_draft_list_dialog_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -43,18 +40,13 @@ extension RestoreLocalEmailDraftExtension on MailboxDashBoardController {
   }
 
   void showLocalEmailDraftListDialog(List<PresentationLocalEmailDraft> presentationLocalEmailDrafts) {
-    Get.dialog(
-      PointerInterceptor(
-        child: LocalEmailDraftListDialogBuilder(
-          accountId: accountId.value,
-          session: sessionCurrent,
-          ownEmailAddress: ownEmailAddress.value,
-          presentationLocalEmailDrafts: presentationLocalEmailDrafts,
-          onEditLocalEmailDraftAction: _editLocalEmailDraft,
-          onRestoreAllLocalEmailDraftsAction: _restoreAllLocalEmailDrafts,
-        ),
-      ),
-      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    DialogBuilderManager().showLocalEmailDraftListDialog(
+      emailDrafts: presentationLocalEmailDrafts,
+      accountId: accountId.value,
+      session: sessionCurrent,
+      ownEmailAddress: ownEmailAddress.value,
+      onEditLocalEmailDraftAction: _editLocalEmailDraft,
+      onRestoreAllLocalEmailDraftsAction: _restoreAllLocalEmailDrafts,
     );
   }
 
