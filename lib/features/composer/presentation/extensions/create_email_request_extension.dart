@@ -245,7 +245,6 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       draftHash: savedDraftHash,
       actionType: savedActionType?.name,
       draftEmailId: draftsEmailId?.asString,
-      templateEmailId: templateEmailId?.asString,
     );
   }
 }

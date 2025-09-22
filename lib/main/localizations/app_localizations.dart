@@ -5478,4 +5478,11 @@ class AppLocalizations {
       name: 'discardAll',
     );
   }
+
+  String get messageWarningDialogDiscardLocalDraft {
+    return Intl.message(
+      'Are you sure you want to delete this local draft? You will not be able to restore it.',
+      name: 'messageWarningDialogDiscardLocalDraft',
+    );
+  }
 }

@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 extension SetupEmailTemplateIdExtension on ComposerController {
   void setupEmailTemplateId(ComposerArguments arguments) {
     if (currentEmailActionType == EmailActionType.editAsNewEmail ||
-        currentEmailActionType == EmailActionType.reopenComposerBrowser
+        currentEmailActionType == EmailActionType.composeFromLocalEmailDraft
     ) {
       currentTemplateEmailId = arguments.savedEmailTemplateId;
     }

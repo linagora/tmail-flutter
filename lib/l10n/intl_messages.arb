@@ -5153,5 +5153,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "messageWarningDialogDiscardLocalDraft": "Are you sure you want to delete this local draft? You will not be able to restore it.",
+  "@messageWarningDialogDiscardLocalDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

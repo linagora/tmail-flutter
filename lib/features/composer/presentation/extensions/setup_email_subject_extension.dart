@@ -17,7 +17,7 @@ extension SetupEmailSubjectExtension on ComposerController {
       case EmailActionType.replyToList:
       case EmailActionType.replyAll:
       case EmailActionType.forward:
-      case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromLocalEmailDraft:
         subject = arguments.presentationEmail!.getEmailTitle().trim();
         break;
       case EmailActionType.editSendingEmail:

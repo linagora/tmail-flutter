@@ -40,9 +40,6 @@ class LocalEmailDraft with EquatableMixin {
   @HiveField(10)
   final String? draftEmailId;
 
-  @HiveField(11)
-  final String? templateEmailId;
-
   LocalEmailDraft({
     required this.id,
     required this.composerId,
@@ -55,7 +52,6 @@ class LocalEmailDraft with EquatableMixin {
     this.draftHash,
     this.actionType,
     this.draftEmailId,
-    this.templateEmailId,
   });
 
   @override
@@ -71,6 +67,5 @@ class LocalEmailDraft with EquatableMixin {
     draftHash,
     actionType,
     draftEmailId,
-    templateEmailId,
   ];
 }

@@ -15,11 +15,7 @@ abstract class LocalEmailDraftRepository {
     UserName userName,
   );
 
-  Future<void> removeLocalEmailDraft(
-    AccountId accountId,
-    UserName userName,
-    String composerId,
-  );
+  Future<void> removeLocalEmailDraft(String draftLocalId);
 
   Future<String> restoreEmailInlineImages(
     String htmlContent,

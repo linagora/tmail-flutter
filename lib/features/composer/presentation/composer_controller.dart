@@ -1148,7 +1148,7 @@ class ComposerController extends BaseController
     );
     if (emailIdEditing != null &&
         savedActionType == EmailActionType.compose &&
-        currentEmailActionType == EmailActionType.reopenComposerBrowser) {
+        currentEmailActionType == EmailActionType.composeFromLocalEmailDraft) {
       emailContent = await _composerRepository.removeStyleLazyLoadDisplayInlineImages(
         emailContent: emailContent,
       );
@@ -1184,7 +1184,7 @@ class ComposerController extends BaseController
     if (currentEmailActionType == EmailActionType.compose ||
         currentEmailActionType == EmailActionType.editDraft) {
       _savedEmailDraftHash = currentDraftHash;
-    } else if (currentEmailActionType == EmailActionType.reopenComposerBrowser) {
+    } else if (currentEmailActionType == EmailActionType.composeFromLocalEmailDraft) {
       _savedEmailDraftHash = oldSavedDraftHash;
     }
     log('ComposerController::initEmailDraftHash:oldSavedDraftHash = $oldSavedDraftHash | currentDraftHash = $currentDraftHash | _savedEmailDraftHash = $_savedEmailDraftHash');

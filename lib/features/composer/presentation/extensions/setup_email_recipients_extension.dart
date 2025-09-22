@@ -10,7 +10,7 @@ extension SetupEmailRecipientsExtension on ComposerController {
     switch(currentEmailActionType) {
       case EmailActionType.editAsNewEmail:
       case EmailActionType.editDraft:
-      case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromLocalEmailDraft:
         initEmailAddress(
           presentationEmail: arguments.presentationEmail!,
           actionType: currentEmailActionType!,
