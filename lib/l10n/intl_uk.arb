@@ -527,7 +527,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "{count} Вкладення ({totalSize})",
+  "titleHeaderAttachment": "{count} Вкладенням ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
@@ -949,7 +949,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments": "Вкладення",
+  "attachments": "Вкладенням",
   "@attachments": {
     "type": "text",
     "placeholders_order": [],
@@ -2705,7 +2705,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enableSpamReport": "Увімкнути звіт про спам",
+  "enableSpamReport": "Увімкнути Звіт про Спам",
   "@enableSpamReport": {
     "type": "text",
     "placeholders_order": [],
@@ -4673,6 +4673,240 @@
   },
   "archiveMessagesFailed": "Не вдалося архівувати повідомлення",
   "@archiveMessagesFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "singularAttachmentTitleHeader": "{count} Вкладення ({totalSize})",
+  "@singularAttachmentTitleHeader": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
+  "attachment": "Вкладення",
+  "@attachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "increaseYourSpace": "Збільште свій простір",
+  "@increaseYourSpace": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaAvailableLabel": "{count} доступно",
+  "@quotaAvailableLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "paywallUrlNotAvailable": "URL-адреса платного доступу недоступна",
+  "@paywallUrlNotAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaBannerWarningTitle": "У вас закінчується місце для зберігання (90%)",
+  "@quotaBannerWarningTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaBannerWarningSubtitleWithPremium": "Щоб продовжувати надсилати повідомлення та користуватися всіма функціями Twake Mail, подумайте про очищення або оновлення вашого сховища.",
+  "@quotaBannerWarningSubtitleWithPremium": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaBannerWarningSubtitleWithoutPremium": "Щоб продовжувати надсилати повідомлення та користуватися всіма функціями Twake Mail, будь ласка, подумайте про очищення.",
+  "@quotaBannerWarningSubtitleWithoutPremium": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageMyStorage": "Керувати моїм сховищем",
+  "@manageMyStorage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addARule": "Додати а правило",
+  "@addARule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noRulesConfigured": "Не налаштовано жодних правил",
+  "@noRulesConfigured": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageExplanationNoRulesConfigured": "Почніть зі створення першого правила для автоматизації\nуправління електронною поштою.",
+  "@messageExplanationNoRulesConfigured": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createMyFirstRule": "Створити моє перше правило",
+  "@createMyFirstRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewRule": "Створити Нове Правило",
+  "@createANewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleName": "Назва правила",
+  "@ruleName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "condition": "Хвороба",
+  "@condition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addACondition": "Додати Умову",
+  "@addACondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionsToPerform": "Дії для виконання",
+  "@actionsToPerform": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAnAction": "Додати Дію",
+  "@addAnAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createRule": "Створити Правило",
+  "@createRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preview": "Попередній перегляд",
+  "@preview": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterConditionPreviewMessage": "{conditionCombinerName} умов: {conditionValue}",
+  "@ruleFilterConditionPreviewMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "conditionCombinerName",
+      "conditionValue"
+    ],
+    "placeholders": {
+      "conditionCombinerName": {},
+      "conditionValue": {}
+    }
+  },
+  "actions": "Дії",
+  "@actions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewFolder": "Створити Нову Папку",
+  "@createANewFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subtitleDisplayTheFolderNameLocationInFolderCreationModal": "Нова папка буде створена всередині {folderName}",
+  "@subtitleDisplayTheFolderNameLocationInFolderCreationModal": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName"
+    ],
+    "placeholders": {
+      "folderName": {}
+    }
+  },
+  "folderName": "Назва папки",
+  "@folderName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterTheFolderName": "Введіть назву папку",
+  "@enterTheFolderName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectTheFolderLocation": "Виберіть розташування папки",
+  "@selectTheFolderLocation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFolder": "Створити папку",
+  "@createFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendMessage": "Надіслати повідомлення",
+  "@sendMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachmentReminderModalTitle": "Забули прикріпити файл?",
+  "@attachmentReminderModalTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachmentReminderModalMessage": "Ви написали {keyword} у своєму повідомленні, але не додали жодних вкладень. Ви все ще хочете надіслати?",
+  "@attachmentReminderModalMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "keyword"
+    ],
+    "placeholders": {
+      "keyword": {}
+    }
+  },
+  "spamReports": "Звіти про спам",
+  "@spamReports": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamReportsSettingExplanation": "Нагадує вам про необхідність періодично модерувати спам-листи",
+  "@spamReportsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamReportToggleDescription": "Увімкнути звіт про спам",
+  "@spamReportToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
