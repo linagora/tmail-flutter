@@ -1,10 +1,9 @@
-
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -54,6 +53,9 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
 
   @override
   Widget build(BuildContext context) {
+    final isEmailSelected = widget.presentationEmail.isSelected;
+    final isEmailStarred = widget.presentationEmail.hasStarred;
+
     return ResponsiveWidget(
       responsiveUtils: responsiveUtils,
       mobile: Material(
@@ -210,58 +212,50 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
               decoration: _getDecorationItem(),
               alignment: Alignment.center,
               child: Row(children: [
-                const SizedBox(width: 10),
-                buildIconWeb(
-                  icon: ValueListenableBuilder(
-                    valueListenable: _hoverNotifier,
-                    builder: (context, isHovered, child) {
-                      return SvgPicture.asset(
-                        widget.presentationEmail.isSelected
+                ValueListenableBuilder(
+                  valueListenable: _hoverNotifier,
+                  builder: (_, isHovered, __) {
+                    return TMailButtonWidget.fromIcon(
+                      icon: isEmailSelected
                           ? imagePaths.icCheckboxSelected
                           : imagePaths.icCheckboxUnselected,
-                        colorFilter: ColorFilter.mode(
-                          isHovered || widget.presentationEmail.isSelected
-                            ? AppColor.primaryColor
-                            : AppColor.colorEmailTileCheckboxUnhover,
-                          BlendMode.srcIn),
-                        width: 20,
-                        height: 20);
-                    },
-                  ),
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  iconPadding: EdgeInsets.zero,
-                  minSize: 28,
-                  tooltip: widget.presentationEmail.isSelected
-                    ? AppLocalizations.of(context).selected
-                    : AppLocalizations.of(context).notSelected,
-                  onTap: () {
-                    widget.emailActionClick?.call(
-                      EmailActionType.selection,
-                      widget.presentationEmail
+                      iconColor: isHovered || isEmailSelected
+                          ? AppColor.primaryColor
+                          : AppColor.colorEmailTileCheckboxUnhover,
+                      iconSize: 20,
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsetsDirectional.only(start: 4),
+                      backgroundColor: Colors.transparent,
+                      tooltipMessage: isEmailSelected
+                          ? AppLocalizations.of(context).selected
+                          : AppLocalizations.of(context).notSelected,
+                      onTapActionCallback: () {
+                        widget.emailActionClick?.call(
+                            EmailActionType.selection,
+                            widget.presentationEmail
+                        );
+                      },
                     );
                   },
                 ),
-                buildIconWeb(
-                  icon: SvgPicture.asset(
-                    widget.presentationEmail.hasStarred
+                TMailButtonWidget.fromIcon(
+                  icon: isEmailStarred
                       ? imagePaths.icStar
                       : imagePaths.icUnStar,
-                    width: 20,
-                    height: 20,
-                    fit: BoxFit.fill
-                  ),
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  iconPadding: EdgeInsets.zero,
-                  minSize: 28,
-                  tooltip: widget.presentationEmail.hasStarred
-                    ? AppLocalizations.of(context).not_starred
-                    : AppLocalizations.of(context).mark_as_starred,
-                  onTap: () => widget.emailActionClick?.call(
-                    widget.presentationEmail.hasStarred
-                      ? EmailActionType.unMarkAsStarred
-                      : EmailActionType.markAsStarred,
-                    widget.presentationEmail
-                  )
+                  iconSize: 20,
+                  padding: EdgeInsets.zero,
+                  backgroundColor: Colors.transparent,
+                  tooltipMessage: isEmailStarred
+                      ? AppLocalizations.of(context).not_starred
+                      : AppLocalizations.of(context).mark_as_starred,
+                  onTapActionCallback: () {
+                    widget.emailActionClick?.call(
+                      isEmailStarred
+                          ? EmailActionType.unMarkAsStarred
+                          : EmailActionType.markAsStarred,
+                      widget.presentationEmail,
+                    );
+                  },
                 ),
                 buildIconWeb(
                   icon: buildIconAnsweredOrForwarded(presentationEmail: widget.presentationEmail),
@@ -340,7 +334,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
 
   EdgeInsetsGeometry _getPaddingItem(BuildContext context) {
     if (responsiveUtils.isDesktop(context)) {
-      return const EdgeInsets.symmetric(vertical: 4);
+      return const EdgeInsets.symmetric(vertical: 2);
     } else if (responsiveUtils.isTablet(context)) {
       return const EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 24);
     } else {
