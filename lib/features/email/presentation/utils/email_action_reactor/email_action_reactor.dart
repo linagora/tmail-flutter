@@ -698,7 +698,7 @@ class EmailActionReactor {
           ),
         ),
         isScrollControlled: true,
-        enableDrag: false,
+        enableDrag: true,
         backgroundColor: Colors.transparent,
       );
     } else {
