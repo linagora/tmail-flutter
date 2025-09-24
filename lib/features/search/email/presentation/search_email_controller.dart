@@ -603,9 +603,6 @@ class SearchEmailController extends BaseController
     listResultSearch.clear();
     emailReceiveTimeType.value = EmailReceiveTimeType.allTime;
     emailSortOrderType.value = mailboxDashBoardController.currentSortOrder;
-    searchEmailFilter.value = SearchEmailFilter.withSortOrder(
-      emailSortOrderType.value,
-    );
     searchIsRunning.value = false;
     final isMailAddress = EmailUtils.isEmailAddressValid(queryString);
     if (isMailAddress) {

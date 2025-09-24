@@ -976,7 +976,6 @@ class MailboxDashBoardController extends ReloadableController
   void searchEmailByQueryString(String queryString) {
     final isMailAddress = EmailUtils.isEmailAddressValid(queryString);
     log('MailboxDashBoardController::searchEmailByQueryString():QueryString = $queryString | isMailAddress = $isMailAddress');
-    clearFilterMessageOption();
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
     } else if (_searchInsideThreadDetailViewIsActive()) {
