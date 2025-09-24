@@ -4989,5 +4989,93 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "singularAttachmentTitleHeader": "{count} Вложений ({totalSize})",
+  "@singularAttachmentTitleHeader": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "totalSize"
+    ],
+    "placeholders": {
+      "count": {},
+      "totalSize": {}
+    }
+  },
+  "attachment": "Вложение",
+  "@attachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "increaseYourSpace": "Увеличить пространство",
+  "@increaseYourSpace": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaAvailableLabel": "{count} доступно",
+  "@quotaAvailableLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "paywallUrlNotAvailable": "URL платного доступа недоступен",
+  "@paywallUrlNotAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaBannerWarningTitle": "Свободное место на диске заканчивается (90%)",
+  "@quotaBannerWarningTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaBannerWarningSubtitleWithPremium": "Чтобы продолжить отправлять сообщения и пользоваться всеми функциями Twake Mail, освободите место или обновите план.",
+  "@quotaBannerWarningSubtitleWithPremium": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaBannerWarningSubtitleWithoutPremium": "Чтобы продолжить отправлять сообщения и пользоваться всеми функциями Twake Mail, освободите место на диске.",
+  "@quotaBannerWarningSubtitleWithoutPremium": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageMyStorage": "Управление пространством",
+  "@manageMyStorage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addARule": "Добавить правило",
+  "@addARule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noRulesConfigured": "Правила не настроены",
+  "@noRulesConfigured": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageExplanationNoRulesConfigured": "Начните с создания первого правила для автоматизации\n управления электронной почтой.",
+  "@messageExplanationNoRulesConfigured": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createMyFirstRule": "Создайте первое правило",
+  "@createMyFirstRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
