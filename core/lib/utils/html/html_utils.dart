@@ -159,6 +159,16 @@ class HtmlUtils {
         table {
           white-space: normal !important;
         }
+              
+        @media only screen and (max-width: 600px) {
+          table {
+            width: 100% !important;
+          }
+          
+          a {
+            width: -webkit-fill-available !important;
+          }
+        }
         
         ${styleCSS ?? ''}
       </style>
