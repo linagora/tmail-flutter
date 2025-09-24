@@ -1,3 +1,7 @@
+## [0.19.2] - 2025-09-19
+### Fixed
+- Cannot Next/Previous email when thread disabled on web
+
 ## [0.19.1] - 2025-09-19
 ### Fixed
 - Fix cannot send email after close attachment reminder dialog
