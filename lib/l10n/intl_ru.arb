@@ -258,7 +258,7 @@
       "count": {}
     }
   },
-  "an_error_occurred": "Ошибка! Произошла ошибка. Пожалуйста, повторите попытку позже.",
+  "an_error_occurred": "Произошла ошибка. Пожалуйста, повторите попытку позже.",
   "@an_error_occurred": {
     "type": "text",
     "placeholders_order": [],
@@ -412,7 +412,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "edit": "Править",
+  "edit": "Изменить",
   "@edit": {
     "type": "text",
     "placeholders_order": [],
@@ -3984,13 +3984,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "warningMessageWhenSendEmailFailure": "Ошибка отправки сообщения.\nВ процессе отправки произошла ошибка.",
+  "warningMessageWhenSendEmailFailure": "Не удалось отправить сообщение.\nВ процессе отправки произошла ошибка.",
   "@warningMessageWhenSendEmailFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "closeAnyway": "Все равно закрыть",
+  "closeAnyway": "Закрыть",
   "@closeAnyway": {
     "type": "text",
     "placeholders_order": [],
@@ -4102,7 +4102,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveMessage": "Сохранить сообщение",
+  "saveMessage": "Сохранить",
   "@saveMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -5074,6 +5074,152 @@
   },
   "createMyFirstRule": "Создайте первое правило",
   "@createMyFirstRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterTheFolderName": "Введите название папки",
+  "@enterTheFolderName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectTheFolderLocation": "Выберите расположение папки",
+  "@selectTheFolderLocation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachmentReminderModalTitle": "Забыли прикрепить файл?",
+  "@attachmentReminderModalTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachmentReminderModalMessage": "Вы написали {keyword} в своём сообщении, но не добавили никаких вложений. Всё ещё хотите отправить?",
+  "@attachmentReminderModalMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "keyword"
+    ],
+    "placeholders": {
+      "keyword": {}
+    }
+  },
+  "spamReports": "Отчеты о спаме",
+  "@spamReports": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamReportsSettingExplanation": "Напоминает вам о необходимости регулярно модерировать спам-письма",
+  "@spamReportsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamReportToggleDescription": "Включить отчет о спаме",
+  "@spamReportToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewRule": "Создать новое правило",
+  "@createANewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleName": "Название правила",
+  "@ruleName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "condition": "Условие",
+  "@condition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addACondition": "Добавить условие",
+  "@addACondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionsToPerform": "Выполняемые действия",
+  "@actionsToPerform": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAnAction": "Добавить действие",
+  "@addAnAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createRule": "Создать правило",
+  "@createRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preview": "Предпросмотр",
+  "@preview": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterConditionPreviewMessage": "{conditionCombinerName} условий: {conditionValue}",
+  "@ruleFilterConditionPreviewMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "conditionCombinerName",
+      "conditionValue"
+    ],
+    "placeholders": {
+      "conditionCombinerName": {},
+      "conditionValue": {}
+    }
+  },
+  "actions": "Действия",
+  "@actions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewFolder": "Создать новую папку",
+  "@createANewFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subtitleDisplayTheFolderNameLocationInFolderCreationModal": "Новая папка будет создана внутри {folderName}",
+  "@subtitleDisplayTheFolderNameLocationInFolderCreationModal": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName"
+    ],
+    "placeholders": {
+      "folderName": {}
+    }
+  },
+  "folderName": "Имя папки",
+  "@folderName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFolder": "Создать папку",
+  "@createFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendMessage": "Отправить сообщение",
+  "@sendMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
