@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -69,6 +70,9 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         return Padding(
           padding: const EdgeInsetsDirectional.only(bottom: 16),
           child: EmailView(
+            key: PlatformInfo.isWeb
+                ? GlobalObjectKey(presentationEmail.id?.id.value ?? '')
+                : null,
             isInsideThreadDetailView: true,
             emailId: presentationEmail.id,
             isFirstEmailInThreadDetail: true,
@@ -84,6 +88,9 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       return Padding(
         padding: const EdgeInsetsDirectional.only(bottom: 16),
         child: EmailView(
+          key: PlatformInfo.isWeb
+              ? GlobalObjectKey(presentationEmail.id?.id.value ?? '')
+              : null,
           isInsideThreadDetailView: true,
           emailId: presentationEmail.id,
           onToggleThreadDetailCollapseExpand: () {
