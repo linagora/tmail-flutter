@@ -143,17 +143,16 @@ class SearchController extends BaseController with DateRangePickerMixin {
   void applyFilterSuggestionToSearchFilter(String currentUserEmail) {
     final receiveTime = listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
       ? EmailReceiveTimeType.last7Days
-      : EmailReceiveTimeType.allTime;
+      : null;
 
-    final hasAttachment = listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment) ? true : false;
+    final hasAttachment = listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment)
+        ? true
+        : null;
 
     var listFromAddress = searchEmailFilter.value.from;
-    if (currentUserEmail.isNotEmpty) {
-      if (listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)) {
-        listFromAddress.add(currentUserEmail);
-      } else {
-        listFromAddress.remove(currentUserEmail);
-      }
+    if (currentUserEmail.isNotEmpty &&
+        listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)) {
+      listFromAddress.add(currentUserEmail);
     }
 
     final listHasKeyword = listFilterOnSuggestionForm.contains(QuickSearchFilter.starred)
@@ -161,10 +160,10 @@ class SearchController extends BaseController with DateRangePickerMixin {
       : null;
 
     updateFilterEmail(
-      emailReceiveTimeTypeOption: Some(receiveTime),
-      hasAttachmentOption: Some(hasAttachment),
+      emailReceiveTimeTypeOption: receiveTime != null ? Some(receiveTime) : null,
+      hasAttachmentOption: hasAttachment != null ? Some(hasAttachment) : null,
       fromOption: Some(listFromAddress),
-      hasKeywordOption: optionOf(listHasKeyword),
+      hasKeywordOption: listHasKeyword != null ? Some(listHasKeyword) : null,
     );
 
     clearFilterSuggestion();
