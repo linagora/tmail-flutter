@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_close_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
+import 'package:tmail_ui_user/features/base/widget/pop_back_barrier_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/handle_toggle_preview_rule_filter_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/select_rule_action_field_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_action_arguments.dart';
@@ -13,8 +14,8 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_f
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_list_action_widget.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_title_with_preview_button.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_title_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_title_with_preview_button.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_preview_banner.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -29,6 +30,8 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
   Widget build(BuildContext context) {
     final responsiveUtils = controller.responsiveUtils;
     final isMobile = responsiveUtils.isMobile(context);
+    final isAllTablet = responsiveUtils.isPortraitTablet(context) ||
+        responsiveUtils.isLandscapeTablet(context);
 
     Widget bodyWidget = Container(
       decoration: BoxDecoration(
@@ -70,6 +73,18 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         body: GestureDetector(
           onTap: FocusScope.of(context).unfocus,
           child: SafeArea(child: bodyWidget),
+        ),
+      );
+    } else if (isAllTablet && PlatformInfo.isMobile) {
+      bodyWidget = Scaffold(
+        backgroundColor: Colors.black.withValues(alpha: 0.2),
+        body: PopBackBarrierWidget(
+          child: Center(
+            child: GestureDetector(
+              onTap: FocusScope.of(context).unfocus,
+              child: bodyWidget,
+            ),
+          ),
         ),
       );
     } else {
