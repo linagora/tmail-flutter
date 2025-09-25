@@ -46,8 +46,55 @@ class ThreadDetailAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final listShortcutActions = <Widget>[
+      _ThreadDetailAppBarButton(
+        icon: threadDetailIsStarred
+            ? imagePaths.icStar
+            : imagePaths.icUnStar,
+        tooltipMessage: threadDetailIsStarred
+            ? AppLocalizations.of(context).not_starred
+            : AppLocalizations.of(context).mark_as_starred,
+        responsiveUtils: responsiveUtils,
+        iconColor: null,
+        onTapActionCallback: threadDetailIsStarred
+            ? (_) => onThreadActionClick?.call(EmailActionType.unMarkAsStarred)
+            : (_) => onThreadActionClick?.call(EmailActionType.markAsStarred),
+      ),
+      _ThreadDetailAppBarButton(
+        icon: imagePaths.icMoveEmail,
+        tooltipMessage: AppLocalizations.of(context).moveMessage,
+        responsiveUtils: responsiveUtils,
+        onTapActionCallback: (_) => onThreadActionClick?.call(EmailActionType.moveToMailbox),
+      ),
+      _ThreadDetailAppBarButton(
+        icon: imagePaths.icDeleteComposer,
+        iconColor: threadDetailCanPermanentlyDelete
+            ? AppColor.redFF3347
+            : EmailViewAppBarWidgetStyles.iconColor,
+        tooltipMessage: threadDetailCanPermanentlyDelete
+            ? AppLocalizations.of(context).delete_permanently
+            : AppLocalizations.of(context).move_to_trash,
+        responsiveUtils: responsiveUtils,
+        onTapActionCallback: threadDetailCanPermanentlyDelete
+            ? (_) => onThreadActionClick?.call(EmailActionType.deletePermanently)
+            : (_) => onThreadActionClick?.call(EmailActionType.moveToTrash),
+      ),
+      _ThreadDetailAppBarButton(
+        icon: imagePaths.icMoreVertical,
+        tooltipMessage: AppLocalizations.of(context).more,
+        responsiveUtils: responsiveUtils,
+        onTapActionCallback: onThreadMoreActionClick,
+      ),
+    ];
+
+    final isRTL = AppUtils.getCurrentDirection(context) == TextDirection.rtl;
+    final isThreadActionAvailable = isThreadDetailEnabled && threadActionReady;
+    final isMobile = responsiveUtils.isMobile(context);
+
+    late List<Widget> childrenWidgets;
+
     final child = LayoutBuilder(
-      builder: (context, constraints) {
+      builder: (_, constraints) {
         Widget backButton = EmailViewBackButton(
           imagePaths: imagePaths,
           onBackAction: () => closeThreadDetailAction(context),
@@ -55,13 +102,27 @@ class ThreadDetailAppBar extends StatelessWidget {
           isSearchActivated: isSearchRunning,
           maxWidth: constraints.maxWidth,
         );
-        if (responsiveUtils.isMobile(context)) {
+
+        if (isMobile) {
           backButton = Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
               child: backButton,
             ),
           );
+
+          childrenWidgets = [
+            if (_supportDisplayMailboxNameTitle(context)) backButton,
+            if (isRTL) ...optionWidgets.reversed else ...optionWidgets,
+            if (isThreadActionAvailable) ...listShortcutActions,
+          ];
+        } else {
+          childrenWidgets = [
+            if (_supportDisplayMailboxNameTitle(context)) backButton,
+            if (isThreadActionAvailable) ...listShortcutActions,
+            const Spacer(),
+            if (isRTL) ...optionWidgets.reversed else ...optionWidgets,
+          ];
         }
 
         return Container(
@@ -82,55 +143,7 @@ class ThreadDetailAppBar extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (_supportDisplayMailboxNameTitle(context)) backButton,
-              if (isThreadDetailEnabled && threadActionReady) ...[
-                _ThreadDetailAppBarButton(
-                  icon: threadDetailIsStarred
-                      ? imagePaths.icStar
-                      : imagePaths.icUnStar,
-                  tooltipMessage: threadDetailIsStarred
-                      ? AppLocalizations.of(context).not_starred
-                      : AppLocalizations.of(context).mark_as_starred,
-                  responsiveUtils: responsiveUtils,
-                  iconColor: null,
-                  onTapActionCallback: threadDetailIsStarred
-                      ? (_) => onThreadActionClick?.call(EmailActionType.unMarkAsStarred)
-                      : (_) => onThreadActionClick?.call(EmailActionType.markAsStarred),
-                ),
-                _ThreadDetailAppBarButton(
-                  icon: imagePaths.icMoveEmail,
-                  tooltipMessage: AppLocalizations.of(context).moveMessage,
-                  responsiveUtils: responsiveUtils,
-                  onTapActionCallback: (_) => onThreadActionClick?.call(EmailActionType.moveToMailbox),
-                ),
-                _ThreadDetailAppBarButton(
-                  icon: imagePaths.icDeleteComposer,
-                  iconColor: threadDetailCanPermanentlyDelete
-                      ? AppColor.redFF3347
-                      : EmailViewAppBarWidgetStyles.iconColor,
-                  tooltipMessage: threadDetailCanPermanentlyDelete
-                      ? AppLocalizations.of(context).delete_permanently
-                      : AppLocalizations.of(context).move_to_trash,
-                  responsiveUtils: responsiveUtils,
-                  onTapActionCallback: threadDetailCanPermanentlyDelete
-                      ? (_) => onThreadActionClick?.call(EmailActionType.deletePermanently)
-                      : (_) => onThreadActionClick?.call(EmailActionType.moveToTrash),
-                ),
-              ],
-              if (!responsiveUtils.isMobile(context)) const Spacer(),
-              if (AppUtils.getCurrentDirection(context) == TextDirection.rtl)
-                ...optionWidgets.reversed
-              else
-                ...optionWidgets,
-              if (isThreadDetailEnabled && threadActionReady)
-                _ThreadDetailAppBarButton(
-                  icon: imagePaths.icMoreVertical,
-                  tooltipMessage: AppLocalizations.of(context).more,
-                  responsiveUtils: responsiveUtils,
-                  onTapActionCallback: onThreadMoreActionClick,
-                ),
-            ],
+            children: childrenWidgets,
           ),
         );
       },
