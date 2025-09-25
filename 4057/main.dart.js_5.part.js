@@ -1159,9 +1159,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.emailActionType = t0;
       this.presentationEmail = t1;
     },
-    EmailView$(emailId, isFirstEmailInThreadDetail, isInsideThreadDetailView, onToggleThreadDetailCollapseExpand, scrollController, threadSubject) {
-      return new B.EmailView(true, emailId, isFirstEmailInThreadDetail, threadSubject, onToggleThreadDetailCollapseExpand, scrollController, null);
-    },
     EmailView: function EmailView(t0, t1, t2, t3, t4, t5, t6) {
       var _ = this;
       _.isInsideThreadDetailView = t0;
@@ -18858,7 +18855,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.GetThreadDetailEmailViews_getThreadDetailEmailViews_closure.prototype = {
     call$1(entry) {
-      var t3, isFirstEmailInThreadDetail, _null = null,
+      var t3, isFirstEmailInThreadDetail, t4, _null = null,
         presentationEmail = entry.value,
         t1 = this._this,
         t2 = t1.emailIdsPresentation,
@@ -18885,11 +18882,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       if (isFirstEmailInThreadDetail) {
         t3 = presentationEmail.id;
+        t4 = t3 == null ? _null : t3.id.value;
+        if (t4 == null)
+          t4 = "";
         t2 = new A._MapBaseValueIterable(t2, t2.$ti._eval$1("_MapBaseValueIterable<MapBase.K,MapBase.V>")).get$last(0);
         t2 = t2 == null ? _null : t2.subject;
-        return new A.Padding(C.EdgeInsetsDirectional_0_0_0_16, B.EmailView$(t3, true, true, new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure2(t1, presentationEmail), t1.scrollController, t2), _null);
+        return new A.Padding(C.EdgeInsetsDirectional_0_0_0_16, new B.EmailView(true, t3, true, t2, new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure2(t1, presentationEmail), t1.scrollController, new A.GlobalObjectKey(t4, type$.GlobalObjectKey_State_StatefulWidget)), _null);
       }
-      return new A.Padding(C.EdgeInsetsDirectional_0_0_0_16, B.EmailView$(presentationEmail.id, false, true, new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure3(t1, presentationEmail), t1.scrollController, _null), _null);
+      t2 = presentationEmail.id;
+      t3 = t2 == null ? _null : t2.id.value;
+      if (t3 == null)
+        t3 = "";
+      return new A.Padding(C.EdgeInsetsDirectional_0_0_0_16, new B.EmailView(true, t2, false, _null, new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure3(t1, presentationEmail), t1.scrollController, new A.GlobalObjectKey(t3, type$.GlobalObjectKey_State_StatefulWidget)), _null);
     },
     $signature: 1921
   };
@@ -20086,5 +20090,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "EYIkBTWyA/hBkl2cZYu7eTzfON4=");
+})($__dart_deferred_initializers__, "WgPyhpahdXbjp3tbtm6wSaPfHfI=");
 ;
