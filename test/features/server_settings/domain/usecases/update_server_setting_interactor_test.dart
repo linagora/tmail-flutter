@@ -10,10 +10,12 @@ import 'package:tmail_ui_user/features/server_settings/domain/repository/server_
 import 'package:tmail_ui_user/features/server_settings/domain/state/update_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/update_server_setting_interactor.dart';
 
+import '../../../../fixtures/session_fixtures.dart';
 import 'update_server_setting_interactor_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<ServerSettingsRepository>()])
 void main() {
+  final session = SessionFixtures.aliceSession;
   final accountId = AccountId(Id('123'));
   const alwaysReadReceipts = false;
   final serverSettings = TMailServerSettings(
@@ -24,12 +26,13 @@ void main() {
   group('update always read receipt setting interactor', () {
     test('should return right with value returned from repository', () {
       // arrange
-      when(serverSettingsRepository.updateServerSettings(any, any))
+      when(serverSettingsRepository.updateServerSettings(any, any, any))
         .thenAnswer((_) async => serverSettings);
       
       // assert
       expect(
         updateServerSettingInteractor.execute(
+          session,
           accountId,
           TMailServerSettingOptions(alwaysReadReceipts: alwaysReadReceipts),
         ),
@@ -43,12 +46,13 @@ void main() {
     test('should return left with exception returned from repository', () {
       // arrange
       final exception = NotFoundServerSettingsException();
-      when(serverSettingsRepository.updateServerSettings(any, any))
+      when(serverSettingsRepository.updateServerSettings(any, any, any))
         .thenThrow(exception);
       
       // assert
       expect(
         updateServerSettingInteractor.execute(
+          session,
           accountId,
           TMailServerSettingOptions(alwaysReadReceipts: alwaysReadReceipts),
         ),

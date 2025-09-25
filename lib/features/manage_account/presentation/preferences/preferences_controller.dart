@@ -179,10 +179,12 @@ class PreferencesController extends BaseController {
         break;
     }
 
+    final session = _manageAccountDashBoardController.sessionCurrent;
     final accountId = _manageAccountDashBoardController.accountId.value;
-    if (accountId != null && newSettingOption != null) {
+    if (session != null && accountId != null && newSettingOption != null) {
       consumeState(
         _updateServerSettingInteractor.execute(
+          session,
           accountId,
           newSettingOption,
         ),

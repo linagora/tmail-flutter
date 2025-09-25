@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/server_settings/data/network/server_setti
 import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
+import '../../../../fixtures/session_fixtures.dart';
 import 'remote_server_settings_data_source_impl_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<ServerSettingsAPI>()])
@@ -18,6 +19,7 @@ void main() {
     id: ServerSettingsId(id: Id('123')),
     settings: TMailServerSettingOptions(alwaysReadReceipts: true),
   );
+  final session = SessionFixtures.aliceSession;
   final accountId = AccountId(Id('321'));
   final serverSettingsAPI = MockServerSettingsAPI();
   final remoteServerSettingsDataSource = RemoteServerSettingsDataSourceImpl(
@@ -55,12 +57,12 @@ void main() {
     group('update server settings', () {
       test('should return value when ServerSettingsAPI returns value',() async {
         // arrange
-        when(serverSettingsAPI.updateServerSettings(any, any))
+        when(serverSettingsAPI.updateServerSettings(any, any, any))
           .thenAnswer((_) async => serverSettings);
 
         // act
         final result = await remoteServerSettingsDataSource
-          .updateServerSettings(accountId, serverSettings);
+          .updateServerSettings(session, accountId, serverSettings);
 
         // assert
         expect(result, serverSettings);
@@ -68,12 +70,13 @@ void main() {
 
       test('should rethrow exception when ServerSettingsAPI throws exception',() async {
         // arrange
-        when(serverSettingsAPI.updateServerSettings(any, any))
+        when(serverSettingsAPI.updateServerSettings(any, any, any))
           .thenThrow(CanNotUpdateServerSettingsException());
 
         // assert
         expect(
           () => remoteServerSettingsDataSource.updateServerSettings(
+            session,
             accountId, 
             serverSettings),
           throwsA(const TypeMatcher<CanNotUpdateServerSettingsException>()));
