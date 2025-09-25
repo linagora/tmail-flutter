@@ -5440,11 +5440,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     MobileAppBarThreadWidgetStyle_getPadding(context, responsiveUtils) {
       var t1 = type$.MediaQuery;
-      if (!(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600 && A.InheritedModel_inheritFrom(context, null, t1).data.get$orientation(0) === C.Orientation_0))
-        t1 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size.get$shortestSide() >= 600 && A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 1200 && A.InheritedModel_inheritFrom(context, null, t1).data.get$orientation(0) === C.Orientation_1;
-      else
-        t1 = true;
-      if (t1)
+      if (A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600 && A.InheritedModel_inheritFrom(context, null, t1).data.get$orientation(0) === C.Orientation_0 || responsiveUtils.isLandscapeTablet$1(context))
         return C.EdgeInsets_16_0_16_0;
       else
         return C.EdgeInsets_32_0_32_0;
@@ -20094,5 +20090,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "UnyduEfD6Kq6URjm6in84jqa0ns=");
+})($__dart_deferred_initializers__, "7PX4yhI35sB2OOZvZHko+BbpvnE=");
 ;
