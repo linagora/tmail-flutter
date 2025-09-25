@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:model/email/presentation_email.dart';
@@ -50,11 +51,14 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       return;
     }
 
-    mailboxDashBoardController.dispatchEmailUIAction(
-      DisposePreviousExpandedEmailAction(
-        currentExpandedEmailId.value!,
-      ),
-    );
+    if (PlatformInfo.isWeb) {
+      mailboxDashBoardController.dispatchEmailUIAction(
+        DisposePreviousExpandedEmailAction(
+          currentExpandedEmailId.value!,
+        ),
+      );
+    }
+
     loadThreadOnThreadChanged = isThreadDetailEnabled;
     _preloadSelectedEmail(selectedEmail);
   }

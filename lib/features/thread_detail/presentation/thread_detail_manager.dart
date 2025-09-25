@@ -82,7 +82,10 @@ class ThreadDetailManager extends ReloadableController {
           return;
         }
 
-        initializeThreadDetailManager(currentDisplayedEmails);
+        initializeThreadDetailManager(
+          currentDisplayedEmails,
+          selectedEmail,
+        );
       },
     );
   }

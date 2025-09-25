@@ -1,11 +1,12 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
-extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
-  void toggleThreadDetailCollapeExpand(PresentationEmail presentationEmail) {
+extension ToggleThreadDetailCollapseExpand on ThreadDetailController {
+  void toggleThreadDetailCollapseExpand(PresentationEmail presentationEmail) {
     final emailId = presentationEmail.id;
     final expansionStatus = presentationEmail.emailInThreadStatus;
     if (emailId == null || expansionStatus == null) return;
@@ -16,9 +17,11 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
       emailIdsPresentation[emailId] = presentationEmail.copyWith(
         emailInThreadStatus: EmailInThreadStatus.collapsed,
       );
-      mailboxDashBoardController.dispatchEmailUIAction(
-        CollapseEmailInThreadDetailAction(emailId),
-      );
+      if (PlatformInfo.isWeb) {
+        mailboxDashBoardController.dispatchEmailUIAction(
+          CollapseEmailInThreadDetailAction(emailId),
+        );
+      }
       currentExpandedEmailId.value = null;
       threadDetailManager.currentMobilePageViewIndex.refresh();
       return;
@@ -40,9 +43,11 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
         emailIdsPresentation[key] = emailIdsPresentation[key]?.copyWith(
           emailInThreadStatus: EmailInThreadStatus.collapsed,
         );
-        mailboxDashBoardController.dispatchEmailUIAction(
-          CollapseEmailInThreadDetailAction(key),
-        );
+        if (PlatformInfo.isWeb) {
+          mailboxDashBoardController.dispatchEmailUIAction(
+            CollapseEmailInThreadDetailAction(key),
+          );
+        }
       }
     }
     threadDetailManager.currentMobilePageViewIndex.refresh();
