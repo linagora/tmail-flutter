@@ -60,8 +60,8 @@ class DesktopEditRecipientsView extends StatelessWidget {
               padding: const EdgeInsetsDirectional.only(
                 start: 16,
                 end: 16,
-                top: 21,
-                bottom: 21,
+                top: 36,
+                bottom: 12,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
