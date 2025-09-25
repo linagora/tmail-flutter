@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_builder/dialog_builder_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
@@ -47,6 +48,7 @@ class ComposerView extends GetWidget<ComposerController> {
       bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
           MessageDialogActionManager().isDialogOpened ||
           ColorDialogPicker().isOpened.isTrue ||
+          DialogBuilderManager().isOpened.isTrue ||
           DialogRouter.isRuleFilterDialogOpened.isTrue ||
           DialogRouter.isDialogOpened;
 

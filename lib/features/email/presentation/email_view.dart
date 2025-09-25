@@ -14,6 +14,7 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_builder/dialog_builder_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
@@ -541,6 +542,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 MessageDialogActionManager().isDialogOpened ||
                 EmailActionReactor.isDialogOpened ||
                 ColorDialogPicker().isOpened.isTrue ||
+                DialogBuilderManager().isOpened.isTrue ||
                 DialogRouter.isRuleFilterDialogOpened.isTrue ||
                 DialogRouter.isDialogOpened;
 

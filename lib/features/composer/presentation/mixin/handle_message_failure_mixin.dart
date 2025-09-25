@@ -2,11 +2,10 @@
 import 'package:jmap_dart_client/jmap/core/error/error_type.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-extension HandleMessageFailureExtension on ComposerController {
+mixin HandleMessageFailureMixin {
 
   ({String message, ErrorType? errorType}) getMessageFailure({
     required AppLocalizations appLocalizations,

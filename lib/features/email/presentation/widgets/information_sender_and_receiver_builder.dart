@@ -75,7 +75,8 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
           : CrossAxisAlignment.center,
         children: [
           EmailAvatarBuilder(
-            emailSelected: emailSelected,
+            avatarText: emailSelected.getAvatarText(),
+            avatarColors: emailSelected.avatarColors,
             onTapAvatarActionClick: onTapAvatarActionClick,
             size: 56,
           ),

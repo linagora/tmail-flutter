@@ -35,7 +35,7 @@ extension SetupEmailAttachmentsExtension on ComposerController {
         attachments = arguments.attachments;
         inlineImages = arguments.inlineImages;
         break;
-      case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromLocalEmailDraft:
         attachments = arguments.attachments;
         inlineImages = arguments.inlineImages;
         break;

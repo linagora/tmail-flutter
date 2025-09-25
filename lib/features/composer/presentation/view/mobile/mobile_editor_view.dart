@@ -107,7 +107,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
       EmailActionType.editDraft,
       EmailActionType.editSendingEmail,
       EmailActionType.composeFromContentShared,
-      EmailActionType.reopenComposerBrowser,
+      EmailActionType.composeFromLocalEmailDraft,
       EmailActionType.composeFromMailtoUri,
       EmailActionType.composeFromUnsubscribeMailtoLink,
       EmailActionType.editAsNewEmail,

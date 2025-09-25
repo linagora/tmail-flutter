@@ -104,7 +104,7 @@ extension SetupEmailContentExtension on ComposerController {
           }
         }
         break;
-      case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromLocalEmailDraft:
         final inlineImages = arguments.inlineImages ?? [];
         final content = arguments.emailContents ?? '';
         final displayMode = arguments.displayMode;
