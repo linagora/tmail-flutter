@@ -19,7 +19,7 @@ extension OnThreadPageChanged on ThreadDetailController {
       PlatformInfo.isWeb && threadDetailManager.previousAvailable;
 
   void onNext() {
-    if (currentExpandedEmailId.value != null) {
+    if (PlatformInfo.isWeb && currentExpandedEmailId.value != null) {
       mailboxDashBoardController.dispatchEmailUIAction(
         CollapseEmailInThreadDetailAction(currentExpandedEmailId.value!),
       );
@@ -29,11 +29,6 @@ extension OnThreadPageChanged on ThreadDetailController {
   }
 
   void onNextMobile() {
-    if (currentExpandedEmailId.value != null) {
-      mailboxDashBoardController.dispatchEmailUIAction(
-        CollapseEmailInThreadDetailAction(currentExpandedEmailId.value!),
-      );
-    }
     loadThreadOnThreadChanged = isThreadDetailEnabled;
     threadDetailManager.pageController?.nextPage(
       duration: const Duration(milliseconds: 500),
@@ -42,7 +37,7 @@ extension OnThreadPageChanged on ThreadDetailController {
   }
 
   void onPrevious() {
-    if (currentExpandedEmailId.value != null) {
+    if (PlatformInfo.isWeb && currentExpandedEmailId.value != null) {
       mailboxDashBoardController.dispatchEmailUIAction(
         CollapseEmailInThreadDetailAction(currentExpandedEmailId.value!),
       );
@@ -52,11 +47,6 @@ extension OnThreadPageChanged on ThreadDetailController {
   }
 
   void onPreviousMobile() {
-    if (currentExpandedEmailId.value != null) {
-      mailboxDashBoardController.dispatchEmailUIAction(
-        CollapseEmailInThreadDetailAction(currentExpandedEmailId.value!),
-      );
-    }
     loadThreadOnThreadChanged = isThreadDetailEnabled;
     threadDetailManager.pageController?.previousPage(
       duration: const Duration(milliseconds: 500),

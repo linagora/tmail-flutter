@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_open_email_address_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_load_more_segments.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/toggle_thread_detail_collape_expand.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/toggle_thread_detail_collapse_expand.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_collapsed_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_load_more_circle.dart';
@@ -61,7 +61,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
             openEmailAddressDetailAction(emailAddress);
           },
           onToggleThreadDetailCollapseExpand: () {
-            toggleThreadDetailCollapeExpand(presentationEmail);
+            toggleThreadDetailCollapseExpand(presentationEmail);
           },
         );
       }
@@ -78,7 +78,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
             isFirstEmailInThreadDetail: true,
             threadSubject: emailIdsPresentation.values.last?.subject,
             onToggleThreadDetailCollapseExpand: () {
-              toggleThreadDetailCollapeExpand(presentationEmail);
+              toggleThreadDetailCollapseExpand(presentationEmail);
             },
             scrollController: scrollController,
           ),
@@ -94,7 +94,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           isInsideThreadDetailView: true,
           emailId: presentationEmail.id,
           onToggleThreadDetailCollapseExpand: () {
-            toggleThreadDetailCollapeExpand(presentationEmail);
+            toggleThreadDetailCollapseExpand(presentationEmail);
           },
           scrollController: scrollController,
         ),

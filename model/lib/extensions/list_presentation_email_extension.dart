@@ -25,6 +25,9 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
 
   List<EmailId> get listEmailIds => map((email) => email.id).nonNulls.toList();
 
+  List<ThreadId> get uniqueThreadIds =>
+      map((email) => email.threadId).toSet().nonNulls.toList();
+
   Map<MailboxId, List<EmailId>> get emailIdsByMailboxId {
     final Map<MailboxId, List<EmailId>> result = {};
     for (final email in this) {
