@@ -85,4 +85,14 @@ class SearchRobot extends CoreRobot {
   Future<void> tapBackButton() async {
     await $(#search_email_back_button).tap();
   }
+
+  Future<void> selectAttachmentFilter() async {
+    await $.scrollUntilVisible(
+      finder: $(#mobile_hasAttachment_search_filter_button),
+      view: $(#search_filter_list_view),
+      scrollDirection: AxisDirection.right,
+      delta: 50,
+    );
+    await $(#mobile_hasAttachment_search_filter_button).tap();
+  }
 }
