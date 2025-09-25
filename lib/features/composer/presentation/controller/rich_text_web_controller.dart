@@ -246,6 +246,10 @@ class RichTextWebController extends GetxController {
 
     if (codeViewEnabled) {
       formattingOptionsState.value = FormattingOptionsState.disabled;
+    } else {
+      editorController.evaluateJavascriptWeb(
+        HtmlUtils.recalculateEditorHeight().name,
+      );
     }
   }
 

@@ -46,6 +46,15 @@ class HtmlUtils {
       editor.parentNode.replaceChild(newEditor, editor);''',
     name: 'unregisterDropListener');
 
+  static recalculateEditorHeight({double? maxHeight}) => (
+    script: '''
+      const editable = document.querySelector('.note-editable');
+      if (editable) {
+        editable.style.height = $maxHeight + 'px';
+      }
+    ''',
+    name: 'recalculateEditorHeight');
+
   static String customInlineBodyCssStyleHtmlEditor({
     TextDirection direction = TextDirection.ltr,
     double? horizontalPadding,
