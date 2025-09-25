@@ -13,7 +13,7 @@ dependencies:
   linagora_design_flutter:
     git:
       url: https://github.com/linagora/linagora-design-flutter.git
-      ref: master
+      ref: update/flutter-3.32.8
 
 dev_dependencies:
   flutter_test:

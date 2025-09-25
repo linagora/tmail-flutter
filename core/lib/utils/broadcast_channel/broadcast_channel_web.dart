@@ -1,1 +1,1 @@
-export 'dart:html' show BroadcastChannel;
+export 'package:web/web.dart' show BroadcastChannel;

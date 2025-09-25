@@ -11,6 +11,8 @@ abstract class WorkRequest with EquatableMixin {
   final Duration initialDelay;
   final Duration backoffPolicyDelay;
   final ExistingWorkPolicy? existingWorkPolicy;
+  final ExistingPeriodicWorkPolicy? existingPeriodicWorkPolicy;
+  final Duration? flexInterval;
   final BackoffPolicy? backoffPolicy;
   final OutOfQuotaPolicy? outOfQuotaPolicy;
   final Constraints? constraints;
@@ -23,6 +25,8 @@ abstract class WorkRequest with EquatableMixin {
     this.initialDelay = Duration.zero,
     this.backoffPolicyDelay = Duration.zero,
     this.existingWorkPolicy,
+    this.existingPeriodicWorkPolicy,
+    this.flexInterval,
     this.backoffPolicy,
     this.outOfQuotaPolicy,
     this.constraints
@@ -37,6 +41,8 @@ abstract class WorkRequest with EquatableMixin {
     initialDelay,
     backoffPolicyDelay,
     existingWorkPolicy,
+    existingPeriodicWorkPolicy,
+    flexInterval,
     backoffPolicy,
     outOfQuotaPolicy,
     constraints
