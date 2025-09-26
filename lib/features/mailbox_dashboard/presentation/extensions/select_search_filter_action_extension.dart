@@ -6,9 +6,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 extension SelectSearchFilterActionExtension on MailboxDashBoardController {
   void selectStarredSearchFilter() {
     final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
-    if (!listHasKeywordFiltered.contains(KeyWordIdentifier.emailFlagged.value)) {
-      listHasKeywordFiltered.add(KeyWordIdentifier.emailFlagged.value);
-    }
+    listHasKeywordFiltered.add(KeyWordIdentifier.emailFlagged.value);
     searchController.updateFilterEmail(
       hasKeywordOption: Some(listHasKeywordFiltered),
     );
@@ -22,9 +20,7 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
 
   void deleteStarredSearchFilter() {
     final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
-    if (listHasKeywordFiltered.contains(KeyWordIdentifier.emailFlagged.value)) {
-      listHasKeywordFiltered.remove(KeyWordIdentifier.emailFlagged.value);
-    }
+    listHasKeywordFiltered.remove(KeyWordIdentifier.emailFlagged.value);
     searchController.updateFilterEmail(
       hasKeywordOption: Some(listHasKeywordFiltered),
     );

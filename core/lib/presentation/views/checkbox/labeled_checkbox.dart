@@ -30,7 +30,7 @@ class LabeledCheckbox extends StatelessWidget {
         children: <Widget>[
           buildCheckboxWidget,
           buildGapWidget,
-          buildLabelWidget,
+          Flexible(child: buildLabelWidget),
         ],
       ),
     );
@@ -53,5 +53,7 @@ class LabeledCheckbox extends StatelessWidget {
   Widget get buildLabelWidget => Text(
         label,
         style: textStyle ?? ThemeUtils.textStyleM3BodyMedium3,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       );
 }
