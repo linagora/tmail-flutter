@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focus_detector_v2/focus_detector_v2.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -42,15 +41,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 right: const EmailViewEmptyWidget(),
                 mobile: buildScaffoldHaveDrawer(body: ThreadView()),
               );
-
-            case DashboardRoutes.emailDetailed:
-              return controller.searchController.isSearchEmailRunning
-                  ? const EmailView()
-                  : buildResponsiveWithDrawer(
-                      left: ThreadView(),
-                      right: const EmailView(),
-                      mobile: const EmailView(),
-                    );
 
             case DashboardRoutes.threadDetailed:
               return controller.searchController.isSearchEmailRunning

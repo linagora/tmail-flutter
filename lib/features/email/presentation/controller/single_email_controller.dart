@@ -387,15 +387,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     });
 
     obxListeners.add(ever(mailboxDashBoardController.emailUIAction, (action) {
-      if (action is CloseEmailDetailedViewToRedirectToTheInboxAction) {
-        _resetToOriginalValue(isEmailClosing: true);
-        mailboxDashBoardController.clearSelectedEmail();
-        mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
-        mailboxDashBoardController.clearEmailUIAction();
-      } else if (action is CloseEmailDetailedViewAction) {
-        closeEmailView(context: currentContext);
-        mailboxDashBoardController.clearEmailUIAction();
-      } else if (action is HideEmailContentViewAction) {
+      if (action is HideEmailContentViewAction) {
         isEmailContentHidden.value = true;
         mailboxDashBoardController.clearEmailUIAction();
       } else if (action is ShowEmailContentViewAction) {

@@ -12,8 +12,8 @@ import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_ac
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
-import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_empty_widget.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
@@ -279,8 +279,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           switch(controller.dashboardRoute.value) {
                             case DashboardRoutes.thread:
                               return _buildThreadViewForWebDesktop(context);
-                            case DashboardRoutes.emailDetailed:
-                              return const EmailView();
                             case DashboardRoutes.threadDetailed:
                               return const ThreadDetailView();
                             default:
@@ -307,11 +305,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         );
                 default:
                   return controller.searchController.isSearchEmailRunning
-                      ? const EmailView()
+                      ? const ThreadDetailView()
                       : buildResponsiveWithDrawer(
                           left: ThreadView(),
-                          right: const EmailView(),
-                          mobile: const EmailView(),
+                          right: const EmailViewEmptyWidget(),
+                          mobile: ThreadView(),
                         );
               }
             }),
@@ -321,8 +319,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   return buildScaffoldHaveDrawer(body: ThreadView());
                 case DashboardRoutes.threadDetailed:
                   return const ThreadDetailView();
-                case DashboardRoutes.emailDetailed:
-                  return const EmailView();
                 case DashboardRoutes.searchEmail:
                   return SearchEmailView();
                 default:
