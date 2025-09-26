@@ -8,11 +8,13 @@ import 'package:tmail_ui_user/features/server_settings/data/datasource/server_se
 import 'package:tmail_ui_user/features/server_settings/data/repository/server_settings_repository_impl.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
 
+import '../../../../fixtures/session_fixtures.dart';
 import 'server_settings_repository_impl_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<ServerSettingsDataSource>()])
 void main() {
   final serverSettings = TMailServerSettings();
+  final session = SessionFixtures.aliceSession;
   final accountId = AccountId(Id('123'));
   final serverSettingsDataSource = MockServerSettingsDataSource();
   final serverSettingsRepository = ServerSettingsRepositoryImpl(
@@ -48,12 +50,12 @@ void main() {
     group('update server settings', () {
       test('should return value when ServerSettingsDataSource returns value', () async {
         // arrange
-        when(serverSettingsDataSource.updateServerSettings(accountId, serverSettings))
+        when(serverSettingsDataSource.updateServerSettings(session, accountId, serverSettings))
           .thenAnswer((_) async => serverSettings);
 
         // act
         final result = await serverSettingsRepository
-          .updateServerSettings(accountId, serverSettings);
+          .updateServerSettings(session, accountId, serverSettings);
 
         // assert
         expect(result, serverSettings);
@@ -61,12 +63,12 @@ void main() {
 
       test('should rethrow exception when ServerSettingsDataSource throws exception', () async {
         // arrange
-        when(serverSettingsDataSource.updateServerSettings(accountId, serverSettings))
+        when(serverSettingsDataSource.updateServerSettings(session, accountId, serverSettings))
           .thenThrow(NotFoundServerSettingsException());
 
         // assert
         expect(
-          () => serverSettingsRepository.updateServerSettings(accountId, serverSettings),
+          () => serverSettingsRepository.updateServerSettings(session, accountId, serverSettings),
           throwsA(const TypeMatcher<NotFoundServerSettingsException>()));
       });
     });

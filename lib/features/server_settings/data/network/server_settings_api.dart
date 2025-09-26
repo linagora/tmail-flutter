@@ -1,6 +1,7 @@
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:server_settings/server_settings/get/get_server_settings_method.dart';
 import 'package:server_settings/server_settings/get/get_server_settings_response.dart';
@@ -10,6 +11,7 @@ import 'package:server_settings/server_settings/set/set_server_settings_response
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/extensions/tmail_server_settings_extension.dart';
 
 class ServerSettingsAPI with HandleSetErrorMixin {
   final HttpClient httpClient;
@@ -44,10 +46,12 @@ class ServerSettingsAPI with HandleSetErrorMixin {
   }
 
   Future<TMailServerSettings> updateServerSettings(
+    Session session,
     AccountId accountId, 
     TMailServerSettings serverSettings
   ) async {
     final processingInvocation = ProcessingInvocation();
+    serverSettings = serverSettings.normalized(session, accountId);
 
     final setServerSettingsMethod = SetServerSettingsMethod(accountId)
       ..addUpdatesSingleton({

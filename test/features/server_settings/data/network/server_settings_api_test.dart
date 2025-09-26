@@ -9,6 +9,8 @@ import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
 
+import '../../../../fixtures/session_fixtures.dart';
+
 void main() {
   final newServerSettings = TMailServerSettings(
     id: ServerSettingsIdExtension.serverSettingsIdSingleton,
@@ -91,11 +93,13 @@ void main() {
 
       final httpClient = HttpClient(dio);
       final serverSettingsAPI = ServerSettingsAPI(httpClient);
+      final session = SessionFixtures.aliceSession;
       final accountId = AccountId(Id('123'));
 
       // assert
       expect(
         serverSettingsAPI.updateServerSettings(
+          session,
           accountId, 
           newServerSettings),
         throwsA(isA<CanNotUpdateServerSettingsException>()));

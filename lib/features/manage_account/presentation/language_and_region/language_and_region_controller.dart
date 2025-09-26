@@ -75,6 +75,7 @@ class LanguageAndRegionController extends BaseController {
     }
 
     consumeState(saveLanguageToServerSettingsInteractor.execute(
+      session,
       accountId,
       localeCurrent,
     ));

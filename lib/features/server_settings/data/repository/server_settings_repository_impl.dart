@@ -1,4 +1,5 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/server_settings/data/datasource/server_settings_data_source.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/repository/server_settings_repository.dart';
@@ -14,7 +15,8 @@ class ServerSettingsRepositoryImpl implements ServerSettingsRepository {
 
   @override
   Future<TMailServerSettings> updateServerSettings(
+    Session session,
     AccountId accountId,
     TMailServerSettings serverSettings)
-      => _serverSettingsDataSource.updateServerSettings(accountId, serverSettings);
+      => _serverSettingsDataSource.updateServerSettings(session, accountId, serverSettings);
 }
