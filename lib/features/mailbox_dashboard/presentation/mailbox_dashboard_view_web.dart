@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
@@ -22,6 +23,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailb
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -452,13 +454,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.colorFilterMessageButton.withValues(alpha: 0.6),
                   shadowColor: Colors.transparent,
-                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
                   elevation: 0.0,
                   foregroundColor: AppColor.colorTextButtonHeaderThread,
                   maximumSize: const Size.fromWidth(250),
+                  fixedSize: const Size.fromHeight(34),
                   textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
                     fontSize: 13,
                     fontWeight: FontWeight.normal,
@@ -660,6 +663,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.dateTime),
                         MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.hasAttachment),
+                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
+                        _buildQuickSearchFilterButton(context, QuickSearchFilter.starred),
+                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
+                        _buildQuickSearchFilterButton(context, QuickSearchFilter.unread),
                       ],
                     ),
                   ),
@@ -710,6 +717,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       final receiveTimeType = controller.searchController.receiveTimeFiltered;
       final mailbox = controller.searchController.mailboxFiltered;
       final listAddressOfTo = controller.searchController.listAddressOfToFiltered;
+      final listHasKeywordFiltered = controller.searchController.listHasKeywordFiltered;
+      final unreadFiltered = controller.searchController.unreadFiltered;
 
       final isSelected = searchFilter.isSelected(
         context,
@@ -727,7 +736,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           startDate != null ||
           endDate != null ||
           receiveTimeType != EmailReceiveTimeType.allTime ||
-          mailbox != null;
+          mailbox != null ||
+          listHasKeywordFiltered.contains(KeyWordIdentifier.emailFlagged.value) ||
+          unreadFiltered;
 
       return SearchFilterButton(
         key: Key('${searchFilter.name}_search_filter_button'),
@@ -786,6 +797,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         break;
       case QuickSearchFilter.folder:
         controller.selectFolderSearchFilter();
+        break;
+      case QuickSearchFilter.starred:
+        controller.selectStarredSearchFilter();
+        break;
+      case QuickSearchFilter.unread:
+        controller.selectUnreadSearchFilter();
         break;
       default:
         break;

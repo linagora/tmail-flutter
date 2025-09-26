@@ -17,6 +17,7 @@ enum QuickSearchFilter {
   last7Days,
   fromMe,
   starred,
+  unread,
   sortBy,
   dateTime,
   from,
@@ -58,6 +59,8 @@ enum QuickSearchFilter {
         return AppLocalizations.of(context).to_email_address_prefix;
       case QuickSearchFilter.starred:
         return AppLocalizations.of(context).starred;
+      case QuickSearchFilter.unread:
+        return AppLocalizations.of(context).unread;
     }
   }
 
@@ -80,7 +83,9 @@ enum QuickSearchFilter {
       case QuickSearchFilter.folder:
         return imagePaths.icFolderMailbox;
       case QuickSearchFilter.starred:
-        return isSelected ? imagePaths.icSelectedSB : imagePaths.icStar;
+        return isSelected ? imagePaths.icSelectedSB : imagePaths.icUnStar;
+      case QuickSearchFilter.unread:
+        return isSelected ? imagePaths.icSelectedSB : imagePaths.icUnread;
     }
   }
 
@@ -112,11 +117,7 @@ enum QuickSearchFilter {
     if (isSelected) {
       return AppColor.primaryColor;
     } else {
-      if (this == QuickSearchFilter.starred) {
-        return AppColor.colorStarredSearchFilterIcon;
-      } else {
-        return AppColor.colorSearchFilterIcon;
-      }
+      return AppColor.colorSearchFilterIcon;
     }
   }
 
@@ -149,6 +150,8 @@ enum QuickSearchFilter {
         return searchFilter.mailbox != null;
       case QuickSearchFilter.starred:
         return searchFilter.hasKeyword.contains(KeyWordIdentifier.emailFlagged.value) == true;
+      case QuickSearchFilter.unread:
+        return searchFilter.unread;
     }
   }
 
