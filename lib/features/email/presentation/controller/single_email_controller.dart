@@ -447,7 +447,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     _resetToOriginalValue();
 
-    _createSingleEmailView(currentEmail!.id!);
+    if (currentEmail?.id != null) {
+      _createSingleEmailView(currentEmail!.id!);
+    }
 
     if (!currentEmail!.hasRead) {
       markAsEmailRead(currentEmail!, ReadActions.markAsRead, MarkReadAction.tap);
@@ -805,7 +807,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     ReadActions readActions,
     MarkReadAction markReadAction,
   ) {
-    if (accountId != null && session != null) {
+    if (accountId != null && session != null && presentationEmail.id != null) {
       consumeState(_markAsEmailReadInteractor.execute(
         session!,
         accountId!,
