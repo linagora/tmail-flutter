@@ -29,6 +29,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final PresentationMailbox? mailbox;
   final EmailReceiveTimeType emailReceiveTimeType;
   final bool hasAttachment;
+  final bool unread;
   final UTCDate? before;
   final UTCDate? startDate;
   final UTCDate? endDate;
@@ -52,6 +53,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Set<String>? to,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
+    bool? unread,
     Set<String>? notKeyword,
     Set<String>? hasKeyword,
     EmailSortOrderType? sortOrderType,
@@ -60,6 +62,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         notKeyword = notKeyword ?? <String>{},
         hasKeyword = hasKeyword ?? <String>{},
         hasAttachment = hasAttachment ?? false,
+        unread = unread ?? false,
         emailReceiveTimeType =
           emailReceiveTimeType ?? EmailReceiveTimeType.allTime,
         sortOrderType = sortOrderType ?? defaultSortOrder;
@@ -74,6 +77,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Option<PresentationMailbox>? mailboxOption,
     Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
     Option<bool>? hasAttachmentOption,
+    Option<bool>? unreadOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
@@ -90,6 +94,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       mailbox: getOptionParam(mailboxOption, mailbox),
       emailReceiveTimeType: getOptionParam(emailReceiveTimeTypeOption, emailReceiveTimeType),
       hasAttachment: getOptionParam(hasAttachmentOption, hasAttachment),
+      unread: getOptionParam(unreadOption, unread),
       before: getOptionParam(beforeOption, before),
       startDate: getOptionParam(startDateOption, startDate),
       endDate: getOptionParam(endDateOption, endDate),
@@ -118,6 +123,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       hasKeyword: hasKeyword.length == 1
         ? hasKeyword.first
         : null,
+      notKeyword: unread ? KeyWordIdentifier.emailSeen.value : null,
     );
 
     final listEmailCondition = {
@@ -197,7 +203,8 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     emailReceiveTimeType != EmailReceiveTimeType.allTime ||
     sortOrderType != SearchEmailFilter.defaultSortOrder ||
     (mailbox != null && mailbox?.id != PresentationMailbox.unifiedMailbox.id) ||
-    hasAttachment;
+    hasAttachment ||
+    unread;
 
   bool get isContainFlagged => hasKeyword.contains(KeyWordIdentifier.emailFlagged.value);
 
@@ -212,6 +219,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     mailbox,
     emailReceiveTimeType,
     hasAttachment,
+    unread,
     before,
     startDate,
     endDate,
