@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -33,6 +34,8 @@ class AdvancedFilterController extends BaseController {
 
   final receiveTimeType = EmailReceiveTimeType.allTime.obs;
   final hasAttachment = false.obs;
+  final isStarred = false.obs;
+  final isUnread = false.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
   final sortOrderType = SearchEmailFilter.defaultSortOrder.obs;
@@ -115,6 +118,7 @@ class AdvancedFilterController extends BaseController {
     Option<Set<String>>? toOption,
     Option<SearchQuery>? textOption,
     Option<String>? subjectOption,
+    Option<Set<String>>? hasKeywordOption,
     Option<Set<String>>? notKeywordOption,
     Option<PresentationMailbox>? mailboxOption,
     Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
@@ -131,6 +135,7 @@ class AdvancedFilterController extends BaseController {
       toOption: toOption,
       textOption: textOption,
       subjectOption: subjectOption,
+      hasKeywordOption: hasKeywordOption,
       notKeywordOption: notKeywordOption,
       mailboxOption: mailboxOption,
       emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
@@ -176,6 +181,13 @@ class AdvancedFilterController extends BaseController {
 
     final endDateOption = optionOf(endDate.value?.toUTCDate());
 
+    final unreadOption = Some(isUnread.value);
+
+    final hasKeywordOption = option(
+      isStarred.isTrue,
+      {KeyWordIdentifier.emailFlagged.value},
+    );
+
     _updateMemorySearchFilter(
       textOption: textOption,
       notKeywordOption: notKeywordsOption,
@@ -186,6 +198,8 @@ class AdvancedFilterController extends BaseController {
       subjectOption: subjectOption,
       emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
       hasAttachmentOption: hasAttachmentOption,
+      unreadOption: unreadOption,
+      hasKeywordOption: hasKeywordOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption
     );
@@ -268,6 +282,11 @@ class AdvancedFilterController extends BaseController {
     _destinationMailboxSelected = _memorySearchFilter.mailbox;
 
     hasAttachment.value = _memorySearchFilter.hasAttachment;
+
+    isUnread.value = _memorySearchFilter.unread;
+
+    isStarred.value = _memorySearchFilter.hasKeyword
+        .contains(KeyWordIdentifier.emailFlagged.value);
 
     if (_memorySearchFilter.from.isEmpty) {
       listFromEmailAddress.clear();
@@ -455,6 +474,8 @@ class AdvancedFilterController extends BaseController {
     endDate.value = null;
     receiveTimeType.value = EmailReceiveTimeType.allTime;
     hasAttachment.value = false;
+    isUnread.value = false;
+    isStarred.value = false;
     selectedFolderName.value = null;
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
@@ -532,6 +553,26 @@ class AdvancedFilterController extends BaseController {
   void onHasAttachmentCheckboxChanged(bool? isChecked) {
     hasAttachment.value = isChecked ?? false;
     _updateMemorySearchFilter(hasAttachmentOption: Some(hasAttachment.value));
+  }
+
+  void onStarredCheckboxChanged(bool? isChecked) {
+    isStarred.value = isChecked ?? false;
+    final listHasKeywordFiltered = _memorySearchFilter.hasKeyword;
+    if (isStarred.isTrue) {
+      listHasKeywordFiltered.add(KeyWordIdentifier.emailFlagged.value);
+    } else {
+      listHasKeywordFiltered.remove(KeyWordIdentifier.emailFlagged.value);
+    }
+    _updateMemorySearchFilter(
+      hasKeywordOption: Some(listHasKeywordFiltered),
+    );
+  }
+
+  void onUnreadCheckboxChanged(bool? isChecked) {
+    isUnread.value = isChecked ?? false;
+    _updateMemorySearchFilter(
+      unreadOption: isStarred.isTrue ? const Some(true) : const None(),
+    );
   }
 
   void onTextChanged(FilterField filterField, String value) {
