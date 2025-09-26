@@ -9,10 +9,9 @@ import 'package:server_settings/server_settings/server_settings_id.dart';
 import 'package:server_settings/server_settings/set/set_server_settings_method.dart';
 import 'package:server_settings/server_settings/set/set_server_settings_response.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
-import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
-import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/extensions/tmail_server_settings_extension.dart';
 
 class ServerSettingsAPI with HandleSetErrorMixin {
   final HttpClient httpClient;
@@ -52,16 +51,7 @@ class ServerSettingsAPI with HandleSetErrorMixin {
     TMailServerSettings serverSettings
   ) async {
     final processingInvocation = ProcessingInvocation();
-
-    if (session.isLanguageReadOnly(accountId)) {
-      serverSettings = TMailServerSettings(
-        id: serverSettings.id,
-        settings: TMailServerSettingOptions(
-          alwaysReadReceipts: serverSettings.settings?.isAlwaysReadReceipts,
-          displaySenderPriority: serverSettings.settings?.isDisplaySenderPriority,
-        ),
-      );
-    }
+    serverSettings = serverSettings.normalized(session, accountId);
 
     final setServerSettingsMethod = SetServerSettingsMethod(accountId)
       ..addUpdatesSingleton({
