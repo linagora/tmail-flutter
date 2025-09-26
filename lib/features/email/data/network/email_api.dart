@@ -312,7 +312,7 @@ class EmailAPI with HandleSetErrorMixin {
 
     String externalStorageDirPath;
     if (Platform.isAndroid) {
-      externalStorageDirPath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS);
+      externalStorageDirPath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOAD);
     } else if (Platform.isIOS) {
       externalStorageDirPath = (await getApplicationDocumentsDirectory()).absolute.path;
     } else {

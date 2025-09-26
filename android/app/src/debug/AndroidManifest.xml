@@ -3,12 +3,4 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
-
-    <application>
-        <!-- Will remove after upgrade to Flutter 3.29.x or above.
-        Detail here https://github.com/flutter/flutter/issues/160442 -->
-        <meta-data
-            android:name="io.flutter.embedding.android.EnableImpeller"
-            android:value="false" />
-    </application>
 </manifest>

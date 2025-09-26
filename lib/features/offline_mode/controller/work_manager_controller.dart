@@ -30,6 +30,7 @@ class WorkManagerController {
           backoffPolicy: workRequest.backoffPolicy,
           backoffPolicyDelay: workRequest.backoffPolicyDelay,
           outOfQuotaPolicy: workRequest.outOfQuotaPolicy,
+          existingWorkPolicy: workRequest.existingWorkPolicy,
           inputData: workRequest.inputData
         );
       } if (workRequest is PeriodicWorkRequest) {
@@ -42,7 +43,8 @@ class WorkManagerController {
           constraints: workRequest.constraints,
           backoffPolicy: workRequest.backoffPolicy,
           backoffPolicyDelay: workRequest.backoffPolicyDelay,
-          outOfQuotaPolicy: workRequest.outOfQuotaPolicy,
+          existingWorkPolicy: workRequest.existingPeriodicWorkPolicy,
+          flexInterval: workRequest.flexInterval,
           inputData: workRequest.inputData
         );
       }
