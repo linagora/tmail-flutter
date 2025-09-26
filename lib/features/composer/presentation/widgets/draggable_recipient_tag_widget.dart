@@ -4,21 +4,20 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/draggable_recipient_tag_widget_style.dart';
 
 class DraggableRecipientTagWidget extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final EmailAddress emailAddress;
   final EdgeInsetsGeometry? padding;
 
-  final _imagePaths = Get.find<ImagePaths>();
-
-  DraggableRecipientTagWidget({
+  const DraggableRecipientTagWidget({
     super.key,
     required this.emailAddress,
+    required this.imagePaths,
     this.padding,
   });
 
@@ -44,15 +43,19 @@ class DraggableRecipientTagWidget extends StatelessWidget {
                 labelFontSize: DraggableRecipientTagWidgetStyle.avatarLabelFontSize,
                 iconSize: DraggableRecipientTagWidgetStyle.avatarIconSize,
               ),
-            Padding(
-              padding: DraggableRecipientTagWidgetStyle.labelPadding,
-              child: DefaultTextStyle(
-                style: DraggableRecipientTagWidgetStyle.labelTextStyle,
-                child: Text(emailAddress.asString()),
+            Flexible(
+              child: Padding(
+                padding: DraggableRecipientTagWidgetStyle.labelPadding,
+                child: DefaultTextStyle(
+                  style: DraggableRecipientTagWidgetStyle.labelTextStyle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  child: Text(emailAddress.asString()),
+                ),
               ),
             ),
             SvgPicture.asset(
-              _imagePaths.icClose,
+              imagePaths.icClose,
               colorFilter: DraggableRecipientTagWidgetStyle.deleteIconColor.asFilter(),
               fit: BoxFit.fill
             )

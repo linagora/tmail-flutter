@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -15,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 
 class DefaultAutocompleteTagItemWidget extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final bool isCollapsed;
   final bool isTagFocused;
   final FilterField field;
@@ -27,6 +29,7 @@ class DefaultAutocompleteTagItemWidget extends StatelessWidget {
 
   const DefaultAutocompleteTagItemWidget({
     Key? key,
+    required this.imagePaths,
     required this.field,
     required this.currentEmailAddress,
     required this.currentListEmailAddress,
@@ -73,10 +76,12 @@ class DefaultAutocompleteTagItemWidget extends StatelessWidget {
         ),
         feedback: DraggableRecipientTagWidget(
           emailAddress: currentEmailAddress,
+          imagePaths: imagePaths,
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         ),
         childWhenDragging: DraggableRecipientTagWidget(
           emailAddress: currentEmailAddress,
+          imagePaths: imagePaths,
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         ),
         child: TextFieldTapRegion(

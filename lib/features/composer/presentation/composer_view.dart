@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_c
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/remove_draggable_email_address_between_recipient_fields_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
@@ -146,6 +147,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                 onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                                 onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
+                                onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                                 onEditRecipientAction: controller.onEditRecipient,
                                 onClearFocusAction: controller.onClearFocusAction,
                               )),
@@ -171,6 +173,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                     onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                                     onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                     onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                                    onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                                     onEditRecipientAction: controller.onEditRecipient,
                                     onClearFocusAction: controller.onClearFocusAction,
                                   );
@@ -200,6 +203,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                     onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                                     onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                     onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                                    onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                                     onEditRecipientAction: controller.onEditRecipient,
                                     onClearFocusAction: controller.onClearFocusAction,
                                   );
@@ -229,6 +233,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                     onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                                     onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                                     onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
+                                    onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                                     onEditRecipientAction: controller.onEditRecipient,
                                     onClearFocusAction: controller.onClearFocusAction,
                                   );
@@ -357,6 +362,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                             onFocusNextAddressAction: controller.handleFocusNextAddressAction,
                             onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputAction,
+                            onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                             onEditRecipientAction: controller.onEditRecipient,
                             onClearFocusAction: controller.onClearFocusAction,
                           ),
@@ -381,6 +387,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                              onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                               onEditRecipientAction: controller.onEditRecipient,
                               onClearFocusAction: controller.onClearFocusAction,
                             ),
@@ -405,6 +412,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                              onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                               onEditRecipientAction: controller.onEditRecipient,
                               onClearFocusAction: controller.onClearFocusAction,
                             ),
@@ -428,6 +436,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onUpdateListEmailAddressAction: controller.updateListEmailAddress,
                               onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
                               onFocusNextAddressAction: controller.handleFocusNextAddressAction,
+                              onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
                               onEditRecipientAction: controller.onEditRecipient,
                               onClearFocusAction: controller.onClearFocusAction,
                             ),
