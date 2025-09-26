@@ -24,10 +24,6 @@ class RefreshChangeEmailAction extends EmailUIAction {
   List<Object?> get props => [newState];
 }
 
-class CloseEmailDetailedViewToRedirectToTheInboxAction extends EmailUIAction {}
-
-class CloseEmailDetailedViewAction extends EmailUIAction {}
-
 class HideEmailContentViewAction extends EmailUIAction {}
 
 class ShowEmailContentViewAction extends EmailUIAction {}

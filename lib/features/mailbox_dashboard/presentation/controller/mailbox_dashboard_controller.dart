@@ -908,13 +908,9 @@ class MailboxDashBoardController extends ReloadableController
     selectedEmail.value = null;
   }
 
-  void openEmailDetailedView(PresentationEmail presentationEmail, {bool singleEmail = false}) {
+  void openEmailDetailedView(PresentationEmail presentationEmail) {
     setSelectedEmail(presentationEmail);
-    if (singleEmail) {
-      dispatchRoute(DashboardRoutes.emailDetailed);
-    } else {
-      dispatchRoute(DashboardRoutes.threadDetailed);
-    }
+    dispatchRoute(DashboardRoutes.threadDetailed);
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
       RouteUtils.replaceBrowserHistory(
         title: 'Email-${presentationEmail.id?.id.value ?? ''}',
@@ -947,9 +943,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void handleAdvancedSearchEmail() {
     log('MailboxDashBoardController::handleAdvancedSearchEmail:');
-    if (_searchInsideEmailDetailedViewIsActive()) {
-      _closeEmailDetailedView();
-    } else if (_searchInsideThreadDetailViewIsActive()) {
+    if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
@@ -962,9 +956,7 @@ class MailboxDashBoardController extends ReloadableController
   void handleClearAdvancedSearchFilterEmail() {
     log('MailboxDashBoardController::handleClearAdvancedSearchFilterEmail:');
     clearFilterMessageOption();
-    if (_searchInsideEmailDetailedViewIsActive()) {
-      _closeEmailDetailedView();
-    } else if (_searchInsideThreadDetailViewIsActive()) {
+    if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
@@ -977,9 +969,7 @@ class MailboxDashBoardController extends ReloadableController
     final isMailAddress = EmailUtils.isEmailAddressValid(queryString);
     log('MailboxDashBoardController::searchEmailByQueryString():QueryString = $queryString | isMailAddress = $isMailAddress');
     clearFilterMessageOption();
-    if (_searchInsideEmailDetailedViewIsActive()) {
-      _closeEmailDetailedView();
-    } else if (_searchInsideThreadDetailViewIsActive()) {
+    if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
@@ -1000,13 +990,6 @@ class MailboxDashBoardController extends ReloadableController
     FocusManager.instance.primaryFocus?.unfocus();
 
     dispatchAction(StartSearchEmailAction());
-  }
-
-  bool _searchInsideEmailDetailedViewIsActive() {
-    return PlatformInfo.isWeb
-      && currentContext != null
-      && responsiveUtils.isDesktop(currentContext!)
-      && dashboardRoute.value == DashboardRoutes.emailDetailed;
   }
 
   bool _searchInsideThreadDetailViewIsActive() {
@@ -2824,10 +2807,6 @@ class MailboxDashBoardController extends ReloadableController
 
   void redirectToInboxAction() {
     log('MailboxDashBoardController::redirectToInboxAction:');
-    if (dashboardRoute.value == DashboardRoutes.emailDetailed) {
-      dispatchEmailUIAction(CloseEmailDetailedViewToRedirectToTheInboxAction());
-    }
-
     final inboxId = getMailboxIdByRole(PresentationMailbox.roleInbox);
     if (inboxId == null) return;
 
@@ -2908,9 +2887,7 @@ class MailboxDashBoardController extends ReloadableController
     FocusManager.instance.primaryFocus?.unfocus();
     clearFilterMessageOption();
     searchController.clearFilterSuggestion();
-    if (_searchInsideEmailDetailedViewIsActive()) {
-      _closeEmailDetailedView();
-    } else if (_searchInsideThreadDetailViewIsActive()) {
+    if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
@@ -2992,18 +2969,6 @@ class MailboxDashBoardController extends ReloadableController
   bool _navigateToScreen() {
     log('MailboxDashBoardController::_navigateToScreen: dashboardRoute: $dashboardRoute');
     switch(dashboardRoute.value) {
-      case DashboardRoutes.emailDetailed:
-        if (PlatformInfo.isMobile) {
-          if (currentContext != null && canBack(currentContext!)) {
-            return false;
-          } else {
-            dispatchEmailUIAction(CloseEmailDetailedViewAction());
-            return true;
-          }
-        } else {
-          dispatchEmailUIAction(CloseEmailDetailedViewAction());
-          return true;
-        }
       case DashboardRoutes.thread:
         if (PlatformInfo.isMobile) {
           if (currentContext != null && canBack(currentContext!)) {
