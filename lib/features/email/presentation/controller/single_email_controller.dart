@@ -202,6 +202,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
   PresentationEmail? get currentEmail {
+    if (PlatformInfo.isMobile &&
+        _threadDetailController?.isThreadDetailEnabled != true) {
+      return mailboxDashBoardController.selectedEmail.value;
+    }
     return _currentEmailId == null
       ? null
       : _threadDetailController?.emailIdsPresentation[_currentEmailId];
