@@ -1,3 +1,12 @@
+## [0.19.3] - 2025-09-26
+### Added
+- Translation vi, en, ru, fr, uk
+
+### Fixed
+- gray screen when comeback app from background
+- rule filter dialog auto close when click outside
+- Server setting for readonly fields
+
 ## [0.19.2] - 2025-09-19
 ### Fixed
 - Cannot Next/Previous email when thread disabled on web
