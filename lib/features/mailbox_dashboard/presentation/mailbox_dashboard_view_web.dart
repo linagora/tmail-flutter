@@ -476,7 +476,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       Obx(() {
         final filterMessageCurrent = controller.filterMessageOption.value;
 
-        if (controller.validateNoEmailsInTrashAndSpamFolder()) {
+        if (controller.validateNoEmailsInTrashAndSpamFolder() ||
+            controller.searchController.isSearchEmailRunning) {
           return const SizedBox.shrink();
         } else {
           return Padding(
@@ -506,11 +507,16 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           return const SizedBox.shrink();
         }
       }),
-      const Spacer(),
       Obx(() {
         if (controller.searchController.isSearchEmailRunning &&
             controller.dashboardRoute.value == DashboardRoutes.thread) {
-          return _buildQuickSearchFilterButton(context, QuickSearchFilter.sortBy);
+          return Padding(
+            padding: const EdgeInsetsDirectional.only(start: 16),
+            child: _buildQuickSearchFilterButton(
+              context,
+              QuickSearchFilter.sortBy,
+            ),
+          );
         } else {
           return const SizedBox.shrink();
         }
@@ -740,8 +746,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         listAddressOfTo: listAddressOfTo,
         mailbox: mailbox,
         buttonPadding: buttonPadding,
-        isContextMenuAlignEndButton: isFilterApplied ||
-            searchFilter == QuickSearchFilter.sortBy,
+        backgroundColor: searchFilter == QuickSearchFilter.sortBy
+          ? isSelected
+              ? AppColor.primaryColor.withValues(alpha: 0.06)
+              : AppColor.colorFilterMessageButton.withValues(alpha: 0.6)
+          : null,
+        isContextMenuAlignEndButton: isFilterApplied,
         onSelectSearchFilterAction: _onSelectSearchFilterAction,
         onDeleteSearchFilterAction: controller.onDeleteSearchFilterAction,
       );
