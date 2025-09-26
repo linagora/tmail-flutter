@@ -224,7 +224,6 @@ extension AppColor on Color {
   static const colorFilterMessageButton = Color(0xFFEBEDF0);
   static const colorFilterMessageIcon = Color(0xFF686E76);
   static const colorFilterMessageTitle = Color(0xFF686E76);
-  static const colorStarredSearchFilterIcon = Color(0xFFFFCC00);
   static const colorMobileSearchFilterButton = Color(0xFFEBEDF0);
   static const colorContactViewClearFilterButton = Color(0x001C3D0D);
   static const steelGrayA540 = Color(0xFF55687D);
