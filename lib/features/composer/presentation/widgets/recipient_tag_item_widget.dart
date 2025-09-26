@@ -139,23 +139,36 @@ class RecipientTagItemWidget extends StatelessWidget {
     );
 
     if (PlatformInfo.isWeb || isTestingForWeb) {
-      tagWidget = Draggable<DraggableEmailAddress>(
-        data: DraggableEmailAddress(
-          emailAddress: currentEmailAddress,
-          filterField: prefix.filterField,
-          composerId: composerId,
-        ),
-        feedback: DraggableRecipientTagWidget(
-          imagePaths: imagePaths,
-          emailAddress: currentEmailAddress,
-        ),
-        childWhenDragging: DraggableRecipientTagWidget(
-          imagePaths: imagePaths,
-          emailAddress: currentEmailAddress,
-        ),
+      tagWidget = MouseRegion(
+        cursor: SystemMouseCursors.grab,
         child: tagWidget,
       );
     }
+
+    tagWidget = Draggable<DraggableEmailAddress>(
+      data: DraggableEmailAddress(
+        emailAddress: currentEmailAddress,
+        filterField: prefix.filterField,
+        composerId: composerId,
+      ),
+      feedback: DraggableRecipientTagWidget(
+        imagePaths: imagePaths,
+        emailAddress: currentEmailAddress,
+      ),
+      childWhenDragging: PlatformInfo.isMobile
+        ? Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: DraggableRecipientTagWidget(
+              imagePaths: imagePaths,
+              emailAddress: currentEmailAddress,
+            ),
+          )
+        : DraggableRecipientTagWidget(
+            imagePaths: imagePaths,
+            emailAddress: currentEmailAddress,
+          ),
+      child: tagWidget,
+    );
 
     if ((PlatformInfo.isWeb || isTestingForWeb) && PlatformInfo.isCanvasKit) {
       tagWidget = Padding(
