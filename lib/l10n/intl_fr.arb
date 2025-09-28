@@ -1072,19 +1072,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputUrlMessage": "Pour vous connecter et accéder à votre message, veuillez connecter votre serveur JMAP",
+  "loginInputUrlMessage": "Pour vous connecter et accéder à votre message, veuillez utiliser votre serveur JMAP",
   "@loginInputUrlMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredEmail": "L'adresse e-mail est requise",
+  "requiredEmail": "Une adresse e-mail est requise",
   "@requiredEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredPassword": "Le mot de passe est requis",
+  "requiredPassword": "Mot de passe requis",
   "@requiredPassword": {
     "type": "text",
     "placeholders_order": [],
@@ -1120,7 +1120,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputCredentialMessage": "Entrez votre identifiant pour vous connecter",
+  "loginInputCredentialMessage": "Entrez vos identifiants pour vous connecter",
   "@loginInputCredentialMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -2590,7 +2590,7 @@
       "endDate": {}
     }
   },
-  "unknownError": "Une erreur inconnue s'est produite, veuillez réessayer",
+  "unknownError": "Une erreur s'est produite, veuillez réessayer",
   "@unknownError": {
     "type": "text",
     "placeholders_order": [],
