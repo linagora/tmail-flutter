@@ -198,9 +198,12 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
                           final isPresentationSpamMailboxIsNull = spamController.presentationSpamMailbox.value == null;
 
+                          final isEmailOpened = controller.dashboardRoute.value == DashboardRoutes.threadDetailed;
+
                           if (isSpamReportDisabled ||
                               isPresentationSpamMailboxIsNull ||
-                              isSpamFolderSelected) {
+                              isSpamFolderSelected ||
+                              isEmailOpened) {
                             return const SizedBox.shrink();
                           }
 
