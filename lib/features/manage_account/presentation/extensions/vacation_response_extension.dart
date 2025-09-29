@@ -87,6 +87,10 @@ extension VacationResponseExtension on VacationResponse {
       htmlBody: htmlBody ?? this.htmlBody
     );
   }
+
+  VacationResponse clearAllExceptHtmlBody() {
+    return VacationResponse(isEnabled: false, htmlBody: htmlBody);
+  }
   
   String getNotificationMessage(BuildContext context) {
     if (vacationResponderIsValid) {

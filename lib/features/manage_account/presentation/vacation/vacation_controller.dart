@@ -8,8 +8,10 @@ import 'package:rich_text_composer/views/commons/constants.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/null_session_or_accountid_exception.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
@@ -223,7 +225,7 @@ class VacationController extends BaseController {
       _updateVacationAction(newVacationResponse);
     } else {
       final vacationDisabled = currentVacation != null
-          ? currentVacation!.copyWith(isEnabled: false)
+          ? currentVacation!.clearAllExceptHtmlBody()
           : VacationResponse(isEnabled: false);
       log('VacationController::saveVacation(): vacationDisabled: $vacationDisabled');
       _updateVacationAction(vacationDisabled);
@@ -234,26 +236,28 @@ class VacationController extends BaseController {
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null) {
       consumeState(_updateVacationInteractor.execute(accountId, vacationResponse));
+    } else {
+      consumeState(
+        Stream.value(Left(UpdateVacationFailure(NullSessionOrAccountIdException()))),
+      );
     }
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
-    if (success.listVacationResponse.isNotEmpty) {
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastSuccessMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).vacationSettingSaved);
-      }
-      currentVacation = success.listVacationResponse.first;
-      log('VacationController::_handleUpdateVacationSuccess(): $currentVacation');
-
-      if (currentVacation != null) {
-        final newVacationPresentation = currentVacation!.toVacationPresentation();
-        _initializeValueForVacation(newVacationPresentation);
-      }
-
-      _accountDashBoardController.updateVacationResponse(currentVacation);
+    if (success.listVacationResponse.isNotEmpty &&
+        currentOverlayContext != null &&
+        currentContext != null) {
+      appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).vacationSettingSaved);
     }
+
+    currentVacation = success.listVacationResponse.firstOrNull;
+    if (currentVacation != null) {
+      final newVacationPresentation = currentVacation!.toVacationPresentation();
+      _initializeValueForVacation(newVacationPresentation);
+    }
+    _accountDashBoardController.setUpVacation(currentVacation);
   }
 
   void updateMessageHtmlText(String? text) => _vacationMessageHtmlText = text;

@@ -617,12 +617,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildVacationNotificationMessage(BuildContext context) {
     return Obx(() {
-      if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
+      final vacation = controller.vacationResponse.value;
+      if (vacation?.vacationResponderIsValid == true) {
         return VacationNotificationMessageWidget(
           margin: VacationNotificationMessageWidgetStyle.bannerMargin,
-          vacationResponse: controller.vacationResponse.value!,
+          vacationResponse: vacation!,
           actionGotoVacationSetting: controller.goToVacationSetting,
-          actionEndNow: controller.disableVacationResponder);
+          actionEndNow: controller.disableVacationResponder,
+        );
       } else {
         return const SizedBox.shrink();
       }
