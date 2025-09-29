@@ -10,19 +10,33 @@ class EditIdentityRequest with EquatableMixin {
   final IdentityId identityId;
   final bool isDefaultIdentity;
   final PublicAssetsInIdentityArguments? publicAssetsInIdentityArguments;
+  final bool isSetAsDefault;
 
   EditIdentityRequest({
     required this.identityId, 
     required this.identityRequest,
     this.isDefaultIdentity = false,
+    this.isSetAsDefault = false,
     this.publicAssetsInIdentityArguments
   });
+
+  factory EditIdentityRequest.fromIdentityWithoutPublicAssets(
+    Identity identity,
+  ) {
+    return EditIdentityRequest(
+      identityId: identity.id!,
+      identityRequest: identity.toIdentityRequest(),
+      isDefaultIdentity: true,
+      isSetAsDefault: true,
+    );
+  }
 
   @override
   List<Object?> get props => [
     identityId, 
     identityRequest,
     isDefaultIdentity,
-    publicAssetsInIdentityArguments
+    publicAssetsInIdentityArguments,
+    isSetAsDefault,
   ];
 }
