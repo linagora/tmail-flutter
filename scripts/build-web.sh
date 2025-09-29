@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
 
 set -eux
-flutter build web --profile --verbose --base-href "/${GITHUB_REPOSITORY##*/}/$FOLDER/"
+
+# Build web in release mode (lightweight, optimized)
+flutter build web --release --base-href "/${GITHUB_REPOSITORY##*/}/$FOLDER/"
