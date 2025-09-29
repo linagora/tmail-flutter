@@ -236,7 +236,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       if (newIdentityArguments is CreateNewIdentityRequest) {
         _createNewIdentityAction(session, accountId, newIdentityArguments);
       } else if (newIdentityArguments is EditIdentityRequest) {
-        _editIdentityAction(session, accountId, newIdentityArguments);
+        editIdentityAction(session, accountId, newIdentityArguments);
       }
     }
   }
@@ -388,12 +388,12 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       if (newIdentityArguments is CreateNewIdentityRequest) {
         _createNewIdentityAction(session, accountId, newIdentityArguments);
       } else if (newIdentityArguments is EditIdentityRequest) {
-        _editIdentityAction(session, accountId, newIdentityArguments);
+        editIdentityAction(session, accountId, newIdentityArguments);
       }
     }
   }
 
-  void _editIdentityAction(
+  void editIdentityAction(
     Session session,
     AccountId accountId,
     EditIdentityRequest editIdentityRequest
@@ -406,18 +406,17 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   }
 
   void _editIdentitySuccess(EditIdentitySuccess success) {
-    _removeIdentityCache();
+    toastManager.showMessageSuccess(success);
 
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).you_are_changed_your_identity_successfully);
+    if (!success.isSetAsDefault) {
+      _removeIdentityCache();
+
+      _cleanUpPublicAssets(
+        success.identityId,
+        IdentityActionType.edit,
+        success.publicAssetsInIdentityArguments,
+      );
     }
-
-    _cleanUpPublicAssets(
-      success.identityId,
-      IdentityActionType.edit,
-      success.publicAssetsInIdentityArguments);
 
     _refreshAllIdentities();
   }
@@ -491,7 +490,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     if (newIdentityArguments is CreateNewIdentityRequest) {
       _createNewIdentityAction(session, accountId, newIdentityArguments);
     } else if (newIdentityArguments is EditIdentityRequest) {
-      _editIdentityAction(session, accountId, newIdentityArguments);
+      editIdentityAction(session, accountId, newIdentityArguments);
     }
   }
 

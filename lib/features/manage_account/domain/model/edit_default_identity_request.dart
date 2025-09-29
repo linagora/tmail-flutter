@@ -10,6 +10,7 @@ class EditDefaultIdentityRequest extends EditIdentityRequest {
     required super.identityId, 
     required super.identityRequest,
     required super.isDefaultIdentity,
+    required super.isSetAsDefault,
     this.oldDefaultIdentityIds,
     super.publicAssetsInIdentityArguments
   });

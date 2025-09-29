@@ -4887,5 +4887,11 @@
     "placeholders": {
       "count": {}
     }
+  },
+  "defaultIdentitySetupSuccessful": "Default identity setup successful",
+  "@defaultIdentitySetupSuccessful": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
