@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-19T09:56:48.738620",
+  "@@last_modified": "2025-09-29T17:51:56.727601",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4884,6 +4884,12 @@
   },
   "spamReportToggleDescription": "Enable spam report",
   "@spamReportToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "defaultIdentitySetupSuccessful": "Default identity setup successful",
+  "@defaultIdentitySetupSuccessful": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
