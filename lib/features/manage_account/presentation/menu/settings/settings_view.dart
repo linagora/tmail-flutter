@@ -40,33 +40,36 @@ class SettingsView extends GetWidget<SettingsController> {
               controller.showExportTraceLogConfirmDialog(context),
         )),
         Obx(() {
-          if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
+          final dashboard = controller.manageAccountDashboardController;
+          final vacation = dashboard.vacationResponse.value;
+          final isWebDesktop = controller.responsiveUtils.isWebDesktop(context);
+
+          if (vacation?.vacationResponderIsValid == true) {
             return VacationNotificationMessageWidget(
               margin: EdgeInsetsDirectional.only(
                 start: 12,
                 end: 12,
-                top: controller.responsiveUtils.isWebDesktop(context) ? 8 : 0,
-                bottom: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                top: isWebDesktop ? 8 : 0,
+                bottom: isWebDesktop ? 0 : 16,
               ),
               fromAccountDashBoard: true,
-              vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-              actionGotoVacationSetting: !controller.manageAccountDashboardController.inVacationSettings()
-                ? () => controller.manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.vacation)
+              vacationResponse: vacation!,
+              actionGotoVacationSetting: !dashboard.inVacationSettings()
+                ? () => dashboard.selectAccountMenuItem(AccountMenuItem.vacation)
                 : null,
-              actionEndNow: controller.manageAccountDashboardController.disableVacationResponder
+              actionEndNow: dashboard.disableVacationResponder
             );
-          } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
-              || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
-              && controller.manageAccountDashboardController.inVacationSettings()) {
+          } else if (vacation?.vacationResponderIsWaiting == true &&
+              dashboard.inVacationSettings()) {
             return VacationNotificationMessageWidget(
               margin: EdgeInsetsDirectional.only(
                 start: 12,
                 end: 12,
-                top: controller.responsiveUtils.isWebDesktop(context) ? 8 : 0,
-                bottom: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                top: isWebDesktop ? 8 : 0,
+                bottom: isWebDesktop ? 0 : 16,
               ),
               fromAccountDashBoard: true,
-              vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+              vacationResponse: vacation!,
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               leadingIcon: const Padding(
                 padding: EdgeInsetsDirectional.only(end: 12),

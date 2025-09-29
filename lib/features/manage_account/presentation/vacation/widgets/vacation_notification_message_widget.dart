@@ -6,7 +6,7 @@ import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef EndNowVacationSettingAction = Function();
+typedef EndNowVacationSettingAction = Function(VacationResponse vacation);
 typedef GoToVacationSettingAction = Function();
 
 class VacationNotificationMessageWidget extends StatelessWidget {
@@ -93,7 +93,8 @@ class VacationNotificationMessageWidget extends StatelessWidget {
           maxWidth: 180,
           maxLines: 1,
           tooltipMessage: AppLocalizations.of(context).endNow,
-          onTapActionCallback: actionEndNow),
+          onTapActionCallback: () => actionEndNow?.call(vacationResponse),
+        ),
       if (actionGotoVacationSetting != null)
         TMailButtonWidget.fromText(
           text: AppLocalizations.of(context).vacationSetting,
@@ -148,7 +149,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
                   maxWidth: 180,
                   maxLines: 1,
                   tooltipMessage: AppLocalizations.of(context).endNow,
-                  onTapActionCallback: actionEndNow
+                  onTapActionCallback: () => actionEndNow?.call(vacationResponse),
                 ),
               ),
             if (actionGotoVacationSetting != null)
