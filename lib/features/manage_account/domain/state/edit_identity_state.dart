@@ -8,13 +8,20 @@ class EditIdentityLoading extends UIState {}
 class EditIdentitySuccess extends UIState {
   final IdentityId identityId;
   final PublicAssetsInIdentityArguments? publicAssetsInIdentityArguments;
+  final bool isSetAsDefault;
 
   EditIdentitySuccess(
-    this.identityId,
-    {this.publicAssetsInIdentityArguments});
+    this.identityId, {
+    this.publicAssetsInIdentityArguments,
+    this.isSetAsDefault = false,
+  });
 
   @override
-  List<Object?> get props => [identityId, publicAssetsInIdentityArguments];
+  List<Object?> get props => [
+        identityId,
+        publicAssetsInIdentityArguments,
+        isSetAsDefault,
+      ];
 }
 
 class EditIdentityFailure extends FeatureFailure {

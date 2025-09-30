@@ -27,7 +27,11 @@ class EditDefaultIdentityInteractor {
     EditIdentityRequest editIdentityRequest
   ) async* {
     try {
-      yield Right(EditDefaultIdentityLoading());
+      yield Right(
+        EditDefaultIdentityLoading(
+          isSetAsDefault: editIdentityRequest.isSetAsDefault,
+        ),
+      );
 
       final defaultIdentities = await _getDefaultIdentities(session, accountId);
       _removeEditIdentityFromDefaultIdentities(defaultIdentities, editIdentityRequest.identityId);
@@ -36,6 +40,7 @@ class EditDefaultIdentityInteractor {
         identityId: editIdentityRequest.identityId, 
         identityRequest: editIdentityRequest.identityRequest,
         isDefaultIdentity: editIdentityRequest.isDefaultIdentity,
+        isSetAsDefault: editIdentityRequest.isSetAsDefault,
         publicAssetsInIdentityArguments: editIdentityRequest.publicAssetsInIdentityArguments,
         oldDefaultIdentityIds: defaultIdentities
             ?.map((identity) => identity.id!)
@@ -45,7 +50,9 @@ class EditDefaultIdentityInteractor {
       yield result
         ? Right(EditDefaultIdentitySuccess(
             editDefaultRequest.identityId,
-            publicAssetsInIdentityArguments: editDefaultRequest.publicAssetsInIdentityArguments))
+            publicAssetsInIdentityArguments: editDefaultRequest.publicAssetsInIdentityArguments,
+            isSetAsDefault: editDefaultRequest.isSetAsDefault,
+          ))
         : Left(EditDefaultIdentityFailure(null));
     } catch (exception) {
       yield Left(EditDefaultIdentityFailure(exception));

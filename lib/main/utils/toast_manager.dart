@@ -6,7 +6,6 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_appauth_web/authorization_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
@@ -27,9 +26,10 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient_in_forwarding_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/state/edit_local_copy_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/edit_identity_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/edit_local_copy_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_workplace_state.dart';
@@ -46,47 +46,48 @@ class ToastManager {
 
   ToastManager(this.appToast);
 
-  String getDefaultMessageByException(BuildContext context, dynamic exception) {
+  String getDefaultMessageByException(
+    AppLocalizations appLocalizations,
+    dynamic exception,
+  ) {
     try {
-      return AppLocalizations.of(context).unexpectedError(exception.message);
+      return appLocalizations.unexpectedError(exception.message);
     } catch (_) {
-      return AppLocalizations.of(context).unexpectedError(
-        exception.toString(),
-      );
+      return appLocalizations.unexpectedError(exception.toString());
     }
   }
 
   String? getMessageByException(
-    BuildContext context,
+    AppLocalizations appLocalizations,
     dynamic exception, {
     bool useDefaultMessage = false,
   }) {
     if (exception is CanNotFoundBaseUrl) {
-      return AppLocalizations.of(context).requiredUrl;
+      return appLocalizations.requiredUrl;
     } else if (exception is CanNotFoundUserName) {
-      return AppLocalizations.of(context).requiredEmail;
+      return appLocalizations.requiredEmail;
     } else if (exception is CanNotFoundPassword) {
-      return AppLocalizations.of(context).requiredPassword;
+      return appLocalizations.requiredPassword;
     } else if (exception is CanNotFoundOIDCLinks) {
-      return AppLocalizations.of(context).ssoNotAvailable;
+      return appLocalizations.ssoNotAvailable;
     } else if (exception is CanNotFindToken) {
-      return AppLocalizations.of(context).canNotGetToken;
+      return appLocalizations.canNotGetToken;
     } else if (exception is ConnectionTimeout ||
         exception is BadGateway ||
         exception is SocketError) {
-      return AppLocalizations.of(context).wrongUrlMessage;
+      return appLocalizations.wrongUrlMessage;
     } else if (exception is BadCredentialsException) {
-      return AppLocalizations.of(context).badCredentials;
+      return appLocalizations.badCredentials;
     } else if (exception is ConnectionError) {
-      return AppLocalizations.of(context).connectionError;
+      return appLocalizations.connectionError;
     } else if (exception is UnknownError && exception.message != null) {
       return '[${exception.code ?? ''}] ${exception.message}';
     } else if (exception is NotFoundSessionException) {
-      return AppLocalizations.of(context).notFoundSession;
+      return appLocalizations.notFoundSession;
     } else if (exception is NoNetworkError) {
-      return AppLocalizations.of(context).youAreOffline;
+      return appLocalizations.youAreOffline;
     } else if (exception is HandshakeException) {
-      return AppLocalizations.of(context)
+      return appLocalizations
           .handshakeException(exception.osError?.message ?? '');
     } else if (exception is SetMethodException &&
         exception.mapErrors.isNotEmpty) {
@@ -104,12 +105,11 @@ class ToastManager {
         exception.message?.isNotEmpty == true) {
       return exception.message!;
     } else if (exception is NotGrantedPermissionStorageException) {
-      return AppLocalizations.of(context)
-          .youNeedToGrantFilesPermissionToExportFile;
+      return appLocalizations.youNeedToGrantFilesPermissionToExportFile;
     } else if (exception is NotFoundFileInFolderException) {
-      return AppLocalizations.of(context).noLogsHaveBeenRecordedYet;
+      return appLocalizations.noLogsHaveBeenRecordedYet;
     } else if (exception is CannotOpenNewWindowException) {
-      return AppLocalizations.of(context).cannotOpenNewWindow;
+      return appLocalizations.cannotOpenNewWindow;
     } else if (exception is CannotReplyCalendarEventException) {
       final mapErrors = exception.mapErrors ?? {};
       if (mapErrors.isNotEmpty) {
@@ -125,7 +125,7 @@ class ToastManager {
     }
 
     if (useDefaultMessage) {
-      return getDefaultMessageByException(context, exception);
+      return getDefaultMessageByException(appLocalizations, exception);
     } else {
       return null;
     }
@@ -140,50 +140,51 @@ class ToastManager {
     }
 
     final exception = failure.exception;
-    String? message = getMessageByException(context, exception);
-
+    final appLocalizations = AppLocalizations.of(context);
+    String? message = getMessageByException(appLocalizations, exception);
+    
     if (failure is GetSessionFailure) {
       message = message ??
           getMessageByException(
-            context,
+            appLocalizations,
             exception,
             useDefaultMessage: true,
           );
     } else if (_isEmptySpamFolderFailure(exception)) {
-      message = message ?? AppLocalizations.of(context).emptySpamFolderFailed;
+      message = message ?? appLocalizations.emptySpamFolderFailed;
     } else if (_isEmptyTrashFolderFailure(failure)) {
-      message = message ?? AppLocalizations.of(context).emptyTrashFolderFailed;
+      message = message ?? appLocalizations.emptyTrashFolderFailed;
     } else if (_isMarkAsSpamFailure(failure)) {
-      message = message ?? AppLocalizations.of(context).markAsSpamFailed;
+      message = message ??appLocalizations.markAsSpamFailed;
     } else if (_isArchiveMessagesFailure(failure)) {
-      message = message ?? AppLocalizations.of(context).archiveMessagesFailed;
+      message = message ?? appLocalizations.archiveMessagesFailed;
     } else if (failure is SignInTwakeWorkplaceFailure) {
-      message = message ?? AppLocalizations.of(context).sigInSaasFailed;
+      message = message ?? appLocalizations.sigInSaasFailed;
     } else if (failure is SignUpTwakeWorkplaceFailure) {
-      message = message ?? AppLocalizations.of(context).createTwakeIdFailed;
+      message = message ?? appLocalizations.createTwakeIdFailed;
     } else if (failure is ParseEmailByBlobIdFailure) {
       message =
-          message ?? AppLocalizations.of(context).parseEmailByBlobIdFailed;
+          message ?? appLocalizations.parseEmailByBlobIdFailed;
     } else if (failure is PreviewEmailFromEmlFileFailure) {
       message =
-          message ?? AppLocalizations.of(context).previewEmailFromEMLFileFailed;
+          message ?? appLocalizations.previewEmailFromEMLFileFailed;
     } else if (failure is ExportTraceLogFailure) {
-      message = message ?? AppLocalizations.of(context).exportTraceLogFailed;
+      message = message ?? appLocalizations.exportTraceLogFailed;
     } else if (failure is AddRecipientsInForwardingFailure ||
         failure is AddRecipientsInForwardingSuccessWithSomeCaseFailure) {
-      message = message ?? AppLocalizations.of(context).addRecipientsFailed;
+      message = message ?? appLocalizations.addRecipientsFailed;
     } else if (failure is EditLocalCopyInForwardingFailure ||
         failure is EditLocalCopyInForwardingSuccessWithSomeCaseFailure) {
       message =
-          message ?? AppLocalizations.of(context).editLocalCopyInForwardFailed;
+          message ?? appLocalizations.editLocalCopyInForwardFailed;
     } else if (failure is DeleteRecipientInForwardingFailure ||
         failure is DeleteRecipientInForwardingSuccessWithSomeCaseFailure) {
-      message = message ?? AppLocalizations.of(context).deleteRecipientsFailed;
+      message = message ?? appLocalizations.deleteRecipientsFailed;
     } else if (failure is CreateNewRuleFilterFailure) {
-      message = message ?? AppLocalizations.of(context).createFilterRuleFailed;
+      message = message ?? appLocalizations.createFilterRuleFailed;
     } else if (failure is CalendarEventReplyFailure) {
       message = message ??
-          AppLocalizations.of(context).eventReplyWasSentUnsuccessfully;
+          appLocalizations.eventReplyWasSentUnsuccessfully;
     }
     log('ToastManager::showMessageFailure: Message: $message');
     if (message?.trim().isNotEmpty == true) {
@@ -224,18 +225,25 @@ class ToastManager {
     }
 
     String? message;
+    final appLocalizations = AppLocalizations.of(context);
 
     if (success is ClearMailboxSuccess ||
         success is EmptySpamFolderSuccess ||
         success is EmptyTrashFolderSuccess) {
       message =
-          AppLocalizations.of(context).toast_message_empty_trash_folder_success;
+          appLocalizations.toast_message_empty_trash_folder_success;
     } else if (success is ExportTraceLogSuccess) {
-      message = AppLocalizations.of(context).exportTraceLogSuccess(
+      message = appLocalizations.exportTraceLogSuccess(
         success.savePath,
       );
     } else if (success is CreateNewRuleFilterSuccess) {
-      message = AppLocalizations.of(context).newFilterWasCreated;
+      message = appLocalizations.newFilterWasCreated;
+    } else if (success is EditIdentitySuccess) {
+      if (success.isSetAsDefault) {
+        message = appLocalizations.defaultIdentitySetupSuccessful;
+      } else {
+        message = appLocalizations.you_are_changed_your_identity_successfully;
+      }
     }
     log('ToastManager::showMessageSuccess: Message: $message');
     if (message?.trim().isNotEmpty == true) {

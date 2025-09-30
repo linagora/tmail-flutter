@@ -35,6 +35,7 @@ class LoginMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsetsDirectional.only(
         top: 11,
@@ -50,34 +51,34 @@ class LoginMessageWidget extends StatelessWidget {
           viewState.fold(
             (failure) {
               if (failure is FeatureFailure && failure.exception is NoNetworkError) {
-                return AppLocalizations.of(context).youAreOffline;
+                return appLocalizations.youAreOffline;
               }
 
               if (failure is GetOIDCConfigurationFailure) {
-                return AppLocalizations.of(context).canNotVerifySSOConfiguration;
+                return appLocalizations.canNotVerifySSOConfiguration;
               } else if (failure is DNSLookupToGetJmapUrlFailure) {
-                return AppLocalizations.of(context).dnsLookupLoginMessage;
+                return appLocalizations.dnsLookupLoginMessage;
               } else if (failure is GetTokenOIDCFailure && failure.exception is NoSuitableBrowserForOIDCException) {
-                return AppLocalizations.of(context).noSuitableBrowserForOIDC;
+                return appLocalizations.noSuitableBrowserForOIDC;
               } else if (failure is FeatureFailure) {
                 return _toastManager?.getMessageByException(
-                  context,
+                  appLocalizations,
                   failure.exception,
                   useDefaultMessage: true,
-                ) ?? AppLocalizations.of(context).unknownError;
+                ) ?? appLocalizations.unknownError;
               } else {
-                return AppLocalizations.of(context).unknownError;
+                return appLocalizations.unknownError;
               }
             },
             (success) {
               if (formType == LoginFormType.credentialForm) {
-                return AppLocalizations.of(context).loginInputCredentialMessage;
+                return appLocalizations.loginInputCredentialMessage;
               } else if (formType == LoginFormType.dnsLookupForm) {
-                return AppLocalizations.of(context).dnsLookupLoginMessage;
+                return appLocalizations.dnsLookupLoginMessage;
               } else if (formType == LoginFormType.passwordForm) {
-                return AppLocalizations.of(context).enterYourPasswordToSignIn;
+                return appLocalizations.enterYourPasswordToSignIn;
               } else if (formType == LoginFormType.baseUrlForm) {
-                return AppLocalizations.of(context).loginInputUrlMessage;
+                return appLocalizations.loginInputUrlMessage;
               } else {
                 return '';
               }
