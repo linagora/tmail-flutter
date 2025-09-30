@@ -3421,7 +3421,7 @@ class AppLocalizations {
 
   String moreAttachments(int count) {
     return Intl.message(
-      '+ $count more',
+      '+$count more',
       name: 'moreAttachments',
       args: [count]
     );

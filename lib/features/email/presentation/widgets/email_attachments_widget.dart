@@ -1,8 +1,6 @@
 import 'package:core/presentation/action/action_callback_define.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/theme_utils.dart';
-import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
@@ -13,9 +11,9 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_info.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/draggable_attachment_item_widget.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/more_attachments_button.dart';
 
-class EmailAttachmentsWidget extends StatelessWidget {
+class EmailAttachmentsWidget extends StatefulWidget {
 
   final List<Attachment> attachments;
   final OnDragAttachmentStarted? onDragStarted;
@@ -24,7 +22,6 @@ class EmailAttachmentsWidget extends StatelessWidget {
   final OnViewAttachmentFileAction? viewAttachmentAction;
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
-  final OnTapActionCallback? onTapShowAllAttachmentFile;
   final bool showDownloadAllAttachmentsButton;
   final bool isDisplayAllAttachments;
   final OnTapActionCallback? onTapDownloadAllButton;
@@ -39,31 +36,44 @@ class EmailAttachmentsWidget extends StatelessWidget {
     this.onDragEnd,
     this.downloadAttachmentAction,
     this.viewAttachmentAction,
-    this.onTapShowAllAttachmentFile,
     this.showDownloadAllAttachmentsButton = false,
-    this.isDisplayAllAttachments = true,
+    this.isDisplayAllAttachments = false,
     this.onTapDownloadAllButton,
     this.singleEmailControllerTag,
   });
 
   @override
+  State<EmailAttachmentsWidget> createState() => _EmailAttachmentsWidgetState();
+}
+
+class _EmailAttachmentsWidgetState extends State<EmailAttachmentsWidget> {
+
+  bool _isShowAllAttachments = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isShowAllAttachments = widget.isDisplayAllAttachments;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final attachmentHeader = AttachmentsInfo(
-      imagePaths: imagePaths,
-      numberOfAttachments: attachments.length,
-      totalSizeInfo: filesize(attachments.totalSize, 1),
-      onTapDownloadAllButton: showDownloadAllAttachmentsButton
-          ? onTapDownloadAllButton
+      imagePaths: widget.imagePaths,
+      numberOfAttachments: widget.attachments.length,
+      totalSizeInfo: filesize(widget.attachments.totalSize, 1),
+      onTapDownloadAllButton: widget.showDownloadAllAttachmentsButton
+          ? widget.onTapDownloadAllButton
           : null,
     );
 
-    final isDesktop = responsiveUtils.isDesktop(context);
-    final isMobile = responsiveUtils.isMobile(context);
+    final isDesktop = widget.responsiveUtils.isDesktop(context);
+    final isMobile = widget.responsiveUtils.isMobile(context);
 
     if (isMobile) {
       final attachmentRecord = _getDisplayedAndHiddenAttachment(
         isMobile,
-        responsiveUtils.getDeviceWidth(context),
+        widget.responsiveUtils.getDeviceWidth(context),
       );
       final displayedAttachments = attachmentRecord.displayedAttachments;
       final hiddenItemsCount = attachmentRecord.hiddenItemsCount;
@@ -82,32 +92,23 @@ class EmailAttachmentsWidget extends StatelessWidget {
               children: displayedAttachments.map((attachment) {
                 return AttachmentItemWidget(
                   attachment: attachment,
-                  imagePaths: imagePaths,
-                  responsiveUtils: responsiveUtils,
+                  imagePaths: widget.imagePaths,
+                  responsiveUtils: widget.responsiveUtils,
                   margin: const EdgeInsets.only(top: 8),
-                  downloadAttachmentAction: downloadAttachmentAction,
-                  viewAttachmentAction: viewAttachmentAction,
-                  singleEmailControllerTag: singleEmailControllerTag,
+                  downloadAttachmentAction: widget.downloadAttachmentAction,
+                  viewAttachmentAction: widget.viewAttachmentAction,
+                  singleEmailControllerTag: widget.singleEmailControllerTag,
                 );
               }).toList(),
             ),
-            const SizedBox(height: 12),
             if (hiddenItemsCount > 0)
-              TMailButtonWidget.fromText(
-                text: AppLocalizations.of(context).moreAttachments(
-                  hiddenItemsCount,
-                ),
-                backgroundColor: Colors.transparent,
-                borderRadius: 5,
-                maxLines: 1,
-                textStyle: ThemeUtils.textStyleM3TitleSmall,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 3,
-                  horizontal: 5,
-                ),
-                margin: const EdgeInsetsDirectional.symmetric(horizontal: 8),
-                onTapActionCallback: onTapShowAllAttachmentFile,
-              )
+              MoreAttachmentsButton(
+                remainingAttachments: hiddenItemsCount,
+                imagePaths: widget.imagePaths,
+                isMobile: isMobile,
+                margin: const EdgeInsets.only(top: 8),
+                onShowAllAttachmentsAction: _showAllAttachmentAction,
+              ),
           ],
         ),
       );
@@ -139,45 +140,38 @@ class EmailAttachmentsWidget extends StatelessWidget {
                 ),
                 Wrap(
                   spacing: 16,
-                  runSpacing: isDisplayAllAttachments ? 16 : 0,
+                  runSpacing: _isShowAllAttachments ? 16 : 0,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     ...displayedAttachments.map((attachment) {
                       if (PlatformInfo.isWeb && isDesktop) {
                         return DraggableAttachmentItemWidget(
                           attachment: attachment,
-                          imagePaths: imagePaths,
-                          responsiveUtils: responsiveUtils,
-                          onDragStarted: onDragStarted,
-                          onDragEnd: onDragEnd,
-                          downloadAttachmentAction: downloadAttachmentAction,
-                          viewAttachmentAction: viewAttachmentAction,
-                          singleEmailControllerTag: singleEmailControllerTag,
+                          imagePaths: widget.imagePaths,
+                          responsiveUtils: widget.responsiveUtils,
+                          onDragStarted: widget.onDragStarted,
+                          onDragEnd: widget.onDragEnd,
+                          downloadAttachmentAction: widget.downloadAttachmentAction,
+                          viewAttachmentAction: widget.viewAttachmentAction,
+                          singleEmailControllerTag: widget.singleEmailControllerTag,
                         );
                       } else {
                         return AttachmentItemWidget(
                           attachment: attachment,
-                          imagePaths: imagePaths,
-                          responsiveUtils: responsiveUtils,
-                          downloadAttachmentAction: downloadAttachmentAction,
-                          viewAttachmentAction: viewAttachmentAction,
-                          singleEmailControllerTag: singleEmailControllerTag,
+                          imagePaths: widget.imagePaths,
+                          responsiveUtils: widget.responsiveUtils,
+                          downloadAttachmentAction: widget.downloadAttachmentAction,
+                          viewAttachmentAction: widget.viewAttachmentAction,
+                          singleEmailControllerTag: widget.singleEmailControllerTag,
                         );
                       }
                     }).toList(),
                     if (hiddenItemsCount > 0)
-                      TMailButtonWidget.fromText(
-                        text: '+ $hiddenItemsCount',
-                        backgroundColor: Colors.transparent,
-                        borderRadius: 5,
-                        maxWidth: EmailUtils.desktopMoreButtonMaxWidth,
-                        maxLines: 1,
-                        textStyle: ThemeUtils.textStyleM3TitleSmall,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 3,
-                          horizontal: 5,
-                        ),
-                        onTapActionCallback: onTapShowAllAttachmentFile,
+                      MoreAttachmentsButton(
+                        remainingAttachments: hiddenItemsCount,
+                        imagePaths: widget.imagePaths,
+                        isMobile: isMobile,
+                        onShowAllAttachmentsAction: _showAllAttachmentAction,
                       ),
                   ],
                 ),
@@ -191,17 +185,17 @@ class EmailAttachmentsWidget extends StatelessWidget {
 
   ({List<Attachment> displayedAttachments, int hiddenItemsCount})
       _getDisplayedAndHiddenAttachment(bool isMobile, double maxWidth) {
-    if (isDisplayAllAttachments) {
-      return (displayedAttachments: attachments, hiddenItemsCount: 0);
+    if (_isShowAllAttachments) {
+      return (displayedAttachments: widget.attachments, hiddenItemsCount: 0);
     }
 
     final displayedAttachments = EmailUtils.getAttachmentDisplayed(
       maxWidth: maxWidth,
-      attachments: attachments,
+      attachments: widget.attachments,
       isMobile: isMobile,
     );
 
-    int hiddenItemsCount = attachments.length - displayedAttachments.length;
+    int hiddenItemsCount = widget.attachments.length - displayedAttachments.length;
     if (hiddenItemsCount > 999) {
       hiddenItemsCount = 999;
     } else if (hiddenItemsCount < 0) {
@@ -212,5 +206,17 @@ class EmailAttachmentsWidget extends StatelessWidget {
       displayedAttachments: displayedAttachments,
       hiddenItemsCount: hiddenItemsCount,
     );
+  }
+
+  void _showAllAttachmentAction() {
+    if (mounted) {
+      setState(() => _isShowAllAttachments = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _isShowAllAttachments = false;
+    super.dispose();
   }
 }

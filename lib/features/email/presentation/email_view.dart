@@ -252,10 +252,6 @@ class EmailView extends GetWidget<SingleEmailController> {
             context,
             attachment,
           ),
-          onTapShowAllAttachmentFile: () => controller.openAttachmentList(
-            context,
-            controller.attachments,
-          ),
           showDownloadAllAttachmentsButton:
               controller.downloadAllButtonIsEnabled(),
           onTapDownloadAllButton: () =>

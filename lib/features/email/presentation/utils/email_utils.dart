@@ -25,8 +25,9 @@ class EmailUtils {
   static const double defaultItemMaxHeight = 151;
   static const double mobileItemMaxWidth = 289;
   static const double mobileItemMaxHeight = 198;
-  static const double desktopMoreButtonMaxWidth = 70;
-  static const double maxMobileVisibleAttachments = 3;
+  static const double desktopMoreButtonMaxWidth = 183;
+  static const double desktopItemSpace = 16;
+  static const int maxMobileVisibleAttachments = 2;
 
   EmailUtils._();
 
@@ -251,7 +252,7 @@ class EmailUtils {
     if (isMobile) {
       return attachments.length <= maxMobileVisibleAttachments
           ? attachments
-          : attachments.sublist(0, 3);
+          : attachments.sublist(0, maxMobileVisibleAttachments);
     }
 
     final displayedCount = maxWidth ~/ defaultItemMaxWidth;
@@ -259,7 +260,8 @@ class EmailUtils {
       return attachments;
     } else {
       final int possibleDisplayedCount =
-          ((maxWidth - desktopMoreButtonMaxWidth) ~/ defaultItemMaxWidth)
+          ((maxWidth - desktopMoreButtonMaxWidth - desktopItemSpace * 3) ~/
+                  defaultItemMaxWidth)
               .clamp(0, attachments.length);
 
       return possibleDisplayedCount == 0
