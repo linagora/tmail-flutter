@@ -91,6 +91,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
               textStyle: ThemeUtils.textStyleBodyBody1(
                 color: AppColor.steelGray400,
               ),
+              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
               backgroundColor: Colors.transparent,
               onTapActionCallback: () => setState(() => _isDisplayAll = false),
             )
