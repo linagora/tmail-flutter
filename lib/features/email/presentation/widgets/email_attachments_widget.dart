@@ -88,19 +88,17 @@ class _EmailAttachmentsWidgetState extends State<EmailAttachmentsWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             attachmentHeader,
-            Column(
-              children: displayedAttachments.map((attachment) {
-                return AttachmentItemWidget(
-                  attachment: attachment,
-                  imagePaths: widget.imagePaths,
-                  responsiveUtils: widget.responsiveUtils,
-                  margin: const EdgeInsets.only(top: 8),
-                  downloadAttachmentAction: widget.downloadAttachmentAction,
-                  viewAttachmentAction: widget.viewAttachmentAction,
-                  singleEmailControllerTag: widget.singleEmailControllerTag,
-                );
-              }).toList(),
-            ),
+            ...displayedAttachments.map((attachment) {
+              return AttachmentItemWidget(
+                attachment: attachment,
+                imagePaths: widget.imagePaths,
+                responsiveUtils: widget.responsiveUtils,
+                margin: const EdgeInsets.only(top: 8),
+                downloadAttachmentAction: widget.downloadAttachmentAction,
+                viewAttachmentAction: widget.viewAttachmentAction,
+                singleEmailControllerTag: widget.singleEmailControllerTag,
+              );
+            }),
             if (hiddenItemsCount > 0)
               MoreAttachmentsButton(
                 remainingAttachments: hiddenItemsCount,

@@ -97,6 +97,7 @@ import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interacto
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/handle_open_attachment_list_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/update_attendance_status_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -189,8 +190,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final isEmailContentClipped = RxBool(false);
   final attendanceStatus = Rxn<AttendanceStatus>();
   final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
-
-  final ScrollController emailScrollController = ScrollController();
+  final attachmentListKey = GlobalKey();
 
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
@@ -200,6 +200,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
+
+  ThreadDetailController? get threadDetailController => _threadDetailController;
 
   PresentationEmail? get currentEmail {
     if (PlatformInfo.isMobile &&
@@ -268,7 +270,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _threadDetailController = null;
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
-    emailScrollController.dispose();
     CalendarEventInteractorBindings().dispose();
     MdnInteractorBindings().dispose();
     super.onClose();
@@ -425,6 +426,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           worker.dispose();
         }
         Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
+      } else if (action is OpenAttachmentListAction) {
+        if (_currentEmailId == null || action.emailId != _currentEmailId) {
+          return;
+        }
+        jumpToAttachmentList();
+        mailboxDashBoardController.clearEmailUIAction();
       }
     }));
 

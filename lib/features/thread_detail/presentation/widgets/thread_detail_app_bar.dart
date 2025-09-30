@@ -29,6 +29,7 @@ class ThreadDetailAppBar extends StatelessWidget {
     this.optionWidgets = const [],
     this.onThreadActionClick,
     this.onThreadMoreActionClick,
+    this.onOpenAttachmentListAction,
   });
 
   final ResponsiveUtils responsiveUtils;
@@ -43,9 +44,12 @@ class ThreadDetailAppBar extends StatelessWidget {
   final List<Widget> optionWidgets;
   final OnThreadActionClick? onThreadActionClick;
   final OnThreadMoreActionClick? onThreadMoreActionClick;
+  final VoidCallback? onOpenAttachmentListAction;
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = responsiveUtils.isMobile(context);
+
     final child = LayoutBuilder(
       builder: (context, constraints) {
         Widget backButton = EmailViewBackButton(
@@ -55,7 +59,7 @@ class ThreadDetailAppBar extends StatelessWidget {
           isSearchActivated: isSearchRunning,
           maxWidth: constraints.maxWidth,
         );
-        if (responsiveUtils.isMobile(context)) {
+        if (isMobile) {
           backButton = Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -84,6 +88,14 @@ class ThreadDetailAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (_supportDisplayMailboxNameTitle(context)) backButton,
+              if (isMobile && onOpenAttachmentListAction != null)
+                _ThreadDetailAppBarButton(
+                  icon: imagePaths.icAttachment,
+                  tooltipMessage: AppLocalizations.of(context).attachments,
+                  responsiveUtils: responsiveUtils,
+                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                  onTapActionCallback: (_) => onOpenAttachmentListAction?.call(),
+                ),
               if (isThreadDetailEnabled && threadActionReady) ...[
                 _ThreadDetailAppBarButton(
                   icon: threadDetailIsStarred
@@ -118,7 +130,7 @@ class ThreadDetailAppBar extends StatelessWidget {
                       : (_) => onThreadActionClick?.call(EmailActionType.moveToTrash),
                 ),
               ],
-              if (!responsiveUtils.isMobile(context)) const Spacer(),
+              if (!isMobile) const Spacer(),
               if (AppUtils.getCurrentDirection(context) == TextDirection.rtl)
                 ...optionWidgets.reversed
               else

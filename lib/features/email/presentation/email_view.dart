@@ -233,9 +233,12 @@ class EmailView extends GetWidget<SingleEmailController> {
     List<String>? emailAddressSender,
     ScrollController? scrollController,
   }) {
+    final isMobile = controller.responsiveUtils.isMobile(context);
+
     final attachmentsWidget = Obx(() {
       if (controller.attachments.isNotEmpty) {
         return EmailAttachmentsWidget(
+          key: isMobile ? controller.attachmentListKey : null,
           responsiveUtils: controller.responsiveUtils,
           attachments: controller.attachments,
           imagePaths: controller.imagePaths,
@@ -264,8 +267,6 @@ class EmailView extends GetWidget<SingleEmailController> {
         return const SizedBox.shrink();
       }
     });
-
-    final isMobile = controller.responsiveUtils.isMobile(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
