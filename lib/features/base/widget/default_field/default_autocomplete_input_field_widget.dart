@@ -159,6 +159,7 @@ class _DefaultAutocompleteInputFieldWidgetState
           final currentEmailAddress = _currentListEmailAddress.elementAt(index);
           return DefaultAutocompleteTagItemWidget(
             field: widget.field,
+            imagePaths: _imagePaths,
             currentEmailAddress: currentEmailAddress,
             currentListEmailAddress: _currentListEmailAddress,
             collapsedListEmailAddress: _collapsedListEmailAddress,
