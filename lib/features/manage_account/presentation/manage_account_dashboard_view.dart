@@ -29,9 +29,10 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
 
   @override
   Widget build(BuildContext context) {
+    final isWebDesktop = controller.responsiveUtils.isWebDesktop(context);
     return Portal(
       child: Scaffold(
-        backgroundColor: controller.responsiveUtils.isWebDesktop(context)
+        backgroundColor: isWebDesktop
             ? AppColor.colorBgDesktop
             : Colors.white,
         drawerEnableOpenDragGesture: false,
@@ -82,32 +83,34 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                       color: AppColor.colorBgDesktop,
                       child: Column(children: [
                         Obx(() {
-                          if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
+                          final vacation = controller.vacationResponse.value;
+
+                          if (vacation?.vacationResponderIsValid == true) {
                             return VacationNotificationMessageWidget(
                               margin: EdgeInsetsDirectional.only(
-                                start: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                                start: isWebDesktop ? 0 : 16,
                                 end: 16,
-                                top: controller.responsiveUtils.isWebDesktop(context) ? 16 : 0,
-                                bottom: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                                top: isWebDesktop ? 16 : 0,
+                                bottom: isWebDesktop ? 0 : 16,
                               ),
                               fromAccountDashBoard: true,
-                              vacationResponse: controller.vacationResponse.value!,
+                              vacationResponse: vacation!,
                               actionGotoVacationSetting: !controller.inVacationSettings()
                                 ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
                                 : null,
-                              actionEndNow: controller.disableVacationResponder);
-                          } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
-                              || controller.vacationResponse.value?.vacationResponderIsStopped == true)
-                              && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
+                              actionEndNow: controller.disableVacationResponder,
+                            );
+                          } else if (vacation?.vacationResponderIsWaiting == true &&
+                              controller.inVacationSettings()) {
                             return VacationNotificationMessageWidget(
                               margin: EdgeInsetsDirectional.only(
-                                start: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                                start: isWebDesktop ? 0 : 16,
                                 end: 16,
-                                top: controller.responsiveUtils.isWebDesktop(context) ? 16 : 0,
-                                bottom: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
+                                top: isWebDesktop ? 16 : 0,
+                                bottom: isWebDesktop ? 0 : 16,
                               ),
                               fromAccountDashBoard: true,
-                              vacationResponse: controller.vacationResponse.value!,
+                              vacationResponse: vacation!,
                               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                               leadingIcon: const Padding(
                                 padding: EdgeInsetsDirectional.only(end: 12),

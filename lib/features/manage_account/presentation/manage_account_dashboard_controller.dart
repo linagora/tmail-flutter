@@ -1,4 +1,3 @@
-
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
@@ -18,6 +17,7 @@ import 'package:tmail_ui_user/features/base/mixin/own_email_address_mixin.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vac
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_bindings.dart';
@@ -80,9 +81,7 @@ class ManageAccountDashBoardController extends ReloadableController
   @override
   void handleSuccessViewState(Success success) {
     if (success is GetAllVacationSuccess) {
-      if (success.listVacationResponse.isNotEmpty) {
-        vacationResponse.value = success.listVacationResponse.first;
-      }
+      syncVacationResponse(success.listVacationResponse.firstOrNull);
     } else if (success is UpdateVacationSuccess) {
       _handleUpdateVacationSuccess(success);
     } else if (success is ExportTraceLogSuccess) {
@@ -96,6 +95,8 @@ class ManageAccountDashBoardController extends ReloadableController
   void handleFailureViewState(Failure failure) {
     if (failure is ExportTraceLogFailure) {
       handleExportTraceLogFailure(failure);
+    } else if (failure is UpdateVacationFailure) {
+      setUpVacation(null);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -176,10 +177,6 @@ class ManageAccountDashBoardController extends ReloadableController
     if (accountId.value != null && _getAllVacationInteractor != null) {
       consumeState(_getAllVacationInteractor!.execute(accountId.value!));
     }
-  }
-
-  void updateVacationResponse(VacationResponse? newVacation) {
-    vacationResponse.value = newVacation;
   }
 
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
@@ -292,25 +289,28 @@ class ManageAccountDashBoardController extends ReloadableController
     }
   }
 
-  void disableVacationResponder() {
+  void disableVacationResponder(VacationResponse vacation) {
     if (accountId.value != null && _updateVacationInteractor != null) {
-      final vacationDisabled = vacationResponse.value != null
-          ? vacationResponse.value!.copyWith(isEnabled: false)
-          : VacationResponse(isEnabled: false);
-      consumeState(_updateVacationInteractor!.execute(accountId.value!, vacationDisabled));
+      consumeState(_updateVacationInteractor!.execute(
+        accountId.value!,
+        vacation.clearAllExceptHtmlBody(),
+      ));
+    } else {
+      consumeState(
+        Stream.value(Left(UpdateVacationFailure(ParametersIsNullException()))),
+      );
     }
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
-    if (success.listVacationResponse.isNotEmpty) {
-      if (currentContext != null && currentOverlayContext != null) {
-        appToast.showToastSuccessMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully);
-      }
-      vacationResponse.value = success.listVacationResponse.first;
-      log('ManageAccountDashBoardController::_handleUpdateVacationSuccess(): $vacationResponse');
+    if (success.listVacationResponse.isNotEmpty &&
+        currentContext != null &&
+        currentOverlayContext != null) {
+      appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully);
     }
+    setUpVacation(success.listVacationResponse.firstOrNull);
   }
 
   bool inVacationSettings() {
