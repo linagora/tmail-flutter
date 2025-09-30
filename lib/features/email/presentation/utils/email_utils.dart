@@ -21,7 +21,10 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class EmailUtils {
-  static const double desktopItemMaxWidth = 260;
+  static const double defaultItemMaxWidth = 183;
+  static const double defaultItemMaxHeight = 151;
+  static const double mobileItemMaxWidth = 289;
+  static const double mobileItemMaxHeight = 198;
   static const double desktopMoreButtonMaxWidth = 70;
   static const double maxMobileVisibleAttachments = 3;
 
@@ -251,12 +254,12 @@ class EmailUtils {
           : attachments.sublist(0, 3);
     }
 
-    final displayedCount = maxWidth ~/ desktopItemMaxWidth;
+    final displayedCount = maxWidth ~/ defaultItemMaxWidth;
     if (displayedCount == attachments.length) {
       return attachments;
     } else {
       final int possibleDisplayedCount =
-          ((maxWidth - desktopMoreButtonMaxWidth) ~/ desktopItemMaxWidth)
+          ((maxWidth - desktopMoreButtonMaxWidth) ~/ defaultItemMaxWidth)
               .clamp(0, attachments.length);
 
       return possibleDisplayedCount == 0

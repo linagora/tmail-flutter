@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/attachment.dart';
@@ -56,9 +57,12 @@ class EmailAttachmentsWidget extends StatelessWidget {
           : null,
     );
 
-    if (responsiveUtils.isMobile(context)) {
+    final isDesktop = responsiveUtils.isDesktop(context);
+    final isMobile = responsiveUtils.isMobile(context);
+
+    if (isMobile) {
       final attachmentRecord = _getDisplayedAndHiddenAttachment(
-        context,
+        isMobile,
         responsiveUtils.getDeviceWidth(context),
       );
       final displayedAttachments = attachmentRecord.displayedAttachments;
@@ -79,6 +83,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
                 return AttachmentItemWidget(
                   attachment: attachment,
                   imagePaths: imagePaths,
+                  responsiveUtils: responsiveUtils,
                   margin: const EdgeInsets.only(top: 8),
                   downloadAttachmentAction: downloadAttachmentAction,
                   viewAttachmentAction: viewAttachmentAction,
@@ -116,7 +121,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final attachmentRecord = _getDisplayedAndHiddenAttachment(
-              context,
+              isMobile,
               constraints.maxWidth,
             );
             final displayedAttachments = attachmentRecord.displayedAttachments;
@@ -133,16 +138,16 @@ class EmailAttachmentsWidget extends StatelessWidget {
                   child: attachmentHeader,
                 ),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: isDisplayAllAttachments ? 8 : 0,
+                  spacing: 16,
+                  runSpacing: isDisplayAllAttachments ? 16 : 0,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     ...displayedAttachments.map((attachment) {
-                      if (responsiveUtils.isDesktop(context)) {
+                      if (PlatformInfo.isWeb && isDesktop) {
                         return DraggableAttachmentItemWidget(
                           attachment: attachment,
                           imagePaths: imagePaths,
-                          width: EmailUtils.desktopItemMaxWidth,
+                          responsiveUtils: responsiveUtils,
                           onDragStarted: onDragStarted,
                           onDragEnd: onDragEnd,
                           downloadAttachmentAction: downloadAttachmentAction,
@@ -153,7 +158,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
                         return AttachmentItemWidget(
                           attachment: attachment,
                           imagePaths: imagePaths,
-                          width: EmailUtils.desktopItemMaxWidth,
+                          responsiveUtils: responsiveUtils,
                           downloadAttachmentAction: downloadAttachmentAction,
                           viewAttachmentAction: viewAttachmentAction,
                           singleEmailControllerTag: singleEmailControllerTag,
@@ -185,7 +190,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
   }
 
   ({List<Attachment> displayedAttachments, int hiddenItemsCount})
-      _getDisplayedAndHiddenAttachment(BuildContext context, double maxWidth) {
+      _getDisplayedAndHiddenAttachment(bool isMobile, double maxWidth) {
     if (isDisplayAllAttachments) {
       return (displayedAttachments: attachments, hiddenItemsCount: 0);
     }
@@ -193,7 +198,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
     final displayedAttachments = EmailUtils.getAttachmentDisplayed(
       maxWidth: maxWidth,
       attachments: attachments,
-      isMobile: responsiveUtils.isMobile(context),
+      isMobile: isMobile,
     );
 
     int hiddenItemsCount = attachments.length - displayedAttachments.length;

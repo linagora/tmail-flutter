@@ -49,7 +49,7 @@ class TMailContainerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final item = Container(
+    Widget item = Container(
       decoration: BoxDecoration(
         color: backgroundColor ?? AppColor.colorButtonHeaderThread,
         borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
@@ -68,41 +68,42 @@ class TMailContainerWidget extends StatelessWidget {
       child: child,
     );
 
-    final materialChild = Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        onTap: onTapActionCallback,
-        onTapDown: onTapActionAtPositionCallback != null
-          ? (detail) {
-              if (onTapActionAtPositionCallback != null) {
-                final screenSize = MediaQuery.of(context).size;
-                final offset = detail.globalPosition;
-                final position = RelativeRect.fromLTRB(
-                  offset.dx,
-                  offset.dy,
-                  screenSize.width - offset.dx,
-                  screenSize.height - offset.dy,
-                );
-                onTapActionAtPositionCallback!.call(position);
-              }
-            }
-          : null,
-        hoverColor: hoverColor,
-        onLongPress: onLongPressActionCallback,
-        borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
-        child: tooltipMessage != null
-          ? Tooltip(
-              message: tooltipMessage,
-              child: item,
-            )
-          : item
-      ),
-    );
+    if (tooltipMessage != null) {
+      item = Tooltip(message: tooltipMessage, child: item);
+    }
+
+    if (onTapActionCallback != null ||
+        onTapActionAtPositionCallback != null ||
+        onLongPressActionCallback != null) {
+      item = Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTapActionCallback,
+          onTapDown: onTapActionAtPositionCallback != null
+              ? (detail) {
+                  final screenSize = MediaQuery.sizeOf(context);
+                  final offset = detail.globalPosition;
+                  final position = RelativeRect.fromLTRB(
+                    offset.dx,
+                    offset.dy,
+                    screenSize.width - offset.dx,
+                    screenSize.height - offset.dy,
+                  );
+                  onTapActionAtPositionCallback!.call(position);
+                }
+              : null,
+          hoverColor: hoverColor,
+          onLongPress: onLongPressActionCallback,
+          borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+          child: item,
+        ),
+      );
+    }
 
     if (margin != null) {
-      return Padding(padding: margin!, child: materialChild);
+      return Padding(padding: margin!, child: item);
     } else {
-      return materialChild;
+      return item;
     }
   }
 }
