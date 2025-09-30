@@ -125,6 +125,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/notify_thread_detail_setting_updated.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_paywall_extension.dart';
@@ -2245,6 +2246,12 @@ class MailboxDashBoardController extends ReloadableController
         break;
       case QuickSearchFilter.folder:
         _deleteFolderSearchFilter();
+        break;
+      case QuickSearchFilter.starred:
+        deleteStarredSearchFilter();
+        break;
+      case QuickSearchFilter.unread:
+        deleteUnreadSearchFilter();
         break;
       default:
         break;
