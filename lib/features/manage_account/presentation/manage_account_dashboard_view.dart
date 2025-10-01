@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/na
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identities_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
@@ -20,6 +21,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_a
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/storage/storage_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 
@@ -167,6 +169,12 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           return const VacationView();
         case AccountMenuItem.mailboxVisibility:
           return MailboxVisibilityView();
+        case AccountMenuItem.storage:
+          if (controller.isStorageCapabilitySupported) {
+            return const StorageView();
+          } else {
+            return const SizedBox.shrink();
+          }
         default:
           return const SizedBox.shrink();
       }
