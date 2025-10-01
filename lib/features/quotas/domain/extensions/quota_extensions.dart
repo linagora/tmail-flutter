@@ -68,13 +68,13 @@ extension QuotasExtensions on Quota {
     }
   }
 
-  Color getQuotasStateProgressBarColor() {
+  Color getQuotasStateProgressBarColor({bool fromSetting = false}) {
     if (isHardLimitReached) {
       return AppColor.colorQuotaError;
     } else if (isWarnLimitReached) {
       return AppColor.colorBackgroundQuotasWarning;
     } else {
-      return AppColor.blue400;
+      return fromSetting ? AppColor.blue25AEFE : AppColor.blue400;
     }
   }
 
