@@ -15,9 +15,7 @@ extension QuotasExtensions on Quota {
   String get hardLimitStorageAsString => presentationHardLimit != null ? filesize(presentationHardLimit!.value) : '';
 
   String get quotaAvailableStorageAsString {
-    if (used != null &&
-        presentationHardLimit != null &&
-        presentationHardLimit!.value > used!.value) {
+    if (storageAvailable && presentationHardLimit!.value > used!.value) {
       return filesize(presentationHardLimit!.value - used!.value);
     }
     return '0 B';
@@ -25,14 +23,14 @@ extension QuotasExtensions on Quota {
 
   bool get isWarnLimitReached {
     if (used != null && warnLimit != null) {
-      return used!.value >= warnLimit!.value * 0.9;
+      return used!.value >= warnLimit!.value;
     } else {
       return false;
     }
   }
 
   bool get isHardLimitReached {
-    if (used != null && presentationHardLimit != null) {
+    if (storageAvailable) {
       return used!.value >= presentationHardLimit!.value;
     } else {
       return false;
@@ -40,8 +38,8 @@ extension QuotasExtensions on Quota {
   }
 
   double get usedStoragePercent {
-    if (used != null && hardLimit != null && hardLimit!.value > 0) {
-      return used!.value / hardLimit!.value;
+    if (storageAvailable && presentationHardLimit!.value > 0) {
+      return used!.value / presentationHardLimit!.value;
     } else {
       return 0;
     }
@@ -50,6 +48,14 @@ extension QuotasExtensions on Quota {
   bool get allowedDisplayToQuotaBanner => storageAvailable && (isHardLimitReached || isWarnLimitReached);
 
   bool get storageAvailable => used != null && presentationHardLimit != null;
+
+  bool get isStorageUsageIndicatorAppear {
+    if (storageAvailable) {
+      return used!.value <= presentationHardLimit!.value * 0.8;
+    } else {
+      return false;
+    }
+  }
 
   String getQuotasStateTitle(BuildContext context) {
     if (isHardLimitReached) {
@@ -85,16 +91,6 @@ extension QuotasExtensions on Quota {
       return AppLocalizations.of(context).quotaBannerWarningTitle;
     } else {
       return '';
-    }
-  }
-
-  Color getQuotaBannerMessageColor() {
-    if (isHardLimitReached) {
-      return AppColor.colorQuotaError;
-    } else if (isWarnLimitReached) {
-      return AppColor.colorQuotaWarning;
-    } else {
-      return Colors.black;
     }
   }
 }
