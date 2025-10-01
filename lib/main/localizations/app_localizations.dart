@@ -5161,4 +5161,41 @@ class AppLocalizations {
       name: 'defaultIdentitySetupSuccessful',
     );
   }
+
+  String get storageSettingExplanation {
+    return Intl.message(
+      'Monitor your available space.',
+      name: 'storageSettingExplanation',
+    );
+  }
+
+  String get storageIsAlmostFullMessage {
+    return Intl.message(
+      'The storage is almost full. You can free up space by deleting unnecessary files or subscribe to get extra space.',
+      name: 'storageIsAlmostFullMessage',
+    );
+  }
+
+  String get upgradeStorage {
+    return Intl.message(
+      'Upgrade storage',
+      name: 'upgradeStorage',
+    );
+  }
+
+  String storageUsedMessage(String limit) {
+    return Intl.message(
+      'of $limit used',
+      name: 'storageUsedMessage',
+      args: [limit],
+    );
+  }
+
+  String storageAvailableMessage(String count) {
+    return Intl.message(
+      'Available: $count',
+      name: 'storageAvailableMessage',
+      args: [count],
+    );
+  }
 }

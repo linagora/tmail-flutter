@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/setting_first_level_tile_builder.dart';
@@ -168,6 +169,33 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
               () => controller.selectSettings(AccountMenuItem.languageAndRegion)
             ),
           ]);
+        }),
+        Obx(() {
+          if (controller.manageAccountDashboardController.isStorageCapabilitySupported) {
+            return Column(children: [
+              Divider(
+                color: AppColor.colorDividerHorizontal,
+                height: 1,
+                indent: SettingsUtils.getHorizontalPadding(
+                  context,
+                  controller.responsiveUtils,
+                ),
+                endIndent: SettingsUtils.getHorizontalPadding(
+                  context,
+                  controller.responsiveUtils,
+                ),
+              ),
+              SettingFirstLevelTileBuilder(
+                key: const ValueKey('setting_storage'),
+                AccountMenuItem.storage.getName(AppLocalizations.of(context)),
+                AccountMenuItem.storage.getIcon(controller.imagePaths),
+                subtitle: AppLocalizations.of(context).storageSettingExplanation,
+                () => controller.selectSettings(AccountMenuItem.storage),
+              ),
+            ]);
+          } else {
+            return const SizedBox.shrink();
+          }
         }),
         Obx(() {
           if (controller.manageAccountDashboardController.isFcmCapabilitySupported && PlatformInfo.isMobile) {
