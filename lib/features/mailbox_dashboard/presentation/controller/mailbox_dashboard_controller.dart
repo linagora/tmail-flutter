@@ -25,9 +25,11 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
+import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/transformers.dart';
+import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
@@ -128,7 +130,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_paywall_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -154,8 +155,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
-import 'package:tmail_ui_user/features/paywall/domain/state/get_paywall_url_state.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/saas_premium_mixin.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
@@ -204,7 +204,6 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
-import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
@@ -292,6 +291,7 @@ class MailboxDashBoardController extends ReloadableController
   final isDrawerOpened = RxBool(false);
   final isContextMenuOpened = RxBool(false);
   final isPopupMenuOpened = RxBool(false);
+  final octetsQuota = Rxn<Quota>();
 
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};
@@ -309,8 +309,7 @@ class MailboxDashBoardController extends ReloadableController
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailSortOrderType currentSortOrder = SearchEmailFilter.defaultSortOrder;
-  PaywallUrlPattern? paywallUrlPattern;
-  bool isRetryGetPaywallUrl = false;
+  PaywallController? paywallController;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -377,7 +376,6 @@ class MailboxDashBoardController extends ReloadableController
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController = ScrollController();
       twakeAppManager.setExecutingBeforeReconnect(false);
-      isRetryGetPaywallUrl = false;
     }
     if (PlatformInfo.isIOS) {
       _registerPendingCurrentEmailIdInNotification();
@@ -507,8 +505,6 @@ class MailboxDashBoardController extends ReloadableController
       );
     } else if (success is GetStoredEmailSortOrderSuccess) {
       setUpDefaultEmailSortOrder(success.emailSortOrderType);
-    } else if (success is GetPaywallUrlSuccess) {
-      loadPaywallUrlSuccess(success.paywallUrlPattern);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -554,23 +550,9 @@ class MailboxDashBoardController extends ReloadableController
       tryGetAuthenticatedAccountToUseApp();
     } else if (isGetTokenOIDCFailure(failure)) {
       backToHomeScreen();
-    } else if (failure is GetPaywallUrlFailure) {
-      loadPaywallUrlFailure();
     } else {
       super.handleFailureViewState(failure);
     }
-  }
-
-  @override
-  void handleErrorViewState(Object error, StackTrace stackTrace) {
-    super.handleErrorViewState(error, stackTrace);
-    isRetryGetPaywallUrl = false;
-  }
-
-  @override
-  void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
-    super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
-    isRetryGetPaywallUrl = false;
   }
 
   @override
@@ -857,7 +839,10 @@ class MailboxDashBoardController extends ReloadableController
       getAllSendingEmails();
       _storeSessionAction(session);
     } else {
-      loadPaywallUrl();
+      paywallController = PaywallController(
+        ownEmailAddress: ownEmailAddress.value,
+      );
+      paywallController?.loadPaywallUrl();
     }
   }
 
@@ -3314,6 +3299,8 @@ class MailboxDashBoardController extends ReloadableController
     _currentEmailState = null;
     _isFirstSessionLoad = false;
     twakeAppManager.setHasComposer(false);
+    paywallController?.onClose();
+    paywallController = null;
     super.onClose();
   }
 }

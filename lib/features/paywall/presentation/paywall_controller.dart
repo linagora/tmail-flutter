@@ -1,34 +1,24 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
+import 'package:tmail_ui_user/features/paywall/domain/state/get_paywall_url_state.dart';
 import 'package:tmail_ui_user/features/paywall/domain/usecases/get_paywall_url_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-extension HandlePaywallExtension on MailboxDashBoardController {
-  bool validatePremiumIsAvailable() {
-    if (accountId.value == null || sessionCurrent == null) {
-      return false;
-    }
-    return isPremiumAvailable(
-      accountId: accountId.value,
-      session: sessionCurrent,
-    );
-  }
+class PaywallController extends BaseController {
+  final String ownEmailAddress;
 
-  bool validateUserHasIsAlreadyHighestSubscription() {
-    if (accountId.value == null || sessionCurrent == null) {
-      return false;
-    }
-    return isAlreadyHighestSubscription(
-      accountId: accountId.value,
-      session: sessionCurrent,
-    );
-  }
+  PaywallUrlPattern? paywallUrlPattern;
+  bool isRetryGetPaywallUrl = false;
+
+  PaywallController({required this.ownEmailAddress});
 
   void loadPaywallUrl() {
     final getPaywallUrlInteractor = getBinding<GetPaywallUrlInteractor>();
@@ -50,7 +40,7 @@ extension HandlePaywallExtension on MailboxDashBoardController {
     if (isRetryGetPaywallUrl) {
       isRetryGetPaywallUrl = false;
       final qualifiedPaywall = paywallUrlPattern!.getQualifiedUrl(
-        ownerEmail: ownEmailAddress.value,
+        ownerEmail: ownEmailAddress,
         domainName: RouteUtils.getRootDomain(),
       );
       AppUtils.launchLink(qualifiedPaywall);
@@ -100,7 +90,7 @@ extension HandlePaywallExtension on MailboxDashBoardController {
     }
 
     final qualifiedPaywall = paywallUrlPattern!.getQualifiedUrl(
-      ownerEmail: ownEmailAddress.value,
+      ownerEmail: ownEmailAddress,
       domainName: RouteUtils.getRootDomain(),
     );
 
@@ -110,5 +100,42 @@ extension HandlePaywallExtension on MailboxDashBoardController {
   void _handleRetryGetPaywallUrl() {
     isRetryGetPaywallUrl = true;
     loadPaywallUrl();
+  }
+
+  @override
+  void handleSuccessViewState(Success success) {
+    if (success is GetPaywallUrlSuccess) {
+      loadPaywallUrlSuccess(success.paywallUrlPattern);
+    } else {
+      super.handleSuccessViewState(success);
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    if (failure is GetPaywallUrlFailure) {
+      loadPaywallUrlFailure();
+    } else {
+      super.handleFailureViewState(failure);
+    }
+  }
+
+  @override
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    super.handleErrorViewState(error, stackTrace);
+    isRetryGetPaywallUrl = false;
+  }
+
+  @override
+  void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
+    super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
+    isRetryGetPaywallUrl = false;
+  }
+
+  @override
+  void onClose() {
+    paywallUrlPattern = null;
+    isRetryGetPaywallUrl = false;
+    super.onClose();
   }
 }
