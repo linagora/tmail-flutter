@@ -51,7 +51,7 @@ extension QuotasExtensions on Quota {
 
   bool get isStorageUsageIndicatorAppear {
     if (storageAvailable) {
-      return used!.value <= presentationHardLimit!.value * 0.8;
+      return used!.value > presentationHardLimit!.value * 0.8;
     } else {
       return false;
     }

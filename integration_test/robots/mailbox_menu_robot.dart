@@ -114,7 +114,7 @@ class MailboxMenuRobot extends CoreRobot {
 
   int getUsedQuota() {
     final usedQuota =
-        getBinding<QuotasController>()?.octetsQuota.value?.used?.value.toInt();
+        getBinding<MailboxDashBoardController>()?.octetsQuota.value?.used?.value.toInt();
     if (usedQuota == null) throw NullQuotaException();
 
     return usedQuota;

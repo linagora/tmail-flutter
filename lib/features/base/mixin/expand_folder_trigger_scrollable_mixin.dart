@@ -3,9 +3,8 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_paywall_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
-import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin ExpandFolderTriggerScrollableMixin {
@@ -50,7 +49,7 @@ mixin ExpandFolderTriggerScrollableMixin {
 
   double _getOffsetY() {
     try {
-      final quota = getBinding<QuotasController>()?.octetsQuota.value;
+      final quota = getBinding<MailboxDashBoardController>()?.octetsQuota.value;
       final isQuotaViewDisplayed = quota?.storageAvailable ?? false;
 
       final isPremiumAvailable = getBinding<MailboxDashBoardController>()

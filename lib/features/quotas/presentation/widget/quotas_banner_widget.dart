@@ -18,7 +18,10 @@ class QuotasBannerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final octetQuota = _quotasController.octetsQuota.value;
+      final octetQuota = _quotasController
+          .mailboxDashBoardController
+          .octetsQuota
+          .value;
 
       if (octetQuota != null &&
           octetQuota.allowedDisplayToQuotaBanner &&
