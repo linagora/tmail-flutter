@@ -15,7 +15,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folder_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
@@ -23,7 +22,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 abstract class BaseMailboxView extends GetWidget<MailboxController>
     with AppLoaderMixin {
@@ -322,71 +320,6 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
               ? buildFolders(context)
               : const Offstage(),
         )),
-        Obx(() {
-          final accountId = controller
-              .mailboxDashBoardController
-              .accountId
-              .value;
-
-          if (accountId == null) return const SizedBox.shrink();
-
-          final contactSupportCapability = controller
-              .mailboxDashBoardController
-              .sessionCurrent
-              ?.getContactSupportCapability(accountId);
-
-          if (contactSupportCapability?.isAvailable != true) {
-            return const SizedBox.shrink();
-          }
-
-          final isFoldersExpanded =
-              controller.foldersExpandMode.value == ExpandMode.EXPAND;
-
-          final dividerPadding = EdgeInsets.only(
-            top: isFoldersExpanded ? 8 : 0,
-            bottom: 8,
-          );
-
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: dividerPadding,
-                child: const Divider(color: AppColor.folderDivider, height: 1),
-              ),
-              FolderWidget(
-                icon: controller.imagePaths.icHelp,
-                label: AppLocalizations.of(context).support,
-                onOpenFolderAction: () => controller
-                    .mailboxDashBoardController
-                    .onGetHelpOrReportBug(contactSupportCapability!),
-                tooltip: AppLocalizations.of(context).getHelpOrReportABug,
-                padding: isDesktop
-                    ? null
-                    : const EdgeInsets.symmetric(horizontal: 12),
-                itemPadding: isDesktop
-                    ? null
-                    : const EdgeInsets.symmetric(
-                        horizontal: MailboxItemWidgetStyles.mobileItemPadding,
-                      ),
-                iconPadding: isDesktop
-                    ? null
-                    : const EdgeInsetsDirectional.only(
-                        end: MailboxItemWidgetStyles.mobileLabelIconSpace,
-                      ),
-                borderRadius: isDesktop
-                  ? null
-                  : MailboxItemWidgetStyles.mobileBorderRadius,
-                height: isDesktop
-                  ? null
-                  : MailboxItemWidgetStyles.mobileHeight,
-                labelTextStyle: isDesktop
-                  ? null
-                  : ThemeUtils.textStyleInter500(),
-              ),
-            ],
-          );
-        }),
       ]),
     );
   }
