@@ -59,32 +59,37 @@ class StorageView extends GetWidget<StorageController> {
                 textAlign: TextAlign.center,
               ),
             Expanded(
-              child: Padding(
-                padding: _getPadding(isMobile: isMobile, isDesktop: isDesktop),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Obx(() {
-                      final octetsQuota = controller.octetsQuota.value;
-                      if (octetsQuota != null && octetsQuota.storageAvailable) {
-                        return StorageProgressBarWidget(
-                          imagePaths: controller.imagePaths,
-                          quota: octetsQuota,
-                          isMobile: isMobile,
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }),
-                    UpgradeStorageWidget(
-                      imagePaths: controller.imagePaths,
-                      isMobile: isMobile,
-                      onUpgradeStorageAction: controller.onUpgradeStorage,
-                    )
-                  ],
-                ),
-              ),
+              child: Obx(() {
+                final octetsQuota = controller.octetsQuota.value;
+                if (octetsQuota != null && octetsQuota.storageAvailable) {
+                  return SingleChildScrollView(
+                    child: Padding(
+                      padding: _getPadding(
+                        isMobile: isMobile,
+                        isDesktop: isDesktop,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          StorageProgressBarWidget(
+                            imagePaths: controller.imagePaths,
+                            quota: octetsQuota,
+                            isMobile: isMobile,
+                          ),
+                          UpgradeStorageWidget(
+                            imagePaths: controller.imagePaths,
+                            isMobile: isMobile,
+                            onUpgradeStorageAction: controller.onUpgradeStorage,
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }),
             ),
           ],
         ),

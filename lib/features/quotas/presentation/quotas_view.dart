@@ -20,7 +20,7 @@ class QuotasView extends GetWidget<QuotasController> {
       final octetQuota = controller.octetsQuota.value;
       bool isDesktop = controller.responsiveUtils.isDesktop(context);
 
-      if (octetQuota != null && octetQuota.storageAvailable) {
+      if (octetQuota != null && octetQuota.isStorageUsageIndicatorAppear) {
         return Container(
           padding: isDesktop
             ? const EdgeInsetsDirectional.only(
