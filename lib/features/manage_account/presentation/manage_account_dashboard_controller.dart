@@ -37,7 +37,9 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/bindings/notification_binding.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/storage/storage_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
+import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -51,6 +53,7 @@ class ManageAccountDashBoardController extends ReloadableController
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
+  PaywallController? paywallController;
 
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
@@ -128,6 +131,10 @@ class ManageAccountDashBoardController extends ReloadableController
     _setUpMinInputLengthAutocomplete();
     _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
     _getVacationResponse();
+    paywallController = PaywallController(
+      ownEmailAddress: ownEmailAddress.value,
+    );
+    paywallController?.loadPaywallUrl();
   }
 
   void _getParametersRouter() {
@@ -215,6 +222,9 @@ class ManageAccountDashBoardController extends ReloadableController
         break;
       case AccountMenuItem.notification:
         NotificationBinding().dependencies();
+        break;
+      case AccountMenuItem.storage:
+        StorageBindings().dependencies();
         break;
       default:
         break;
@@ -414,6 +424,8 @@ class ManageAccountDashBoardController extends ReloadableController
     if (LogTracking().isEnabled) {
       disposeTraceLogDependencies();
     }
+    paywallController?.onClose();
+    paywallController = null;
     super.onClose();
   }
 }
