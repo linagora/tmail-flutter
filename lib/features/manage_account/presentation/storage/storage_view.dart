@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
@@ -77,11 +78,19 @@ class StorageView extends GetWidget<StorageController> {
                             quota: octetsQuota,
                             isMobile: isMobile,
                           ),
-                          UpgradeStorageWidget(
-                            imagePaths: controller.imagePaths,
-                            isMobile: isMobile,
-                            onUpgradeStorageAction: controller.onUpgradeStorage,
-                          )
+                          Obx(() {
+                            if (controller.validatePremiumIsAvailable() &&
+                                PlatformInfo.isWeb) {
+                              return UpgradeStorageWidget(
+                                imagePaths: controller.imagePaths,
+                                isMobile: isMobile,
+                                onUpgradeStorageAction: () =>
+                                    controller.onUpgradeStorage(context),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          })
                         ],
                       ),
                     ),

@@ -17,7 +17,7 @@ class QuotasView extends GetWidget<QuotasController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final octetQuota = controller.octetsQuota.value;
+      final octetQuota = controller.mailboxDashBoardController.octetsQuota.value;
       bool isDesktop = controller.responsiveUtils.isDesktop(context);
 
       if (octetQuota != null && octetQuota.isStorageUsageIndicatorAppear) {
