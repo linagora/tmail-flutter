@@ -5,8 +5,6 @@ import 'package:get/get.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/setting_first_level_tile_builder.dart';
@@ -19,6 +17,20 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
+    final indent = SettingsUtils.getHorizontalPadding(
+      context,
+      controller.responsiveUtils,
+    );
+
+    final appLocalizations = AppLocalizations.of(context);
+
+    final divider = Divider(
+      color: AppColor.colorDividerHorizontal,
+      height: 1,
+      indent: indent,
+      endIndent: indent,
+    );
+
     return SingleChildScrollView(
       key: const Key('setting_menu'),
       child: Column(children: [
@@ -43,40 +55,23 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             titlePadding: const EdgeInsetsDirectional.only(start: 16),
           );
         }),
-        Divider(
-          color: AppColor.colorDividerHorizontal,
-          height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-        ),
-        SettingFirstLevelTileBuilder(
+        divider,
+        _buildSettingItem(
           key: const Key('setting_profiles'),
-          AppLocalizations.of(context).profiles,
-          AccountMenuItem.profiles.getIcon(controller.imagePaths),
-          subtitle: AppLocalizations.of(context).profilesSettingExplanation,
-          () => controller.selectSettings(AccountMenuItem.profiles)
+          context: context,
+          menuItem: AccountMenuItem.profiles,
+          appLocalizations: appLocalizations,
         ),
-        Divider(
-          color: AppColor.colorDividerHorizontal,
-          height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-        ),
+        divider,
         Obx(() {
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
             return Column(children: [
-              SettingFirstLevelTileBuilder(
-                AccountMenuItem.emailRules.getName(AppLocalizations.of(context)),
-                AccountMenuItem.emailRules.getIcon(controller.imagePaths),
-                subtitle: AppLocalizations.of(context).emailRuleSettingExplanation,
-                () => controller.selectSettings(AccountMenuItem.emailRules)
+              _buildSettingItem(
+                context: context,
+                menuItem: AccountMenuItem.emailRules,
+                appLocalizations: appLocalizations,
               ),
-              Divider(
-                color: AppColor.colorDividerHorizontal,
-                height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-              ),
+              divider,
             ]);
           } else {
             return const SizedBox.shrink();
@@ -85,19 +80,13 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         Obx(() {
           if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
             return Column(children: [
-              SettingFirstLevelTileBuilder(
+              _buildSettingItem(
                 key: const ValueKey('setting_preferences'),
-                AccountMenuItem.preferences.getName(AppLocalizations.of(context)),
-                AccountMenuItem.preferences.getIcon(controller.imagePaths),
-                subtitle: AppLocalizations.of(context).emailReadReceiptsSettingExplanation,
-                () => controller.selectSettings(AccountMenuItem.preferences)
+                context: context,
+                menuItem: AccountMenuItem.preferences,
+                appLocalizations: appLocalizations,
               ),
-              Divider(
-                color: AppColor.colorDividerHorizontal,
-                height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-              ),
+              divider,
             ]);
           } else {
             return const SizedBox.shrink();
@@ -106,18 +95,12 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         Obx(() {
           if (controller.manageAccountDashboardController.isForwardCapabilitySupported) {
             return Column(children: [
-              SettingFirstLevelTileBuilder(
-                AccountMenuItem.forward.getName(AppLocalizations.of(context)),
-                AccountMenuItem.forward.getIcon(controller.imagePaths),
-                subtitle: AppLocalizations.of(context).forwardingSettingExplanation,
-                () => controller.selectSettings(AccountMenuItem.forward)
+              _buildSettingItem(
+                context: context,
+                menuItem: AccountMenuItem.forward,
+                appLocalizations: appLocalizations,
               ),
-              Divider(
-                color: AppColor.colorDividerHorizontal,
-                height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-              ),
+              divider,
             ]);
           } else {
             return const SizedBox.shrink();
@@ -126,28 +109,21 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         Obx(() {
           if (controller.manageAccountDashboardController.isVacationCapabilitySupported) {
             return Column(children: [
-              SettingFirstLevelTileBuilder(
-                AccountMenuItem.vacation.getName(AppLocalizations.of(context)),
-                AccountMenuItem.vacation.getIcon(controller.imagePaths),
-                subtitle: AppLocalizations.of(context).vacationSettingExplanation,
-                () => controller.selectSettings(AccountMenuItem.vacation)
+              _buildSettingItem(
+                context: context,
+                menuItem: AccountMenuItem.vacation,
+                appLocalizations: appLocalizations,
               ),
-              Divider(
-                color: AppColor.colorDividerHorizontal,
-                height: 1,
-                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-              ),
+              divider,
             ]);
           } else {
             return const SizedBox.shrink();
           }
         }),
-        SettingFirstLevelTileBuilder(
-          AccountMenuItem.mailboxVisibility.getName(AppLocalizations.of(context)),
-          AccountMenuItem.mailboxVisibility.getIcon(controller.imagePaths),
-          subtitle: AppLocalizations.of(context).folderVisibilitySubtitle,
-          () => controller.selectSettings(AccountMenuItem.mailboxVisibility)
+        _buildSettingItem(
+          context: context,
+          menuItem: AccountMenuItem.mailboxVisibility,
+          appLocalizations: appLocalizations,
         ),
         Obx(() {
           if (!controller.manageAccountDashboardController.isLanguageSettingDisplayed) {
@@ -155,41 +131,24 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           }
 
           return Column(children: [
-            Divider(
-              color: AppColor.colorDividerHorizontal,
-              height: 1,
-              indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-              endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-            ),
-            SettingFirstLevelTileBuilder(
+            divider,
+            _buildSettingItem(
               key: const Key('setting_language_region'),
-              AccountMenuItem.languageAndRegion.getName(AppLocalizations.of(context)),
-              AccountMenuItem.languageAndRegion.getIcon(controller.imagePaths),
-              () => controller.selectSettings(AccountMenuItem.languageAndRegion)
+              context: context,
+              menuItem: AccountMenuItem.languageAndRegion,
+              appLocalizations: appLocalizations,
             ),
           ]);
         }),
         Obx(() {
           if (controller.manageAccountDashboardController.octetsQuota.value != null) {
             return Column(children: [
-              Divider(
-                color: AppColor.colorDividerHorizontal,
-                height: 1,
-                indent: SettingsUtils.getHorizontalPadding(
-                  context,
-                  controller.responsiveUtils,
-                ),
-                endIndent: SettingsUtils.getHorizontalPadding(
-                  context,
-                  controller.responsiveUtils,
-                ),
-              ),
-              SettingFirstLevelTileBuilder(
+              divider,
+              _buildSettingItem(
                 key: const ValueKey('setting_storage'),
-                AccountMenuItem.storage.getName(AppLocalizations.of(context)),
-                AccountMenuItem.storage.getIcon(controller.imagePaths),
-                subtitle: AppLocalizations.of(context).storageSettingExplanation,
-                () => controller.selectSettings(AccountMenuItem.storage),
+                context: context,
+                menuItem: AccountMenuItem.keyboardShortcuts,
+                appLocalizations: appLocalizations,
               ),
             ]);
           } else {
@@ -199,18 +158,12 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
         Obx(() {
           if (controller.manageAccountDashboardController.isFcmCapabilitySupported && PlatformInfo.isMobile) {
             return Column(children: [
-              Divider(
-                  color: AppColor.colorDividerHorizontal,
-                  height: 1,
-                  indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-                  endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+              divider,
+              _buildSettingItem(
+                context: context,
+                menuItem: AccountMenuItem.notification,
+                appLocalizations: appLocalizations,
               ),
-              SettingFirstLevelTileBuilder(
-                AppLocalizations.of(context).notification,
-                controller.imagePaths.icNotification,
-                    () => controller.selectSettings(AccountMenuItem.notification),
-                subtitle: AppLocalizations.of(context).allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone,
-              )
             ]);
           } else {
             return const SizedBox.shrink();
@@ -232,45 +185,41 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           if (contactSupportCapability?.isAvailable != true) return const SizedBox.shrink();
 
           return Column(children: [
-            Divider(
-              color: AppColor.colorDividerHorizontal,
-              height: 1,
-              indent: SettingsUtils.getHorizontalPadding(
-                context,
-                controller.responsiveUtils,
-              ),
-              endIndent: SettingsUtils.getHorizontalPadding(
-                context,
-                controller.responsiveUtils,
-              ),
-            ),
-            SettingFirstLevelTileBuilder(
-              AccountMenuItem.contactSupport.getName(AppLocalizations.of(context)),
-              AccountMenuItem.contactSupport.getIcon(controller.imagePaths),
-              () => controller.onGetHelpOrReportBug(
+            divider,
+            _buildSettingItem(
+              context: context,
+              menuItem: AccountMenuItem.contactSupport,
+              appLocalizations: appLocalizations,
+              onActionCallback: () => controller.onGetHelpOrReportBug(
                 contactSupportCapability!,
                 route: AppRoutes.settings,
               ),
             ),
           ]);
         }),
-        Divider(
-          color: AppColor.colorDividerHorizontal,
-          height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-        ),
-        SettingFirstLevelTileBuilder(
-          AppLocalizations.of(context).sign_out,
-          controller.imagePaths.icSignOut,
-          () => controller
-            .manageAccountDashboardController
-            .handleProfileSettingActionTypeClick(
-              context: context,
-              actionType: ProfileSettingActionType.signOut,
-            )
+        divider,
+        _buildSettingItem(
+          context: context,
+          menuItem: AccountMenuItem.signOut,
+          appLocalizations: appLocalizations,
         ),
       ]),
+    );
+  }
+
+  Widget _buildSettingItem({
+    required BuildContext context,
+    required AccountMenuItem menuItem,
+    required AppLocalizations appLocalizations,
+    Key? key,
+    VoidCallback? onActionCallback,
+  }) {
+    return SettingFirstLevelTileBuilder(
+      key: key,
+      menuItem.getName(appLocalizations),
+      menuItem.getIcon(controller.imagePaths),
+      subtitle: menuItem.getExplanation(appLocalizations),
+      onActionCallback ?? () => controller.selectSettings(context, menuItem),
     );
   }
 }

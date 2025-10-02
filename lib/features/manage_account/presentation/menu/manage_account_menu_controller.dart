@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
@@ -16,7 +17,8 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
   final listAccountMenuItem = RxList<AccountMenuItem>([
     AccountMenuItem.profiles,
     AccountMenuItem.mailboxVisibility,
-    AccountMenuItem.languageAndRegion,
+    if (PlatformInfo.isWeb)
+      AccountMenuItem.keyboardShortcuts,
   ]);
 
   late Worker _quotaRxWorker;
@@ -58,6 +60,8 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
       AccountMenuItem.mailboxVisibility,
       if (dashBoardController.isLanguageSettingDisplayed)
         AccountMenuItem.languageAndRegion,
+      if (PlatformInfo.isWeb)
+        AccountMenuItem.keyboardShortcuts,
     ];
     listAccountMenuItem.value = newListMenuSetting;
 
