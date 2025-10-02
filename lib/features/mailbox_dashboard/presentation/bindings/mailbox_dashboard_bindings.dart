@@ -100,6 +100,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_text_formatting_menu_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
@@ -408,6 +409,11 @@ class MailboxDashBoardBindings extends BaseBindings {
     SettingInteractorBindings().dependencies();
     Get.lazyPut(
       () => GetTextFormattingMenuStateInteractor(
+        Get.find<ManageAccountRepository>(),
+      ),
+    );
+    Get.lazyPut(
+      () => SaveTextFormattingMenuStateInteractor(
         Get.find<ManageAccountRepository>(),
       ),
     );

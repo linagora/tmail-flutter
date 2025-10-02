@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/composer_ar
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -125,6 +126,8 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
     if (composerId != null) {
       await removeComposerCacheByIdOnWeb(composerId);
     }
+
+    saveTextFormattingMenuState();
   }
 
   void _handleResultAfterCloseComposer(dynamic result) {

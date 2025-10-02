@@ -103,6 +103,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -1446,6 +1447,11 @@ class ComposerController extends BaseController
   }
 
   void _closeComposerAction({dynamic result, bool closeOverlays = false}) {
+    if (PlatformInfo.isWeb && richTextWebController != null) {
+      mailboxDashBoardController.updateTextFormattingMenuState(
+        richTextWebController!.isFormattingOptionsEnabled,
+      );
+    }
     mailboxDashBoardController.closeComposer(
       result: result,
       closeOverlays: closeOverlays,

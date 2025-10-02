@@ -112,6 +112,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_tex
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_text_formatting_menu_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
@@ -269,6 +270,7 @@ class MailboxDashBoardController extends ReloadableController
   CreateNewEmailRuleFilterInteractor? createNewEmailRuleFilterInteractor;
   SaveLanguageInteractor? saveLanguageInteractor;
   GetTextFormattingMenuStateInteractor? getTextFormattingMenuStateInteractor;
+  SaveTextFormattingMenuStateInteractor? saveTextFormattingMenuStateInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
