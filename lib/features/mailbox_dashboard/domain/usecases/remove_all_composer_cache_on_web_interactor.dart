@@ -13,7 +13,7 @@ class RemoveAllComposerCacheOnWebInteractor {
 
   Future<Either<Failure, Success>> execute(AccountId accountId, UserName userName) async {
     try {
-      composerCacheRepository.removeAllComposerCacheOnWeb(accountId, userName);
+      await composerCacheRepository.removeAllComposerCacheOnWeb(accountId, userName,);
       return Right(RemoveComposerCacheSuccess());
     } catch (exception) {
       return Left(RemoveComposerCacheFailure(exception));

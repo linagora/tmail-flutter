@@ -9,11 +9,7 @@ class ThreadDetailConfig extends PreferencesConfig {
 
   ThreadDetailConfig({this.isEnabled = false});
 
-  factory ThreadDetailConfig.initial() {
-    return ThreadDetailConfig(
-      isEnabled: false,
-    );
-  }
+  factory ThreadDetailConfig.initial() => ThreadDetailConfig();
 
   factory ThreadDetailConfig.fromJson(Map<String, dynamic> json) =>
       _$ThreadDetailConfigFromJson(json);

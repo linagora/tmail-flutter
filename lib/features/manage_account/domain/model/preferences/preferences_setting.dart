@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/text_formatting_menu_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 
 class PreferencesSetting with EquatableMixin {
@@ -13,6 +14,7 @@ class PreferencesSetting with EquatableMixin {
     return PreferencesSetting([
       ThreadDetailConfig.initial(),
       SpamReportConfig.initial(),
+      TextFormattingMenuConfig.initial(),
     ]);
   }
 
@@ -33,6 +35,16 @@ class PreferencesSetting with EquatableMixin {
       return spamConfig as SpamReportConfig;
     } else {
       return SpamReportConfig.initial();
+    }
+  }
+
+  TextFormattingMenuConfig get textFormattingMenuConfig {
+    final formatConfig = configs
+        .firstWhereOrNull((config) => config is TextFormattingMenuConfig);
+    if (formatConfig != null) {
+      return formatConfig as TextFormattingMenuConfig;
+    } else {
+      return TextFormattingMenuConfig.initial();
     }
   }
 

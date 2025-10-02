@@ -656,6 +656,12 @@ class ComposerController extends BaseController
         responsiveUtils.isWebDesktop(currentContext!)) {
       await setupSelectedIdentityWithoutApplySignature();
     }
+
+    if (PlatformInfo.isWeb) {
+      richTextWebController?.updateFormattingOptions(
+        mailboxDashBoardController.isTextFormattingMenuOpened.value,
+      );
+    }
   }
 
   void initAttachmentsAndInlineImages({
