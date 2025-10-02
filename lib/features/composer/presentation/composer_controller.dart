@@ -61,6 +61,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_cre
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outbox_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_message_failure_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
@@ -209,6 +210,7 @@ class ComposerController extends BaseController
   FocusNode? ccAddressFocusNodeKeyboard;
   FocusNode? bccAddressFocusNodeKeyboard;
   FocusNode? replyToAddressFocusNodeKeyboard;
+  FocusNode? keyboardShortcutFocusNode;
 
   StreamSubscription<html.Event>? _subscriptionOnDragEnter;
   StreamSubscription<html.Event>? _subscriptionOnDragOver;
@@ -259,7 +261,6 @@ class ComposerController extends BaseController
       mailboxDashBoardController.ownEmailAddress.value;
 
   late Worker uploadInlineImageWorker;
-  late Worker dashboardViewStateWorker;
   late bool _isEmailBodyLoaded;
 
   ComposerController(
@@ -300,6 +301,7 @@ class ComposerController extends BaseController
     _listenStreamEvent();
     _beforeReconnectManager.addListener(onBeforeReconnect);
     _injectBinding();
+    onKeyboardShortcutInit();
   }
 
   @override
@@ -344,6 +346,7 @@ class ComposerController extends BaseController
     } else {
       richTextMobileTabletController = null;
     }
+    onKeyboardShortcutDispose();
     super.onClose();
   }
 
@@ -375,7 +378,6 @@ class ComposerController extends BaseController
     bccEmailAddressController.dispose();
     replyToEmailAddressController.dispose();
     uploadInlineImageWorker.dispose();
-    dashboardViewStateWorker.dispose();
     scrollController.dispose();
     scrollControllerEmailAddress.removeListener(_scrollControllerEmailAddressListener);
     scrollControllerEmailAddress.dispose();
@@ -561,18 +563,7 @@ class ComposerController extends BaseController
   }
 
   void _scrollControllerEmailAddressListener() {
-    if (toEmailAddressController.text.isNotEmpty) {
-      keyToEmailTagEditor.currentState?.closeSuggestionBox();
-    }
-    if (ccEmailAddressController.text.isNotEmpty) {
-      keyCcEmailTagEditor.currentState?.closeSuggestionBox();
-    }
-    if (bccEmailAddressController.text.isNotEmpty) {
-      keyBccEmailTagEditor.currentState?.closeSuggestionBox();
-    }
-    if (replyToEmailAddressController.text.isNotEmpty) {
-      keyReplyToEmailTagEditor.currentState?.closeSuggestionBox();
-    }
+    _closeSuggestionBox();
   }
 
   void createFocusNodeInput() {
@@ -785,7 +776,7 @@ class ComposerController extends BaseController
     }
     _sendButtonState = ButtonState.disabled;
 
-    clearFocus(context);
+    clearFocus();
 
     if (toEmailAddressController.text.isNotEmpty
         || ccEmailAddressController.text.isNotEmpty
@@ -1170,7 +1161,7 @@ class ComposerController extends BaseController
   }
 
   void openPickAttachmentMenu(BuildContext context, List<Widget> actionTiles) {
-    clearFocus(context);
+    clearFocus();
 
     (ContextMenuBuilder(context)
         ..addHeader((ContextMenuHeaderBuilder(const Key('attachment_picker_context_menu_header_builder'))
@@ -1456,16 +1447,27 @@ class ComposerController extends BaseController
     }
   }
 
-  void clearFocus(BuildContext context) {
-    log('ComposerController::clearFocus:');
+  void clearFocus() {
     if (PlatformInfo.isMobile) {
       htmlEditorApi?.unfocus();
+      FocusManager.instance.primaryFocus?.unfocus();
+    } else {
+      toAddressFocusNode?.unfocus();
+      ccAddressFocusNode?.unfocus();
+      bccAddressFocusNode?.unfocus();
+      replyToAddressFocusNode?.unfocus();
     }
-    FocusScope.of(context).unfocus();
   }
 
-  void clickOutsideComposer(BuildContext context) {
-    clearFocus(context);
+  void onClickOutsideComposer() {
+    clearFocus();
+    if (PlatformInfo.isWeb) {
+      refocusKeyboardShortcutFocus();
+    }
+  }
+
+  void clickOutsideComposer() {
+    clearFocus();
     if (PlatformInfo.isWeb) {
       _collapseAllRecipient();
       _hideCcBccReplyToRecipients();
@@ -1725,8 +1727,8 @@ class ComposerController extends BaseController
     }
   }
 
-  void insertImage(BuildContext context, double maxWith) async {
-    clearFocus(context);
+  void insertImage(BuildContext context, double maxWith) {
+    clearFocus();
 
     if (responsiveUtils.isMobile(context)) {
       maxWithEditor = maxWith - 40;
@@ -1763,8 +1765,8 @@ class ComposerController extends BaseController
     }
   }
 
-  void handleClickDeleteComposer(BuildContext context) {
-    clearFocus(context);
+  void handleClickDeleteComposer() {
+    clearFocus();
     _closeComposerAction();
   }
 
@@ -2019,11 +2021,12 @@ class ComposerController extends BaseController
     }
 
     _closeComposerButtonState = ButtonState.disabled;
+    autoCreateEmailTag();
 
     if (_validateCloseComposerWithoutSave()) {
       log('ComposerController::handleClickCloseComposer: ARGUMENTS is NULL or EMAIL NOT LOADED');
       _closeComposerButtonState = ButtonState.enabled;
-      clearFocus(context);
+      clearFocus();
       _closeComposerAction();
       return;
     }
@@ -2031,16 +2034,14 @@ class ComposerController extends BaseController
     final isChanged = await _validateEmailChange();
 
     if (isChanged && context.mounted) {
-      clearFocus(context);
+      clearFocus();
       await _showConfirmDialogSaveMessage(context);
       return;
     }
 
-    if (context.mounted) {
-      _closeComposerButtonState = ButtonState.enabled;
-      clearFocus(context);
-      _closeComposerAction();
-    }
+    _closeComposerButtonState = ButtonState.enabled;
+    clearFocus();
+    _closeComposerAction();
   }
 
   bool _validateCloseComposerWithoutSave() {

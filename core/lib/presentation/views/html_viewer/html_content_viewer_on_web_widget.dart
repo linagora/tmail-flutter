@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/shortcut/key_shortcut.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
@@ -13,6 +14,7 @@ import 'package:universal_html/html.dart' as html;
 
 typedef OnClickHyperLinkAction = Function(Uri?);
 typedef OnMailtoClicked = void Function(Uri? uri);
+typedef OnIFrameKeyboardShortcutAction = void Function(KeyShortcut keyShortcut);
 
 class HtmlContentViewerOnWeb extends StatefulWidget {
 
@@ -27,6 +29,8 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final OnMailtoClicked? mailtoDelegate;
 
   final OnClickHyperLinkAction? onClickHyperLinkAction;
+
+  final OnIFrameKeyboardShortcutAction? onIFrameKeyboardShortcutAction;
 
   // if widthContent is bigger than width of htmlContent, set this to true let widget able to resize to width of htmlContent
   final bool allowResizeToDocumentSize;
@@ -63,6 +67,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.htmlContentMinWidth = ConstantsUI.htmlContentMinWidth,
     this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
     this.viewMaxHeight,
+    this.onIFrameKeyboardShortcutAction,
   }) : super(key: key);
 
   @override
@@ -86,7 +91,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   bool _iframeLoaded = false;
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
   static const String onClickHyperLinkName = 'onClickHyperLink';
-  static const String onScrollChangedEvent = 'onScrollChanged';
 
   @override
   void initState() {
@@ -109,6 +113,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       if (_isScrollChangedEventTriggered(type)) {
         _handleIframeOnScrollChangedListener(data, widget.scrollController!);
         return;
+      } else if (_isIframeKeyboardEventTriggered(type)) {
+        _handleOnIFrameKeyboardEvent(data);
+        return;
       }
 
       if (data['message'] == iframeOnLoadMessage) {
@@ -126,29 +133,33 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         _handleHyperLinkEvent(data['url']);
       }
     } catch (e) {
-      logError('_HtmlContentViewerOnWebState::_handleMessageEvent:Exception = $e');
+      logError('$runtimeType::_handleMessageEvent:Exception = $e');
     }
   }
 
   bool _isScrollChangedEventTriggered(String? type) {
     return widget.scrollController != null &&
         widget.scrollController?.hasClients == true &&
-        type?.contains('toDart: $onScrollChangedEvent') == true;
+        type?.contains('toDart: iframeScrolling') == true;
   }
 
   void _handleIframeOnScrollChangedListener(
     dynamic data,
     ScrollController controller,
   ) {
-    final deltaY = data['deltaY'] ?? 0.0;
-    final newOffset = controller.offset + deltaY;
-    log('_HtmlContentViewerOnWebState::_handleIframeOnScrollChangedListener:deltaY = $deltaY | newOffset = $newOffset');
-    if (newOffset < controller.position.minScrollExtent) {
-      controller.jumpTo(controller.position.minScrollExtent);
-    } else if (newOffset > controller.position.maxScrollExtent) {
-      controller.jumpTo(controller.position.maxScrollExtent);
-    } else {
-      controller.jumpTo(newOffset);
+    try {
+      final deltaY = data['deltaY'] ?? 0.0;
+      final newOffset = controller.offset + deltaY;
+      log('$runtimeType::_handleIframeOnScrollChangedListener:deltaY = $deltaY | newOffset = $newOffset');
+      if (newOffset < controller.position.minScrollExtent) {
+        controller.jumpTo(controller.position.minScrollExtent);
+      } else if (newOffset > controller.position.maxScrollExtent) {
+        controller.jumpTo(controller.position.maxScrollExtent);
+      } else {
+        controller.jumpTo(newOffset);
+      }
+    } catch (e) {
+      logError('$runtimeType::_handleIframeOnScrollChangedListener:Exception = $e');
     }
   }
 
@@ -209,10 +220,29 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
   }
 
+  bool _isIframeKeyboardEventTriggered(String? type) {
+    return widget.onIFrameKeyboardShortcutAction != null &&
+        type?.contains('toDart: iframeKeydown') == true;
+  }
+
+  void _handleOnIFrameKeyboardEvent(dynamic data) {
+    try {
+      final shortcut = KeyShortcut(
+        key: data['key'] as String,
+        code: data['code'] as String,
+        shift: data['shift'] == true,
+      );
+      log('$runtimeType::_handleOnIFrameKeyboardEvent:📥 Shortcut pressed: $shortcut');
+      widget.onIFrameKeyboardShortcutAction?.call(shortcut);
+    } catch (e) {
+      logError('$runtimeType::_handleOnIFrameKeyboardEvent: Exception = $e');
+    }
+  }
+
   @override
   void didUpdateWidget(covariant HtmlContentViewerOnWeb oldWidget) {
     super.didUpdateWidget(oldWidget);
-    log('_HtmlContentViewerOnWebState::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
+    log('$runtimeType::didUpdateWidget():Old-Direction: ${oldWidget.direction} | Current-Direction: ${widget.direction}');
     if (widget.contentHtml != oldWidget.contentHtml ||
         widget.direction != oldWidget.direction) {
       _setUpWeb();
@@ -240,6 +270,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         window.addEventListener('load', handleOnLoad);
         window.addEventListener('pagehide', (event) => {
           window.parent.removeEventListener('message', handleMessage, false);
+          window.removeEventListener('load', handleOnLoad);
         });
       
         function handleMessage(e) {
@@ -319,17 +350,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
           
           ${!widget.autoAdjustHeight ? 'resizeObserver.observe(document.body);' : ''}
         }
-        
-        ${widget.scrollController != null ? '''
-          window.addEventListener('wheel', function (event) {
-            const deltaY = event.deltaY;
-            window.parent.postMessage(JSON.stringify({
-              "view": "$_createdViewId",
-              "type": "toDart: $onScrollChangedEvent",
-              "deltaY": deltaY
-            }), "*");
-          });
-        ''' : ''}
       </script>
     ''';
 
@@ -349,6 +369,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
       HtmlInteraction.generateNormalizeImageScript(widget.widthContent),
       if (widget.enableQuoteToggle) HtmlUtils.quoteToggleScript,
+      if (widget.scrollController != null)
+        HtmlInteraction.scriptHandleIframeScrollingListener(_createdViewId),
+      if (widget.onIFrameKeyboardShortcutAction != null)
+        HtmlInteraction.scriptHandleIframeKeyboardListener(_createdViewId),
     ].join();
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(

@@ -37,7 +37,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/presentation/bindings/email_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:tmail_ui_user/features/home/domain/repository/session_repository.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/data/datasource/identity_creator_data_source.dart';
@@ -155,7 +155,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     SendingQueueBindings().dependencies();
     MailboxBindings().dependencies();
     ThreadBindings().dependencies();
-    EmailInteractorBindings().dependencies();
+    EmailBindings().dependencies();
     SearchEmailBindings().dependencies();
     QuotasBindings().dependencies();
     ThreadDetailBindings().dependencies();

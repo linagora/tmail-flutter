@@ -3,7 +3,9 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
@@ -13,7 +15,16 @@ class SettingsController extends GetxController with ContactSupportMixin {
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
-  void selectSettings(AccountMenuItem accountMenuItem) => manageAccountDashboardController.selectSettings(accountMenuItem);
+  void selectSettings(BuildContext context, AccountMenuItem accountMenuItem) {
+    if (accountMenuItem == AccountMenuItem.signOut) {
+      manageAccountDashboardController.handleProfileSettingActionTypeClick(
+        context: context,
+        actionType: ProfileSettingActionType.signOut,
+      );
+    } else {
+      manageAccountDashboardController.selectSettings(accountMenuItem);
+    }
+  }
 
   void backToUniversalSettings() => manageAccountDashboardController.backToUniversalSettings();
 

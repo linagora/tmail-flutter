@@ -14,7 +14,6 @@ import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_detail_presentation_utils.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleRefreshThreadDetailAction on ThreadDetailController {
   void handleRefreshThreadDetailAction(
@@ -86,7 +85,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
     );
 
     if (afterRefreshedEmailIds.isEmpty) {
-      closeThreadDetailAction(currentContext);
+      closeThreadDetailAction();
       return;
     }
 

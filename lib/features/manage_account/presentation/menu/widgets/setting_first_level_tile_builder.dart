@@ -19,7 +19,7 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
     this.clickAction,
     {
       Key? key,
-      this.subtitle
+      this.subtitle = '',
     }
   ) : super(key: key);
 
@@ -28,7 +28,7 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
 
   final String settingIcon;
   final String title;
-  final String? subtitle;
+  final String subtitle;
   final SettingFirstLevelTileClickAction clickAction;
 
   @override
@@ -69,7 +69,7 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
                       ))
                     ],
                   ),
-                  subtitle != null
+                  subtitle.isNotEmpty
                     ? Padding(
                         padding: EdgeInsets.only(
                           left: AppUtils.isDirectionRTL(context) ? 12 : _getSubtitleLeftPadding(context),
@@ -77,7 +77,7 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
                           top: 12
                         ),
                         child: Text(
-                          subtitle!,
+                          subtitle,
                           style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                             fontSize: 13,
                             color: AppColor.colorContentEmail,

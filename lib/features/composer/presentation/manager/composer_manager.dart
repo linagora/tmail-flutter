@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
@@ -249,6 +250,14 @@ class ComposerManager extends GetxController {
     return composerIdsQueue.every((id) => getComposerView(id).controller.isHiddenScreen);
   }
 
+  bool get isAnyComposerOpened {
+    final isComposerOpened = composerIdsQueue.any((id) {
+      final controller = getComposerView(id).controller;
+      return controller.isNormalScreen || controller.isFullScreen;
+    });
+    return hasComposer && isComposerOpened;
+  }
+
   List<String> get hiddenComposerIds {
     return composerIdsQueue
       .where((id) => getComposerView(id).controller.isHiddenScreen)
@@ -292,6 +301,21 @@ class ComposerManager extends GetxController {
   }
 
   ComposerView getComposerView(String id) => composers[id]!;
+
+  void refocusKeyboardShortcutFocusFirstComposer() {
+    if (!hasComposer) return;
+
+    final listComposerIdOpened = composerIdsQueue.where((id) {
+      final controller = getComposerView(id).controller;
+      return controller.isNormalScreen || controller.isFullScreen;
+    });
+
+    if (listComposerIdOpened.isNotEmpty) {
+      final firstComposerIdOpened = listComposerIdOpened.first;
+      final composerView = getComposerView(firstComposerIdOpened);
+      composerView.controller.refocusKeyboardShortcutFocus();
+    }
+  }
 
   @override
   void onClose() {

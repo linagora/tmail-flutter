@@ -70,7 +70,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
       case EmailActionType.deletePermanently:
         mailboxDashBoardController.permanentDeleteMultipleEmailInThreadDetail(
           emailsInThreadDetailInfo,
-          onConfirm: () => closeThreadDetailAction(currentContext),
+          onConfirm: closeThreadDetailAction,
         );
         break;
       case EmailActionType.moveToMailbox:
@@ -181,7 +181,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
   }
 
   void _moveToMailbox(MailboxId mailboxId, EmailActionType emailActionType) {
-    closeThreadDetailAction(currentContext);
+    closeThreadDetailAction();
     mailboxDashBoardController.moveMultipleEmailInThreadDetail(
       emailsInThreadDetailInfo,
       destinationMailboxId: mailboxId,

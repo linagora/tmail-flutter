@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/ha
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identities_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/keyboard_shortcuts/keyboard_shortcuts_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -164,6 +165,8 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           return const VacationView();
         case AccountMenuItem.mailboxVisibility:
           return MailboxVisibilityView();
+        case AccountMenuItem.keyboardShortcuts:
+          return const KeyboardShortcutsView();
         default:
           return const SizedBox.shrink();
       }

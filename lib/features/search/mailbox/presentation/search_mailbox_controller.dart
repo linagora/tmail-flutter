@@ -65,6 +65,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbo
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_reactive_obx_variable_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -90,6 +91,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   final listMailboxSearched = RxList<PresentationMailbox>();
   final textInputSearchController = TextEditingController();
   late Debouncer<String> _deBouncerTime;
+  FocusNode? searchFocusNode;
 
   PresentationMailbox? get selectedMailbox => dashboardController.selectedMailbox.value;
 
@@ -124,6 +126,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     super.onInit();
     _initializeDebounceTimeTextSearchChange();
     _registerObxStreamListener();
+    if (PlatformInfo.isWeb) {
+      _registerInputFocusListener();
+    }
     _getAllMailboxAction();
   }
 
@@ -213,6 +218,23 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         );
       }
     });
+  }
+
+  void _registerInputFocusListener() {
+    searchFocusNode = FocusNode();
+    searchFocusNode?.addListener(_onSearchFocusChanged);
+    searchFocusNode?.requestFocus();
+  }
+
+  void _onSearchFocusChanged() {
+    log('$runtimeType::_onSearchFocusChanged: ${searchFocusNode?.hasFocus}');
+    final hasFocus = searchFocusNode?.hasFocus ?? false;
+    dashboardController.onSearchInputFocusChanged(hasFocus);
+  }
+
+  void _disposeInputFocusListener() {
+    searchFocusNode?.removeListener(_onSearchFocusChanged);
+    searchFocusNode?.dispose();
   }
 
   void _getAllMailboxAction() {
@@ -837,6 +859,9 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   void onClose() {
     textInputSearchController.dispose();
     _deBouncerTime.cancel();
+    if (PlatformInfo.isWeb) {
+      _disposeInputFocusListener();
+    }
     super.onClose();
   }
 }
