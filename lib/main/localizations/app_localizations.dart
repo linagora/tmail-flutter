@@ -5212,4 +5212,137 @@ class AppLocalizations {
       name: 'mailHasBeenUnstarred',
     );
   }
+
+  String get keyboardShortcuts {
+    return Intl.message(
+      'Keyboard shortcuts',
+      name: 'keyboardShortcuts',
+    );
+  }
+
+  String get keyboardShortcutsSettingExplanation {
+    return Intl.message(
+      'Mailbox & email actions',
+      name: 'keyboardShortcutsSettingExplanation',
+    );
+  }
+
+  String get navigationAndClosing {
+    return Intl.message(
+      'Navigation & Closing',
+      name: 'navigationAndClosing',
+    );
+  }
+
+  String get readingAndReplying {
+    return Intl.message(
+      'Reading & Replying',
+      name: 'readingAndReplying',
+    );
+  }
+
+  String get messageManagementAndSelection {
+    return Intl.message(
+      'Message Management & Selection',
+      name: 'messageManagementAndSelection',
+    );
+  }
+
+  String get navigation {
+    return Intl.message(
+      'Navigation',
+      name: 'navigation',
+    );
+  }
+
+  String get reading {
+    return Intl.message(
+      'Reading',
+      name: 'reading',
+    );
+  }
+
+  String get closeMailComposer {
+    return Intl.message(
+      'Close mail composer',
+      name: 'closeMailComposer',
+    );
+  }
+
+  String get removeFocusFromSearch {
+    return Intl.message(
+      'Remove focus from search',
+      name: 'removeFocusFromSearch',
+    );
+  }
+
+  String get closeModalWindow {
+    return Intl.message(
+      'Close modal window',
+      name: 'closeModalWindow',
+    );
+  }
+
+  String get openNewMessage {
+    return Intl.message(
+      'Open new message',
+      name: 'openNewMessage',
+    );
+  }
+
+  String get mailComposer {
+    return Intl.message(
+      'Mail composer',
+      name: 'mailComposer',
+    );
+  }
+
+  String get focusOnSearch {
+    return Intl.message(
+      'Focus on search',
+      name: 'focusOnSearch',
+    );
+  }
+
+  String get openedModal {
+    return Intl.message(
+      'Opened modal',
+      name: 'openedModal',
+    );
+  }
+
+  String get mailboxList {
+    return Intl.message(
+      'Mailbox list',
+      name: 'mailboxList',
+    );
+  }
+
+  String get openedMailView {
+    return Intl.message(
+      'Opened mail view',
+      name: 'openedMailView',
+    );
+  }
+
+  String get mailboxListWithSelectedMail {
+    return Intl.message(
+      'Mailbox list (selected mail)',
+      name: 'mailboxListWithSelectedMail',
+    );
+  }
+
+  String get replyToAll {
+    return Intl.message(
+      'Reply to all',
+      name: 'replyToAll',
+    );
+  }
+
+  String get deleteMessage {
+    return Intl.message(
+      'Delete message',
+      name: 'deleteMessage',
+    );
+  }
 }

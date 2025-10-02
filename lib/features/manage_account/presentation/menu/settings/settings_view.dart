@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identities_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/keyboard_shortcuts/keyboard_shortcuts_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/setting_app_bar.dart';
@@ -145,6 +146,8 @@ class SettingsView extends GetWidget<SettingsController> {
           } else {
             return const SizedBox.shrink();
           }
+        case AccountMenuItem.keyboardShortcuts:
+          return const KeyboardShortcutsView();
         default:
           return const SizedBox.shrink();
       }

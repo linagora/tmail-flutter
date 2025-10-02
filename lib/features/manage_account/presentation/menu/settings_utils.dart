@@ -149,4 +149,17 @@ class SettingsUtils {
       return const EdgeInsetsDirectional.symmetric(vertical: 8);
     }
   }
+
+  static EdgeInsetsGeometry getBodyPadding(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+  ) {
+    if (responsiveUtils.isMobile(context)) {
+      return const EdgeInsetsDirectional.only(top: 16, start: 24, end: 24);
+    } else if (responsiveUtils.isDesktop(context)) {
+      return const EdgeInsetsDirectional.only(top: 36);
+    } else {
+      return const EdgeInsetsDirectional.only(top: 16, start: 44, end: 44);
+    }
+  }
 }
