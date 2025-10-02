@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/e
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identities_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/keyboard_shortcuts/keyboard_shortcuts_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/setting_app_bar.dart';
@@ -132,6 +133,8 @@ class SettingsView extends GetWidget<SettingsController> {
           return MailboxVisibilityView();
         case AccountMenuItem.notification:
           return const NotificationView();
+        case AccountMenuItem.keyboardShortcuts:
+          return const KeyboardShortcutsView();
         default:
           return const SizedBox.shrink();
       }

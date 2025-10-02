@@ -12,6 +12,7 @@ enum AccountMenuItem {
   mailboxVisibility,
   notification,
   contactSupport,
+  keyboardShortcuts,
   signOut,
   none;
 
@@ -35,6 +36,8 @@ enum AccountMenuItem {
         return imagePaths.icNotification;
       case AccountMenuItem.contactSupport:
         return imagePaths.icHelp;
+      case AccountMenuItem.keyboardShortcuts:
+        return imagePaths.icKeyboard;
       case AccountMenuItem.signOut:
         return imagePaths.icSignOut;
       case AccountMenuItem.none:
@@ -62,6 +65,8 @@ enum AccountMenuItem {
         return appLocalizations.notification;
       case AccountMenuItem.contactSupport:
         return appLocalizations.contactSupport;
+      case AccountMenuItem.keyboardShortcuts:
+        return appLocalizations.keyboardShortcuts;
       case AccountMenuItem.signOut:
         return appLocalizations.sign_out;
       case AccountMenuItem.none:
@@ -83,6 +88,10 @@ enum AccountMenuItem {
         return appLocalizations.vacationSettingExplanation;
       case AccountMenuItem.mailboxVisibility:
         return appLocalizations.folderVisibilitySubtitle;
+      case AccountMenuItem.notification:
+        return appLocalizations.allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone;
+      case AccountMenuItem.keyboardShortcuts:
+        return appLocalizations.keyboardShortcutsSettingExplanation;
       default:
         return '';
     }
@@ -108,6 +117,8 @@ enum AccountMenuItem {
         return 'notification';
       case AccountMenuItem.contactSupport:
         return 'contact-support';
+      case AccountMenuItem.keyboardShortcuts:
+        return 'keyboard-shortcuts';
       case AccountMenuItem.signOut:
         return 'sign-out';
       case AccountMenuItem.none:
