@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/e
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/text_formatting_menu_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 
 class PreferencesSettingManager {
@@ -14,6 +15,8 @@ class PreferencesSettingManager {
       '${_preferencesSettingKey}_THREAD';
   static const String _preferencesSettingSpamReportKey =
       '${_preferencesSettingKey}_SPAM_REPORT';
+  static const String _preferencesSettingTextFormattingMenuKey =
+      '${_preferencesSettingKey}_TEXT_FORMATTING_MENU';
 
   const PreferencesSettingManager(this._sharedPreferences);
 
@@ -36,6 +39,8 @@ class PreferencesSettingManager {
             return ThreadDetailConfig.fromJson(jsonDecoded);
           case _preferencesSettingSpamReportKey:
             return SpamReportConfig.fromJson(jsonDecoded);
+          case _preferencesSettingTextFormattingMenuKey:
+            return TextFormattingMenuConfig.fromJson(jsonDecoded);
           default:
             return DefaultPreferencesConfig.fromJson(jsonDecoded);
         }
@@ -59,6 +64,11 @@ class PreferencesSettingManager {
     } else if (config is SpamReportConfig) {
       await _sharedPreferences.setString(
         _preferencesSettingSpamReportKey,
+        jsonEncode(config.toJson()),
+      );
+    } else if (config is TextFormattingMenuConfig) {
+      await _sharedPreferences.setString(
+        _preferencesSettingTextFormattingMenuKey,
         jsonEncode(config.toJson()),
       );
     } else {
@@ -109,5 +119,23 @@ class PreferencesSettingManager {
     return jsonString == null
         ? ThreadDetailConfig.initial()
         : ThreadDetailConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<TextFormattingMenuConfig> getTextFormattingMenuConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingTextFormattingMenuKey,
+    );
+
+    return jsonString == null
+        ? TextFormattingMenuConfig.initial()
+        : TextFormattingMenuConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updateTextFormattingMenu({required bool isDisplayed}) async {
+    final currentConfig = await getTextFormattingMenuConfig();
+    final updatedConfig = currentConfig.copyWith(isDisplayed: isDisplayed);
+    await savePreferences(updatedConfig);
   }
 }

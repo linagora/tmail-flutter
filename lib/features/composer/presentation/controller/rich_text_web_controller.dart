@@ -313,6 +313,12 @@ class RichTextWebController extends GetxController {
     }
   }
 
+  void updateFormattingOptions(bool isDisplayed) {
+    formattingOptionsState.value = isDisplayed
+        ? FormattingOptionsState.enabled
+        : FormattingOptionsState.disabled;
+  }
+
   bool get isFormattingOptionsEnabled => formattingOptionsState.value == FormattingOptionsState.enabled;
 
   @override

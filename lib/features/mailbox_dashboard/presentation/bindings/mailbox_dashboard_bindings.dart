@@ -85,11 +85,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_com
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_mailbox_cached_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_text_formatting_menu_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_text_formatting_menu_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
@@ -101,7 +103,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/identity_repository.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/bindings/setting_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
@@ -378,6 +382,18 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<IdentityCreatorRepository>()
     ));
     PaywallBindings().dependencies();
+
+    SettingInteractorBindings().dependencies();
+    Get.lazyPut(
+      () => GetTextFormattingMenuStateInteractor(
+        Get.find<ManageAccountRepository>(),
+      ),
+    );
+    Get.lazyPut(
+      () => SaveTextFormattingMenuStateInteractor(
+        Get.find<ManageAccountRepository>(),
+      ),
+    );
   }
 
   @override
