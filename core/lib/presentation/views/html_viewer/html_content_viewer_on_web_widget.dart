@@ -8,6 +8,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -87,6 +88,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
   static const String onClickHyperLinkName = 'onClickHyperLink';
   static const String onScrollChangedEvent = 'onScrollChanged';
+  static const String onScrollEndEvent = 'onScrollEnd';
 
   @override
   void initState() {
@@ -106,8 +108,11 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       if (viewId != _createdViewId) return;
 
       final type = data['type'];
-      if (_isScrollChangedEventTriggered(type)) {
+      if (_isScrollingIsAvailable && _isScrollChangedEventTriggered(type)) {
         _handleIframeOnScrollChangedListener(data, widget.scrollController!);
+        return;
+      } else if (_isScrollingIsAvailable && _isScrollEndEventTriggered(type)) {
+        _handleIframeOnScrollEndListener(data, widget.scrollController!);
         return;
       }
 
@@ -130,10 +135,17 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
   }
 
-  bool _isScrollChangedEventTriggered(String? type) {
+  bool get _isScrollingIsAvailable {
     return widget.scrollController != null &&
-        widget.scrollController?.hasClients == true &&
-        type?.contains('toDart: $onScrollChangedEvent') == true;
+        widget.scrollController?.hasClients == true;
+  }
+
+  bool _isScrollChangedEventTriggered(String? type) {
+    return type?.contains('toDart: $onScrollChangedEvent') == true;
+  }
+
+  bool _isScrollEndEventTriggered(String? type) {
+    return type?.contains('toDart: $onScrollEndEvent') == true;
   }
 
   void _handleIframeOnScrollChangedListener(
@@ -141,15 +153,49 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     ScrollController controller,
   ) {
     final deltaY = data['deltaY'] ?? 0.0;
-    final newOffset = controller.offset + deltaY;
-    log('_HtmlContentViewerOnWebState::_handleIframeOnScrollChangedListener:deltaY = $deltaY | newOffset = $newOffset');
-    if (newOffset < controller.position.minScrollExtent) {
-      controller.jumpTo(controller.position.minScrollExtent);
-    } else if (newOffset > controller.position.maxScrollExtent) {
-      controller.jumpTo(controller.position.maxScrollExtent);
+    final target = controller.offset + deltaY;
+
+    if (PlatformInfo.isWebTouchDevice) {
+      final newOffset = target.clamp(
+        controller.position.minScrollExtent,
+        controller.position.maxScrollExtent,
+      );
+
+      controller.animateTo(
+        newOffset,
+        duration: const Duration(milliseconds: 50),
+        curve: Curves.linear,
+      );
     } else {
-      controller.jumpTo(newOffset);
+      if (target < controller.position.minScrollExtent) {
+        controller.jumpTo(controller.position.minScrollExtent);
+      } else if (target > controller.position.maxScrollExtent) {
+        controller.jumpTo(controller.position.maxScrollExtent);
+      } else {
+        controller.jumpTo(target);
+      }
     }
+  }
+
+  void _handleIframeOnScrollEndListener(
+    dynamic data,
+    ScrollController controller,
+  ) {
+    final velocity = data['velocity'] ?? 0.0;
+
+    final distance = velocity * 800;
+    final target = controller.offset + distance;
+
+    final newOffset = target.clamp(
+      controller.position.minScrollExtent,
+      controller.position.maxScrollExtent,
+    );
+
+    controller.animateTo(
+      newOffset,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.decelerate,
+    );
   }
 
   bool _isHtmlContentHeightEventTriggered(String? type) =>
@@ -319,17 +365,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
           
           ${!widget.autoAdjustHeight ? 'resizeObserver.observe(document.body);' : ''}
         }
-        
-        ${widget.scrollController != null ? '''
-          window.addEventListener('wheel', function (event) {
-            const deltaY = event.deltaY;
-            window.parent.postMessage(JSON.stringify({
-              "view": "$_createdViewId",
-              "type": "toDart: $onScrollChangedEvent",
-              "deltaY": deltaY
-            }), "*");
-          });
-        ''' : ''}
       </script>
     ''';
 
@@ -349,6 +384,17 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
       HtmlInteraction.generateNormalizeImageScript(widget.widthContent),
       if (widget.enableQuoteToggle) HtmlUtils.quoteToggleScript,
+      if (widget.scrollController != null)
+        PlatformInfo.isWebTouchDevice
+            ? HtmlInteraction.scriptsTouchEventListener(
+                viewId: _createdViewId,
+                onScrollChangedEvent: onScrollChangedEvent,
+                onScrollEndEvent: onScrollEndEvent,
+              )
+            : HtmlInteraction.scriptsWheelEventListener(
+                viewId: _createdViewId,
+                onScrollChangedEvent: onScrollChangedEvent,
+              ),
     ].join();
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
