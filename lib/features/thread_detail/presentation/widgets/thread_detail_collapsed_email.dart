@@ -69,7 +69,6 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
               onEmailActionClick: onEmailActionClick,
               openEmailAddressDetailAction: openEmailAddressDetailAction,
               showRecipients: false,
-              onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,
               mailboxContain: mailboxContain,
               showUnreadVisualization: true,
             ),

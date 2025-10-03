@@ -4,7 +4,6 @@ import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -41,7 +40,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   final OnMoreActionClick? onMoreActionClick;
   final bool showRecipients;
   final VoidCallback? onToggleThreadDetailCollapseExpand;
-  final OnTapAvatarActionClick? onTapAvatarActionClick;
   final PresentationMailbox? mailboxContain;
   final bool showUnreadVisualization;
 
@@ -60,7 +58,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     this.onMoreActionClick,
     this.showRecipients = true,
     this.onToggleThreadDetailCollapseExpand,
-    this.onTapAvatarActionClick,
     this.mailboxContain,
     this.showUnreadVisualization = false,
   }) : super(key: key);
@@ -76,7 +73,14 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
         children: [
           EmailAvatarBuilder(
             emailSelected: emailSelected,
-            onTapAvatarActionClick: onTapAvatarActionClick,
+            onTapAvatarActionClick: () {
+              if (emailSelected.from?.isNotEmpty == true) {
+                openEmailAddressDetailAction?.call(
+                  context,
+                  emailSelected.from!.first,
+                );
+              }
+            },
             size: 56,
           ),
           const SizedBox(width: 16),

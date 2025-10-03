@@ -281,7 +281,6 @@ class EmailView extends GetWidget<SingleEmailController> {
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenu,
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
-          onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,
           mailboxContain: presentationEmail.findMailboxContain(
             controller.mailboxDashBoardController.mapMailboxById,
           ),
