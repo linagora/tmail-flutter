@@ -1722,7 +1722,10 @@ class ComposerController extends BaseController
 
   Future<void> applySignature(String signature) async {
     if (PlatformInfo.isWeb) {
-      richTextWebController?.editorController.insertSignature(signature);
+      richTextWebController?.editorController.insertSignature(
+        signature,
+        allowCollapsed: false,
+      );
     } else {
       await htmlEditorApi?.insertSignature(signature, allowCollapsed: false);
     }
