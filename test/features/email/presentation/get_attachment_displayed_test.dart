@@ -18,7 +18,7 @@ void main() {
     });
 
     group('on mobile devices', () {
-      test('Should returns all attachments when there are 3 or fewer', () {
+      test('Should returns all attachments when there are 2 or fewer', () {
         final attachments = generateAttachments(2);
         final result = EmailUtils.getAttachmentDisplayed(
           maxWidth: 1000,
@@ -28,14 +28,14 @@ void main() {
         expect(result, attachments);
       });
 
-      test('Should returns first 3 attachments when more than 3 exist', () {
+      test('Should returns first 2 attachments when more than 2 exist', () {
         final attachments = generateAttachments(5);
         final result = EmailUtils.getAttachmentDisplayed(
           maxWidth: 1000,
           attachments: attachments,
           isMobile: true,
         );
-        expect(result, attachments.sublist(0, 3));
+        expect(result, attachments.sublist(0, 2));
       });
     });
 

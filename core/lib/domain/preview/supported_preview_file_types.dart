@@ -1,59 +1,7 @@
 class SupportedPreviewFileTypes {
-  static const imageMimeTypes = [
-    'image/bmp',
-    'image/jpeg',
-    'image/gif',
-    'image/webp',
-    'image/png',
-    'image/svg+xml',
-    'image/x-icon',
-    'image/tiff',
-    'image/heif',
-    'image/avif'
-  ];
-
-  static const textMimeTypes = [
-    'text/plain',
-    'text/markdown',
-  ];
-
   static const jsonMimeTypes = [
     'application/json',
   ];
-
-  static const docMimeTypes = [
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.oasis.opendocument.text',
-    'application/vnd.oasis.opendocument.text-template',
-    'application/vnd.oasis.opendocument.text-web',
-    'application/vnd.oasis.opendocument.text-master',
-    'application/msword',
-    'application/vnd.ms-works'];
-
-  static const rtfMimeTypes = ['application/rtf'];
-
-  static const xlsMimeTypes = [
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'application/vnd.oasis.opendocument.spreadsheet',
-    'application/vnd.oasis.opendocument.spreadsheet-template',
-    'application/vnd.oasis.opendocument.chart',
-    'application/vnd.oasis.opendocument.formula',
-    'application/vnd.ms-excel'];
-
-  static const pptMimeTypes = [
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'application/vnd.oasis.opendocument.presentation',
-    'application/vnd.oasis.opendocument.presentation-template',
-    'application/vnd.ms-powerpoint'];
-
-  static const zipMimeTypes = [
-    'application/zip',
-    'application/x-tar',
-    'application/x-gtar',
-    'application/x-gzip',
-    'application/x-compressed',
-    'application/x-zip-compressed',
-    'application/java-archive'];
 
   static const iOSSupportedTypes = {
     'text/plain' : 'public.plain-text',
@@ -83,50 +31,4 @@ class SupportedPreviewFileTypes {
     'application/vnd.openxmlformats-officedocument.presentationml.presentation' : 'com.microsoft.powerpoint.​ppt',
     'application/pdf' : 'com.adobe.pdf',
   };
-
-  static const androidSupportedTypes = [
-    'image/bmp',
-    'image/jpeg',
-    'image/gif',
-    'image/png',
-    'text/plain',
-    'text/html',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'application/msword',
-    'application/vnd.ms-excel',
-    'application/vnd.ms-powerpoint',
-    'application/vnd.ms-outlook',
-    'application/vnd.ms-works',
-    'application/vnd.mpohun.certificate',
-    'application/vnd.android.package-archive',
-    'application/octet-stream',
-    'application/x-tar',
-    'application/x-gtar',
-    'application/x-gzip',
-    'application/x-javascript',
-    'application/x-compressed',
-    'application/x-zip-compressed',
-    'application/java-archive',
-    'application/pdf',
-    'application/rtf',
-    'audio/x-mpegurl',
-    'video/x-m4v',
-    'video/x-ms-asf',
-    'video/x-msvideo',
-    'audio/x-mpeg',
-    'audio/mp4a-latm',
-    'video/vnd.mpegurl',
-    'video/quicktime',
-    'video/mp4',
-    'video/3gpp',
-    'video/mpeg',
-    'audio/mpeg',
-    'audio/ogg',
-    'audio/x-pn-realaudio',
-    'audio/x-wav',
-    'audio/x-ms-wma',
-    'audio/x-ms-wmv',
-  ];
 }

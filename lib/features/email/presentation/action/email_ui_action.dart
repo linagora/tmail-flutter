@@ -84,3 +84,12 @@ class CollapseEmailInThreadDetailAction extends EmailUIAction {
   @override
   List<Object?> get props => [emailId];
 }
+
+class OpenAttachmentListAction extends EmailUIAction {
+  OpenAttachmentListAction(this.emailId);
+
+  final EmailId? emailId;
+
+  @override
+  List<Object?> get props => [emailId];
+}

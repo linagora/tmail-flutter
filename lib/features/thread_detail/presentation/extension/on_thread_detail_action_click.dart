@@ -8,6 +8,7 @@ import 'package:model/email/read_actions.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -216,5 +217,11 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     if (destinationMailbox is! PresentationMailbox) return null;
 
     return destinationMailbox.id;
+  }
+
+  void onOpenAttachmentListAction() {
+    mailboxDashBoardController.dispatchEmailUIAction(
+      OpenAttachmentListAction(currentExpandedEmailId.value),
+    );
   }
 }

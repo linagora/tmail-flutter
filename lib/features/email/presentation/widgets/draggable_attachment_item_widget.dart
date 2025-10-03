@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
@@ -12,7 +13,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
 
   final Attachment attachment;
   final ImagePaths imagePaths;
-  final double? width;
+  final ResponsiveUtils responsiveUtils;
   final OnDragAttachmentStarted? onDragStarted;
   final OnDragAttachmentEnd? onDragEnd;
   final OnDownloadAttachmentFileAction? downloadAttachmentAction;
@@ -23,7 +24,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
     Key? key,
     required this.attachment,
     required this.imagePaths,
-    this.width,
+    required this.responsiveUtils,
     this.onDragStarted,
     this.onDragEnd,
     this.downloadAttachmentAction,
@@ -41,7 +42,7 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
       child: AttachmentItemWidget(
         attachment: attachment,
         imagePaths: imagePaths,
-        width: width,
+        responsiveUtils: responsiveUtils,
         downloadAttachmentAction: downloadAttachmentAction,
         viewAttachmentAction: viewAttachmentAction,
         singleEmailControllerTag: singleEmailControllerTag,
