@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
+import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -39,12 +40,19 @@ class RecipientCollapsedItemWidget extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Flexible(
-            child: Text(
+            child: ExtendedText(
               emailAddress.asString(),
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              overflowWidget: TextOverflowWidget(
+                position: TextOverflowPosition.middle,
+                clearType: TextOverflowClearType.clipRect,
+                child: Text(
+                  '...',
+                  style: RecipientTagItemWidgetStyle.labelTextStyle,
+                ),
+              ),
               style: RecipientTagItemWidgetStyle.labelTextStyle,
-            ),
+            )
           ),
         ],
       ),

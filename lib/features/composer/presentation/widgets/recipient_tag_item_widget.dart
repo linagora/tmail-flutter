@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
@@ -94,6 +95,9 @@ class RecipientTagItemWidget extends StatelessWidget {
       ),
       onClearFocusAction: onClearFocusAction,
       child: Container(
+        key: PlatformInfo.isWeb
+            ? Key('recipient_tag_item_${prefix.name}_$index')
+            : null,
         constraints: const BoxConstraints(maxWidth: 267),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(
@@ -116,13 +120,28 @@ class RecipientTagItemWidget extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Flexible(
-              child: Text(
-                key: Key('label_recipient_tag_item_${prefix.name}_$index'),
-                currentEmailAddress.asString(),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: RecipientTagItemWidgetStyle.labelTextStyle,
-              ),
+              child: PlatformInfo.isWeb
+                ? ExtendedText(
+                    key: Key('label_recipient_tag_item_${prefix.name}_$index'),
+                    currentEmailAddress.asString(),
+                    maxLines: 1,
+                    overflowWidget: TextOverflowWidget(
+                      position: TextOverflowPosition.middle,
+                      clearType: TextOverflowClearType.clipRect,
+                      child: Text(
+                        '...',
+                        style: RecipientTagItemWidgetStyle.labelTextStyle,
+                      ),
+                    ),
+                    style: RecipientTagItemWidgetStyle.labelTextStyle,
+                  )
+                : Text(
+                    key: Key('label_recipient_tag_item_${prefix.name}_$index'),
+                    currentEmailAddress.asString(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: RecipientTagItemWidgetStyle.labelTextStyle,
+                  ),
             ),
             const SizedBox(width: 4),
             TMailButtonWidget.fromIcon(
@@ -167,29 +186,33 @@ class RecipientTagItemWidget extends StatelessWidget {
       );
     }
 
-    return Container(
-      key: Key('recipient_tag_item_${prefix.name}_$index'),
-      constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(child: tagWidget),
-          if (isCollapsed)
-            TMailButtonWidget.fromText(
-              key: Key('counter_recipient_tag_item_${prefix.name}_$index'),
-              margin: _counterMargin,
-              text: '+$countRecipients',
-              onTapActionCallback: () => onShowFullAction?.call(prefix),
-              borderRadius: RecipientTagItemWidgetStyle.radius,
-              textStyle: RecipientTagItemWidgetStyle.labelTextStyle,
-              padding: PlatformInfo.isWeb || isTestingForWeb
-                ? RecipientTagItemWidgetStyle.counterPadding
-                : RecipientTagItemWidgetStyle.mobileCounterPadding,
-              backgroundColor: AppColor.colorEmailAddressTag,
-            )
-        ]
-      ),
-    );
+    if (PlatformInfo.isWeb) {
+      return tagWidget;
+    } else {
+      return Container(
+        key: Key('recipient_tag_item_${prefix.name}_$index'),
+        constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
+        child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(child: tagWidget),
+              if (isCollapsed)
+                TMailButtonWidget.fromText(
+                  key: Key('counter_recipient_tag_item_${prefix.name}_$index'),
+                  margin: _counterMargin,
+                  text: '+$countRecipients',
+                  onTapActionCallback: () => onShowFullAction?.call(prefix),
+                  borderRadius: RecipientTagItemWidgetStyle.radius,
+                  textStyle: RecipientTagItemWidgetStyle.labelTextStyle,
+                  padding: PlatformInfo.isWeb || isTestingForWeb
+                      ? RecipientTagItemWidgetStyle.counterPadding
+                      : RecipientTagItemWidgetStyle.mobileCounterPadding,
+                  backgroundColor: AppColor.colorEmailAddressTag,
+                ),
+            ],
+        ),
+      );
+    }
   }
 
   EdgeInsetsGeometry? get _counterMargin {
