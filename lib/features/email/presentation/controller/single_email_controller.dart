@@ -432,7 +432,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         if (_currentEmailId == null || action.emailId != _currentEmailId) {
           return;
         }
-        jumpToAttachmentList();
+        jumpToAttachmentList(
+          emailId: _currentEmailId!,
+          countAttachments: action.countAttachments,
+          screenHeight: action.screenHeight,
+          isDisplayAllAttachments: action.isDisplayAllAttachments,
+        );
         mailboxDashBoardController.clearEmailUIAction();
       }
     }));
@@ -1765,10 +1770,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void showAllAttachmentsAction() {
     isDisplayAllAttachments.value = true;
+    threadDetailController?.isDisplayAllAttachments = true;
   }
 
   void hideAllAttachmentsAction() {
     isDisplayAllAttachments.value = false;
+    threadDetailController?.isDisplayAllAttachments = false;
   }
 
   void _unsubscribeEmail(BuildContext context, PresentationEmail presentationEmail) {

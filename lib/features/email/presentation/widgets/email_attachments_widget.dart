@@ -65,7 +65,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
     bool isMobile = responsiveUtils.isMobile(context);
 
     final hideButton = SizedBox(
-      height: 36,
+      height: EmailUtils.attachmentItemHeight,
       width: isMobile ? double.infinity : null,
       child: ConfirmDialogButton(
         label: AppLocalizations.of(context).hideAll,
@@ -105,7 +105,9 @@ class EmailAttachmentsWidget extends StatelessWidget {
                   return AttachmentItemWidget(
                     attachment: attachment,
                     imagePaths: imagePaths,
-                    margin: const EdgeInsets.only(top: 8),
+                    margin: const EdgeInsets.only(
+                      top: EmailUtils.attachmentItemSpacing,
+                    ),
                     downloadAttachmentAction: downloadAttachmentAction,
                     viewAttachmentAction: viewAttachmentAction,
                     singleEmailControllerTag: singleEmailControllerTag,
@@ -113,10 +115,10 @@ class EmailAttachmentsWidget extends StatelessWidget {
                 }).toList(),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: EmailUtils.attachmentItemSpacing),
             if (hiddenItemsCount > 0)
               SizedBox(
-                height: 36,
+                height: EmailUtils.attachmentItemHeight,
                 width: double.infinity,
                 child: ConfirmDialogButton(
                   label: AppLocalizations.of(context).moreAttachments(
@@ -200,7 +202,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
                         }).toList(),
                         if (hiddenItemsCount > 0)
                           SizedBox(
-                            height: 36,
+                            height: EmailUtils.attachmentItemHeight,
                             child: ConfirmDialogButton(
                               label: '+$hiddenItemsCount',
                               backgroundColor: Theme.of(context).colorScheme.outline.withValues(

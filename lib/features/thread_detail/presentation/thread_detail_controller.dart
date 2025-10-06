@@ -123,6 +123,7 @@ class ThreadDetailController extends BaseController {
   ScrollController? scrollController;
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   bool loadThreadOnThreadChanged = false;
+  bool isDisplayAllAttachments = false;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -232,6 +233,7 @@ class ThreadDetailController extends BaseController {
     currentEmailLoaded.value = null;
     cachedEmailLoaded.clear();
     _threadGetDebouncer.value = null;
+    isDisplayAllAttachments = false;
   }
 
   @override

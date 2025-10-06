@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_action_status.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/parsing_email_opened_properties_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -219,9 +220,14 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     return destinationMailbox.id;
   }
 
-  void onOpenAttachmentListAction() {
+  void onOpenAttachmentListAction(double screenHeight) {
     mailboxDashBoardController.dispatchEmailUIAction(
-      OpenAttachmentListAction(currentExpandedEmailId.value),
+      OpenAttachmentListAction(
+        emailId: currentExpandedEmailId.value,
+        countAttachments: currentAttachmentsList.length,
+        screenHeight: screenHeight,
+        isDisplayAllAttachments: isDisplayAllAttachments,
+      ),
     );
   }
 }
