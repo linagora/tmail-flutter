@@ -62,6 +62,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draf
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outbox_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_message_failure_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_attachments_extension.dart';
@@ -96,7 +97,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -110,8 +110,8 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_upload_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
@@ -146,9 +146,11 @@ class ComposerController extends BaseController
   final emailContentsViewState = Rxn<Either<Failure, Success>>();
   final hasRequestReadReceipt = false.obs;
   final fromRecipientState = PrefixRecipientState.disabled.obs;
+  final toRecipientState = PrefixRecipientState.enabled.obs;
   final ccRecipientState = PrefixRecipientState.disabled.obs;
   final bccRecipientState = PrefixRecipientState.disabled.obs;
   final replyToRecipientState = PrefixRecipientState.disabled.obs;
+  final recipientsCollapsedState = PrefixRecipientState.disabled.obs;
   final identitySelected = Rxn<Identity>();
   final listFromIdentities = RxList<Identity>();
   final isEmailChanged = Rx<bool>(false);
@@ -243,6 +245,7 @@ class ComposerController extends BaseController
   EmailActionType? savedActionType;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailId? currentTemplateEmailId;
+  PrefixEmailAddress prefixRootState = PrefixEmailAddress.to;
 
   @visibleForTesting
   int? get savedEmailDraftHash => _savedEmailDraftHash;
@@ -601,8 +604,8 @@ class ComposerController extends BaseController
       }
       _collapseAllRecipient();
       autoCreateEmailTag();
-      if (PlatformInfo.isWeb) {
-        _hideCcBccReplyToRecipients();
+      if (PlatformInfo.isWeb && isRecipientsNotEmpty) {
+        hideAllRecipients();
       }
     }
   }
@@ -722,26 +725,34 @@ class ComposerController extends BaseController
     listBccEmailAddress = List.from(recipients.bcc);
     listReplyToEmailAddress = List.from(recipients.replyTo);
 
-    if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty || listReplyToEmailAddress.isNotEmpty) {
-      isInitialRecipient.value = true;
-      toAddressExpandMode.value = ExpandMode.COLLAPSE;
-    }
+    if (PlatformInfo.isWeb) {
+      if (isRecipientsNotEmpty) {
+        hideAllRecipients();
+        isInitialRecipient.value = true;
+      } else {
+        toRecipientState.value = PrefixRecipientState.enabled;
+      }
+    } else {
+      if (isRecipientsNotEmpty) {
+        isInitialRecipient.value = true;
+        toAddressExpandMode.value = ExpandMode.COLLAPSE;
+      }
 
-    if (listCcEmailAddress.isNotEmpty) {
-      ccRecipientState.value = PrefixRecipientState.enabled;
-      ccAddressExpandMode.value = ExpandMode.COLLAPSE;
-    }
+      if (listCcEmailAddress.isNotEmpty) {
+        ccRecipientState.value = PrefixRecipientState.enabled;
+        ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+      }
 
-    if (listBccEmailAddress.isNotEmpty) {
-      bccRecipientState.value = PrefixRecipientState.enabled;
-      bccAddressExpandMode.value = ExpandMode.COLLAPSE;
-    }
+      if (listBccEmailAddress.isNotEmpty) {
+        bccRecipientState.value = PrefixRecipientState.enabled;
+        bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+      }
 
-    if (listReplyToEmailAddress.isNotEmpty) {
-      replyToRecipientState.value = PrefixRecipientState.enabled;
-      replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
+      if (listReplyToEmailAddress.isNotEmpty) {
+        replyToRecipientState.value = PrefixRecipientState.enabled;
+        replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
+      }
     }
-
     updateStatusEmailSendButton();
   }
 
@@ -809,10 +820,6 @@ class ComposerController extends BaseController
       return;
     }
 
-    final allListEmailAddress = listToEmailAddress + listCcEmailAddress + listBccEmailAddress + listReplyToEmailAddress;
-    final listEmailAddressInvalid = allListEmailAddress
-        .where((emailAddress) => !EmailUtils.isEmailAddressValid(emailAddress.emailAddress))
-        .toList();
     if (listEmailAddressInvalid.isNotEmpty) {
       MessageDialogActionManager().showConfirmDialogAction(context,
         appLocalizations.message_dialog_send_email_with_email_address_invalid,
@@ -1466,9 +1473,9 @@ class ComposerController extends BaseController
 
   void clickOutsideComposer(BuildContext context) {
     clearFocus(context);
-    if (PlatformInfo.isWeb) {
+    if (PlatformInfo.isWeb && isRecipientsNotEmpty) {
       _collapseAllRecipient();
-      _hideCcBccReplyToRecipients();
+      hideAllRecipients();
     }
   }
 
@@ -1501,6 +1508,9 @@ class ComposerController extends BaseController
       case PrefixEmailAddress.from:
         fromRecipientState.value = PrefixRecipientState.enabled;
         break;
+      case PrefixEmailAddress.to:
+        toRecipientState.value = PrefixRecipientState.enabled;
+        break;
       case PrefixEmailAddress.cc:
         ccRecipientState.value = PrefixRecipientState.enabled;
         break;
@@ -1509,8 +1519,6 @@ class ComposerController extends BaseController
         break;
       case PrefixEmailAddress.replyTo:
         replyToRecipientState.value = PrefixRecipientState.enabled;
-        break;
-      default:
         break;
     }
   }
@@ -1545,10 +1553,15 @@ class ComposerController extends BaseController
     replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
   }
 
-  void _hideCcBccReplyToRecipients() {
-    ccRecipientState.value = PrefixRecipientState.disabled;
-    bccRecipientState.value = PrefixRecipientState.disabled;
-    replyToRecipientState.value = PrefixRecipientState.disabled;
+  void clearFocusRecipients() {
+    toAddressFocusNode?.unfocus();
+    ccAddressFocusNode?.unfocus();
+    bccAddressFocusNode?.unfocus();
+    replyToAddressFocusNode?.unfocus();
+  }
+
+  void clearFocusSubject() {
+    subjectEmailInputFocusNode?.unfocus();
   }
 
   void clearFocusRecipients() {
@@ -1793,9 +1806,6 @@ class ComposerController extends BaseController
     }
     _collapseAllRecipient();
     autoCreateEmailTag();
-    if (PlatformInfo.isWeb) {
-      _hideCcBccReplyToRecipients();
-    }
   }
 
   void _onChangeCursorOnMobile(List<int>? coordinates, BuildContext context) {
@@ -1926,14 +1936,14 @@ class ComposerController extends BaseController
     if (mailboxDashBoardController.isPopupMenuOpened.isTrue) {
       popBack();
     }
-    if (PlatformInfo.isWeb) {
-      _hideCcBccReplyToRecipients();
+    autoCreateEmailTag();
+    if (PlatformInfo.isWeb && isRecipientsNotEmpty) {
+      hideAllRecipients();
     }
   }
 
   void handleOnMouseDownHtmlEditorWeb() {
     _collapseAllRecipient();
-    autoCreateEmailTag();
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {

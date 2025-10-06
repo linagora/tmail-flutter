@@ -56,9 +56,11 @@ class RecipientComposerWidget extends StatefulWidget {
   final double maxWidth;
   final ExpandMode expandMode;
   final PrefixRecipientState fromState;
+  final PrefixRecipientState toState;
   final PrefixRecipientState ccState;
   final PrefixRecipientState bccState;
   final PrefixRecipientState replyToState;
+  final PrefixEmailAddress prefixRootState;
   final bool? isInitial;
   final FocusNode? focusNode;
   final FocusNode? focusNodeKeyboard;
@@ -90,10 +92,12 @@ class RecipientComposerWidget extends StatefulWidget {
     required this.maxWidth,
     this.minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete,
     @visibleForTesting this.isTestingForWeb = false,
+    this.toState = PrefixRecipientState.disabled,
     this.ccState = PrefixRecipientState.disabled,
     this.bccState = PrefixRecipientState.disabled,
     this.replyToState = PrefixRecipientState.disabled,
     this.fromState = PrefixRecipientState.disabled,
+    this.prefixRootState = PrefixEmailAddress.to,
     this.isInitial,
     this.controller,
     this.focusNode,
@@ -360,7 +364,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
             )
           ),
           const SizedBox(width: RecipientComposerWidgetStyle.space),
-          if (widget.prefix == PrefixEmailAddress.to)
+          if (widget.prefix == widget.prefixRootState)
             if (PlatformInfo.isWeb || widget.isTestingForWeb)
               ...[
                 if (widget.fromState == PrefixRecipientState.disabled)
@@ -372,6 +376,16 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                     padding: RecipientComposerWidgetStyle.prefixButtonPadding,
                     margin: RecipientComposerWidgetStyle.recipientMargin,
                     onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.from),
+                  ),
+                if (widget.toState == PrefixRecipientState.disabled)
+                  TMailButtonWidget.fromText(
+                    key: Key('prefix_${widget.prefix.name}_recipient_to_button'),
+                    text: AppLocalizations.of(context).to_email_address_prefix,
+                    textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                    backgroundColor: Colors.transparent,
+                    padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                    margin: RecipientComposerWidgetStyle.recipientMargin,
+                    onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.to),
                   ),
                 if (widget.ccState == PrefixRecipientState.disabled)
                   TMailButtonWidget.fromText(
@@ -404,7 +418,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                     onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.replyTo),
                   ),
               ]
-            else if (PlatformInfo.isMobile)
+            else
               TMailButtonWidget.fromIcon(
                 key: Key('prefix_${widget.prefix.name}_recipient_expand_button'),
                 icon: _isAllRecipientInputEnabled

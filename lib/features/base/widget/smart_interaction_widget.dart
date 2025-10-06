@@ -149,19 +149,25 @@ class _SmartInteractionWidgetState extends State<SmartInteractionWidget> {
               _lastPointerEventOffset = event.position;
             }
           },
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onDoubleTap: _handleDoubleTap,
+              onTap: _handleOnTapAction,
+              child: widget.child,
+            ),
+          ),
+        );
+      } else {
+        return MouseRegion(
+          cursor: SystemMouseCursors.click,
           child: GestureDetector(
+            key: _childKey,
+            behavior: HitTestBehavior.opaque,
             onDoubleTap: _handleDoubleTap,
             onTap: _handleOnTapAction,
             child: widget.child,
           ),
-        );
-      } else {
-        return GestureDetector(
-          key: _childKey,
-          behavior: HitTestBehavior.opaque,
-          onDoubleTap: _handleDoubleTap,
-          onTap: _handleOnTapAction,
-          child: widget.child,
         );
       }
     } else {
