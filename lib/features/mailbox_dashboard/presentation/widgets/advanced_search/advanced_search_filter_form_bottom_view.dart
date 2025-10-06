@@ -23,10 +23,25 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildCheckboxHasAttachment(
-          context,
-          focusManager.attachmentCheckboxFocusNode,
+        Wrap(
+          runSpacing: 12,
+          spacing: 24,
+          children: [
+            _buildCheckboxHasAttachment(
+              context,
+              focusManager.attachmentCheckboxFocusNode,
+            ),
+            _buildCheckboxUnread(
+              context,
+              focusManager.unreadCheckboxFocusNode,
+            ),
+            _buildCheckboxStarred(
+              context,
+              focusManager.starredCheckboxFocusNode,
+            ),
+          ],
         ),
+        const SizedBox(height: 25),
         _buildListButton(context),
       ],
     );
@@ -82,8 +97,43 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
         svgIconPath: controller.imagePaths.icCheckboxUnselected,
         selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,
         focusNode: currentFocusNode,
+        gap: 8.0,
         value: controller.hasAttachment.value,
         onChanged: controller.onHasAttachmentCheckboxChanged,
+      ),
+    );
+  }
+
+  Widget _buildCheckboxStarred(
+    BuildContext context,
+    FocusNode currentFocusNode,
+  ) {
+    return Obx(
+      () => CustomIconLabeledCheckbox(
+        label: AppLocalizations.of(context).starred,
+        svgIconPath: controller.imagePaths.icCheckboxUnselected,
+        selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,
+        focusNode: currentFocusNode,
+        gap: 8.0,
+        value: controller.isStarred.value,
+        onChanged: controller.onStarredCheckboxChanged,
+      ),
+    );
+  }
+
+  Widget _buildCheckboxUnread(
+    BuildContext context,
+    FocusNode currentFocusNode,
+  ) {
+    return Obx(
+      () => CustomIconLabeledCheckbox(
+        label: AppLocalizations.of(context).unread,
+        svgIconPath: controller.imagePaths.icCheckboxUnselected,
+        selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,
+        focusNode: currentFocusNode,
+        gap: 8.0,
+        value: controller.isUnread.value,
+        onChanged: controller.onUnreadCheckboxChanged,
       ),
     );
   }
