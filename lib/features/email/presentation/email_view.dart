@@ -453,6 +453,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           responsiveUtils: controller.responsiveUtils,
           attachments: controller.attachments,
           imagePaths: controller.imagePaths,
+          isDisplayAllAttachments: controller.isDisplayAllAttachments.value,
           onDragStarted: controller
               .mailboxDashBoardController.enableAttachmentDraggableApp,
           onDragEnd: (_) {
@@ -467,10 +468,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                 context,
                 attachment,
               ),
-          onTapShowAllAttachmentFile: () => controller.openAttachmentList(
-            context,
-            controller.attachments,
-          ),
+          onTapShowAllAttachmentFile: controller.showAllAttachmentsAction,
+          onTapHideAllAttachments: controller.hideAllAttachmentsAction,
           showDownloadAllAttachmentsButton:
           controller.downloadAllButtonIsEnabled(),
           onTapDownloadAllButton: () =>
