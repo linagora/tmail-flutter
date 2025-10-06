@@ -52,79 +52,40 @@ class AttachmentsInfo extends StatelessWidget {
       style: ThemeUtils.textStyleInter400.copyWith(
         fontSize: 15,
         height: 20 / 15,
+        letterSpacing: -0.24,
         color: AppColor.gray99A2AD,
       ),
     );
 
-    if (responsiveUtils.isMobile(context)) {
-      return Row(
-        children: [
-          iconAttachment,
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsetsDirectional.only(start: 8, end: 3),
-              child: titleHeaderAttachment,
-            ),
+    return Row(
+      children: [
+        iconAttachment,
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.only(start: 8, end: 3),
+            child: titleHeaderAttachment,
           ),
-          if (displayShowAll && numberOfAttachments > 3)
-            _buildShowAllButton(context),
-        ],
-      );
-    } else {
-      return Row(
-        children: [
-          iconAttachment,
-          Expanded(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 8, end: 3),
-                    child: titleHeaderAttachment,
-                  ),
-                ),
-                if (displayShowAll && numberOfAttachments > 4)
-                  _buildShowAllButton(context),
-              ],
+        ),
+        if (onTapDownloadAllButton != null)
+          TMailButtonWidget(
+            text: AppLocalizations.of(context).archiveAndDownload,
+            icon: imagePaths.icDownloadAll,
+            iconSize: 20,
+            iconColor: AppColor.steelGrayA540,
+            iconAlignment: TextDirection.rtl,
+            backgroundColor: Colors.transparent,
+            borderRadius: 5,
+            mainAxisSize: MainAxisSize.min,
+            flexibleText: true,
+            maxLines: 1,
+            maxWidth: 300,
+            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+            textStyle: ThemeUtils.textStyleBodyBody1().copyWith(
+              color: AppColor.steelGray400,
             ),
+            onTapActionCallback: onTapDownloadAllButton,
           ),
-          if (onTapDownloadAllButton != null)
-            TMailButtonWidget(
-              text: AppLocalizations.of(context).archiveAndDownload,
-              icon: imagePaths.icDownloadAll,
-              iconSize: 20,
-              iconColor: AppColor.steelGrayA540,
-              iconAlignment: TextDirection.rtl,
-              backgroundColor: Colors.transparent,
-              borderRadius: 5,
-              mainAxisSize: MainAxisSize.min,
-              flexibleText: true,
-              maxLines: 1,
-              maxWidth: 300,
-              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-              textStyle: ThemeUtils.textStyleBodyBody1().copyWith(
-                color: AppColor.steelGray400,
-              ),
-              onTapActionCallback: onTapDownloadAllButton,
-            ),
-        ],
-      );
-    }
-  }
-
-  Widget _buildShowAllButton(BuildContext context) {
-    return TMailButtonWidget.fromText(
-      text: AppLocalizations.of(context).showAll,
-      backgroundColor: Colors.transparent,
-      textStyle: ThemeUtils.textStyleBodyBody1().copyWith(
-        color: AppColor.steelGray400,
-      ),
-      borderRadius: 5,
-      maxLines: 1,
-      maxWidth: 120,
-      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-      onTapActionCallback: onTapShowAllAttachmentFile,
+      ],
     );
   }
 }

@@ -83,6 +83,48 @@ void main() {
         );
         expect(result, attachments);
       });
+
+      test('returns all if total width <= maxWidth', () {
+        final attachments = generateAttachments(5);
+        final result = EmailUtils.getAttachmentDisplayed(
+          maxWidth: 1400,
+          attachments: attachments,
+          isMobile: false,
+        );
+        expect(result.length, attachments.length);
+      });
+
+      test('returns some items when total width > maxWidth', () {
+        final attachments = generateAttachments(5);
+        final result = EmailUtils.getAttachmentDisplayed(
+          maxWidth: 600,
+          attachments: attachments,
+          isMobile: false,
+        );
+        expect(result.length, 1);
+        expect(result.first.name, 'A0');
+      });
+
+      test('returns 2 items if enough for 2 + button', () {
+        final attachments = generateAttachments(5);
+        final result = EmailUtils.getAttachmentDisplayed(
+          maxWidth: 800,
+          attachments: attachments,
+          isMobile: false,
+        );
+        expect(result.length, 2);
+        expect(result.map((e) => e.name), ['A0', 'A1']);
+      });
+
+      test('returns at least 1 even if not enough for one item + button', () {
+        final attachments = generateAttachments(5);
+        final result = EmailUtils.getAttachmentDisplayed(
+          maxWidth: 100,
+          attachments: attachments,
+          isMobile: false,
+        );
+        expect(result.length, 1);
+      });
     });
   });
 }
