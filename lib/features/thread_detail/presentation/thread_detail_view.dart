@@ -44,6 +44,9 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             threadDetailCanPermanentlyDelete: controller.threadDetailCanPermanentlyDelete,
             onThreadActionClick: controller.onThreadDetailActionClick,
             onThreadMoreActionClick: controller.onThreadDetailMoreActionClick,
+            onOpenAttachmentListAction: controller.isEmailExpandedHasAttachments
+                ? controller.onOpenAttachmentListAction
+                : null,
             optionWidgets: [
               if (controller.previousAvailable)
                 TMailButtonWidget.fromIcon(
@@ -135,8 +138,11 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                     itemCount: manager.isThreadDetailEnabled
                         ? manager.availableThreadIds.length
                         : manager.currentDisplayedEmails.length,
-                    itemBuilder: (context, index) {
-                      return SingleChildScrollView(child: threadBody);
+                    itemBuilder: (_, __) {
+                      return SingleChildScrollView(
+                        controller: controller.scrollController,
+                        child: threadBody,
+                      );
                     },
                     onPageChanged: controller.onThreadPageChanged,
                   ),

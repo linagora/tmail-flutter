@@ -29,6 +29,7 @@ class ThreadDetailAppBar extends StatelessWidget {
     this.optionWidgets = const [],
     this.onThreadActionClick,
     this.onThreadMoreActionClick,
+    this.onOpenAttachmentListAction,
   });
 
   final ResponsiveUtils responsiveUtils;
@@ -43,6 +44,7 @@ class ThreadDetailAppBar extends StatelessWidget {
   final List<Widget> optionWidgets;
   final OnThreadActionClick? onThreadActionClick;
   final OnThreadMoreActionClick? onThreadMoreActionClick;
+  final VoidCallback? onOpenAttachmentListAction;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +116,14 @@ class ThreadDetailAppBar extends StatelessWidget {
           childrenWidgets = [
             if (_supportDisplayMailboxNameTitle(context)) backButton,
             if (isRTL) ...optionWidgets.reversed else ...optionWidgets,
+            if (onOpenAttachmentListAction != null)
+              _ThreadDetailAppBarButton(
+                icon: imagePaths.icAttachment,
+                tooltipMessage: AppLocalizations.of(context).attachments,
+                responsiveUtils: responsiveUtils,
+                iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                onTapActionCallback: (_) => onOpenAttachmentListAction?.call(),
+              ),
             if (isThreadActionAvailable) ...listShortcutActions,
           ];
         } else {

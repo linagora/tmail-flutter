@@ -189,10 +189,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final isEmailContentClipped = RxBool(false);
   final attendanceStatus = Rxn<AttendanceStatus>();
   final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
-  final attachmentListKey = GlobalKey();
 
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
+  GlobalKey? attachmentListKey;
+
   final obxListeners = <Worker>[];
   late final EmailActionReactor emailActionReactor;
 
@@ -249,6 +250,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void onInit() {
+    if (PlatformInfo.isWeb) {
+      attachmentListKey = GlobalKey();
+    }
     _threadDetailController = getBinding<ThreadDetailController>();
     _injectCalendarEventBindings(session, accountId);
     _registerObxStreamListener();
