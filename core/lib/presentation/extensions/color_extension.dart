@@ -244,6 +244,7 @@ extension AppColor on Color {
   static const m3Neutral90 = Color(0xFFE6E1E5);
   static const m3SysLightSecondaryBlue = Color(0xFF5C9CE6);
   static const m3SysLight = Color(0xFF0157AD);
+  static const m3SysOutline = Color(0xFFAEAEC0);
   static const grayBackgroundColor = Color(0xFFF3F6F9);
   static const m3SurfaceBackground = Color(0xFF1C1B1F);
   static const warningColor = Color(0xFFFFC107);
