@@ -27,7 +27,6 @@ extension HandleRecipientsCollapsedExtensions on ComposerController {
       listReplyToEmailAddress.isNotEmpty;
 
   void showFullRecipients() {
-    updatePrefixRootState();
     recipientsCollapsedState.value = PrefixRecipientState.disabled;
 
     if (listToEmailAddress.isNotEmpty) {
@@ -50,27 +49,28 @@ extension HandleRecipientsCollapsedExtensions on ComposerController {
       replyToAddressExpandMode.value = ExpandMode.EXPAND;
     }
 
+    updatePrefixRootState();
     requestFocusRecipientInput();
   }
 
   void updatePrefixRootState() {
-    if (listToEmailAddress.isNotEmpty) {
-      prefixRootState = PrefixEmailAddress.to;
+    if (toRecipientState.value == PrefixRecipientState.enabled) {
+      prefixRootState.value = PrefixEmailAddress.to;
       return;
     }
 
-    if (listCcEmailAddress.isNotEmpty) {
-      prefixRootState = PrefixEmailAddress.cc;
+    if (ccRecipientState.value == PrefixRecipientState.enabled) {
+      prefixRootState.value = PrefixEmailAddress.cc;
       return;
     }
 
-    if (listBccEmailAddress.isNotEmpty) {
-      prefixRootState = PrefixEmailAddress.bcc;
+    if (bccRecipientState.value == PrefixRecipientState.enabled) {
+      prefixRootState.value = PrefixEmailAddress.bcc;
       return;
     }
 
-    if (listReplyToEmailAddress.isNotEmpty) {
-      prefixRootState = PrefixEmailAddress.replyTo;
+    if (replyToRecipientState.value == PrefixRecipientState.enabled) {
+      prefixRootState.value = PrefixEmailAddress.replyTo;
     }
   }
 
