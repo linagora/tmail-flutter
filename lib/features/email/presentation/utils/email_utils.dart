@@ -23,7 +23,8 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 class EmailUtils {
   static const double desktopItemMaxWidth = 260;
   static const double desktopMoreButtonMaxWidth = 70;
-  static const double maxMobileVisibleAttachments = 3;
+  static const double attachmentItemSpacing = 8;
+  static const int maxMobileVisibleAttachments = 3;
 
   EmailUtils._();
 
@@ -248,21 +249,35 @@ class EmailUtils {
     if (isMobile) {
       return attachments.length <= maxMobileVisibleAttachments
           ? attachments
-          : attachments.sublist(0, 3);
+          : attachments.sublist(0, maxMobileVisibleAttachments);
     }
 
-    final displayedCount = maxWidth ~/ desktopItemMaxWidth;
-    if (displayedCount == attachments.length) {
+    final totalNeededWidth = attachments.length * desktopItemMaxWidth +
+        (attachments.length - 1) * attachmentItemSpacing;
+    if (totalNeededWidth <= maxWidth) {
       return attachments;
-    } else {
-      final int possibleDisplayedCount =
-          ((maxWidth - desktopMoreButtonMaxWidth) ~/ desktopItemMaxWidth)
-              .clamp(0, attachments.length);
-
-      return possibleDisplayedCount == 0
-          ? [attachments.first]
-          : attachments.sublist(0, possibleDisplayedCount);
     }
+
+    final availableWidth =
+        maxWidth - desktopMoreButtonMaxWidth - attachmentItemSpacing;
+
+    double usedWidth = 0;
+    int visibleCount = 0;
+
+    for (int i = 0; i < attachments.length; i++) {
+      final nextWidth =
+          desktopItemMaxWidth + (i > 0 ? attachmentItemSpacing : 0);
+      if (usedWidth + nextWidth <= availableWidth) {
+        usedWidth += nextWidth;
+        visibleCount++;
+      } else {
+        break;
+      }
+    }
+
+    if (visibleCount == 0) visibleCount = 1;
+
+    return attachments.sublist(0, visibleCount);
   }
 
   static String getDomainByEmailAddress(String emailAddress) {
