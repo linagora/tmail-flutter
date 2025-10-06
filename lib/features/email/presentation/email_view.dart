@@ -233,6 +233,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     List<String>? emailAddressSender,
     ScrollController? scrollController,
   }) {
+    final isMobile = controller.responsiveUtils.isMobile(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -285,8 +286,8 @@ class EmailView extends GetWidget<SingleEmailController> {
             controller.mailboxDashBoardController.mapMailboxById,
           ),
         )),
-        if (!controller.responsiveUtils.isMobile(context))
-         const SizedBox(height: 24),
+        if (!isMobile)
+         const SizedBox(height: 16),
         Obx(() => MailUnsubscribedBanner(
           presentationEmail: controller.currentEmail,
           emailUnsubscribe: controller.emailUnsubscribe.value
@@ -294,6 +295,8 @@ class EmailView extends GetWidget<SingleEmailController> {
         Obx(() => EmailViewLoadingBarWidget(
           viewState: controller.emailLoadedViewState.value
         )),
+        if (!isMobile)
+          _buildAttachmentsList(context),
         if (calendarEvent != null)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -437,44 +440,49 @@ class EmailView extends GetWidget<SingleEmailController> {
             height: 5,
             color: Colors.transparent,
           ),
-        Obx(() {
-          if (controller.attachments.isNotEmpty) {
-            return EmailAttachmentsWidget(
-              responsiveUtils: controller.responsiveUtils,
-              attachments: controller.attachments,
-              imagePaths: controller.imagePaths,
-              onDragStarted: controller
-                  .mailboxDashBoardController.enableAttachmentDraggableApp,
-              onDragEnd: (_) {
-                controller
-                    .mailboxDashBoardController
-                    .disableAttachmentDraggableApp();
-              },
-              downloadAttachmentAction: (attachment) =>
-                  controller.handleDownloadAttachmentAction(attachment),
-              viewAttachmentAction: (attachment) =>
-                  controller.handleViewAttachmentAction(
-                    context,
-                    attachment,
-                  ),
-              onTapShowAllAttachmentFile: () => controller.openAttachmentList(
-                context,
-                controller.attachments,
-              ),
-              showDownloadAllAttachmentsButton:
-                  controller.downloadAllButtonIsEnabled(),
-              onTapDownloadAllButton: () =>
-                  controller.handleDownloadAllAttachmentsAction(
-                'TwakeMail-${DateTime.now()}',
-              ),
-              singleEmailControllerTag: tag,
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
+        if (isMobile)
+          _buildAttachmentsList(context),
       ],
     );
+  }
+
+  Widget _buildAttachmentsList(BuildContext context) {
+    return Obx(() {
+      if (controller.attachments.isNotEmpty) {
+        return EmailAttachmentsWidget(
+          responsiveUtils: controller.responsiveUtils,
+          attachments: controller.attachments,
+          imagePaths: controller.imagePaths,
+          onDragStarted: controller
+              .mailboxDashBoardController.enableAttachmentDraggableApp,
+          onDragEnd: (_) {
+            controller
+                .mailboxDashBoardController
+                .disableAttachmentDraggableApp();
+          },
+          downloadAttachmentAction: (attachment) =>
+              controller.handleDownloadAttachmentAction(attachment),
+          viewAttachmentAction: (attachment) =>
+              controller.handleViewAttachmentAction(
+                context,
+                attachment,
+              ),
+          onTapShowAllAttachmentFile: () => controller.openAttachmentList(
+            context,
+            controller.attachments,
+          ),
+          showDownloadAllAttachmentsButton:
+          controller.downloadAllButtonIsEnabled(),
+          onTapDownloadAllButton: () =>
+              controller.handleDownloadAllAttachmentsAction(
+                'TwakeMail-${DateTime.now()}',
+              ),
+          singleEmailControllerTag: tag,
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 
   bool _validateDisplayEventActionBanner({

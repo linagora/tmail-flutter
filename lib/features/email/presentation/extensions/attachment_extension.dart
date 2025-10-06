@@ -1,5 +1,6 @@
 import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/extensions/media_type_extension.dart';
+import 'package:core/presentation/model/file_category.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:model/download/download_task_id.dart';
@@ -8,7 +9,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 extension AttachmentExtension on Attachment {
-  String getIcon(ImagePaths imagePaths) => type?.getIcon(imagePaths, fileName: name) ?? imagePaths.icFileEPup;
+  String getIcon(ImagePaths imagePaths) => type?.getIcon(imagePaths, fileName: name) ?? imagePaths.icFileDefault;
 
   bool get isPDFFile => type?.isPDFFile(fileName: name) ?? false;
 
@@ -41,11 +42,9 @@ extension AttachmentExtension on Attachment {
 
   bool get isHTMLFile => type?.isHTMLFile(fileName: name) ?? false;
 
-  bool get isImage => type?.isImageSupportedPreview(fileName: name) ?? false;
+  bool get isImage => type?.getFileCategory(fileName: name) == FileCategory.image;
 
-  bool get isText => (type?.isTextFile() ?? false)
-    || name?.endsWith('.txt') == true
-    || name?.endsWith('.md') == true;
+  bool get isText => type?.getFileCategory(fileName: name) == FileCategory.text;
 
   bool get isJson => (type?.isJsonFile() ?? false)
     || name?.endsWith('.json') == true;

@@ -182,6 +182,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
                   fontSize: 15
                 ),
                 backgroundColor: Colors.transparent,
+                padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 5),
                 onTapActionCallback: () => setState(() => _isDisplayAll = false),
               )
             ]
