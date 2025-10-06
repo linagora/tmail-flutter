@@ -97,6 +97,7 @@ import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interacto
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/handle_open_attachment_list_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/update_attendance_status_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -105,8 +106,6 @@ import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscrib
 import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_bottom_sheet_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/html_attachment_previewer.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/pdf_viewer.dart';
 import 'package:tmail_ui_user/features/email_previewer/email_previewer_dialog_view.dart';
@@ -150,7 +149,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final _downloadManager = Get.find<DownloadManager>();
   final _printUtils = Get.find<PrintUtils>();
-  final _attachmentListScrollController = ScrollController();
 
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -180,6 +178,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
+  final isDisplayAllAttachments = RxBool(false);
+  final emlPreviewer = <Attachment>[].obs;
   final blobCalendarEvent = Rxn<BlobCalendarEvent>();
   final emailLoadedViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final emailUnsubscribe = Rxn<EmailUnsubscribe>();
@@ -189,8 +189,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final isEmailContentClipped = RxBool(false);
   final attendanceStatus = Rxn<AttendanceStatus>();
   final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
-
-  final ScrollController emailScrollController = ScrollController();
+  final attachmentListKey = GlobalKey();
 
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
@@ -200,6 +199,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
+
+  ThreadDetailController? get threadDetailController => _threadDetailController;
 
   PresentationEmail? get currentEmail {
     if (PlatformInfo.isMobile &&
@@ -267,8 +268,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void onClose() {
     _threadDetailController = null;
     _downloadProgressStateController.close();
-    _attachmentListScrollController.dispose();
-    emailScrollController.dispose();
     CalendarEventInteractorBindings().dispose();
     MdnInteractorBindings().dispose();
     super.onClose();
@@ -425,6 +424,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           worker.dispose();
         }
         Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
+      } else if (action is OpenAttachmentListAction) {
+        if (_currentEmailId == null || action.emailId != _currentEmailId) {
+          return;
+        }
+        jumpToAttachmentList();
+        mailboxDashBoardController.clearEmailUIAction();
       }
     }));
 
@@ -1754,39 +1759,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.openComposer(ComposerArguments.fromEmailAddress(emailAddress));
   }
 
-  void openAttachmentList(BuildContext context, List<Attachment> attachments) {
-    final tag = _currentEmailId?.id.value;
-    if (responsiveUtils.isMobile(context)) {
-      (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController, tag)
-        ..onCloseButtonAction(() => popBack())
-        ..onDownloadAttachmentFileAction((attachment) => handleDownloadAttachmentAction(attachment))
-        ..onViewAttachmentFileAction((attachment) => handleViewAttachmentAction(context, attachment))
-        ..onDownloadAllButtonAction(isDownloadAllSupported()
-          ? () => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}')
-          : null
-        )
-      ).show();
-    } else {
-      Get.dialog(
-        PointerInterceptor(
-          child: AttachmentListDialogBuilder(
-            imagePaths: imagePaths,
-            attachments: attachments,
-            responsiveUtils: responsiveUtils,
-            scrollController: _attachmentListScrollController,
-            backgroundColor: Colors.black.withAlpha(24),
-            onCloseButtonAction: () => popBack(),
-            onDownloadAttachmentFileAction: (attachment) => handleDownloadAttachmentAction(attachment),
-            onViewAttachmentFileAction: (attachment) => handleViewAttachmentAction(context, attachment),
-            onDownloadAllButtonAction: isDownloadAllSupported()
-              ? () => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}')
-              : null,
-            singleEmailControllerTag: tag,
-          )
-        ),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-      );
-    }
+  void showAllAttachmentsAction() {
+    isDisplayAllAttachments.value = true;
+  }
+
+  void hideAllAttachmentsAction() {
+    isDisplayAllAttachments.value = false;
   }
 
   void _unsubscribeEmail(BuildContext context, PresentationEmail presentationEmail) {

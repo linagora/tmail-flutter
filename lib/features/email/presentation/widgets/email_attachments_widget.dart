@@ -1,4 +1,5 @@
 import 'package:core/presentation/action/action_callback_define.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
@@ -25,6 +26,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
   final OnTapActionCallback? onTapShowAllAttachmentFile;
+  final OnTapActionCallback? onTapHideAllAttachments;
   final bool showDownloadAllAttachmentsButton;
   final bool isDisplayAllAttachments;
   final OnTapActionCallback? onTapDownloadAllButton;
@@ -40,6 +42,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
     this.downloadAttachmentAction,
     this.viewAttachmentAction,
     this.onTapShowAllAttachmentFile,
+    this.onTapHideAllAttachments,
     this.showDownloadAllAttachmentsButton = false,
     this.isDisplayAllAttachments = false,
     this.onTapDownloadAllButton,
@@ -59,9 +62,27 @@ class EmailAttachmentsWidget extends StatelessWidget {
           : null,
     );
 
-    if (responsiveUtils.isMobile(context)) {
+    bool isMobile = responsiveUtils.isMobile(context);
+
+    final hideButton = SizedBox(
+      height: 36,
+      width: isMobile ? double.infinity : null,
+      child: ConfirmDialogButton(
+        label: AppLocalizations.of(context).hideAll,
+        backgroundColor: Theme.of(context).colorScheme.outline.withValues(
+          alpha: 0.08,
+        ),
+        textStyle: ThemeUtils.textStyleM3TitleSmall.copyWith(
+          color: AppColor.steelGrayA540,
+        ),
+        radius: 5,
+        onTapAction: onTapHideAllAttachments,
+      ),
+    );
+
+    if (isMobile) {
       final attachmentRecord = _getDisplayedAndHiddenAttachment(
-        context,
+        isMobile,
         responsiveUtils.getDeviceWidth(context),
       );
       final displayedAttachments = attachmentRecord.displayedAttachments;
@@ -104,11 +125,15 @@ class EmailAttachmentsWidget extends StatelessWidget {
                   backgroundColor: Theme.of(context).colorScheme.outline.withValues(
                     alpha: 0.08,
                   ),
-                  textStyle: ThemeUtils.textStyleM3TitleSmall,
+                  textStyle: ThemeUtils.textStyleM3TitleSmall.copyWith(
+                    color: AppColor.steelGrayA540,
+                  ),
                   radius: 5,
                   onTapAction: onTapShowAllAttachmentFile,
                 ),
               ),
+            if (isDisplayAllAttachments)
+              hideButton,
           ],
         ),
       );
@@ -136,7 +161,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
               child: LayoutBuilder(
                   builder: (context, constraints) {
                     final attachmentRecord = _getDisplayedAndHiddenAttachment(
-                      context,
+                      isMobile,
                       constraints.maxWidth,
                     );
                     final displayedAttachments = attachmentRecord.displayedAttachments;
@@ -181,11 +206,15 @@ class EmailAttachmentsWidget extends StatelessWidget {
                               backgroundColor: Theme.of(context).colorScheme.outline.withValues(
                                 alpha: 0.08,
                               ),
-                              textStyle: ThemeUtils.textStyleM3TitleSmall,
+                              textStyle: ThemeUtils.textStyleM3TitleSmall.copyWith(
+                                color: AppColor.steelGrayA540,
+                              ),
                               radius: 5,
                               onTapAction: onTapShowAllAttachmentFile,
                             ),
                           ),
+                        if (isDisplayAllAttachments)
+                          hideButton,
                       ],
                     );
                   }
@@ -198,7 +227,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
   }
 
   ({List<Attachment> displayedAttachments, int hiddenItemsCount})
-      _getDisplayedAndHiddenAttachment(BuildContext context, double maxWidth) {
+      _getDisplayedAndHiddenAttachment(bool isMobile, double maxWidth) {
     if (isDisplayAllAttachments) {
       return (displayedAttachments: attachments, hiddenItemsCount: 0);
     }
@@ -206,7 +235,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
     final displayedAttachments = EmailUtils.getAttachmentDisplayed(
       maxWidth: maxWidth,
       attachments: attachments,
-      isMobile: responsiveUtils.isMobile(context),
+      isMobile: isMobile,
     );
 
     int hiddenItemsCount = attachments.length - displayedAttachments.length;
