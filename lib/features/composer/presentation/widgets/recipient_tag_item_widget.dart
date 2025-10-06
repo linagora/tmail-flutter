@@ -3,10 +3,8 @@ import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -95,40 +93,51 @@ class RecipientTagItemWidget extends StatelessWidget {
         onCloseAction: onClose,
       ),
       onClearFocusAction: onClearFocusAction,
-      child: Chip(
-        labelPadding: EdgeInsetsDirectional.symmetric(
-          horizontal: 4,
-          vertical: DirectionUtils.isDirectionRTLByHasAnyRtl(currentEmailAddress.asString()) ? 0 : 2
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 267),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(
+            Radius.circular(RecipientTagItemWidgetStyle.radius),
+          ),
+          border: _getTagBorder(),
+          color: _getTagBackgroundColor(),
         ),
-        padding: EdgeInsets.zero,
-        label: Text(
-          key: Key('label_recipient_tag_item_${prefix.name}_$index'),
-          currentEmailAddress.asString(),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          softWrap: true,
-        ),
-        deleteIcon: SvgPicture.asset(
-          imagePaths.icClose,
-          key: Key('delete_icon_recipient_tag_item_${prefix.name}_$index'),
-          fit: BoxFit.fill
-        ),
-        labelStyle: RecipientTagItemWidgetStyle.labelTextStyle,
-        backgroundColor: _getTagBackgroundColor(),
-        side: _getTagBorderSide(),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(RecipientTagItemWidgetStyle.radius)),
-        ),
-        avatar: currentEmailAddress.displayName.isNotEmpty
-          ? GradientCircleAvatarIcon(
+        height: 32,
+        padding: const EdgeInsetsDirectional.only(start: 8, end: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GradientCircleAvatarIcon(
               key: Key('avatar_icon_recipient_tag_item_${prefix.name}_$index'),
               colors: currentEmailAddress.avatarColors,
-              label: currentEmailAddress.displayName.firstLetterToUpperCase,
-              labelFontSize: RecipientTagItemWidgetStyle.avatarLabelFontSize,
+              label: currentEmailAddress.asString().firstCharacterToUpperCase,
+              textStyle: RecipientTagItemWidgetStyle.avatarTextStyle,
               iconSize: RecipientTagItemWidgetStyle.avatarIconSize,
+            ),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                key: Key('label_recipient_tag_item_${prefix.name}_$index'),
+                currentEmailAddress.asString(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: RecipientTagItemWidgetStyle.labelTextStyle,
+              ),
+            ),
+            const SizedBox(width: 4),
+            TMailButtonWidget.fromIcon(
+              key: Key('delete_icon_recipient_tag_item_${prefix.name}_$index'),
+              icon: imagePaths.icClose,
+              iconSize: 20,
+              iconColor: AppColor.m3SysOutline,
+              padding: const EdgeInsets.all(4),
+              borderRadius: 100,
+              backgroundColor: Colors.transparent,
+              onTapActionCallback: () =>
+                  onDeleteTagAction?.call(currentEmailAddress),
             )
-          : null,
-        onDeleted: () => onDeleteTagAction?.call(currentEmailAddress),
+          ],
+        ),
       ),
     );
 
@@ -139,12 +148,15 @@ class RecipientTagItemWidget extends StatelessWidget {
           filterField: prefix.filterField,
           composerId: composerId,
         ),
-        feedback: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
-        childWhenDragging: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
-        child: MouseRegion(
-          cursor: SystemMouseCursors.grab,
-          child: tagWidget,
+        feedback: DraggableRecipientTagWidget(
+          imagePaths: imagePaths,
+          emailAddress: currentEmailAddress,
         ),
+        childWhenDragging: DraggableRecipientTagWidget(
+          imagePaths: imagePaths,
+          emailAddress: currentEmailAddress,
+        ),
+        child: tagWidget,
       );
     }
 
@@ -202,15 +214,21 @@ class RecipientTagItemWidget extends StatelessWidget {
     }
   }
 
-  BorderSide _getTagBorderSide() {
+  Border _getTagBorder() {
     if (isTagFocused) {
-      return const BorderSide(width: 1, color: AppColor.primaryColor);
-    } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
-      return const BorderSide(width: 1, color: AppColor.colorEmailAddressTag);
-    } else {
-      return const BorderSide(
+      return Border.all(
         width: 1,
-        color: AppColor.colorBorderEmailAddressInvalid
+        color: AppColor.primaryColor,
+      );
+    } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
+      return Border.all(
+        width: 1,
+        color: AppColor.grayBackgroundColor,
+      );
+    } else {
+      return Border.all(
+        width: 1,
+        color: AppColor.colorBorderEmailAddressInvalid,
       );
     }
   }
