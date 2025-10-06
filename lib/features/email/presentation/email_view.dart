@@ -450,6 +450,9 @@ class EmailView extends GetWidget<SingleEmailController> {
     return Obx(() {
       if (controller.attachments.isNotEmpty) {
         return EmailAttachmentsWidget(
+          key: PlatformInfo.isWeb && controller.responsiveUtils.isMobile(context)
+              ? controller.attachmentListKey
+              : null,
           responsiveUtils: controller.responsiveUtils,
           attachments: controller.attachments,
           imagePaths: controller.imagePaths,
