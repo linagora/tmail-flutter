@@ -3,9 +3,9 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
@@ -13,6 +13,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/identities/wi
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/widgets/signature_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/widgets/signature_loading_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+typedef OnChangeIdentityAsDefaultAction = Function(Identity identity);
 
 class IdentityListTileBuilder extends StatelessWidget {
 
@@ -26,7 +28,10 @@ class IdentityListTileBuilder extends StatelessWidget {
     required this.onDeleteIdentityAction,
     this.isDesktop = false,
     this.isSelected = false,
+    this.isDefaultIdentitySupported = false,
+    this.isItemLoading = false,
     this.scrollController,
+    this.onChangeIdentityAsDefaultAction,
   }) : super(key: key);
 
   final Identity identity;
@@ -35,17 +40,26 @@ class IdentityListTileBuilder extends StatelessWidget {
   final ImagePaths imagePaths;
   final bool isSelected;
   final bool isDesktop;
+  final bool isDefaultIdentitySupported;
+  final bool isItemLoading;
   final OnEditIdentityAction onEditIdentityAction;
   final OnDeleteIdentityAction onDeleteIdentityAction;
+  final OnChangeIdentityAsDefaultAction? onChangeIdentityAsDefaultAction;
   final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
-    final selectedIcon = SvgPicture.asset(
-      isSelected ? imagePaths.icRadioSelected : imagePaths.icRadio,
-      width: 18,
-      height: 18,
-      fit: BoxFit.fill,
+    final selectedIcon = AbsorbPointer(
+      absorbing: isItemLoading,
+      child: TMailButtonWidget.fromIcon(
+        icon: isSelected ? imagePaths.icRadioSelected : imagePaths.icRadio,
+        iconSize: 18,
+        padding: const EdgeInsets.all(12),
+        backgroundColor: Colors.transparent,
+        borderRadius: 100,
+        onTapActionCallback: () =>
+            onChangeIdentityAsDefaultAction?.call(identity),
+      ),
     );
 
     final signatureContent = mapIdentitySignatures[identity.id!] ??
@@ -113,18 +127,30 @@ class IdentityListTileBuilder extends StatelessWidget {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          selectedIcon,
+          if (isDefaultIdentitySupported)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(end: 6),
+              child: selectedIcon,
+            ),
           Container(
             width: 280,
-            padding: const EdgeInsetsDirectional.only(start: 18, end: 12),
+            padding: EdgeInsetsDirectional.only(
+              end: 12,
+              top: isDefaultIdentitySupported ? 10 : 0,
+            ),
             child: identityContent,
           ),
-          ListIdentityItemActionsWidget(
-            identity: identity,
-            imagePaths: imagePaths,
-            onEditIdentityAction: onEditIdentityAction,
-            onDeleteIdentityAction: onDeleteIdentityAction,
-            isDesktop: isDesktop,
+          Padding(
+            padding: isDefaultIdentitySupported
+                ? const EdgeInsetsDirectional.only(top: 10)
+                : EdgeInsetsDirectional.zero,
+            child: ListIdentityItemActionsWidget(
+              identity: identity,
+              imagePaths: imagePaths,
+              onEditIdentityAction: onEditIdentityAction,
+              onDeleteIdentityAction: onDeleteIdentityAction,
+              isDesktop: isDesktop,
+            ),
           ),
           const Spacer(),
         ],
@@ -134,14 +160,24 @@ class IdentityListTileBuilder extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              selectedIcon,
-              const SizedBox(width: 18),
-              Expanded(child: identityContent),
-            ],
-          ),
+          if (isDefaultIdentitySupported)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 6),
+                  child: selectedIcon,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(top: 10),
+                    child: identityContent,
+                  ),
+                ),
+              ],
+            )
+          else
+            identityContent,
           const SizedBox(height: 24),
           ListIdentityItemActionsWidget(
             identity: identity,

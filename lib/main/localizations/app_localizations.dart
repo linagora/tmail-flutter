@@ -5160,4 +5160,11 @@ class AppLocalizations {
       name: 'spamReportToggleDescription',
     );
   }
+
+  String get defaultIdentitySetupSuccessful {
+    return Intl.message(
+      'Default identity setup successful',
+      name: 'defaultIdentitySetupSuccessful',
+    );
+  }
 }
