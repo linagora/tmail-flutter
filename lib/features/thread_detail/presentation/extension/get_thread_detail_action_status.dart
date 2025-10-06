@@ -68,8 +68,4 @@ extension GetThreadDetailActionStatus on ThreadDetailController {
   bool get threadDetailCanPermanentlyDelete {
     return threadDetailIsTrashed || threadDetailIsSpam || threadDetailIsDraft;
   }
-
-  bool get isEmailExpandedHasAttachments {
-    return currentEmailLoaded.value?.attachments.isNotEmpty == true;
-  }
 }

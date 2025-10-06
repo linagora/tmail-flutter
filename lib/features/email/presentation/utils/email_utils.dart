@@ -24,6 +24,7 @@ class EmailUtils {
   static const double desktopItemMaxWidth = 260;
   static const double desktopMoreButtonMaxWidth = 70;
   static const double attachmentItemSpacing = 8;
+  static const double attachmentItemHeight = 36;
   static const int maxMobileVisibleAttachments = 3;
 
   EmailUtils._();

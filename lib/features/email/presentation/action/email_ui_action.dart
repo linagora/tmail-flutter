@@ -86,10 +86,23 @@ class CollapseEmailInThreadDetailAction extends EmailUIAction {
 }
 
 class OpenAttachmentListAction extends EmailUIAction {
-  OpenAttachmentListAction(this.emailId);
+  OpenAttachmentListAction({
+    required this.emailId,
+    required this.countAttachments,
+    required this.screenHeight,
+    this.isDisplayAllAttachments = false,
+  });
 
   final EmailId? emailId;
+  final int countAttachments;
+  final bool isDisplayAllAttachments;
+  final double screenHeight;
 
   @override
-  List<Object?> get props => [emailId];
+  List<Object?> get props => [
+    emailId,
+    countAttachments,
+    isDisplayAllAttachments,
+    screenHeight,
+  ];
 }
