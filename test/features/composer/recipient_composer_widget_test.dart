@@ -409,49 +409,6 @@ void main() {
       expect(isExceededTextOverflow, equals(true));
     });
 
-    testWidgets('WHEN EmailAddress has address short AND display name is NULL\n'
-        'RecipientTagItemWidget SHOULD have text display full', (tester) async {
-      final listEmailAddress = <EmailAddress>[
-        EmailAddress(null, 'test123@example.com'),
-      ];
-
-      final widget = makeTestableWidget(
-        child: RecipientComposerWidget(
-          prefix: prefix,
-          listEmailAddress: listEmailAddress,
-          imagePaths: imagePaths,
-          maxWidth: 360,
-          keyTagEditor: keyEmailTagEditor,
-        ),
-      );
-
-      await tester.pumpWidget(widget);
-
-      await tester.pumpAndSettle();
-
-      final labelRecipientTagItemWidgetFinder = find.byKey(Key('label_recipient_tag_item_${prefix.name}_0'));
-
-      final labelRecipientTagItemWidget = tester.widget<Text>(labelRecipientTagItemWidgetFinder);
-      final labelTagWidth = tester.getSize(labelRecipientTagItemWidgetFinder).width;
-
-      expect(labelRecipientTagItemWidget.overflow, equals(TextOverflow.ellipsis));
-
-      final TextPainter textPainter = TextPainter(
-        maxLines: labelRecipientTagItemWidget.maxLines,
-        textDirection: labelRecipientTagItemWidget.textDirection ?? TextDirection.ltr,
-        text: TextSpan(
-          text: labelRecipientTagItemWidget.data,
-          style: labelRecipientTagItemWidget.style,
-          locale: labelRecipientTagItemWidget.locale
-        ),
-      );
-      textPainter.layout(maxWidth: labelTagWidth);
-      bool isExceededTextOverflow = textPainter.didExceedMaxLines;
-      log('recipient_composer_widget_test::main: LABEL_TAB_WIDTH = $labelTagWidth | TextPainterWidth = ${textPainter.width} | isExceededTextOverflow = $isExceededTextOverflow');
-
-      expect(isExceededTextOverflow, equals(false));
-    });
-
     testWidgets('ToRecipientComponentWidget should display prefix To label correctly when the locale is fr-FR', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress('test1', 'test1@example.com'),

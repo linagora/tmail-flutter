@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
+import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -46,10 +47,22 @@ class DraggableRecipientTagWidget extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Flexible(
-              child: Text(
+              child: ExtendedText(
                 emailAddress.asString(),
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                overflowWidget: TextOverflowWidget(
+                  position: TextOverflowPosition.middle,
+                  clearType: TextOverflowClearType.clipRect,
+                  child: Text(
+                    '...',
+                    style: ThemeUtils.textStyleInter400.copyWith(
+                      color: Colors.white,
+                      fontSize: 17,
+                      height: 1.0,
+                      letterSpacing: -0.17,
+                    ),
+                  ),
+                ),
                 style: ThemeUtils.textStyleInter400.copyWith(
                   color: Colors.white,
                   fontSize: 17,
