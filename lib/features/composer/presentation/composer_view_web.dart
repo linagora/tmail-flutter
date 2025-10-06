@@ -874,10 +874,10 @@ class ComposerView extends GetWidget<ComposerController> {
     required FocusNode? nextFocusNode,
     bool isMobile = false,
   }) {
-    return RecipientComposerWidget(
+    return Obx(() => RecipientComposerWidget(
       composerId: composerId,
       prefix: prefix,
-      prefixRootState: controller.prefixRootState,
+      prefixRootState: controller.prefixRootState.value,
       fromState: controller.fromRecipientState.value,
       toState: controller.toRecipientState.value,
       ccState: controller.ccRecipientState.value,
@@ -906,11 +906,11 @@ class ComposerView extends GetWidget<ComposerController> {
       onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
       onFocusNextAddressAction: controller.handleFocusNextAddressAction,
       onRemoveDraggableEmailAddressAction:
-          controller.removeDraggableEmailAddress,
+      controller.removeDraggableEmailAddress,
       onEditRecipientAction: controller.onEditRecipient,
       onClearFocusAction: controller.onClearFocusAction,
       onAddEmailAddressTypeAction: controller.addEmailAddressType,
       onDeleteEmailAddressTypeAction: controller.deleteEmailAddressType,
-    );
+    ));
   }
 }

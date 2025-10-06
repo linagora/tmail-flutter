@@ -151,6 +151,7 @@ class ComposerController extends BaseController
   final bccRecipientState = PrefixRecipientState.disabled.obs;
   final replyToRecipientState = PrefixRecipientState.disabled.obs;
   final recipientsCollapsedState = PrefixRecipientState.disabled.obs;
+  final prefixRootState = PrefixEmailAddress.to.obs;
   final identitySelected = Rxn<Identity>();
   final listFromIdentities = RxList<Identity>();
   final isEmailChanged = Rx<bool>(false);
@@ -245,7 +246,6 @@ class ComposerController extends BaseController
   EmailActionType? savedActionType;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailId? currentTemplateEmailId;
-  PrefixEmailAddress prefixRootState = PrefixEmailAddress.to;
 
   @visibleForTesting
   int? get savedEmailDraftHash => _savedEmailDraftHash;
@@ -1521,11 +1521,18 @@ class ComposerController extends BaseController
         replyToRecipientState.value = PrefixRecipientState.enabled;
         break;
     }
+
+    updatePrefixRootState();
   }
 
   void deleteEmailAddressType(PrefixEmailAddress prefixEmailAddress) {
     updateListEmailAddress(prefixEmailAddress, <EmailAddress>[]);
     switch(prefixEmailAddress) {
+      case PrefixEmailAddress.to:
+        toRecipientState.value = PrefixRecipientState.disabled;
+        toAddressFocusNode = FocusNode();
+        toEmailAddressController.clear();
+        break;
       case PrefixEmailAddress.cc:
         ccRecipientState.value = PrefixRecipientState.disabled;
         ccAddressFocusNode = FocusNode();
@@ -1544,6 +1551,8 @@ class ComposerController extends BaseController
       default:
         break;
     }
+
+    updatePrefixRootState();
   }
 
   void _collapseAllRecipient() {
