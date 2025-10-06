@@ -120,7 +120,7 @@ class AttachmentItemWidget extends StatelessWidget {
       );
 
       return TMailContainerWidget(
-        height: 36,
+        height: EmailUtils.attachmentItemHeight,
         borderRadius: 8,
         border: Border.all(color: AppColor.m3Tertiary70),
         padding: const EdgeInsets.symmetric(horizontal: 8),
