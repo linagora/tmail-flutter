@@ -1,0 +1,2 @@
+/Users/ditsmmini2/Desktop/tmail-flutter/android/app/.cxx/Debug/m5h3x372/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/ditsmmini2/Desktop/tmail-flutter/android/app/.cxx/Debug/m5h3x372/arm64-v8a/CMakeFiles/rebuild_cache.dir
