@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'package:core/core.dart';
-import 'package:flutter/services.dart' as services;
+
 import 'package:contact/contact/model/capability_contact.dart';
+import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
 import 'package:fcm/model/firebase_registration_id.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' as services;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
@@ -56,8 +57,8 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -152,7 +153,8 @@ abstract class BaseController extends GetxController
   bool validateUrgentException(dynamic exception) {
     return exception is NoNetworkError
       || exception is BadCredentialsException
-      || exception is ConnectionError;
+      || exception is ConnectionError
+      || exception is ClientAuthenticationException;
   }
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
@@ -169,10 +171,14 @@ abstract class BaseController extends GetxController
 
   void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
     logError('$runtimeType::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception');
-    if (exception is ConnectionError) {
+    if (exception is NoNetworkError) {
+      _handleNotNetworkErrorException();
+    } else if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       handleBadCredentialsException();
+    } else if (exception is ClientAuthenticationException) {
+      handleClientAuthenticationException(exception);
     }
   }
 
@@ -184,6 +190,8 @@ abstract class BaseController extends GetxController
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       handleBadCredentialsException();
+    } else if (exception is ClientAuthenticationException) {
+      handleClientAuthenticationException(exception);
     }
   }
 
@@ -213,7 +221,8 @@ abstract class BaseController extends GetxController
         leadingSVGIcon: imagePaths.icNotConnection,
         backgroundColor: AppColor.textFieldErrorBorderColor,
         textColor: Colors.white,
-        infinityToast: true);
+        infinityToast: PlatformInfo.isWeb,
+      );
     }
   }
 
@@ -223,6 +232,21 @@ abstract class BaseController extends GetxController
       _performSaveAndReconnection();
     } else {
       _performReconnection();
+    }
+  }
+
+  void handleClientAuthenticationException(
+    ClientAuthenticationException exception,
+  ) {
+    final message = exception.message;
+    final firstErrorCode = exception.code;
+    final secondErrorCode = exception.secondErrorCode;
+    log('$runtimeType::handleClientAuthenticationException: Message is $message, [$firstErrorCode - $secondErrorCode]');
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        '$message [$firstErrorCode - $secondErrorCode]',
+      );
     }
   }
 
