@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/manage_account/data/local/preferences_set
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/text_formatting_menu_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
@@ -38,6 +39,10 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
       } else if (preferencesConfig is SpamReportConfig) {
         await _preferencesSettingManager.updateSpamReport(
           isEnabled: preferencesConfig.isEnabled,
+        );
+      } else if (preferencesConfig is TextFormattingMenuConfig) {
+        await _preferencesSettingManager.updateTextFormattingMenu(
+          isDisplayed: preferencesConfig.isDisplayed,
         );
       } else {
         await _preferencesSettingManager.savePreferences(

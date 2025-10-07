@@ -17,7 +17,7 @@ class RemoveComposerCacheByIdOnWebInteractor {
     String composerId,
   ) async {
     try {
-      composerCacheRepository.removeComposerCacheByIdOnWeb(
+      await composerCacheRepository.removeComposerCacheByIdOnWeb(
         accountId,
         userName,
         composerId,
