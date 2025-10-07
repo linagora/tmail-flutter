@@ -25,9 +25,11 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/model/login_source.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/auto_refresh_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
@@ -195,10 +197,12 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future<void> _executeBeforeReconnectAndLogOut() async {
+  Future<void> _executeBeforeReconnectAndLogOut({
+    LoginSource source = LoginSource.manual,
+  }) async {
     twakeAppManager.setExecutingBeforeReconnect(true);
     await executeBeforeReconnect();
-    clearDataAndGoToLoginPage();
+    clearDataAndGoToLoginPage(source: source);
   }
 
   void onCancelReconnectWhenSessionExpired() {}
@@ -229,9 +233,9 @@ abstract class BaseController extends GetxController
   void handleBadCredentialsException() {
     log('$runtimeType::handleBadCredentialsException:');
     if (twakeAppManager.hasComposer) {
-      _performSaveAndReconnection();
+      _performSaveAndReconnection(source: LoginSource.auto);
     } else {
-      _performReconnection();
+      _performReconnection(source: LoginSource.auto);
     }
   }
 
@@ -250,16 +254,20 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void _performSaveAndReconnection() {
+  void _performSaveAndReconnection({
+    LoginSource source = LoginSource.manual,
+  }) {
     if (PlatformInfo.isWeb) {
-      _executeBeforeReconnectAndLogOut();
+      _executeBeforeReconnectAndLogOut(source: source);
     } else if (PlatformInfo.isMobile) {
-      clearDataAndGoToLoginPage();
+      clearDataAndGoToLoginPage(source: source);
     }
   }
 
-  void _performReconnection() {
-    clearDataAndGoToLoginPage();
+  void _performReconnection({
+    LoginSource source = LoginSource.manual,
+  }) {
+    clearDataAndGoToLoginPage(source: source);
   }
 
   void onDataFailureViewState(Failure failure) {
@@ -420,9 +428,24 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void removeAllPageAndGoToLogin() {
+  void removeAllPageAndGoToLogin({
+    LoginSource source = LoginSource.manual,
+  }) {
     if (PlatformInfo.isMobile) {
-      pushAndPopAll(AppRoutes.twakeWelcome);
+      final jmapUrl = dynamicUrlInterceptors.jmapUrl ?? '';
+
+      final isAutoRefresh = source == LoginSource.auto &&
+          Get.currentRoute != AppRoutes.login &&
+          jmapUrl.isNotEmpty;
+
+      if (isAutoRefresh) {
+        pushAndPopAll(
+          AppRoutes.login,
+          arguments: AutoRefreshArguments(jmapUrl),
+        );
+      } else {
+        pushAndPopAll(AppRoutes.twakeWelcome);
+      }
     } else {
       navigateToLoginPage();
     }
@@ -564,10 +587,12 @@ abstract class BaseController extends GetxController
     await beforeReconnectManager?.executeBeforeReconnectListeners();
   }
 
-  Future<void> clearDataAndGoToLoginPage() async {
-    log('$runtimeType::clearDataAndGoToLoginPage:');
+  Future<void> clearDataAndGoToLoginPage({
+    LoginSource source = LoginSource.manual,
+  }) async {
+    log('$runtimeType::clearDataAndGoToLoginPage: Login source is $source');
     await clearAllData();
-    removeAllPageAndGoToLogin();
+    removeAllPageAndGoToLogin(source: source);
   }
 
   Future<void> clearAllData() async {
