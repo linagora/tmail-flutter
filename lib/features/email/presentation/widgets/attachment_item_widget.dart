@@ -69,26 +69,15 @@ class AttachmentItemWidget extends StatelessWidget {
         ),
       );
 
-      final attachmentTitleWithEndDots = Text(
-        attachment.generateFileName(),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: ThemeUtils.textStyleM3LabelLarge(
-          color: AppColor.m3SurfaceBackground,
-        ),
-      );
-
       final bodyItemWidget = Row(
         children: [
           isLoading ? loadingIndicator : attachmentIcon,
           const SizedBox(width: 8),
           Expanded(
-            child: PlatformInfo.isCanvasKit
-                ? attachmentTitleWithMiddleDots
-                : attachmentTitleWithEndDots,
+            child: attachmentTitleWithMiddleDots,
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsetsDirectional.only(start: 8, end: 3),
             child: Text(
               filesize(attachment.size?.value),
               maxLines: 1,
@@ -97,10 +86,10 @@ class AttachmentItemWidget extends StatelessWidget {
             ),
           ),
           TMailButtonWidget.fromIcon(
-            icon: imagePaths.icFileDownload,
+            icon: imagePaths.icDownloadAttachment,
             backgroundColor: Colors.transparent,
             padding: const EdgeInsets.all(5),
-            iconColor: AppColor.steelGrayA540,
+            iconColor: AppColor.primaryColor,
             iconSize: 20,
             onTapActionCallback:
                 isLoading ? null : () => _onTapDownloadAction(attachment),
