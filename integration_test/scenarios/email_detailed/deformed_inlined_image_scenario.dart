@@ -1,9 +1,8 @@
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
-import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -121,10 +120,12 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
   }
 
   Future<void> _expectEmailViewDisplaysNormalizedInlineImages() async {
+    GlobalKey<HtmlContentViewState>? htmlContentViewKey;
     HtmlContentViewer? htmlContentViewer;
     await $(HtmlContentViewer)
       .which<HtmlContentViewer>((view) {
         htmlContentViewer = view;
+        htmlContentViewKey = view.key as GlobalKey<HtmlContentViewState>;
         return true;
       })
       .first
@@ -133,17 +134,6 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
     log('DeformedInlinedImageScenario::_expectEmailViewDisplaysNormalizedInlineImages:initialWidth = ${htmlContentViewer?.initialWidth}');
     expect(htmlContentViewer?.contentHtml.isNotEmpty, isTrue);
 
-    SingleEmailController? emailController;
-    await $(EmailView)
-      .which<EmailView>((view) {
-        emailController = view.controller;
-        return true;
-      })
-      .first
-      .tap();
-    expect(emailController, isNotNull);
-
-    final htmlContentViewKey = emailController?.htmlContentViewKey;
     expect(htmlContentViewKey, isNotNull);
 
     final result = await htmlContentViewKey!.currentState!.webViewController.evaluateJavascript(

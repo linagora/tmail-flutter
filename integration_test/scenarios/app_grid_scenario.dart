@@ -16,6 +16,7 @@ class AppGridScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
+    PlatformInfo.isIntegrationTesting = true;
     final threadRobot = ThreadRobot($);
     final mailboxMenuRobot = MailboxMenuRobot($);
     final appGridRobot = AppGridRobot($);
@@ -52,6 +53,7 @@ class AppGridScenario extends BaseTestScenario {
     } else if (PlatformInfo.isIOS) {
       await _expectMailboxViewInVisible();
     }
+    PlatformInfo.isIntegrationTesting = false;
   }
 
   Future<void> _expectMailboxViewVisible() => expectViewVisible($(MailboxView));
