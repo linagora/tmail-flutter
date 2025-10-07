@@ -139,10 +139,6 @@ class ComposerController extends BaseController
   final isInitialRecipient = false.obs;
   final subjectEmail = Rxn<String>();
   final screenDisplayMode = ScreenDisplayMode.normal.obs;
-  final toAddressExpandMode = ExpandMode.EXPAND.obs;
-  final ccAddressExpandMode = ExpandMode.EXPAND.obs;
-  final bccAddressExpandMode = ExpandMode.EXPAND.obs;
-  final replyToAddressExpandMode = ExpandMode.EXPAND.obs;
   final emailContentsViewState = Rxn<Either<Failure, Success>>();
   final hasRequestReadReceipt = false.obs;
   final fromRecipientState = PrefixRecipientState.disabled.obs;
@@ -602,9 +598,8 @@ class ComposerController extends BaseController
           && !responsiveUtils.isScreenWithShortestSide(currentContext!)) {
         richTextMobileTabletController?.richTextController.hideRichTextView();
       }
-      _collapseAllRecipient();
       autoCreateEmailTag();
-      if (PlatformInfo.isWeb && isRecipientsNotEmpty) {
+      if (isRecipientsNotEmpty) {
         hideAllRecipients();
       }
     }
@@ -725,33 +720,11 @@ class ComposerController extends BaseController
     listBccEmailAddress = List.from(recipients.bcc);
     listReplyToEmailAddress = List.from(recipients.replyTo);
 
-    if (PlatformInfo.isWeb) {
-      if (isRecipientsNotEmpty) {
-        hideAllRecipients();
-        isInitialRecipient.value = true;
-      } else {
-        toRecipientState.value = PrefixRecipientState.enabled;
-      }
+    if (isRecipientsNotEmpty) {
+      hideAllRecipients();
+      isInitialRecipient.value = true;
     } else {
-      if (isRecipientsNotEmpty) {
-        isInitialRecipient.value = true;
-        toAddressExpandMode.value = ExpandMode.COLLAPSE;
-      }
-
-      if (listCcEmailAddress.isNotEmpty) {
-        ccRecipientState.value = PrefixRecipientState.enabled;
-        ccAddressExpandMode.value = ExpandMode.COLLAPSE;
-      }
-
-      if (listBccEmailAddress.isNotEmpty) {
-        bccRecipientState.value = PrefixRecipientState.enabled;
-        bccAddressExpandMode.value = ExpandMode.COLLAPSE;
-      }
-
-      if (listReplyToEmailAddress.isNotEmpty) {
-        replyToRecipientState.value = PrefixRecipientState.enabled;
-        replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
-      }
+      toRecipientState.value = PrefixRecipientState.enabled;
     }
     updateStatusEmailSendButton();
   }
@@ -802,7 +775,6 @@ class ComposerController extends BaseController
         || ccEmailAddressController.text.isNotEmpty
         || bccEmailAddressController.text.isNotEmpty
         || replyToEmailAddressController.text.isNotEmpty) {
-      _collapseAllRecipient();
       autoCreateEmailTag();
     }
 
@@ -824,12 +796,7 @@ class ComposerController extends BaseController
       MessageDialogActionManager().showConfirmDialogAction(context,
         appLocalizations.message_dialog_send_email_with_email_address_invalid,
         appLocalizations.fix_email_addresses,
-        onConfirmAction: () {
-          toAddressExpandMode.value = ExpandMode.EXPAND;
-          ccAddressExpandMode.value = ExpandMode.EXPAND;
-          bccAddressExpandMode.value = ExpandMode.EXPAND;
-          replyToAddressExpandMode.value = ExpandMode.EXPAND;
-        },
+        onConfirmAction: showFullRecipients,
         showAsBottomSheet: true,
         title: appLocalizations.sending_failed,
         hasCancelButton: false,
@@ -1473,8 +1440,7 @@ class ComposerController extends BaseController
 
   void clickOutsideComposer(BuildContext context) {
     clearFocus(context);
-    if (PlatformInfo.isWeb && isRecipientsNotEmpty) {
-      _collapseAllRecipient();
+    if (isRecipientsNotEmpty) {
       hideAllRecipients();
     }
   }
@@ -1555,13 +1521,6 @@ class ComposerController extends BaseController
     updatePrefixRootState();
   }
 
-  void _collapseAllRecipient() {
-    toAddressExpandMode.value = ExpandMode.COLLAPSE;
-    ccAddressExpandMode.value = ExpandMode.COLLAPSE;
-    bccAddressExpandMode.value = ExpandMode.COLLAPSE;
-    replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
-  }
-
   void clearFocusRecipients() {
     toAddressFocusNode?.unfocus();
     ccAddressFocusNode?.unfocus();
@@ -1599,47 +1558,8 @@ class ComposerController extends BaseController
     }
   }
 
-  void showFullEmailAddress(PrefixEmailAddress prefixEmailAddress) {
-    switch(prefixEmailAddress) {
-      case PrefixEmailAddress.to:
-        toAddressExpandMode.value = ExpandMode.EXPAND;
-        toAddressFocusNode?.requestFocus();
-        break;
-      case PrefixEmailAddress.cc:
-        ccAddressExpandMode.value = ExpandMode.EXPAND;
-        ccAddressFocusNode?.requestFocus();
-        break;
-      case PrefixEmailAddress.bcc:
-        bccAddressExpandMode.value = ExpandMode.EXPAND;
-        bccAddressFocusNode?.requestFocus();
-        break;
-      case PrefixEmailAddress.replyTo:
-        replyToAddressExpandMode.value = ExpandMode.EXPAND;
-        replyToAddressFocusNode?.requestFocus();
-        break;
-      default:
-        break;
-    }
-  }
-
   void onEmailAddressFocusChange(PrefixEmailAddress prefixEmailAddress, bool isFocus) {
     if (isFocus) {
-      switch(prefixEmailAddress) {
-        case PrefixEmailAddress.to:
-          toAddressExpandMode.value = ExpandMode.EXPAND;
-          break;
-        case PrefixEmailAddress.cc:
-          ccAddressExpandMode.value = ExpandMode.EXPAND;
-          break;
-        case PrefixEmailAddress.bcc:
-          bccAddressExpandMode.value = ExpandMode.EXPAND;
-          break;
-        case PrefixEmailAddress.replyTo:
-          replyToAddressExpandMode.value = ExpandMode.EXPAND;
-          break;
-        default:
-          break;
-      }
       _closeSuggestionBox();
       if (PlatformInfo.isMobile
           && currentContext != null
@@ -1649,28 +1569,24 @@ class ComposerController extends BaseController
     } else {
       switch(prefixEmailAddress) {
         case PrefixEmailAddress.to:
-          toAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputToEmail = toEmailAddressController.text;
           if (inputToEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.to, inputToEmail);
           }
           break;
         case PrefixEmailAddress.cc:
-          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputCcEmail = ccEmailAddressController.text;
           if (inputCcEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.cc, inputCcEmail);
           }
           break;
         case PrefixEmailAddress.bcc:
-          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputBccEmail = bccEmailAddressController.text;
           if (inputBccEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.bcc, inputBccEmail);
           }
           break;
         case PrefixEmailAddress.replyTo:
-          replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputReplyToEmail = replyToEmailAddressController.text;
           if (inputReplyToEmail.trim().isNotEmpty) {
             autoCreateEmailTagForType(PrefixEmailAddress.replyTo, inputReplyToEmail);
@@ -1722,10 +1638,6 @@ class ComposerController extends BaseController
     } else {
       listBccEmailAddress = listEmailAddress.toList();
     }
-    toAddressExpandMode.value = ExpandMode.COLLAPSE;
-    ccAddressExpandMode.value = ExpandMode.COLLAPSE;
-    bccAddressExpandMode.value = ExpandMode.COLLAPSE;
-    bccAddressExpandMode.refresh();
     updateStatusEmailSendButton();
   }
 
@@ -1736,9 +1648,6 @@ class ComposerController extends BaseController
     if (listBccEmailAddress.isEmpty) {
       bccRecipientState.value = PrefixRecipientState.disabled;
     }
-    toAddressExpandMode.value = ExpandMode.COLLAPSE;
-    ccAddressExpandMode.value = ExpandMode.COLLAPSE;
-    bccAddressExpandMode.value = ExpandMode.COLLAPSE;
     updateStatusEmailSendButton();
   }
 
@@ -1813,8 +1722,10 @@ class ComposerController extends BaseController
         const Duration(milliseconds: 300),
         richTextMobileTabletController?.richTextController.showDeviceKeyboard);
     }
-    _collapseAllRecipient();
     autoCreateEmailTag();
+    if (isRecipientsNotEmpty) {
+      hideAllRecipients();
+    }
   }
 
   void _onChangeCursorOnMobile(List<int>? coordinates, BuildContext context) {
@@ -1946,13 +1857,9 @@ class ComposerController extends BaseController
       popBack();
     }
     autoCreateEmailTag();
-    if (PlatformInfo.isWeb && isRecipientsNotEmpty) {
+    if (isRecipientsNotEmpty) {
       hideAllRecipients();
     }
-  }
-
-  void handleOnMouseDownHtmlEditorWeb() {
-    _collapseAllRecipient();
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {

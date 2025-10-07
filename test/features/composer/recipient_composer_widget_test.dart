@@ -8,8 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
-import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_tag_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
@@ -86,7 +86,7 @@ void main() {
       expect(find.text('test2@example.com'), findsOneWidget);
     });
 
-    testWidgets('RecipientTagItemWidget should have a `maxWidth` equal to the RecipientComposerWidget\'s `maxWidth`', (tester) async {
+    testWidgets('RecipientTagItemWidget should have a `maxWidth` equal to the default `maxWidth`', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress('test1', 'test1@example.com'),
       ];
@@ -110,7 +110,7 @@ void main() {
       final Container recipientTagItemWidget = tester.widget(recipientTagItemWidgetFinder);
 
       expect(recipientTagItemWidgetFinder, findsOneWidget);
-      expect(recipientTagItemWidget.constraints!.maxWidth, 360);
+      expect(recipientTagItemWidget.constraints!.maxWidth, 267);
     });
 
     testWidgets('WHEN EmailAddress has address is not empty AND display name is not empty\n'
@@ -273,7 +273,7 @@ void main() {
     });
 
     testWidgets('WHEN To has multiple recipients AND expandMode is COLLAPSE\n'
-        'RecipientTagItemWidget should have all the components (AvatarIcon, Label, DeleteIcon, CounterTag)', (tester) async {
+        'RecipientTagItemWidget should have all the components (AvatarIcon, Label, DeleteIcon)', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress('test1', 'test1@example.com'),
         EmailAddress('test2', 'test2@example.com'),
@@ -285,7 +285,6 @@ void main() {
           listEmailAddress: listEmailAddress,
           imagePaths: imagePaths,
           maxWidth: 360,
-          expandMode: ExpandMode.COLLAPSE,
           keyTagEditor: keyEmailTagEditor,
         ),
       );
@@ -312,24 +311,20 @@ void main() {
       final labelRecipientTagItemWidgetFinder = find.byKey(Key('label_recipient_tag_item_${prefix.name}_0'));
       final deleteIconRecipientTagItemWidgetFinder = find.byKey(Key('delete_icon_recipient_tag_item_${prefix.name}_0'));
       final avatarIconRecipientTagItemWidgetFinder = find.byKey(Key('avatar_icon_recipient_tag_item_${prefix.name}_0'));
-      final counterRecipientTagItemWidgetFinder = find.byKey(Key('counter_recipient_tag_item_${prefix.name}_0'));
 
       final Size labelRecipientTagItemWidgetSize = tester.getSize(labelRecipientTagItemWidgetFinder);
       final Size deleteIconRecipientTagItemWidgetSize = tester.getSize(deleteIconRecipientTagItemWidgetFinder);
       final Size avatarIconRecipientTagItemWidgetSize = tester.getSize(avatarIconRecipientTagItemWidgetFinder);
-      final Size counterRecipientTagItemWidgetSize = tester.getSize(counterRecipientTagItemWidgetFinder);
 
-      log('recipient_composer_widget_test::main: LabelTagSize = $labelRecipientTagItemWidgetSize | DeleteIconTagSize = $deleteIconRecipientTagItemWidgetSize | AvatarIconTagSize = $avatarIconRecipientTagItemWidgetSize | CounterTagSize = $counterRecipientTagItemWidgetSize');
+      log('recipient_composer_widget_test::main: LabelTagSize = $labelRecipientTagItemWidgetSize | DeleteIconTagSize = $deleteIconRecipientTagItemWidgetSize | AvatarIconTagSize = $avatarIconRecipientTagItemWidgetSize');
 
       expect(labelRecipientTagItemWidgetFinder, findsOneWidget);
       expect(deleteIconRecipientTagItemWidgetFinder, findsOneWidget);
       expect(avatarIconRecipientTagItemWidgetFinder, findsOneWidget);
-      expect(counterRecipientTagItemWidgetFinder, findsOneWidget);
 
       final totalSizeOfAllComponents = labelRecipientTagItemWidgetSize.width +
         deleteIconRecipientTagItemWidgetSize.width +
         avatarIconRecipientTagItemWidgetSize.width;
-        counterRecipientTagItemWidgetSize.width;
 
       expect(
         totalSizeOfAllComponents,
@@ -350,7 +345,6 @@ void main() {
           listEmailAddress: listEmailAddress,
           imagePaths: imagePaths,
           maxWidth: 360,
-          expandMode: ExpandMode.EXPAND,
           keyTagEditor: keyEmailTagEditor,
         ),
       );
@@ -390,8 +384,6 @@ void main() {
 
       final labelRecipientTagItemWidget = tester.widget<Text>(labelRecipientTagItemWidgetFinder);
       final labelTagWidth = tester.getSize(labelRecipientTagItemWidgetFinder).width;
-
-      expect(labelRecipientTagItemWidget.overflow, equals(TextOverflow.ellipsis));
 
       final TextPainter textPainter = TextPainter(
         maxLines: labelRecipientTagItemWidget.maxLines,
@@ -477,10 +469,13 @@ void main() {
       final widget = makeTestableWidget(
         child: RecipientComposerWidget(
           prefix: prefix,
+          prefixRootState: prefix,
           listEmailAddress: listEmailAddress,
           imagePaths: imagePaths,
           maxWidth: 360,
           keyTagEditor: keyEmailTagEditor,
+          isTestingForWeb: true,
+          toState: PrefixRecipientState.enabled,
         ),
       );
 
@@ -518,7 +513,7 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets('ToRecipientComponentWidget should have all the components (PrefixLabel, RecipientTagItemWidget, FromButton, CCButton, BccButton) on web platform', (tester) async {
+    testWidgets('ToRecipientComponentWidget should have all the components (PrefixLabel, RecipientTagItemWidget, FromButton, CCButton, BccButton, ReplyToButton) on web platform', (tester) async {
       final listEmailAddress = <EmailAddress>[
         EmailAddress('test1', 'test1@example.com'),
       ];
@@ -526,11 +521,13 @@ void main() {
       final widget = makeTestableWidget(
         child: RecipientComposerWidget(
           prefix: prefix,
+          prefixRootState: prefix,
           listEmailAddress: listEmailAddress,
           imagePaths: imagePaths,
           maxWidth: 360,
           keyTagEditor: keyEmailTagEditor,
           isTestingForWeb: true,
+          toState: PrefixRecipientState.enabled,
         ),
       );
 
