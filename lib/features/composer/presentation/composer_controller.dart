@@ -1532,17 +1532,6 @@ class ComposerController extends BaseController
     subjectEmailInputFocusNode?.unfocus();
   }
 
-  void clearFocusRecipients() {
-    toAddressFocusNode?.unfocus();
-    ccAddressFocusNode?.unfocus();
-    bccAddressFocusNode?.unfocus();
-    replyToAddressFocusNode?.unfocus();
-  }
-
-  void clearFocusSubject() {
-    subjectEmailInputFocusNode?.unfocus();
-  }
-
   void _closeSuggestionBox() {
     if (toEmailAddressController.text.isEmpty) {
       keyToEmailTagEditor.currentState?.closeSuggestionBox();

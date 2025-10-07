@@ -233,7 +233,8 @@ class EmailView extends GetWidget<SingleEmailController> {
     List<String>? emailAddressSender,
     ScrollController? scrollController,
   }) {
-    final isMobile = controller.responsiveUtils.isMobile(context);
+    final isMobileResponsive = controller.responsiveUtils.isMobile(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -286,7 +287,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             controller.mailboxDashBoardController.mapMailboxById,
           ),
         )),
-        if (!isMobile)
+        if (!isMobileResponsive)
          const SizedBox(height: 16),
         Obx(() => MailUnsubscribedBanner(
           presentationEmail: controller.currentEmail,
@@ -295,7 +296,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         Obx(() => EmailViewLoadingBarWidget(
           viewState: controller.emailLoadedViewState.value
         )),
-        if (!isMobile)
+        if (!isMobileResponsive)
           _buildAttachmentsList(context),
         if (calendarEvent != null)
           Column(
@@ -440,7 +441,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             height: 5,
             color: Colors.transparent,
           ),
-        if (isMobile)
+        if (isMobileResponsive)
           _buildAttachmentsList(context),
       ],
     );

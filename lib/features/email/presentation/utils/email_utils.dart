@@ -2,6 +2,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/mail/mail_address.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:http_parser/http_parser.dart';
@@ -22,9 +23,10 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class EmailUtils {
   static const double desktopItemMaxWidth = 260;
-  static const double desktopMoreButtonMaxWidth = 70;
+  static const double desktopMoreButtonMaxWidth = 150;
   static const double attachmentItemSpacing = 8;
   static const double attachmentItemHeight = 36;
+  static const double attachmentIcon = 20;
   static const int maxMobileVisibleAttachments = 3;
 
   EmailUtils._();
@@ -244,30 +246,38 @@ class EmailUtils {
     required double maxWidth,
     required List<Attachment> attachments,
     required bool isMobile,
+    int maxVisibleAttachments = EmailUtils.maxMobileVisibleAttachments,
+    double attachmentItemWidth = EmailUtils.desktopItemMaxWidth,
+    double attachmentItemSpacing = EmailUtils.attachmentItemSpacing,
+    double showMoreButtonMaxWidth = EmailUtils.desktopMoreButtonMaxWidth,
+    double attachmentIcon = EmailUtils.attachmentIcon,
   }) {
     if (attachments.isEmpty) return [];
 
     if (isMobile) {
-      return attachments.length <= maxMobileVisibleAttachments
+      return attachments.length <= maxVisibleAttachments
           ? attachments
-          : attachments.sublist(0, maxMobileVisibleAttachments);
+          : attachments.sublist(0, maxVisibleAttachments);
     }
 
-    final totalNeededWidth = attachments.length * desktopItemMaxWidth +
+    final totalNeededWidth = attachments.length * attachmentItemWidth +
         (attachments.length - 1) * attachmentItemSpacing;
     if (totalNeededWidth <= maxWidth) {
       return attachments;
     }
 
-    final availableWidth =
-        maxWidth - desktopMoreButtonMaxWidth - attachmentItemSpacing;
+    final availableWidth = maxWidth -
+        showMoreButtonMaxWidth -
+        attachmentIcon -
+        attachmentItemSpacing * 4;
 
+    log('EmailUtils::getAttachmentDisplayed: availableWidth = $availableWidth, maxWidth = $maxWidth, showMoreButtonMaxWidth = $showMoreButtonMaxWidth, attachmentIcon = $attachmentIcon, attachmentItemSpacing = $attachmentItemSpacing');
     double usedWidth = 0;
     int visibleCount = 0;
 
     for (int i = 0; i < attachments.length; i++) {
       final nextWidth =
-          desktopItemMaxWidth + (i > 0 ? attachmentItemSpacing : 0);
+          attachmentItemWidth + (i > 0 ? attachmentItemSpacing : 0);
       if (usedWidth + nextWidth <= availableWidth) {
         usedWidth += nextWidth;
         visibleCount++;
@@ -279,6 +289,29 @@ class EmailUtils {
     if (visibleCount == 0) visibleCount = 1;
 
     return attachments.sublist(0, visibleCount);
+  }
+
+  static double estimateTextWidth({
+    required BuildContext context,
+    required String text,
+    TextStyle? textStyle,
+    Locale? locale,
+  }) {
+    try {
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: text,
+          style: textStyle ?? DefaultTextStyle.of(context).style,
+          locale: locale,
+        ),
+        maxLines: 1,
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      return textPainter.width;
+    } catch (e) {
+      return desktopMoreButtonMaxWidth;
+    }
   }
 
   static String getDomainByEmailAddress(String emailAddress) {

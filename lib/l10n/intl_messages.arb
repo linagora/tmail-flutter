@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-09-19T09:56:48.738620",
+  "@@last_modified": "2025-10-07T12:02:25.245876",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3330,16 +3330,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moreAttachments": "+ {count} more",
-  "@moreAttachments": {
-    "type": "text",
-    "placeholders_order": [
-      "count"
-    ],
-    "placeholders": {
-      "count": {}
-    }
-  },
   "attachmentList": "Attachment list",
   "@attachmentList": {
     "type": "text",
@@ -3939,16 +3929,6 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "showMore": "Show more (+{count})",
-  "@showMore": {
-    "type": "text",
-    "placeholders_order": [
-      "count"
-    ],
-    "placeholders": {
-      "count": {}
-    }
   },
   "showLess": "Show less",
   "@showLess": {
@@ -4887,5 +4867,25 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "showMoreAttachmentButton": "Show +{count} more",
+  "@showMoreAttachmentButton": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "hideAttachmentButton": "Hide {count}",
+  "@hideAttachmentButton": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
   }
 }
