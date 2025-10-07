@@ -29,20 +29,31 @@ class RecipientsCollapsedComposerWidget extends StatelessWidget {
         List<Widget> visibleChips = [];
         int hiddenCount = 0;
 
-        for (var emailAddress in listEmailAddress) {
-          final textWidth =
-              _estimateTextWidth(context, emailAddress.asString()) + 80;
-          if (usedWidth + textWidth > maxWidth - 60) {
-            hiddenCount = listEmailAddress.length - visibleChips.length;
-            break;
-          }
-          usedWidth += textWidth + spacing;
+        if (listEmailAddress.length == 1) {
           visibleChips.add(
             Padding(
               padding: const EdgeInsetsDirectional.only(end: spacing),
-              child: RecipientCollapsedItemWidget(emailAddress: emailAddress),
+              child: RecipientCollapsedItemWidget(
+                emailAddress: listEmailAddress.first,
+              ),
             ),
           );
+        } else {
+          for (var emailAddress in listEmailAddress) {
+            final textWidth =
+                _estimateTextWidth(context, emailAddress.asString()) + 80;
+            if (usedWidth + textWidth > maxWidth - 60) {
+              hiddenCount = listEmailAddress.length - visibleChips.length;
+              break;
+            }
+            usedWidth += textWidth + spacing;
+            visibleChips.add(
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: spacing),
+                child: RecipientCollapsedItemWidget(emailAddress: emailAddress),
+              ),
+            );
+          }
         }
 
         if (hiddenCount > 0) {
