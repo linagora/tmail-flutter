@@ -68,8 +68,10 @@ class AttachmentsInfo extends StatelessWidget {
         ),
         if (onTapDownloadAllButton != null)
           TMailButtonWidget(
-            text: AppLocalizations.of(context).archiveAndDownload,
-            icon: imagePaths.icDownloadAll,
+            text: AppLocalizations.of(context).downloadAll,
+            icon: !responsiveUtils.isMobile(context)
+                ? imagePaths.icDownloadAttachment
+                : imagePaths.icDownloadAll,
             iconSize: 20,
             iconColor: AppColor.steelGrayA540,
             iconAlignment: TextDirection.rtl,

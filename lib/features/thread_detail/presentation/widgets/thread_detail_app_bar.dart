@@ -48,7 +48,8 @@ class ThreadDetailAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = responsiveUtils.isMobile(context);
+    final isMobileResponsive = responsiveUtils.isMobile(context);
+
     final child = LayoutBuilder(
       builder: (context, constraints) {
         Widget backButton = EmailViewBackButton(
@@ -58,7 +59,7 @@ class ThreadDetailAppBar extends StatelessWidget {
           isSearchActivated: isSearchRunning,
           maxWidth: constraints.maxWidth,
         );
-        if (isMobile) {
+        if (isMobileResponsive) {
           backButton = Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
@@ -87,7 +88,7 @@ class ThreadDetailAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (_supportDisplayMailboxNameTitle(context)) backButton,
-              if (isMobile && onOpenAttachmentListAction != null)
+              if (isMobileResponsive && onOpenAttachmentListAction != null)
                 _ThreadDetailAppBarButton(
                   icon: imagePaths.icAttachment,
                   tooltipMessage: AppLocalizations.of(context).attachments,
@@ -129,7 +130,7 @@ class ThreadDetailAppBar extends StatelessWidget {
                       : (_) => onThreadActionClick?.call(EmailActionType.moveToTrash),
                 ),
               ],
-              if (!isMobile) const Spacer(),
+              if (!isMobileResponsive) const Spacer(),
               if (AppUtils.getCurrentDirection(context) == TextDirection.rtl)
                 ...optionWidgets.reversed
               else
