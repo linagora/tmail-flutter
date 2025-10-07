@@ -100,7 +100,7 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_paywall_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
@@ -1079,7 +1079,7 @@ class ComposerController extends BaseController
         popBack();
 
         if (needIncreaseMySpace) {
-          mailboxDashBoardController.navigateToPaywall(context);
+          mailboxDashBoardController.paywallController?.navigateToPaywall(context);
         } else {
           _autoFocusFieldWhenLauncher();
         }
@@ -1362,7 +1362,7 @@ class ComposerController extends BaseController
             popBack();
 
             if (needIncreaseMySpace) {
-              mailboxDashBoardController.navigateToPaywall(context);
+              mailboxDashBoardController.paywallController?.navigateToPaywall(context);
             } else {
               _autoFocusFieldWhenLauncher();
             }
@@ -2363,7 +2363,7 @@ class ComposerController extends BaseController
           popBack();
 
           if (needIncreaseMySpace) {
-            mailboxDashBoardController.navigateToPaywall(context);
+            mailboxDashBoardController.paywallController?.navigateToPaywall(context);
           } else {
             _autoFocusFieldWhenLauncher();
           }
