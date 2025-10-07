@@ -62,31 +62,21 @@ class EmailAttachmentsWidget extends StatelessWidget {
           : null,
     );
 
-    bool isMobile = responsiveUtils.isMobile(context);
+    bool isMobileResponsive = responsiveUtils.isMobile(context);
 
-    final hideButton = SizedBox(
-      height: EmailUtils.attachmentItemHeight,
-      width: isMobile ? double.infinity : null,
-      child: ConfirmDialogButton(
-        label: AppLocalizations.of(context).hideAll,
-        backgroundColor: Theme.of(context).colorScheme.outline.withValues(
-          alpha: 0.08,
-        ),
-        textStyle: ThemeUtils.textStyleM3TitleSmall.copyWith(
-          color: AppColor.steelGrayA540,
-        ),
-        radius: 5,
-        onTapAction: onTapHideAllAttachments,
-      ),
-    );
-
-    if (isMobile) {
+    if (isMobileResponsive) {
       final attachmentRecord = _getDisplayedAndHiddenAttachment(
-        isMobile,
+        context,
+        isMobileResponsive,
         responsiveUtils.getDeviceWidth(context),
       );
-      final displayedAttachments = attachmentRecord.displayedAttachments;
-      final hiddenItemsCount = attachmentRecord.hiddenItemsCount;
+
+      final displayedAttachments = isDisplayAllAttachments
+          ? attachments
+          : attachmentRecord.displayedAttachments;
+      final hiddenItemsCount = isDisplayAllAttachments
+          ? 0
+          : attachmentRecord.hiddenItemsCount;
 
       return Padding(
         padding: const EdgeInsetsDirectional.only(
@@ -108,6 +98,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
                     margin: const EdgeInsets.only(
                       top: EmailUtils.attachmentItemSpacing,
                     ),
+                    width: EmailUtils.desktopItemMaxWidth,
                     downloadAttachmentAction: downloadAttachmentAction,
                     viewAttachmentAction: viewAttachmentAction,
                     singleEmailControllerTag: singleEmailControllerTag,
@@ -119,23 +110,37 @@ class EmailAttachmentsWidget extends StatelessWidget {
             if (hiddenItemsCount > 0)
               SizedBox(
                 height: EmailUtils.attachmentItemHeight,
-                width: double.infinity,
                 child: ConfirmDialogButton(
-                  label: AppLocalizations.of(context).moreAttachments(
+                  icon: imagePaths.icAttachment,
+                  iconSize: 16,
+                  iconColor: AppColor.steelGrayA540,
+                  label: AppLocalizations.of(context).showMoreAttachmentButton(
                     hiddenItemsCount,
                   ),
-                  backgroundColor: Theme.of(context).colorScheme.outline.withValues(
-                    alpha: 0.08,
-                  ),
-                  textStyle: ThemeUtils.textStyleM3TitleSmall.copyWith(
-                    color: AppColor.steelGrayA540,
+                  textStyle: ThemeUtils.textStyleBodyBody1(
+                    color: AppColor.steelGray400,
                   ),
                   radius: 5,
                   onTapAction: onTapShowAllAttachmentFile,
                 ),
               ),
             if (isDisplayAllAttachments)
-              hideButton,
+              SizedBox(
+                height: EmailUtils.attachmentItemHeight,
+                child: ConfirmDialogButton(
+                  icon: imagePaths.icAttachment,
+                  iconSize: 16,
+                  iconColor: AppColor.steelGrayA540,
+                  label: AppLocalizations.of(context).hideAttachmentButton(
+                    attachmentRecord.hiddenItemsCount,
+                  ),
+                  textStyle: ThemeUtils.textStyleBodyBody1(
+                    color: AppColor.steelGray400,
+                  ),
+                  radius: 5,
+                  onTapAction: onTapHideAllAttachments,
+                ),
+              ),
           ],
         ),
       );
@@ -163,11 +168,16 @@ class EmailAttachmentsWidget extends StatelessWidget {
               child: LayoutBuilder(
                   builder: (context, constraints) {
                     final attachmentRecord = _getDisplayedAndHiddenAttachment(
-                      isMobile,
+                      context,
+                      isMobileResponsive,
                       constraints.maxWidth,
                     );
-                    final displayedAttachments = attachmentRecord.displayedAttachments;
-                    final hiddenItemsCount = attachmentRecord.hiddenItemsCount;
+                    final displayedAttachments = isDisplayAllAttachments
+                        ? attachments
+                        : attachmentRecord.displayedAttachments;
+                    final hiddenItemsCount = isDisplayAllAttachments
+                        ? 0
+                        : attachmentRecord.hiddenItemsCount;
 
                     return Wrap(
                       spacing: EmailUtils.attachmentItemSpacing,
@@ -204,19 +214,36 @@ class EmailAttachmentsWidget extends StatelessWidget {
                           SizedBox(
                             height: EmailUtils.attachmentItemHeight,
                             child: ConfirmDialogButton(
-                              label: '+$hiddenItemsCount',
-                              backgroundColor: Theme.of(context).colorScheme.outline.withValues(
-                                alpha: 0.08,
+                              icon: imagePaths.icAttachment,
+                              iconSize: 16,
+                              iconColor: AppColor.steelGrayA540,
+                              label: AppLocalizations.of(context).showMoreAttachmentButton(
+                                hiddenItemsCount,
                               ),
-                              textStyle: ThemeUtils.textStyleM3TitleSmall.copyWith(
-                                color: AppColor.steelGrayA540,
+                              textStyle: ThemeUtils.textStyleBodyBody1(
+                                color: AppColor.steelGray400,
                               ),
                               radius: 5,
                               onTapAction: onTapShowAllAttachmentFile,
                             ),
                           ),
                         if (isDisplayAllAttachments)
-                          hideButton,
+                          SizedBox(
+                            height: EmailUtils.attachmentItemHeight,
+                            child: ConfirmDialogButton(
+                              icon: imagePaths.icAttachment,
+                              iconSize: 16,
+                              iconColor: AppColor.steelGrayA540,
+                              label: AppLocalizations.of(context).hideAttachmentButton(
+                                attachmentRecord.hiddenItemsCount,
+                              ),
+                              textStyle: ThemeUtils.textStyleBodyBody1(
+                                color: AppColor.steelGray400,
+                              ),
+                              radius: 5,
+                              onTapAction: onTapHideAllAttachments,
+                            ),
+                          ),
                       ],
                     );
                   }
@@ -229,15 +256,25 @@ class EmailAttachmentsWidget extends StatelessWidget {
   }
 
   ({List<Attachment> displayedAttachments, int hiddenItemsCount})
-      _getDisplayedAndHiddenAttachment(bool isMobile, double maxWidth) {
-    if (isDisplayAllAttachments) {
-      return (displayedAttachments: attachments, hiddenItemsCount: 0);
-    }
+      _getDisplayedAndHiddenAttachment(
+    BuildContext context,
+    bool isMobile,
+    double maxWidth,
+  ) {
+    final showMoreButtonMaxWidth = EmailUtils.estimateTextWidth(
+      context: context,
+      text: AppLocalizations.of(context).showMoreAttachmentButton(999),
+      textStyle: ThemeUtils.textStyleBodyBody1(
+        color: AppColor.steelGray400,
+      ),
+      locale: Localizations.localeOf(context),
+    );
 
     final displayedAttachments = EmailUtils.getAttachmentDisplayed(
       maxWidth: maxWidth,
       attachments: attachments,
       isMobile: isMobile,
+      showMoreButtonMaxWidth: showMoreButtonMaxWidth,
     );
 
     int hiddenItemsCount = attachments.length - displayedAttachments.length;
@@ -246,6 +283,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
     } else if (hiddenItemsCount < 0) {
       hiddenItemsCount = 0;
     }
+
     log('EmailAttachmentsWidget::_getDisplayedAndHiddenAttachment: Displayed: ${displayedAttachments.length}, Hidden: $hiddenItemsCount');
     return (
       displayedAttachments: displayedAttachments,

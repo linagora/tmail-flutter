@@ -57,7 +57,7 @@ void main() {
           attachments: attachments,
           isMobile: false,
         );
-        expect(result, attachments.sublist(0, 3));
+        expect(result, attachments.sublist(0, 2));
       });
 
       test(

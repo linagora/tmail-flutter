@@ -3419,14 +3419,6 @@ class AppLocalizations {
     );
   }
 
-  String moreAttachments(int count) {
-    return Intl.message(
-      '+ $count more',
-      name: 'moreAttachments',
-      args: [count]
-    );
-  }
-
   String get attachmentList {
     return Intl.message(
       'Attachment list',
@@ -4097,13 +4089,6 @@ class AppLocalizations {
       'Mail to attendees',
       name: 'mailToAttendees'
     );
-  }
-
-  String showMore(int count) {
-    return Intl.message(
-      'Show more (+$count)',
-      name: 'showMore',
-      args: [count]);
   }
 
   String get showLess {
@@ -5158,6 +5143,22 @@ class AppLocalizations {
     return Intl.message(
       'Enable spam report',
       name: 'spamReportToggleDescription',
+    );
+  }
+
+  String showMoreAttachmentButton(int count) {
+    return Intl.message(
+      'Show +$count more',
+      name: 'showMoreAttachmentButton',
+      args: [count],
+    );
+  }
+
+  String hideAttachmentButton(int count) {
+    return Intl.message(
+      'Hide $count',
+      name: 'hideAttachmentButton',
+      args: [count],
     );
   }
 }
