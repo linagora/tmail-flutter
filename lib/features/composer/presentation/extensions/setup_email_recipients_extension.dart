@@ -1,6 +1,5 @@
 
 import 'package:model/email/email_action_type.dart';
-import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -29,7 +28,6 @@ extension SetupEmailRecipientsExtension on ComposerController {
         if (emailAddressOfTo.isNotEmpty) {
           listToEmailAddress.addAll(emailAddressOfTo);
           isInitialRecipient.value = true;
-          toAddressExpandMode.value = ExpandMode.COLLAPSE;
         }
         break;
       case EmailActionType.composeFromMailtoUri:
@@ -40,19 +38,16 @@ extension SetupEmailRecipientsExtension on ComposerController {
         if (emailAddressOfTo.isNotEmpty) {
           listToEmailAddress.addAll(emailAddressOfTo);
           isInitialRecipient.value = true;
-          toAddressExpandMode.value = ExpandMode.COLLAPSE;
         }
 
         if (emailAddressOfCc.isNotEmpty) {
           listCcEmailAddress = emailAddressOfCc;
           ccRecipientState.value = PrefixRecipientState.enabled;
-          ccAddressExpandMode.value = ExpandMode.COLLAPSE;
         }
 
         if (emailAddressOfBc.isNotEmpty) {
           listBccEmailAddress = emailAddressOfBc;
           bccRecipientState.value = PrefixRecipientState.enabled;
-          bccAddressExpandMode.value = ExpandMode.COLLAPSE;
         }
         break;
       case EmailActionType.reply:
