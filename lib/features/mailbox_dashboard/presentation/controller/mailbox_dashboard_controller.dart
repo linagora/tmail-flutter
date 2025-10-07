@@ -2020,12 +2020,16 @@ class MailboxDashBoardController extends ReloadableController
     downloadController.deleteDownloadTask(taskId);
   }
 
-  void disableVacationResponder() {
+  void disableVacationResponder(VacationResponse vacationResponse) {
     if (accountId.value != null && _updateVacationInteractor != null) {
-      final vacationDisabled = vacationResponse.value != null
-          ? vacationResponse.value!.copyWith(isEnabled: false)
-          : VacationResponse(isEnabled: false);
-      consumeState(_updateVacationInteractor!.execute(accountId.value!, vacationDisabled));
+      consumeState(_updateVacationInteractor!.execute(
+        accountId.value!,
+        vacationResponse.clearAllExceptHtmlBody(),
+      ));
+    } else {
+      consumeState(
+        Stream.value(Left(UpdateVacationFailure(ParametersIsNullException()))),
+      );
     }
   }
 
