@@ -1,5 +1,4 @@
 
-import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
@@ -33,19 +32,15 @@ extension RemoveDraggableEmailAddressBetweenRecipientFieldsExtension on Composer
     switch(draggableEmailAddress.filterField) {
       case FilterField.to:
         controller.listToEmailAddress.remove(draggableEmailAddress.emailAddress);
-        controller.toAddressExpandMode.value = ExpandMode.EXPAND;
         break;
       case FilterField.cc:
         controller.listCcEmailAddress.remove(draggableEmailAddress.emailAddress);
-        controller.ccAddressExpandMode.value = ExpandMode.EXPAND;
         break;
       case FilterField.bcc:
         controller.listBccEmailAddress.remove(draggableEmailAddress.emailAddress);
-        controller.bccAddressExpandMode.value = ExpandMode.EXPAND;
         break;
       case FilterField.replyTo:
         controller.listReplyToEmailAddress.remove(draggableEmailAddress.emailAddress);
-        controller.replyToAddressExpandMode.value = ExpandMode.EXPAND;
         break;
       default:
         break;

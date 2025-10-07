@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 
 class RecipientTagItemWidget extends StatelessWidget {
 
-  final bool isCollapsed;
   final bool isTagFocused;
   final ImagePaths imagePaths;
   final double? maxWidth;
@@ -29,8 +28,6 @@ class RecipientTagItemWidget extends StatelessWidget {
   final PrefixEmailAddress prefix;
   final EmailAddress currentEmailAddress;
   final List<EmailAddress> currentListEmailAddress;
-  final List<EmailAddress> collapsedListEmailAddress;
-  final OnShowFullListEmailAddressAction? onShowFullAction;
   final OnDeleteTagAction? onDeleteTagAction;
   final OnEditRecipientAction? onEditRecipientAction;
   final bool isTestingForWeb;
@@ -44,13 +41,10 @@ class RecipientTagItemWidget extends StatelessWidget {
     required this.prefix,
     required this.currentEmailAddress,
     required this.currentListEmailAddress,
-    required this.collapsedListEmailAddress,
     required this.imagePaths,
     @visibleForTesting this.isTestingForWeb = false,
-    this.isCollapsed = false,
     this.isTagFocused = false,
     this.isMobile = false,
-    this.onShowFullAction,
     this.onDeleteTagAction,
     this.onEditRecipientAction,
     this.maxWidth,
@@ -95,9 +89,7 @@ class RecipientTagItemWidget extends StatelessWidget {
       ),
       onClearFocusAction: onClearFocusAction,
       child: Container(
-        key: PlatformInfo.isWeb
-            ? Key('recipient_tag_item_${prefix.name}_$index')
-            : null,
+        key: Key('recipient_tag_item_${prefix.name}_$index'),
         constraints: const BoxConstraints(maxWidth: 267),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(
@@ -108,6 +100,9 @@ class RecipientTagItemWidget extends StatelessWidget {
         ),
         height: 32,
         padding: const EdgeInsetsDirectional.only(start: 8, end: 4),
+        margin: PlatformInfo.isMobile
+            ? const EdgeInsetsDirectional.only(top: 8)
+            : null,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -120,28 +115,20 @@ class RecipientTagItemWidget extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Flexible(
-              child: PlatformInfo.isWeb
-                ? ExtendedText(
-                    key: Key('label_recipient_tag_item_${prefix.name}_$index'),
-                    currentEmailAddress.asString(),
-                    maxLines: 1,
-                    overflowWidget: TextOverflowWidget(
-                      position: TextOverflowPosition.middle,
-                      clearType: TextOverflowClearType.clipRect,
-                      child: Text(
-                        '...',
-                        style: RecipientTagItemWidgetStyle.labelTextStyle,
-                      ),
-                    ),
-                    style: RecipientTagItemWidgetStyle.labelTextStyle,
-                  )
-                : Text(
-                    key: Key('label_recipient_tag_item_${prefix.name}_$index'),
-                    currentEmailAddress.asString(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+              child: ExtendedText(
+                key: Key('label_recipient_tag_item_${prefix.name}_$index'),
+                currentEmailAddress.asString(),
+                maxLines: 1,
+                overflowWidget: TextOverflowWidget(
+                  position: TextOverflowPosition.middle,
+                  clearType: TextOverflowClearType.clipRect,
+                  child: Text(
+                    '...',
                     style: RecipientTagItemWidgetStyle.labelTextStyle,
                   ),
+                ),
+                style: RecipientTagItemWidgetStyle.labelTextStyle,
+              ),
             ),
             const SizedBox(width: 4),
             TMailButtonWidget.fromIcon(
@@ -186,46 +173,8 @@ class RecipientTagItemWidget extends StatelessWidget {
       );
     }
 
-    if (PlatformInfo.isWeb) {
-      return tagWidget;
-    } else {
-      return Container(
-        key: Key('recipient_tag_item_${prefix.name}_$index'),
-        constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
-        child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(child: tagWidget),
-              if (isCollapsed)
-                TMailButtonWidget.fromText(
-                  key: Key('counter_recipient_tag_item_${prefix.name}_$index'),
-                  margin: _counterMargin,
-                  text: '+$countRecipients',
-                  onTapActionCallback: () => onShowFullAction?.call(prefix),
-                  borderRadius: RecipientTagItemWidgetStyle.radius,
-                  textStyle: RecipientTagItemWidgetStyle.labelTextStyle,
-                  padding: PlatformInfo.isWeb || isTestingForWeb
-                      ? RecipientTagItemWidgetStyle.counterPadding
-                      : RecipientTagItemWidgetStyle.mobileCounterPadding,
-                  backgroundColor: AppColor.colorEmailAddressTag,
-                ),
-            ],
-        ),
-      );
-    }
+    return tagWidget;
   }
-
-  EdgeInsetsGeometry? get _counterMargin {
-    if (PlatformInfo.isWeb || isTestingForWeb) {
-      return PlatformInfo.isCanvasKit
-        ? RecipientTagItemWidgetStyle.webCounterMargin
-        : RecipientTagItemWidgetStyle.webMobileCounterMargin;
-    } else {
-      return RecipientTagItemWidgetStyle.counterMargin;
-    }
-  }
-
-  int get countRecipients => currentListEmailAddress.length - collapsedListEmailAddress.length;
 
   Color _getTagBackgroundColor() {
     if (isTagFocused) {

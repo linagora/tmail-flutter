@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
-import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/email_address_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
@@ -60,8 +59,7 @@ extension HandleEditRecipientExtension on ComposerController {
     switch(prefix) {
       case PrefixEmailAddress.to:
         listToEmailAddress.remove(emailAddress);
-        toAddressExpandMode.value = ExpandMode.EXPAND;
-        toAddressExpandMode.refresh();
+        toRecipientState.refresh();
         _setTextAndFocus(
           controller: toEmailAddressController,
           focusNode: toAddressFocusNode,
@@ -70,8 +68,7 @@ extension HandleEditRecipientExtension on ComposerController {
         break;
       case PrefixEmailAddress.cc:
         listCcEmailAddress.remove(emailAddress);
-        ccAddressExpandMode.value = ExpandMode.EXPAND;
-        ccAddressExpandMode.refresh();
+        ccRecipientState.refresh();
         _setTextAndFocus(
           controller: ccEmailAddressController,
           focusNode: ccAddressFocusNode,
@@ -80,8 +77,7 @@ extension HandleEditRecipientExtension on ComposerController {
         break;
       case PrefixEmailAddress.bcc:
         listBccEmailAddress.remove(emailAddress);
-        bccAddressExpandMode.value = ExpandMode.EXPAND;
-        bccAddressExpandMode.refresh();
+        bccRecipientState.refresh();
         _setTextAndFocus(
           controller: bccEmailAddressController,
           focusNode: bccAddressFocusNode,
@@ -90,8 +86,7 @@ extension HandleEditRecipientExtension on ComposerController {
         break;
       case PrefixEmailAddress.replyTo:
         listReplyToEmailAddress.remove(emailAddress);
-        replyToAddressExpandMode.value = ExpandMode.EXPAND;
-        replyToAddressExpandMode.refresh();
+        replyToRecipientState.refresh();
         _setTextAndFocus(
           controller: replyToEmailAddressController,
           focusNode: replyToAddressFocusNode,
