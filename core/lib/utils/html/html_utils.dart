@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:core/utils/html/html_template.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' as parser;
 import 'package:html_unescape/html_unescape.dart';
 
 import 'js_interop_stub.dart' if (dart.library.html) 'dart:js_interop';
@@ -712,5 +714,76 @@ class HtmlUtils {
     cleaned = cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
 
     return cleaned;
+  }
+
+  static String wrapPlainTextLinks(String htmlString) {
+    try {
+      final document = parser.parse(htmlString);
+      final container = document.body;
+
+      if (container == null) return htmlString;
+
+      final urlRegex = RegExp(r'''(?:(?:https?:\/\/)|(?:www\.))[^\s<]+[^<.,:;\"')\]\s!?]''');
+
+      _processNode(container, urlRegex);
+
+      return container.innerHtml;
+    } catch (e) {
+      logError('HtmlUtils::wrapPlainTextLinks:Exception = $e');
+      return htmlString;
+    }
+  }
+
+  static final _skipTags = {
+    'a', 'img', 'video', 'audio', 'source', 'link', 'script', 'iframe'
+  };
+
+  static void _processNode(dom.Node node, RegExp urlRegex) {
+    for (var child in node.nodes.toList()) {
+      // Skip if node or parent node is in tag to skip
+      final parentTag = child.parent?.localName;
+      if (parentTag != null && _skipTags.contains(parentTag.toLowerCase())) {
+        continue;
+      }
+
+      if (child.nodeType == dom.Node.TEXT_NODE) {
+        final text = child.text ?? '';
+        final matches = urlRegex.allMatches(text);
+
+        if (matches.isEmpty) continue;
+
+        final nodes = <dom.Node>[];
+        int lastIndex = 0;
+
+        for (final match in matches) {
+          final url = match.group(0)!;
+          final start = match.start;
+
+          if (start > lastIndex) {
+            nodes.add(dom.Text(text.substring(lastIndex, start)));
+          }
+
+          final href = url.startsWith('http') ? url : 'https://$url';
+          final link = dom.Element.tag('a')
+            ..attributes['href'] = href
+            ..text = url;
+          nodes.add(link);
+
+          lastIndex = match.end;
+        }
+
+        if (lastIndex < text.length) {
+          nodes.add(dom.Text(text.substring(lastIndex)));
+        }
+
+        final parent = child.parent!;
+        final index = parent.nodes.indexOf(child);
+
+        parent.nodes.removeAt(index);
+        parent.nodes.insertAll(index, nodes);
+      } else {
+        _processNode(child, urlRegex);
+      }
+    }
   }
 }
