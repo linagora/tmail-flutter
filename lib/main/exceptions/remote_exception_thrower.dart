@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/status/http_status.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
@@ -30,16 +31,21 @@ class RemoteExceptionThrower extends ExceptionThrower {
   }
 
   void handleDioError(dynamic error) {
+    logError('RemoteExceptionThrower::handleDioError(): ${error.runtimeType}');
     if (error is ChainedRequestError) {
       final statusCode = error.primaryError.response?.statusCode;
       final secondaryError = error.secondaryError;
-      if (statusCode == HttpStatus.unauthorized && secondaryError != null) {
+      if (PlatformInfo.isMobile &&
+          statusCode == HttpStatus.unauthorized &&
+          secondaryError != null) {
         throw ClientAuthenticationException(
           code: HttpStatus.unauthorized,
           secondErrorCode: getCodeByError(secondaryError),
           message: getMessageByError(secondaryError),
         );
       }
+
+      error = error.primaryError.copyWith(error: secondaryError);
     }
 
     if (error is DioError) {
