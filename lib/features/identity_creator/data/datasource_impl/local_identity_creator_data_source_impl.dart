@@ -31,7 +31,10 @@ class LocalIdentityCreatorDataSourceImpl implements IdentityCreatorDataSource {
         cacheKey: jsonEncode(IdentityCacheModel.fromDomain(identityCache).toJson())
       };
       window.sessionStorage.addAll(entries);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
     
   @override
@@ -48,7 +51,10 @@ class LocalIdentityCreatorDataSourceImpl implements IdentityCreatorDataSource {
       } else {
         throw NotFoundInWebSessionException();
       }
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -56,7 +62,10 @@ class LocalIdentityCreatorDataSourceImpl implements IdentityCreatorDataSource {
     return Future.sync(() {
       window.sessionStorage.removeWhere(
         (key, value) => key.startsWith(LocalIdentityCreatorDataSourceImpl.sessionStorageKeyword));
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   String _generateTupleKey(AccountId accountId, UserName userName) {

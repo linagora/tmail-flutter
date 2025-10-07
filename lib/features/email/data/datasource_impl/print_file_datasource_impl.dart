@@ -69,7 +69,10 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
         titleAttachment: emailPrint.titleAttachment,
         listAttachment: listPrintAttachment
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   Future<String> _transformHtmlEmailContent(EmailPrint emailPrint) async {
