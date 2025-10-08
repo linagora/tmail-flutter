@@ -37,11 +37,11 @@ class PullToRefreshScenario extends BaseTestScenario {
     _expectEmailWithSubjectInvisible(visibleAfterPullToRefresh);
 
     await threadRobot.pullToRefreshByEmailSubject(visibleBeforePullToRefresh);
-    _expectEmailWithSubjectVisible(visibleAfterPullToRefresh);
+    await _expectEmailWithSubjectVisible(visibleAfterPullToRefresh);
   }
 
-  _expectEmailWithSubjectVisible(String subject) {
-    expect($(subject), findsOneWidget);
+  Future<void> _expectEmailWithSubjectVisible(String subject) async {
+    await expectViewVisible($(subject));
   }
 
   _expectEmailWithSubjectInvisible(String subject) {
