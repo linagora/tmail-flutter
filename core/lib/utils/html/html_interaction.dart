@@ -298,4 +298,84 @@ class HtmlInteraction {
       });
     </script>
   ''';
+
+  static String scriptsWheelEventListener({
+    required String viewId,
+    required String onScrollChangedEvent,
+  }) => '''
+    <script type="text/javascript">
+      function onWheel(e) { 
+        const deltaY = event.deltaY;
+        window.parent.postMessage(JSON.stringify({
+          "view": "$viewId",
+          "type": "toDart: $onScrollChangedEvent",
+          "deltaY": deltaY
+        }), "*");
+      }
+      
+      window.addEventListener('wheel', onWheel, { passive: true });
+      
+      window.addEventListener('pagehide', (event) => {
+        window.removeEventListener('wheel', onWheel);
+      });
+    </script>
+  ''';
+
+  static String scriptsTouchEventListener({
+    required String viewId,
+    required String onScrollChangedEvent,
+    required String onScrollEndEvent,
+  }) => '''
+    <script type="text/javascript">
+      let lastY = 0;
+      let lastTime = 0;
+      let velocity = 0;
+    
+      function onTouchStart(e) { 
+        lastY = e.touches[0].clientY;
+        lastTime = performance.now();
+        velocity = 0;
+      }
+    
+      function onTouchMove(e) { 
+        const now = performance.now();
+        const y = e.touches[0].clientY;
+        const dy = lastY - y;
+        const dt = now - lastTime;
+    
+        if (dt > 0) {
+          velocity = dy / dt; // px per ms
+          velocity = Math.max(Math.min(velocity, 2), -2); // clamp velocity
+        }
+    
+        lastY = y;
+        lastTime = now;
+    
+        window.parent.postMessage(JSON.stringify({
+          view: "$viewId",
+          type: "toDart: $onScrollChangedEvent",
+          deltaY: dy,
+        }), '*');
+      }
+    
+      function onTouchEnd(e) { 
+        window.parent.postMessage(JSON.stringify({
+          view: "$viewId",
+          type: "toDart: $onScrollEndEvent",
+          velocity: velocity,
+        }), '*');
+      }
+    
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchmove', onTouchMove, { passive: true });
+      window.addEventListener('touchend', onTouchEnd, { passive: true });
+    
+      window.addEventListener('pagehide', () => {
+        window.removeEventListener('touchstart', onTouchStart);
+        window.removeEventListener('touchmove', onTouchMove);
+        window.removeEventListener('touchend', onTouchEnd);
+      });
+    </script>
+
+  ''';
 }
