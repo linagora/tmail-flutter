@@ -49,7 +49,10 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   Future<void> update(AccountId accountId, UserName userName, {List<Mailbox>? updated, List<Mailbox>? created, List<MailboxId>? destroyed}) {
     return Future.sync(() async {
       return await _mailboxCacheManager.update(accountId, userName, updated: updated, created: created, destroyed: destroyed);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -57,7 +60,10 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
     return Future.sync(() async {
       final listMailboxes = await _mailboxCacheManager.getAllMailbox(accountId, userName);
       return listMailboxes;
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -159,7 +165,10 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   Future<void> clearAllMailboxCache(AccountId accountId, UserName userName) {
     return Future.sync(() async {
       return await _mailboxCacheManager.deleteByKey(accountId, userName);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override

@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 class CacheExceptionThrower extends ExceptionThrower {
 
   @override
-  throwException(dynamic error, dynamic stackTrace) {
+  Future<void> throwException(dynamic error, dynamic stackTrace) {
     logError('CacheExceptionThrower::throwException():error: $error | stackTrace: $stackTrace');
     throw error;
   }

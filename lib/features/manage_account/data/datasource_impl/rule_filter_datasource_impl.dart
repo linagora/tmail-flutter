@@ -22,7 +22,10 @@ class RuleFilterDataSourceImpl extends RuleFilterDataSource {
   Future<List<TMailRule>> getAllTMailRule(AccountId accountId) {
     return Future.sync(() async {
       return await _ruleFilterAPI.getListTMailRule(accountId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -32,20 +35,29 @@ class RuleFilterDataSourceImpl extends RuleFilterDataSource {
 
     return Future.sync(() async {
       return await _ruleFilterAPI.updateListTMailRule(accountId, deleteEmailRuleRequest.currentEmailRules);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<List<TMailRule>> createNewEmailRuleFilter(AccountId accountId, CreateNewEmailRuleFilterRequest ruleFilterRequest) {
     return Future.sync(() async {
       return await _ruleFilterAPI.updateListTMailRule(accountId, ruleFilterRequest.newListTMailRules);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<List<TMailRule>> editEmailRuleFilter(AccountId accountId, EditEmailRuleFilterRequest ruleFilterRequest) {
     return Future.sync(() async {
       return await _ruleFilterAPI.updateListTMailRule(accountId, ruleFilterRequest.listTMailRulesUpdated);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

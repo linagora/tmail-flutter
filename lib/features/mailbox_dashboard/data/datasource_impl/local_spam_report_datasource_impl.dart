@@ -27,7 +27,10 @@ class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
       return DateTime.fromMillisecondsSinceEpoch(
         spamReportConfig.lastTimeDismissedMilliseconds,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -39,7 +42,10 @@ class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
         lastTimeDismissedMilliseconds:
             lastTimeDismissedSpamReported.millisecondsSinceEpoch,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -48,7 +54,10 @@ class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
       return await _preferencesSettingManager.updateSpamReport(
         lastTimeDismissedMilliseconds: 0,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -69,7 +78,10 @@ class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
       final spamReportConfig =
         await _preferencesSettingManager.getSpamReportConfig();
       return spamReportConfig.spamReportState;
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -78,7 +90,10 @@ class LocalSpamReportDataSourceImpl extends SpamReportDataSource {
       return await _preferencesSettingManager.updateSpamReport(
         isEnabled: spamReportState == SpamReportState.enabled,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override

@@ -341,7 +341,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
           return detailedEmailCache;
         });
       return _newEmailCacheWorkerQueue.addTask(task);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -369,7 +372,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<void> storeEmail(Session session, AccountId accountId, Email email) {
     return Future.sync(() async {
       return await _emailCacheManager.storeEmail(accountId, session.username, email.toEmailCache());
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -394,7 +400,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
           return detailedEmailCache;
         });
       return _openedEmailCacheWorkerQueue.addTask(task);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -409,7 +418,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
       final emailContent = listResult[1] as String;
       log('EmailHiveCacheDataSourceImpl::getStoredOpenedEmail():detailedEmailCache: ${detailedEmailCache.emailId} | emailContent: $emailContent');
       return detailedEmailCache.toDetailedEmailWithContent(emailContent);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -424,7 +436,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
       final emailContent = listResult[1] as String;
       log('EmailHiveCacheDataSourceImpl::getStoredNewEmail():detailedEmailCache: ${detailedEmailCache.emailId} | emailContent: $emailContent');
       return detailedEmailCache.toDetailedEmailWithContent(emailContent);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -432,7 +447,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       final email = await _emailCacheManager.getStoredEmail(accountId, session.username, emailId);
       return email.toEmail();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -440,7 +458,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       final sendingEmailsCache = await _sendingEmailCacheManager.storeSendingEmail(accountId, userName, sendingEmail.toHiveCache());
       return sendingEmailsCache.toSendingEmail();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -448,14 +469,20 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       final sendingEmailsCache = await _sendingEmailCacheManager.getAllSendingEmailsByTupleKey(accountId, userName);
       return sendingEmailsCache.toSendingEmails();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> deleteSendingEmail(AccountId accountId, UserName userName, String sendingId) {
     return Future.sync(() async {
       return await _sendingEmailCacheManager.deleteSendingEmail(accountId, userName, sendingId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -463,7 +490,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       final sendingEmailsCache = await _sendingEmailCacheManager.updateSendingEmail(accountId, userName, newSendingEmail.toHiveCache());
       return sendingEmailsCache.toSendingEmail();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -471,14 +501,20 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       final listSendingEmailsCache = await _sendingEmailCacheManager.updateMultipleSendingEmail(accountId, userName, newSendingEmails.toHiveCache());
       return listSendingEmailsCache.toSendingEmails();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> deleteMultipleSendingEmail(AccountId accountId, UserName userName, List<String> sendingIds) {
     return Future.sync(() async {
       return await _sendingEmailCacheManager.deleteMultipleSendingEmail(accountId, userName, sendingIds);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -486,7 +522,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       final sendingEmailCache = await _sendingEmailCacheManager.getStoredSendingEmail(accountId, userName, sendingId);
       return sendingEmailCache.toSendingEmail();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
