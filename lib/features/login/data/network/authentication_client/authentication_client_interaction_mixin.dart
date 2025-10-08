@@ -59,14 +59,16 @@ mixin AuthenticationClientInteractionMixin {
     String clientId,
     String redirectUrl,
     String discoveryUrl,
-    List<String> scopes,
-  ) {
+    List<String> scopes, {
+    String? loginHint,
+  }) {
     return AuthorizationTokenRequest(
       clientId,
       redirectUrl,
       discoveryUrl: discoveryUrl,
       scopes: scopes,
       externalUserAgent: getExternalUserAgent(),
+      loginHint: loginHint,
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/mail/domain.dart';
 import 'package:core/utils/mail/mail_address.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:dartz/dartz.dart';
@@ -274,4 +275,24 @@ class EmailUtils {
       return '';
     }
   }
+
+  static MailAddress? getMailAddress({required String ownerEmail}) {
+    try {
+      return MailAddress.validateAddress(ownerEmail);
+    } catch (e) {
+      if (GetUtils.isEmail(ownerEmail)) {
+        final listPart = ownerEmail.split('@');
+        if (listPart.length == 2) {
+          return MailAddress(
+            localPart: listPart.first,
+            domain: Domain.of((listPart.last)),
+          );
+        }
+      }
+      return null;
+    }
+  }
+
+  static String? getLocalPartEmail(String emailAddress) =>
+      getMailAddress(ownerEmail: emailAddress)?.localPart;
 }

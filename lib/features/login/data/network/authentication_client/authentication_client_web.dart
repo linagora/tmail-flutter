@@ -25,13 +25,15 @@ class AuthenticationClientWeb with AuthenticationClientInteractionMixin
     String clientId,
     String redirectUrl,
     String discoveryUrl,
-    List<String> scopes,
-  ) async {
+    List<String> scopes, {
+    String? loginHint,
+  }) async {
     final authorizationTokenRequest = getAuthorizationTokenRequest(
       clientId,
       redirectUrl,
       discoveryUrl,
       scopes,
+      loginHint: loginHint,
     );
     final authorizationTokenResponse = await _appAuthWeb.authorizeAndExchangeCode(
       authorizationTokenRequest,
