@@ -2,8 +2,8 @@
 a[b][c]=a[b][c]||[]
 a[b][c].push({p:"main.dart.js_8",e:"beginPart"})})(self,"$__dart_deferred_initializers__","eventLog")
 $__dart_deferred_initializers__.current=function(a,b,c,$){var J,A,C,B={
-bNt(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v){return new B.Lg(f,v,k,h,g,t,p,r,d,s,j,i,n,l,m,q,u,e,o)},
-Lg:function Lg(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v){var _=this
+bNw(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v){return new B.Lf(f,v,k,h,g,t,p,r,d,s,j,i,n,l,m,q,u,e,o)},
+Lf:function Lf(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v){var _=this
 _.c=d
 _.d=e
 _.e=f
@@ -23,7 +23,7 @@ _.cx=s
 _.cy=t
 _.db=u
 _.a=v},
-aoa:function aoa(d){var _=this
+aob:function aob(d){var _=this
 _.f=_.e=_.d=$
 _.w=_.r=null
 _.x=!0
@@ -39,45 +39,45 @@ this.b=e},
 cMh:function cMh(d){this.a=d},
 cMd:function cMd(d){this.a=d},
 cMc:function cMc(d){this.a=d},
-asL:function asL(){},
-dH8(d){var x,w,v,u,t,s,r,q,p="text/html"
+asM:function asM(){},
+dH7(d){var x,w,v,u,t,s,r,q,p="text/html"
 if(!(C.d.t(d,A.bs("<[a-zA-Z][^>]*>",!0,!1,!1))&&C.d.t(d,A.bs("</[a-zA-Z][^>]*>",!0,!1,!1))))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
 v.toString
 u=y.f
-t=new A.a1V(v,u)
+t=new A.a1Y(v,u)
 for(s=1;t.gA(0)===0;){if(s>=3)return d
-v=w.querySelectorAll(".quote-toggle-container"+C.d.b2(" > div",s)+" > blockquote")
+v=w.querySelectorAll(".quote-toggle-container"+C.d.b3(" > div",s)+" > blockquote")
 v.toString
-t=new A.a1V(v,u);++s}r=t.$ti.c.a(C.u9.gU(t.a))
+t=new A.a1Y(v,u);++s}r=t.$ti.c.a(C.uc.gU(t.a))
 q=new DOMParser().parseFromString('      <button class="quote-toggle-button collapsed" title="Show trimmed content">\n          <span class="dot"></span>\n          <span class="dot"></span>\n          <span class="dot"></span>\n      </button>',p).querySelector(".quote-toggle-button")
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.dA8(v)
+v=v==null?null:J.dA7(v)
 return v==null?d:v}},D
 J=c[1]
 A=c[0]
 C=c[2]
 B=a.updateHolder(c[12],B)
 D=c[22]
-B.Lg.prototype={
-V(){return new B.aoa(null)}}
-B.aoa.prototype={
+B.Lf.prototype={
+V(){return new B.aob(null)}}
+B.aob.prototype={
 ao(){var x,w=this
-w.aU4()
+w.aU_()
 x=w.a
 w.e=x.e
 w.f=x.d
 w.y=x.ch
-w.apM()
+w.apN()
 x=window
 x.toString
-x=A.hK(x,"message",w.gb8y(),!1,y.B)
+x=A.hK(x,"message",w.gb8t(),!1,y.B)
 w.z!==$&&A.d3()
 w.z=x},
-b8z(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
+b8u(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
 try{x=C.ar.fh(0,new A.nb([],[]).o3(d.data,!0))
 w=J.aj(x,"view")
 t=n.d
@@ -104,57 +104,57 @@ else s.j9(p)
 return}if(J.u(J.aj(x,"message"),"iframeHasBeenLoaded"))n.Q=!0
 if(!n.Q)return
 t=v
-if((t==null?m:C.d.t(t,"toDart: htmlHeight"))===!0)n.b6m(J.aj(x,"height"))
+if((t==null?m:C.d.t(t,"toDart: htmlHeight"))===!0)n.b6h(J.aj(x,"height"))
 else{t=v
 t=(t==null?m:C.d.t(t,"toDart: htmlWidth"))===!0
 if(t)n.a.toString
-if(t)n.b6n(J.aj(x,"width"))
+if(t)n.b6i(J.aj(x,"width"))
 else{t=v
 if((t==null?m:C.d.t(t,"toDart: OpenLink"))===!0){t=J.aj(x,"url")
-if(t!=null&&n.c!=null&&typeof t=="string"&&C.d.bK(t,"mailto:")){s=n.a.x
+if(t!=null&&n.c!=null&&typeof t=="string"&&C.d.bL(t,"mailto:")){s=n.a.x
 if(s!=null)s.$1(A.jn(t))}}else{t=v
 if((t==null?m:C.d.t(t,"toDart: onClickHyperLink"))===!0){t=J.aj(x,"url")
 if(t!=null&&n.c!=null&&typeof t=="string"){s=n.a.y
 if(s!=null)s.$1(A.jn(t))}}}}}}catch(o){u=A.N(o)
 A.y("_HtmlContentViewerOnWebState::_handleMessageEvent:Exception = "+A.e(u),C.w)}},
-b6m(d){var x,w,v,u,t,s,r=this
+b6h(d){var x,w,v,u,t,s,r=this
 if(d==null){x=r.e
 x===$&&A.d()
 w=x}else w=d
 x=r.c
-if(x!=null){v=J.aux(w,r.a.cx)
+if(x!=null){v=J.auy(w,r.a.cx)
 A.y(A.I(r).l(0)+"::_handleContentHeightEvent: ScrollHeightWithBuffer = "+A.e(v),C.h)
 x=r.a.db
-u=J.bhQ(v)
+u=J.bhR(v)
 t=r.y
 if(x){t===$&&A.d()
 s=u.tU(v,t)}else{t===$&&A.d()
-s=u.pl(v,t)}if(s)r.M(new B.cMe(r,v))}if(r.c!=null&&r.x)r.M(new B.cMf(r))},
-b6n(d){var x,w,v=this
+s=u.pm(v,t)}if(s)r.M(new B.cMe(r,v))}if(r.c!=null&&r.x)r.M(new B.cMf(r))},
+b6i(d){var x,w,v=this
 if(d==null){x=v.f
 x===$&&A.d()
 w=x}else w=d
-if(v.c!=null&&J.dcJ(w,v.a.CW)&&v.a.z)v.M(new B.cMg(v,w))},
+if(v.c!=null&&J.dcH(w,v.a.CW)&&v.a.z)v.M(new B.cMg(v,w))},
 b5(d){var x,w,v=this
 v.bn(d)
 x=d.f
 A.y("_HtmlContentViewerOnWebState::didUpdateWidget():Old-Direction: "+x.l(0)+" | Current-Direction: "+v.a.f.l(0),C.h)
 w=v.a
-if(w.c!==d.c||w.f!==x)v.apM()
+if(w.c!==d.c||w.f!==x)v.apN()
 x=v.a
 w=x.e
 if(w!==d.e)v.e=w
 x=x.d
 if(x!==d.d)v.f=x},
-b4U(d){var x,w=$.bii(),v=J.qF(d,y.D)
+b4P(d){var x,w=$.bij(),v=J.qF(d,y.D)
 for(x=0;x<d;++x)v[x]=w.tA(255)
-return C.pL.ghk().bE(v)},
-apM(){var x,w,v,u,t=this,s="\n          \n          ",r=t.d=t.b4U(10),q=t.a,p=q.c,o=!q.db,n=o?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",m=q.x!=null,l=m?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",k=q.y!=null,j=k?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
+return C.pM.ghk().bE(v)},
+apN(){var x,w,v,u,t=this,s="\n          \n          ",r=t.d=t.b4P(10),q=t.a,p=q.c,o=!q.db,n=o?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",m=q.x!=null,l=m?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",k=q.y!=null,j=k?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 k=k?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 m=m?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 o=o?"resizeObserver.observe(document.body);":""
 x=q.as!=null?'          window.addEventListener(\'wheel\', function (event) {\n            const deltaY = event.deltaY;\n            window.parent.postMessage(JSON.stringify({\n              "view": "'+r+'",\n              "type": "toDart: onScrollChanged",\n              "deltaY": deltaY\n            }), "*");\n          });\n        ':""
-if(q.at)p=B.dH8(p)
+if(q.at)p=B.dH7(p)
 q=y.x
 w=A.c(["    .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  "],q)
 if(t.a.at)w.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -170,21 +170,21 @@ o=q.CW
 n=q.f
 m=q.r
 q=q.w?"    div, p, span, th, td, tr, ul, ol, li, a, button {\n      font-weight: 400;\n      font-size: 16px;\n      line-height: 24px;\n      letter-spacing: -0.01em; /* -1% */\n    }\n    \n    p {\n      margin: 0px;\n    }\n  ":""
-n=n===C.ax?'dir="rtl"':""
+n=n===C.ay?'dir="rtl"':""
 m=m!=null?"margin: "+A.e(m)+";":""
-t.w='      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n            @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Regular.ttf") format("truetype");\n      font-weight: 400;\n      font-style: normal;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Medium.ttf") format("truetype");\n      font-weight: 500;\n      font-style: medium;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-SemiBold.ttf") format("truetype");\n      font-weight: 600;\n      font-style: semi-bold;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Bold.ttf") format("truetype");\n      font-weight: 700;\n      font-style: bold;\n    }\n    \n    body {\n      font-family: \'Inter\', sans-serif;\n    }\n  \n        \n        '+q+"\n        \n        .tmail-content {\n          min-height: "+A.e(r)+"px;\n          min-width: "+o+"px;\n          overflow: auto;\n          overflow-wrap: break-word;\n          word-break: break-word;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n        \n        pre {\n          white-space: pre-wrap;\n        }\n        \n        table {\n          white-space: normal !important;\n        }\n              \n        @media only screen and (max-width: 600px) {\n          table {\n            width: 100% !important;\n          }\n          \n          a {\n            width: -webkit-fill-available !important;\n          }\n        }\n        \n        "+v+"\n      </style>\n      </head>\n      <body "+n+' style = "overflow-x: hidden; '+m+'";>\n      <div class="tmail-content">'+p+"</div>\n      "+u+"\n      </body>\n      </html> \n    "
-t.r=A.bN(!0,y.e)},
+t.w='      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n            @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Regular.ttf") format("truetype");\n      font-weight: 400;\n      font-style: normal;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Medium.ttf") format("truetype");\n      font-weight: 500;\n      font-style: medium;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-SemiBold.ttf") format("truetype");\n      font-weight: 600;\n      font-style: semi-bold;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Bold.ttf") format("truetype");\n      font-weight: 700;\n      font-style: bold;\n    }\n    \n    body {\n      font-family: \'Inter\', sans-serif;\n    }\n  \n        \n        '+q+"\n        \n        .tmail-content {\n          min-height: "+A.e(r)+"px;\n          min-width: "+o+"px;\n          overflow: auto;\n          overflow-wrap: break-word;\n          word-break: break-word;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n        \n        pre {\n          white-space: pre-wrap;\n        }\n        \n        table {\n          white-space: normal !important;\n        }\n        \n        "+v+"\n      </style>\n      </head>\n      <body "+n+' style = "overflow-x: hidden; '+m+'";>\n      <div class="tmail-content">'+p+"</div>\n      "+u+"\n      </body>\n      </html> \n    "
+t.r=A.bM(!0,y.e)},
 u(d){var x=this
 x.vG(d)
-if(x.a.db)return x.akL()
+if(x.a.db)return x.akM()
 else return new A.eG(new B.cMh(x),null)},
-akL(){var x,w=this,v=null,u=A.I(w).l(0),t=w.e
+akM(){var x,w=this,v=null,u=A.I(w).l(0),t=w.e
 t===$&&A.d()
 A.y(u+"::_buildHtmlElementView: ActualHeight: "+A.e(t),C.h)
 t=A.c([],y.u)
 u=w.w
-if((u==null?v:C.d.aZ(u).length!==0)===!0)t.push(A.UN(new B.cMd(w),w.r,y.e))
-if(w.x)t.push(D.a1D)
+if((u==null?v:C.d.aZ(u).length!==0)===!0)t.push(A.UQ(new B.cMd(w),w.r,y.e))
+if(w.x)t.push(D.a1E)
 x=new A.ct(C.ad,v,C.a1,C.G,t,v)
 w.a.toString
 u=w.f
@@ -196,10 +196,10 @@ x===$&&A.d()
 x.am(0)
 this.av()},
 grk(){return this.a.ay}}
-B.asL.prototype={
+B.asM.prototype={
 ao(){this.aI()
 if(this.a.ay)this.um()},
-iy(){var x=this.cJ$
+ix(){var x=this.cJ$
 if(x!=null){x.bf()
 x.hX()
 this.cJ$=null}this.oy()}}
@@ -219,12 +219,12 @@ B.cMh.prototype={
 $2(d,e){var x=this.a,w=x.y
 w===$&&A.d()
 x.y=Math.min(e.d,w)
-return x.akL()},
-$S:195}
+return x.akM()},
+$S:223}
 B.cMd.prototype={
 $2(d,e){var x,w,v,u,t=null
 if(e.b!=null){x=this.a
-w=A.dh_(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.q),new B.cMc(x),"iframe")
+w=A.dgY(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.q),new B.cMc(x),"iframe")
 v=x.a.cy
 u=x.e
 x=x.f
@@ -233,7 +233,7 @@ x===$&&A.d()
 return A.a7(t,w,C.k,t,new A.at(0,1/0,0,v),t,t,u,t,t,t,t,t,x)}else{u===$&&A.d()
 x===$&&A.d()
 return new A.aZ(x,u,w,t)}}else return C.y},
-$S:191}
+$S:204}
 B.cMc.prototype={
 $1(d){var x,w
 y.C.a(d)
@@ -254,19 +254,19 @@ x=d.style
 x.width="100%"
 x=d.style
 x.height="100%"},
-$S:698};(function aliases(){var x=B.asL.prototype
-x.aU4=x.ao})();(function installTearOffs(){var x=a._instance_1u
-x(B.aoa.prototype,"gb8y","b8z",0)})();(function inheritance(){var x=a.mixinHard,w=a.inherit,v=a.inheritMany
-w(B.Lg,A.aa)
-w(B.asL,A.a9)
-w(B.aoa,B.asL)
-v(A.wQ,[B.cMe,B.cMf,B.cMg])
+$S:586};(function aliases(){var x=B.asM.prototype
+x.aU_=x.ao})();(function installTearOffs(){var x=a._instance_1u
+x(B.aob.prototype,"gb8t","b8u",0)})();(function inheritance(){var x=a.mixinHard,w=a.inherit,v=a.inheritMany
+w(B.Lf,A.aa)
+w(B.asM,A.a9)
+w(B.aob,B.asM)
+v(A.wR,[B.cMe,B.cMf,B.cMg])
 v(A.uj,[B.cMh,B.cMd])
 w(B.cMc,A.o8)
-x(B.asL,A.qg)})()
-A.CM(b.typeUniverse,JSON.parse('{"Lg":{"aa":[],"j":[]},"aoa":{"a9":["Lg"]}}'))
-var y={C:A.ao("uM"),x:A.ao("O<f>"),u:A.ao("O<j>"),B:A.ao("pG"),q:A.ao("b6<f>"),f:A.ao("a1V<kP>"),e:A.ao("B"),D:A.ao("F")};(function constants(){D.aPd=new A.aZ(30,30,C.qK,null)
-D.aHU=new A.T(C.co,D.aPd,null)
-D.a1D=new A.dz(C.cZ,null,null,D.aHU,null)})()};
+x(B.asM,A.qg)})()
+A.CO(b.typeUniverse,JSON.parse('{"Lf":{"aa":[],"j":[]},"aob":{"a9":["Lf"]}}'))
+var y={C:A.ao("uM"),x:A.ao("O<f>"),u:A.ao("O<j>"),B:A.ao("pG"),q:A.ao("b6<f>"),f:A.ao("a1Y<kP>"),e:A.ao("B"),D:A.ao("F")};(function constants(){D.aPc=new A.aZ(30,30,C.qM,null)
+D.aHT=new A.T(C.co,D.aPc,null)
+D.a1E=new A.dz(C.cZ,null,null,D.aHT,null)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"JOC9dS4y89+9jBYqBt69GXgwGbY=");
+a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"J5LK/y0HszJi3S4dLprDPAI0e5E=");
