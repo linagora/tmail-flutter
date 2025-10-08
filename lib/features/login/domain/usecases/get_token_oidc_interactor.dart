@@ -27,10 +27,12 @@ class GetTokenOIDCInteractor {
     try {
       yield Right<Failure, Success>(GetTokenOIDCLoading());
       final tokenOIDC = await authenticationOIDCRepository.getTokenOIDC(
-          config.clientId,
-          config.redirectUrl,
-          config.discoveryUrl,
-          config.scopes);
+        config.clientId,
+        config.redirectUrl,
+        config.discoveryUrl,
+        config.scopes,
+        loginHint: config.loginHint,
+      );
 
       await Future.wait([
         _credentialRepository.saveBaseUrl(baseUri),

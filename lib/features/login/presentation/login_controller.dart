@@ -18,6 +18,7 @@ import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
@@ -188,7 +189,7 @@ class LoginController extends ReloadableController {
     } else if (success is CheckOIDCIsAvailableSuccess) {
       getOIDCConfiguration(success.oidcResponse);
     } else if (success is GetOIDCConfigurationSuccess) {
-      _getOIDCConfigurationSuccess(success);
+      _getOIDCConfigurationSuccess(success.oidcConfiguration);
     } else if (success is GetTokenOIDCSuccess) {
       _getTokenOIDCSuccess(success);
     } else if (success is AuthenticationUserSuccess) {
@@ -413,16 +414,25 @@ class LoginController extends ReloadableController {
   }
 
   void getOIDCConfiguration(OIDCResponse oidcResponse) {
-    consumeState(_getOIDCConfigurationInteractor.execute(oidcResponse));
+    final loginHint = PlatformInfo.isMobile && _username != null
+        ? EmailUtils.getLocalPartEmail(_username!.value) ?? _username?.value
+        : null;
+    log('$runtimeType::getOIDCConfiguration:loginHint = $loginHint');
+    consumeState(
+      _getOIDCConfigurationInteractor.execute(
+        oidcResponse,
+        loginHint: loginHint,
+      ),
+    );
   }
 
-  void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
+  void _getOIDCConfigurationSuccess(OIDCConfiguration config) {
     if (PlatformInfo.isWeb) {
-      _authenticateOidcOnBrowserAction(success.oidcConfiguration);
-    } else if (success.oidcConfiguration.authority == AppConfig.saasRegistrationUrl) {
-      _getTokenOIDCOnSaaSPlatform(success.oidcConfiguration);
+      _authenticateOidcOnBrowserAction(config);
+    } else if (config.authority == AppConfig.saasRegistrationUrl) {
+      _getTokenOIDCOnSaaSPlatform(config);
     } else {
-      _getTokenOIDCAction(success.oidcConfiguration);
+      _getTokenOIDCAction(config);
     }
   }
 
