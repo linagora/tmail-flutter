@@ -22,9 +22,13 @@ extension HandleOpenAttachmentListExtension on SingleEmailController {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (PlatformInfo.isWeb && attachmentListKey != null) {
-        scrollController.scrollToWidgetTop(
-          key: attachmentListKey!,
-          padding: 70,
+        final context = attachmentListKey!.currentContext;
+        if (context == null) return;
+
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
         );
       } else {
         final emailContentHeight =
