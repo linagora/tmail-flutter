@@ -1,3 +1,11 @@
+## [0.19.4] - 2025-10-08
+### Changed
+- #4075 Move Attachment panel to top on web view
+
+### Fixed
+- Drag & drop text in composer must be move, not copy
+- #4013 Remove prefix in recipient fields when it is not focus
+
 ## [0.19.3] - 2025-09-26
 ### Added
 - Translation vi, en, ru, fr, uk
