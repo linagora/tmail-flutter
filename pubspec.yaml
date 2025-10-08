@@ -216,8 +216,6 @@ dependencies:
 
   flutter_keyboard_visibility: 6.0.0
 
-  extended_text: 14.0.0
-
   date_format: 2.0.7
 
   flutter_linkify: 6.0.0
