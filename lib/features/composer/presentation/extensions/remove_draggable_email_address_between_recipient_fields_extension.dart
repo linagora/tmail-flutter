@@ -32,15 +32,19 @@ extension RemoveDraggableEmailAddressBetweenRecipientFieldsExtension on Composer
     switch(draggableEmailAddress.filterField) {
       case FilterField.to:
         controller.listToEmailAddress.remove(draggableEmailAddress.emailAddress);
+        controller.toRecipientState.refresh();
         break;
       case FilterField.cc:
         controller.listCcEmailAddress.remove(draggableEmailAddress.emailAddress);
+        controller.ccRecipientState.refresh();
         break;
       case FilterField.bcc:
         controller.listBccEmailAddress.remove(draggableEmailAddress.emailAddress);
+        controller.bccRecipientState.refresh();
         break;
       case FilterField.replyTo:
         controller.listReplyToEmailAddress.remove(draggableEmailAddress.emailAddress);
+        controller.replyToRecipientState.refresh();
         break;
       default:
         break;

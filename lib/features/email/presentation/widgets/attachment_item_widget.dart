@@ -3,8 +3,8 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/container/tmail_container_widget.dart';
+import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:extended_text/extended_text.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -62,19 +62,8 @@ class AttachmentItemWidget extends StatelessWidget {
         fit: BoxFit.fill,
       );
 
-      final attachmentTitleWithMiddleDots = ExtendedText(
+      final attachmentTitleWithMiddleDots = MiddleEllipsisText(
         attachment.generateFileName(),
-        maxLines: 1,
-        overflowWidget: TextOverflowWidget(
-          position: TextOverflowPosition.middle,
-          clearType: TextOverflowClearType.clipRect,
-          child: Text(
-            "...",
-            style: ThemeUtils.textStyleM3LabelLarge(
-              color: AppColor.m3SurfaceBackground,
-            ),
-          ),
-        ),
         style: ThemeUtils.textStyleM3LabelLarge(
           color: AppColor.m3SurfaceBackground,
         ),

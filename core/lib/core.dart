@@ -64,6 +64,7 @@ export 'presentation/views/text/text_form_field_builder.dart';
 export 'presentation/views/text/input_decoration_builder.dart';
 export 'presentation/views/text/rich_text_builder.dart';
 export 'presentation/views/text/text_overflow_builder.dart';
+export 'presentation/views/text/middle_ellipsis_text.dart';
 export 'presentation/views/responsive/responsive_widget.dart';
 export 'presentation/views/list/tree_view.dart';
 export 'presentation/views/button/icon_button_web.dart';

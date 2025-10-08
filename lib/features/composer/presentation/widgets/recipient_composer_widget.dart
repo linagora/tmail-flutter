@@ -284,7 +284,11 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                       builder: (context, candidateData, rejectedData) {
                         return tagEditor;
                       },
-                      onAcceptWithDetails: (draggableEmailAddress) => _handleAcceptDraggableEmailAddressAction(draggableEmailAddress.data, stateSetter),
+                      onAcceptWithDetails: (draggableEmailAddress) =>
+                          _handleAcceptDraggableEmailAddressAction(
+                              draggableEmailAddress.data,
+                              stateSetter,
+                          ),
                       onLeave: (draggableEmailAddress) {
                         if (_isDragging) {
                           stateSetter(() => _isDragging = false);
