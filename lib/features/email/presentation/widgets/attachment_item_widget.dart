@@ -4,7 +4,6 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/container/tmail_container_widget.dart';
 import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
