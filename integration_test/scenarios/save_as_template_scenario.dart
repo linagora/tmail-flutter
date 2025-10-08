@@ -22,7 +22,7 @@ class SaveAsTemplateScenario extends BaseTestScenario {
 
     await composerRobot.addSubject('test subject');
     hideKeyboard();
-    await $.pumpAndTrySettle();
+    await $.pumpAndTrySettle(duration: const Duration(seconds: 1));
     await composerRobot.saveAsTemplate();
 
     await _expectUpdateToastSuccessVisible();
