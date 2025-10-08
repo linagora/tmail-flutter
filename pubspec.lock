@@ -520,22 +520,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.5"
-  extended_text:
-    dependency: "direct main"
-    description:
-      name: extended_text
-      sha256: "38c1cac571d6eaf406f4b80040c1f88561e7617ad90795aac6a1be0a8d0bb676"
-      url: "https://pub.dev"
-    source: hosted
-    version: "14.0.0"
-  extended_text_library:
-    dependency: transitive
-    description:
-      name: extended_text_library
-      sha256: "55d09098ec56fab0d9a8a68950ca0bbf2efa1327937f7cec6af6dfa066234829"
-      url: "https://pub.dev"
-    source: hosted
-    version: "12.0.0"
   external_app_launcher:
     dependency: "direct main"
     description:

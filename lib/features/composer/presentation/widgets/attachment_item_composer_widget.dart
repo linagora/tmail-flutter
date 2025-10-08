@@ -1,7 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/platform_info.dart';
-import 'package:extended_text/extended_text.dart';
+import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -70,27 +69,11 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
                       fit: BoxFit.fill
                     ),
                     const SizedBox(width: AttachmentItemComposerWidgetStyle.space),
-                    Expanded(
-                      child: PlatformInfo.isCanvasKit
-                        ? ExtendedText(
-                            fileName,
-                            maxLines: 1,
-                            overflowWidget: TextOverflowWidget(
-                              position: TextOverflowPosition.middle,
-                              clearType: TextOverflowClearType.clipRect,
-                              child: Text(
-                                '...',
-                                style: AttachmentItemComposerWidgetStyle.dotsLabelTextStyle,
-                              ),
-                            ),
-                            style: AttachmentItemComposerWidgetStyle.labelTextStyle,
-                          )
-                        : Text(
-                            fileName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AttachmentItemComposerWidgetStyle.labelTextStyle,
-                          )
+                    Flexible(
+                      child: MiddleEllipsisText(
+                        fileName,
+                        style: AttachmentItemComposerWidgetStyle.labelTextStyle,
+                      )
                     ),
                     const SizedBox(width: AttachmentItemComposerWidgetStyle.space),
                     Text(

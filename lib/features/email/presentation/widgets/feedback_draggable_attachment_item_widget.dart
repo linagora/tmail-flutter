@@ -1,6 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/utils/platform_info.dart';
-import 'package:extended_text/extended_text.dart';
+import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -44,28 +43,10 @@ class FeedbackDraggableAttachmentItemWidget extends StatelessWidget {
           ),
           const SizedBox(width: FeedbackDraggableAttachmentItemWidgetStyle.space),
           Flexible(
-            child: PlatformInfo.isCanvasKit
-              ? DefaultTextStyle(
-                  style: FeedbackDraggableAttachmentItemWidgetStyle.labelTextStyle,
-                  child: ExtendedText(
-                    attachment.name ?? '',
-                    maxLines: 1,
-                    overflowWidget: TextOverflowWidget(
-                      position: TextOverflowPosition.middle,
-                      clearType: TextOverflowClearType.clipRect,
-                      child: Text(
-                        '...',
-                        style: FeedbackDraggableAttachmentItemWidgetStyle.dotsLabelTextStyle,
-                      ),
-                    ),
-                  ),
-                )
-              : Text(
-                  attachment.name ?? '',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: FeedbackDraggableAttachmentItemWidgetStyle.labelTextStyle,
-                ),
+            child: MiddleEllipsisText(
+              attachment.name ?? '',
+              style: FeedbackDraggableAttachmentItemWidgetStyle.dotsLabelTextStyle,
+            ),
           )
         ],
       ),

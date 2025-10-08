@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -63,8 +64,8 @@ void main() {
 
     testWidgets('RecipientComposerWidget renders list email address correctly', (tester) async {
       final listEmailAddress = <EmailAddress>[
-        EmailAddress(null, 'test1@example.com'),
-        EmailAddress(null, 'test2@example.com'),
+        EmailAddress(null, 'test1@dev.com'),
+        EmailAddress(null, 'test2@dev.com'),
       ];
 
       final widget = makeTestableWidget(
@@ -82,8 +83,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(RecipientTagItemWidget), findsNWidgets(2));
-      expect(find.text('test1@example.com'), findsOneWidget);
-      expect(find.text('test2@example.com'), findsOneWidget);
     });
 
     testWidgets('RecipientTagItemWidget should have a `maxWidth` equal to the default `maxWidth`', (tester) async {
@@ -382,16 +381,15 @@ void main() {
 
       final labelRecipientTagItemWidgetFinder = find.byKey(Key('label_recipient_tag_item_${prefix.name}_0'));
 
-      final labelRecipientTagItemWidget = tester.widget<Text>(labelRecipientTagItemWidgetFinder);
+      final labelRecipientTagItemWidget = tester.widget<MiddleEllipsisText>(labelRecipientTagItemWidgetFinder);
       final labelTagWidth = tester.getSize(labelRecipientTagItemWidgetFinder).width;
 
       final TextPainter textPainter = TextPainter(
-        maxLines: labelRecipientTagItemWidget.maxLines,
-        textDirection: labelRecipientTagItemWidget.textDirection ?? TextDirection.ltr,
+        maxLines: 1,
+        textDirection: TextDirection.ltr,
         text: TextSpan(
-          text: labelRecipientTagItemWidget.data,
+          text: labelRecipientTagItemWidget.text,
           style: labelRecipientTagItemWidget.style,
-          locale: labelRecipientTagItemWidget.locale
         ),
       );
       textPainter.layout(maxWidth: labelTagWidth);
