@@ -1,8 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/platform_info.dart';
-import 'package:extended_text/extended_text.dart';
+import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -66,27 +65,10 @@ class AttachmentListItemWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (PlatformInfo.isCanvasKit)
-                          ExtendedText(
-                            (attachment.name ?? ''),
-                            maxLines: 1,
-                            overflowWidget: TextOverflowWidget(
-                              position: TextOverflowPosition.middle,
-                              clearType: TextOverflowClearType.clipRect,
-                              child: Text(
-                                "...",
-                                style: AttachmentListItemWidgetStyle.dotsLabelTextStyle,
-                              ),
-                            ),
-                            style: AttachmentListItemWidgetStyle.labelTextStyle,
-                          )
-                        else
-                         Text(
-                            (attachment.name ?? ''),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AttachmentListItemWidgetStyle.labelTextStyle,
-                          ),
+                        MiddleEllipsisText(
+                          (attachment.name ?? ''),
+                          style: AttachmentListItemWidgetStyle.labelTextStyle,
+                        ),
                         const SizedBox(height: AttachmentListItemWidgetStyle.fileTitleBottomSpace),
                         Text(
                           filesize(attachment.size?.value),
