@@ -16,6 +16,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_named_address_extension.dart';
@@ -270,7 +271,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                         suggestionValid: suggestionValid,
                         highlight: highlight,
                         onSelectedAction: (emailAddress) {
-                          stateSetter(() => _currentListEmailAddress.add(emailAddress));
+                          if (!_isDuplicatedRecipient(emailAddress.emailAddress)) {
+                            stateSetter(() => _currentListEmailAddress.add(emailAddress));
+                          }
                           _updateListEmailAddressAction();
                           tagEditorState.resetTextField();
                           tagEditorState.closeSuggestionBox();
@@ -434,13 +437,10 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
         limit: limit,
       );
       final listSuggestionEmailAddress = listEmailAddress
-        .map((emailAddress) => _toSuggestionEmailAddress(
-          emailAddress,
-          _currentListEmailAddress));
+        .map(_toSuggestionEmailAddress);
+
       tmailSuggestion.addAll(listSuggestionEmailAddress);
     }
-
-    tmailSuggestion.addAll(_matchedSuggestionEmailAddress(processedQuery, _currentListEmailAddress));
 
     final currentTextOnTextField = widget.controller?.text ?? '';
     if (currentTextOnTextField.isEmpty) {
@@ -453,25 +453,15 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   bool _isDuplicatedRecipient(String inputEmail) {
     if (inputEmail.trim().isEmpty) return false;
 
-    return _currentListEmailAddress
-      .any((emailAddress) => emailAddress.email?.trim() == inputEmail.trim());
+    return _currentListEmailAddress.isDuplicatedEmail(inputEmail.trim());
   }
 
-  SuggestionEmailAddress _toSuggestionEmailAddress(EmailAddress item, List<EmailAddress> addedEmailAddresses) {
-    if (addedEmailAddresses.contains(item)) {
+  SuggestionEmailAddress _toSuggestionEmailAddress(EmailAddress item) {
+    if (_currentListEmailAddress.isDuplicatedEmail(item.emailAddress)) {
       return SuggestionEmailAddress(item, state: SuggestionEmailState.duplicated);
     } else {
       return SuggestionEmailAddress(item);
     }
-  }
-
-  Iterable<SuggestionEmailAddress> _matchedSuggestionEmailAddress(String query, List<EmailAddress> addedEmailAddress) {
-    return addedEmailAddress
-      .where((addedMail) => addedMail.emailAddress.contains(query))
-      .map((emailAddress) => SuggestionEmailAddress(
-        emailAddress,
-        state: SuggestionEmailState.duplicated
-      ));
   }
 
   void _handleGapBetweenTagChangedAndFindSuggestion() {
@@ -571,7 +561,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     log('_RecipientComposerWidgetState::_handleAcceptDraggableEmailAddressAction: $draggableEmailAddress');
     if (draggableEmailAddress.composerId == widget.composerId) {
       if (draggableEmailAddress.filterField != widget.prefix.filterField) {
-        if (!_currentListEmailAddress.contains(draggableEmailAddress.emailAddress)) {
+        if (!_isDuplicatedRecipient(draggableEmailAddress.emailAddress.emailAddress)) {
           stateSetter(() {
             _currentListEmailAddress.add(draggableEmailAddress.emailAddress);
             _isDragging = false;
@@ -589,7 +579,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
         }
       }
     } else {
-      if (!_currentListEmailAddress.contains(draggableEmailAddress.emailAddress)) {
+      if (!_isDuplicatedRecipient(draggableEmailAddress.emailAddress.emailAddress)) {
         stateSetter(() {
           _currentListEmailAddress.add(draggableEmailAddress.emailAddress);
           _isDragging = false;
