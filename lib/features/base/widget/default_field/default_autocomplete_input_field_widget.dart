@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_autocomplete_tag_item_widget.dart';
@@ -193,7 +194,9 @@ class _DefaultAutocompleteInputFieldWidgetState
             suggestionValid: suggestionValid,
             highlight: highlight,
             onSelectedAction: (emailAddress) {
-              _setStateSafety(() => _currentListEmailAddress.add(emailAddress));
+              if (!_isDuplicated(emailAddress.emailAddress)) {
+                _setStateSafety(() => _currentListEmailAddress.add(emailAddress));
+              }
               _updateListEmailAddressAction();
               tagEditorState.resetTextField();
               tagEditorState.closeSuggestionBox();
@@ -268,18 +271,11 @@ class _DefaultAutocompleteInputFieldWidgetState
         processedQuery,
         limit: limit,
       );
-      final listSuggestionEmailAddress =
-          listEmailAddress.map((emailAddress) => _toSuggestionEmailAddress(
-                emailAddress,
-                _currentListEmailAddress,
-              ));
+      final listSuggestionEmailAddress = listEmailAddress
+          .map(_toSuggestionEmailAddress);
+
       displayedSuggestion.addAll(listSuggestionEmailAddress);
     }
-
-    displayedSuggestion.addAll(_matchedSuggestionEmailAddress(
-      processedQuery,
-      _currentListEmailAddress,
-    ));
 
     final currentTextOnTextField = widget.controller?.text ?? '';
     if (currentTextOnTextField.isEmpty) {
@@ -293,17 +289,11 @@ class _DefaultAutocompleteInputFieldWidgetState
     if (inputEmail.isEmpty) {
       return false;
     }
-    return _currentListEmailAddress
-        .map((emailAddress) => emailAddress.email)
-        .nonNulls
-        .contains(inputEmail);
+    return _currentListEmailAddress.isDuplicatedEmail(inputEmail.trim());
   }
 
-  SuggestionEmailAddress _toSuggestionEmailAddress(
-    EmailAddress item,
-    List<EmailAddress> addedEmailAddresses,
-  ) {
-    if (addedEmailAddresses.contains(item)) {
+  SuggestionEmailAddress _toSuggestionEmailAddress(EmailAddress item) {
+    if (_currentListEmailAddress.isDuplicatedEmail(item.emailAddress)) {
       return SuggestionEmailAddress(
         item,
         state: SuggestionEmailState.duplicated,
@@ -311,18 +301,6 @@ class _DefaultAutocompleteInputFieldWidgetState
     } else {
       return SuggestionEmailAddress(item);
     }
-  }
-
-  Iterable<SuggestionEmailAddress> _matchedSuggestionEmailAddress(
-    String query,
-    List<EmailAddress> addedEmailAddress,
-  ) {
-    return addedEmailAddress
-        .where((addedMail) => addedMail.emailAddress.contains(query))
-        .map((emailAddress) => SuggestionEmailAddress(
-              emailAddress,
-              state: SuggestionEmailState.duplicated,
-            ));
   }
 
   void _updateListEmailAddressAction() {
@@ -396,7 +374,7 @@ class _DefaultAutocompleteInputFieldWidgetState
 
   double? _getSuggestionBoxWidth(double maxWidth) {
     if (maxWidth < ResponsiveUtils.minTabletWidth) {
-      final newWidth = min(maxWidth, 300.0);
+      final newWidth = math.min(maxWidth, 300.0);
       return newWidth;
     } else {
       return null;
@@ -405,8 +383,7 @@ class _DefaultAutocompleteInputFieldWidgetState
 
   void _onAcceptWithDetails(DraggableEmailAddress draggableEmailAddress) {
     if (draggableEmailAddress.filterField != widget.field) {
-      if (!_currentListEmailAddress
-          .contains(draggableEmailAddress.emailAddress)) {
+      if (!_isDuplicated(draggableEmailAddress.emailAddress.emailAddress)) {
         _setStateSafety(() {
           _currentListEmailAddress.add(draggableEmailAddress.emailAddress);
           _isDragging = false;
