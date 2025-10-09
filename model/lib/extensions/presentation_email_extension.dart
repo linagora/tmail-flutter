@@ -70,7 +70,7 @@ extension PresentationEmailExtension on PresentationEmail {
     return '';
   }
 
-  Set<EmailAddress> get listEmailAddressSender => from.asSet()..addAll(replyTo.asSet());
+  Set<EmailAddress> get listEmailAddressSender => {...?from, ...?replyTo};
 
   PresentationEmail toggleSelect() {
     return copyWith(
