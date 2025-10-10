@@ -128,7 +128,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               Obx(() {
                                 if (controller.recipientsCollapsedState.value == PrefixRecipientState.enabled) {
                                   return RecipientsCollapsedComposerWidget(
-                                    listEmailAddress: controller.allListEmailAddress,
+                                    listEmailAddress: controller.allListEmailAddressWithoutReplyTo,
                                     margin: ComposerStyle.mobileRecipientMargin,
                                     onShowAllRecipientsAction: controller.showFullRecipients,
                                   );
@@ -307,7 +307,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           Obx(() {
                             if (controller.recipientsCollapsedState.value == PrefixRecipientState.enabled) {
                               return RecipientsCollapsedComposerWidget(
-                                listEmailAddress: controller.allListEmailAddress,
+                                listEmailAddress: controller.allListEmailAddressWithoutReplyTo,
                                 margin: ComposerStyle.mobileRecipientMargin,
                                 onShowAllRecipientsAction: controller.showFullRecipients,
                               );
