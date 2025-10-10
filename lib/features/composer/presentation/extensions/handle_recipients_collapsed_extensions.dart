@@ -12,17 +12,25 @@ extension HandleRecipientsCollapsedExtensions on ComposerController {
       listBccEmailAddress +
       listReplyToEmailAddress;
 
-  List<EmailAddress> get listEmailAddressInvalid => allListEmailAddress
-      .where(
+  List<EmailAddress> get allListEmailAddressWithoutReplyTo =>
+      listToEmailAddress +
+      listCcEmailAddress +
+      listBccEmailAddress;
+
+  bool get existEmailAddressInvalid => allListEmailAddress
+      .any(
         (emailAddress) => !EmailUtils.isEmailAddressValid(
           emailAddress.emailAddress,
         ),
-      )
-      .toList();
+      );
 
-  bool get isRecipientsNotEmpty => listToEmailAddress.isNotEmpty ||
+  bool get isRecipientsWithoutReplyToNotEmpty => listToEmailAddress.isNotEmpty ||
       listCcEmailAddress.isNotEmpty ||
-      listBccEmailAddress.isNotEmpty ||
+      listBccEmailAddress.isNotEmpty;
+
+  bool get isRecipientsEmptyExceptReplyTo => listToEmailAddress.isEmpty &&
+      listCcEmailAddress.isEmpty &&
+      listBccEmailAddress.isEmpty &&
       listReplyToEmailAddress.isNotEmpty;
 
   void showFullRecipients() {
@@ -90,12 +98,29 @@ extension HandleRecipientsCollapsedExtensions on ComposerController {
     }
   }
 
-  void hideAllRecipients() {
+  void triggerHideRecipientsFiledsWhenUnfocus() {
+    if (isRecipientsEmptyExceptReplyTo) {
+      hideAllRecipientsFieldsExceptTo();
+    } else if (isRecipientsWithoutReplyToNotEmpty) {
+      hideAllRecipientsFields();
+    }
+  }
+
+  void hideAllRecipientsFields() {
     fromRecipientState.value = PrefixRecipientState.disabled;
     toRecipientState.value = PrefixRecipientState.disabled;
     ccRecipientState.value = PrefixRecipientState.disabled;
     bccRecipientState.value = PrefixRecipientState.disabled;
     replyToRecipientState.value = PrefixRecipientState.disabled;
     recipientsCollapsedState.value = PrefixRecipientState.enabled;
+  }
+
+  void hideAllRecipientsFieldsExceptTo() {
+    toRecipientState.value = PrefixRecipientState.enabled;
+    fromRecipientState.value = PrefixRecipientState.disabled;
+    ccRecipientState.value = PrefixRecipientState.disabled;
+    bccRecipientState.value = PrefixRecipientState.disabled;
+    replyToRecipientState.value = PrefixRecipientState.disabled;
+    recipientsCollapsedState.value = PrefixRecipientState.disabled;
   }
 }
