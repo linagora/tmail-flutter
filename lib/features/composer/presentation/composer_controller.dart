@@ -599,9 +599,7 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.richTextController.hideRichTextView();
       }
       autoCreateEmailTag();
-      if (isRecipientsNotEmpty) {
-        hideAllRecipients();
-      }
+      triggerHideRecipientsFiledsWhenUnfocus();
     }
   }
 
@@ -720,8 +718,8 @@ class ComposerController extends BaseController
     listBccEmailAddress = List.from(recipients.bcc);
     listReplyToEmailAddress = List.from(recipients.replyTo);
 
-    if (isRecipientsNotEmpty) {
-      hideAllRecipients();
+    if (isRecipientsWithoutReplyToNotEmpty) {
+      hideAllRecipientsFields();
       isInitialRecipient.value = true;
     } else {
       toRecipientState.value = PrefixRecipientState.enabled;
@@ -792,7 +790,7 @@ class ComposerController extends BaseController
       return;
     }
 
-    if (listEmailAddressInvalid.isNotEmpty) {
+    if (existEmailAddressInvalid) {
       MessageDialogActionManager().showConfirmDialogAction(context,
         appLocalizations.message_dialog_send_email_with_email_address_invalid,
         appLocalizations.fix_email_addresses,
@@ -1440,9 +1438,7 @@ class ComposerController extends BaseController
 
   void clickOutsideComposer(BuildContext context) {
     clearFocus(context);
-    if (isRecipientsNotEmpty) {
-      hideAllRecipients();
-    }
+    triggerHideRecipientsFiledsWhenUnfocus();
   }
 
   void _closeComposerAction({dynamic result, bool closeOverlays = false}) {
@@ -1712,9 +1708,7 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.richTextController.showDeviceKeyboard);
     }
     autoCreateEmailTag();
-    if (isRecipientsNotEmpty) {
-      hideAllRecipients();
-    }
+    triggerHideRecipientsFiledsWhenUnfocus();
   }
 
   void _onChangeCursorOnMobile(List<int>? coordinates, BuildContext context) {
@@ -1846,9 +1840,7 @@ class ComposerController extends BaseController
       popBack();
     }
     autoCreateEmailTag();
-    if (isRecipientsNotEmpty) {
-      hideAllRecipients();
-    }
+    triggerHideRecipientsFiledsWhenUnfocus();
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {

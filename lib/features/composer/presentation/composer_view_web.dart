@@ -122,7 +122,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           ),
                         if (controller.recipientsCollapsedState.value == PrefixRecipientState.enabled)
                           RecipientsCollapsedComposerWidget(
-                            listEmailAddress: controller.allListEmailAddress,
+                            listEmailAddress: controller.allListEmailAddressWithoutReplyTo,
                             margin: ComposerStyle.mobileRecipientMargin,
                             onShowAllRecipientsAction: controller.showFullRecipients,
                           ),
@@ -349,7 +349,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         ),
                       if (controller.recipientsCollapsedState.value == PrefixRecipientState.enabled)
                         RecipientsCollapsedComposerWidget(
-                          listEmailAddress: controller.allListEmailAddress,
+                          listEmailAddress: controller.allListEmailAddressWithoutReplyTo,
                           margin: ComposerStyle.desktopRecipientMargin,
                           onShowAllRecipientsAction: controller.showFullRecipients,
                         ),
@@ -617,7 +617,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         ),
                       if (controller.recipientsCollapsedState.value == PrefixRecipientState.enabled)
                         RecipientsCollapsedComposerWidget(
-                          listEmailAddress: controller.allListEmailAddress,
+                          listEmailAddress: controller.allListEmailAddressWithoutReplyTo,
                           margin: ComposerStyle.desktopRecipientMargin,
                           onShowAllRecipientsAction: controller.showFullRecipients,
                         ),
