@@ -1,3 +1,7 @@
+## [0.19.5] - 2025-10-10
+### Fixed
+- Fix bug relate to recipients 
+
 ## [0.19.4] - 2025-10-08
 ### Changed
 - #4075 Move Attachment panel to top on web view
