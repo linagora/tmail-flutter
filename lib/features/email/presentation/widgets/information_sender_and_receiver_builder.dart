@@ -42,6 +42,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   final VoidCallback? onToggleThreadDetailCollapseExpand;
   final PresentationMailbox? mailboxContain;
   final bool showUnreadVisualization;
+  final bool isInsideThreadCollapsed;
 
   const InformationSenderAndReceiverBuilder({
     Key? key,
@@ -60,16 +61,18 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     this.onToggleThreadDetailCollapseExpand,
     this.mailboxContain,
     this.showUnreadVisualization = false,
+    this.isInsideThreadCollapsed = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final isMobileResponsive = responsiveUtils.isMobile(context);
+    final crossAxisAlignment = _getAxisAlignment(isMobileResponsive);
+
     return Padding(
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 4),
+      padding: _getPadding(isMobileResponsive),
       child: Row(
-        crossAxisAlignment: emailSelected.countRecipients > 0 && (showRecipients || responsiveUtils.isMobile(context))
-          ? CrossAxisAlignment.start
-          : CrossAxisAlignment.center,
+        crossAxisAlignment: crossAxisAlignment,
         children: [
           EmailAvatarBuilder(
             emailSelected: emailSelected,
@@ -81,7 +84,18 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                 );
               }
             },
-            size: 56,
+            size: isMobileResponsive ? 44 : 32,
+            textStyle: !isMobileResponsive
+                ? ThemeUtils.textStyleHeadingHeadingSmall(color: Colors.white)
+                : ThemeUtils.textStyleInter600().copyWith(
+                    fontSize: 18.86,
+                    height: 17.29 / 18.86,
+                    letterSpacing: -0.32,
+                    color: Colors.white,
+                  ),
+            padding: crossAxisAlignment == CrossAxisAlignment.start
+                ? const EdgeInsetsDirectional.only(top: 4)
+                : null,
           ),
           const SizedBox(width: 16),
           Expanded(child: LayoutBuilder(builder: (context, constraints) {
@@ -98,7 +112,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                           children: [
                             if (showUnreadVisualization &&
                                 !emailSelected.hasRead &&
-                                responsiveUtils.isMobile(context))
+                                isMobileResponsive)
                               TMailButtonWidget.fromIcon(
                                 icon: imagePaths.icUnreadStatus,
                                 backgroundColor: Colors.transparent,
@@ -114,9 +128,10 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                   emailAddress: emailSelected.from!.first,
                                   openEmailAddressDetailAction: openEmailAddressDetailAction,
                                   showSenderEmail: _showSenderEmail(
-                                    responsiveUtils.isMobile(context),
+                                    isMobileResponsive,
                                     senderEmail: emailSelected.from!.first,
                                   ),
+                                  isMobileResponsive: isMobileResponsive,
                                 ),
                               ),
                             if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
@@ -134,19 +149,20 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                             if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
                               TMailButtonWidget.fromText(
                                 text: AppLocalizations.of(context).unsubscribe,
-                                textStyle: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                                  fontWeight: FontWeight.normal,
+                                textStyle: ThemeUtils.textStyleInter400.copyWith(
                                   fontSize: 14,
-                                  color: AppColor.colorTextBody,
+                                  height: 1,
+                                  letterSpacing: -0.14,
+                                  color: AppColor.gray6D7885,
                                   decoration: TextDecoration.underline,
                                 ),
                                 padding: const EdgeInsetsDirectional.symmetric(vertical: 4, horizontal: 8),
                                 backgroundColor: Colors.transparent,
                                 onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
                               ),
-                            if (_showAttachmentIcon() && !responsiveUtils.isMobile(context))
+                            if (_showAttachmentIcon() && !isMobileResponsive)
                               Padding(
-                                padding: const EdgeInsetsDirectional.only(start: 16),
+                                padding: const EdgeInsetsDirectional.only(start: 8),
                                 child: SvgPicture.asset(
                                   imagePaths.icAttachment,
                                   colorFilter: AppColor.steelGray200.asFilter(),
@@ -154,7 +170,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                   height: 20,
                                 ),
                               ),
-                            if (isInsideThreadDetailView && !responsiveUtils.isMobile(context))
+                            if (isInsideThreadDetailView && !isMobileResponsive)
                               ReceivedTimeBuilder(
                                 emailSelected: emailSelected,
                                 padding: const EdgeInsetsDirectional.only(start: 8, top: 2),
@@ -162,7 +178,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                               ),
                             if (showUnreadVisualization &&
                                 !emailSelected.hasRead &&
-                                !responsiveUtils.isMobile(context))
+                                !isMobileResponsive)
                               TMailButtonWidget.fromIcon(
                                 icon: imagePaths.icUnreadStatus,
                                 backgroundColor: Colors.transparent,
@@ -208,7 +224,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ),
                     ],
                   ),
-                  if (responsiveUtils.isMobile(context) && isInsideThreadDetailView)
+                  if (isMobileResponsive && isInsideThreadDetailView)
                     Row(
                       children: [
                         if (_showAttachmentIcon())
@@ -242,6 +258,24 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
         ]
       ),
     );
+  }
+
+  EdgeInsetsGeometry _getPadding(bool isMobileResponsive) {
+    if (isInsideThreadCollapsed) {
+      return EdgeInsetsDirectional.symmetric(
+        horizontal: isMobileResponsive ? 12 : 16,
+        vertical: isMobileResponsive ? 12 : 8,
+      );
+    } else {
+      return EdgeInsetsDirectional.all(isMobileResponsive ? 12 : 16);
+    }
+  }
+
+  CrossAxisAlignment _getAxisAlignment(bool isMobileResponsive) {
+    return emailSelected.countRecipients > 0 &&
+            (showRecipients || isMobileResponsive)
+        ? CrossAxisAlignment.start
+        : CrossAxisAlignment.center;
   }
 
   bool _showSenderEmail(

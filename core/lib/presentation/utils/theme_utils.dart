@@ -142,6 +142,14 @@ class ThemeUtils {
     backgroundColor: backgroundColor,
   );
 
+  static TextStyle textStyleBodySmallHeadline = defaultTextStyleInterFont.copyWith(
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.13,
+    fontSize: 13,
+    height: 16 / 13,
+    color: Colors.black,
+  );
+
   static TextStyle textStyleHeadingH6({
     Color? color,
     FontWeight? fontWeight,

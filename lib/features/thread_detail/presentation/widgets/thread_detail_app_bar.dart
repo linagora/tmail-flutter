@@ -106,7 +106,7 @@ class ThreadDetailAppBar extends StatelessWidget {
         if (isMobile) {
           backButton = Expanded(
             child: Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: backButton,
             ),
           );
@@ -131,7 +131,9 @@ class ThreadDetailAppBar extends StatelessWidget {
             : EmailViewAppBarWidgetStyles.height,
           padding: PlatformInfo.isIOS
             ? EmailViewAppBarWidgetStyles.paddingIOS(context, responsiveUtils)
-            : EmailViewAppBarWidgetStyles.padding,
+            : isMobile
+              ? EmailViewAppBarWidgetStyles.mobilePadding
+              : EmailViewAppBarWidgetStyles.padding,
           decoration: const BoxDecoration(
             border: Border(
               bottom: BorderSide(
