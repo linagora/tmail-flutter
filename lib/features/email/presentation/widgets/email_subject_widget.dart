@@ -1,5 +1,3 @@
-import 'package:core/presentation/utils/theme_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_subject_styles.dart';
@@ -7,8 +5,13 @@ import 'package:tmail_ui_user/features/email/presentation/styles/email_subject_s
 class EmailSubjectWidget extends StatelessWidget {
 
   final PresentationEmail presentationEmail;
+  final bool isMobileResponsive;
 
-  const EmailSubjectWidget({super.key, required this.presentationEmail});
+  const EmailSubjectWidget({
+    super.key,
+    required this.presentationEmail,
+    this.isMobileResponsive = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +20,12 @@ class EmailSubjectWidget extends StatelessWidget {
     }
 
     return Padding(
-      padding: EmailSubjectStyles.padding,
+      padding: isMobileResponsive
+          ? EmailSubjectStyles.mobilePadding
+          : EmailSubjectStyles.padding,
       child: Text(
         presentationEmail.getEmailTitle(),
-        style: ThemeUtils.textStyleHeadingH5(color: Colors.black).copyWith(
-          overflow: PlatformInfo.isWeb ? TextOverflow.ellipsis : null,
-        ),
+        style: EmailSubjectStyles.textStyle,
         maxLines: EmailSubjectStyles.maxLines,
       )
     );

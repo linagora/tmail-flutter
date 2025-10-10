@@ -151,6 +151,7 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
       styleCSS: combinedCss,
       contentPadding: widget.contentPadding,
       useDefaultFontStyle: widget.useDefaultFontStyle,
+      fontSize: 16,
     );
   }
 

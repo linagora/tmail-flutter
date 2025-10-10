@@ -233,6 +233,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     List<String>? emailAddressSender,
     ScrollController? scrollController,
   }) {
+    final isMobileResponsive = controller.responsiveUtils.isMobile(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -242,9 +243,8 @@ class EmailView extends GetWidget<SingleEmailController> {
             presentationEmail: presentationEmail.copyWith(
               subject: threadSubject,
             ),
-          )
-        else
-          const SizedBox(height: 16),
+            isMobileResponsive: isMobileResponsive,
+          ),
         Obx(() => InformationSenderAndReceiverBuilder(
           emailSelected: presentationEmail,
           imagePaths: controller.imagePaths,
@@ -252,6 +252,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           sMimeStatus: controller.currentEmailLoaded.value?.sMimeStatus,
           emailUnsubscribe: controller.emailUnsubscribe.value,
           maxBodyHeight: bodyConstraints.maxHeight,
+          isInsideThreadCollapsed: false,
           openEmailAddressDetailAction: (_, emailAddress) => controller.openEmailAddressDialog(emailAddress),
           onEmailActionClick: (presentationEmail, actionType) => controller.handleEmailAction(context, presentationEmail, actionType),
           isInsideThreadDetailView: isInsideThreadDetailView,
@@ -285,8 +286,6 @@ class EmailView extends GetWidget<SingleEmailController> {
             controller.mailboxDashBoardController.mapMailboxById,
           ),
         )),
-        if (!controller.responsiveUtils.isMobile(context))
-         const SizedBox(height: 24),
         Obx(() => MailUnsubscribedBanner(
           presentationEmail: controller.currentEmail,
           emailUnsubscribe: controller.emailUnsubscribe.value
@@ -366,10 +365,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            vertical: EmailViewStyles.mobileContentVerticalMargin,
-                            horizontal: EmailViewStyles.mobileContentHorizontalMargin,
-                          ),
+                          padding: EmailViewStyles.mobileEmailContentPadding,
                           child: HtmlContentViewer(
                             key: PlatformInfo.isIntegrationTesting
                                 ? controller.htmlContentViewKey
@@ -407,10 +403,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 });
               } else {
                 return Padding(
-                  padding: const EdgeInsetsDirectional.symmetric(
-                    vertical: EmailViewStyles.mobileContentVerticalMargin,
-                    horizontal: EmailViewStyles.mobileContentHorizontalMargin
-                  ),
+                  padding: EmailViewStyles.mobileEmailContentPadding,
                   child: HtmlContentViewer(
                     key: PlatformInfo.isIntegrationTesting
                         ? controller.htmlContentViewKey
