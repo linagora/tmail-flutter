@@ -1,3 +1,7 @@
+## [0.19.6] - 2025-10-12
+### Fixed
+- Remove Reply-to in one-line field
+
 ## [0.19.5] - 2025-10-10
 ### Fixed
 - Fix bug relate to recipients 
