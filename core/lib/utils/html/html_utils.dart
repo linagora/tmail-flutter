@@ -723,7 +723,12 @@ class HtmlUtils {
 
       if (container == null) return htmlString;
 
-      final urlRegex = RegExp(r'''(?:(?:https?:\/\/)|(?:www\.))[^\s<]+[^<.,:;\"')\]\s!?]''');
+      final urlRegex = RegExp(
+        r'''(?:(?:https?:\/\/)|(?:ftp:\/\/)|(?:mailto:)|(?:file:\/\/)|(?:www\.))(?!\.)(?!.*\.\.)([^\s<]+[^<.,:;\"\'\)\]\s!?])''',
+        caseSensitive: false,
+        multiLine: true,
+        dotAll: true,
+      );
 
       _processNode(container, urlRegex);
 
@@ -735,7 +740,16 @@ class HtmlUtils {
   }
 
   static final _skipTags = {
-    'a', 'img', 'video', 'audio', 'source', 'link', 'script', 'iframe'
+    'a',
+    'img',
+    'video',
+    'audio',
+    'source',
+    'link',
+    'script',
+    'iframe',
+    'code',
+    'pre',
   };
 
   static void _processNode(dom.Node node, RegExp urlRegex) {
@@ -763,11 +777,22 @@ class HtmlUtils {
             nodes.add(dom.Text(text.substring(lastIndex, start)));
           }
 
-          final href = url.startsWith('http') ? url : 'https://$url';
-          final link = dom.Element.tag('a')
-            ..attributes['href'] = href
-            ..text = url;
-          nodes.add(link);
+          // ignore unsafe URLs
+          if (url.toLowerCase().startsWith('javascript:') ||
+              url.toLowerCase().startsWith('data:')) {
+            nodes.add(dom.Text(url));
+          } else {
+            // Normalize href
+            final href = url.startsWith(RegExp(r'https?|ftp|mailto|file'))
+                ? url
+                : 'https://$url';
+
+            final link = dom.Element.tag('a')
+              ..attributes['href'] = href
+              ..text = url;
+
+            nodes.add(link);
+          }
 
           lastIndex = match.end;
         }
