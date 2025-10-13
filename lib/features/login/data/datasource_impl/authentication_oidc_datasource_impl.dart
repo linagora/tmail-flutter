@@ -56,9 +56,21 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   }
 
   @override
-  Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes) {
+  Future<TokenOIDC> getTokenOIDC(
+    String clientId,
+    String redirectUrl,
+    String discoveryUrl,
+    List<String> scopes, {
+    String? loginHint,
+  }) {
     return Future.sync(() async {
-      return await _authenticationClient.getTokenOIDC(clientId, redirectUrl, discoveryUrl, scopes);
+      return await _authenticationClient.getTokenOIDC(
+        clientId,
+        redirectUrl,
+        discoveryUrl,
+        scopes,
+        loginHint: loginHint,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 

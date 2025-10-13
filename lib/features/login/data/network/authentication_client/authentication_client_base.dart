@@ -13,10 +13,12 @@ abstract class AuthenticationClientBase {
       List<String> scopes);
 
   Future<TokenOIDC> getTokenOIDC(
-      String clientId,
-      String redirectUrl,
-      String discoveryUrl,
-      List<String> scopes);
+    String clientId,
+    String redirectUrl,
+    String discoveryUrl,
+    List<String> scopes, {
+    String? loginHint,
+  });
 
   Future<TokenOIDC> refreshingTokensOIDC(
       String clientId,
