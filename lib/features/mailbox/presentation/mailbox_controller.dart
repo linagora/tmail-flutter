@@ -262,12 +262,6 @@ class MailboxController extends BaseMailboxController
       _handleNavigationRouteParameters
     );
 
-    ever(mailboxDashBoardController.dashBoardAction, (action) {
-      if (action is ClearSearchEmailAction) {
-        _switchBackToMailboxDefault();
-      }
-    });
-
     ever(mailboxDashBoardController.mailboxUIAction, (action) {
       if (action is SelectMailboxDefaultAction) {
         _switchBackToMailboxDefault();

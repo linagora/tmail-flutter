@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
@@ -160,21 +161,22 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
 
   void _invokeSearchEmailAction(String queryString) {
     log('SearchInputFormWidget::_invokeSearchEmailAction:QueryString = $queryString');
+    final trimmedQueryString = queryString.trimmed;
+
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
 
-    if (queryString.isNotEmpty) {
-      _saveRecentSearch(queryString);
+    if (trimmedQueryString.isNotEmpty) {
+      _saveRecentSearch(trimmedQueryString);
     }
 
-    if (queryString.isNotEmpty || _searchController.listFilterOnSuggestionForm.isNotEmpty) {
+    if (_searchController.listFilterOnSuggestionForm.isNotEmpty) {
       _searchController.applyFilterSuggestionToSearchFilter(
         _dashBoardController.ownEmailAddress.value,
       );
-      _dashBoardController.searchEmailByQueryString(queryString);
-    } else {
-      _dashBoardController.clearSearchEmail();
     }
+
+    _dashBoardController.searchEmailByQueryString(trimmedQueryString);
   }
 
   void _saveRecentSearch(String queryString) {
@@ -189,7 +191,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     _searchController.saveRecentSearch(
       accountId,
       userName,
-      RecentSearch.now(queryString),
+      RecentSearch.now(queryString.trimmed),
     );
   }
 

@@ -231,13 +231,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
     searchState.value = searchState.value.enableSearchState();
   }
 
-  void disableSimpleSearch() {
-    updateFilterEmail(textOption: Some(SearchQuery.initial()));
-    _clearAllTextInputSimpleSearch();
-    deactivateSimpleSearch();
-    hideSimpleSearchFormView();
-  }
-
   void clearTextSearch() {
     searchInputController.clear();
     searchFocus.requestFocus();

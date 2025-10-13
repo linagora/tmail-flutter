@@ -58,8 +58,6 @@ class StartSearchEmailAction extends DashBoardAction {}
 
 class EmptyTrashAction extends DashBoardAction {}
 
-class ClearSearchEmailAction extends DashBoardAction {}
-
 class ClearAllFieldOfAdvancedSearchAction extends DashBoardAction {}
 
 class OpenEmailInsideMailboxFromLocationBar extends DashBoardAction {
