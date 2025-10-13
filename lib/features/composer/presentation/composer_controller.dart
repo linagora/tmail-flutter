@@ -10,7 +10,6 @@ import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -612,6 +611,9 @@ class ComposerController extends BaseController
 
   void onCreatedMobileEditorAction(BuildContext context, HtmlEditorApi editorApi, String? content) {
     richTextMobileTabletController?.htmlEditorApi = editorApi;
+    richTextMobileTabletController?.onInitWebViewLifecycleManager(
+      editorApi.webViewController,
+    );
     richTextMobileTabletController?.richTextController.onCreateHTMLEditor(
       editorApi,
       onEnterKeyDown: _onEnterKeyDown,
@@ -1157,14 +1159,18 @@ class ComposerController extends BaseController
       .build();
   }
 
-  void openFilePickerByType(BuildContext context, FileType fileType) async {
-    if (!kIsWeb) {
+  void openFilePickerByType(BuildContext context, FileType fileType) {
+    if (PlatformInfo.isMobile) {
       popBack();
+      richTextMobileTabletController?.webViewLifecycleManager?.pause();
     }
     consumeState(_localFilePickerInteractor.execute(fileType: fileType));
   }
 
   void _handlePickFileFailure(LocalFilePickerFailure failure) {
+    if (PlatformInfo.isMobile) {
+      richTextMobileTabletController?.webViewLifecycleManager?.resume();
+    }
     if (currentOverlayContext != null && currentContext != null && failure.exception is! PickFileCanceledException) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -1173,6 +1179,9 @@ class ComposerController extends BaseController
   }
 
   void _handlePickImageFailure(LocalImagePickerFailure failure) {
+    if (PlatformInfo.isMobile) {
+      richTextMobileTabletController?.webViewLifecycleManager?.resume();
+    }
     if (currentOverlayContext != null && currentContext != null && failure.exception is! PickFileCanceledException) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -1181,6 +1190,9 @@ class ComposerController extends BaseController
   }
 
   void _handlePickFileSuccess(LocalFilePickerSuccess success) {
+    if (PlatformInfo.isMobile) {
+      richTextMobileTabletController?.webViewLifecycleManager?.resume();
+    }
     uploadController.validateTotalSizeAttachmentsBeforeUpload(
       totalSizePreparedFiles: success.pickedFiles.totalSize,
       onValidationSuccess: () => uploadAttachmentsAction(pickedFiles: success.pickedFiles)
@@ -1188,6 +1200,9 @@ class ComposerController extends BaseController
   }
 
   void _handlePickImageSuccess(LocalImagePickerSuccess success) {
+    if (PlatformInfo.isMobile) {
+      richTextMobileTabletController?.webViewLifecycleManager?.resume();
+    }
     uploadController.validateTotalSizeInlineAttachmentsBeforeUpload(
       totalSizePreparedFiles: success.fileInfo.fileSize,
       onValidationSuccess: () => uploadAttachmentsAction(pickedFiles: [success.fileInfo.withInline()])
@@ -1680,6 +1695,9 @@ class ComposerController extends BaseController
       maxWithEditor = maxWith - 70;
     }
 
+    if (PlatformInfo.isMobile) {
+      richTextMobileTabletController?.webViewLifecycleManager?.pause();
+    }
     consumeState(_localImagePickerInteractor.execute());
   }
 
