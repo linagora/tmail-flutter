@@ -698,5 +698,152 @@ void main() {
         reason: 'There must be no <a> tag inside href or src attributes',
       );
     });
+
+    test('Protocol variations: http/https/www', () {
+      const html = 'A https://example.com B http://foo.bar C www.site.com';
+      final result = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(result, contains('<a href="https://example.com">https://example.com</a>'));
+      expect(result, contains('<a href="http://foo.bar">http://foo.bar</a>'));
+      expect(result, contains('<a href="https://www.site.com">www.site.com</a>'));
+    });
+
+    test('Protocol variations: ftp, mailto, file', () {
+      const html =
+          'ftp://files.example.com mailto:me@example.com file:///Users/me/readme.txt';
+      final out = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(
+        out,
+        contains('<a href="ftp://files.example.com">ftp://files.example.com</a>'),
+      );
+
+      expect(
+        out,
+        contains('<a href="mailto:me@example.com">mailto:me@example.com</a>'),
+      );
+
+      expect(
+        out,
+        contains(
+          '<a href="file:///Users/me/readme.txt">file:///Users/me/readme.txt</a>',
+        ),
+      );
+    });
+
+    test('Fragment + query: keep the same href, do not double https://', () {
+      const html =
+          'View https://example.com/page?query=1#section and https://a.b/c#frag';
+      final out = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(
+        out,
+        contains(
+          '<a href="https://example.com/page?query=1#section">https://example.com/page?query=1#section</a>',
+        ),
+      );
+      expect(
+        out,
+        contains('<a href="https://a.b/c#frag">https://a.b/c#frag</a>'),
+      );
+    });
+
+    test('Do not wrap in <code> and <pre>', () {
+      const html = '<pre>https://example.com</pre> <code>www.site.com</code>';
+      final out = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(out, contains('<pre>https://example.com</pre>'));
+      expect(out, contains('<code>www.site.com</code>'));
+      expect(out, isNot(contains('<pre><a ')));
+      expect(out, isNot(contains('<code><a ')));
+    });
+
+    test('Do not wrap javascript: and data:', () {
+      const html = 'javascript:alert(1) and data:text/html;base64,AAAA';
+      final out = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(out, isNot(contains('<a ')));
+      expect(out, contains('javascript:alert(1)'));
+      expect(out, contains('data:text/html;base64,AAAA'));
+    });
+
+    test('Do not wrap URLs in attributes', () {
+      const html = '<img src="https://example.com/img.png">';
+      final out = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(out, equals('<img src="https://example.com/img.png">'));
+    });
+
+    test('IP addresses: http + www.*', () {
+      const html = 'http://192.168.1.1 www.127.0.0.1';
+      final out = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(out, contains('<a href="http://192.168.1.1">http://192.168.1.1</a>'));
+      expect(out, contains('<a href="https://www.127.0.0.1">www.127.0.0.1</a>'));
+    });
+
+    test('URLs in blockquote/list/table are wrapped', () {
+      const html = '''
+      <blockquote>https://example.com</blockquote>
+      <ul><li>www.site.com</li></ul>
+      <table><tr><td>https://abc.com</td></tr></table>
+      ''';
+      final out = HtmlUtils.wrapPlainTextLinks(html).replaceAll('\n', '');
+
+      expect(
+        out,
+        contains(
+          '<blockquote><a href="https://example.com">https://example.com</a></blockquote>',
+        ),
+      );
+      expect(
+        out,
+        contains('<li><a href="https://www.site.com">www.site.com</a></li>'),
+      );
+      expect(
+        out,
+        contains('<td><a href="https://abc.com">https://abc.com</a></td>'),
+      );
+    });
+
+    test('Malformed URLs: no wrap', () {
+      const html = 'Wrong: http//example and www..com';
+      final out = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(out, isNot(contains('<a href')));
+      expect(out, contains('http//example'));
+      expect(out, contains('www..com'));
+    });
+
+    test('Adjacent links without spaces: will now wrap into ONE link', () {
+      const html = 'www.example1.comwww.example2.com';
+      final out = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(
+        out,
+        contains(
+          '<a href="https://www.example1.comwww.example2.com">www.example1.comwww.example2.com</a>',
+        ),
+      );
+      expect(out.indexOf('<a '), greaterThanOrEqualTo(0));
+      expect(out.indexOf('<a ', out.indexOf('<a ') + 1), equals(-1));
+    });
+
+    test('Do not wrap when already in <a> (skip parent tag)', () {
+      const html =
+          '<a href="https://example.com">https://example.com</a> và www.site.com';
+      final out = HtmlUtils.wrapPlainTextLinks(html);
+
+      expect(
+        out,
+        contains(
+          '<a href="https://example.com">https://example.com</a>',
+        ),
+      );
+      expect(
+        out,
+        contains('<a href="https://www.site.com">www.site.com</a>'),
+      );
+    });
   });
 }
