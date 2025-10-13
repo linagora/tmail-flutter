@@ -188,7 +188,7 @@ class LoginController extends ReloadableController {
     } else if (success is CheckOIDCIsAvailableSuccess) {
       getOIDCConfiguration(success.oidcResponse);
     } else if (success is GetOIDCConfigurationSuccess) {
-      _getOIDCConfigurationSuccess(success);
+      _getOIDCConfigurationSuccess(success.oidcConfiguration);
     } else if (success is GetTokenOIDCSuccess) {
       _getTokenOIDCSuccess(success);
     } else if (success is AuthenticationUserSuccess) {
@@ -413,16 +413,23 @@ class LoginController extends ReloadableController {
   }
 
   void getOIDCConfiguration(OIDCResponse oidcResponse) {
-    consumeState(_getOIDCConfigurationInteractor.execute(oidcResponse));
+    final loginHint = PlatformInfo.isMobile ? _username?.value : null;
+    log('$runtimeType::getOIDCConfiguration:loginHint = $loginHint');
+    consumeState(
+      _getOIDCConfigurationInteractor.execute(
+        oidcResponse,
+        loginHint: loginHint,
+      ),
+    );
   }
 
-  void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
+  void _getOIDCConfigurationSuccess(OIDCConfiguration config) {
     if (PlatformInfo.isWeb) {
-      _authenticateOidcOnBrowserAction(success.oidcConfiguration);
-    } else if (success.oidcConfiguration.authority == AppConfig.saasRegistrationUrl) {
-      _getTokenOIDCOnSaaSPlatform(success.oidcConfiguration);
+      _authenticateOidcOnBrowserAction(config);
+    } else if (config.authority == AppConfig.saasRegistrationUrl) {
+      _getTokenOIDCOnSaaSPlatform(config);
     } else {
-      _getTokenOIDCAction(success.oidcConfiguration);
+      _getTokenOIDCAction(config);
     }
   }
 
