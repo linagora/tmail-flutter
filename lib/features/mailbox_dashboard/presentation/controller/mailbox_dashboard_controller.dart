@@ -998,11 +998,6 @@ class MailboxDashBoardController extends ReloadableController
       && dashboardRoute.value == DashboardRoutes.threadDetailed;
   }
 
-  void clearSearchEmail() {
-    dispatchAction(ClearSearchEmailAction());
-    searchController.disableSimpleSearch();
-  }
-
   void _unSelectedMailbox() {
     selectedMailbox.value = null;
   }

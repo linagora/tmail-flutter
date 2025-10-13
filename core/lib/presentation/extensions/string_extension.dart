@@ -98,4 +98,6 @@ extension StringExtension on String {
       return 0;
     }
   }
+
+  String get trimmed => trim();
 }
