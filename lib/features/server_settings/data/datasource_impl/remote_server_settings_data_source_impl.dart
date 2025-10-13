@@ -17,13 +17,19 @@ class RemoteServerSettingsDataSourceImpl implements ServerSettingsDataSource {
   Future<TMailServerSettings> getServerSettings(AccountId accountId) {
     return Future.sync(() async {
       return await _serverSettingsAPI.getServerSettings(accountId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<TMailServerSettings> updateServerSettings(Session session, AccountId accountId, TMailServerSettings serverSettings) {
     return Future.sync(() async {
       return await _serverSettingsAPI.updateServerSettings(session, accountId, serverSettings);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

@@ -39,14 +39,20 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<JmapMailboxResponse> getAllMailbox(Session session, AccountId accountId, {Properties? properties}) {
     return Future.sync(() async {
       return await mailboxAPI.getAllMailbox(session, accountId, properties: properties);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<MailboxChangeResponse> getChanges(Session session, AccountId accountId, State sinceState, {Properties? properties}) {
     return Future.sync(() async {
       return await mailboxAPI.getChanges(session, accountId, sinceState, properties: properties);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -63,28 +69,40 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<Mailbox?> createNewMailbox(Session session, AccountId accountId, CreateNewMailboxRequest newMailboxRequest) {
     return Future.sync(() async {
       return await mailboxAPI.createNewMailbox(session, accountId, newMailboxRequest);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<Map<Id,SetError>> deleteMultipleMailbox(Session session, AccountId accountId, List<MailboxId> mailboxIds) {
     return Future.sync(() async {
       return await mailboxAPI.deleteMultipleMailbox(session, accountId, mailboxIds);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.renameMailbox(session, accountId, request);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.moveMailbox(session, accountId, request);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -101,14 +119,20 @@ class MailboxDataSourceImpl extends MailboxDataSource {
           mailboxId,
           totalEmailUnread,
           onProgressController);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<bool> subscribeMailbox(Session session, AccountId accountId, SubscribeMailboxRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.subscribeMailbox(session, accountId, request);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -119,35 +143,50 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   ) {
     return Future.sync(() async {
       return await mailboxAPI.subscribeMultipleMailbox(session, accountId, subscribeRequest);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<bool> handleMailboxRightRequest(Session session, AccountId accountId, MailboxRightRequest request) {
     return Future.sync(() async {
       return await mailboxAPI.handleMailboxRightRequest(session, accountId, request);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> createDefaultMailbox(Session session, AccountId accountId, Map<Id, Role> mapRoles) {
     return Future.sync(() async {
       return await mailboxAPI.createDefaultMailbox(session, accountId, mapRoles);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
     return Future.sync(() async {
       return await mailboxAPI.setRoleDefaultMailbox(session, accountId, listMailbox);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
   
   @override
   Future<GetMailboxByRoleResponse> getMailboxByRole(Session session, AccountId accountId, Role role, {UnsignedInt? limit}) {
     return Future.sync(() async {
       return await mailboxAPI.getMailboxByRole(session, accountId, role);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -159,6 +198,9 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   Future<UnsignedInt> clearMailbox(Session session, AccountId accountId, MailboxId mailboxId) {
     return Future.sync(() async {
       return await mailboxAPI.clearMailbox(session, accountId, mailboxId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

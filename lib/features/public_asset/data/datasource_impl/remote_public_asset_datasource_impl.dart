@@ -28,7 +28,10 @@ class RemotePublicAssetDatasourceImpl implements PublicAssetDatasource {
       accountId,
       blobId: blobId,
       identityId: identityId);
-  }).catchError(_exceptionThrower.throwException);
+      }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
 
   @override
   Future<void> deletePublicAssets(
@@ -41,7 +44,10 @@ class RemotePublicAssetDatasourceImpl implements PublicAssetDatasource {
       accountId,
       publicAssetIds: publicAssetIds
     );
-  }).catchError(_exceptionThrower.throwException);
+      }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
 
   @override
   Future<List<PublicAsset>> getPublicAssetFromIds(
@@ -54,7 +60,10 @@ class RemotePublicAssetDatasourceImpl implements PublicAssetDatasource {
       accountId,
       publicAssetIds: publicAssetIds
     );
-  }).catchError(_exceptionThrower.throwException);
+      }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
 
   @override
   Future<void> updatePublicAssets(
@@ -67,7 +76,10 @@ class RemotePublicAssetDatasourceImpl implements PublicAssetDatasource {
       accountId,
       publicAssets: publicAssets
     );
-  }).catchError(_exceptionThrower.throwException);
+      }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
 
   @override
   Future<void> partialUpdatePublicAssets(
@@ -80,5 +92,8 @@ class RemotePublicAssetDatasourceImpl implements PublicAssetDatasource {
       accountId,
       mapPublicAssetIdToUpdatingIdentityIds: mapPublicAssetIdToUpdatingIdentityIds
     );
-  }).catchError(_exceptionThrower.throwException);
+      }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
 }

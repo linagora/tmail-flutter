@@ -38,56 +38,80 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   Future<OIDCResponse> checkOIDCIsAvailable(OIDCRequest oidcRequest) {
     return Future.sync(() async {
       return await _oidcHttpClient.checkOIDCIsAvailable(oidcRequest);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<OIDCConfiguration> getOIDCConfiguration(OIDCResponse oidcResponse) {
     return Future.sync(() async {
       return await _oidcHttpClient.getOIDCConfiguration(oidcResponse);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<OIDCDiscoveryResponse> discoverOIDC(OIDCConfiguration oidcConfiguration) {
     return Future.sync(() async {
       return await _oidcHttpClient.discoverOIDC(oidcConfiguration);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl, String discoveryUrl, List<String> scopes) {
     return Future.sync(() async {
       return await _authenticationClient.getTokenOIDC(clientId, redirectUrl, discoveryUrl, scopes);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<TokenOIDC> getStoredTokenOIDC(String tokenIdHash) {
     return Future.sync(() async {
       return await _tokenOidcCacheManager.getTokenOidc(tokenIdHash);
-    }).catchError(_cacheExceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _cacheExceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> persistTokenOIDC(TokenOIDC tokenOidc) {
     return Future.sync(() async {
       return await _tokenOidcCacheManager.persistOneTokenOidc(tokenOidc);
-    }).catchError(_cacheExceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _cacheExceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<OIDCConfiguration> getStoredOidcConfiguration() {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.getOidcConfiguration();
-    }).catchError(_cacheExceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _cacheExceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> persistOidcConfiguration(OIDCConfiguration oidcConfiguration) {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.persistOidcConfiguration(oidcConfiguration);
-    }).catchError(_cacheExceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _cacheExceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -105,21 +129,30 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
         discoveryUrl,
         scopes,
         refreshToken);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<bool> logout(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery) {
     return Future.sync(() async {
        return await _authenticationClient.logoutOidc(tokenId, config, oidcRescovery);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> deleteOidcConfiguration() {
     return Future.sync(() async {
       return await _oidcConfigurationCacheManager.deleteOidcConfiguration();
-    }).catchError(_cacheExceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _cacheExceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -135,7 +168,10 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
         redirectUrl,
         discoveryUrl,
         scopes);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -144,14 +180,20 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
       return _sessionStorageManager.get(
         OIDCConstant.authResponseKey,
       );
-    }).catchError(_cacheExceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _cacheExceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> deleteTokenOIDC() {
     return Future.sync(() async {
       return await _tokenOidcCacheManager.deleteTokenOidc();
-    }).catchError(_cacheExceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _cacheExceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -160,6 +202,9 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
       return _sessionStorageManager.remove(
         LoginConstants.AUTH_DESTINATION_KEY,
       );
-    }).catchError(_cacheExceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _cacheExceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

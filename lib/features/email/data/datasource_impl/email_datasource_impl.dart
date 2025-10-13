@@ -68,7 +68,10 @@ class EmailDataSourceImpl extends EmailDataSource {
         accountId,
         emailId,
         additionalProperties: additionalProperties);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -106,7 +109,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   ) {
     return Future.sync(() async {
       return await emailAPI.markAsRead(session, accountId, emailIds, readActions);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -118,7 +124,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   ) {
     return Future.sync(() async {
       return await emailAPI.downloadAttachments(attachments, accountId, baseDownloadUrl, accountRequest);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -131,7 +140,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   ) {
     return Future.sync(() async {
       return await emailAPI.exportAttachment(attachment, accountId, baseDownloadUrl, accountRequest, cancelToken);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -145,7 +157,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   ) {
     return Future.sync(() async {
       return await emailAPI.moveToMailbox(session, accountId, moveRequest);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -165,7 +180,10 @@ class EmailDataSourceImpl extends EmailDataSource {
         emailIds,
         markStarAction,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -182,7 +200,10 @@ class EmailDataSourceImpl extends EmailDataSource {
         email,
         cancelToken: cancelToken
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -199,7 +220,10 @@ class EmailDataSourceImpl extends EmailDataSource {
         emailId,
         cancelToken: cancelToken
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -218,7 +242,10 @@ class EmailDataSourceImpl extends EmailDataSource {
         oldEmailId,
         cancelToken: cancelToken
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -239,7 +266,10 @@ class EmailDataSourceImpl extends EmailDataSource {
         createNewMailboxRequest: createNewMailboxRequest,
         cancelToken: cancelToken
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -258,7 +288,10 @@ class EmailDataSourceImpl extends EmailDataSource {
         oldEmailId,
         cancelToken: cancelToken
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -280,7 +313,10 @@ class EmailDataSourceImpl extends EmailDataSource {
           accountRequest,
           onReceiveController,
           cancelToken: cancelToken);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -298,7 +334,10 @@ class EmailDataSourceImpl extends EmailDataSource {
         accountId,
         emailIds,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -315,7 +354,10 @@ class EmailDataSourceImpl extends EmailDataSource {
         emailId,
         cancelToken: cancelToken
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -327,7 +369,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<Email> getDetailedEmailById(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
       return await emailAPI.getDetailedEmailById(session, accountId, emailId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -394,21 +439,30 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<void> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
       return await emailAPI.unsubscribeMail(session, accountId, emailId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest) {
     return Future.sync(() async {
       return await emailAPI.restoreDeletedMessage(restoredDeletedMessageRequest);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
     return Future.sync(() async {
       return await emailAPI.getRestoredDeletedMessage(emailRecoveryActionId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -425,7 +479,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds) {
     return Future.sync(() async {
       return await emailAPI.parseEmailByBlobIds(accountId, blobIds);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -515,7 +572,10 @@ class EmailDataSourceImpl extends EmailDataSource {
       );
 
       return previewEmlHtmlDocument;
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   Future<String> _transformEmailContent(
@@ -588,7 +648,10 @@ class EmailDataSourceImpl extends EmailDataSource {
       onReceiveController,
       cancelToken: cancelToken,
     );
-  }).catchError(_exceptionThrower.throwException);
+  }).catchError((error, stackTrace) async {
+    await _exceptionThrower.throwException(error, stackTrace);
+    throw error;
+  });
   
   @override
   Future<DownloadedResponse> exportAllAttachments(
@@ -607,7 +670,10 @@ class EmailDataSourceImpl extends EmailDataSource {
       accountRequest,
       cancelToken: cancelToken,
     );
-  }).catchError(_exceptionThrower.throwException);
+  }).catchError((error, stackTrace) async {
+    await _exceptionThrower.throwException(error, stackTrace);
+    throw error;
+  });
 
   @override
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {

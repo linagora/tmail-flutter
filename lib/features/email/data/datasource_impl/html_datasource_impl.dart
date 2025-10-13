@@ -26,7 +26,10 @@ class HtmlDataSourceImpl extends HtmlDataSource {
         mapCidImageDownloadUrl,
         transformConfiguration
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -36,7 +39,10 @@ class HtmlDataSourceImpl extends HtmlDataSource {
         htmlContent,
         configuration
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -51,7 +57,10 @@ class HtmlDataSourceImpl extends HtmlDataSource {
         inlineAttachments: inlineAttachments,
         uploadUri: uploadUri,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -60,7 +69,10 @@ class HtmlDataSourceImpl extends HtmlDataSource {
       return await _htmlAnalyzer.removeCollapsedExpandedSignatureEffect(
         emailContent: emailContent
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -69,6 +81,9 @@ class HtmlDataSourceImpl extends HtmlDataSource {
       return await _htmlAnalyzer.removeStyleLazyLoadDisplayInlineImages(
         emailContent: emailContent,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }
