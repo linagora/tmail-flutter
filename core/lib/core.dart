@@ -49,7 +49,6 @@ export 'utils/platform_info.dart';
 export 'utils/file_utils.dart';
 export 'utils/option_param_mixin.dart';
 export 'utils/print_utils.dart';
-export 'utils/broadcast_channel/broadcast_channel.dart';
 export 'utils/list_utils.dart';
 export 'utils/mail/domain.dart';
 export 'utils/mail/mail_address.dart';
