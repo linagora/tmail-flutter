@@ -16,6 +16,6 @@ extension HandleVacationResponseExtension on ManageAccountDashBoardController {
   }
 
   void automaticallyDeactivateVacation(VacationResponse vacationResponse) {
-    disableVacationResponder(vacationResponse);
+    disableVacationResponder(vacationResponse, isAuto: true);
   }
 }

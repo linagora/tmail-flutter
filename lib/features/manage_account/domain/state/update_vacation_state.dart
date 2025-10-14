@@ -6,11 +6,12 @@ class LoadingUpdateVacation extends UIState {}
 
 class UpdateVacationSuccess extends UIState {
   final List<VacationResponse> listVacationResponse;
+  final bool isAuto;
 
-  UpdateVacationSuccess(this.listVacationResponse);
+  UpdateVacationSuccess(this.listVacationResponse, this.isAuto);
 
   @override
-  List<Object?> get props => [listVacationResponse];
+  List<Object?> get props => [listVacationResponse, isAuto];
 }
 
 class UpdateVacationFailure extends FeatureFailure {

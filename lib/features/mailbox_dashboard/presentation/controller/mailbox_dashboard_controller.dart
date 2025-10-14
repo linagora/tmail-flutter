@@ -2062,10 +2062,13 @@ class MailboxDashBoardController extends ReloadableController
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
     if (success.listVacationResponse.isNotEmpty) {
-      if (currentContext != null && currentOverlayContext != null) {
+      if (!success.isAuto &&
+          currentContext != null &&
+          currentOverlayContext != null) {
         appToast.showToastSuccessMessage(
           currentOverlayContext!,
-          AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully);
+          AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully,
+        );
       }
       vacationResponse.value = success.listVacationResponse.first;
       log('MailboxDashBoardController::_handleUpdateVacationSuccess(): $vacationResponse');

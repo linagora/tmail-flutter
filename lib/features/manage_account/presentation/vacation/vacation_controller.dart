@@ -245,6 +245,7 @@ class VacationController extends BaseController {
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
     if (success.listVacationResponse.isNotEmpty &&
+        !success.isAuto &&
         currentOverlayContext != null &&
         currentContext != null) {
       appToast.showToastSuccessMessage(
