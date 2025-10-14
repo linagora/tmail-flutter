@@ -1,6 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:filesize/filesize.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
@@ -10,15 +10,21 @@ extension QuotasExtensions on Quota {
 
   UnsignedInt? get presentationHardLimit => hardLimit ?? limit;
 
-  String get usedStorageAsString => used != null ? filesize(used!.value) : '';
+  String get usedStorageAsString =>
+      used != null ? fileSize(used!.value, divider: 1000) : '';
 
-  String get hardLimitStorageAsString => presentationHardLimit != null ? filesize(presentationHardLimit!.value) : '';
+  String get hardLimitStorageAsString => presentationHardLimit != null
+      ? fileSize(presentationHardLimit!.value, divider: 1000)
+      : '';
 
   String get quotaAvailableStorageAsString {
     if (used != null &&
         presentationHardLimit != null &&
         presentationHardLimit!.value > used!.value) {
-      return filesize(presentationHardLimit!.value - used!.value);
+      return fileSize(
+        presentationHardLimit!.value - used!.value,
+        divider: 1000,
+      );
     }
     return '0 B';
   }

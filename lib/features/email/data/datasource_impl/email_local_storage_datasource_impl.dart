@@ -16,7 +16,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
-import 'package:filesize/filesize.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -317,7 +317,7 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
           final previewAttachment = PreviewAttachment(
             iconBase64Data: iconBase64Data,
             name: attachment.name.escapeLtGtHtmlString(),
-            size: filesize(attachment.size?.value),
+            size: fileSize(attachment.size?.value),
             link: attachment.hyperLink,
           );
 

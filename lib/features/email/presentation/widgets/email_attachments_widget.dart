@@ -6,7 +6,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:filesize/filesize.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
@@ -54,7 +54,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
     final attachmentHeader = AttachmentsInfo(
       imagePaths: imagePaths,
       numberOfAttachments: attachments.length,
-      totalSizeInfo: filesize(attachments.totalSize, 1),
+      totalSizeInfo: fileSize(attachments.totalSize, round: 1),
       responsiveUtils: responsiveUtils,
       onTapShowAllAttachmentFile: onTapShowAllAttachmentFile,
       onTapDownloadAllButton: showDownloadAllAttachmentsButton

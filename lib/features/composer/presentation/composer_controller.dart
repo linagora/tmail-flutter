@@ -9,7 +9,7 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:filesize/filesize.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -835,7 +835,10 @@ class ComposerController extends BaseController
       MessageDialogActionManager().showConfirmDialogAction(
         context,
         appLocalizations.message_dialog_send_email_exceeds_maximum_size(
-          filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0),
+          fileSize(
+            mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0,
+            round: 0,
+          ),
         ),
         appLocalizations.got_it,
         title: appLocalizations.sending_failed,

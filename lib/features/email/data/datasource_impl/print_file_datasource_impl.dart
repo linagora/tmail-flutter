@@ -5,7 +5,7 @@ import 'package:core/presentation/utils/html_transformer/transform_configuration
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/print_utils.dart';
-import 'package:filesize/filesize.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draft_email_print.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
@@ -43,7 +43,7 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
           final printAttachment = PrintAttachment(
             iconBase64Data: iconBase64Data,
             name: attachment.name.escapeLtGtHtmlString(),
-            size: filesize(attachment.size?.value)
+            size: fileSize(attachment.size?.value)
           );
           listPrintAttachment.add(printAttachment);
         });

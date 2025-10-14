@@ -7,7 +7,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:filesize/filesize.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -369,7 +369,10 @@ class UploadController extends BaseController {
   }
 
   void _showConfirmDialogWhenExceededMaxSizeAttachmentsPerEmail({required BuildContext context}) {
-    final maxSizeAttachmentsPerEmail = filesize(_mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0);
+    final maxSizeAttachmentsPerEmail = fileSize(
+      _mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0,
+      round: 0,
+    );
     MessageDialogActionManager().showConfirmDialogAction(
       context,
       AppLocalizations.of(context).message_dialog_upload_attachments_exceeds_maximum_size(maxSizeAttachmentsPerEmail),
