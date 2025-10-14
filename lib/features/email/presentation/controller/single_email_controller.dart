@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:better_open_file/better_open_file.dart' as open_file;
+import 'package:open_file/open_file.dart' as open_file;
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_unescape_html_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
@@ -1044,9 +1044,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
 
     final openResult = await open_file.OpenFile.open(
-        downloadedResponse.filePath,
-        type: Platform.isAndroid ? downloadedResponse.mediaType!.mimeType : null,
-        uti: Platform.isIOS ? downloadedResponse.mediaType!.getDocumentUti().value : null);
+      downloadedResponse.filePath,
+      type: Platform.isAndroid ? downloadedResponse.mediaType!.mimeType : null,
+      // "xdg" is default value
+      linuxDesktopName: Platform.isIOS
+          ? downloadedResponse.mediaType!.getDocumentUti().value ?? 'xdg'
+          : 'xdg',
+    );
 
     if (openResult.type != open_file.ResultType.done) {
       logError('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): no preview available');
