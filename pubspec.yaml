@@ -102,21 +102,21 @@ dependencies:
       url: https://github.com/linagora/linagora-design-flutter.git
       ref: master
 
-  # TODO: Fix bug where apps cannot be launched on iOS 18. We will change it when the PR in upstream repository will be merged
-  # https://github.com/GeekyAnts/external_app_launcher/pull/42
-  external_app_launcher:
+  ### Original dependency is abandoned, so we use fork
+  ### https://github.com/linagora/intl_generator/pull/1
+  intl_generator:
     git:
-      url: https://github.com/putnokiabel/external_app_launcher.git
+      url: https://github.com/linagora/intl_generator.git
       ref: master
 
   ### Dependencies from pub.dev ###
-  super_tag_editor: 0.3.3
+  super_tag_editor: 0.4.1
+
+  external_app_launcher: 4.0.3
 
   cupertino_icons: 1.0.6
 
   get: 4.6.6
-
-  intl_generator: 0.4.1
 
   flutter_svg: 2.1.0
 
@@ -124,7 +124,7 @@ dependencies:
 
   equatable: 2.0.5
 
-  shared_preferences: 2.0.18
+  shared_preferences: 2.5.3
 
   dartz: 0.10.1
 
@@ -136,21 +136,21 @@ dependencies:
 
   http_parser: 4.0.2
 
-  collection: 1.19.0
+  collection: 1.19.1
 
   filesize: 2.0.1
 
   uuid: 3.0.7
 
-  flutter_downloader: 1.10.2
+  flutter_downloader: 1.12.0
 
-  external_path: 1.0.3
+  external_path: 2.2.0
 
   path_provider: 2.1.5
 
   device_info_plus: 9.0.1
 
-  permission_handler: 10.2.0
+  permission_handler: 12.0.1
 
   share_plus: 7.2.1
 
@@ -168,9 +168,9 @@ dependencies:
 
   flutter_portal: 1.1.3
 
-  timeago: 3.7.0
+  timeago: 3.7.1
 
-  better_open_file: 3.6.4
+  open_file: 3.5.10
 
   flutter_appauth: 9.0.1
 
@@ -178,7 +178,7 @@ dependencies:
 
   worker_manager: 5.0.3
 
-  async: 2.11.0
+  async: 2.13.0
 
   html: 0.15.3
 
@@ -208,9 +208,9 @@ dependencies:
 
   flutter_appauth_platform_interface: 9.0.0
 
-  intl: 0.19.0
+  intl: 0.20.2
 
-  workmanager: 0.5.1
+  workmanager: 0.9.0+3
 
   flutter_typeahead: 5.0.2
 
@@ -246,7 +246,7 @@ dependencies:
 
   web_socket_channel: 3.0.3
 
-  flutter_web_auth_2: 3.1.1
+  flutter_web_auth_2: 4.1.0
 
   app_links: 6.3.2
 
@@ -261,7 +261,7 @@ dependencies:
   twake_previewer_flutter:
     git:
       url: https://github.com/linagora/twake-previewer-flutter.git
-      ref: main
+      ref: update/flutter-3.32.8
 
   lottie_native: 0.1.2
 
@@ -287,11 +287,11 @@ dev_dependencies:
 
   http_mock_adapter: 0.4.2
 
-  patrol: 3.14.0
+  patrol: 3.19.0
 
-  patrol_log: 0.3.0
+  patrol_log: 0.5.0
 
-  patrol_finders: 2.7.2
+  patrol_finders: 2.9.0
 
   plugin_platform_interface: 2.1.8
 
@@ -307,15 +307,6 @@ dependency_overrides:
       url: https://github.com/IO-Design-Team/hive_ce
       ref: 18f92b53295e9eb77ebd4830d905a72cd404a126
       path: overrides/hive
-
-  # TODO: The package publisher fixed the issue with android API 35.
-  # However, they bundled it with the Flutter 3.27.4.
-  # When this app upgrade to Flutter 3.27.4, we will update this package
-  # and remove this override.
-  flutter_downloader:
-    git:
-      url: https://github.com/linagora/flutter_downloader.git
-      ref: fixbug/android-api-35
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
