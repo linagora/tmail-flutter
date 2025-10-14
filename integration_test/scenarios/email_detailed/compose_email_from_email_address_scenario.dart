@@ -49,6 +49,9 @@ class ComposeEmailFromEmailAddressScenario extends BaseTestScenario {
 
     await composerRobot.grantContactPermission();
 
+    await composerRobot.expandRecipientsFields();
+    await $.pumpAndSettle();
+
     await _expectToFieldContainListEmailAddressCorrectly(emailUser);
   }
 

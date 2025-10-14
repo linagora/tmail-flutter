@@ -46,6 +46,9 @@ class ReplyEmailWithContentContainImageBase64DataScenario extends BaseTestScenar
 
     await composerRobot.grantContactPermission();
 
+    await composerRobot.expandRecipientsFields();
+    await $.pumpAndSettle();
+
     await composerRobot.addRecipientIntoField(
       prefixEmailAddress: PrefixEmailAddress.to,
       email: emailUser,

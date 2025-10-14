@@ -70,6 +70,7 @@ class LongPressEmptyAndRecoverSpamScenario extends BaseTestScenario {
   }
 
   Future<void> _expectEmailWithSubjectVisible(String subject) async {
+    await $.scrollUntilVisible(finder: $(subject));
     await expectViewVisible($(subject));
   }
 

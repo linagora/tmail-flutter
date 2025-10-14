@@ -55,6 +55,10 @@ class ForwardingEmailLostAttachmentsScenario extends BaseTestScenario {
     await _expectComposerViewVisible();
 
     await composerRobot.grantContactPermission();
+
+    await composerRobot.expandRecipientsFields();
+    await $.pumpAndSettle();
+
     await composerRobot.addRecipientIntoField(
       prefixEmailAddress: PrefixEmailAddress.to,
       email: emailUser,
