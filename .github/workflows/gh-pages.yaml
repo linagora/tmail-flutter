@@ -6,7 +6,7 @@ on:
 name: Deploy PR on Github Pages
 
 env:
-  FLUTTER_VERSION: 3.27.4
+  FLUTTER_VERSION: 3.32.8
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
