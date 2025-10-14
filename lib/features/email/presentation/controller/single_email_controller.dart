@@ -36,7 +36,6 @@ import 'package:model/error_type_handler/unknown_uri_exception.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
@@ -968,6 +967,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         logError('SingleEmailController::_exportAttachmentAction(): $e');
         consumeState(Stream.value(Left(ExportAttachmentFailure(e))));
       }
+    } else {
+      consumeState(Stream.value(Left(ExportAttachmentFailure(NotFoundAccountIdException()))));
     }
   }
 
@@ -1034,35 +1035,35 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _exportAllAttachmentsSuccessAction(ExportAllAttachmentsSuccess success) {
     popBack();
-    _saveDownloadedZipAttachments(success.downloadedResponse.filePath);
+    _saveFileToStorage(success.downloadedResponse.filePath);
   }
 
   void _openDownloadedPreviewWorkGroupDocument(DownloadedResponse downloadedResponse) async {
     log('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): $downloadedResponse');
-    if (downloadedResponse.mediaType == null) {
-      await Share.shareXFiles([XFile(downloadedResponse.filePath)]);
+    final filePath = downloadedResponse.filePath;
+    final mediaType = downloadedResponse.mediaType;
+
+    if (mediaType == null) {
+      _saveFileToStorage(filePath);
+      return;
     }
 
     final openResult = await open_file.OpenFile.open(
-      downloadedResponse.filePath,
-      type: Platform.isAndroid ? downloadedResponse.mediaType!.mimeType : null,
+      filePath,
+      type: Platform.isAndroid ? mediaType.mimeType : null,
       // "xdg" is default value
       linuxDesktopName: Platform.isIOS
-          ? downloadedResponse.mediaType!.getDocumentUti().value ?? 'xdg'
+          ? mediaType.getDocumentUti().value ?? 'xdg'
           : 'xdg',
     );
 
     if (openResult.type != open_file.ResultType.done) {
       logError('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): no preview available');
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).noPreviewAvailable);
-      }
+      _saveFileToStorage(filePath);
     }
   }
 
-  Future<void> _saveDownloadedZipAttachments(String filePath) async {
+  Future<void> _saveFileToStorage(String filePath) async {
     final params = SaveFileDialogParams(sourceFilePath: filePath);
     await FlutterFileDialog.saveFile(params: params);
   }
