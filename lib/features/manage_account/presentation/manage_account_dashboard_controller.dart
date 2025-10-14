@@ -289,11 +289,15 @@ class ManageAccountDashBoardController extends ReloadableController
     }
   }
 
-  void disableVacationResponder(VacationResponse vacation) {
+  void disableVacationResponder(
+    VacationResponse vacation, {
+    bool isAuto = false,
+  }) {
     if (accountId.value != null && _updateVacationInteractor != null) {
       consumeState(_updateVacationInteractor!.execute(
         accountId.value!,
         vacation.clearAllExceptHtmlBody(),
+        isAuto: isAuto,
       ));
     } else {
       consumeState(
@@ -304,11 +308,13 @@ class ManageAccountDashBoardController extends ReloadableController
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
     if (success.listVacationResponse.isNotEmpty &&
+        !success.isAuto &&
         currentContext != null &&
         currentOverlayContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully);
+        AppLocalizations.of(currentContext!).yourVacationResponderIsDisabledSuccessfully,
+      );
     }
     setUpVacation(success.listVacationResponse.firstOrNull);
   }

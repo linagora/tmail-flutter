@@ -42,15 +42,17 @@ class SettingsView extends GetWidget<SettingsController> {
         Obx(() {
           final dashboard = controller.manageAccountDashboardController;
           final vacation = dashboard.vacationResponse.value;
-          final isWebDesktop = controller.responsiveUtils.isWebDesktop(context);
+          final isWebDesktopResponsive = controller
+              .responsiveUtils
+              .isWebDesktop(context);
 
           if (vacation?.vacationResponderIsValid == true) {
             return VacationNotificationMessageWidget(
               margin: EdgeInsetsDirectional.only(
                 start: 12,
                 end: 12,
-                top: isWebDesktop ? 8 : 0,
-                bottom: isWebDesktop ? 0 : 16,
+                top: isWebDesktopResponsive ? 8 : 0,
+                bottom: isWebDesktopResponsive ? 0 : 16,
               ),
               fromAccountDashBoard: true,
               vacationResponse: vacation!,
@@ -65,8 +67,8 @@ class SettingsView extends GetWidget<SettingsController> {
               margin: EdgeInsetsDirectional.only(
                 start: 12,
                 end: 12,
-                top: isWebDesktop ? 8 : 0,
-                bottom: isWebDesktop ? 0 : 16,
+                top: isWebDesktopResponsive ? 8 : 0,
+                bottom: isWebDesktopResponsive ? 0 : 16,
               ),
               fromAccountDashBoard: true,
               vacationResponse: vacation!,
