@@ -1,5 +1,6 @@
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,6 +11,10 @@ mixin ImageLoaderMixin {
     required String imagePath,
     double? imageSize
   }) {
+    log('$runtimeType::buildImage: imagePath = $imagePath');
+    if (PlatformInfo.isIntegrationTesting) {
+      return buildNoImage(imageSize ?? 150);
+    }
     if (isImageNetworkLink(imagePath) && isImageSVG(imagePath)) {
       return SvgPicture.network(
         imagePath,
@@ -19,6 +24,9 @@ mixin ImageLoaderMixin {
         placeholderBuilder: (_) {
           return const CupertinoActivityIndicator();
         },
+        errorBuilder: (_, __, ___) {
+          return buildNoImage(imageSize ?? 150);
+        },
       );
     } else if (isImageNetworkLink(imagePath)) {
       return Image.network(
@@ -27,16 +35,10 @@ mixin ImageLoaderMixin {
         width: imageSize ?? 150,
         height: imageSize ?? 150,
         loadingBuilder: (_, child, loadingProgress) {
-          if (loadingProgress != null &&
-              loadingProgress.cumulativeBytesLoaded != loadingProgress.expectedTotalBytes) {
-            return const Center(
-              child: CupertinoActivityIndicator(),
-            );
-          }
-          return child;
+          if (loadingProgress == null) return child;
+          return const Center(child: CupertinoActivityIndicator());
         },
-        errorBuilder: (context, error, stackTrace) {
-          logError('ImageLoaderMixin::buildImage:Exception = $error');
+        errorBuilder: (_, __, ___) {
           return buildNoImage(imageSize ?? 150);
         },
       );

@@ -31,7 +31,7 @@ class ComposerUploadAttachmentAndInlineImageScenario extends BaseTestScenario {
     await _expectAttachment(pngName);
 
     await composerRobot.addInline(png);
-    await $.pumpAndSettle();
+    await $.pumpAndSettle(duration: const Duration(seconds: 1));
     await _expectInline();
 
     await composerRobot.addAttachment(png);

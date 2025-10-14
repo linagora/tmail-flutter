@@ -44,6 +44,9 @@ class ReplyAllEmailScenario extends BaseTestScenario {
 
     await composerRobot.grantContactPermission();
 
+    await composerRobot.expandRecipientsFields();
+    await $.pumpAndTrySettle();
+
     await _expectComposerSubjectDisplayedCorrectly(appLocalizations);
     await _expectToFieldContainListEmailAddressCorrectly();
     await _expectCcFieldContainListEmailAddressCorrectly();

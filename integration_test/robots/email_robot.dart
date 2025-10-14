@@ -16,7 +16,7 @@ class EmailRobot extends CoreRobot {
   }
 
   Future<void> tapDownloadAllButton() async {
-    await $(AppLocalizations().archiveAndDownload).tap();
+    await $(#download_all_attachments_button).tap();
     await $.pumpAndSettle();
   }
 

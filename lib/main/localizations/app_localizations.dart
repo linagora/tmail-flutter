@@ -4838,13 +4838,6 @@ class AppLocalizations {
     );
   }
 
-  String get archiveAndDownload {
-    return Intl.message(
-      'Archive and download',
-      name: 'archiveAndDownload',
-    );
-  }
-
   String get creatingAnArchiveForDownloading {
     return Intl.message(
       'Creating an archive for downloading',
