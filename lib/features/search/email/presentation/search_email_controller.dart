@@ -171,7 +171,6 @@ class SearchEmailController extends BaseController
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is SearchEmailSuccess) {
       _searchEmailsSuccess(success);
     } else if (success is SearchingMoreState) {
@@ -180,16 +179,19 @@ class SearchEmailController extends BaseController
       _searchMoreEmailsSuccess(success);
     } else if (success is SearchingState) {
       resultSearchViewState.value = Right(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
     if (failure is SearchEmailFailure) {
       _searchEmailsFailure(failure);
     } else if (failure is SearchMoreEmailFailure) {
       _searchMoreEmailsFailure(failure);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
@@ -630,6 +632,11 @@ class SearchEmailController extends BaseController
     _searchEmailAction(context);
   }
 
+  void selectUnreadSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(unreadOption: const Some(true));
+    _searchEmailAction(context);
+  }
+
   bool checkQuickSearchFilterSelected(QuickSearchFilter filter) {
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
@@ -1017,6 +1024,9 @@ class SearchEmailController extends BaseController
       case QuickSearchFilter.starred:
         _deleteStarredSearchFilter(context);
         break;
+      case QuickSearchFilter.unread:
+        _deleteUnreadSearchFilter(context);
+        break;
       default:
         break;
     }
@@ -1065,6 +1075,11 @@ class SearchEmailController extends BaseController
 
   void _deleteStarredSearchFilter(BuildContext context) {
     _updateSimpleSearchFilter(hasKeywordOption: const None());
+    _searchEmailAction(context);
+  }
+
+  void _deleteUnreadSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(unreadOption: const None());
     _searchEmailAction(context);
   }
 

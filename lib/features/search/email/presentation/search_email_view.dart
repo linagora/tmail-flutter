@@ -271,6 +271,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   SearchEmailViewStyle.searchFilterSizeBoxMargin,
                   _buildSearchFilterButton(context, QuickSearchFilter.starred),
                   SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                  _buildSearchFilterButton(context, QuickSearchFilter.unread),
+                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
                   _buildSearchFilterButton(context, QuickSearchFilter.sortBy),
                 ],
               ),
@@ -381,6 +383,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         break;
       case QuickSearchFilter.starred:
         controller.selectStarredSearchFilter(context);
+        break;
+      case QuickSearchFilter.unread:
+        controller.selectUnreadSearchFilter(context);
         break;
       default:
         break;
