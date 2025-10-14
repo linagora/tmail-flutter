@@ -4,7 +4,7 @@ import 'dart:io' hide HttpClient;
 
 import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -282,7 +282,7 @@ mixin ScenarioUtilsMixin {
     IdentityInteractorsBindings().dispose();
   }
 
-  Future<void> hideKeyboard() async {
-    await SystemChannels.textInput.invokeMethod('TextInput.hide');
+  void hideKeyboard() {
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 }

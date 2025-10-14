@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
+import '../../robots/composer_robot.dart';
 import '../../robots/email_robot.dart';
 import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
@@ -19,6 +21,7 @@ class ReplyToOwnSentEmailScenario extends BaseTestScenario {
     final threadRobot = ThreadRobot($);
     final mailboxMenuRobot = MailboxMenuRobot($);
     final emailRobot = EmailRobot($);
+    final composerRobot = ComposerRobot($);
     final sendEmailScenario = SendEmailScenario($, customSubject: subject);
     final appLocalizations = AppLocalizations();
 
@@ -29,7 +32,18 @@ class ReplyToOwnSentEmailScenario extends BaseTestScenario {
     );
     await threadRobot.openEmailWithSubject(subject);
     await emailRobot.onTapReplyEmail();
+    await _expectComposerViewVisible();
+
+    await composerRobot.grantContactPermission();
+
+    await composerRobot.expandRecipientsFields();
+    await $.pumpAndSettle();
+
     _expectToFieldContainListEmailAddressCorrectly();
+  }
+
+  Future<void> _expectComposerViewVisible() async {
+    await expectViewVisible($(ComposerView));
   }
 
   void _expectToFieldContainListEmailAddressCorrectly()  {

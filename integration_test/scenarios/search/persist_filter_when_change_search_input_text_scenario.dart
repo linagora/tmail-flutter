@@ -14,7 +14,7 @@ class PersistFilterWhenChangeSearchInputTextScenario
   Future<void> runTestLogic() async {
     const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
     const subject = 'Persist search filter';
-    const queryStringFirst = 'Persist';
+    const queryStringFirst = 'Persist search filter';
     const queryStringSecond = 'Persist search';
 
     final threadRobot = ThreadRobot($);

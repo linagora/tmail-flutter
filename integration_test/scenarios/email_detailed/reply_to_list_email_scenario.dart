@@ -44,6 +44,9 @@ class ReplyToListEmailScenario extends BaseTestScenario {
 
     await composerRobot.grantContactPermission();
 
+    await composerRobot.expandRecipientsFields();
+    await $.pumpAndTrySettle();
+
     await _expectComposerSubjectDisplayedCorrectly(appLocalizations);
     await _expectToFieldContainListPostEmailAddress();
   }

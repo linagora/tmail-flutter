@@ -68,6 +68,7 @@ class AttachmentsInfo extends StatelessWidget {
         ),
         if (onTapDownloadAllButton != null)
           TMailButtonWidget(
+            key: const Key('download_all_attachments_button'),
             text: AppLocalizations.of(context).downloadAll,
             icon: !responsiveUtils.isMobile(context)
                 ? imagePaths.icDownloadAttachment

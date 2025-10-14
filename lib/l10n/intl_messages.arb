@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-10-07T12:02:25.245876",
+  "@@last_modified": "2025-10-14T15:18:48.964794",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4588,12 +4588,6 @@
   },
   "enterEmailAddress": "Enter email address",
   "@enterEmailAddress": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "archiveAndDownload": "Archive and download",
-  "@archiveAndDownload": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

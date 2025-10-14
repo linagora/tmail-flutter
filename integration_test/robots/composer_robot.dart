@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_b
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/list_recipients_collapsed_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
@@ -28,6 +29,10 @@ import '../extensions/patrol_finder_extension.dart';
 
 class ComposerRobot extends CoreRobot {
   ComposerRobot(super.$);
+
+  Future<void> expandRecipientsFields() async {
+    await $(RecipientsCollapsedComposerWidget).$(GestureDetector).tap();
+  }
 
   Future<void> addRecipientIntoField({
     required PrefixEmailAddress prefixEmailAddress,
