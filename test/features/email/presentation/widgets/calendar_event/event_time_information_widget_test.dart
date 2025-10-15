@@ -21,21 +21,21 @@ void main() {
   group('EventTimeInformationWidget tests', () {
     Widget makeTestableWidget({
       required String timeEvent,
-      required bool isFree,
+      required bool isFreeBusyEnabled,
     }) {
       return WidgetFixtures.makeTestableWidget(
         child: EventTimeInformationWidget(
           timeEvent: timeEvent,
-          isFree: isFree,
+          isFreeBusyEnabled: isFreeBusyEnabled,
         ),
       );
     }
 
-    testWidgets('should show error icon with tooltip when isFree is false', (tester) async {
+    testWidgets('should show error icon with tooltip when isFreeBusyEnabled is true', (tester) async {
       // arrange
       final widget = makeTestableWidget(
         timeEvent: '10:00 AM - 11:00 AM',
-        isFree: false,
+        isFreeBusyEnabled: true,
       );
 
       // act
@@ -51,11 +51,11 @@ void main() {
       expect(find.byType(Tooltip), findsOneWidget);
     });
 
-    testWidgets('should not show error icon when isFree is true', (tester) async {
+    testWidgets('should not show error icon when isFreeBusyEnabled is false', (tester) async {
       // arrange
       final widget = makeTestableWidget(
         timeEvent: '10:00 AM - 11:00 AM',
-        isFree: true,
+        isFreeBusyEnabled: false,
       );
 
       // act
