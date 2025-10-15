@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/validate_display_free_busy_message_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
@@ -317,7 +318,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 ownEmailAddress: controller.ownEmailAddress,
                 onMailtoAttendeesAction: controller.handleMailToAttendees,
                 openEmailAddressDetailAction: (_, emailAddress) => controller.openEmailAddressDialog(emailAddress),
-                isFree: controller.isCalendarEventFree,
+                isFreeBusyEnabled: controller.isFreeBusyEnabled(emailAddressSender ?? []),
                 listEmailAddressSender: emailAddressSender ?? [],
                 isPortraitMobile: controller
                     .responsiveUtils

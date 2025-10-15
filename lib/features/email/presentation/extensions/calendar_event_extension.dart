@@ -437,6 +437,17 @@ extension CalendarEventExtension on CalendarEvent {
     }
   }
 
+  bool isIMIPResponsesAvailable(List<String> listEmailAddressSender) {
+    final participationStatus = findAttendeeHasUpdatedStatus(
+      listEmailAddressSender,
+    )?.participationStatus?.value;
+
+    return method == EventMethod.reply &&
+        (participationStatus == acceptedParticipationStatus ||
+            participationStatus == tentativeParticipationStatus ||
+            participationStatus == declinedParticipationStatus);
+  }
+
   CalendarEvent copyWith({
     EventId? eventId,
     String? title,

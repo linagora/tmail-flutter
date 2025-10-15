@@ -31,7 +31,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
   final AttendanceStatus? attendanceStatus;
   final OnMailtoAttendeesAction? onMailtoAttendeesAction;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
-  final bool isFree;
+  final bool isFreeBusyEnabled;
   final List<String> listEmailAddressSender;
   final String ownEmailAddress;
   final bool isPortraitMobile;
@@ -41,7 +41,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
     required this.calendarEvent,
     required this.onCalendarEventReplyActionClick,
     required this.calendarEventReplying,
-    required this.isFree,
+    required this.isFreeBusyEnabled,
     required this.ownEmailAddress,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
@@ -233,7 +233,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
         padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
         child: EventTimeInformationWidget(
           timeEvent: dateTimeEvent,
-          isFree: isFree,
+          isFreeBusyEnabled: isFreeBusyEnabled,
         ),
       );
     } else {

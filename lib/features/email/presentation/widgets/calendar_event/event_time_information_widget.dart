@@ -13,12 +13,12 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class EventTimeInformationWidget extends StatelessWidget {
 
   final String timeEvent;
-  final bool isFree;
+  final bool isFreeBusyEnabled;
 
   const EventTimeInformationWidget({
     super.key,
     required this.timeEvent,
-    required this.isFree,
+    required this.isFreeBusyEnabled,
   });
 
   @override
@@ -51,7 +51,7 @@ class EventTimeInformationWidget extends StatelessWidget {
             color: EventTimeInformationWidgetStyles.valueColor
           ),
         )),
-        if (!isFree)
+        if (isFreeBusyEnabled)
           ...[
             const SizedBox(width: EventTimeInformationWidgetStyles.horizontalSpacing),
             Tooltip(
