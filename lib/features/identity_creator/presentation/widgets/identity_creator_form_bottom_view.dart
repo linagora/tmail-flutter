@@ -72,6 +72,7 @@ class IdentityCreatorFormBottomView extends StatelessWidget {
           );
         } else {
           return ConfirmDialogButton(
+            key: const Key('save_identity_button'),
             label: actionType.getPositiveButtonTitle(appLocalizations),
             backgroundColor: AppColor.primaryMain,
             textColor: Colors.white,
