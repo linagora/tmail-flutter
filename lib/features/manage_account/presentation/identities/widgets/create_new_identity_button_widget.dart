@@ -22,6 +22,7 @@ class CreateNewIdentityButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TMailButtonWidget(
+      key: const Key('create_new_identity_button'),
       text: AppLocalizations.of(context).createNewIdentity,
       icon: imagePaths.icAddIdentity,
       backgroundColor: AppColor.primaryMain,

@@ -15,6 +15,10 @@ class SettingRobot extends CoreRobot {
     await $(#setting_preferences).tap();
   }
 
+  Future<void> openProfilesMenuItem() async {
+    await $(#setting_profiles).tap();
+  }
+
   Future<void> switchOnThreadSetting() async {
     final threadSettingOn = $(ValueKey(AppLocalizations().thread))
         .$(#setting_option_switch_on)

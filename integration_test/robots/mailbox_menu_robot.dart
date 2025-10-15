@@ -16,7 +16,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../base/core_robot.dart';
 import '../exceptions/mailbox/null_inbox_unread_count_exception.dart';
-import '../integration_test/exceptions/mailbox/null_quota_exception.dart';
+import '../exceptions/mailbox/null_quota_exception.dart';
 
 class MailboxMenuRobot extends CoreRobot {
   MailboxMenuRobot(super.$);

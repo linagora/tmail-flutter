@@ -50,6 +50,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
         ),
         SettingFirstLevelTileBuilder(
+          key: const Key('setting_profiles'),
           AppLocalizations.of(context).profiles,
           AccountMenuItem.profiles.getIcon(controller.imagePaths),
           subtitle: AppLocalizations.of(context).profilesSettingExplanation,
