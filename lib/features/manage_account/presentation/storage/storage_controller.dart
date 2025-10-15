@@ -59,6 +59,9 @@ class StorageController extends BaseController with SaaSPremiumMixin {
     dashBoardController.paywallController?.navigateToPaywall(context);
   }
 
+  bool get isLoading => viewState.value
+      .fold((failure) => false, (success) => success is GetQuotasLoading);
+
   @override
   void handleSuccessViewState(Success success) {
     if (success is GetQuotasSuccess) {

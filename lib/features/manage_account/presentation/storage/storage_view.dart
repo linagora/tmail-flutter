@@ -2,6 +2,8 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/circle_loading_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -12,7 +14,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setti
 import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 
-class StorageView extends GetWidget<StorageController> {
+class StorageView extends GetWidget<StorageController> with AppLoaderMixin {
   const StorageView({Key? key}) : super(key: key);
 
   @override
@@ -59,6 +61,20 @@ class StorageView extends GetWidget<StorageController> {
                 isCenter: true,
                 textAlign: TextAlign.center,
               ),
+            Obx(() {
+              if (!controller.isLoading) {
+                return const SizedBox.shrink();
+              }
+              return Center(
+                child: Padding(
+                  padding: SettingsUtils.getSettingProgressBarPadding(
+                    context,
+                    controller.responsiveUtils,
+                  ),
+                  child: const CircleLoadingWidget(),
+                ),
+              );
+            }),
             Expanded(
               child: Obx(() {
                 final octetsQuota = controller.octetsQuota.value;
