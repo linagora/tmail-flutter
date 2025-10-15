@@ -1,8 +1,8 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/attachment_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_item_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_header_composer_widget.dart';
@@ -78,7 +78,7 @@ class _AttachmentComposerWidgetState extends State<AttachmentComposerWidget> {
                     .map((file) => AttachmentItemComposerWidget(
                       fileIcon: file.getIcon(_imagePaths),
                       fileName: file.fileName,
-                      fileSize: filesize(file.fileSize),
+                      fileSize: fileSize(file.fileSize),
                       uploadStatus: file.uploadStatus,
                       percentUploading: file.percentUploading,
                       uploadTaskId: file.uploadTaskId,

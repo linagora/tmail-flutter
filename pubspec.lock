@@ -584,14 +584,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.2.0"
-  filesize:
-    dependency: "direct main"
-    description:
-      name: filesize
-      sha256: f53df1f27ff60e466eefcd9df239e02d4722d5e2debee92a87dfd99ac66de2af
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   firebase_core:
     dependency: "direct main"
     description:
@@ -2063,6 +2055,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  super_file_size:
+    dependency: "direct main"
+    description:
+      name: super_file_size
+      sha256: "809e1823f7eae4b869e147a7d3899d6a071ba39ab37af7cb95d2234ba1c58747"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   super_tag_editor:
     dependency: "direct main"
     description:

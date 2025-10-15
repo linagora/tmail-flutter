@@ -1,9 +1,9 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/attachment_header_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/upload/presentation/extensions/list_upload_file_state_extension.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
@@ -70,7 +70,7 @@ class AttachmentHeaderComposerWidget extends StatelessWidget {
               ),
               padding: AttachmentHeaderComposerWidgetStyle.sizeLabelPadding,
               child: Text(
-                filesize(listFileUploaded.totalSize),
+                fileSize(listFileUploaded.totalSize),
                 style: AttachmentHeaderComposerWidgetStyle.sizeLabelTextSize,
               ),
             ),

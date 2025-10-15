@@ -3,7 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/list/sliver_grid_delegate_fixed_height.dart';
-import 'package:filesize/filesize.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/attachment_item_composer_widget_style.dart';
@@ -78,7 +78,7 @@ class _MobileAttachmentComposerWidgetState extends State<MobileAttachmentCompose
                         return AttachmentItemComposerWidget(
                           fileIcon: file.getIcon(_imagePaths),
                           fileName: file.fileName,
-                          fileSize: filesize(file.fileSize),
+                          fileSize: fileSize(file.fileSize),
                           uploadStatus: file.uploadStatus,
                           percentUploading: file.percentUploading,
                           uploadTaskId: file.uploadTaskId,
@@ -141,7 +141,7 @@ class _MobileAttachmentComposerWidgetState extends State<MobileAttachmentCompose
                     return AttachmentItemComposerWidget(
                       fileIcon: file.getIcon(_imagePaths),
                       fileName: file.fileName,
-                      fileSize: filesize(file.fileSize),
+                      fileSize: fileSize(file.fileSize),
                       uploadStatus: file.uploadStatus,
                       percentUploading: file.percentUploading,
                       uploadTaskId: file.uploadTaskId,

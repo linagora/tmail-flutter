@@ -4,7 +4,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/container/tmail_container_widget.dart';
 import 'package:core/presentation/views/text/middle_ellipsis_text.dart';
-import 'package:filesize/filesize.dart';
+import 'package:super_file_size/super_file_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -78,7 +78,7 @@ class AttachmentItemWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsetsDirectional.only(start: 8, end: 3),
             child: Text(
-              filesize(attachment.size?.value),
+              fileSize(attachment.size?.value),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: ThemeUtils.textStyleM3LabelSmall,
