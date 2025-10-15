@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
@@ -136,7 +134,6 @@ class AppPages {
           binding: SearchMailboxBindings()),
         GetPage(
           name: AppRoutes.identityCreator,
-          opaque: Platform.isAndroid ? true : false,
           page: () => DeferredWidget(
             identity_creator.loadLibrary,
             () => identity_creator.IdentityCreatorView()
