@@ -123,6 +123,7 @@ class HtmlUtils {
     String? javaScripts,
     bool hideScrollBar = true,
     bool useDefaultFontStyle = false,
+    double fontSize = 14,
     TextDirection? direction,
     double? contentPadding,
   }) {
@@ -135,7 +136,7 @@ class HtmlUtils {
       <style>
         ${HtmlTemplate.fontFaceStyle}
         
-        ${useDefaultFontStyle ? HtmlTemplate.defaultFontStyle : ''}
+        ${useDefaultFontStyle ? HtmlTemplate.defaultFontStyle(fontSize: fontSize) : ''}
         
         .tmail-content {
           min-height: ${minHeight ?? 0}px;

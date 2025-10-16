@@ -1,5 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,6 +31,7 @@ class ThreadDetailLoadMoreCircle extends StatefulWidget {
 class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle> {
   final _isHover = ValueNotifier(false);
   final threadDetailController = Get.find<ThreadDetailController>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   @override
   void dispose() {
@@ -38,8 +41,10 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
 
   @override
   Widget build(BuildContext context) {
+    final isMobileResponsive = _responsiveUtils.isMobile(context);
+
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical: isMobileResponsive ? 12 : 16),
       color: Colors.white,
       child: Stack(
         alignment: Alignment.centerLeft,
@@ -57,9 +62,11 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
             onTap: widget.onTap,
             onHover: (value) => _isHover.value = value,
             child: Container(
-              margin: const EdgeInsetsDirectional.only(start: 16),
-              width: 56,
-              height: 56,
+              margin: EdgeInsetsDirectional.only(
+                start: isMobileResponsive ? 12 : 16,
+              ),
+              width: isMobileResponsive ? 44 : 32,
+              height: isMobileResponsive ? 44 : 32,
               decoration: BoxDecoration(
                 border: Border.all(
                   color: AppColor.colorDividerEmailView,
@@ -80,10 +87,10 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
                     );
 
                     if (isLoading) {
-                      return const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CupertinoLoadingWidget(),
+                      return SizedBox(
+                        width: isMobileResponsive ? 24 : 16,
+                        height: isMobileResponsive ? 24 : 16,
+                        child: const CupertinoLoadingWidget(),
                       );
                     }
 
@@ -93,15 +100,19 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
 
                     return Text(
                       '${widget.count}',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.normal,
-                        height: 24 / 16,
-                        letterSpacing: -0.1,
+                      style: ThemeUtils.textStyleBodyBody3().copyWith(
+                        color: Colors.black,
+                        fontSize: isMobileResponsive ? 14 : 13,
+                        height: isMobileResponsive ? 18 / 14 : 16 / 13,
                       ),
                     );
                   });
                 },
-                child: SvgPicture.asset(widget.imagePaths.icExpandArrows),
+                child: SvgPicture.asset(
+                  widget.imagePaths.icExpandArrows,
+                  width: isMobileResponsive ? 20 : 16,
+                  height: isMobileResponsive ? 20 : 16,
+                ),
               ),
             ),
           ),

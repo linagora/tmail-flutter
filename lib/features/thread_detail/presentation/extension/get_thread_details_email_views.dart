@@ -67,37 +67,31 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       }
 
       if (isFirstEmailInThreadDetail) {
-        return Padding(
-          padding: const EdgeInsetsDirectional.only(bottom: 16),
-          child: EmailView(
-            key: PlatformInfo.isWeb
-                ? GlobalObjectKey(presentationEmail.id?.id.value ?? '')
-                : null,
-            isInsideThreadDetailView: true,
-            emailId: presentationEmail.id,
-            isFirstEmailInThreadDetail: true,
-            threadSubject: emailIdsPresentation.values.last?.subject,
-            onToggleThreadDetailCollapseExpand: () {
-              toggleThreadDetailCollapseExpand(presentationEmail);
-            },
-            scrollController: scrollController,
-          ),
-        );
-      }
-
-      return Padding(
-        padding: const EdgeInsetsDirectional.only(bottom: 16),
-        child: EmailView(
+        return EmailView(
           key: PlatformInfo.isWeb
               ? GlobalObjectKey(presentationEmail.id?.id.value ?? '')
               : null,
           isInsideThreadDetailView: true,
           emailId: presentationEmail.id,
+          isFirstEmailInThreadDetail: true,
+          threadSubject: emailIdsPresentation.values.last?.subject,
           onToggleThreadDetailCollapseExpand: () {
             toggleThreadDetailCollapseExpand(presentationEmail);
           },
           scrollController: scrollController,
-        ),
+        );
+      }
+
+      return EmailView(
+        key: PlatformInfo.isWeb
+            ? GlobalObjectKey(presentationEmail.id?.id.value ?? '')
+            : null,
+        isInsideThreadDetailView: true,
+        emailId: presentationEmail.id,
+        onToggleThreadDetailCollapseExpand: () {
+          toggleThreadDetailCollapseExpand(presentationEmail);
+        },
+        scrollController: scrollController,
       );
     }).toList();
   }

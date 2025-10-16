@@ -25,10 +25,19 @@ class EmailViewAppBarWidgetStyles {
     if (responsiveUtils.isLandscapeMobile(context)) {
       return EdgeInsets.zero;
     } else if (responsiveUtils.isPortraitTablet(context) || responsiveUtils.isLandscapeTablet(context)) {
-      return const EdgeInsetsDirectional.only(top: 40, start: 16, end: 16, bottom: 4);
+      return const EdgeInsetsDirectional.only(
+        top: 40,
+        start: 12,
+        end: 12,
+        bottom: 4,
+      );
     } else {
-      return const EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 4);
+      return const EdgeInsetsDirectional.only(start: 12, end: 12, bottom: 4);
     }
   }
-  static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.symmetric(horizontal: 16);
+
+  static const EdgeInsetsGeometry mobilePadding =
+      EdgeInsetsDirectional.only(start: 8, end: 12);
+  static const EdgeInsetsGeometry padding =
+      EdgeInsetsDirectional.symmetric(horizontal: 16);
 }
