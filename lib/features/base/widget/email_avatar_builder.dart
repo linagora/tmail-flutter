@@ -11,12 +11,16 @@ class EmailAvatarBuilder extends StatelessWidget {
   final PresentationEmail emailSelected;
   final OnTapAvatarActionClick? onTapAvatarActionClick;
   final double? size;
+  final TextStyle? textStyle;
+  final EdgeInsetsGeometry? padding;
 
   const EmailAvatarBuilder({
     Key? key,
     required this.emailSelected,
     this.onTapAvatarActionClick,
     this.size,
+    this.textStyle,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -24,8 +28,9 @@ class EmailAvatarBuilder extends StatelessWidget {
     return (AvatarBuilder()
       ..text(emailSelected.getAvatarText())
       ..size(size ?? 50)
-      ..addTextStyle(ThemeUtils.textStyleHeadingH4(color: Colors.white))
+      ..addTextStyle(textStyle ?? ThemeUtils.textStyleHeadingH4(color: Colors.white))
       ..backgroundColor(AppColor.colorAvatar)
+      ..addPadding(padding)
       ..addOnTapActionClick(onTapAvatarActionClick ?? () {})
       ..avatarColor(emailSelected.avatarColors))
     .build();

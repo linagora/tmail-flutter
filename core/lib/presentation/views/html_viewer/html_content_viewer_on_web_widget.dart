@@ -23,6 +23,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final TextDirection? direction;
   final double? contentPadding;
   final bool useDefaultFontStyle;
+  final double fontSize;
 
   /// Handler for mailto: links
   final OnMailtoClicked? mailtoDelegate;
@@ -60,6 +61,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.keepAlive = false,
     this.disableScrolling = false,
     this.autoAdjustHeight = false,
+    this.fontSize = 14,
     this.htmlContentMinHeight = ConstantsUI.htmlContentMinHeight,
     this.htmlContentMinWidth = ConstantsUI.htmlContentMinWidth,
     this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
@@ -406,6 +408,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       direction: widget.direction,
       contentPadding: widget.contentPadding,
       useDefaultFontStyle: widget.useDefaultFontStyle,
+      fontSize: widget.fontSize,
     );
 
     return htmlTemplate;

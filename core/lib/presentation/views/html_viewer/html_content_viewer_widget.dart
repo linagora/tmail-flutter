@@ -30,6 +30,7 @@ class HtmlContentViewer extends StatefulWidget {
   final bool keepWidthWhileLoading;
   final double? contentPadding;
   final bool useDefaultFontStyle;
+  final double fontSize;
   final double? maxHtmlContentHeight;
   final double htmlContentMinHeight;
   final double offsetHtmlContentHeight;
@@ -58,6 +59,7 @@ class HtmlContentViewer extends StatefulWidget {
     this.contentPadding,
     this.useDefaultFontStyle = false,
     this.disableScrolling = false,
+    this.fontSize = 16,
     this.maxViewHeight,
     this.maxHtmlContentHeight,
     this.onLoadWidthHtmlViewer,
@@ -151,6 +153,7 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
       styleCSS: combinedCss,
       contentPadding: widget.contentPadding,
       useDefaultFontStyle: widget.useDefaultFontStyle,
+      fontSize: widget.fontSize,
     );
   }
 

@@ -18,6 +18,7 @@ class AvatarBuilder {
   List<Color>? _avatarColors;
   List<BoxShadow>? _boxShadows;
   TextStyle? _textStyle;
+  EdgeInsetsGeometry? _padding;
 
   void key(Key key) {
     _key = key;
@@ -55,6 +56,10 @@ class AvatarBuilder {
     _textStyle = textStyle;
   }
 
+  void addPadding(EdgeInsetsGeometry? padding) {
+    _padding = padding;
+  }
+
   void addOnTapActionClick(OnTapAvatarActionClick onTapAvatarActionClick) {
     _onTapAvatarActionClick = onTapAvatarActionClick;
   }
@@ -64,7 +69,7 @@ class AvatarBuilder {
   }
 
   Widget build() {
-    return InkWell(
+    final bodyWidget = InkWell(
       onTap: _onTapAvatarActionClick,
       onTapDown: (detail) {
         if (_onTapAvatarActionWithPositionClick != null && _context != null) {
@@ -102,5 +107,11 @@ class AvatarBuilder {
           )
       ),
     );
+
+    if (_padding != null) {
+      return Padding(padding: _padding!, child: bodyWidget);
+    } else {
+      return bodyWidget;
+    }
   }
 }

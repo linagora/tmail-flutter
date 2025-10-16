@@ -54,6 +54,7 @@ class _IosHtmlContentViewerWidgetState extends State<IosHtmlContentViewerWidget>
       direction: widget.direction,
       javaScripts: HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
       useDefaultFontStyle: widget.useDefaultFontStyle,
+      fontSize: 16,
     ));
   }
 

@@ -93,7 +93,6 @@ extension AppColor on Color {
   static const colorDividerEmailView = Color(0xFFD7D8D9);
   static const colorButton = Color(0xFF959DAD);
   static const colorTime = Color(0xFF92A1B4);
-  static const colorEmailAddressPrefix = Color(0xFF9AA7B6);
   static const colorEmailAddressTag = Color(0xFFF4F4F4);
   static const colorLineLeftEmailView = Color(0x2999A2AD);
   static const colorShadowComposer = Color(0x1F000000);
@@ -258,6 +257,7 @@ extension AppColor on Color {
   static const gray424244 = Color(0xFF424244);
   static const lightGrayF4F4F4 = Color(0xFFF4F4F4);
   static const gray959DAD = Color(0xFF959DAD);
+  static const gray9AA7B6 = Color(0xFF9AA7B6);
   static const redFF3347 = Color(0xFFFF3347);
   static const gray686E76 = Color(0xFF686E76);
   static const lightGrayEBEDF0 = Color(0xFFEBEDF0);

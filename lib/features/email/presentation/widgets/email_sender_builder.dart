@@ -15,12 +15,14 @@ class EmailSenderBuilder extends StatelessWidget {
   final EmailAddress emailAddress;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
   final bool showSenderEmail;
+  final bool isMobileResponsive;
 
   const EmailSenderBuilder({
     super.key,
     required this.emailAddress,
     this.openEmailAddressDetailAction,
     this.showSenderEmail = true,
+    this.isMobileResponsive = false,
   });
 
   @override
@@ -43,10 +45,12 @@ class EmailSenderBuilder extends StatelessWidget {
                 },
                 borderRadius: 8,
                 padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                customStyle: ThemeUtils.textStyleHeadingH6(
+                customStyle: ThemeUtils.textStyleInter500().copyWith(
                   color: Colors.black,
-                  fontWeight: FontWeight.w500,
-                ).copyWith(height: 1, letterSpacing: -0.2),
+                  fontSize: isMobileResponsive ? 20 : 15,
+                  height: isMobileResponsive ? 1 : 20 / 15,
+                  letterSpacing: isMobileResponsive ? -0.2 : 0.0,
+                ),
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 softWrap: CommonTextStyle.defaultSoftWrap
               ),
@@ -59,12 +63,11 @@ class EmailSenderBuilder extends StatelessWidget {
                 },
                 borderRadius: 8,
                 padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                customStyle: ThemeUtils.textStyleBodyBody1(
+                customStyle: ThemeUtils.textStyleInter500().copyWith(
                   color: AppColor.gray6D7885,
-                ).copyWith(
-                  fontSize: 17,
+                  fontSize: 14,
                   height: 1,
-                  letterSpacing: -0.17,
+                  letterSpacing: -0.14,
                 ),
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 softWrap: CommonTextStyle.defaultSoftWrap

@@ -103,12 +103,11 @@ class HtmlTemplate {
     }
   ''';
 
-  static const String defaultFontStyle = '''
-    div, p, span, th, td, tr, ul, ol, li, a, button {
+  static String defaultFontStyle({double fontSize = 14}) => '''
+    body {
       font-weight: 400;
-      font-size: 16px;
-      line-height: 24px;
-      letter-spacing: -0.01em; /* -1% */
+      font-size: ${fontSize}px;
+      font-style: normal;
     }
     
     p {
