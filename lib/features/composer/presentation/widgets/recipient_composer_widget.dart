@@ -134,6 +134,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   void initState() {
     super.initState();
     _currentListEmailAddress = widget.listEmailAddress;
+    if (PlatformInfo.isWeb) {
+      widget.focusNodeKeyboard?.addListener(_onFocusKeyboardListener);
+    }
   }
 
   @override
@@ -141,6 +144,20 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.listEmailAddress != widget.listEmailAddress) {
       _currentListEmailAddress = widget.listEmailAddress;
+    }
+  }
+
+  @override
+  void dispose() {
+    if (PlatformInfo.isWeb) {
+      widget.focusNodeKeyboard?.removeListener(_onFocusKeyboardListener);
+    }
+    super.dispose();
+  }
+
+  void _onFocusKeyboardListener() {
+    if (widget.focusNodeKeyboard?.hasFocus != true && mounted) {
+      setState(() => _tagIndexFocused = -1);
     }
   }
 
@@ -406,7 +423,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   }
 
   KeyEventResult _recipientInputOnKeyListener(FocusNode node, KeyEvent event) {
-    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+    if (widget.focusNode?.hasFocus == true &&
+        event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.tab) {
       widget.nextFocusNode?.requestFocus();
       widget.onFocusNextAddressAction?.call();
       return KeyEventResult.handled;
