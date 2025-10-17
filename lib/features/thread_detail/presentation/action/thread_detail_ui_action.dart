@@ -25,6 +25,8 @@ class UpdatedEmailKeywordsAction extends ThreadDetailUIAction {
 
 class UpdatedThreadDetailSettingAction extends ThreadDetailUIAction {}
 
+class ResyncThreadDetailWhenSettingChangedAction extends ThreadDetailUIAction {}
+
 class EmailMovedAction extends ThreadDetailUIAction {
   EmailMovedAction({
     required this.emailId,

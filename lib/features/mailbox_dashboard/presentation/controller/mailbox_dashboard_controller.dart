@@ -3273,6 +3273,9 @@ class MailboxDashBoardController extends ReloadableController
 
   jmap.State? get currentEmailState => _currentEmailState;
 
+  bool get isThreadDetailedViewVisible =>
+      dashboardRoute.value == DashboardRoutes.threadDetailed;
+
   void _loadAppGrid() {
     if (PlatformInfo.isWeb && AppConfig.appGridDashboardAvailable) {
       appGridDashboardController.loadAppDashboardConfiguration();
