@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-10-14T15:18:48.964794",
+  "@@last_modified": "2025-10-17T09:52:08.303266",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4925,5 +4925,17 @@
     "placeholders": {
       "count": {}
     }
+  },
+  "mailHasBeenStarred": "Mail has been starred",
+  "@mailHasBeenStarred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailHasBeenUnstarred": "Mail has been unstarred",
+  "@mailHasBeenUnstarred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

@@ -12,11 +12,13 @@ import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.da
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/mark_star_action.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_email_by_blob_id_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/preview_email_from_eml_file_state.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -244,6 +246,10 @@ class ToastManager {
       } else {
         message = appLocalizations.you_are_changed_your_identity_successfully;
       }
+    } else if (success is MarkAsStarEmailSuccess) {
+      message = success.markStarAction == MarkStarAction.markStar
+          ? appLocalizations.mailHasBeenStarred
+          : appLocalizations.mailHasBeenUnstarred;
     }
     log('ToastManager::showMessageSuccess: Message: $message');
     if (message?.trim().isNotEmpty == true) {

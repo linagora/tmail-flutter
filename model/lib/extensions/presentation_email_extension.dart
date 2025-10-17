@@ -202,4 +202,9 @@ extension PresentationEmailExtension on PresentationEmail {
 
   MailboxId? get firstMailboxIdAvailable =>
       mailboxIds?.entries.firstWhereOrNull((element) => element.value)?.key;
+
+  void resyncKeywords(Map<KeyWordIdentifier, bool> newKeywords) {
+    keywords?.addAll(newKeywords);
+    keywords?.removeWhere((key, value) => !value);
+  }
 }
