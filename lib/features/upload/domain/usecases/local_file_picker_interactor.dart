@@ -1,6 +1,9 @@
 
+import 'dart:io';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:file_picker/file_picker.dart';
@@ -14,6 +17,7 @@ class LocalFilePickerInteractor {
 
   Stream<Either<Failure, Success>> execute({FileType fileType = FileType.any}) async* {
     try {
+      log('$runtimeType::execute:Memory info: ${(ProcessInfo.currentRss / (1024 * 1024)).toStringAsFixed(2)} MB');
       yield Right<Failure, Success>(LocalFilePickerLoading());
 
       final filesResult = await FilePicker.platform.pickFiles(
