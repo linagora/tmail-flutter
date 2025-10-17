@@ -172,7 +172,6 @@ class ThreadDetailController extends BaseController {
     ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {
       onSelectedEmailUpdated(
         presentationEmail,
-        _getEmailIdsByThreadIdInteractor,
         currentContext,
       );
     });
@@ -197,6 +196,8 @@ class ThreadDetailController extends BaseController {
           threadId: action.threadId,
           isSentMailbox: action.isSentMailbox,
         );
+      } else if (action is ResyncThreadDetailWhenSettingChangedAction) {
+        resyncThreadDetailWhenSettingChanged();
       }
       // Reset [threadDetailUIAction] to original value
       mailboxDashBoardController.dispatchThreadDetailUIAction(
