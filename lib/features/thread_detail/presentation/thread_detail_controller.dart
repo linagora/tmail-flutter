@@ -177,7 +177,6 @@ class ThreadDetailController extends BaseController {
     ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {
       onSelectedEmailUpdated(
         presentationEmail,
-        _getEmailIdsByThreadIdInteractor,
         currentContext,
       );
     });
@@ -206,6 +205,8 @@ class ThreadDetailController extends BaseController {
         refocusMailShortcutFocus();
       } else if (action is ClearMailViewKeyboardShortcutFocusAction) {
         clearMailShortcutFocus();
+      } else if (action is ResyncThreadDetailWhenSettingChangedAction) {
+        resyncThreadDetailWhenSettingChanged();
       }
       // Reset [threadDetailUIAction] to original value
       mailboxDashBoardController.dispatchThreadDetailUIAction(

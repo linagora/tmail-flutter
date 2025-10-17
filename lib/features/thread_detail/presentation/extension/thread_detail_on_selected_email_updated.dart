@@ -8,7 +8,6 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
-import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -16,7 +15,6 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
   void onSelectedEmailUpdated(
     PresentationEmail? selectedEmail,
-    GetThreadByIdInteractor getThreadByIdInteractor,
     BuildContext? context,
   ) {
     if (selectedEmail?.id == null) {
@@ -75,5 +73,20 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
       )),
       Right(PreloadEmailsByIdsSuccess([selectedEmail])),
     ]));
+  }
+
+  void resyncThreadDetailWhenSettingChanged() {
+    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+    if (selectedEmail == null) return;
+
+    emailIdsPresentation.clear();
+    scrollController ??= ScrollController();
+
+    mailboxDashBoardController.dispatchEmailUIAction(
+      DisposePreviousExpandedEmailAction(selectedEmail.id!),
+    );
+
+    loadThreadOnThreadChanged = isThreadDetailEnabled;
+    _preloadSelectedEmail(selectedEmail);
   }
 }
