@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
@@ -24,6 +25,7 @@ typedef OnOpenComposerAction = void Function(String emailAddress);
 class CalendarEventInformationWidget extends StatelessWidget {
 
   final CalendarEvent calendarEvent;
+  final ImagePaths imagePaths;
   final OnOpenNewTabAction? onOpenNewTabAction;
   final OnOpenComposerAction? onOpenComposerAction;
   final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
@@ -39,6 +41,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
   const CalendarEventInformationWidget({
     super.key,
     required this.calendarEvent,
+    required this.imagePaths,
     required this.onCalendarEventReplyActionClick,
     required this.calendarEventReplying,
     required this.isFreeBusyEnabled,
@@ -96,7 +99,11 @@ class CalendarEventInformationWidget extends StatelessWidget {
                   ),
                   children: [
                     TextSpan(
-                      text: calendarEvent.organizerName,
+                      text: calendarEvent.getUserNameEventAction(
+                        context: context,
+                        imagePaths: imagePaths,
+                        listEmailAddressSender: listEmailAddressSender,
+                      ),
                       style: ThemeUtils.defaultTextStyleInterFont.copyWith(
                         color: CalendarEventInformationWidgetStyles
                             .invitationMessageColor,
