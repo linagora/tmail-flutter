@@ -1,3 +1,4 @@
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
@@ -12,6 +13,8 @@ import '../../../../../fixtures/widget_fixtures.dart';
 
 void main() {
   group('CalendarEventInformationWidget::', () {
+    final imagePaths = ImagePaths();
+
     testWidgets(
       'Should show warning message\n'
       'when user is not in the participants\n'
@@ -36,6 +39,7 @@ void main() {
           child: Scaffold(
             body: CalendarEventInformationWidget(
               calendarEvent: calendarEvent,
+              imagePaths: imagePaths,
               onCalendarEventReplyActionClick: (_) {},
               calendarEventReplying: false,
               isFreeBusyEnabled: false,
@@ -79,6 +83,7 @@ void main() {
           child: Scaffold(
             body: CalendarEventInformationWidget(
               calendarEvent: calendarEvent,
+              imagePaths: imagePaths,
               onCalendarEventReplyActionClick: (_) {},
               calendarEventReplying: false,
               isFreeBusyEnabled: false,
@@ -119,6 +124,7 @@ void main() {
           child: Scaffold(
             body: CalendarEventInformationWidget(
               calendarEvent: calendarEvent,
+              imagePaths: imagePaths,
               onCalendarEventReplyActionClick: (_) {},
               calendarEventReplying: false,
               isFreeBusyEnabled: false,
