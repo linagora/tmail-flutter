@@ -12,7 +12,6 @@ class EmailSubjectStyles {
     overflow: PlatformInfo.isWeb ? TextOverflow.ellipsis : null,
     color: Colors.black,
     fontSize: 24,
-    height: 1,
     letterSpacing: -0.24,
   );
 }
