@@ -1,3 +1,17 @@
+## [0.20.0] - 2025-10-17
+### Fixed
+- #4045 Display storage only when storage exceeds 80% of total storage
+- #4049 Pre-fill OIDC login form
+- #4058 Support 16kb page size for Android
+- #4066 Simplify filters
+- #4068 Change profile doesn’t work
+- #4069 Automatically reply should be deactivated after end date
+- #4084 Cannot read or scroll emails when opening them in Twake Mail on Android chrome mobile browser
+- #4093 Make interface more compact
+- #4102 Don't display free-busy on IMIP responses (accepted, tentative, rejected)
+- White overlay hides bottom action in create identity view
+- Email content disappears after marking as `star/unstar` when thread is disabled
+
 ## [0.19.6] - 2025-10-12
 ### Fixed
 - Remove Reply-to in one-line field
