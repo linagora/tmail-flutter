@@ -11,7 +11,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
-import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_selected_email_updated.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
@@ -21,17 +20,14 @@ import 'thread_detail_on_selected_email_updated_test.mocks.dart';
 
 @GenerateNiceMocks([
   MockSpec<ThreadDetailController>(),
-  MockSpec<GetThreadByIdInteractor>(),
   MockSpec<MailboxDashBoardController>(),
 ])
 void main() {
   late MockThreadDetailController threadDetailController;
-  late MockGetThreadByIdInteractor getThreadByIdInteractor;
   late MockMailboxDashBoardController mailboxDashboardController;
 
   setUp(() {
     threadDetailController = MockThreadDetailController();
-    getThreadByIdInteractor = MockGetThreadByIdInteractor();
     mailboxDashboardController = MockMailboxDashBoardController();
     when(threadDetailController.session)
       .thenReturn(SessionFixtures.aliceSession);
@@ -51,7 +47,6 @@ void main() {
       // act
       threadDetailController.onSelectedEmailUpdated(
         null,
-        getThreadByIdInteractor,
         null,
       );
       
@@ -76,7 +71,6 @@ void main() {
       // act
       threadDetailController.onSelectedEmailUpdated(
         selectedEmail,
-        getThreadByIdInteractor,
         null,
       );
       
