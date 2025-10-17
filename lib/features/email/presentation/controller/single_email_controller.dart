@@ -228,6 +228,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   GlobalObjectKey? get htmlViewKey => _threadDetailController?.expandedEmailHtmlViewKey;
 
+  bool get isThreadDetailEnabled =>
+      _threadDetailController?.isThreadDetailEnabled == true;
+
   SingleEmailController(
     this._getEmailContentInteractor,
     this._markAsEmailReadInteractor,
@@ -1343,32 +1346,28 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void markAsStarEmail(
-    PresentationEmail presentationEmail,
-    MarkStarAction markStarAction,
-  ) {
-    if (accountId != null && session != null) {
-      consumeState(_markAsStarEmailInteractor.execute(
-        session!,
-        accountId!,
-        presentationEmail.id!,
-        markStarAction,
-      ));
-    }
-  }
-
   void _markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
-    final newEmail = currentEmail?.updateKeywords({
-      KeyWordIdentifier.emailFlagged: success.markStarAction == MarkStarAction.markStar,
-    });
+    final newKeywords = {
+      KeyWordIdentifier.emailFlagged:
+        success.markStarAction == MarkStarAction.markStar,
+    };
 
+    final newEmail = currentEmail?.updateKeywords(newKeywords);
     final emailId = newEmail?.id;
     if (emailId == null) return;
-    _threadDetailController?.emailIdsPresentation[emailId] = newEmail;
+
+    if (PlatformInfo.isMobile && !isThreadDetailEnabled) {
+      mailboxDashBoardController.selectedEmail.value?.resyncKeywords(newKeywords);
+    } else {
+      _threadDetailController?.emailIdsPresentation[emailId] = newEmail;
+    }
+
     mailboxDashBoardController.updateEmailFlagByEmailIds(
       [emailId],
       markStarAction: success.markStarAction,
     );
+
+    toastManager.showMessageSuccess(success);
   }
 
   void handleEmailAction(BuildContext context, PresentationEmail presentationEmail, EmailActionType actionType) {

@@ -5198,4 +5198,18 @@ class AppLocalizations {
       args: [count],
     );
   }
+
+  String get mailHasBeenStarred {
+    return Intl.message(
+      'Mail has been starred',
+      name: 'mailHasBeenStarred',
+    );
+  }
+
+  String get mailHasBeenUnstarred {
+    return Intl.message(
+      'Mail has been unstarred',
+      name: 'mailHasBeenUnstarred',
+    );
+  }
 }
