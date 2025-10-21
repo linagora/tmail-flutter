@@ -105,7 +105,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email": "电子邮件",
+  "email": "电子邮件地址",
   "@email": {
     "type": "text",
     "placeholders_order": [],
@@ -167,13 +167,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredEmail": "请填写电子邮件",
+  "requiredEmail": "请填写电子邮件地址",
   "@requiredEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_mail_selected": "未选择电子邮件",
+  "no_mail_selected": "未选择电子邮件地址",
   "@no_mail_selected": {
     "type": "text",
     "placeholders_order": [],
@@ -3189,7 +3189,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageAddRecipientsSuccessfully": "从收件人列表中添加了此电子邮件。",
+  "toastMessageAddRecipientsSuccessfully": "电子邮件地址已从收件人列表中添加。",
   "@toastMessageAddRecipientsSuccessfully": {
     "type": "text",
     "placeholders_order": [],
@@ -3247,7 +3247,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "很抱歉，当前文件夹中没有电子邮件",
+  "noEmailInYourCurrentFolder": "当前文件夹中没有电子邮件",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
@@ -3265,7 +3265,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSearchInputContact": "输入名称或电子邮件",
+  "hintSearchInputContact": "输入名称或电子邮件地址",
   "@hintSearchInputContact": {
     "type": "text",
     "placeholders_order": [],
@@ -4973,6 +4973,82 @@
   },
   "spamReportToggleDescription": "启用垃圾邮件报告",
   "@spamReportToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showMoreAttachmentButton": "显示另外 {count} 个",
+  "@showMoreAttachmentButton": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "hideAttachmentButton": "隐藏 {count} 个",
+  "@hideAttachmentButton": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "defaultIdentitySetupSuccessful": "默认身份设置成功",
+  "@defaultIdentitySetupSuccessful": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageSettingExplanation": "请留意您的可用空间。",
+  "@storageSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageIsAlmostFullMessage": "存储空间即将用尽。您可以通过删除非必要文件来释放空间，或者订阅以获得额外空间。",
+  "@storageIsAlmostFullMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "upgradeStorage": "升级存储空间",
+  "@upgradeStorage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageUsedMessage": "已使用 {limit}",
+  "@storageUsedMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "limit"
+    ],
+    "placeholders": {
+      "limit": {}
+    }
+  },
+  "storageAvailableMessage": "可用：{count}",
+  "@storageAvailableMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "mailHasBeenStarred": "邮件已加注星标",
+  "@mailHasBeenStarred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailHasBeenUnstarred": "邮件已移除星标‌",
+  "@mailHasBeenUnstarred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
