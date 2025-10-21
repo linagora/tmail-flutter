@@ -2688,7 +2688,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "We're sorry, there are no emails in your current folder",
+  "noEmailInYourCurrentFolder": "There are no emails in your current folder",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
