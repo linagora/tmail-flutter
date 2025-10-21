@@ -5223,5 +5223,81 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "showMoreAttachmentButton": "Показать еще {count}",
+  "@showMoreAttachmentButton": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "hideAttachmentButton": "Скрыть {count}",
+  "@hideAttachmentButton": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "defaultIdentitySetupSuccessful": "Настройка профиля по умолчанию прошла успешно",
+  "@defaultIdentitySetupSuccessful": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageSettingExplanation": "Контролируйте доступное пространство.",
+  "@storageSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageIsAlmostFullMessage": "Хранилище почти заполнено. Вы можете удалить ненужные файлы или получить дополнительное место, оформив подписку.",
+  "@storageIsAlmostFullMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "upgradeStorage": "Увеличить пространство",
+  "@upgradeStorage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageUsedMessage": "из {limit}",
+  "@storageUsedMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "limit"
+    ],
+    "placeholders": {
+      "limit": {}
+    }
+  },
+  "storageAvailableMessage": "Доступно: {count}",
+  "@storageAvailableMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "mailHasBeenStarred": "Отмечено как избранное",
+  "@mailHasBeenStarred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailHasBeenUnstarred": "Удалено из избранного",
+  "@mailHasBeenUnstarred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
