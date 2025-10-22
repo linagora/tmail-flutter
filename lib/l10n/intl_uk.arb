@@ -2723,7 +2723,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "На жаль, немає електронних листів, які відповідають вашому поточному фільтру.",
+  "noEmailMatchYourCurrentFilter": "Немає електронних листів, що відповідають вашому поточному фільтру.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
