@@ -3408,7 +3408,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "К сожалению, в текущей папке нет писем",
+  "noEmailInYourCurrentFolder": "В этой папке еще нет писем",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
