@@ -2620,7 +2620,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "К сожалению, мы не нашли писем, соответствующих текущему фильтру.",
+  "noEmailMatchYourCurrentFilter": "Мы не нашли писем, соответствующих текущему фильтру.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
