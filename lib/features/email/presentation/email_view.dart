@@ -304,6 +304,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             children: [
               Obx(() => CalendarEventInformationWidget(
                 calendarEvent: calendarEvent,
+                imagePaths: controller.imagePaths,
                 onOpenComposerAction: controller.openNewComposerAction,
                 onOpenNewTabAction: controller.openNewTabAction,
                 onCalendarEventReplyActionClick: (eventActionType) =>
