@@ -2694,7 +2694,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "We're sorry, there are no emails that match your current filter.",
+  "noEmailMatchYourCurrentFilter": "There are no emails that match your current filter.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
