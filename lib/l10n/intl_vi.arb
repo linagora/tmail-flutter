@@ -3408,7 +3408,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "Xin lỗi, không có thư nào ở thư mục hiện tại",
+  "noEmailInYourCurrentFolder": "Không có thư nào ở thư mục hiện tại",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
@@ -5208,6 +5208,82 @@
   },
   "spamReportToggleDescription": "Bật báo cáo thư rác",
   "@spamReportToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showMoreAttachmentButton": "Hiển thị +{count}",
+  "@showMoreAttachmentButton": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "hideAttachmentButton": "Ẩn {count}",
+  "@hideAttachmentButton": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "defaultIdentitySetupSuccessful": "Đã chọn định danh mặc định",
+  "@defaultIdentitySetupSuccessful": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageSettingExplanation": "Kiểm tra dung lượng khả dụng.",
+  "@storageSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageIsAlmostFullMessage": "Dung lượng lưu trữ sắp đầy. Bạn có thể xóa bớt tệp không cần thiết hoặc đăng ký gói mở rộng để có thêm dung lượng.",
+  "@storageIsAlmostFullMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "upgradeStorage": "Nâng cấp dung lượng",
+  "@upgradeStorage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageUsedMessage": "đã dùng {limit}",
+  "@storageUsedMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "limit"
+    ],
+    "placeholders": {
+      "limit": {}
+    }
+  },
+  "storageAvailableMessage": "Khả dụng: {count}",
+  "@storageAvailableMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "mailHasBeenStarred": "Thư đã được đánh dấu quan trọng",
+  "@mailHasBeenStarred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailHasBeenUnstarred": "Thư đã được gỡ quan trọng",
+  "@mailHasBeenUnstarred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
