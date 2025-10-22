@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_co
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/local_file_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 
@@ -49,6 +50,7 @@ class ComposerView extends GetWidget<ComposerController> {
     final iframeOverlay = Obx(() {
       bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
           MessageDialogActionManager().isDialogOpened ||
+          EmailActionReactor.isDialogOpened ||
           ColorDialogPicker().isOpened.isTrue ||
           DialogRouter.isRuleFilterDialogOpened.isTrue ||
           DialogRouter.isDialogOpened;
