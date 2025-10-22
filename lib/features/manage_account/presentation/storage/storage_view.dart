@@ -3,7 +3,6 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/widget/circle_loading_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -61,23 +60,13 @@ class StorageView extends GetWidget<StorageController> with AppLoaderMixin {
                 isCenter: true,
                 textAlign: TextAlign.center,
               ),
-            Obx(() {
-              if (!controller.isLoading) {
-                return const SizedBox.shrink();
-              }
-              return Center(
-                child: Padding(
-                  padding: SettingsUtils.getSettingProgressBarPadding(
-                    context,
-                    controller.responsiveUtils,
-                  ),
-                  child: const CircleLoadingWidget(),
-                ),
-              );
-            }),
             Expanded(
               child: Obx(() {
-                final octetsQuota = controller.octetsQuota.value;
+                final octetsQuota = controller
+                    .dashBoardController
+                    .octetsQuota
+                    .value;
+
                 if (octetsQuota != null && octetsQuota.storageAvailable) {
                   return SingleChildScrollView(
                     child: Padding(

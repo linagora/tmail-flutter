@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
+import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
@@ -29,6 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/b
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_storage_menu_visible_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
@@ -41,6 +43,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/preferences/b
 import 'package:tmail_ui_user/features/manage_account/presentation/storage/storage_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
 import 'package:tmail_ui_user/features/paywall/presentation/paywall_controller.dart';
+import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart';
+import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -55,14 +59,17 @@ class ManageAccountDashBoardController extends ReloadableController
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
   PaywallController? paywallController;
+  GetQuotasInteractor? getQuotasInteractor;
 
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
   final settingsPageLevel = SettingsPageLevel.universal.obs;
   final vacationResponse = Rxn<VacationResponse>();
   final dashboardSettingAction = Rxn<UIAction>();
+  final octetsQuota = Rxn<Quota>();
 
   Uri? previousUri;
+  AccountMenuItem? selectedMenu;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
 
   @override
@@ -89,6 +96,8 @@ class ManageAccountDashBoardController extends ReloadableController
       _handleUpdateVacationSuccess(success);
     } else if (success is ExportTraceLogSuccess) {
       handleExportTraceLogSuccess(success);
+    } else if (success is GetQuotasSuccess) {
+      handleGetQuotasSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -100,6 +109,8 @@ class ManageAccountDashBoardController extends ReloadableController
       handleExportTraceLogFailure(failure);
     } else if (failure is UpdateVacationFailure) {
       setUpVacation(null);
+    } else if (failure is GetQuotasFailure) {
+      handleGetQuotasFailure();
     } else {
       super.handleFailureViewState(failure);
     }
@@ -108,7 +119,7 @@ class ManageAccountDashBoardController extends ReloadableController
   @override
   void handleReloaded(Session session) {
     log('ManageAccountDashBoardController::handleReloaded:');
-    _setUpComponentsFromSession(session);
+    _setUpComponentsFromSession(session: session);
     _getParametersRouter();
   }
 
@@ -116,16 +127,24 @@ class ManageAccountDashBoardController extends ReloadableController
     final arguments = Get.arguments;
     if (arguments is ManageAccountArguments) {
       previousUri = arguments.previousUri;
-      _setUpComponentsFromSession(arguments.session);
-      if (arguments.menuSettingCurrent != null) {
-        selectAccountMenuItem(arguments.menuSettingCurrent!);
+      _setUpComponentsFromSession(
+        session: arguments.session,
+        quota: arguments.quota,
+      );
+      selectedMenu = arguments.menuSettingCurrent;
+      if (selectedMenu != null && selectedMenu != AccountMenuItem.storage) {
+        selectAccountMenuItem(selectedMenu!);
       }
     } else if (PlatformInfo.isWeb) {
+      selectedMenu = null;
       reload();
     }
   }
 
-  void _setUpComponentsFromSession(Session? session) {
+  void _setUpComponentsFromSession({
+    Session? session,
+    Quota? quota,
+  }) {
     sessionCurrent = session;
     accountId.value = session?.accountId;
     synchronizeOwnEmailAddress(session?.getOwnEmailAddressOrEmpty() ?? '');
@@ -136,6 +155,12 @@ class ManageAccountDashBoardController extends ReloadableController
       ownEmailAddress: ownEmailAddress.value,
     );
     paywallController?.loadPaywallUrl();
+
+    if (quota != null) {
+      octetsQuota.value = quota;
+    } else {
+      getQuotas(accountId.value);
+    }
   }
 
   void _getParametersRouter() {
@@ -149,7 +174,10 @@ class ManageAccountDashBoardController extends ReloadableController
     ) {
       selectAccountMenuItem(AccountMenuItem.profiles);
     } else {
-      selectAccountMenuItem(navigationRouter.accountMenuItem);
+      selectedMenu = navigationRouter.accountMenuItem;
+      if (selectedMenu != null && selectedMenu != AccountMenuItem.storage) {
+        selectAccountMenuItem(selectedMenu!);
+      }
     }
   }
 
@@ -166,6 +194,7 @@ class ManageAccountDashBoardController extends ReloadableController
     injectVacationBindings(session, accountId);
     injectForwardBindings(session, accountId);
     injectRuleFilterBindings(session, accountId);
+    injectQuotaBindings();
   }
 
   @override
@@ -432,6 +461,8 @@ class ManageAccountDashBoardController extends ReloadableController
     }
     paywallController?.onClose();
     paywallController = null;
+    previousUri = null;
+    selectedMenu = null;
     super.onClose();
   }
 }
