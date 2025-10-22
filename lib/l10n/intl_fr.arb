@@ -1856,7 +1856,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "Nous sommes désolés, aucun message ne correspond à votre filtre actuel.",
+  "noEmailMatchYourCurrentFilter": "Aucun message ne correspond à votre filtre actuel.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
@@ -3396,7 +3396,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "Nous sommes désolés, il n'y a aucun message dans ce dossier",
+  "noEmailInYourCurrentFolder": "Il n'y a aucun message dans ce dossier",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
