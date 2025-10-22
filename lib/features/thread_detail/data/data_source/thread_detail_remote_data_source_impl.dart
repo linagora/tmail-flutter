@@ -22,7 +22,10 @@ class ThreadDetailRemoteDataSourceImpl implements ThreadDetailDataSource {
   ) {
     return Future.sync(() async {
       return threadDetailApi.getThreadById(threadId, accountId);
-    }).catchError(exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -39,7 +42,10 @@ class ThreadDetailRemoteDataSourceImpl implements ThreadDetailDataSource {
         emailIds,
         properties: properties,
       );
-    }).catchError(exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override

@@ -144,7 +144,7 @@ class ToastManager {
     final exception = failure.exception;
     final appLocalizations = AppLocalizations.of(context);
     String? message = getMessageByException(appLocalizations, exception);
-    
+
     if (failure is GetSessionFailure) {
       message = message ??
           getMessageByException(
@@ -152,7 +152,7 @@ class ToastManager {
             exception,
             useDefaultMessage: true,
           );
-    } else if (_isEmptySpamFolderFailure(exception)) {
+    } else if (_isEmptySpamFolderFailure(failure)) {
       message = message ?? appLocalizations.emptySpamFolderFailed;
     } else if (_isEmptyTrashFolderFailure(failure)) {
       message = message ?? appLocalizations.emptyTrashFolderFailed;
