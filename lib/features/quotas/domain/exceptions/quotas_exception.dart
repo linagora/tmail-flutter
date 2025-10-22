@@ -1,3 +1,3 @@
-class NotFoundQuotasException implements Exception {
-  NotFoundQuotasException();
-}
+class NotFoundQuotasException implements Exception {}
+
+class QuotasNotSupportedException implements Exception {}

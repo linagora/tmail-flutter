@@ -1,10 +1,8 @@
-
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -21,12 +19,23 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
     AccountMenuItem.languageAndRegion,
   ]);
 
+  late Worker _quotaRxWorker;
+
   void _registerObxStreamListener() {
     ever(dashBoardController.accountId, (accountId) {
       if (accountId != null) {
         _createListAccountMenu();
       }
     });
+
+    _quotaRxWorker = ever(
+      dashBoardController.octetsQuota,
+      (octetsQuota) {
+        if (octetsQuota != null) {
+          _addStorageToMenuList();
+        }
+      },
+    );
   }
 
   @override
@@ -49,8 +58,6 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
       AccountMenuItem.mailboxVisibility,
       if (dashBoardController.isLanguageSettingDisplayed)
         AccountMenuItem.languageAndRegion,
-      if (dashBoardController.isStorageCapabilitySupported)
-        AccountMenuItem.storage,
     ];
     listAccountMenuItem.value = newListMenuSetting;
 
@@ -69,5 +76,21 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
 
   void backToMailboxDashBoard(BuildContext context) {
     dashBoardController.backToMailboxDashBoard(context: context);
+  }
+
+  void _addStorageToMenuList() {
+    listAccountMenuItem.add(AccountMenuItem.storage);
+
+    if (dashBoardController.selectedMenu != null) {
+      dashBoardController.selectAccountMenuItem(
+        dashBoardController.selectedMenu!,
+      );
+    }
+  }
+
+  @override
+  void onClose() {
+    _quotaRxWorker.dispose();
+    super.onClose();
   }
 }
