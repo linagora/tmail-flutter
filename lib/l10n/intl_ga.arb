@@ -611,7 +611,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "Tá brón orainn, níl aon ríomhphoist ann a mheaitseálann do scagaire reatha.",
+  "noEmailMatchYourCurrentFilter": "Níl aon ríomhphoist ann a mheaitseálann do scagaire reatha.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
@@ -2369,7 +2369,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "Tá brón orainn, níl aon ríomhphoist i d'fhillteán reatha",
+  "noEmailInYourCurrentFolder": "Níl aon ríomhphoist i do fhillteán reatha",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
