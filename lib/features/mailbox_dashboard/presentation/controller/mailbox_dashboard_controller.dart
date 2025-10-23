@@ -123,6 +123,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_download_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_reactive_obx_variable_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_save_email_as_draft_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
@@ -766,6 +767,9 @@ class MailboxDashBoardController extends ReloadableController
       (action) {
         if (action is DownloadAttachmentsQuicklyAction) {
           downloadAttachmentForWeb(attachment: action.attachment);
+          downloadController.clearDownloadUIAction();
+        } else if (action is OpenMailtoLinkFromPreviewAttachmentAction) {
+          openMailToLink(action.uri);
           downloadController.clearDownloadUIAction();
         }
       },

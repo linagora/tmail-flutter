@@ -1,19 +1,19 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
-import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_preview_email_eml_content_shared_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/download_repository.dart';
 
 class GetPreviewEmailEMLContentSharedInteractor {
-  final EmailRepository _emailRepository;
+  final DownloadRepository _downloadRepository;
 
-  const GetPreviewEmailEMLContentSharedInteractor(this._emailRepository);
+  const GetPreviewEmailEMLContentSharedInteractor(this._downloadRepository);
 
   Stream<Either<Failure, Success>> execute(String keyStored) async* {
     try {
       yield Right<Failure, Success>(GettingPreviewEmailEMLContentShared());
 
-      final previewEMLContent = await _emailRepository
+      final previewEMLContent = await _downloadRepository
         .getPreviewEmailEMLContentShared(keyStored);
 
       yield Right<Failure, Success>(GetPreviewEmailEMLContentSharedSuccess(previewEMLContent));

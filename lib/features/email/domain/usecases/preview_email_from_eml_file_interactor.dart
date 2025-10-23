@@ -3,14 +3,14 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
-import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/preview_email_from_eml_file_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/download_repository.dart';
 
 class PreviewEmailFromEmlFileInteractor {
-  final EmailRepository _emailRepository;
+  final DownloadRepository _downloadRepository;
 
-  const PreviewEmailFromEmlFileInteractor(this._emailRepository);
+  const PreviewEmailFromEmlFileInteractor(this._downloadRepository);
 
   Stream<Either<Failure, Success>> execute(
     PreviewEmailEMLRequest previewEmailEMLRequest,
@@ -18,7 +18,7 @@ class PreviewEmailFromEmlFileInteractor {
     try {
       yield Right<Failure, Success>(PreviewingEmailFromEmlFile());
 
-      final previewEMLContent = await _emailRepository
+      final previewEMLContent = await _downloadRepository
         .generatePreviewEmailEMLContent(previewEmailEMLRequest);
 
       final emlPreviewer = EMLPreviewer(
@@ -29,13 +29,22 @@ class PreviewEmailFromEmlFileInteractor {
 
       if (PlatformInfo.isWeb) {
         if (previewEmailEMLRequest.isShared) {
-          await _emailRepository.sharePreviewEmailEMLContent(emlPreviewer);
+          await _downloadRepository.sharePreviewEmailEMLContent(emlPreviewer);
         } else {
-          await _emailRepository.storePreviewEMLContentToSessionStorage(emlPreviewer);
+          await _downloadRepository.storePreviewEMLContentToSessionStorage(
+            emlPreviewer,
+          );
         }
       }
 
-      yield Right<Failure, Success>(PreviewEmailFromEmlFileSuccess(emlPreviewer));
+      yield Right<Failure, Success>(
+        PreviewEmailFromEmlFileSuccess(
+          emlPreviewer,
+          previewEmailEMLRequest.accountId,
+          previewEmailEMLRequest.session,
+          previewEmailEMLRequest.ownEmailAddress,
+        ),
+      );
     } catch (e) {
       yield Left<Failure, Success>(PreviewEmailFromEmlFileFailure(e));
     }

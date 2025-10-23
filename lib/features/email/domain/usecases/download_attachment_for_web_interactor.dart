@@ -18,13 +18,13 @@ import 'package:tmail_ui_user/features/login/domain/repository/credential_reposi
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/download_repository.dart';
 
 class DownloadAttachmentForWebInteractor {
-  final DownloadRepository _downloadRepository;
+  final DownloadRepository downloadRepository;
   final CredentialRepository credentialRepository;
   final AccountRepository _accountRepository;
   final AuthenticationOIDCRepository _authenticationOIDCRepository;
 
   DownloadAttachmentForWebInteractor(
-      this._downloadRepository,
+      this.downloadRepository,
       this.credentialRepository,
       this._accountRepository,
       this._authenticationOIDCRepository);
@@ -56,7 +56,7 @@ class DownloadAttachmentForWebInteractor {
         );
       }
 
-      final bytesDownloaded = await _downloadRepository.downloadAttachmentForWeb(
+      final bytesDownloaded = await downloadRepository.downloadAttachmentForWeb(
         taskId,
         attachment,
         accountId,

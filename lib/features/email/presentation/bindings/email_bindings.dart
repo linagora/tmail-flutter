@@ -3,11 +3,8 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_interactor_bindings.dart';
@@ -30,9 +27,6 @@ class EmailBindings extends Bindings {
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<StoreOpenedEmailInteractor>(),
       Get.find<PrintEmailInteractor>(),
-      Get.find<ParseEmailByBlobIdInteractor>(),
-      Get.find<PreviewEmailFromEmlFileInteractor>(),
-      Get.find<GetHtmlContentFromAttachmentInteractor>(),
       Get.find<ExportAllAttachmentsInteractor>(),
       currentEmailId: currentEmailId,
     ), tag: tag);
