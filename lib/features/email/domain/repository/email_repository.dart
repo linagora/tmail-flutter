@@ -21,10 +21,8 @@ import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart'
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
-import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/view_entire_message_request.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 
 abstract class EmailRepository {
@@ -171,26 +169,6 @@ abstract class EmailRepository {
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId);
 
   Future<void> printEmail(EmailPrint emailPrint);
-
-  Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds);
-
-  Future<String> generatePreviewEmailEMLContent(PreviewEmailEMLRequest previewEmailEMLRequest);
-
-  Future<void> sharePreviewEmailEMLContent(EMLPreviewer emlPreviewer);
-
-  Future<EMLPreviewer> getPreviewEmailEMLContentShared(String keyStored);
-
-  Future<void> removePreviewEmailEMLContentShared(String keyStored);
-
-  Future<void> storePreviewEMLContentToSessionStorage(EMLPreviewer emlPreviewer);
-
-  Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored);
-
-  Future<String> sanitizeHtmlContent(
-    String htmlContent,
-    TransformConfiguration configuration);
-
-
 
   Future<DownloadedResponse> exportAllAttachments(
     AccountId accountId,

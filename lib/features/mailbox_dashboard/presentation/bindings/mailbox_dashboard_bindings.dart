@@ -34,10 +34,13 @@ import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_perman
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
@@ -175,6 +178,9 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<DownloadAttachmentForWebInteractor>(),
       Get.find<DownloadAllAttachmentsForWebInteractor>(),
       Get.find<DownloadManager>(),
+      Get.find<ParseEmailByBlobIdInteractor>(),
+      Get.find<PreviewEmailFromEmlFileInteractor>(),
+      Get.find<GetHtmlContentFromAttachmentInteractor>(),
     ));
     Get.put(SearchController(
       Get.find<QuickSearchEmailInteractor>(),

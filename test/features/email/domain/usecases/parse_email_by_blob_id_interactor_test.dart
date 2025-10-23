@@ -5,28 +5,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_email_by_blob_id_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/download_repository.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
-
+import '../../../../fixtures/session_fixtures.dart';
 import 'parse_email_by_blob_id_interactor_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<EmailRepository>()])
+@GenerateNiceMocks([MockSpec<DownloadRepository>()])
 void main() {
   group('ParseEmailByBlobIdInteractor::execute::', () {
-    late MockEmailRepository mockEmailRepository;
+    late MockDownloadRepository mockDownloadRepository;
     late ParseEmailByBlobIdInteractor parseEmailByBlobIdInteractor;
 
     setUp(() {
-      mockEmailRepository = MockEmailRepository();
+      mockDownloadRepository = MockDownloadRepository();
       parseEmailByBlobIdInteractor =
-          ParseEmailByBlobIdInteractor(mockEmailRepository);
+          ParseEmailByBlobIdInteractor(mockDownloadRepository);
     });
 
     final accountId = AccountFixtures.aliceAccountId;
+    final session = SessionFixtures.aliceSession;
     final blobId = Id('blob-id');
 
     test(
@@ -35,11 +37,16 @@ void main() {
       // Arrange
       final parsedEmail = EmailFixtures.email1;
 
-      when(mockEmailRepository.parseEmailByBlobIds(accountId, {blobId}))
+      when(mockDownloadRepository.parseEmailByBlobIds(accountId, {blobId}))
           .thenAnswer((_) async => [parsedEmail]);
 
       // Act
-      final result = parseEmailByBlobIdInteractor.execute(accountId, blobId);
+      final result = parseEmailByBlobIdInteractor.execute(
+        accountId,
+        session,
+        session.getOwnEmailAddressOrEmpty(),
+        blobId,
+      );
 
       // Assert
 
@@ -47,13 +54,19 @@ void main() {
         result,
         emitsInOrder([
           Right<Failure, Success>(ParsingEmailByBlobId()),
-          Right<Failure, Success>(ParseEmailByBlobIdSuccess(parsedEmail, blobId)),
+          Right<Failure, Success>(ParseEmailByBlobIdSuccess(
+            email: parsedEmail,
+            blobId: blobId,
+            accountId: accountId,
+            session: session,
+            ownEmailAddress: session.getOwnEmailAddressOrEmpty(),
+          )),
         ]),
       );
 
-      verify(mockEmailRepository.parseEmailByBlobIds(accountId, {blobId}))
+      verify(mockDownloadRepository.parseEmailByBlobIds(accountId, {blobId}))
           .called(1);
-      verifyNoMoreInteractions(mockEmailRepository);
+      verifyNoMoreInteractions(mockDownloadRepository);
     });
 
     test(
@@ -62,11 +75,16 @@ void main() {
       // Arrange
       final exception = Exception('Failed to parse email');
 
-      when(mockEmailRepository.parseEmailByBlobIds(accountId, {blobId}))
+      when(mockDownloadRepository.parseEmailByBlobIds(accountId, {blobId}))
           .thenThrow(exception);
 
       // Act
-      final result = parseEmailByBlobIdInteractor.execute(accountId, blobId);
+      final result = parseEmailByBlobIdInteractor.execute(
+        accountId,
+        session,
+        session.getOwnEmailAddressOrEmpty(),
+        blobId,
+      );
 
       // Assert
       await expectLater(
@@ -77,9 +95,9 @@ void main() {
         ]),
       );
 
-      verify(mockEmailRepository.parseEmailByBlobIds(accountId, {blobId}))
+      verify(mockDownloadRepository.parseEmailByBlobIds(accountId, {blobId}))
           .called(1);
-      verifyNoMoreInteractions(mockEmailRepository);
+      verifyNoMoreInteractions(mockDownloadRepository);
     });
   });
 }

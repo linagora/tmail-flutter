@@ -169,7 +169,12 @@ class EmailPreviewerController extends ReloadableController {
     _accountId = session.accountId;
 
     if (_keyStored != null) {
-      _parseEmailByBlobId(session.accountId, _keyStored!);
+      _parseEmailByBlobId(
+        accountId: _accountId!,
+        session: _session!,
+        ownEmailAddress: session.getOwnEmailAddressOrEmpty(),
+        blobId: _keyStored!,
+      );
     }
   }
 
@@ -244,9 +249,16 @@ class EmailPreviewerController extends ReloadableController {
     return uri.toString();
   }
 
-  void _parseEmailByBlobId(AccountId accountId, String blobId) {
+  void _parseEmailByBlobId({
+    required AccountId accountId,
+    required Session session,
+    required String ownEmailAddress,
+    required String blobId,
+  }) {
     consumeState(_parseEmailByBlobIdInteractor.execute(
       accountId,
+      session,
+      ownEmailAddress,
       Id(blobId),
     ));
   }
@@ -271,6 +283,7 @@ class EmailPreviewerController extends ReloadableController {
       consumeState(_previewEmailFromEmlFileInteractor.execute(
         PreviewEmailEMLRequest(
           accountId: _accountId!,
+          session: _session!,
           ownEmailAddress: _session!.getOwnEmailAddressOrUsername(),
           blobId: success.blobId,
           email: success.email,

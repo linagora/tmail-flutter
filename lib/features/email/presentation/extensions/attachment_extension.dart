@@ -48,4 +48,8 @@ extension AttachmentExtension on Attachment {
 
   bool get isJson => (type?.isJsonFile() ?? false)
     || name?.endsWith('.json') == true;
+
+  bool get isPreviewSupported {
+    return isImage || isText || isJson || isPDFFile || isEMLFile || isHTMLFile;
+  }
 }

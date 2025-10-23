@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/utils/html/html_utils.dart';
 import 'package:date_format/date_format.dart' as date_format;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

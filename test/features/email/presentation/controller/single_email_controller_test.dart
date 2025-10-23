@@ -32,13 +32,10 @@ import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reje
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -97,14 +94,11 @@ const fallbackGenerators = {
   MockSpec<AcceptCalendarEventInteractor>(),
   MockSpec<MaybeCalendarEventInteractor>(),
   MockSpec<RejectCalendarEventInteractor>(),
-  MockSpec<ParseEmailByBlobIdInteractor>(),
-  MockSpec<PreviewEmailFromEmlFileInteractor>(),
   MockSpec<PrintUtils>(),
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<CalendarEventDataSource>(),
   MockSpec<DioClient>(),
-  MockSpec<GetHtmlContentFromAttachmentInteractor>(),
   MockSpec<TwakeAppManager>(),
   MockSpec<ExportAllAttachmentsInteractor>(),
   MockSpec<FileUploader>(),
@@ -133,12 +127,9 @@ void main() {
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
-  final parseEmailByBlobIdInteractor = MockParseEmailByBlobIdInteractor();
-  final previewEmailFromEmlFileInteractor = MockPreviewEmailFromEmlFileInteractor();
   final printUtils = MockPrintUtils();
   final applicationManager = MockApplicationManager();
   final mockToastManager = MockToastManager();
-  final getHtmlContentFromAttachmentInteractor = MockGetHtmlContentFromAttachmentInteractor();
   final mockTwakeAppManager = MockTwakeAppManager();
 
   final exportAllAttachmentsInteractor = MockExportAllAttachmentsInteractor();
@@ -192,9 +183,6 @@ void main() {
       getAllIdentitiesInteractor,
       storeOpenedEmailInteractor,
       printEmailInteractor,
-      parseEmailByBlobIdInteractor,
-      previewEmailFromEmlFileInteractor,
-      getHtmlContentFromAttachmentInteractor,
       exportAllAttachmentsInteractor,
     );
   });

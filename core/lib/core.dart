@@ -35,6 +35,8 @@ export 'presentation/utils/app_toast.dart';
 export 'presentation/utils/html_transformer/html_transform.dart';
 export 'presentation/utils/html_transformer/transform_configuration.dart';
 export 'presentation/utils/html_transformer/text/persist_preformatted_text_transformer.dart';
+export 'presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
+export 'presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 export 'data/utils/device_manager.dart';
 export 'utils/app_logger.dart';
 export 'utils/benchmark.dart';
@@ -56,6 +58,7 @@ export 'utils/mail/named_address.dart';
 export 'utils/application_manager.dart';
 export 'utils/preview_eml_file_utils.dart';
 export 'utils/logger/log_tracking.dart';
+export 'utils/html/html_utils.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
