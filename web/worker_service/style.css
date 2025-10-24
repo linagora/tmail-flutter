@@ -1,6 +1,7 @@
 .smart-banner {
   display: none;
   position: fixed;
+  z-index: 9999999; /* always above Flutter canvas */
   left: 14px;
   right: 14px;
   border-radius: 10px;
