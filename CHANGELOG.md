@@ -1,3 +1,7 @@
+## [0.20.1] - 2025-10-24
+### Added
+- Translation: Chinese, French, Vietnamese, Russian, Ukrainian, Irish
+
 ## [0.20.0] - 2025-10-17
 ### Fixed
 - #4045 Display storage only when storage exceeds 80% of total storage
