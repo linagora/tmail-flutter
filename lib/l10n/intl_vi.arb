@@ -2266,7 +2266,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "Chúng tôi xin lỗi, không có email nào phù hợp với bộ lọc hiện tại của bạn.",
+  "noEmailMatchYourCurrentFilter": "Không có email nào phù hợp với bộ lọc hiện tại của bạn.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
