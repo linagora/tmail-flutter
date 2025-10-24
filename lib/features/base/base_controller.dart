@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/email/presentation/mixin/emit_mixin.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -63,7 +64,7 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
-    with PopupContextMenuActionMixin, LogoutMixin {
+    with PopupContextMenuActionMixin, LogoutMixin, EmitMixin {
 
   final CachingManager cachingManager = Get.find<CachingManager>();
   final LanguageCacheManager languageCacheManager = Get.find<LanguageCacheManager>();

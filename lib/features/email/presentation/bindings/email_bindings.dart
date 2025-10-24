@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_and_get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
@@ -39,7 +39,7 @@ class EmailBindings extends Bindings {
       Get.find<PrintEmailInteractor>(),
       Get.find<ParseEmailByBlobIdInteractor>(),
       Get.find<PreviewEmailFromEmlFileInteractor>(),
-      Get.find<GetHtmlContentFromAttachmentInteractor>(),
+      Get.find<DownloadAndGetHtmlContentFromAttachmentInteractor>(),
       Get.find<DownloadAllAttachmentsForWebInteractor>(),
       Get.find<ExportAllAttachmentsInteractor>(),
       currentEmailId: currentEmailId,

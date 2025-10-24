@@ -397,21 +397,21 @@ class EmailRepositoryImpl extends EmailRepository {
 
   @override
   Future<Uint8List> downloadAttachmentForWeb(
-      DownloadTaskId taskId,
-      Attachment attachment,
-      AccountId accountId,
-      String baseDownloadUrl,
-      AccountRequest accountRequest,
-      StreamController<Either<Failure, Success>> onReceiveController,
-      {CancelToken? cancelToken}
-  ) {
+    DownloadTaskId taskId,
+    Attachment attachment,
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest, {
+    CancelToken? cancelToken,
+    StreamController<Either<Failure, Success>>? onReceiveController,
+  }) {
     return emailDataSource[DataSourceType.network]!.downloadAttachmentForWeb(
         taskId,
         attachment,
         accountId,
         baseDownloadUrl,
         accountRequest,
-        onReceiveController,
+        onReceiveController: onReceiveController,
         cancelToken: cancelToken);
   }
 

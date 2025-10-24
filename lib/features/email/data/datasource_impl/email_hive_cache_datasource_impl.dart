@@ -118,10 +118,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     Attachment attachment,
     AccountId accountId,
     String baseDownloadUrl,
-    AccountRequest accountRequest,
-    StreamController<Either<Failure, Success>> onReceiveController,
-    {CancelToken? cancelToken}
-  ) {
+    AccountRequest accountRequest, {
+    CancelToken? cancelToken,
+    StreamController<Either<Failure, Success>>? onReceiveController,
+  }) {
     throw UnimplementedError();
   }
 

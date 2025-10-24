@@ -13,6 +13,7 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -64,6 +65,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_message_failure_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/preview_composer_attachment_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/sanitize_signature_in_email_content_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_attachments_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_email_content_extension.dart';
@@ -88,20 +90,32 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_template_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
+import 'package:tmail_ui_user/features/email/domain/state/download_and_get_html_content_from_attachment_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_upload_file_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/parse_email_by_blob_id_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/preview_email_from_eml_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/save_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_and_get_html_content_from_attachment_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_upload_file_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/mixin/download_attachment_mixin.dart';
+import 'package:tmail_ui_user/features/email/presentation/mixin/preview_attachment_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -127,7 +141,11 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ComposerController extends BaseController
-    with DragDropFileMixin, AutoCompleteResultMixin, EditorViewMixin
+    with DragDropFileMixin,
+        AutoCompleteResultMixin,
+        EditorViewMixin,
+        PreviewAttachmentMixin,
+        DownloadAttachmentMixin
     implements BeforeReconnectHandler {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -171,6 +189,11 @@ class ComposerController extends BaseController
   final String? composerId;
   final ComposerArguments? composerArgs;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
+  final ParseEmailByBlobIdInteractor parseEmailByBlobIdInteractor;
+  final PreviewEmailFromEmlFileInteractor previewEmailFromEmlFileInteractor;
+  final GetHtmlContentFromUploadFileInteractor getHtmlContentFromUploadFileInteractor;
+  final DownloadAndGetHtmlContentFromAttachmentInteractor downloadAndGetHtmlContentFromAttachmentInteractor;
+  final DownloadAttachmentForWebInteractor downloadAttachmentForWebInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -277,6 +300,11 @@ class ComposerController extends BaseController
     this.printEmailInteractor,
     this._composerRepository,
     this._saveTemplateEmailInteractor,
+    this.parseEmailByBlobIdInteractor,
+    this.previewEmailFromEmlFileInteractor,
+    this.getHtmlContentFromUploadFileInteractor,
+    this.downloadAndGetHtmlContentFromAttachmentInteractor,
+    this.downloadAttachmentForWebInteractor,
     {
       this.composerId,
       this.composerArgs,
@@ -399,6 +427,60 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.insertImage(inlineImage);
       }
       maxWithEditor = null;
+    } else if (success is ParseEmailByBlobIdSuccess) {
+      handleParseEmailByBlobIdSuccess(
+        context: currentContext,
+        accountId: mailboxDashBoardController.accountId.value,
+        session: mailboxDashBoardController.sessionCurrent,
+        ownEmailAddress: ownEmailAddress,
+        blobId: success.blobId,
+        email: success.email,
+        controller: this,
+        previewInteractor: previewEmailFromEmlFileInteractor,
+      );
+    } else if (success is PreviewEmailFromEmlFileSuccess) {
+      previewEMLFileAction(
+        emlPreviewer: success.emlPreviewer,
+        context: currentContext,
+        imagePaths: imagePaths,
+        onMailtoAction: openMailToLink,
+        onDownloadAction: (uri) async => downloadAttachmentInEMLPreview(
+          uri: uri,
+          onDownloadAction: (attachment) =>
+              downloadAttachment(attachment: attachment),
+        ),
+        onPreviewAction: (uri) async => previewEML(uri),
+      );
+    } else if (success is GetHtmlContentFromUploadFileSuccess) {
+      if (SmartDialog.checkExist()) {
+        SmartDialog.dismiss();
+      }
+
+      previewHtmlFileAction(
+        attachment: success.attachment,
+        title: success.htmlAttachmentTitle,
+        content: success.sanitizedHtmlContent,
+        openMailToLink: openMailToLink,
+        responsiveUtils: responsiveUtils,
+        onDownloadAction: (attachment) =>
+            downloadAttachment(attachment: attachment),
+      );
+    } else if (success is DownloadAndGetHtmlContentFromAttachmentSuccess) {
+      if (SmartDialog.checkExist()) {
+        SmartDialog.dismiss();
+      }
+
+      previewHtmlFileAction(
+        attachment: success.attachment,
+        title: success.htmlAttachmentTitle,
+        content: success.sanitizedHtmlContent,
+        openMailToLink: openMailToLink,
+        onDownloadAction: (attachment) =>
+            downloadAttachment(attachment: attachment),
+        responsiveUtils: responsiveUtils,
+      );
+    } else if (success is DownloadAttachmentForWebSuccess) {
+      downloadAttachmentForWebSuccessAction(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -410,6 +492,25 @@ class ComposerController extends BaseController
       _handlePickFileFailure(failure);
     } else if (failure is LocalImagePickerFailure) {
       _handlePickImageFailure(failure);
+    } else if (failure is ParseEmailByBlobIdFailure) {
+      handleParseEmailByBlobIdFailure(failure);
+    } else if (failure is PreviewEmailFromEmlFileFailure) {
+      handlePreviewEmailFromEMLFileFailure(failure);
+    } else if (failure is GetHtmlContentFromUploadFileFailure ||
+        failure is DownloadAndGetHtmlContentFromAttachmentFailure) {
+      if (SmartDialog.checkExist()) {
+        SmartDialog.dismiss();
+      }
+      handlePreviewHtmlFileFailure();
+    } else if (failure is DownloadAttachmentForWebFailure) {
+      downloadAttachmentForWebFailureAction(
+        failureState: failure,
+        onCallbackAction: () {
+          if (SmartDialog.checkExist()) {
+            SmartDialog.dismiss();
+          }
+        },
+      );
     } else {
       super.handleFailureViewState(failure);
     }

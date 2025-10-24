@@ -35,7 +35,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_and_get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
@@ -107,7 +107,7 @@ const fallbackGenerators = {
   MockSpec<ToastManager>(),
   MockSpec<CalendarEventDataSource>(),
   MockSpec<DioClient>(),
-  MockSpec<GetHtmlContentFromAttachmentInteractor>(),
+  MockSpec<DownloadAndGetHtmlContentFromAttachmentInteractor>(),
   MockSpec<TwakeAppManager>(),
   MockSpec<DownloadAllAttachmentsForWebInteractor>(),
   MockSpec<ExportAllAttachmentsInteractor>(),
@@ -145,7 +145,7 @@ void main() {
   final printUtils = MockPrintUtils();
   final applicationManager = MockApplicationManager();
   final mockToastManager = MockToastManager();
-  final getHtmlContentFromAttachmentInteractor = MockGetHtmlContentFromAttachmentInteractor();
+  final mockDownloadAndGetHtmlContentFromAttachmentInteractor = MockDownloadAndGetHtmlContentFromAttachmentInteractor();
   final mockTwakeAppManager = MockTwakeAppManager();
 
   final downloadAllAttachmentsForWebInteractor = MockDownloadAllAttachmentsForWebInteractor();
@@ -204,7 +204,7 @@ void main() {
       printEmailInteractor,
       parseEmailByBlobIdInteractor,
       previewEmailFromEmlFileInteractor,
-      getHtmlContentFromAttachmentInteractor,
+      mockDownloadAndGetHtmlContentFromAttachmentInteractor,
       downloadAllAttachmentsForWebInteractor,
       exportAllAttachmentsInteractor,
     );

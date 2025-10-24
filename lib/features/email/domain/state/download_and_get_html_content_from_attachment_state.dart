@@ -2,8 +2,8 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:model/email/attachment.dart';
 
-class GettingHtmlContentFromAttachment extends LoadingState {
-  GettingHtmlContentFromAttachment({required this.attachment});
+class DownloadAndGettingHtmlContentFromAttachment extends LoadingState {
+  DownloadAndGettingHtmlContentFromAttachment({required this.attachment});
 
   final Attachment attachment;
 
@@ -11,8 +11,8 @@ class GettingHtmlContentFromAttachment extends LoadingState {
   List<Object?> get props => [attachment];
 }
 
-class GetHtmlContentFromAttachmentSuccess extends UIState {
-  GetHtmlContentFromAttachmentSuccess({
+class DownloadAndGetHtmlContentFromAttachmentSuccess extends UIState {
+  DownloadAndGetHtmlContentFromAttachmentSuccess({
     required this.sanitizedHtmlContent,
     required this.htmlAttachmentTitle,
     required this.attachment,
@@ -30,8 +30,11 @@ class GetHtmlContentFromAttachmentSuccess extends UIState {
   ];
 }
 
-class GetHtmlContentFromAttachmentFailure extends FeatureFailure {
-  GetHtmlContentFromAttachmentFailure({super.exception, required this.attachment});
+class DownloadAndGetHtmlContentFromAttachmentFailure extends FeatureFailure {
+  DownloadAndGetHtmlContentFromAttachmentFailure({
+    super.exception,
+    required this.attachment,
+  });
 
   final Attachment attachment;
 

@@ -69,6 +69,9 @@ class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
                         child: Center(
                           child: Container(
                             margin: const EdgeInsets.symmetric(vertical: _verticalMargin),
+                            constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height,
+                            ),
                             color: Colors.white,
                             child: ResponsiveWidget(
                               responsiveUtils: widget.responsiveUtils,

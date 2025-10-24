@@ -30,17 +30,25 @@ class DownloadAttachmentForWebInteractor {
       this._authenticationOIDCRepository);
 
   Stream<Either<Failure, Success>> execute(
-      DownloadTaskId taskId,
-      Attachment attachment,
-      AccountId accountId,
-      String baseDownloadUrl,
-      StreamController<Either<Failure, Success>> onReceiveController,
-      {CancelToken? cancelToken,
-      bool previewerSupported = false,
+    DownloadTaskId taskId,
+    Attachment attachment,
+    AccountId accountId,
+    String baseDownloadUrl, {
+    CancelToken? cancelToken,
+    StreamController<Either<Failure, Success>>? onReceiveController,
+    bool previewerSupported = false,
   }) async* {
     try {
-      yield Right<Failure, Success>(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken, previewerSupported));
-      onReceiveController.add(Right(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken, previewerSupported)));
+      final loadingState = Right<Failure, Success>(
+        StartDownloadAttachmentForWeb(
+          taskId,
+          attachment,
+          cancelToken,
+          previewerSupported,
+        ),
+      );
+      yield loadingState;
+      onReceiveController?.add(loadingState);
 
       final currentAccount = await _accountRepository.getCurrentAccount();
       AccountRequest? accountRequest;
@@ -62,7 +70,7 @@ class DownloadAttachmentForWebInteractor {
         accountId,
         baseDownloadUrl,
         accountRequest,
-        onReceiveController,
+        onReceiveController: onReceiveController,
         cancelToken: cancelToken
       );
 

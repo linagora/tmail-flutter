@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachme
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_entire_message_as_document_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_and_get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
@@ -144,7 +144,7 @@ class EmailInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => ParseEmailByBlobIdInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => PreviewEmailFromEmlFileInteractor(Get.find<EmailRepository>()));
     IdentityInteractorsBindings().dependencies();
-    Get.lazyPut(() => GetHtmlContentFromAttachmentInteractor(Get.find<DownloadAttachmentForWebInteractor>()));
+    Get.lazyPut(() => DownloadAndGetHtmlContentFromAttachmentInteractor(Get.find<DownloadAttachmentForWebInteractor>()));
     Get.lazyPut(() => DownloadAllAttachmentsForWebInteractor(
       Get.find<EmailRepository>(),
       Get.find<AccountRepository>(),

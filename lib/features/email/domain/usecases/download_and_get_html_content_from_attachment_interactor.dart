@@ -10,11 +10,13 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/download_and_get_html_content_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 
-class GetHtmlContentFromAttachmentInteractor {
-  GetHtmlContentFromAttachmentInteractor(this._downloadAttachmentForWebInteractor);
+class DownloadAndGetHtmlContentFromAttachmentInteractor {
+  DownloadAndGetHtmlContentFromAttachmentInteractor(
+    this._downloadAttachmentForWebInteractor,
+  );
 
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
 
@@ -27,26 +29,32 @@ class GetHtmlContentFromAttachmentInteractor {
   ) async* {
     final onReceiveController = StreamController<Either<Failure, Success>>();
     try {
-      yield Right(GettingHtmlContentFromAttachment(attachment: attachment));
+      yield Right(
+        DownloadAndGettingHtmlContentFromAttachment(attachment: attachment),
+      );
       final downloadState = await _downloadAttachmentForWebInteractor.execute(
         taskId,
         attachment,
         accountId,
         baseDownloadUrl,
-        onReceiveController,
+        onReceiveController: onReceiveController,
       ).last;
       
       Either<Failure, Success>? sanitizeState;
       await downloadState.fold(
         (failure) {
-          sanitizeState = Left(GetHtmlContentFromAttachmentFailure(
+          sanitizeState = Left(DownloadAndGetHtmlContentFromAttachmentFailure(
             exception: failure is FeatureFailure ? failure.exception : null,
             attachment: attachment,
           ));
         },
         (success) async {
           if (success is! DownloadAttachmentForWebSuccess) {
-            sanitizeState = Right(GettingHtmlContentFromAttachment(attachment: attachment));
+            sanitizeState = Right(
+              DownloadAndGettingHtmlContentFromAttachment(
+                attachment: attachment,
+              ),
+            );
           } else {
             final htmlContent = StringConvert.decodeFromBytes(
               success.bytes,
@@ -66,7 +74,7 @@ class GetHtmlContentFromAttachmentInteractor {
       if (sanitizeState != null) {
         yield sanitizeState!;
       } else {
-        yield Left(GetHtmlContentFromAttachmentFailure(
+        yield Left(DownloadAndGetHtmlContentFromAttachmentFailure(
           exception: null,
           attachment: attachment,
         ));
@@ -75,7 +83,7 @@ class GetHtmlContentFromAttachmentInteractor {
     } catch (e) {
       logError('GetHtmlContentFromAttachmentInteractor:exception: $e');
       onReceiveController.close();
-      yield Left(GetHtmlContentFromAttachmentFailure(
+      yield Left(DownloadAndGetHtmlContentFromAttachmentFailure(
         exception: e,
         attachment: attachment,
       ));
@@ -94,13 +102,13 @@ class GetHtmlContentFromAttachmentInteractor {
           htmlContent,
           transformConfiguration,
         );
-      return Right(GetHtmlContentFromAttachmentSuccess(
+      return Right(DownloadAndGetHtmlContentFromAttachmentSuccess(
         sanitizedHtmlContent: sanitizedHtmlContent,
         htmlAttachmentTitle: attachment.generateFileName(),
         attachment: attachment,
       ));
     } catch (e) {
-      return Left(GetHtmlContentFromAttachmentFailure(
+      return Left(DownloadAndGetHtmlContentFromAttachmentFailure(
         exception: e,
         attachment: attachment,
       ));

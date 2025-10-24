@@ -78,8 +78,10 @@ abstract class EmailDataSource {
     AccountId accountId,
     String baseDownloadUrl,
     AccountRequest accountRequest,
-    StreamController<Either<Failure, Success>> onReceiveController,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      StreamController<Either<Failure, Success>>? onReceiveController,
+    }
   );
 
   Future<({

@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/composer
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/preview_composer_attachment_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/remove_draggable_email_address_between_recipient_fields_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
@@ -239,6 +240,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                 listFileUploaded: controller.uploadController.listUploadAttachments,
                                 isCollapsed: controller.isAttachmentCollapsed,
                                 onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+                                onPreviewAttachmentAction: (id) =>
+                                    controller.previewAttachment(context, id),
                                 onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
                               );
                             } else {
@@ -477,6 +480,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                       listFileUploaded: controller.uploadController.listUploadAttachments,
                                       isCollapsed: controller.isAttachmentCollapsed,
                                       onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+                                      onPreviewAttachmentAction: (id) =>
+                                          controller.previewAttachment(context, id),
                                       onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
                                     );
                                   } else {
@@ -743,6 +748,8 @@ class ComposerView extends GetWidget<ComposerController> {
                                       listFileUploaded: controller.uploadController.listUploadAttachments,
                                       isCollapsed: controller.isAttachmentCollapsed,
                                       onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+                                      onPreviewAttachmentAction: (id) =>
+                                          controller.previewAttachment(context, id),
                                       onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
                                     );
                                   } else {

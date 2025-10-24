@@ -263,14 +263,14 @@ class EmailDataSourceImpl extends EmailDataSource {
 
   @override
   Future<Uint8List> downloadAttachmentForWeb(
-      DownloadTaskId taskId,
-      Attachment attachment,
-      AccountId accountId,
-      String baseDownloadUrl,
-      AccountRequest accountRequest,
-      StreamController<Either<Failure, Success>> onReceiveController,
-      {CancelToken? cancelToken}
-  ) {
+    DownloadTaskId taskId,
+    Attachment attachment,
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest, {
+    CancelToken? cancelToken,
+    StreamController<Either<Failure, Success>>? onReceiveController,
+  }) {
     return Future.sync(() async {
       return await emailAPI.downloadAttachmentForWeb(
           taskId,
@@ -278,7 +278,7 @@ class EmailDataSourceImpl extends EmailDataSource {
           accountId,
           baseDownloadUrl,
           accountRequest,
-          onReceiveController,
+          onReceiveController: onReceiveController,
           cancelToken: cancelToken);
     }).catchError(_exceptionThrower.throwException);
   }

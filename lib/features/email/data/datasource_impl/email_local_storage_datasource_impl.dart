@@ -81,7 +81,15 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Uint8List> downloadAttachmentForWeb(DownloadTaskId taskId, Attachment attachment, AccountId accountId, String baseDownloadUrl, AccountRequest accountRequest, StreamController<Either<Failure, Success>> onReceiveController, {CancelToken? cancelToken}) {
+  Future<Uint8List> downloadAttachmentForWeb(
+    DownloadTaskId taskId,
+    Attachment attachment,
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest, {
+    CancelToken? cancelToken,
+    StreamController<Either<Failure, Success>>? onReceiveController,
+  }) {
     throw UnimplementedError();
   }
 

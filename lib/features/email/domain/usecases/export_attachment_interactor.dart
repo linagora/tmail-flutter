@@ -57,7 +57,7 @@ class ExportAttachmentInteractor {
 
       yield Right<Failure, Success>(ExportAttachmentSuccess(downloadedResponse));
     } catch (exception) {
-      log('ExportAttachmentInteractor::execute(): exception: $exception');
+      logError('ExportAttachmentInteractor::execute(): exception: $exception');
       yield Left<Failure, Success>(ExportAttachmentFailure(exception));
     }
   }

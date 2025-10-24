@@ -455,7 +455,7 @@ class EmailActionReactor {
         emlAttachment,
         accountId,
         baseDownloadUrl,
-        downloadProgressStateController,
+        onReceiveController: downloadProgressStateController,
         cancelToken: cancelToken,
         previewerSupported: false,
       );

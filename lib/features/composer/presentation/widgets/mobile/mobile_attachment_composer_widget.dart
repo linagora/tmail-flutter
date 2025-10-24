@@ -76,6 +76,7 @@ class _MobileAttachmentComposerWidgetState extends State<MobileAttachmentCompose
                       itemBuilder: (context, index) {
                         final file =  _listFileDisplayed[index];
                         return AttachmentItemComposerWidget(
+                          imagePaths: _imagePaths,
                           fileIcon: file.getIcon(_imagePaths),
                           fileName: file.fileName,
                           fileSize: filesize(file.fileSize),
@@ -139,6 +140,7 @@ class _MobileAttachmentComposerWidgetState extends State<MobileAttachmentCompose
                   itemBuilder: (context, index) {
                     final file = _listFileDisplayed[index];
                     return AttachmentItemComposerWidget(
+                      imagePaths: _imagePaths,
                       fileIcon: file.getIcon(_imagePaths),
                       fileName: file.fileName,
                       fileSize: filesize(file.fileSize),

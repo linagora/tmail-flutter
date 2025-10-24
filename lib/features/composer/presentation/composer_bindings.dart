@@ -33,11 +33,19 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_and_get_html_content_from_attachment_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_upload_file_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -309,6 +317,41 @@ class ComposerBindings extends BaseBindings {
       Get.find<ComposerRepository>(tag: composerId),
       Get.find<EmailRepository>(tag: composerId),
     ), tag: composerId);
+
+    Get.lazyPut(
+      () => ParseEmailByBlobIdInteractor(
+        Get.find<EmailRepository>(tag: composerId),
+      ),
+      tag: composerId,
+    );
+    Get.lazyPut(
+      () => PreviewEmailFromEmlFileInteractor(
+        Get.find<EmailRepository>(tag: composerId),
+      ),
+      tag: composerId,
+    );
+    Get.lazyPut(
+      () => GetHtmlContentFromUploadFileInteractor(
+        Get.find<EmailRepository>(tag: composerId),
+      ),
+      tag: composerId,
+    );
+
+    Get.lazyPut(
+      () => DownloadAttachmentForWebInteractor(
+        Get.find<EmailRepository>(tag: composerId),
+        Get.find<CredentialRepository>(),
+        Get.find<AccountRepository>(),
+        Get.find<AuthenticationOIDCRepository>(),
+      ),
+      tag: composerId,
+    );
+    Get.lazyPut(
+      () => DownloadAndGetHtmlContentFromAttachmentInteractor(
+        Get.find<DownloadAttachmentForWebInteractor>(tag: composerId),
+      ),
+      tag: composerId,
+    );
   }
 
   @override
@@ -338,6 +381,11 @@ class ComposerBindings extends BaseBindings {
       Get.find<PrintEmailInteractor>(tag: composerId),
       Get.find<ComposerRepository>(tag: composerId),
       Get.find<SaveTemplateEmailInteractor>(tag: composerId),
+      Get.find<ParseEmailByBlobIdInteractor>(tag: composerId),
+      Get.find<PreviewEmailFromEmlFileInteractor>(tag: composerId),
+      Get.find<GetHtmlContentFromUploadFileInteractor>(tag: composerId),
+      Get.find<DownloadAndGetHtmlContentFromAttachmentInteractor>(tag: composerId),
+      Get.find<DownloadAttachmentForWebInteractor>(tag: composerId),
       composerId: composerId,
       composerArgs: composerArguments,
     ), tag: composerId);
@@ -401,6 +449,11 @@ class ComposerBindings extends BaseBindings {
     Get.delete<RestoreEmailInlineImagesInteractor>(tag: composerId);
     Get.delete<PrintEmailInteractor>(tag: composerId);
     Get.delete<SaveTemplateEmailInteractor>(tag: composerId);
+    Get.delete<ParseEmailByBlobIdInteractor>(tag: composerId);
+    Get.delete<PreviewEmailFromEmlFileInteractor>(tag: composerId);
+    Get.delete<DownloadAttachmentForWebInteractor>(tag: composerId);
+    Get.delete<GetHtmlContentFromUploadFileInteractor>(tag: composerId);
+    Get.delete<DownloadAndGetHtmlContentFromAttachmentInteractor>(tag: composerId);
 
     IdentityInteractorsBindings(composerId: composerId).dispose();
     PreferencesInteractorsBindings(composerId: composerId).dispose();
