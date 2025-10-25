@@ -1773,7 +1773,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newFilterWasCreated": "已创建新筛选器",
+  "newFilterWasCreated": "已创建新筛选规则",
   "@newFilterWasCreated": {
     "type": "text",
     "placeholders_order": [],
@@ -2841,7 +2841,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFilters": "创建筛选器",
+  "createFilters": "创建筛选规则",
   "@createFilters": {
     "type": "text",
     "placeholders_order": [],
@@ -2931,7 +2931,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "很抱歉，没有符合当前筛选器的电子邮件。",
+  "noEmailMatchYourCurrentFilter": "没有符合当前筛选规则的邮件。",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
@@ -3177,7 +3177,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourFilterHasBeenUpdated": "已更新您的筛选器",
+  "yourFilterHasBeenUpdated": "您的筛选规则已更新",
   "@yourFilterHasBeenUpdated": {
     "type": "text",
     "placeholders_order": [],
@@ -4587,7 +4587,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFilter": "创建筛选器",
+  "createFilter": "创建筛选规则",
   "@createFilter": {
     "type": "text",
     "placeholders_order": [],
