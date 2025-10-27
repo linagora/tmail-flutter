@@ -51,7 +51,7 @@ class RecipientCollapsedItemWidget extends StatelessWidget {
   }
 
   Color _getTagBackgroundColor() {
-    if (EmailUtils.isEmailAddressValid(emailAddress.emailAddress)) {
+    if (EmailUtils.isValidEmail(emailAddress.emailAddress)) {
       return AppColor.grayBackgroundColor;
     } else {
       return Colors.white;
@@ -59,7 +59,7 @@ class RecipientCollapsedItemWidget extends StatelessWidget {
   }
 
   Border _getTagBorder() {
-    if (EmailUtils.isEmailAddressValid(emailAddress.emailAddress)) {
+    if (EmailUtils.isValidEmail(emailAddress.emailAddress)) {
       return Border.all(
         width: 1,
         color: AppColor.grayBackgroundColor,

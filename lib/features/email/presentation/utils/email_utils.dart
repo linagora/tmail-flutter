@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscrib
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class EmailUtils {
   static const double desktopItemMaxWidth = 260;
@@ -106,6 +107,15 @@ class EmailUtils {
       return GetUtils.isEmail(mailAddress.stripDetails().asString()) && mailAddress.asString().isNotEmpty;
     } catch(e) {
       logError('EmailUtils::isEmailAddressValid: Exception = $e');
+      return false;
+    }
+  }
+
+  static bool isValidEmail(String address) {
+    try {
+      return isEmailAddressValid(address) ||
+          AppUtils.isEmailLocalhost(address);
+    } catch (_) {
       return false;
     }
   }
