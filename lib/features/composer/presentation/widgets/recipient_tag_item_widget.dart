@@ -170,7 +170,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   Color _getTagBackgroundColor() {
     if (isTagFocused) {
       return AppColor.colorItemRecipientSelected;
-    } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
+    } else if (EmailUtils.isValidEmail(currentEmailAddress.emailAddress)) {
       return AppColor.grayBackgroundColor;
     } else {
       return Colors.white;
@@ -183,7 +183,7 @@ class RecipientTagItemWidget extends StatelessWidget {
         width: 1,
         color: AppColor.primaryColor,
       );
-    } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
+    } else if (EmailUtils.isValidEmail(currentEmailAddress.emailAddress)) {
       return Border.all(
         width: 1,
         color: AppColor.grayBackgroundColor,

@@ -19,7 +19,7 @@ extension HandleRecipientsCollapsedExtensions on ComposerController {
 
   bool get existEmailAddressInvalid => allListEmailAddress
       .any(
-        (emailAddress) => !EmailUtils.isEmailAddressValid(
+        (emailAddress) => !EmailUtils.isValidEmail(
           emailAddress.emailAddress,
         ),
       );
