@@ -9,14 +9,19 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
+import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 
 class GetHtmlContentFromAttachmentInteractor {
-  GetHtmlContentFromAttachmentInteractor(this._downloadAttachmentForWebInteractor);
+  GetHtmlContentFromAttachmentInteractor(
+    this._downloadAttachmentForWebInteractor,
+    this._emailRepository,
+  );
 
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
+  final EmailRepository _emailRepository;
 
   Stream<Either<Failure, Success>> execute(
     AccountId accountId,
@@ -25,7 +30,6 @@ class GetHtmlContentFromAttachmentInteractor {
     String baseDownloadUrl,
     TransformConfiguration transformConfiguration,
   ) async* {
-    final onReceiveController = StreamController<Either<Failure, Success>>();
     try {
       yield Right(GettingHtmlContentFromAttachment(attachment: attachment));
       final downloadState = await _downloadAttachmentForWebInteractor.execute(
@@ -33,7 +37,6 @@ class GetHtmlContentFromAttachmentInteractor {
         attachment,
         accountId,
         baseDownloadUrl,
-        onReceiveController,
       ).last;
       
       Either<Failure, Success>? sanitizeState;
@@ -62,7 +65,6 @@ class GetHtmlContentFromAttachmentInteractor {
         },
       );
 
-      onReceiveController.close();
       if (sanitizeState != null) {
         yield sanitizeState!;
       } else {
@@ -74,7 +76,6 @@ class GetHtmlContentFromAttachmentInteractor {
       
     } catch (e) {
       logError('GetHtmlContentFromAttachmentInteractor:exception: $e');
-      onReceiveController.close();
       yield Left(GetHtmlContentFromAttachmentFailure(
         exception: e,
         attachment: attachment,
@@ -88,12 +89,10 @@ class GetHtmlContentFromAttachmentInteractor {
     Attachment attachment,
   ) async {
     try {
-      final sanitizedHtmlContent = await _downloadAttachmentForWebInteractor
-        .emailRepository
-        .sanitizeHtmlContent(
-          htmlContent,
-          transformConfiguration,
-        );
+      final sanitizedHtmlContent = await _emailRepository.sanitizeHtmlContent(
+        htmlContent,
+        transformConfiguration,
+      );
       return Right(GetHtmlContentFromAttachmentSuccess(
         sanitizedHtmlContent: sanitizedHtmlContent,
         htmlAttachmentTitle: attachment.generateFileName(),

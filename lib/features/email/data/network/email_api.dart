@@ -12,8 +12,6 @@ import 'package:email_recovery/email_recovery/get/get_email_recovery_action_meth
 import 'package:email_recovery/email_recovery/get/get_email_recovery_action_response.dart';
 import 'package:email_recovery/email_recovery/set/set_email_recovery_action_method.dart';
 import 'package:email_recovery/email_recovery/set/set_email_recovery_action_response.dart';
-import 'package:external_path/external_path.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -57,7 +55,6 @@ import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/list_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:model/oidc/token_oidc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
@@ -67,7 +64,6 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_all_attachments_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
-import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -298,49 +294,6 @@ class EmailAPI with HandleSetErrorMixin {
     return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);
   }
 
-  Future<List<DownloadTaskId>> downloadAttachments(
-      List<Attachment> attachments,
-      AccountId accountId,
-      String baseDownloadUrl,
-      AccountRequest accountRequest
-  ) async {
-    if (accountRequest.authenticationType == AuthenticationType.oidc &&
-        accountRequest.token?.isExpired == true &&
-        accountRequest.token?.refreshToken.isNotEmpty == true) {
-      throw DownloadAttachmentHasTokenExpiredException(accountRequest.token!.refreshToken);
-    }
-
-    String externalStorageDirPath;
-    if (Platform.isAndroid) {
-      externalStorageDirPath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOAD);
-    } else if (Platform.isIOS) {
-      externalStorageDirPath = (await getApplicationDocumentsDirectory()).absolute.path;
-    } else {
-      throw DeviceNotSupportedException();
-    }
-
-    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
-        ? accountRequest.bearerToken
-        : accountRequest.basicAuth;
-
-    final taskIds = await Future.wait(
-      attachments.map((attachment) async => await FlutterDownloader.enqueue(
-        url: attachment.getDownloadUrl(baseDownloadUrl, accountId),
-        savedDir: externalStorageDirPath,
-        headers: {
-          HttpHeaders.authorizationHeader: authentication,
-          HttpHeaders.acceptHeader: DioClient.jmapHeader
-        },
-        fileName: attachment.name,
-        showNotification: true,
-        openFileFromNotification: true)));
-
-    return taskIds
-      .where((taskId) => taskId != null)
-      .map((taskId) => DownloadTaskId(taskId!))
-      .toList();
-  }
-
   Future<DownloadedResponse> exportAttachment(
       Attachment attachment,
       AccountId accountId,
@@ -361,14 +314,14 @@ class EmailAPI with HandleSetErrorMixin {
   }
 
   Future<Uint8List> downloadAttachmentForWeb(
-      DownloadTaskId taskId,
-      Attachment attachment,
-      AccountId accountId,
-      String baseDownloadUrl,
-      AccountRequest accountRequest,
-      StreamController<Either<Failure, Success>> onReceiveController,
-      {CancelToken? cancelToken}
-  ) async {
+    DownloadTaskId taskId,
+    Attachment attachment,
+    AccountId accountId,
+    String baseDownloadUrl,
+    AccountRequest accountRequest, {
+    StreamController<Either<Failure, Success>>? onReceiveController,
+    CancelToken? cancelToken,
+  }) async {
     final authentication = accountRequest.authenticationType == AuthenticationType.oidc
         ? accountRequest.bearerToken
         : accountRequest.basicAuth;
@@ -392,7 +345,7 @@ class EmailAPI with HandleSetErrorMixin {
             progress = (downloaded / total) * 100;
           }
           log('EmailAPI::downloadFileForWeb(): progress = ${progress.round()}%');
-          onReceiveController.add(Right(DownloadingAttachmentForWeb(
+          onReceiveController?.add(Right(DownloadingAttachmentForWeb(
               taskId,
               attachment,
               progress,
@@ -410,10 +363,10 @@ class EmailAPI with HandleSetErrorMixin {
     String baseDownloadAllUrl,
     String outputFileName,
     AccountRequest accountRequest,
-    DownloadTaskId taskId,
-    StreamController<Either<Failure, Success>> onReceiveController,
-    {CancelToken? cancelToken}
-  ) async {
+    DownloadTaskId taskId, {
+    StreamController<Either<Failure, Success>>? onReceiveController,
+    CancelToken? cancelToken,
+  }) async {
     final authentication = accountRequest.authenticationType == AuthenticationType.oidc
         ? accountRequest.bearerToken
         : accountRequest.basicAuth;
@@ -441,7 +394,7 @@ class EmailAPI with HandleSetErrorMixin {
           progress = (downloaded / total) * 100;
         }
         log('EmailAPI::downloadFileForWeb(): progress = ${progress.round()}%');
-        onReceiveController.add(Right(DownloadingAllAttachmentsForWeb(
+        onReceiveController?.add(Right(DownloadingAllAttachmentsForWeb(
           taskId,
           downloadFileName,
           progress,

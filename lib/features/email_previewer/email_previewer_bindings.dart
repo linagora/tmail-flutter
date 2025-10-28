@@ -30,12 +30,10 @@ import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob
 import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/remove_preview_email_eml_content_shared_interactor.dart';
 import 'package:tmail_ui_user/features/email_previewer/email_previewer_controller.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/download_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
@@ -119,11 +117,8 @@ class EmailPreviewerBindings extends BaseBindings {
         Get.find<EmailRepository>()));
     Get.lazyPut(() => PreviewEmailFromEmlFileInteractor(
         Get.find<EmailRepository>()));
-    Get.lazyPut(() => DownloadAttachmentForWebInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<CredentialRepository>(),
-        Get.find<AccountRepository>(),
-        Get.find<AuthenticationOIDCRepository>()));
+
+    DownloadInteractorBindings().dependencies();
   }
 
   @override

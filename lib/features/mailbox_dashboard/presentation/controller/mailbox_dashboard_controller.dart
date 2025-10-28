@@ -111,6 +111,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
@@ -120,6 +121,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_clear_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_download_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_reactive_obx_variable_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_save_email_as_draft_extension.dart';
@@ -313,6 +315,7 @@ class MailboxDashBoardController extends ReloadableController
   PaywallController? paywallController;
   Worker? advancedSearchVisibleWorker;
   Worker? searchInputFocusWorker;
+  Worker? _downloadUIActionWorker;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -748,10 +751,24 @@ class MailboxDashBoardController extends ReloadableController
       .listen(_handleRefreshActionWhenBackToApp);
 
     _registerLocalNotificationStreamListener();
+
+    _registerDownloadUIActionListener();
   }
 
   void _registerLocalNotificationStreamListener() {
     _notificationManager.localNotificationStream.listen(_handleClickLocalNotificationOnForeground);
+  }
+
+  void _registerDownloadUIActionListener() {
+    _downloadUIActionWorker = ever(
+      downloadController.downloadUIAction,
+      (action) {
+        if (action is DownloadAttachmentsQuicklyAction) {
+          downloadAttachmentForWeb(attachment: action.attachment);
+          downloadController.clearDownloadUIAction();
+        }
+      },
+    );
   }
 
   Future<void> _handleClickNotificationOnAndroidInTerminated() async {
@@ -3322,6 +3339,8 @@ class MailboxDashBoardController extends ReloadableController
     twakeAppManager.setHasComposer(false);
     paywallController?.onClose();
     paywallController = null;
+    _downloadUIActionWorker?.dispose();
+    _downloadUIActionWorker = null;
     super.onClose();
   }
 }

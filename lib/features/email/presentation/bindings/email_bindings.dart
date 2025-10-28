@@ -1,9 +1,5 @@
-import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
@@ -29,18 +25,14 @@ class EmailBindings extends Bindings {
     Get.put(SingleEmailController(
       Get.find<GetEmailContentInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
-      Get.find<DownloadAttachmentsInteractor>(),
-      Get.find<DeviceManager>(),
       Get.find<ExportAttachmentInteractor>(),
       Get.find<MarkAsStarEmailInteractor>(),
-      Get.find<DownloadAttachmentForWebInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<StoreOpenedEmailInteractor>(),
       Get.find<PrintEmailInteractor>(),
       Get.find<ParseEmailByBlobIdInteractor>(),
       Get.find<PreviewEmailFromEmlFileInteractor>(),
       Get.find<GetHtmlContentFromAttachmentInteractor>(),
-      Get.find<DownloadAllAttachmentsForWebInteractor>(),
       Get.find<ExportAllAttachmentsInteractor>(),
       currentEmailId: currentEmailId,
     ), tag: tag);

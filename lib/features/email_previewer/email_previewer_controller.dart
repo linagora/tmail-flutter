@@ -320,7 +320,7 @@ class EmailPreviewerController extends ReloadableController {
               attachment,
               _accountId!,
               _session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
-              _downloadAttachmentStreamController!)
+              onReceiveController: _downloadAttachmentStreamController!)
           .listen(_handleDownloadAttachmentViewState);
     } catch (e) {
       logError('EmailPreviewerController::_handleParseEmailByBlobIdSuccess(): $e');

@@ -67,6 +67,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
@@ -396,6 +397,7 @@ void main() {
       getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
 
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();
@@ -441,6 +443,7 @@ void main() {
       // arrange
       when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
       when(context.mounted).thenReturn(true);
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
       
       // expect query in search controller update as expected
       mailboxDashboardController.searchEmailByQueryString(queryString);
@@ -630,6 +633,7 @@ void main() {
       getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
 
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();

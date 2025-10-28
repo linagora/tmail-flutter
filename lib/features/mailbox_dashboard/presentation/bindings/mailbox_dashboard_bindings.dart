@@ -1,4 +1,5 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/data/network/download/download_manager.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/utils/config/app_config_loader.dart';
@@ -31,6 +32,8 @@ import 'package:tmail_ui_user/features/email/data/repository/email_repository_im
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
@@ -93,6 +96,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_re
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/download_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
@@ -167,7 +171,11 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetAppDashboardConfigurationInteractor>(),
       Get.find<GetAppGridLinagraEcosystemInteractor>(),
     ));
-    Get.put(DownloadController());
+    Get.put(DownloadController(
+      Get.find<DownloadAttachmentForWebInteractor>(),
+      Get.find<DownloadAllAttachmentsForWebInteractor>(),
+      Get.find<DownloadManager>(),
+    ));
     Get.put(SearchController(
       Get.find<QuickSearchEmailInteractor>(),
       Get.find<SaveRecentSearchInteractor>(),
@@ -378,6 +386,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<IdentityCreatorRepository>()
     ));
     PaywallBindings().dependencies();
+
+    DownloadInteractorBindings().dependencies();
   }
 
   @override

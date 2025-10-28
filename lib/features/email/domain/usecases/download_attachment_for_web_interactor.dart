@@ -11,36 +11,36 @@ import 'package:model/account/authentication_type.dart';
 import 'package:model/account/password.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
-import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/download_repository.dart';
 
 class DownloadAttachmentForWebInteractor {
-  final EmailRepository emailRepository;
+  final DownloadRepository _downloadRepository;
   final CredentialRepository credentialRepository;
   final AccountRepository _accountRepository;
   final AuthenticationOIDCRepository _authenticationOIDCRepository;
 
   DownloadAttachmentForWebInteractor(
-      this.emailRepository,
+      this._downloadRepository,
       this.credentialRepository,
       this._accountRepository,
       this._authenticationOIDCRepository);
 
   Stream<Either<Failure, Success>> execute(
-      DownloadTaskId taskId,
-      Attachment attachment,
-      AccountId accountId,
-      String baseDownloadUrl,
-      StreamController<Either<Failure, Success>> onReceiveController,
-      {CancelToken? cancelToken,
-      bool previewerSupported = false,
+    DownloadTaskId taskId,
+    Attachment attachment,
+    AccountId accountId,
+    String baseDownloadUrl, {
+    StreamController<Either<Failure, Success>>? onReceiveController,
+    CancelToken? cancelToken,
+    bool previewerSupported = false,
   }) async* {
     try {
       yield Right<Failure, Success>(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken, previewerSupported));
-      onReceiveController.add(Right(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken, previewerSupported)));
+      onReceiveController?.add(Right(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken, previewerSupported)));
 
       final currentAccount = await _accountRepository.getCurrentAccount();
       AccountRequest? accountRequest;
@@ -56,13 +56,13 @@ class DownloadAttachmentForWebInteractor {
         );
       }
 
-      final bytesDownloaded = await emailRepository.downloadAttachmentForWeb(
+      final bytesDownloaded = await _downloadRepository.downloadAttachmentForWeb(
         taskId,
         attachment,
         accountId,
         baseDownloadUrl,
         accountRequest,
-        onReceiveController,
+        onReceiveController: onReceiveController,
         cancelToken: cancelToken
       );
 
