@@ -77,10 +77,10 @@ packages:
     dependency: transitive
     description:
       name: args
-      sha256: eef6c46b622e0494a36c5a12d10d77fb4e855501a91c1b9ef9339326e58f0596
+      sha256: d0481093c50b1da8910eb0bb301626d4d8eb7284aa739614d2b394ee09e3ea04
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.2"
+    version: "2.7.0"
   async:
     dependency: "direct main"
     description:
@@ -463,15 +463,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
-  dns_client:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: twake-supported
-      resolved-ref: "0966c504c1a813ff40e22ea8896537c32d97b82d"
-      url: "https://github.com/linagora/dns_client.git"
-    source: git
-    version: "0.2.1"
   dotted_border:
     dependency: "direct main"
     description:
@@ -1176,10 +1167,10 @@ packages:
     dependency: transitive
     description:
       name: freezed_annotation
-      sha256: c3fd9336eb55a38cc1bbd79ab17573113a8deccd0ecbbf926cca3c62803b5c2d
+      sha256: c2e2d632dd9b8a2b7751117abcfc2b4888ecfe181bd9fca7170d9ef02e595fe2
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
+    version: "2.4.4"
   frontend_server_client:
     dependency: transitive
     description:
@@ -2166,6 +2157,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  super_dns:
+    dependency: transitive
+    description:
+      name: super_dns
+      sha256: "213d06aafacdcb342ba491faceb50cfca19e90df9cbd2216b39949b5080b283d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
+  super_dns_client:
+    dependency: "direct main"
+    description:
+      name: super_dns_client
+      sha256: "78c2b9c38d96d95f85d495902fc3bc49354cd63db7c4ebd15faa55bff2e4d13f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
+  super_ip:
+    dependency: transitive
+    description:
+      name: super_ip
+      sha256: "450f781cddd61b34793063e6f0508c190ca0664bb80a7df12a12b9ec4cd90d0e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
+  super_raw:
+    dependency: transitive
+    description:
+      name: super_raw
+      sha256: "7f33a7b6d11b0a829c9a8eda27767ea63f8ef61e1bcc179055861a84f1ad5744"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   super_tag_editor:
     dependency: "direct main"
     description:
