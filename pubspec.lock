@@ -2161,18 +2161,18 @@ packages:
     dependency: transitive
     description:
       name: super_dns
-      sha256: "213d06aafacdcb342ba491faceb50cfca19e90df9cbd2216b39949b5080b283d"
+      sha256: "8cdf3ebabf1afe9711ab5bd0ab786634cada8a8f2af211edccb940b1ffd22f48"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.0"
+    version: "0.1.1"
   super_dns_client:
     dependency: "direct main"
     description:
       name: super_dns_client
-      sha256: "78c2b9c38d96d95f85d495902fc3bc49354cd63db7c4ebd15faa55bff2e4d13f"
+      sha256: fe51cb3da20be471ca1d72293bf0f86ddff015fbc1644b586cdb695e85433b9c
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.1"
+    version: "0.3.3"
   super_ip:
     dependency: transitive
     description:
