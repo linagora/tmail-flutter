@@ -91,7 +91,7 @@ class _PDFViewerState extends State<PDFViewer> {
       widget.attachment, 
       widget.accountId,
       widget.downloadUrl,
-      _downloadAttachmentStreamController,
+      onReceiveController: _downloadAttachmentStreamController,
       cancelToken: _downloadAttachmentCancelToken
     ).listen((viewState) {
       viewState.fold(

@@ -1,11 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:core/data/network/download/downloaded_response.dart';
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
-import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
@@ -17,7 +13,6 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/account/account_request.dart';
-import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/mark_star_action.dart';
@@ -59,29 +54,12 @@ abstract class EmailRepository {
     ReadActions readActions,
   );
 
-  Future<List<DownloadTaskId>> downloadAttachments(
-    List<Attachment> attachments,
-    AccountId accountId,
-    String baseDownloadUrl,
-    AccountRequest accountRequest
-  );
-
   Future<DownloadedResponse> exportAttachment(
     Attachment attachment,
     AccountId accountId,
     String baseDownloadUrl,
     AccountRequest accountRequest,
     CancelToken cancelToken
-  );
-
-  Future<Uint8List> downloadAttachmentForWeb(
-    DownloadTaskId taskId,
-    Attachment attachment,
-    AccountId accountId,
-    String baseDownloadUrl,
-    AccountRequest accountRequest,
-    StreamController<Either<Failure, Success>> onReceiveController,
-    {CancelToken? cancelToken}
   );
 
   Future<({
@@ -212,16 +190,7 @@ abstract class EmailRepository {
     String htmlContent,
     TransformConfiguration configuration);
 
-  Future<void> downloadAllAttachmentsForWeb(
-    AccountId accountId,
-    EmailId emailId,
-    String baseDownloadAllUrl,
-    String outputFileName,
-    AccountRequest accountRequest,
-    DownloadTaskId taskId,
-    StreamController<Either<Failure, Success>> onReceiveController,
-    {CancelToken? cancelToken}
-  );
+
 
   Future<DownloadedResponse> exportAllAttachments(
     AccountId accountId,

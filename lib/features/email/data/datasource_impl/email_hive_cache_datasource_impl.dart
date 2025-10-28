@@ -1,13 +1,9 @@
 
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:core/data/network/download/downloaded_response.dart';
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
-import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
@@ -20,7 +16,6 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/account/account_request.dart';
-import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
@@ -110,24 +105,6 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
       emailIdsSuccess: emailIds,
       mapErrors: <Id, SetError>{}
     );
-  }
-
-  @override
-  Future<Uint8List> downloadAttachmentForWeb(
-    DownloadTaskId taskId,
-    Attachment attachment,
-    AccountId accountId,
-    String baseDownloadUrl,
-    AccountRequest accountRequest,
-    StreamController<Either<Failure, Success>> onReceiveController,
-    {CancelToken? cancelToken}
-  ) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<DownloadTaskId>> downloadAttachments(List<Attachment> attachments, AccountId accountId, String baseDownloadUrl, AccountRequest accountRequest) {
-    throw UnimplementedError();
   }
 
   @override
@@ -586,20 +563,6 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
 
   @override
   Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored) {
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<void> downloadAllAttachmentsForWeb(
-      AccountId accountId,
-      EmailId emailId,
-      String baseDownloadAllUrl,
-      String outputFileName,
-      AccountRequest accountRequest,
-      DownloadTaskId taskId,
-      StreamController<Either<Failure, Success>> onReceiveController,
-      {CancelToken? cancelToken}
-  ) {
     throw UnimplementedError();
   }
   

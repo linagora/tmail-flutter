@@ -65,6 +65,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -347,6 +348,7 @@ void main() {
       Get.put<GetTokenOIDCInteractor>(getTokenOIDCInteractor);
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
 
       searchController = SearchController(
         quickSearchEmailInteractor,
