@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/login/data/datasource/login_datasource.da
 import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_login_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/login_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/data/network/dns_service.dart';
+import 'package:tmail_ui_user/features/login/data/network/dns_lookup/dns_lookup_manager.dart';
 import 'package:tmail_ui_user/features/login/data/repository/login_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
@@ -74,7 +74,7 @@ class LoginBindings extends BaseBindings {
       Get.find<CacheExceptionThrower>()
     ));
     Get.lazyPut(() => LoginDataSourceImpl(
-      Get.find<DNSService>(),
+      Get.find<DnsLookupManager>(),
       Get.find<RemoteExceptionThrower>(),
     ));
     Get.lazyPut(() => SaasAuthenticationDataSourceImpl(

@@ -18,7 +18,7 @@ import 'package:tmail_ui_user/features/login/data/local/authentication_info_cach
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/data/network/dns_service.dart';
+import 'package:tmail_ui_user/features/login/data/network/dns_lookup/dns_lookup_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
@@ -144,6 +144,6 @@ class NetworkBindings extends Bindings {
   }
 
   void _bindingServices() {
-    Get.put(DNSService());
+    Get.put(DnsLookupManager());
   }
 }
