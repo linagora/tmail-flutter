@@ -52,7 +52,10 @@ class AppUtils {
   static TextDirection getCurrentDirection(BuildContext context) => Directionality.maybeOf(context) ?? TextDirection.ltr;
 
   static bool isEmailLocalhost(String email) {
-    return  RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@localhost$').hasMatch(email);
+    final normalized = email.trim();
+    return RegExp(
+        r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@localhost$'
+    ).hasMatch(normalized);
   }
 
   static void copyEmailAddressToClipboard(BuildContext context, String emailAddress) {
