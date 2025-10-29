@@ -5345,4 +5345,11 @@ class AppLocalizations {
       name: 'deleteMessage',
     );
   }
+
+  String get moveFolderContent {
+    return Intl.message(
+      'Move folder content',
+      name: 'moveFolderContent',
+    );
+  }
 }

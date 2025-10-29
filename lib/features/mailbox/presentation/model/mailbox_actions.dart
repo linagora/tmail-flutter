@@ -10,6 +10,7 @@ enum MailboxActions {
   delete,
   rename,
   move,
+  moveFolderContent,
   markAsRead,
   selectForRuleAction,
   openInNewTab,
@@ -63,6 +64,8 @@ extension MailboxActionsExtension on MailboxActions {
         return appLocalizations.mark_as_read;
       case MailboxActions.move:
         return appLocalizations.moveFolder;
+      case MailboxActions.moveFolderContent:
+        return appLocalizations.moveFolderContent;
       case MailboxActions.rename:
         return appLocalizations.renameFolder;
       case MailboxActions.delete:
@@ -106,6 +109,8 @@ extension MailboxActionsExtension on MailboxActions {
         return imagePaths.icMarkAsRead;
       case MailboxActions.move:
         return imagePaths.icMoveMailbox;
+      case MailboxActions.moveFolderContent:
+        return imagePaths.icMoveFolderContent;
       case MailboxActions.rename:
         return imagePaths.icRenameMailbox;
       case MailboxActions.delete:
@@ -172,6 +177,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.create:
       case MailboxActions.moveEmail:
       case MailboxActions.move:
+      case MailboxActions.moveFolderContent:
       case MailboxActions.select:
       case MailboxActions.selectForRuleAction:
         return true;
@@ -188,18 +194,6 @@ extension MailboxActionsExtension on MailboxActions {
         return true;
       default:
         return false;
-    }
-  }
-
-  bool canCollapseMailboxGroup() {
-    switch(this) {
-      case MailboxActions.moveEmail:
-      case MailboxActions.move:
-      case MailboxActions.select:
-      case MailboxActions.selectForRuleAction:
-        return false;
-      default:
-        return true;
     }
   }
 }

@@ -21,7 +21,6 @@ mixin MailboxWidgetMixin {
     bool spamReportEnabled,
     bool deletedMessageVaultSupported
   ) {
-
     return [
       if (PlatformInfo.isWeb)
         MailboxActions.openInNewTab,
@@ -30,18 +29,23 @@ mixin MailboxWidgetMixin {
       MailboxActions.createFilter,
       if (mailbox.isTrash)
         ...[
+          MailboxActions.moveFolderContent,
           MailboxActions.emptyTrash,
           if (deletedMessageVaultSupported)
             MailboxActions.recoverDeletedMessages,
         ]
       else if (mailbox.isSpam)
         ...[
+          MailboxActions.moveFolderContent,
           _mailboxActionForSpam(spamReportEnabled),
           MailboxActions.confirmMailSpam,
           MailboxActions.emptySpam
         ]
       else if (mailbox.countUnReadEmailsAsString.isNotEmpty)
-        MailboxActions.markAsRead
+        ...[
+          MailboxActions.markAsRead,
+          MailboxActions.moveFolderContent,
+        ]
     ];
   }
 
@@ -54,6 +58,7 @@ mixin MailboxWidgetMixin {
       if (mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
       MailboxActions.move,
+      MailboxActions.moveFolderContent,
       MailboxActions.rename,
       if (subaddressingSupported) ...[
         if (mailbox.isSubaddressingAllowed)

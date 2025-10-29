@@ -1265,6 +1265,8 @@ class MailboxController extends BaseMailboxController
       case MailboxActions.recoverDeletedMessages:
         mailboxDashBoardController.gotoEmailRecovery();
         break;
+      case MailboxActions.moveFolderContent:
+        break;
       default:
         break;
     }
