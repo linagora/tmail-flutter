@@ -5051,5 +5051,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "moveFolderContent": "Move folder content",
+  "@moveFolderContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
