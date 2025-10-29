@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_folder_content_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
@@ -40,6 +41,13 @@ abstract class MailboxRepository {
     StreamController<dartz.Either<Failure, Success>> onProgressController);
 
   Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request);
+
+  Future<void> moveFolderContent({
+    required Session session,
+    required AccountId accountId,
+    required MoveFolderContentRequest request,
+    StreamController<dartz.Either<Failure, Success>>? onProgressController,
+  });
 
   Future<State?> getMailboxState(Session session, AccountId accountId);
 

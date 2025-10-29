@@ -14,8 +14,6 @@ import 'package:email_recovery/email_recovery/set/set_email_recovery_action_meth
 import 'package:email_recovery/email_recovery/set/set_email_recovery_action_response.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
-import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
@@ -55,8 +53,10 @@ import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/list_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
@@ -70,7 +70,7 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:uri/uri.dart';
 import 'package:uuid/uuid.dart';
 
-class EmailAPI with HandleSetErrorMixin {
+class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
 
   final HttpClient _httpClient;
   final DownloadManager _downloadManager;
@@ -247,7 +247,7 @@ class EmailAPI with HandleSetErrorMixin {
     List<EmailId> emailIds,
     ReadActions readActions,
   ) async {
-    final maxObjects = _getMaxObjectsInSetMethod(session, accountId);
+    final maxObjects = getMaxObjectsInSetMethod(session, accountId);
     final totalEmails = emailIds.length;
     final maxBatches = min(totalEmails, maxObjects);
 
@@ -455,13 +455,14 @@ class EmailAPI with HandleSetErrorMixin {
       final currentMailboxId = listMailboxIds[i];
       final listEmailIds = moveRequest.currentMailboxes[currentMailboxId]!;
       log('EmailAPI::moveToMailbox:from mailbox ${currentMailboxId.asString} with ${listEmailIds.length} emails to mailbox ${moveRequest.destinationMailboxId.asString}');
-      final resultRecords = await _moveEmailsBetweenMailboxes(
+      final resultRecords = await moveEmailsBetweenMailboxes(
+        httpClient: _httpClient,
         session: session,
         accountId: accountId,
         emailIds: listEmailIds,
         currentMailboxId: currentMailboxId,
         destinationMailboxId: moveRequest.destinationMailboxId,
-        isMovingToSpam: moveRequest.isMovingToSpam,
+        markAsRead: moveRequest.isMovingToSpam,
       );
 
       listEmailIdResult.addAll(resultRecords.emailIdsSuccess);
@@ -474,95 +475,13 @@ class EmailAPI with HandleSetErrorMixin {
   Future<({
     List<EmailId> emailIdsSuccess,
     Map<Id, SetError> mapErrors,
-  })> _moveEmailsBetweenMailboxes({
-    required Session session,
-    required AccountId accountId,
-    required List<EmailId> emailIds,
-    required MailboxId currentMailboxId,
-    required MailboxId destinationMailboxId,
-    bool isMovingToSpam = false,
-  }) async {
-    final maxObjects = _getMaxObjectsInSetMethod(session, accountId);
-    final totalEmails = emailIds.length;
-    final maxBatches = min(totalEmails, maxObjects);
-
-    final List<EmailId> updatedEmailIds = List.empty(growable: true);
-    final Map<Id, SetError> mapErrors = <Id, SetError>{};
-
-    for (int start = 0; start < totalEmails; start += maxBatches) {
-      int end = (start + maxBatches < totalEmails)
-          ? start + maxBatches
-          : totalEmails;
-      log('EmailAPI::_moveEmailsBetweenMailboxes:emails from ${start + 1} to $end');
-
-      final currentEmailIds = emailIds.sublist(start, end);
-
-      final moveProperties = isMovingToSpam
-          ? currentEmailIds.generateMapUpdateObjectMoveToSpam(
-              currentMailboxId,
-              destinationMailboxId,
-            )
-          : currentEmailIds.generateMapUpdateObjectMoveToMailbox(
-              currentMailboxId,
-              destinationMailboxId,
-            );
-
-      final setEmailMethod = SetEmailMethod(accountId)
-        ..addUpdates(moveProperties);
-
-      final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-
-      final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
-
-      final capabilities = setEmailMethod.requiredCapabilities
-          .toCapabilitiesSupportTeamMailboxes(session, accountId);
-
-      final response = await (requestBuilder
-          ..usings(capabilities))
-        .build()
-        .execute();
-
-      final setEmailResponse = response.parse(
-        setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize,
-      );
-
-      final listEmailIds = setEmailResponse?.updated?.keys.toEmailIds() ?? [];
-      final mapErrors = handleSetResponse([setEmailResponse]);
-
-      updatedEmailIds.addAll(listEmailIds);
-      mapErrors.addAll(mapErrors);
-    }
-
-    return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);
-  }
-
-  int _getMaxObjectsInSetMethod(Session session, AccountId accountId) {
-    final coreCapability = session.getCapabilityProperties<CoreCapability>(
-      accountId,
-      CapabilityIdentifier.jmapCore,
-    );
-    final maxObjectsInSetMethod = coreCapability?.maxObjectsInSet?.value.toInt()
-        ?? CapabilityIdentifierExtension.defaultMaxObjectsInSet;
-
-    final minOfMaxObjectsInSetMethod = min(
-      maxObjectsInSetMethod,
-      CapabilityIdentifierExtension.defaultMaxObjectsInSet,
-    );
-    log('EmailAPI::_getMaxObjectsInSetMethod:minOfMaxObjectsInSetMethod = $minOfMaxObjectsInSetMethod');
-    return minOfMaxObjectsInSetMethod;
-  }
-
-  Future<({
-    List<EmailId> emailIdsSuccess,
-    Map<Id, SetError> mapErrors,
   })> markAsStar(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
     MarkStarAction markStarAction
   ) async {
-    final maxObjects = _getMaxObjectsInSetMethod(session, accountId);
+    final maxObjects = getMaxObjectsInSetMethod(session, accountId);
     final totalEmails = emailIds.length;
     final maxBatches = min(totalEmails, maxObjects);
 
@@ -803,7 +722,7 @@ class EmailAPI with HandleSetErrorMixin {
     AccountId accountId,
     List<EmailId> emailIds
   ) async {
-    final maxObjects = _getMaxObjectsInSetMethod(session, accountId);
+    final maxObjects = getMaxObjectsInSetMethod(session, accountId);
     final totalEmails = emailIds.length;
     final maxBatches = min(totalEmails, maxObjects);
 

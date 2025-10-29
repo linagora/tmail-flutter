@@ -21,7 +21,8 @@ import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
 import 'package:model/extensions/list_id_extension.dart';
-import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
+import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_response.dart';
@@ -31,7 +32,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-class ThreadAPI {
+class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
 
   final HttpClient httpClient;
 
@@ -48,81 +49,16 @@ class ThreadAPI {
       Properties? properties
     }
   ) async {
-    final processingInvocation = ProcessingInvocation();
-
-    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
-
-    final queryEmailMethod = QueryEmailMethod(accountId);
-
-    if (limit != null) queryEmailMethod.addLimit(limit);
-
-    if (position != null) queryEmailMethod.addPosition(position);
-
-    if (sort != null) queryEmailMethod.addSorts(sort);
-
-    if (filter != null) queryEmailMethod.addFilters(filter);
-
-    final queryEmailInvocation = jmapRequestBuilder.invocation(queryEmailMethod);
-
-    final getEmailMethod = GetEmailMethod(accountId);
-
-    if (properties != null) getEmailMethod.addProperties(properties);
-
-    getEmailMethod.addReferenceIds(processingInvocation.createResultReference(
-      queryEmailInvocation.methodCallId,
-      ReferencePath.idsPath));
-
-    final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
-
-    final capabilities = getEmailMethod.requiredCapabilities
-      .toCapabilitiesSupportTeamMailboxes(session, accountId);
-
-    final result = await (jmapRequestBuilder
-        ..usings(capabilities))
-      .build()
-      .execute();
-
-    final responseOfGetEmailMethod = result.parse<GetEmailResponse>(
-      getEmailInvocation.methodCallId,
-      GetEmailResponse.deserialize,
+    return await fetchAllEmail(
+      httpClient: httpClient,
+      session: session,
+      accountId: accountId,
+      limit: limit,
+      position: position,
+      sort: sort,
+      filter: filter,
+      properties: properties,
     );
-
-    final responseOfQueryEmailMethod = result.parse<QueryEmailResponse>(
-      queryEmailInvocation.methodCallId,
-      QueryEmailResponse.deserialize,
-    );
-
-    final emailList = sortEmails(
-      getEmailResponse: responseOfGetEmailMethod,
-      queryEmailResponse: responseOfQueryEmailMethod,
-    );
-
-    final notFoundEmailIds = responseOfGetEmailMethod
-      ?.notFound
-      ?.toEmailIds()
-      .toList();
-    log('ThreadAPI::getAllEmail:notFoundEmailIds = ${notFoundEmailIds!.asListString.toString()} | NewState = ${responseOfGetEmailMethod?.state.value}');
-    return EmailsResponse(
-      emailList: emailList,
-      notFoundEmailIds: notFoundEmailIds,
-      state: responseOfGetEmailMethod?.state,
-    );
-  }
-
-  List<Email>? sortEmails({
-    GetEmailResponse? getEmailResponse,
-    QueryEmailResponse? queryEmailResponse,
-  }) {
-    final listEmails = getEmailResponse?.list;
-    final listIds = queryEmailResponse?.ids.toList();
-
-    if (listEmails?.isNotEmpty != true || listIds?.isNotEmpty != true) {
-      return listEmails;
-    }
-
-    final listSortedEmails = listEmails!.sortEmailsById(listIds!);
-
-    return listSortedEmails;
   }
 
   Future<SearchEmailsResponse> searchEmails(

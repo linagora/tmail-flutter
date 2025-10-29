@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart' hide State;
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
@@ -32,6 +35,7 @@ import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
 import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
@@ -41,17 +45,18 @@ import 'package:tmail_ui_user/features/mailbox/domain/extensions/role_extension.
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/jmap_mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subaddressing_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_folder_content_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:uuid/uuid.dart';
 
-class MailboxAPI with HandleSetErrorMixin {
+class MailboxAPI with HandleSetErrorMixin, MailAPIMixin {
 
   final HttpClient httpClient;
   final Uuid _uuid;
@@ -635,5 +640,24 @@ class MailboxAPI with HandleSetErrorMixin {
     } else {
       throw NotFoundClearMailboxResponseException();
     }
+  }
+
+  Future<void> moveFolderContent({
+    required Session session,
+    required AccountId accountId,
+    required MoveFolderContentRequest request,
+    StreamController<Either<Failure, Success>>? onProgressController,
+  }) async {
+    return await moveAllEmailsBetweenFolders(
+      httpClient: httpClient,
+      accountId: accountId,
+      session: session,
+      moveAction: request.moveAction,
+      currentMailboxId: request.mailboxId,
+      destinationMailboxId: request.destinationMailboxId,
+      totalEmails: request.totalEmails,
+      markAsRead: request.markAsRead,
+      onProgressController: onProgressController,
+    );
   }
 }

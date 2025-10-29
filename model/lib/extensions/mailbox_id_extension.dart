@@ -13,24 +13,20 @@ extension MailboxIdExtension on MailboxId {
     }
   }
 
-  PatchObject generateMoveToMailboxActionPath(MailboxId destinationMailboxId) {
+  PatchObject generateMoveToMailboxActionPath({
+    required MailboxId destinationMailboxId,
+    bool markAsRead = false,
+  }) {
     return PatchObject({
       generatePath():  null,
-      destinationMailboxId.generatePath(): true
+      destinationMailboxId.generatePath(): true,
+      if (markAsRead) KeyWordIdentifier.emailSeen.generatePath(): true,
     });
   }
 
   PatchObject generateActionPath() {
     return PatchObject({
       generatePath():  true,
-    });
-  }
-
-  PatchObject generateMoveToSpamActionPath(MailboxId currentMailboxId, MailboxId spamMailboxId) {
-    return PatchObject({
-      currentMailboxId.generatePath():  null,
-      spamMailboxId.generatePath(): true,
-      KeyWordIdentifier.emailSeen.generatePath(): true
     });
   }
 

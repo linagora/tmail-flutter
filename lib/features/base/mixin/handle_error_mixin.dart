@@ -1,4 +1,4 @@
-import 'package:core/core.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
