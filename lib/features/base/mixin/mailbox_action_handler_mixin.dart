@@ -1,17 +1,26 @@
 
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_folder_content_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 
 mixin MailboxActionHandlerMixin {
 
@@ -148,5 +157,121 @@ mixin MailboxActionHandlerMixin {
         },
       );
     }
+  }
+
+  void performMoveFolderContent({
+    required BuildContext context,
+    required PresentationMailbox mailboxSelected,
+    required MailboxDashBoardController dashboardController,
+    required BaseMailboxController baseMailboxController,
+    required MailboxActionReactor mailboxActionReactor,
+  }) {
+    final accountId = dashboardController.accountId.value;
+    final session = dashboardController.sessionCurrent;
+
+    if (accountId == null || session == null) {
+      baseMailboxController.consumeState(
+        Stream.value(
+          Left(MoveFolderContentFailure(NotFoundAccountIdException())),
+        ),
+      );
+      return;
+    }
+
+    baseMailboxController.moveFolderContentAction(
+      context: context,
+      accountId: accountId,
+      session: session,
+      mailboxSelected: mailboxSelected,
+      onMoveFolderContentAction: (currentMailbox, destinationMailbox) {
+        baseMailboxController.consumeState(
+          mailboxActionReactor.moveFolderContent(
+            session: session,
+            accountId: accountId,
+            moveRequest: MoveFolderContentRequest(
+              moveAction: MoveAction.moving,
+              mailboxId: currentMailbox.id,
+              destinationMailboxId: destinationMailbox.id,
+              destinationMailboxDisplayName:
+              destinationMailbox.getDisplayName(context),
+              markAsRead: destinationMailbox.isSpam,
+              totalEmails: currentMailbox.countTotalEmails,
+            ),
+            onProgressController: dashboardController.progressStateController,
+          ),
+        );
+      },
+    );
+  }
+
+  void handleMoveFolderContentSuccess({
+    required MoveFolderContentSuccess success,
+    required MailboxDashBoardController dashboardController,
+    required BaseMailboxController baseMailboxController,
+    required MailboxActionReactor mailboxActionReactor,
+  }) {
+    dashboardController.syncViewStateMailboxActionProgress(
+      newState: Right(UIState.idle),
+    );
+    final moveFolderRequest = success.request;
+
+    if (moveFolderRequest.moveAction == MoveAction.moving) {
+      baseMailboxController.toastManager.showMessageSuccessWithAction(
+        success: success,
+        onActionCallback: () {
+          _undoMoveFolderContentAction(
+            dashboardController: dashboardController,
+            baseMailboxController: baseMailboxController,
+            mailboxActionReactor: mailboxActionReactor,
+            newMoveRequest: MoveFolderContentRequest(
+              moveAction: MoveAction.undo,
+              mailboxId: moveFolderRequest.destinationMailboxId,
+              destinationMailboxId: moveFolderRequest.mailboxId,
+              destinationMailboxDisplayName: '',
+              totalEmails: moveFolderRequest.totalEmails,
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void _undoMoveFolderContentAction({
+    required MoveFolderContentRequest newMoveRequest,
+    required MailboxDashBoardController dashboardController,
+    required BaseMailboxController baseMailboxController,
+    required MailboxActionReactor mailboxActionReactor,
+  }) {
+    final accountId = dashboardController.accountId.value;
+    final session = dashboardController.sessionCurrent;
+
+    if (accountId == null || session == null) {
+      baseMailboxController.consumeState(
+        Stream.value(
+          Left(MoveFolderContentFailure(NotFoundAccountIdException())),
+        ),
+      );
+      return;
+    }
+
+    baseMailboxController.consumeState(
+      mailboxActionReactor.moveFolderContent(
+        session: session,
+        accountId: accountId,
+        moveRequest: newMoveRequest,
+        onProgressController: dashboardController.progressStateController,
+      ),
+    );
+  }
+
+  void handleMoveFolderContentFailure({
+    required MoveFolderContentFailure failure,
+    required MailboxDashBoardController dashboardController,
+    required ToastManager toastManager,
+  }) {
+    dashboardController.syncViewStateMailboxActionProgress(
+      newState: Right(UIState.idle),
+    );
+    toastManager.showMessageFailure(failure);
   }
 }

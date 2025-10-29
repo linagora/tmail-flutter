@@ -22,7 +22,9 @@ class MarkMailboxAsReadLoadingBanner extends StatelessWidget with AppLoaderMixin
     return viewState.fold(
       (failure) => const SizedBox.shrink(),
       (success) {
-        if (success is MarkAsMailboxReadLoading || success is ClearingMailbox) {
+        if (success is MarkAsMailboxReadLoading ||
+            success is ClearingMailbox ||
+            success is MovingFolderContent) {
           return Padding(
             padding: MarkMailboxAsReadLoadingBannerStyle.bannerMargin,
             child: horizontalLoadingWidget);

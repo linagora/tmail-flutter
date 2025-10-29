@@ -69,7 +69,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_move_folder_content_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -219,7 +218,12 @@ class MailboxController extends BaseMailboxController
     } else if (success is CreateDefaultMailboxAllSuccess) {
       _handleCreateDefaultFolderIfMissingSuccess(success);
     } else if (success is MoveFolderContentSuccess) {
-      handleMoveFolderContentSuccess(success);
+      handleMoveFolderContentSuccess(
+        success: success,
+        mailboxActionReactor: mailboxActionReactor,
+        dashboardController: mailboxDashBoardController,
+        baseMailboxController: this,
+      );
     } else {
       super.handleSuccessViewState(success);
     }
@@ -236,7 +240,11 @@ class MailboxController extends BaseMailboxController
     } else if (failure is SubaddressingFailure) {
       handleSubAddressingFailure(failure);
     } else if (failure is MoveFolderContentFailure) {
-      handleMoveFolderContentFailure(failure);
+      handleMoveFolderContentFailure(
+        failure: failure,
+        dashboardController: mailboxDashBoardController,
+        toastManager: toastManager,
+      );
     } else {
       super.handleFailureViewState(failure);
     }
@@ -1194,7 +1202,13 @@ class MailboxController extends BaseMailboxController
         mailboxDashBoardController.gotoEmailRecovery();
         break;
       case MailboxActions.moveFolderContent:
-        performMoveFolderContent(context: context, mailboxSelected: mailbox);
+        performMoveFolderContent(
+          context: context,
+          mailboxSelected: mailbox,
+          mailboxActionReactor: mailboxActionReactor,
+          dashboardController: mailboxDashBoardController,
+          baseMailboxController: this,
+        );
         mailboxDashBoardController.closeMailboxMenuDrawer();
         break;
       default:
