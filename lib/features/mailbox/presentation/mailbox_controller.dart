@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/base/extensions/handle_mailbox_action_typ
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/launcher_application_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
@@ -32,15 +31,15 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/null_session_or_accountid_exception.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subaddressing_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
@@ -952,44 +951,6 @@ class MailboxController extends BaseMailboxController
       .toList();
   }
 
-  void pressMailboxSelectionAction(
-      BuildContext context,
-      MailboxActions actions,
-      List<PresentationMailbox> selectedMailboxList
-  ) {
-    switch(actions) {
-      case MailboxActions.delete:
-        _openConfirmationDialogDeleteMultipleMailboxAction(context, selectedMailboxList);
-        break;
-      case MailboxActions.rename:
-        openDialogRenameMailboxAction(
-          context,
-          selectedMailboxList.first,
-          responsiveUtils,
-          onRenameMailboxAction: _renameMailboxAction
-        );
-        break;
-      case MailboxActions.markAsRead:
-        markAsReadMailboxAction(
-          context,
-          selectedMailboxList.first,
-          mailboxDashBoardController,
-          onCallbackAction: closeMailboxScreen
-        );
-        break;
-      case MailboxActions.move:
-        moveMailboxAction(
-          context,
-          selectedMailboxList.first,
-          mailboxDashBoardController,
-          onMovingMailboxAction: (mailboxSelected, destinationMailbox) => _invokeMovingMailboxAction(context, mailboxSelected, destinationMailbox)
-        );
-        break;
-      default:
-        break;
-    }
-  }
-
   void _deleteMailboxAction(PresentationMailbox presentationMailbox) {
     if (session != null && accountId != null) {
       final tupleMap = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
@@ -1026,55 +987,6 @@ class MailboxController extends BaseMailboxController
       _switchBackToMailboxDefault();
       _closeEmailViewIfMailboxDisabledOrNotExist(listMailboxIdDeleted);
     }
-  }
-
-  void _openConfirmationDialogDeleteMultipleMailboxAction(
-      BuildContext context,
-      List<PresentationMailbox> selectedMailboxList
-  ) {
-    if (responsiveUtils.isLandscapeMobile(context) ||
-        responsiveUtils.isPortraitMobile(context)) {
-      (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(AppLocalizations.of(context)
-            .messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length))
-        ..onCancelAction(AppLocalizations.of(context).cancel, () =>
-            popBack())
-        ..onConfirmAction(AppLocalizations.of(context).delete, () =>
-            _deleteMultipleMailboxAction(selectedMailboxList)))
-        .show();
-    } else {
-      MessageDialogActionManager().showConfirmDialogAction(
-        key: const Key('confirm_dialog_delete_multiple_mailbox'),
-        context,
-        title: AppLocalizations.of(context).deleteFolders,
-        AppLocalizations.of(context).messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length),
-        cancelTitle: AppLocalizations.of(context).cancel,
-        AppLocalizations.of(context).delete,
-        onConfirmAction: () => _deleteMultipleMailboxAction(selectedMailboxList),
-        onCloseButtonAction: popBack,
-      );
-    }
-  }
-
-  void _deleteMultipleMailboxAction(List<PresentationMailbox> selectedMailboxList) {
-    if (session != null && accountId != null) {
-      final tupleMap = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
-          selectedMailboxList,
-          defaultMailboxTree.value,
-          personalMailboxTree.value);
-      final mapDescendantIds = tupleMap.value1;
-      final listMailboxId = tupleMap.value2;
-      consumeState(_deleteMultipleMailboxInteractor.execute(
-        session!,
-        accountId!,
-        mapDescendantIds,
-        listMailboxId,
-      ));
-    } else {
-      _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
-    }
-
-    popBack();
   }
 
   void _switchBackToMailboxDefault() {
