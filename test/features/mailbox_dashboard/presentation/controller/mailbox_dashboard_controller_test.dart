@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbo
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_folder_content_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
@@ -165,6 +166,7 @@ const fallbackGenerators = {
   MockSpec<SubscribeMultipleMailboxInteractor>(),
   MockSpec<SubaddressingInteractor>(),
   MockSpec<CreateDefaultMailboxInteractor>(),
+  MockSpec<MoveFolderContentInteractor>(),
   MockSpec<TreeBuilder>(),
   MockSpec<VerifyNameInteractor>(),
   MockSpec<GetAllMailboxInteractor>(),
@@ -280,6 +282,7 @@ void main() {
   final subscribeMultipleMailboxInteractor = MockSubscribeMultipleMailboxInteractor();
   final subaddressingInteractor = MockSubaddressingInteractor();
   final createDefaultMailboxInteractor = MockCreateDefaultMailboxInteractor();
+  final moveFolderContentInteractor = MockMoveFolderContentInteractor();
   final treeBuilder = MockTreeBuilder();
   final verifyNameInteractor = MockVerifyNameInteractor();
   final getAllMailboxInteractor = MockGetAllMailboxInteractor();
@@ -411,6 +414,7 @@ void main() {
         subscribeMultipleMailboxInteractor,
         subaddressingInteractor,
         createDefaultMailboxInteractor,
+        moveFolderContentInteractor,
         treeBuilder,
         verifyNameInteractor,
         getAllMailboxInteractor,
@@ -647,6 +651,7 @@ void main() {
           subscribeMultipleMailboxInteractor,
           subaddressingInteractor,
           createDefaultMailboxInteractor,
+          moveFolderContentInteractor,
           treeBuilder,
           verifyNameInteractor,
           getAllMailboxInteractor,

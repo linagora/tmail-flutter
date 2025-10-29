@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/context_item_ema
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
@@ -793,6 +794,7 @@ class _MailboxActionProgressBanner extends StatelessWidget with AppLoaderMixin {
         if (success is MarkAsMailboxReadLoading ||
             success is EmptySpamFolderLoading ||
             success is EmptyTrashFolderLoading ||
+            success is MovingFolderContent ||
             success is ClearingMailbox) {
           return Padding(
             padding: EdgeInsets.only(
@@ -813,6 +815,12 @@ class _MailboxActionProgressBanner extends StatelessWidget with AppLoaderMixin {
           return _buildProgressBanner(
             context,
             success.countEmailsDeleted,
+            success.totalEmails,
+          );
+        } else if (success is MoveFolderContentProgressState) {
+          return _buildProgressBanner(
+            context,
+            success.countEmailsCompleted,
             success.totalEmails,
           );
         }

@@ -53,6 +53,10 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef RenameMailboxActionCallback = void Function(PresentationMailbox mailbox, MailboxName newMailboxName);
 typedef MovingMailboxActionCallback = void Function(PresentationMailbox mailboxSelected, PresentationMailbox? destinationMailbox);
+typedef OnMoveFolderContentActionCallback = void Function(
+  PresentationMailbox currentMailbox,
+  PresentationMailbox destinationMailbox,
+);
 typedef DeleteMailboxActionCallback = void Function(PresentationMailbox mailbox);
 typedef AllowSubaddressingActionCallback = void Function(MailboxId, Map<String, List<String>?>?, MailboxActions);
 
@@ -635,6 +639,35 @@ abstract class BaseMailboxController extends BaseController
 
     if (hasChildren) {
       triggerScrollWhenExpandFolder(newExpandMode, itemKey, scrollController);
+    }
+  }
+
+  void moveFolderContentAction({
+    required BuildContext context,
+    required AccountId accountId,
+    required Session session,
+    required PresentationMailbox mailboxSelected,
+    required OnMoveFolderContentActionCallback onMoveFolderContentAction,
+  }) async {
+    final arguments = DestinationPickerArguments(
+      accountId,
+      MailboxActions.moveFolderContent,
+      session,
+      mailboxIdSelected: mailboxSelected.id,
+    );
+
+    final destinationMailbox = PlatformInfo.isWeb
+        ? await DialogRouter.pushGeneralDialog(
+            routeName: AppRoutes.destinationPicker,
+            arguments: arguments,
+          )
+        : await push(AppRoutes.destinationPicker, arguments: arguments);
+    if (destinationMailbox is PresentationMailbox) {
+      log('$runtimeType::moveFolderContentAction: DestinationMailbox is ${destinationMailbox.name?.name}');
+      onMoveFolderContentAction(
+        mailboxSelected,
+        destinationMailbox,
+      );
     }
   }
 }

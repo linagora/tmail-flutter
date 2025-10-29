@@ -2,12 +2,16 @@ import 'dart:io';
 
 import 'package:core/domain/exceptions/file_exception.dart';
 import 'package:core/domain/exceptions/web_session_exception.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_appauth_web/authorization_exception.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -27,6 +31,7 @@ import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
@@ -45,8 +50,9 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ToastManager {
   final AppToast appToast;
+  final ImagePaths imagePaths;
 
-  ToastManager(this.appToast);
+  ToastManager(this.appToast, this.imagePaths);
 
   String getDefaultMessageByException(
     AppLocalizations appLocalizations,
@@ -187,6 +193,9 @@ class ToastManager {
     } else if (failure is CalendarEventReplyFailure) {
       message = message ??
           appLocalizations.eventReplyWasSentUnsuccessfully;
+    } else if (failure is MoveFolderContentFailure) {
+      message = message ??
+          appLocalizations.moveFolderContentToastMessage;
     }
     log('ToastManager::showMessageFailure: Message: $message');
     if (message?.trim().isNotEmpty == true) {
@@ -254,6 +263,40 @@ class ToastManager {
     log('ToastManager::showMessageSuccess: Message: $message');
     if (message?.trim().isNotEmpty == true) {
       appToast.showToastSuccessMessage(overlayContext, message!);
+    }
+  }
+
+  void showMessageSuccessWithAction({
+    required Success success,
+    required VoidCallback onActionCallback,
+  }) {
+    final context = currentContext;
+    final overlayContext = currentOverlayContext;
+    if (context == null || overlayContext == null) {
+      logError('$runtimeType::showMessageSuccessWithAction: Context or OverlayContext is null');
+      return;
+    }
+
+    String? message;
+    final appLocalizations = AppLocalizations.of(context);
+    if (success is MoveFolderContentSuccess) {
+      message = appLocalizations.movedToFolder(
+        success.request.destinationMailboxDisplayName,
+      );
+    }
+    log('$runtimeType::showMessageSuccessWithAction: Message: $message');
+    if (message?.trim().isNotEmpty == true) {
+      appToast.showToastMessage(
+        overlayContext,
+        message!,
+        actionName: appLocalizations.undo,
+        onActionClick: onActionCallback,
+        leadingSVGIcon: imagePaths.icFolderMailbox,
+        leadingSVGIconColor: Colors.white,
+        backgroundColor: AppColor.toastSuccessBackgroundColor,
+        textColor: Colors.white,
+        actionIcon: SvgPicture.asset(imagePaths.icUndo),
+      );
     }
   }
 }

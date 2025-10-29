@@ -158,6 +158,7 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
     (
       mailboxActions == MailboxActions.select ||
       mailboxActions == MailboxActions.create ||
-      mailboxActions == MailboxActions.moveEmail
+      mailboxActions == MailboxActions.moveEmail ||
+      mailboxActions == MailboxActions.moveFolderContent
     );
 }
