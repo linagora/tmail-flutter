@@ -61,4 +61,7 @@ extension ListEmailExtension on List<Email> {
       ),
     ).toList();
   }
+
+  List<Email> withoutEmailWithId(EmailId emailId) =>
+      where((email) => email.id != emailId).toList();
 }

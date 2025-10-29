@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/jmap_mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_folder_content_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
@@ -304,5 +305,20 @@ class MailboxRepositoryImpl extends MailboxRepository {
   @override
   Future<UnsignedInt> clearMailbox(Session session, AccountId accountId, MailboxId mailboxId) {
     return mapDataSource[DataSourceType.network]!.clearMailbox(session, accountId, mailboxId);
+  }
+
+  @override
+  Future<void> moveFolderContent({
+    required Session session,
+    required AccountId accountId,
+    required MoveFolderContentRequest request,
+    StreamController<dartz.Either<Failure, Success>>? onProgressController,
+  }) {
+    return mapDataSource[DataSourceType.network]!.moveFolderContent(
+      session: session,
+      accountId: accountId,
+      request: request,
+      onProgressController: onProgressController,
+    );
   }
 }

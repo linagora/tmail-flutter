@@ -16,10 +16,17 @@ extension ListEmailIdExtension on List<EmailId> {
     };
   }
 
-  Map<Id, PatchObject> generateMapUpdateObjectMoveToMailbox(MailboxId currentMailboxId, MailboxId destinationMailboxId) {
+  Map<Id, PatchObject> generateMapUpdateObjectMoveToMailbox({
+    required MailboxId currentMailboxId,
+    required MailboxId destinationMailboxId,
+    bool markAsRead = false,
+  }) {
     return {
       for (var emailId in this)
-        emailId.id: currentMailboxId.generateMoveToMailboxActionPath(destinationMailboxId)
+        emailId.id: currentMailboxId.generateMoveToMailboxActionPath(
+          destinationMailboxId: destinationMailboxId,
+          markAsRead: markAsRead,
+        )
     };
   }
 
@@ -27,13 +34,6 @@ extension ListEmailIdExtension on List<EmailId> {
     return {
       for (var emailId in this)
         emailId.id: KeyWordIdentifier.emailFlagged.generateMarkStarActionPath(markStarAction)
-    };
-  }
-
-  Map<Id, PatchObject> generateMapUpdateObjectMoveToSpam(MailboxId currentMailboxId, MailboxId spamMailboxId) {
-    return {
-      for (var emailId in this)
-        emailId.id: currentMailboxId.generateMoveToSpamActionPath(currentMailboxId, spamMailboxId)
     };
   }
 

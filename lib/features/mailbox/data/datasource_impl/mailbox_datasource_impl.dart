@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -20,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_work
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/jmap_mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/move_folder_content_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
@@ -160,5 +162,34 @@ class MailboxDataSourceImpl extends MailboxDataSource {
     return Future.sync(() async {
       return await mailboxAPI.clearMailbox(session, accountId, mailboxId);
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> moveFolderContent({
+    required Session session,
+    required AccountId accountId,
+    required MoveFolderContentRequest request,
+    StreamController<dartz.Either<Failure, Success>>? onProgressController,
+  }) {
+    return Future.sync(() async {
+      if (PlatformInfo.isWeb) {
+        return await mailboxAPI.moveFolderContent(
+          session: session,
+          accountId: accountId,
+          request: request,
+          onProgressController: onProgressController,
+        );
+      } else {
+        return await _mailboxIsolateWorker.moveFolderContent(
+          session: session,
+          accountId: accountId,
+          request: request,
+          onProgressController: onProgressController,
+        );
+      }
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }
