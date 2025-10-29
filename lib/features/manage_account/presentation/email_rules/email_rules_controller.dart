@@ -175,6 +175,7 @@ class EmailRulesController extends BaseController {
       title: AppLocalizations.of(context).deleteEmailRule,
       AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name),
       AppLocalizations.of(context).delete,
+      alignCenter: true,
       cancelTitle: AppLocalizations.of(context).cancel,
       onConfirmAction: () => _handleDeleteEmailRuleAction(emailRule),
       onCloseButtonAction: popBack,
