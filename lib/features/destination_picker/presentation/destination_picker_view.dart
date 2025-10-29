@@ -296,8 +296,10 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             }
           }),
           Obx(() {
-            if (controller.teamMailboxesIsNotEmpty
-                && controller.mailboxAction.value == MailboxActions.moveEmail) {
+            if (controller.teamMailboxesIsNotEmpty &&
+                (controller.mailboxAction.value == MailboxActions.moveEmail ||
+                    controller.mailboxAction.value ==
+                        MailboxActions.moveFolderContent)) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

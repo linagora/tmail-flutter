@@ -49,6 +49,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_s
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
@@ -60,6 +61,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_defaul
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_folder_content_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
@@ -67,6 +69,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_move_folder_content_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -74,6 +77,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
@@ -116,8 +120,10 @@ class MailboxController extends BaseMailboxController
   final SubscribeMultipleMailboxInteractor _subscribeMultipleMailboxInteractor;
   final SubaddressingInteractor _subaddressingInteractor;
   final CreateDefaultMailboxInteractor _createDefaultMailboxInteractor;
+  final MoveFolderContentInteractor _moveFolderContentInteractor;
 
   IOSSharingManager? _iosSharingManager;
+  late MailboxActionReactor mailboxActionReactor;
 
   final _activeScrollTop = RxBool(false);
   final _activeScrollBottom = RxBool(true);
@@ -147,6 +153,7 @@ class MailboxController extends BaseMailboxController
     this._subscribeMultipleMailboxInteractor,
     this._subaddressingInteractor,
     this._createDefaultMailboxInteractor,
+    this._moveFolderContentInteractor,
     TreeBuilder treeBuilder,
     VerifyNameInteractor verifyNameInteractor,
     GetAllMailboxInteractor getAllMailboxInteractor,
@@ -162,6 +169,9 @@ class MailboxController extends BaseMailboxController
   void onInit() {
     _registerObxStreamListener();
     _initWebSocketQueueHandler();
+    mailboxActionReactor = MailboxActionReactor(
+      _moveFolderContentInteractor,
+    );
     super.onInit();
   }
 
@@ -186,7 +196,6 @@ class MailboxController extends BaseMailboxController
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is GetAllMailboxSuccess) {
       _handleGetAllMailboxSuccess(success);
     } else if (success is CreateNewMailboxSuccess) {
@@ -209,12 +218,15 @@ class MailboxController extends BaseMailboxController
       handleSubAddressingSuccess(success);
     } else if (success is CreateDefaultMailboxAllSuccess) {
       _handleCreateDefaultFolderIfMissingSuccess(success);
+    } else if (success is MoveFolderContentSuccess) {
+      handleMoveFolderContentSuccess(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
     if (failure is CreateNewMailboxFailure) {
       _createNewMailboxFailure(failure);
     } else if (failure is RenameMailboxFailure) {
@@ -223,6 +235,10 @@ class MailboxController extends BaseMailboxController
       _deleteMailboxFailure(failure);
     } else if (failure is SubaddressingFailure) {
       handleSubAddressingFailure(failure);
+    } else if (failure is MoveFolderContentFailure) {
+      handleMoveFolderContentFailure(failure);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
@@ -1178,6 +1194,8 @@ class MailboxController extends BaseMailboxController
         mailboxDashBoardController.gotoEmailRecovery();
         break;
       case MailboxActions.moveFolderContent:
+        performMoveFolderContent(context: context, mailboxSelected: mailbox);
+        mailboxDashBoardController.closeMailboxMenuDrawer();
         break;
       default:
         break;

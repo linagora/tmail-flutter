@@ -103,7 +103,9 @@ class DestinationPickerController extends BaseMailboxController {
   void handleSuccessViewState(Success success) async {
     super.handleSuccessViewState(success);
     if (success is GetAllMailboxSuccess)  {
-      if (mailboxAction.value == MailboxActions.move && mailboxIdSelected != null) {
+      if ((mailboxAction.value == MailboxActions.move ||
+              mailboxAction.value == MailboxActions.moveFolderContent) &&
+          mailboxIdSelected != null) {
         await buildTree(
           success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes,
           mailboxIdSelected: mailboxIdSelected);
@@ -249,9 +251,11 @@ class DestinationPickerController extends BaseMailboxController {
 
   void searchMailbox(BuildContext context, String value) {
     searchQuery.value = SearchQuery(value);
-    final searchableMailboxList = mailboxAction.value == MailboxActions.moveEmail
-      ? allMailboxes
-      : allMailboxes.listPersonalMailboxes;
+    final searchableMailboxList =
+        mailboxAction.value == MailboxActions.moveEmail ||
+                mailboxAction.value == MailboxActions.moveFolderContent
+            ? allMailboxes
+            : allMailboxes.listPersonalMailboxes;
 
     final mailboxListWithDisplayName = searchableMailboxList
       .map((mailbox) => mailbox.withDisplayName(mailbox.getDisplayName(context)))

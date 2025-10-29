@@ -5352,4 +5352,11 @@ class AppLocalizations {
       name: 'moveFolderContent',
     );
   }
+
+  String get moveFolderContentToastMessage {
+    return Intl.message(
+      'Failed to move all emails from this folder to another folder.',
+      name: 'moveFolderContentToastMessage',
+    );
+  }
 }

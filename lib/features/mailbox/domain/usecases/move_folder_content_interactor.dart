@@ -8,14 +8,13 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_folder_content_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
 
 class MoveFolderContentInteractor {
   final MailboxRepository _mailboxRepository;
 
   MoveFolderContentInteractor(this._mailboxRepository);
 
-  Stream<void> execute({
+  Stream<Either<Failure, Success>> execute({
     required Session session,
     required AccountId accountId,
     required MoveFolderContentRequest request,
@@ -23,6 +22,7 @@ class MoveFolderContentInteractor {
   }) async* {
     try {
       yield Right<Failure, Success>(MovingFolderContent());
+      onProgressController?.add(Right(MovingFolderContent()));
       await _mailboxRepository.moveFolderContent(
         session: session,
         accountId: accountId,
@@ -31,7 +31,7 @@ class MoveFolderContentInteractor {
       );
       yield Right<Failure, Success>(MoveFolderContentSuccess(request));
     } catch (e) {
-      yield Left<Failure, Success>(MoveMailboxFailure(e));
+      yield Left<Failure, Success>(MoveFolderContentFailure(e));
     }
   }
 }

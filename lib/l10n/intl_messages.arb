@@ -5057,5 +5057,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "moveFolderContentToastMessage": "Failed to move all emails from this folder to another folder.",
+  "@moveFolderContentToastMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

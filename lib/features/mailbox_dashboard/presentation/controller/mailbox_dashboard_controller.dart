@@ -317,9 +317,9 @@ class MailboxDashBoardController extends ReloadableController
   Worker? searchInputFocusWorker;
   Worker? _downloadUIActionWorker;
 
-  final StreamController<Either<Failure, Success>> _progressStateController =
+  final StreamController<Either<Failure, Success>> progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
-  Stream<Either<Failure, Success>> get progressState => _progressStateController.stream;
+  Stream<Either<Failure, Success>> get progressState => progressStateController.stream;
 
   final StreamController<RefreshActionViewEvent> _refreshActionEventController =
     StreamController<RefreshActionViewEvent>.broadcast();
@@ -743,7 +743,8 @@ class MailboxDashBoardController extends ReloadableController
 
   void _registerStreamListener() {
     progressState.listen((state) {
-      viewStateMailboxActionProgress.value = state;
+      log('$runtimeType::_registerStreamListener: ViewStateMailboxActionProgress = ${state.runtimeType}');
+      syncViewStateMailboxActionProgress(newState: state);
     });
 
     _refreshActionEventController.stream
@@ -1760,13 +1761,19 @@ class MailboxDashBoardController extends ReloadableController
         accountId,
         trashMailboxId,
         totalEmailsInTrash,
-        _progressStateController,
+        progressStateController,
       ));
     }
   }
 
+  void syncViewStateMailboxActionProgress({
+    required Either<Failure, Success> newState,
+  }) {
+    viewStateMailboxActionProgress.value = newState;
+  }
+
   void _emptyTrashFolderSuccess(EmptyTrashFolderSuccess success) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
+    syncViewStateMailboxActionProgress(newState: Right(UIState.idle));
 
     handleDeleteEmailsInMailbox(
       emailIds: success.emailIds,
@@ -1902,11 +1909,11 @@ class MailboxDashBoardController extends ReloadableController
       mailboxId,
       mailboxDisplayName,
       totalEmailsUnread,
-      _progressStateController));
+      progressStateController));
   }
 
   void _markAsReadMailboxSuccess(Success success) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
+    syncViewStateMailboxActionProgress(newState: Right(UIState.idle));
 
     if (success is MarkAsMailboxReadAllSuccess) {
       if (currentContext != null && currentOverlayContext != null) {
@@ -1926,7 +1933,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _markAsReadMailboxFailure(MarkAsMailboxReadFailure failure) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
+    syncViewStateMailboxActionProgress(newState: Right(UIState.idle));
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -1938,7 +1945,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _markAsReadMailboxAllFailure(MarkAsMailboxReadAllFailure failure) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
+    syncViewStateMailboxActionProgress(newState: Right(UIState.idle));
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -2694,13 +2701,13 @@ class MailboxDashBoardController extends ReloadableController
         accountId,
         spamFolderId,
         totalEmails,
-        _progressStateController,
+        progressStateController,
       ));
     }
   }
 
   void _emptySpamFolderSuccess(EmptySpamFolderSuccess success) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
+    syncViewStateMailboxActionProgress(newState: Right(UIState.idle));
 
     handleDeleteEmailsInMailbox(
       emailIds: success.emailIds,
@@ -3108,13 +3115,13 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _handleEmptySpamFolderFailure(EmptySpamFolderFailure failure) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
+    syncViewStateMailboxActionProgress(newState: Right(UIState.idle));
 
     toastManager.showMessageFailure(failure);
   }
 
   void _handleEmptyTrashFolderFailure(EmptyTrashFolderFailure failure) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
+    syncViewStateMailboxActionProgress(newState: Right(UIState.idle));
 
     toastManager.showMessageFailure(failure);
   }
@@ -3325,7 +3332,7 @@ class MailboxDashBoardController extends ReloadableController
       _emailReceiveManager.closeEmailReceiveManagerStream();
       _deepLinkDataStreamSubscription?.cancel();
     }
-    _progressStateController.close();
+    progressStateController.close();
     _refreshActionEventController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();

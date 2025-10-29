@@ -37,6 +37,7 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).selectParentFolder;
       case MailboxActions.moveEmail:
       case MailboxActions.move:
+      case MailboxActions.moveFolderContent:
         return AppLocalizations.of(context).moveTo;
       case MailboxActions.select:
       case MailboxActions.selectForRuleAction:
