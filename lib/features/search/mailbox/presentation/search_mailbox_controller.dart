@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_s
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
@@ -48,6 +49,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_multiple_m
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_folder_content_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
@@ -59,6 +61,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_ac
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
@@ -84,6 +87,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   final SubscribeMultipleMailboxInteractor _subscribeMultipleMailboxInteractor;
   final CreateNewMailboxInteractor _createNewMailboxInteractor;
   final SubaddressingInteractor _subAddressingInteractor;
+  final MoveFolderContentInteractor _moveFolderContentInteractor;
 
   final dashboardController = Get.find<MailboxDashBoardController>();
 
@@ -92,6 +96,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   final textInputSearchController = TextEditingController();
   late Debouncer<String> _deBouncerTime;
   FocusNode? searchFocusNode;
+  late MailboxActionReactor mailboxActionReactor;
 
   PresentationMailbox? get selectedMailbox => dashboardController.selectedMailbox.value;
 
@@ -110,6 +115,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     this._subscribeMultipleMailboxInteractor,
     this._createNewMailboxInteractor,
     this._subAddressingInteractor,
+    this._moveFolderContentInteractor,
     TreeBuilder treeBuilder,
     VerifyNameInteractor verifyNameInteractor,
     GetAllMailboxInteractor getAllMailboxInteractor,
@@ -124,6 +130,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   @override
   void onInit() {
     super.onInit();
+    mailboxActionReactor = MailboxActionReactor(_moveFolderContentInteractor);
     _initializeDebounceTimeTextSearchChange();
     _registerObxStreamListener();
     if (PlatformInfo.isWeb) {
@@ -142,6 +149,12 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       _renameMailboxFailure(failure);
     } else if (failure is SubaddressingFailure) {
       handleSubAddressingFailure(failure);
+    } else if (failure is MoveFolderContentFailure) {
+      handleMoveFolderContentFailure(
+        failure: failure,
+        dashboardController: dashboardController,
+        toastManager: toastManager,
+      );
     } else {
       super.handleFailureViewState(failure);
     }
@@ -182,6 +195,13 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       _createNewMailboxSuccess(success);
     } else if (success is SubaddressingSuccess) {
       handleSubAddressingSuccess(success);
+    } else if (success is MoveFolderContentSuccess) {
+      handleMoveFolderContentSuccess(
+        success: success,
+        mailboxActionReactor: mailboxActionReactor,
+        dashboardController: dashboardController,
+        baseMailboxController: this,
+      );
     } else {
       super.handleSuccessViewState(success);
     }
@@ -415,6 +435,15 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         break;
       case MailboxActions.disallowSubaddressing:
         _handleSubAddressingAction(mailbox.id, mailbox.rights, actions);
+        break;
+      case MailboxActions.moveFolderContent:
+        performMoveFolderContent(
+          context: context,
+          mailboxSelected: mailbox,
+          mailboxActionReactor: mailboxActionReactor,
+          dashboardController: dashboardController,
+          baseMailboxController: this,
+        );
         break;
       default:
         break;

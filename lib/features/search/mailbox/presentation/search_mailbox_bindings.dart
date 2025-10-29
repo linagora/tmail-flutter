@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_reposit
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_folder_content_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
@@ -53,6 +54,7 @@ class SearchMailboxBindings extends BaseBindings {
       Get.find<SubscribeMultipleMailboxInteractor>(),
       Get.find<CreateNewMailboxInteractor>(),
       Get.find<SubaddressingInteractor>(),
+      Get.find<MoveFolderContentInteractor>(),
       Get.find<TreeBuilder>(),
       Get.find<VerifyNameInteractor>(),
       Get.find<GetAllMailboxInteractor>(),
