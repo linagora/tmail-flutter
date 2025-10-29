@@ -56,6 +56,7 @@ typedef MovingMailboxActionCallback = void Function(PresentationMailbox mailboxS
 typedef OnMoveFolderContentActionCallback = void Function(
   PresentationMailbox currentMailbox,
   PresentationMailbox destinationMailbox,
+  String destinationMailboxName,
 );
 typedef DeleteMailboxActionCallback = void Function(PresentationMailbox mailbox);
 typedef AllowSubaddressingActionCallback = void Function(MailboxId, Map<String, List<String>?>?, MailboxActions);
@@ -643,7 +644,7 @@ abstract class BaseMailboxController extends BaseController
   }
 
   void moveFolderContentAction({
-    required BuildContext context,
+    required AppLocalizations appLocalizations,
     required AccountId accountId,
     required Session session,
     required PresentationMailbox mailboxSelected,
@@ -667,6 +668,7 @@ abstract class BaseMailboxController extends BaseController
       onMoveFolderContentAction(
         mailboxSelected,
         destinationMailbox,
+        destinationMailbox.getDisplayNameWithoutContext(appLocalizations),
       );
     }
   }

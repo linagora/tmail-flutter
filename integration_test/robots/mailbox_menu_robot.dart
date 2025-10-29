@@ -180,4 +180,12 @@ class MailboxMenuRobot extends CoreRobot {
     await $(AppLocalizations().mark_as_read).tap();
     await $.pumpAndSettle();
   }
+
+  Future<void> tapMoveFolderContentAction(String mailboxName) async {
+    await $(AppLocalizations().moveFolderContent).tap();
+    await $.pumpAndTrySettle();
+
+    await $(mailboxName).tap();
+    await $.pumpAndTrySettle();
+  }
 }

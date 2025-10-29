@@ -179,11 +179,11 @@ mixin MailboxActionHandlerMixin {
     }
 
     baseMailboxController.moveFolderContentAction(
-      context: context,
+      appLocalizations: AppLocalizations.of(context),
       accountId: accountId,
       session: session,
       mailboxSelected: mailboxSelected,
-      onMoveFolderContentAction: (currentMailbox, destinationMailbox) {
+      onMoveFolderContentAction: (currentMailbox, destinationMailbox, appLocalizations) {
         baseMailboxController.consumeState(
           mailboxActionReactor.moveFolderContent(
             session: session,
@@ -192,8 +192,7 @@ mixin MailboxActionHandlerMixin {
               moveAction: MoveAction.moving,
               mailboxId: currentMailbox.id,
               destinationMailboxId: destinationMailbox.id,
-              destinationMailboxDisplayName:
-              destinationMailbox.getDisplayName(context),
+              destinationMailboxDisplayName: appLocalizations,
               markAsRead: destinationMailbox.isSpam,
               totalEmails: currentMailbox.countTotalEmails,
             ),

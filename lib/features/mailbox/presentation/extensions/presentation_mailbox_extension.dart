@@ -37,6 +37,33 @@ extension PresentationMailboxExtension on PresentationMailbox {
     return name?.name ?? '';
   }
 
+  String getDisplayNameWithoutContext(AppLocalizations appLocalizations) {
+    if (isDefault) {
+      switch(role!.value.toLowerCase()) {
+        case PresentationMailbox.inboxRole:
+          return appLocalizations.inboxMailboxDisplayName;
+        case PresentationMailbox.archiveRole:
+          return appLocalizations.archiveMailboxDisplayName;
+        case PresentationMailbox.draftsRole:
+          return appLocalizations.draftsMailboxDisplayName;
+        case PresentationMailbox.sentRole:
+          return appLocalizations.sentMailboxDisplayName;
+        case PresentationMailbox.outboxRole:
+          return appLocalizations.outboxMailboxDisplayName;
+        case PresentationMailbox.trashRole:
+          return appLocalizations.trashMailboxDisplayName;
+        case PresentationMailbox.spamRole:
+        case PresentationMailbox.junkRole:
+          return appLocalizations.spamMailboxDisplayName;
+        case PresentationMailbox.templatesRole:
+          return appLocalizations.templatesMailboxDisplayName;
+        case PresentationMailbox.recoveredRole:
+          return appLocalizations.recoveredMailboxDisplayName;
+      }
+    }
+    return name?.name ?? '';
+  }
+
   String getMailboxIcon(ImagePaths imagePaths) {
     if (hasRole()) {
       switch(role!.value) {
