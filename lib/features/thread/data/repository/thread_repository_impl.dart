@@ -314,12 +314,14 @@ class ThreadRepositoryImpl extends ThreadRepository {
   @override
   Stream<EmailsResponse> loadMoreEmails(GetEmailRequest emailRequest) async* {
     final response = await _getAllEmailsWithoutLastEmailId(emailRequest);
-    await _updateEmailCache(
-      emailRequest.accountId,
-      emailRequest.session.username,
-      newCreated: response.emailList,
-      newDestroyed: response.notFoundEmailIds,
-    );
+    if (emailRequest.useCache) {
+      await _updateEmailCache(
+        emailRequest.accountId,
+        emailRequest.session.username,
+        newCreated: response.emailList,
+        newDestroyed: response.notFoundEmailIds,
+      );
+    }
     yield response;
   }
 
@@ -498,4 +500,27 @@ class ThreadRepositoryImpl extends ThreadRepository {
     accountId,
     session,
   );
+
+  @override
+  Stream<EmailsResponse> loadAllEmailInFolderWithoutCache({
+    required Session session,
+    required AccountId accountId,
+    UnsignedInt? limit,
+    int? position,
+    Set<Comparator>? sort,
+    EmailFilter? emailFilter,
+    Properties? propertiesCreated,
+  }) async* {
+    final networkDataSource = mapDataSource[DataSourceType.network]!;
+    final emailResponse = await networkDataSource.getAllEmail(
+      session,
+      accountId,
+      limit: limit,
+      position: position,
+      sort: sort,
+      filter: emailFilter?.filter,
+      properties: propertiesCreated,
+    );
+    yield emailResponse;
+  }
 }

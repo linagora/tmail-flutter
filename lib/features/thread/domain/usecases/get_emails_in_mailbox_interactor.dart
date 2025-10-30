@@ -27,13 +27,14 @@ class GetEmailsInMailboxInteractor {
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
       bool getLatestChanges = true,
+      bool useCache = true,
     }
   ) async* {
     try {
       yield Right<Failure, Success>(GetAllEmailLoading());
 
-      yield* threadRepository
-        .getAllEmail(
+      if (useCache) {
+        yield* threadRepository.getAllEmail(
           session,
           accountId,
           limit: limit,
@@ -41,11 +42,24 @@ class GetEmailsInMailboxInteractor {
           emailFilter: emailFilter,
           propertiesCreated: propertiesCreated,
           propertiesUpdated: propertiesUpdated,
-          getLatestChanges: getLatestChanges)
-        .map((emailResponse) => _toGetEmailState(
+          getLatestChanges: getLatestChanges,
+        ).map((emailResponse) => _toGetEmailState(
           emailResponse: emailResponse,
-          currentMailboxId: emailFilter?.mailboxId
+          currentMailboxId: emailFilter?.mailboxId,
         ));
+      } else {
+        yield* threadRepository.loadAllEmailInFolderWithoutCache(
+          session: session,
+          accountId: accountId,
+          limit: limit,
+          sort: sort,
+          emailFilter: emailFilter,
+          propertiesCreated: propertiesCreated,
+        ).map((emailResponse) => _toGetEmailState(
+          emailResponse: emailResponse,
+          currentMailboxId: emailFilter?.mailboxId,
+        ));
+      }
     } catch (e) {
       yield Left(GetAllEmailFailure(e));
     }

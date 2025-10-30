@@ -24,6 +24,7 @@ abstract class ThreadRepository {
     AccountId accountId,
     {
       UnsignedInt? limit,
+      int? position,
       Set<Comparator>? sort,
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
@@ -31,6 +32,16 @@ abstract class ThreadRepository {
       bool getLatestChanges = true,
     }
   );
+
+  Stream<EmailsResponse> loadAllEmailInFolderWithoutCache({
+    required Session session,
+    required AccountId accountId,
+    UnsignedInt? limit,
+    int? position,
+    Set<Comparator>? sort,
+    EmailFilter? emailFilter,
+    Properties? propertiesCreated,
+  });
 
   Stream<EmailsResponse> refreshChanges(
     Session session,

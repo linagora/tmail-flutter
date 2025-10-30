@@ -18,6 +18,7 @@ class GetEmailRequest with EquatableMixin {
   final FilterMessageOption? filterOption;
   final Properties? properties;
   final EmailId? lastEmailId;
+  final bool useCache;
 
   GetEmailRequest(
     this.session,
@@ -30,6 +31,7 @@ class GetEmailRequest with EquatableMixin {
       this.filterOption,
       this.properties,
       this.lastEmailId,
+      this.useCache = true,
     }
   );
 
@@ -43,6 +45,7 @@ class GetEmailRequest with EquatableMixin {
     filter,
     properties,
     lastEmailId,
-    filterOption
+    filterOption,
+    useCache,
   ];
 }

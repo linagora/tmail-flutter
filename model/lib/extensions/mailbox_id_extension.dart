@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/core/reference_id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 
 extension MailboxIdExtension on MailboxId {
   String generatePath() {
@@ -31,4 +32,7 @@ extension MailboxIdExtension on MailboxId {
   }
 
   String get asString => id.value;
+
+  bool get isNotFavoriteMailboxId =>
+      this != PresentationMailbox.favoriteFolder.id;
 }

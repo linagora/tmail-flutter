@@ -134,6 +134,7 @@ class MailboxController extends BaseMailboxController
   WebSocketQueueHandler? _webSocketQueueHandler;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
+  StreamSubscription? _openMailboxEventStreamSubscription;
   final mailboxListScrollController = ScrollController();
 
   PresentationMailbox? get selectedMailbox => mailboxDashBoardController.selectedMailbox.value;
@@ -177,10 +178,13 @@ class MailboxController extends BaseMailboxController
 
   @override
   void onReady() {
-    _openMailboxEventController.stream.debounceTime(const Duration(milliseconds: 500)).listen((event) {
-      if (!event.buildContext.mounted) return;
-      _handleOpenMailbox(event.buildContext, event.presentationMailbox);
-    });
+    _openMailboxEventStreamSubscription = _openMailboxEventController
+      .stream
+      .debounceTime(const Duration(milliseconds: 500))
+      .listen((event) {
+        if (!event.buildContext.mounted) return;
+        _handleOpenMailbox(event.buildContext, event.presentationMailbox);
+      });
     _initCollapseMailboxCategories();
     mailboxListScrollController.addListener(_mailboxListScrollControllerListener);
     super.onReady();
@@ -188,6 +192,8 @@ class MailboxController extends BaseMailboxController
 
   @override
   void onClose() {
+    _openMailboxEventStreamSubscription?.cancel();
+    _openMailboxEventStreamSubscription = null;
     _openMailboxEventController.close();
     mailboxListScrollController.dispose();
     _webSocketQueueHandler?.dispose();
