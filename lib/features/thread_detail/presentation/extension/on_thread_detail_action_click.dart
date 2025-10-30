@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -6,13 +7,14 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/extensions/popup_menu_action_list_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
@@ -158,26 +160,44 @@ extension OnThreadDetailActionClick on ThreadDetailController {
         useGroupedActions: true,
       );
     } else {
+      final popupMenuItemEmailActions = moreActions.map((actionType) {
+        return PopupMenuItemEmailAction(
+          actionType,
+          AppLocalizations.of(currentContext!),
+          imagePaths,
+          key: '${actionType.name}_action',
+          category: actionType.category,
+        );
+      }).toList();
+
+      final groupedActions = popupMenuItemEmailActions.groupByCategory();
+      final entries = groupedActions.entries.toList();
+
+      final popupMenuItems = <PopupMenuEntry>[
+        for (var i = 0; i < entries.length; i++) ...[
+          ...entries[i].value.map((menuAction) => PopupMenuItem(
+            key: menuAction.key != null ? Key(menuAction.key!) : null,
+            padding: EdgeInsets.zero,
+            child: PopupMenuItemActionWidget(
+              menuAction: menuAction,
+              menuActionClick: (menuAction) {
+                popBack();
+                onThreadDetailActionClick(menuAction.action);
+              },
+            ),
+          )),
+          if (i < entries.length - 1)
+            PopupMenuDivider(
+              height: 1,
+              color: AppColor.gray424244.withValues(alpha: 0.12),
+            ),
+        ],
+      ];
+
       mailboxDashBoardController.openPopupMenu(
         currentContext!,
         position,
-        moreActions.map((action) {
-          return PopupMenuItem(
-            key: Key('${action.name}_action'),
-            padding: EdgeInsets.zero,
-            child: PopupMenuItemActionWidget(
-              menuAction: PopupMenuItemEmailAction(
-                action,
-                AppLocalizations.of(currentContext!),
-                imagePaths,
-              ),
-              menuActionClick: (_) {
-                popBack();
-                onThreadDetailActionClick(action);
-              },
-            ),
-          );
-        }).toList(),
+        popupMenuItems,
       );
     }
   }

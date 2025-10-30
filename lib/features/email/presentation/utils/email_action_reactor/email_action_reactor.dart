@@ -29,6 +29,7 @@ import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/extensions/popup_menu_action_list_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
@@ -591,23 +592,41 @@ class EmailActionReactor {
       EmailActionType action,
     ) handleEmailAction,
   }) {
-    return actionTypes.map((action) {
-      return PopupMenuItem(
-        key: Key('${action.name}_action'),
-        padding: EdgeInsets.zero,
-        child: PopupMenuItemActionWidget(
-          menuAction: PopupMenuItemEmailAction(
-            action,
-            AppLocalizations.of(context),
-            imagePaths,
-          ),
-          menuActionClick: (_) {
-            popBack();
-            handleEmailAction(presentationEmail, action);
-          }
-        )
+    final popupMenuItemEmailActions = actionTypes.map((actionType) {
+      return PopupMenuItemEmailAction(
+        actionType,
+        AppLocalizations.of(context),
+        imagePaths,
+        key: '${actionType.name}_action',
+        category: actionType.category,
       );
     }).toList();
+
+    final groupedActions = popupMenuItemEmailActions.groupByCategory();
+    final entries = groupedActions.entries.toList();
+
+    final popupMenuItems = <PopupMenuEntry>[
+      for (var i = 0; i < entries.length; i++) ...[
+        ...entries[i].value.map((menuAction) => PopupMenuItem(
+              key: menuAction.key != null ? Key(menuAction.key!) : null,
+              padding: EdgeInsets.zero,
+              child: PopupMenuItemActionWidget(
+                menuAction: menuAction,
+                menuActionClick: (menuAction) {
+                  popBack();
+                  handleEmailAction(presentationEmail, menuAction.action);
+                },
+              ),
+            )),
+        if (i < entries.length - 1)
+          PopupMenuDivider(
+            height: 1,
+            color: AppColor.gray424244.withValues(alpha: 0.12),
+          ),
+      ],
+    ];
+
+    return popupMenuItems;
   }
 
   Future<void> openEmailAddressDialog(

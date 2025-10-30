@@ -13,8 +13,10 @@ class PopupMenuItemEmailAction
   PopupMenuItemEmailAction(
     super.action,
     this.appLocalizations,
-    this.imagePaths,
-  );
+    this.imagePaths, {
+    super.key,
+    super.category,
+  });
 
   @override
   String get actionIcon => action.getIcon(imagePaths);
