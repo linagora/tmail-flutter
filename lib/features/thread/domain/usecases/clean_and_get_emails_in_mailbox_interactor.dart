@@ -30,6 +30,7 @@ class CleanAndGetEmailsInMailboxInteractor {
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
       bool getLatestChanges = true,
+      bool useCache = true,
     }
   ) async* {
     try {
@@ -46,6 +47,7 @@ class CleanAndGetEmailsInMailboxInteractor {
         propertiesCreated: propertiesCreated,
         propertiesUpdated: propertiesUpdated,
         getLatestChanges: getLatestChanges,
+        useCache: useCache,
       );
     } catch (e) {
       yield Left(CleanAndGetAllEmailFailure(e));

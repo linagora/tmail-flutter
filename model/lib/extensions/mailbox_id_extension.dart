@@ -33,6 +33,6 @@ extension MailboxIdExtension on MailboxId {
 
   String get asString => id.value;
 
-  bool get isNotFavoriteMailboxId =>
-      this != PresentationMailbox.favoriteFolder.id;
+  bool get isFavoriteMailboxId =>
+      this == PresentationMailbox.favoriteFolder.id;
 }
