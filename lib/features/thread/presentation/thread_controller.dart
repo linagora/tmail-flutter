@@ -711,6 +711,8 @@ class ThreadController extends BaseController with EmailActionController {
     try {
       if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {
         await _refreshChangeSearchEmail();
+      } else if (selectedMailboxId?.isFavoriteMailboxId == true) {
+        await _refreshChangeListEmailsInFavoriteFolder();
       } else {
         await _refreshChangeListEmail();
       }
@@ -812,6 +814,40 @@ class ThreadController extends BaseController with EmailActionController {
       _refreshChangesAllEmailSuccess(refreshState);
     } else {
       onDataFailureViewState(refreshState);
+    }
+  }
+
+  Future<void> _refreshChangeListEmailsInFavoriteFolder() async {
+    log('ThreadController::_refreshChangeListEmailsInFavoriteFolder:');
+
+    await _refreshChangeListEmailCache();
+
+    final viewState = await _getEmailsInMailboxInteractor
+        .execute(
+          _session!,
+          _accountId!,
+          limit: limitEmailFetched,
+          sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+          emailFilter: getEmailFilterForLoadMailbox(),
+          propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
+            _session!,
+            _accountId!,
+          ),
+          propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
+            _session!,
+            _accountId!,
+          ),
+          useCache: false,
+        )
+        .last;
+
+    final emailSuccessState = viewState
+        .foldSuccessWithResult<GetAllEmailSuccess>();
+
+    if (emailSuccessState is GetAllEmailSuccess) {
+      _getAllEmailSuccess(emailSuccessState);
+    } else {
+      onDataFailureViewState(emailSuccessState);
     }
   }
 

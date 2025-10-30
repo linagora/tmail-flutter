@@ -278,6 +278,8 @@ class MailboxController extends BaseMailboxController
           if (PlatformInfo.isIOS) {
             _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
           }
+        } else if (success is CreateDefaultMailboxAllSuccess) {
+          addFavoriteFolderToMailboxList();
         }
       });
   }
@@ -599,6 +601,7 @@ class MailboxController extends BaseMailboxController
     if (currentContext != null) {
       syncAllMailboxWithDisplayName(currentContext!);
     }
+    addFavoriteFolderToMailboxList();
     _setMapMailbox();
     _setOutboxMailbox();
     _selectSelectedMailboxDefault();
