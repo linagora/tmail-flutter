@@ -5063,5 +5063,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "favoriteMailboxDisplayName": "Starred",
+  "@favoriteMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

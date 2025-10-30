@@ -18,8 +18,14 @@ class PresentationMailbox with EquatableMixin {
   static const String spamRole = 'spam';
   static const String archiveRole = 'archive';
   static const String recoveredRole = 'restored messages';
+  static const String favoriteRole = 'favorite';
 
   static final PresentationMailbox unifiedMailbox = PresentationMailbox(MailboxId(Id('unified')));
+  static final PresentationMailbox favoriteFolder = PresentationMailbox(
+    MailboxId(Id(favoriteRole)),
+    name: MailboxName('Starred'),
+    role: Role(favoriteRole),
+  );
 
   static final roleInbox = Role(inboxRole);
   static final roleTrash = Role(trashRole);
