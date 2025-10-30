@@ -5359,4 +5359,11 @@ class AppLocalizations {
       name: 'moveFolderContentToastMessage',
     );
   }
+
+  String get favoriteMailboxDisplayName {
+    return Intl.message(
+      'Starred',
+      name: 'favoriteMailboxDisplayName',
+    );
+  }
 }

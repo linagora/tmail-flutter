@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_favorite_tab_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -205,6 +206,20 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     } else {
       super.handleSuccessViewState(success);
     }
+  }
+
+  @override
+  void onDone() {
+    super.onDone();
+    viewState.value.fold((failure) {
+      if (failure is GetAllMailboxFailure) {
+        addFavoriteFolderToMailboxList();
+      }
+    }, (success) {
+      if (success is GetAllMailboxSuccess) {
+        addFavoriteFolderToMailboxList();
+      }
+    });
   }
 
   void _initializeDebounceTimeTextSearchChange() {
@@ -449,7 +464,6 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
         break;
     }
   }
-
 
   void _handleSubAddressingAction(
     MailboxId mailboxId,

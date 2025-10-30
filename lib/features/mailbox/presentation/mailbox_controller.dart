@@ -69,6 +69,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_favorite_tab_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -256,12 +257,14 @@ class MailboxController extends BaseMailboxController
     viewState.value.fold(
       (failure) {
         if (failure is GetAllMailboxFailure) {
+          addFavoriteFolderToMailboxList();
           mailboxDashBoardController.updateRefreshAllMailboxState(Left(RefreshAllMailboxFailure()));
           showRetryToast(failure);
         }
       },
       (success) {
         if (success is GetAllMailboxSuccess) {
+          addFavoriteFolderToMailboxList();
           mailboxDashBoardController.updateRefreshAllMailboxState(Right(RefreshAllMailboxSuccess()));
           _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
           _handleDataFromNavigationRouter();
