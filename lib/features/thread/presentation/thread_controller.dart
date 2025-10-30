@@ -507,7 +507,7 @@ class ThreadController extends BaseController with EmailActionController {
     mailboxDashBoardController.updateRefreshAllEmailState(Right(RefreshAllEmailSuccess()));
 
     if (success.currentMailboxId != selectedMailboxId &&
-        selectedMailboxId?.isFavoriteMailboxId != true) {
+        selectedMailbox?.isFavorite != true) {
       log('ThreadController::_getAllEmailSuccess: GetAllForMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
       return;
     }
@@ -548,7 +548,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _refreshChangesAllEmailSuccess(RefreshChangesAllEmailSuccess success) {
     if (success.currentMailboxId != selectedMailboxId &&
-        selectedMailboxId?.isFavoriteMailboxId != true) {
+        selectedMailbox?.isFavorite != true) {
       log('ThreadController::_refreshChangesAllEmailSuccess: RefreshedMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
       return;
     }
@@ -591,7 +591,7 @@ class ThreadController extends BaseController with EmailActionController {
           _accountId!,
         ),
         getLatestChanges: getLatestChanges,
-        useCache: selectedMailboxId?.isFavoriteMailboxId != true,
+        useCache: selectedMailbox?.isFavorite != true,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -599,7 +599,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   EmailFilter getEmailFilterForLoadMailbox({PresentationEmail? oldestEmail}) {
-    if (selectedMailboxId?.isFavoriteMailboxId == true) {
+    if (selectedMailbox?.isFavorite == true) {
       return EmailFilter(
         filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
       );
@@ -613,7 +613,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   Filter getFilterConditionForLoadMailbox({PresentationEmail? oldestEmail}) {
-    if (selectedMailboxId?.isFavoriteMailboxId == true) {
+    if (selectedMailbox?.isFavorite == true) {
       switch (mailboxDashBoardController.filterMessageOption.value) {
         case FilterMessageOption.unread:
           return EmailFilterCondition(
@@ -711,7 +711,7 @@ class ThreadController extends BaseController with EmailActionController {
     try {
       if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {
         await _refreshChangeSearchEmail();
-      } else if (selectedMailboxId?.isFavoriteMailboxId == true) {
+      } else if (selectedMailbox?.isFavorite == true) {
         await _refreshChangeListEmailsInFavoriteFolder();
       } else {
         await _refreshChangeListEmail();
@@ -868,14 +868,14 @@ class ThreadController extends BaseController with EmailActionController {
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
-          useCache: selectedMailboxId?.isFavoriteMailboxId != true,
+          useCache: selectedMailbox?.isFavorite != true,
         )
       ));
     }
   }
 
   bool _validatePresentationEmail(PresentationEmail email) {
-    return (_belongToCurrentMailboxId(email) || selectedMailboxId?.isFavoriteMailboxId == true)
+    return (_belongToCurrentMailboxId(email) || selectedMailbox?.isFavorite == true)
       && _notDuplicatedInCurrentList(email);
   }
 

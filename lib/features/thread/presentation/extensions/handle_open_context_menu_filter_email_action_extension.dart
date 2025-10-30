@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:model/extensions/mailbox_id_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/popup_menu_item_filter_message_action.dart';
@@ -16,7 +16,7 @@ extension HandleOpenContextMenuFilterEmailActionExtension on ThreadController {
     final popupMenuItems = [
       FilterMessageOption.attachments,
       FilterMessageOption.unread,
-      if (selectedMailboxId?.isFavoriteMailboxId != true)
+      if (selectedMailbox?.isFavorite != true)
         FilterMessageOption.starred,
     ].map((filterOption) {
       return PopupMenuItem(

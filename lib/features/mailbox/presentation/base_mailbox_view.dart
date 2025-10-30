@@ -4,6 +4,7 @@ import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
@@ -196,6 +197,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           .mailboxDashBoardController
           .selectedMailbox
           .value,
+        isHighlighted: isFolderHighlighted(mailboxNode),
         onOpenMailboxFolderClick: (mailboxNode) =>
             mailboxNode != null
                 ? controller.openMailbox(context, mailboxNode.item)
@@ -239,6 +241,17 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
       }
     }).toList();
   }
+
+  bool get isSearchByStarredOnly {
+    final searchController =
+        controller.mailboxDashBoardController.searchController;
+
+    return searchController.isSearchEmailRunning &&
+        searchController.searchEmailFilter.value.isOnlyStarredApplied;
+  }
+
+  bool isFolderHighlighted(MailboxNode mailboxNode) =>
+      mailboxNode.item.isFavorite && isSearchByStarredOnly;
 
   Widget buildListMailbox(BuildContext context) {
     final isDesktop = controller.responsiveUtils.isDesktop(context);

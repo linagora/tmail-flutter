@@ -34,6 +34,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isSpam => role == PresentationMailbox.roleSpam || role == PresentationMailbox.roleJunk;
 
+  bool get isFavorite => role == PresentationMailbox.roleFavorite;
+
   bool get isTrash => role == PresentationMailbox.roleTrash;
 
   bool get isDrafts => role == PresentationMailbox.roleDrafts;

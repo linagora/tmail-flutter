@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:model/extensions/mailbox_id_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/context_item_filter_message_option_action.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
@@ -14,7 +14,7 @@ extension HandleSelectMessageFilterExtension on ThreadController {
     final contextMenuActions = [
       FilterMessageOption.attachments,
       FilterMessageOption.unread,
-      if (selectedMailboxId?.isFavoriteMailboxId != true)
+      if (selectedMailbox?.isFavorite != true)
         FilterMessageOption.starred,
     ].map((filter) {
       return ContextItemFilterMessageOptionAction(

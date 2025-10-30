@@ -198,8 +198,8 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     to.isNotEmpty ||
     text?.value.trim().isNotEmpty == true ||
     subject?.trim().isNotEmpty == true ||
-    hasKeyword.isNotEmpty == true ||
-    notKeyword.isNotEmpty == true ||
+    hasKeyword.isNotEmpty ||
+    notKeyword.isNotEmpty ||
     emailReceiveTimeType != EmailReceiveTimeType.allTime ||
     sortOrderType != SearchEmailFilter.defaultSortOrder ||
     (mailbox != null && mailbox?.id != PresentationMailbox.unifiedMailbox.id) ||
@@ -207,6 +207,18 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     unread;
 
   bool get isContainFlagged => hasKeyword.contains(KeyWordIdentifier.emailFlagged.value);
+
+  bool get isOnlyStarredApplied => from.isEmpty &&
+    to.isEmpty &&
+    text?.value.trim().isNotEmpty != true &&
+    subject?.trim().isNotEmpty != true &&
+    hasKeyword.firstOrNull == KeyWordIdentifier.emailFlagged.value &&
+    notKeyword.isEmpty &&
+    emailReceiveTimeType == EmailReceiveTimeType.allTime &&
+    sortOrderType == SearchEmailFilter.defaultSortOrder &&
+    (mailbox == null || mailbox?.id == PresentationMailbox.unifiedMailbox.id) &&
+    !hasAttachment &&
+    !unread;
 
   @override
   List<Object?> get props => [

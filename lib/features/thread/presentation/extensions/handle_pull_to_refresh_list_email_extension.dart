@@ -1,7 +1,7 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
-import 'package:model/extensions/mailbox_id_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -49,7 +49,7 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
         accountId,
       ),
       getLatestChanges: true,
-      useCache: selectedMailboxId?.isFavoriteMailboxId != true,
+      useCache: selectedMailbox?.isFavorite != true,
     ));
   }
 }

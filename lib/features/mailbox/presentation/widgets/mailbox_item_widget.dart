@@ -30,6 +30,7 @@ class MailboxItemWidget extends StatefulWidget {
   final Color? iconColor;
   final double? itemHeight;
   final String? iconSelected;
+  final bool isHighlighted;
 
   final OnClickExpandMailboxNodeAction? onExpandFolderActionClick;
   final OnClickOpenMailboxNodeAction? onOpenMailboxFolderClick;
@@ -43,6 +44,7 @@ class MailboxItemWidget extends StatefulWidget {
     super.key,
     required this.mailboxNode,
     this.mailboxDisplayed = MailboxDisplayed.mailbox,
+    this.isHighlighted = false,
     this.mailboxNodeSelected,
     this.mailboxActions,
     this.mailboxIdAlreadySelected,
@@ -116,6 +118,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         mailboxNode: widget.mailboxNode,
                         isItemHovered: _isItemHovered,
                         isSelected: _isSelected,
+                        isHighlighted: widget.isHighlighted,
                         textStyle: widget.textStyle,
                         onMenuActionClick: widget.onMenuActionClick,
                         onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
@@ -174,6 +177,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         mailboxNode: widget.mailboxNode,
                         isItemHovered: _isItemHovered,
                         isSelected: _isSelected,
+                        isHighlighted: widget.isHighlighted,
                         textStyle: widget.textStyle,
                         onMenuActionClick: widget.onMenuActionClick,
                         onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
@@ -224,6 +228,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         mailboxNode: widget.mailboxNode,
                         isItemHovered: _isItemHovered,
                         isSelected: _isSelected,
+                        isHighlighted: widget.isHighlighted,
                         textStyle: widget.textStyle,
                         onMenuActionClick: widget.onMenuActionClick,
                         onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
@@ -273,6 +278,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                           mailboxNode: widget.mailboxNode,
                           showTrailing: false,
                           isSelected: _isSelected,
+                          isHighlighted: widget.isHighlighted,
                           isItemHovered: _isItemHovered,
                           textStyle: widget.textStyle,
                           isSelectedFolderInModal: isSelectedFolderInModal,
@@ -306,7 +312,9 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
 
   Color get backgroundColorItem {
     if (widget.mailboxDisplayed == MailboxDisplayed.mailbox) {
-      return _isSelected ? AppColor.blue100 : Colors.transparent;
+      return _isSelected || widget.isHighlighted
+          ? AppColor.blue100
+          : Colors.transparent;
     }
     return Colors.white;
   }
