@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
+import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -48,7 +49,8 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
 
     final mapEmailIdsByMailboxId = <MailboxId, List<EmailId>>{};
 
-    if (searchController.isSearchEmailRunning) {
+    if (searchController.isSearchEmailRunning ||
+        selectedMailbox.value?.id.isFavoriteMailboxId == true) {
       for (final email in emails) {
         final mailboxId = email.firstMailboxIdAvailable;
         final emailId = email.id;

@@ -12,6 +12,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnEmailActionClick = void Function(PresentationEmail, EmailActionType);
@@ -81,7 +82,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
                 child: EmailViewBackButton(
                   imagePaths: _imagePaths,
                   onBackAction: onBackAction,
-                  mailboxContain: mailboxContain,
+                  backButtonLabel: mailboxContain?.getDisplayName(context) ?? '',
                   isSearchActivated: isSearchActivated,
                   maxWidth: constraints.maxWidth,
                 ),

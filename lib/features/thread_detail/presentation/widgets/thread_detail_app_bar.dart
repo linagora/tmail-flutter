@@ -5,7 +5,6 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -25,7 +24,7 @@ class ThreadDetailAppBar extends StatelessWidget {
     required this.threadDetailIsStarred,
     required this.isThreadDetailEnabled,
     required this.threadDetailCanPermanentlyDelete,
-    this.mailboxContain,
+    required this.backButtonLabel,
     this.optionWidgets = const [],
     this.onThreadActionClick,
     this.onThreadMoreActionClick,
@@ -40,7 +39,7 @@ class ThreadDetailAppBar extends StatelessWidget {
   final bool threadDetailIsStarred;
   final bool isThreadDetailEnabled;
   final bool threadDetailCanPermanentlyDelete;
-  final PresentationMailbox? mailboxContain;
+  final String backButtonLabel;
   final List<Widget> optionWidgets;
   final OnThreadActionClick? onThreadActionClick;
   final OnThreadMoreActionClick? onThreadMoreActionClick;
@@ -100,7 +99,7 @@ class ThreadDetailAppBar extends StatelessWidget {
         Widget backButton = EmailViewBackButton(
           imagePaths: imagePaths,
           onBackAction: closeThreadDetailAction,
-          mailboxContain: mailboxContain,
+          backButtonLabel: backButtonLabel,
           isSearchActivated: isSearchRunning,
           maxWidth: constraints.maxWidth,
         );

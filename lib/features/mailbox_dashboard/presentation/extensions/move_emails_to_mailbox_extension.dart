@@ -2,6 +2,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 
 extension MoveEmailsToMailboxExtension on MailboxDashBoardController {
@@ -9,7 +10,10 @@ extension MoveEmailsToMailboxExtension on MailboxDashBoardController {
     required Map<MailboxId,List<EmailId>> originalMailboxIdsWithEmailIds,
     required MailboxId destinationMailboxId,
   }) {
-    if (destinationMailboxId == selectedMailbox.value?.id) return;
+    if (destinationMailboxId == selectedMailbox.value?.id ||
+        selectedMailbox.value?.id.isFavoriteMailboxId == true) {
+      return;
+    }
 
     final currentEmails = List<PresentationEmail>.from(
       emailsInCurrentMailbox,
