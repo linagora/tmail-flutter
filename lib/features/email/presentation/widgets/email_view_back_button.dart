@@ -3,9 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_back_button_styles.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailViewBackButton extends StatelessWidget {
@@ -14,7 +12,7 @@ class EmailViewBackButton extends StatelessWidget {
   final bool isSearchActivated;
   final VoidCallback onBackAction;
   final double maxWidth;
-  final PresentationMailbox? mailboxContain;
+  final String backButtonLabel;
 
   const EmailViewBackButton({
     super.key,
@@ -22,14 +20,14 @@ class EmailViewBackButton extends StatelessWidget {
     required this.onBackAction,
     required this.isSearchActivated,
     required this.maxWidth,
-    this.mailboxContain,
+    required this.backButtonLabel,
   });
 
   @override
   Widget build(BuildContext context) {
     if (!isSearchActivated) {
       return TMailButtonWidget(
-        text: mailboxContain?.getDisplayName(context) ?? '',
+        text: backButtonLabel,
         icon: DirectionUtils.isDirectionRTLByLanguage(context)
           ? imagePaths.icArrowRight
           : imagePaths.icBack,

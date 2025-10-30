@@ -180,7 +180,7 @@ class ThreadController extends BaseController with EmailActionController {
       openingEmail.value = true;
     } else if (success is GetEmailByIdSuccess) {
       openingEmail.value = false;
-      if (searchController.isSearchEmailRunning) {
+      if (isSearchActive) {
         _openEmailSearchedFromLocationBar(
           email: success.email,
           searchQuery: searchQuery
@@ -362,7 +362,7 @@ class ThreadController extends BaseController with EmailActionController {
     });
 
     ever(mailboxDashBoardController.viewState, (viewState) {
-      if (mailboxDashBoardController.searchController.isSearchEmailRunning) return;
+      if (isSearchActive) return;
       final reactionState = viewState.getOrElse(() => UIState.idle);
       if (reactionState is MarkAsMailboxReadAllSuccess) {
         _handleMarkEmailsAsReadByMailboxId(reactionState.mailboxId);
@@ -1036,7 +1036,7 @@ class ThreadController extends BaseController with EmailActionController {
         leadingSVGIcon: newFilterOption.getIconToast(imagePaths));
     }
 
-    if (searchController.isSearchEmailRunning) {
+    if (isSearchActive) {
       _searchEmail();
     } else {
       refreshAllEmail();
@@ -1125,7 +1125,7 @@ class ThreadController extends BaseController with EmailActionController {
       mapMailboxById: mailboxDashBoardController.mapMailboxById,
       selectedMailbox: selectedMailbox,
       searchQuery: searchController.searchQuery,
-      isSearchEmailRunning: searchController.isSearchEmailRunning
+      isSearchEmailRunning: isSearchActive,
     );
     mailboxDashBoardController.updateEmailList(newEmailListSynced);
     if (mailboxDashBoardController.isSelectionEnabled()) {
@@ -1184,7 +1184,7 @@ class ThreadController extends BaseController with EmailActionController {
             mapMailboxById: mailboxDashBoardController.mapMailboxById,
             selectedMailbox: selectedMailbox,
             searchQuery: searchController.searchQuery,
-            isSearchEmailRunning: searchController.isSearchEmailRunning
+            isSearchEmailRunning: isSearchActive,
           );
       mailboxDashBoardController.emailsInCurrentMailbox.addAll(resultEmailSearchList);
     }
@@ -1225,7 +1225,7 @@ class ThreadController extends BaseController with EmailActionController {
         moveEmailsToTrash(selectionEmail);
         break;
       case EmailActionType.deletePermanently:
-        final mailboxContainCurrent = searchController.isSearchEmailRunning
+        final mailboxContainCurrent = isSearchActive
             ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
             : selectedMailbox;
         if (mailboxContainCurrent != null && currentContext != null) {
@@ -1351,13 +1351,13 @@ class ThreadController extends BaseController with EmailActionController {
         AppRoutes.dashboard,
         router: NavigationRouter(
           emailId: currentEmail.id,
-          mailboxId: searchController.isSearchEmailRunning
+          mailboxId: isSearchActive
             ? currentEmail.mailboxContain?.mailboxId
             : selectedMailboxId,
-          searchQuery: searchController.isSearchEmailRunning
+          searchQuery: isSearchActive
             ? searchQuery
             : null,
-          dashboardType: searchController.isSearchEmailRunning
+          dashboardType: isSearchActive
             ? DashboardType.search
             : DashboardType.normal
         )
