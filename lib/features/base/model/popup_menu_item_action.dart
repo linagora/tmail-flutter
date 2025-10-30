@@ -6,11 +6,13 @@ typedef OnPopupMenuActionClick = void Function(PopupMenuItemAction action);
 
 abstract class PopupMenuItemAction<T> with EquatableMixin {
   final T action;
+  final String? key;
+  final int category;
 
-  PopupMenuItemAction(this.action);
+  PopupMenuItemAction(this.action, {this.key, this.category = -1});
 
   @override
-  List<Object?> get props => [action];
+  List<Object?> get props => [action, key, category];
 
   String get actionName;
 
@@ -40,21 +42,31 @@ mixin OptionalPopupSelectedIcon<T> {
 
 abstract class PopupMenuItemActionRequiredIcon<T> extends PopupMenuItemAction<T>
     with OptionalPopupIcon {
-  PopupMenuItemActionRequiredIcon(super.action);
+  PopupMenuItemActionRequiredIcon(super.action, {super.key, super.category});
 }
 
 abstract class PopupMenuItemActionRequiredSelectedIcon<T>
     extends PopupMenuItemAction<T> with OptionalPopupSelectedIcon<T> {
   final T? selectedAction;
 
-  PopupMenuItemActionRequiredSelectedIcon(super.action, this.selectedAction);
+  PopupMenuItemActionRequiredSelectedIcon(
+    super.action,
+    this.selectedAction, {
+    super.key,
+    super.category,
+  });
 }
 
 abstract class PopupMenuItemActionRequiredFull<T> extends PopupMenuItemAction<T>
     with OptionalPopupIcon, OptionalPopupSelectedIcon<T> {
   final T selectedAction;
 
-  PopupMenuItemActionRequiredFull(super.action, this.selectedAction);
+  PopupMenuItemActionRequiredFull(
+    super.action,
+    this.selectedAction, {
+    super.key,
+    super.category,
+  });
 }
 
 abstract class PopupMenuItemActionRequiredIconWithMultipleSelected<T>
@@ -64,6 +76,8 @@ abstract class PopupMenuItemActionRequiredIconWithMultipleSelected<T>
 
   PopupMenuItemActionRequiredIconWithMultipleSelected(
     super.action,
-    this.selectedActions,
-  );
+    this.selectedActions, {
+    super.key,
+    super.category,
+  });
 }

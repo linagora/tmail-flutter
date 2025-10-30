@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/extensions/popup_menu_action_list_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
@@ -668,26 +669,41 @@ class ThreadView extends GetWidget<ThreadController>
         useGroupedActions: true,
       );
     } else {
-      final popupMenuItems = listEmailActions.map((actionType) {
-        return PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: PopupMenuItemActionWidget(
-            menuAction: PopupMenuItemEmailAction(
-              actionType,
-              AppLocalizations.of(context),
-              controller.imagePaths,
-            ),
-            menuActionClick: (menuAction) {
-              popBack();
-              controller.handleEmailActionType(
-                menuAction.action,
-                presentationEmail,
-                mailboxContain: mailboxContain,
-              );
-            },
-          ),
+      final popupMenuItemEmailActions = listEmailActions.map((actionType) {
+        return PopupMenuItemEmailAction(
+          actionType,
+          AppLocalizations.of(context),
+          controller.imagePaths,
+          category: actionType.category,
         );
       }).toList();
+
+      final groupedActions = popupMenuItemEmailActions.groupByCategory();
+      final entries = groupedActions.entries.toList();
+
+      final popupMenuItems = <PopupMenuEntry>[
+        for (var i = 0; i < entries.length; i++) ...[
+          ...entries[i].value.map((menuAction) => PopupMenuItem(
+                padding: EdgeInsets.zero,
+                child: PopupMenuItemActionWidget(
+                  menuAction: menuAction,
+                  menuActionClick: (menuAction) {
+                    popBack();
+                    controller.handleEmailActionType(
+                      menuAction.action,
+                      presentationEmail,
+                      mailboxContain: mailboxContain,
+                    );
+                  },
+                ),
+              )),
+          if (i < entries.length - 1)
+            PopupMenuDivider(
+              height: 1,
+              color: AppColor.gray424244.withValues(alpha: 0.12),
+            ),
+        ],
+      ];
 
       return controller.mailboxDashBoardController.openPopupMenuAction(
         context,
