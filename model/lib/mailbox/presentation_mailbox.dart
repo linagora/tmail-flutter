@@ -24,7 +24,7 @@ class PresentationMailbox with EquatableMixin {
   static final PresentationMailbox favoriteFolder = PresentationMailbox(
     MailboxId(Id(favoriteRole)),
     name: MailboxName('Starred'),
-    role: Role(favoriteRole),
+    role: roleFavorite,
   );
 
   static final roleInbox = Role(inboxRole);
@@ -37,6 +37,7 @@ class PresentationMailbox with EquatableMixin {
   static final roleJunk = Role(junkRole);
   static final roleArchive = Role(archiveRole);
   static final roleRecovered = Role(recoveredRole);
+  static final roleFavorite = Role(favoriteRole);
 
   final MailboxId id;
   final MailboxName? name;

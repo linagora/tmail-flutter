@@ -25,6 +25,7 @@ class LabelMailboxItemWidget extends StatefulWidget {
   final bool isItemHovered;
   final bool isSelected;
   final bool isSelectedFolderInModal;
+  final bool isHighlighted;
   final TextStyle? textStyle;
   final OnClickOpenMenuMailboxNodeAction? onMenuActionClick;
   final OnEmptyMailboxActionCallback? onEmptyMailboxActionCallback;
@@ -38,6 +39,7 @@ class LabelMailboxItemWidget extends StatefulWidget {
     this.isItemHovered = false,
     this.isSelected = false,
     this.isSelectedFolderInModal = false,
+    this.isHighlighted = false,
     this.textStyle,
     this.onMenuActionClick,
     this.onEmptyMailboxActionCallback,
@@ -218,7 +220,7 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
   bool _showMoreButton(BuildContext context) => PlatformInfo.isWeb;
 
   TextStyle get _displayNameTextStyle {
-    if (widget.isSelected) {
+    if (widget.isSelected || widget.isHighlighted) {
       return ThemeUtils.textStyleInter700(
         color: _responsiveUtils.isDesktop(context) ? null : AppColor.iconFolder,
         fontSize: 14,
