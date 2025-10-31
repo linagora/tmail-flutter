@@ -43,7 +43,11 @@ extension HandleKeyboardShortcutActionsExtension on ComposerController {
 
   void handleComposerShortcutAction(ComposerActionShortcutType shortcutType) {
     log('$runtimeType::handleComposerShortcutAction: 🔥 Shortcut triggered: $shortcutType');
-    if (currentContext == null) return;
-    handleClickCloseComposer(currentContext!);
+    switch(shortcutType) {
+      case ComposerActionShortcutType.closeView:
+        if (currentContext == null) return;
+        handleClickCloseComposer(currentContext!);
+        break;
+    }
   }
 }
