@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -7,12 +6,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:tmail_ui_user/features/composer/presentation/controller/web_view_lifecycle_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class RichTextMobileTabletController extends GetxController {
   HtmlEditorApi? htmlEditorApi;
+  WebViewLifecycleManager? webViewLifecycleManager;
 
   final RichTextController richTextController = RichTextController();
 
@@ -72,9 +73,14 @@ class RichTextMobileTabletController extends GetxController {
     }
   }
 
+  void onInitWebViewLifecycleManager(InAppWebViewController? controller) {
+    webViewLifecycleManager = WebViewLifecycleManager(controller);
+  }
+
   @override
   void onClose() {
     richTextController.dispose();
+    webViewLifecycleManager = null;
     htmlEditorApi = null;
     super.onClose();
   }
