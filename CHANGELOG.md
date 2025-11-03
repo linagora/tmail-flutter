@@ -1,3 +1,7 @@
+## [0.19.7] - 2025-11-03
+### Fixed
+- UI be blocked by when overlay recipient modal in composer
+
 ## [0.19.6] - 2025-10-12
 ### Fixed
 - Remove Reply-to in one-line field
