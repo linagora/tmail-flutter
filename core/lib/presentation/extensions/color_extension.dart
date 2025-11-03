@@ -235,6 +235,7 @@ extension AppColor on Color {
   static const blue400 = Color(0xFF80BDFF);
   static const blue900 = Color(0xFF0F76E7);
   static const m3Tertiary = Color(0xFF8C9CAF);
+  static const m3Tertiary30 = Color(0xFF99A0A9);
   static const m3Tertiary60 = Color(0xFFD8E1EB);
   static const m3Tertiary70 = Color(0xFFE5ECF3);
   static const m3Tertiary20 = Color(0xFF71767C);
@@ -246,6 +247,7 @@ extension AppColor on Color {
   static const m3SysOutline = Color(0xFFAEAEC0);
   static const grayBackgroundColor = Color(0xFFF3F6F9);
   static const m3SurfaceBackground = Color(0xFF1C1B1F);
+  static const m3LightSurfaceTint = Color(0xFF6750A4);
   static const warningColor = Color(0xFFFFC107);
   static const primaryMain = Color(0xFF0A84FF);
   static const m3LayerDarkOutline = Color(0xFF938F99);
