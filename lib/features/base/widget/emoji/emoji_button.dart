@@ -4,7 +4,6 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji_mart/flutter_emoji_mart.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:linagora_design_flutter/colors/linagora_ref_colors.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -142,16 +141,19 @@ class _EmojiButtonState extends State<EmojiButton>
                         emojiData: widget.emojiData,
                         configuration: EmojiPickerConfiguration(
                           showRecentTab: true,
-                          emojiStyle:
-                              Theme.of(context).textTheme.headlineLarge ??
-                                  ThemeUtils.defaultTextStyleInterFont,
-                          searchEmptyTextStyle: Theme.of(context)
-                              .textTheme
-                              .labelMedium
-                              ?.copyWith(
-                                color:
-                                    LinagoraRefColors.material().tertiary[30],
-                              ),
+                          emojiStyle: ThemeUtils.textStyleInter600().copyWith(
+                            fontSize: 32,
+                            height: 1,
+                          ),
+                          mainAxisSpacing: 4,
+                          crossAxisSpacing: 4,
+                          perLine: 8,
+                          stickyHeaderTextStyle:
+                              ThemeUtils.textStyleM3LabelMedium,
+                          searchEmptyTextStyle:
+                              ThemeUtils.textStyleM3BodyMedium.copyWith(
+                            color: AppColor.m3Tertiary30,
+                          ),
                           searchEmptyWidget:
                               widget.emojiSearchEmptySvgAssetPath != null
                                   ? SvgPicture.asset(
@@ -160,14 +162,29 @@ class _EmojiButtonState extends State<EmojiButton>
                                   : null,
                         ),
                         itemBuilder: (context, emojiId, emoji, callback) {
-                          return MouseRegion(
-                            onHover: (_) {},
-                            child: EmojiItem(
-                              textStyle:
-                                  Theme.of(context).textTheme.headlineLarge ??
-                                      ThemeUtils.defaultTextStyleInterFont,
+                          return Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
                               onTap: () => callback(emojiId, emoji),
-                              emoji: emoji,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(4),
+                              ),
+                              hoverColor: AppColor.m3LightSurfaceTint
+                                  .withValues(alpha: 0.08),
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.only(
+                                  top: 6,
+                                ),
+                                child: Text(
+                                  emoji,
+                                  style:
+                                      ThemeUtils.textStyleInter600().copyWith(
+                                    fontSize: 32,
+                                    height: 1,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
                             ),
                           );
                         },
