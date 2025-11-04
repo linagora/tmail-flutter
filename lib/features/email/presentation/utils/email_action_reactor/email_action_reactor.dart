@@ -29,10 +29,9 @@ import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/base/extensions/popup_menu_action_list_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -72,10 +71,10 @@ typedef OpenBottomSheetContextMenuAction = Future<void> Function({
   bool useGroupedActions,
 });
 
-typedef OpenPopUpContextMenuAction = Future<void> Function(
+typedef OpenPopupMenuActionGroup = Future<void> Function(
   BuildContext context,
   RelativeRect position,
-  List<PopupMenuEntry> popupMenuItems,
+  PopupMenuActionGroupWidget popupMenuWidget,
 );
 
 class EmailActionReactor {
@@ -485,7 +484,7 @@ class EmailActionReactor {
     required List<EmailActionType> additionalActions,
     required bool emailIsRead,
     required OpenBottomSheetContextMenuAction openBottomSheetContextMenu,
-    required OpenPopUpContextMenuAction openPopupMenu,
+    required OpenPopupMenuActionGroup openPopupMenu,
   }) {
     if (currentContext == null) return;
 
@@ -557,17 +556,24 @@ class EmailActionReactor {
         useGroupedActions: true,
       );
     } else {
-      openPopupMenu(
-        currentContext!,
-        position,
-        _popupMenuEmailActionTile(
-          currentContext!,
-          presentationEmail,
-          moreActions,
+      final popupMenuItemEmailActions = moreActions.map((actionType) {
+        return PopupMenuItemEmailAction(
+          actionType,
+          AppLocalizations.of(currentContext!),
           imagePaths,
-          handleEmailAction: handleEmailAction,
-        )
+          key: '${actionType.name}_action',
+          category: actionType.category,
+        );
+      }).toList();
+
+      final popupMenuWidget = PopupMenuActionGroupWidget(
+        actions: popupMenuItemEmailActions,
+        onActionSelected: (action) {
+          handleEmailAction(presentationEmail, action.action);
+        },
       );
+
+      openPopupMenu(currentContext!, position, popupMenuWidget);
     }
   }
 
@@ -580,53 +586,6 @@ class EmailActionReactor {
       ?? email.mailboxContain?.isTrash
       ?? email.mailboxContain?.isSpam
       ?? false;
-  }
-
-  List<PopupMenuEntry> _popupMenuEmailActionTile(
-    BuildContext context,
-    PresentationEmail presentationEmail,
-    List<EmailActionType> actionTypes,
-    ImagePaths imagePaths, {
-    required void Function(
-      PresentationEmail presentationEmail,
-      EmailActionType action,
-    ) handleEmailAction,
-  }) {
-    final popupMenuItemEmailActions = actionTypes.map((actionType) {
-      return PopupMenuItemEmailAction(
-        actionType,
-        AppLocalizations.of(context),
-        imagePaths,
-        key: '${actionType.name}_action',
-        category: actionType.category,
-      );
-    }).toList();
-
-    final groupedActions = popupMenuItemEmailActions.groupByCategory();
-    final entries = groupedActions.entries.toList();
-
-    final popupMenuItems = <PopupMenuEntry>[
-      for (var i = 0; i < entries.length; i++) ...[
-        ...entries[i].value.map((menuAction) => PopupMenuItem(
-              key: menuAction.key != null ? Key(menuAction.key!) : null,
-              padding: EdgeInsets.zero,
-              child: PopupMenuItemActionWidget(
-                menuAction: menuAction,
-                menuActionClick: (menuAction) {
-                  popBack();
-                  handleEmailAction(presentationEmail, menuAction.action);
-                },
-              ),
-            )),
-        if (i < entries.length - 1)
-          PopupMenuDivider(
-            height: 1,
-            color: AppColor.gray424244.withValues(alpha: 0.12),
-          ),
-      ],
-    ];
-
-    return popupMenuItems;
   }
 
   Future<void> openEmailAddressDialog(
