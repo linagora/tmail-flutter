@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 final logHistory = _Dispatcher('');
 
@@ -46,20 +43,6 @@ void log(String? value, {Level level = Level.info}) {
 }
 
 void logError(String? value) => log(value, level: Level.error);
-
-// Take from: https://flutter.dev/docs/testing/errors
-void initLogger(VoidCallback runApp) {
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    FlutterError.onError = (details) {
-      FlutterError.dumpErrorToConsole(details);
-      logError('AppLogger::initLogger::runZonedGuarded:FlutterError.onError: ${details.stack.toString()}');
-    };
-    runApp.call();
-  }, (error, stack) {
-    logError('AppLogger::initLogger::runZonedGuarded:onError: $error | stack: $stack');
-  });
-}
 
 class _Dispatcher extends ValueNotifier<String> {
   _Dispatcher(String value) : super(value);

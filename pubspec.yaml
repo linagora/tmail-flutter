@@ -262,6 +262,8 @@ dependencies:
 
   flutter_custom_tab_bar: 1.2.1
 
+  sentry_flutter: 9.8.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

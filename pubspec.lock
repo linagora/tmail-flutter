@@ -1367,6 +1367,14 @@ packages:
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.3.6"
+  jni:
+    dependency: transitive
+    description:
+      name: jni
+      sha256: d2c361082d554d4593c3012e26f6b188f902acd291330f13d6427641a92b3da1
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.14.2"
   js:
     dependency: transitive
     description:
@@ -1519,6 +1527,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  objective_c:
+    dependency: transitive
+    description:
+      name: objective_c
+      sha256: "64e35e1e2e79da4e83f2ace3bf4e5437cef523f46c7db2eba9a1419c49573790"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.0.0"
   open_file:
     dependency: "direct main"
     description:
@@ -1993,6 +2009,22 @@ packages:
       url: "https://github.com/linagora/dart-neats.git"
     source: git
     version: "2.1.0"
+  sentry:
+    dependency: transitive
+    description:
+      name: sentry
+      sha256: "10a0bc25f5f21468e3beeae44e561825aaa02cdc6829438e73b9b64658ff88d9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.8.0"
+  sentry_flutter:
+    dependency: "direct main"
+    description:
+      name: sentry_flutter
+      sha256: aafbf41c63c98a30b17bdbf3313424d5102db62b08735c44bff810f277e786a5
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.8.0"
   server_settings:
     dependency: "direct main"
     description:
