@@ -29,36 +29,55 @@ jobs:
       fail-fast: false
 
     steps:
+      # 🔄 Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup flutter
+      # 🧰 Setup SSH (required for private git@ dependencies)
+      - name: Set up SSH for private Git dependencies
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      # ⚙️ Add GitHub to known hosts (avoid "Host key verification failed")
+      - name: Add GitHub to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      # 🚀 Setup Flutter SDK
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
           cache-key: "deps-${{ hashFiles('**/pubspec.lock') }}"
-          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+          cache-path: ${{ runner.tool_cache }}/flutter
 
+      # 🔥 Setup Firebase environment (if required by tests)
       - name: Setup Firebase env
         env:
           FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
         run: ./scripts/setup-firebase.sh
 
+      # 🧱 Prebuild step (runs flutter pub get + build_runner + intl generation)
       - name: Run prebuild
         run: ./scripts/prebuild.sh
 
-      - name: Analyze
+      # 🧩 Run Flutter static analysis
+      - name: Analyze Dart code
         uses: zgosalvez/github-actions-analyze-dart@v1
 
-      - name: Test
+      # 🧪 Run tests for each module in matrix
+      - name: Run tests
         env:
           MODULES: ${{ matrix.modules }}
         run: ./scripts/test.sh
 
+      # 📤 Upload test reports (always, even on failure)
       - name: Upload test reports
-        if: success() || failure() # Always upload report
+        if: success() || failure()
         uses: actions/upload-artifact@v4
         with:
           name: test-reports-${{ matrix.modules }}

@@ -16,7 +16,9 @@ jobs:
   reports:
     name: Upload test reports
     runs-on: ubuntu-latest
+
     steps:
+      # 🧩 Generate GitHub Checks summary from uploaded test artifacts
       - uses: dorny/test-reporter@v1
         with:
           artifact: /test-reports-(.*)/

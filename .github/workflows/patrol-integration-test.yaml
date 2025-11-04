@@ -17,40 +17,63 @@ jobs:
 
     name: Run integration tests for mobile apps
     runs-on: ubuntu-latest
+
     concurrency:
       group: ngrok
       cancel-in-progress: false
+
     steps:
+      # 🔄 Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 🧰 Setup SSH (required for private git@ dependencies during prebuild)
+      - name: Set up SSH for private Git dependencies
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      # ⚙️ Add GitHub to known hosts (avoid host verification failures)
+      - name: Add GitHub to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      # ☁️ Authenticate to Google Cloud for emulator or test infra
       - name: Authenticate to Google Cloud
-        uses: "google-github-actions/auth@v2"
+        uses: google-github-actions/auth@v2
         with:
           project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
           workload_identity_provider: ${{ secrets.GOOGLE_CLOUD_WORKLOAD_IDENTITY_PROVIDER_ID }}
           service_account: ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT }}
 
+      # ☁️ Setup Google Cloud SDK
       - name: Setup Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
+      # 🚀 Setup Flutter SDK
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
+          cache-key: deps-${{ hashFiles('**/pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
 
+      # ☕️ Setup Java (required for Android build tools)
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: "temurin"
 
+      # 🧱 Prebuild (runs flutter pub get for all modules, build_runner, intl)
       - name: Run prebuild
         run: ./scripts/prebuild.sh
 
-      - name: Test
+      # 🧪 Run Patrol integration tests with Docker
+      - name: Run Patrol integration tests
         env:
           NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
         run: ./scripts/patrol-integration-test-with-docker.sh
