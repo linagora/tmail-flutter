@@ -1,7 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mailbox_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -32,10 +29,10 @@ class MoveFolderContentScenario extends BaseTestScenario {
 
     await provisionEmail(listEmails);
     await $.pumpAndTrySettle(duration: const Duration(seconds: 2));
+    await _expectEmptyViewInVisibleInInboxFolder();
 
     await threadRobot.openMailbox();
     await $.pumpAndTrySettle();
-    _expectInboxUnreadCountVisible();
 
     await mailboxMenuRobot.longPressMailboxWithName(
       appLocalizations.inboxMailboxDisplayName,
@@ -60,6 +57,7 @@ class MoveFolderContentScenario extends BaseTestScenario {
     );
     await $.pumpAndTrySettle();
     await _expectEmailWithSubjectInVisible(emailSubject);
+    await _expectEmptyViewVisibleInInboxFolder();
   }
 
   Future<void> _expectEmailWithSubjectVisible(String subject) async {
@@ -70,14 +68,11 @@ class MoveFolderContentScenario extends BaseTestScenario {
     await expectViewInvisible($(subject));
   }
 
-  void _expectInboxUnreadCountVisible() {
-    expect(
-      $(TrailingMailboxItemWidget).which<TrailingMailboxItemWidget>((widget) {
-        final mailbox = widget.mailboxNode.item;
-        return mailbox.role == PresentationMailbox.roleInbox &&
-            mailbox.countUnreadEmails > 0;
-      }),
-      findsOneWidget,
-    );
+  Future<void> _expectEmptyViewVisibleInInboxFolder() async {
+    await expectViewVisible($(#empty_thread_view));
+  }
+
+  Future<void> _expectEmptyViewInVisibleInInboxFolder() async {
+    await expectViewInvisible($(#empty_thread_view));
   }
 }

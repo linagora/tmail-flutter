@@ -52,8 +52,6 @@ import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/list_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
-import 'package:model/extensions/session_extension.dart';
-import 'package:model/oidc/token_oidc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
