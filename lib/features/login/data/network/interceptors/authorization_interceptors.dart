@@ -17,6 +17,8 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/main/monitoring/sentry/sentry_context_data.dart';
+import 'package:tmail_ui_user/main/monitoring/sentry/sentry_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
@@ -151,8 +153,19 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return super.onError(err, handler);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       logError('AuthorizationInterceptors::onError:Exception: $e');
+      if (PlatformInfo.isWeb) {
+        SentryManager.instance.reportError(
+          e,
+          stackTrace,
+          SentryContextData(
+            errorType: e.runtimeType.toString(),
+            errorMessage: e.toString(),
+            statusCode: err.response?.statusCode,
+          ),
+        );
+      }
       if (e is ServerError || e is TemporarilyUnavailable) {
         return super.onError(
           DioError(requestOptions: err.requestOptions, error: e),
@@ -172,8 +185,18 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return mapUploadExtra[FileUploader.streamDataExtraKey];
       }
-    } catch(e) {
+    } catch (e, stackTrace) {
       log('AuthorizationInterceptors::_getDataUploadRequest: Exception = $e');
+      if (PlatformInfo.isWeb) {
+        SentryManager.instance.reportError(
+          e,
+          stackTrace,
+          SentryContextData(
+            errorType: 'AuthorizationInterceptors.getDataUploadRequest',
+            errorMessage: e.toString(),
+          ),
+        );
+      }
       return null;
     }
   }
