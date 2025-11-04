@@ -19,6 +19,9 @@ class SentryInitializer {
         options.enableLogs = config.enableLogs;
         options.debug = config.isDebug;
 
+        // Automatically enable breadcrumbs that are appropriate for the current platform
+        options.enableBreadcrumbTrackingForCurrentPlatform();
+
         // Assign the callback to process events before sending them to Sentry
         options.beforeSend = _beforeSendHandler;
       },
