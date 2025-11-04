@@ -110,7 +110,7 @@ dependencies:
       ref: master
 
   ### Dependencies from pub.dev ###
-  super_tag_editor: 0.4.1
+  super_tag_editor: 1.1.0
 
   external_app_launcher: 4.0.3
 
