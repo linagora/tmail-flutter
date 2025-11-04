@@ -14,6 +14,7 @@ class AppConfig {
   static const String envFileName = 'env.file';
   static const String appDashboardConfigurationPath = "configurations/app_dashboard.json";
   static const String appFCMConfigurationPath = "configurations/env.fcm";
+  static const String sentryConfigurationPath = "configurations/sentry.env";
   static const String iOSKeychainSharingGroupId = 'KUT463DS29.com.linagora.ios.teammail.shared';
   static const String iOSKeychainSharingService = 'com.linagora.ios.teammail.sessions';
   static const String saasPlatform = 'saas';

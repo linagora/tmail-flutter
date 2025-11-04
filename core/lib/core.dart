@@ -138,3 +138,6 @@ export 'data/model/query/query_parameter.dart';
 
 // Action
 export 'presentation/action/action_callback_define.dart';
+
+// Library
+export 'package:package_info_plus/package_info_plus.dart';
