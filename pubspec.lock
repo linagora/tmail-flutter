@@ -2170,10 +2170,10 @@ packages:
     dependency: "direct main"
     description:
       name: super_tag_editor
-      sha256: "83823674fa1048eb0411d169c9072028fa80ba6998ef18b357c29f58b835ea75"
+      sha256: "7f7c1cb38e98e9cfa92fb074d4d5f5f53846d6bffcc96e05cb2191c159dba28d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.1"
+    version: "1.1.0"
   syncfusion_flutter_core:
     dependency: transitive
     description:
