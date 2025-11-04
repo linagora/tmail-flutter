@@ -1,10 +1,8 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
- import 'package:model/email/email_action_type.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
-import 'package:tmail_ui_user/features/base/extensions/popup_menu_action_list_extension.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
@@ -68,36 +66,22 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
         );
       }).toList();
 
-      final groupedActions = popupMenuItemEmailActions.groupByCategory();
-      final entries = groupedActions.entries.toList();
+      final popupMenuWidget = PopupMenuActionGroupWidget(
+        actions: popupMenuItemEmailActions,
+        onActionSelected: (action) {
+          pressEmailAction(
+            context,
+            action.action,
+            presentationEmail,
+            mailboxContain: mailboxContain,
+          );
+        },
+      );
 
-      final popupMenuItems = <PopupMenuEntry>[
-        for (var i = 0; i < entries.length; i++)
-          ...[
-            ...entries[i].value.map((menuAction) => PopupMenuItem(
-              padding: EdgeInsets.zero,
-              child: PopupMenuItemActionWidget(
-                menuAction: menuAction,
-                menuActionClick: (menuAction) {
-                  popBack();
-                  pressEmailAction(
-                    context,
-                    menuAction.action,
-                    presentationEmail,
-                    mailboxContain: mailboxContain,
-                  );
-                },
-              ),
-            )),
-            if (i < entries.length - 1)
-              PopupMenuDivider(
-                height: 1,
-                color: AppColor.gray424244.withValues(alpha: 0.12),
-              ),
-          ],
-      ];
-
-      return openPopupMenuAction(context, position, popupMenuItems);
+      return popupMenuWidget.show(
+        context,
+        position,
+      );
     }
   }
 }
