@@ -23,11 +23,11 @@ class RemoteExceptionThrower extends ExceptionThrower {
       logError('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
       throw const NoNetworkError();
     } else {
-      handleDioError(error);
+      handleDioError(error, stackTrace);
     }
   }
 
-  void handleDioError(dynamic error) {
+  void handleDioError(dynamic error, dynamic stackTrace) {
     if (error is DioError) {
       logError(
         'RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
@@ -37,6 +37,17 @@ class RemoteExceptionThrower extends ExceptionThrower {
       final statusCode = response?.statusCode;
 
       if (response != null) {
+        if (statusCode != HttpStatus.unauthorized) {
+          reportToSentry(
+            error,
+            stackTrace,
+            statusCode: statusCode,
+            additionalInfo: {
+              'errorDescription': response.statusMessage,
+            },
+          );
+        }
+
         switch (statusCode) {
           case HttpStatus.internalServerError:
             throw const InternalServerError();
@@ -52,11 +63,19 @@ class RemoteExceptionThrower extends ExceptionThrower {
         }
       }
 
-      return _handleDioErrorWithoutResponse(error);
+      return _handleDioErrorWithoutResponse(error, stackTrace);
     }
 
     if (error is ErrorMethodResponseException) {
       final errorResponse = error.errorResponse as ErrorMethodResponse;
+
+      reportToSentry(
+        error,
+        stackTrace,
+        errorType: errorResponse.type.value,
+        errorMessage: errorResponse.description,
+      );
+
       if (errorResponse is CannotCalculateChangesMethodResponse) {
         throw CannotCalculateChangesMethodResponseException();
       } else {
@@ -67,26 +86,57 @@ class RemoteExceptionThrower extends ExceptionThrower {
       }
     }
 
+    reportToSentry(error, stackTrace);
+
     throw error;
   }
 
-  void _handleDioErrorWithoutResponse(DioError error) {
+  void _handleDioErrorWithoutResponse(DioError error, dynamic stackTrace) {
     switch (error.type) {
       case DioErrorType.connectionTimeout:
+        reportToSentry(
+          error,
+          stackTrace,
+          errorType: error.type.name,
+        );
         throw ConnectionTimeout(message: error.message);
       case DioErrorType.connectionError:
+        reportToSentry(
+          error,
+          stackTrace,
+          errorType: error.type.name,
+        );
         throw ConnectionError(message: error.message);
       case DioErrorType.badResponse:
         throw const BadCredentialsException();
       default:
         final underlyingError = error.error;
         if (underlyingError is SocketException) {
+          reportToSentry(
+            error,
+            stackTrace,
+            errorType: error.type.name,
+            errorMessage: 'SocketException',
+          );
           throw const SocketError();
         } else if (underlyingError is OAuthAuthorizationError) {
+          reportToSentry(
+            error,
+            stackTrace,
+            errorType: underlyingError.error,
+            errorMessage: underlyingError.errorDescription,
+          );
           throw underlyingError;
         } else if (underlyingError != null) {
+          reportToSentry(
+            error,
+            stackTrace,
+            errorType: error.type.name,
+            errorMessage: underlyingError.toString(),
+          );
           throw UnknownError(message: underlyingError);
         } else {
+          reportToSentry(error, stackTrace);
           throw const UnknownError();
         }
     }

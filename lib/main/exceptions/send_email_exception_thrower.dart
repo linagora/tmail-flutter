@@ -17,7 +17,7 @@ class SendEmailExceptionThrower extends RemoteExceptionThrower {
       logError('SendEmailExceptionThrower::throwException(): No realtime network connection');
       throw const NoNetworkError();
     } else {
-      handleDioError(error);
+      handleDioError(error, stackTrace);
     }
   }
 }

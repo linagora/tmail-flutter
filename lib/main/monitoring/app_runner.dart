@@ -13,14 +13,19 @@ Future<void> runAppWithMonitoring(Future<void> Function() runTmail) async {
     WidgetsFlutterBinding.ensureInitialized();
 
     // Handling Flutter UI and Build Errors
-    FlutterError.onError = (details) {
+    FlutterError.onError = (details) async {
       logError('FlutterError: ${details.exception} | stack: ${details.stack}');
+      await SentryManager.instance.reportError(
+        details.exception,
+        details.stack,
+      );
       FlutterError.presentError(details);
     };
 
     // Handling Uncaught and Platform-Specific Errors
     PlatformDispatcher.instance.onError = (error, stack) {
       logError('PlatformDispatcher: Error: $error | stack: $stack');
+      SentryManager.instance.reportError(error, stack);
       return true; // Prevent app from crashing
     };
 
@@ -30,7 +35,8 @@ Future<void> runAppWithMonitoring(Future<void> Function() runTmail) async {
     } else {
       await runTmail();
     }
-  }, (error, stack) {
+  }, (error, stack) async {
     logError('Uncaught zone error: $error\n$stack');
+    await SentryManager.instance.reportError(error, stack);
   });
 }
