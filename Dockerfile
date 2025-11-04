@@ -1,26 +1,48 @@
+# syntax=docker/dockerfile:1.4
+# ↑ Required for BuildKit features like --mount=type=ssh
+
 ARG FLUTTER_VERSION=3.32.8
-# Stage 1 - Install dependencies and build the app
-# This matches the flutter version on our CI/CD pipeline on Github
+
+# ──────────────────────────────
+# Stage 1 – Build Flutter Web App
+# ──────────────────────────────
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
 
-# Set directory to Copy App
+# Enable SSH forwarding for private git dependencies (git@github.com)
 WORKDIR /app
-
 COPY . .
 
-# Precompile tmail flutter
+# Fetch pub dependencies for all modules defined in prebuild.sh
+# The SSH mount allows access to private repos during flutter pub get
+RUN --mount=type=ssh \
+    mkdir -p /root/.ssh && \
+    ssh-keyscan github.com >> /root/.ssh/known_hosts && \
+    # Fetch dependencies for each module
+    for mod in core model contact forward rule_filter fcm email_recovery server_settings cozy; do \
+      cd /app/$mod && flutter pub get; \
+    done && \
+    # Fetch dependencies for the main project
+    cd /app && flutter pub get
+
+# Run code generation and localization steps
 RUN ./scripts/prebuild.sh
-# Build flutter for web
+
+# Build Flutter Web in release mode
 RUN flutter build web --release
 
-# Stage 2 - Create the run-time image
+# ──────────────────────────────
+# Stage 2 – Runtime Image
+# ──────────────────────────────
 FROM nginx:alpine
-RUN apk add gzip
+
+# Install gzip for pre-compression
+RUN apk add --no-cache gzip
+
+# Copy Nginx configuration and compiled web assets
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 
-# Record the exposed port
 EXPOSE 80
 
-# Before stating NGinx, re-zip all the content to ensure customizations are propagated
+# Re-compress assets before starting Nginx
 CMD gzip -k -r -f /usr/share/nginx/html/ && nginx -g 'daemon off;'
