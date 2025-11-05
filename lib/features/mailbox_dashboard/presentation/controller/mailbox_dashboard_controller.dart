@@ -1347,32 +1347,67 @@ class MailboxDashBoardController extends ReloadableController
       .where((email) => email.id != null)
       .map((e) => MapEntry(e.id!, e.hasRead))
     );
-    if (searchController.isSearchEmailRunning ||
-        selectedMailbox.value?.isFavorite == true) {
-      final Map<MailboxId,List<EmailId>> mapListEmailSelectedByMailBoxId = {};
-      for (var element in listEmails) {
-        final mailbox = element.findMailboxContain(mapMailboxById);
-        if (mailbox != null && element.id != null) {
-          if (mapListEmailSelectedByMailBoxId.containsKey(mailbox.id)) {
-            mapListEmailSelectedByMailBoxId[mailbox.id]?.add(element.id!);
-          } else {
-            mapListEmailSelectedByMailBoxId.addAll({mailbox.id: [element.id!]});
+
+    if (destinationMailbox.isFavorite) {
+      _handleDragSelectedMultipleEmailToFavoriteFolder(listEmails);
+    } else {
+      if (searchController.isSearchEmailRunning ||
+          selectedMailbox.value?.isFavorite == true) {
+        final Map<MailboxId,List<EmailId>> mapListEmailSelectedByMailBoxId = {};
+        for (var element in listEmails) {
+          final mailbox = element.findMailboxContain(mapMailboxById);
+          if (mailbox != null && element.id != null) {
+            if (mapListEmailSelectedByMailBoxId.containsKey(mailbox.id)) {
+              mapListEmailSelectedByMailBoxId[mailbox.id]?.add(element.id!);
+            } else {
+              mapListEmailSelectedByMailBoxId.addAll({mailbox.id: [element.id!]});
+            }
           }
         }
+        _handleDragSelectedMultipleEmailToMailboxAction(
+          mapListEmailSelectedByMailBoxId,
+          destinationMailbox,
+          emailIdsWithReadStatus,
+        );
+      } else if (selectedMailbox.value != null) {
+        _handleDragSelectedMultipleEmailToMailboxAction(
+          {selectedMailbox.value!.id: listEmails.listEmailIds},
+          destinationMailbox,
+          emailIdsWithReadStatus,
+        );
       }
-      _handleDragSelectedMultipleEmailToMailboxAction(
-        mapListEmailSelectedByMailBoxId,
-        destinationMailbox,
-        emailIdsWithReadStatus,
+    }
+  }
+
+  void _handleDragSelectedMultipleEmailToFavoriteFolder(
+    List<PresentationEmail> listPresentationEmail,
+  ) async {
+    if (accountId.value != null && sessionCurrent != null) {
+      final listEmailIds = listPresentationEmail
+        .where((email) => !email.hasStarred)
+        .toList()
+        .listEmailIds;
+
+      consumeState(
+        _markAsStarMultipleEmailInteractor.execute(
+          sessionCurrent!,
+          accountId.value!,
+          listEmailIds,
+          MarkStarAction.markStar,
+        ),
       );
-    } else if (selectedMailbox.value != null) {
-      _handleDragSelectedMultipleEmailToMailboxAction(
-        {selectedMailbox.value!.id: listEmails.listEmailIds},
-        destinationMailbox,
-        emailIdsWithReadStatus,
+    } else {
+      consumeState(
+        Stream.value(Left(
+          MarkAsStarMultipleEmailFailure(
+            MarkStarAction.markStar,
+            NotFoundSessionException(),
+          ),
+        )),
       );
     }
 
+    dispatchAction(CancelSelectionAllEmailAction());
   }
 
   void _handleDragSelectedMultipleEmailToMailboxAction(

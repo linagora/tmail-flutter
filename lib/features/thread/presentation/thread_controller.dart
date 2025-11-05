@@ -166,6 +166,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   @override
   void handleSuccessViewState(Success success) {
+    super.handleSuccessViewState(success);
     if (success is GetAllEmailSuccess) {
       _getAllEmailSuccess(success);
     } else if (success is LoadMoreEmailsSuccess) {
@@ -192,13 +193,12 @@ class ThreadController extends BaseController with EmailActionController {
           _openEmailWithoutMailboxFromLocationBar(success.email);
         }
       }
-    } else {
-      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
     if (failure is SearchEmailFailure) {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
       canSearchMore = false;
@@ -216,8 +216,6 @@ class ThreadController extends BaseController with EmailActionController {
     } else if (failure is GetAllEmailFailure || failure is CleanAndGetAllEmailFailure) {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
       canLoadMore = true;
-    } else {
-      super.handleFailureViewState(failure);
     }
   }
 
