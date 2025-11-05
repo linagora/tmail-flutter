@@ -2,8 +2,8 @@
 a[b][c]=a[b][c]||[]
 a[b][c].push({p:"main.dart.js_8",e:"beginPart"})})(self,"$__dart_deferred_initializers__","eventLog")
 $__dart_deferred_initializers__.current=function(a,b,c,$){var J,A,C,B={
-bUV(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x){return new B.Ns(f,x,l,h,g,v,k,q,s,t,d,u,j,i,o,m,n,r,w,e,p)},
-Ns:function Ns(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x){var _=this
+bVq(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x){return new B.NC(f,x,l,h,g,v,k,q,s,t,d,u,j,i,o,m,n,r,w,e,p)},
+NC:function NC(d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x){var _=this
 _.c=d
 _.d=e
 _.e=f
@@ -25,7 +25,7 @@ _.db=u
 _.dx=v
 _.dy=w
 _.a=x},
-aru:function aru(d){var _=this
+arP:function arP(d){var _=this
 _.f=_.e=_.d=$
 _.w=_.r=null
 _.x=!0
@@ -33,40 +33,40 @@ _.z=_.y=$
 _.Q=!1
 _.iJ$=d
 _.c=_.a=null},
-cX7:function cX7(d,e){this.a=d
+cXK:function cXK(d,e){this.a=d
 this.b=e},
-cX8:function cX8(d){this.a=d},
-cX9:function cX9(d,e){this.a=d
+cXL:function cXL(d){this.a=d},
+cXM:function cXM(d,e){this.a=d
 this.b=e},
-cXa:function cXa(d){this.a=d},
-cX6:function cX6(d){this.a=d},
-cX5:function cX5(d){this.a=d},
-awg:function awg(){},
-Zo:function Zo(d,e,f){this.a=d
+cXN:function cXN(d){this.a=d},
+cXJ:function cXJ(d){this.a=d},
+cXI:function cXI(d){this.a=d},
+awB:function awB(){},
+Zv:function Zv(d,e,f){this.a=d
 this.b=e
 this.c=f},
-bbd:function bbd(){},
-dWa(d){var x,w,v,u,t,s,r,q,p="text/html"
+bbz:function bbz(){},
+dX1(d){var x,w,v,u,t,s,r,q,p="text/html"
 if(!(C.d.q(d,A.bb("<[a-zA-Z][^>]*>",!0,!1,!1,!1))&&C.d.q(d,A.bb("</[a-zA-Z][^>]*>",!0,!1,!1,!1))))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
 v.toString
 u=y.f
-t=new A.a53(v,u)
+t=new A.a5g(v,u)
 for(s=1;t.gv(0)===0;){if(s>=3)return d
 v=w.querySelectorAll(".quote-toggle-container"+C.d.b5(" > div",s)+" > blockquote")
 v.toString
-t=new A.a53(v,u);++s}r=t.$ti.c.a(C.uS.gX(t.a))
+t=new A.a5g(v,u);++s}r=t.$ti.c.a(C.uT.gX(t.a))
 q=new DOMParser().parseFromString('      <button class="quote-toggle-button collapsed" title="Show trimmed content">\n          <span class="dot"></span>\n          <span class="dot"></span>\n          <span class="dot"></span>\n      </button>',p).querySelector(".quote-toggle-button")
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.dOo(v)
+v=v==null?null:J.dPh(v)
 return v==null?d:v},
-dxz(){if(!C.d.q(window.navigator.userAgent.toLowerCase(),"iphone"))var x=C.d.q(window.navigator.userAgent.toLowerCase(),"android")&&C.d.q(window.navigator.userAgent.toLowerCase(),"mobile")
+dyb(){if(!C.d.q(window.navigator.userAgent.toLowerCase(),"iphone"))var x=C.d.q(window.navigator.userAgent.toLowerCase(),"android")&&C.d.q(window.navigator.userAgent.toLowerCase(),"mobile")
 else x=!0
 return x},
-dxA(){if(!C.d.q(window.navigator.userAgent.toLowerCase(),"ipad"))var x=C.d.q(window.navigator.userAgent.toLowerCase(),"android")&&!C.d.q(window.navigator.userAgent.toLowerCase(),"mobile")
+dyc(){if(!C.d.q(window.navigator.userAgent.toLowerCase(),"ipad"))var x=C.d.q(window.navigator.userAgent.toLowerCase(),"android")&&!C.d.q(window.navigator.userAgent.toLowerCase(),"mobile")
 else x=!0
 return x}},D
 J=c[1]
@@ -74,124 +74,124 @@ A=c[0]
 C=c[2]
 B=a.updateHolder(c[12],B)
 D=c[22]
-B.Ns.prototype={
-a1(){return new B.aru(null)}}
-B.aru.prototype={
+B.NC.prototype={
+a1(){return new B.arP(null)}}
+B.arP.prototype={
 aA(){var x,w=this
-w.b_2()
+w.b_p()
 x=w.a
 w.e=x.e
 w.f=x.d
 w.y=x.cx
-w.atG()
+w.atW()
 x=window
 x.toString
-x=A.ie(x,"message",w.gbfe(),!1,y.B)
-w.z!==$&&A.cN()
+x=A.ih(x,"message",w.gbfE(),!1,y.B)
+w.z!==$&&A.cO()
 w.z=x},
-bff(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
-try{x=C.as.ff(0,new A.pK([],[]).qs(d.data,!0))
+bfF(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
+try{x=C.as.fe(0,new A.qW([],[]).rr(d.data,!0))
 w=J.ah(x,"view")
 t=n.d
 t===$&&A.d()
 if(!J.u(w,t))return
 v=J.ah(x,"type")
-if(n.gaun()){t=v
+if(n.gauD()){t=v
 t=(t==null?m:C.d.q(t,"toDart: onScrollChanged"))===!0}else t=!1
 if(t){t=n.a.ax
 t.toString
-n.beM(x,t)
-return}else{if(n.gaun()){t=v
+n.bfb(x,t)
+return}else{if(n.gauD()){t=v
 t=(t==null?m:C.d.q(t,"toDart: onScrollEnd"))===!0}else t=!1
 if(t){t=n.a.ax
 t.toString
 s=J.ah(x,"velocity")
-r=J.dpL(s==null?0:s,800)
+r=J.dqp(s==null?0:s,800)
 q=t.f
 p=C.c.gbq(q).at
 p.toString
-t.iQ(C.j.fE(p+r,C.c.gbq(q).geU(),C.c.gbq(q).geg()),C.fq,C.hH)
+t.iQ(C.j.fF(p+r,C.c.gbq(q).geT(),C.c.gbq(q).gef()),C.fr,C.hI)
 return}else{t=v
 if(n.a.Q!=null)t=(t==null?m:C.d.q(t,"toDart: iframeKeydown"))===!0
 else t=!1
-if(t){n.bfU(x)
+if(t){n.bgj(x)
 return}}}if(J.u(J.ah(x,"message"),"iframeHasBeenLoaded"))n.Q=!0
 if(!n.Q)return
 t=v
-if((t==null?m:C.d.q(t,"toDart: htmlHeight"))===!0)n.bcY(J.ah(x,"height"))
+if((t==null?m:C.d.q(t,"toDart: htmlHeight"))===!0)n.bdn(J.ah(x,"height"))
 else{t=v
 t=(t==null?m:C.d.q(t,"toDart: htmlWidth"))===!0
 if(t)n.a.toString
-if(t)n.bcZ(J.ah(x,"width"))
+if(t)n.bdo(J.ah(x,"width"))
 else{t=v
 if((t==null?m:C.d.q(t,"toDart: OpenLink"))===!0){t=J.ah(x,"url")
-if(t!=null&&n.c!=null&&typeof t=="string"&&C.d.bb(t,"mailto:")){q=n.a.y
-if(q!=null)q.$1(A.jd(t))}}else{t=v
+if(t!=null&&n.c!=null&&typeof t=="string"&&C.d.b6(t,"mailto:")){q=n.a.y
+if(q!=null)q.$1(A.je(t))}}else{t=v
 if((t==null?m:C.d.q(t,"toDart: onClickHyperLink"))===!0){t=J.ah(x,"url")
 if(t!=null&&n.c!=null&&typeof t=="string"){q=n.a.z
-if(q!=null)q.$1(A.jd(t))}}}}}}catch(o){u=A.O(o)
+if(q!=null)q.$1(A.je(t))}}}}}}catch(o){u=A.O(o)
 A.x(A.J(n).l(0)+"::_handleMessageEvent:Exception = "+A.e(u),C.w)}},
-gaun(){var x=this.a.ax
+gauD(){var x=this.a.ax
 if(x!=null)x=x.f.length!==0===!0
 else x=!1
 return x},
-beM(d,e){var x,w,v,u,t,s,r,q
+bfb(d,e){var x,w,v,u,t,s,r,q
 try{t=J.ah(d,"deltaY")
 x=t==null?0:t
 s=e.f
 r=C.c.gbq(s).at
 r.toString
 w=r+x
-r=B.dxz()||B.dxA()
-if(r){v=J.dpQ(w,C.c.gbq(s).geU(),C.c.gbq(s).geg())
-e.iQ(v,C.ae,C.oe)}else if(w<C.c.gbq(s).geU())e.im(C.c.gbq(s).geU())
-else if(w>C.c.gbq(s).geg())e.im(C.c.gbq(s).geg())
+r=B.dyb()||B.dyc()
+if(r){v=J.dqu(w,C.c.gbq(s).geT(),C.c.gbq(s).gef())
+e.iQ(v,C.ae,C.og)}else if(w<C.c.gbq(s).geT())e.im(C.c.gbq(s).geT())
+else if(w>C.c.gbq(s).gef())e.im(C.c.gbq(s).gef())
 else e.im(w)}catch(q){u=A.O(q)
 A.x(A.J(this).l(0)+"::_handleIframeOnScrollChangedListener:Exception = "+A.e(u),C.w)}},
-bcY(d){var x,w,v,u,t,s,r=this
+bdn(d){var x,w,v,u,t,s,r=this
 if(d==null){x=r.e
 x===$&&A.d()
 w=x}else w=d
 x=r.c
-if(x!=null){v=J.axZ(w,r.a.db)
+if(x!=null){v=J.ayj(w,r.a.db)
 A.x(A.J(r).l(0)+"::_handleContentHeightEvent: ScrollHeightWithBuffer = "+A.e(v),C.h)
 x=r.a.dy
-u=J.ax9(v)
+u=J.axu(v)
 t=r.y
 if(x){t===$&&A.d()
-s=u.q1(v,t)}else{t===$&&A.d()
-s=u.nu(v,t)}if(s)r.U(new B.cX7(r,v))}if(r.c!=null&&r.x)r.U(new B.cX8(r))},
-bcZ(d){var x,w,v=this
+s=u.q3(v,t)}else{t===$&&A.d()
+s=u.nx(v,t)}if(s)r.U(new B.cXK(r,v))}if(r.c!=null&&r.x)r.U(new B.cXL(r))},
+bdo(d){var x,w,v=this
 if(d==null){x=v.f
 x===$&&A.d()
 w=x}else w=d
-if(v.c!=null&&J.dpK(w,v.a.cy)&&v.a.as)v.U(new B.cX9(v,w))},
-bfU(d){var x,w,v,u
+if(v.c!=null&&J.dqo(w,v.a.cy)&&v.a.as)v.U(new B.cXM(v,w))},
+bgj(d){var x,w,v,u
 try{v=J.ao(d)
-x=new B.Zo(A.aN(v.j(d,"key")),A.aN(v.j(d,"code")),J.u(v.j(d,"shift"),!0))
+x=new B.Zv(A.aN(v.j(d,"key")),A.aN(v.j(d,"code")),J.u(v.j(d,"shift"),!0))
 A.x(A.J(this).l(0)+"::_handleOnIFrameKeyboardEvent:\ud83d\udce5 Shortcut pressed: "+A.e(x),C.h)
 v=this.a.Q
 if(v!=null)v.$1(x)}catch(u){w=A.O(u)
 A.x(A.J(this).l(0)+"::_handleOnIFrameKeyboardEvent: Exception = "+A.e(w),C.w)}},
-ba(d){var x,w,v=this
+bb(d){var x,w,v=this
 v.bp(d)
 x=d.f
 A.x(A.J(v).l(0)+"::didUpdateWidget():Old-Direction: "+x.l(0)+" | Current-Direction: "+v.a.f.l(0),C.h)
 w=v.a
-if(w.c!==d.c||w.f!==x)v.atG()
+if(w.c!==d.c||w.f!==x)v.atW()
 x=v.a
 w=x.e
 if(w!==d.e)v.e=w
 x=x.d
 if(x!==d.d)v.f=x},
-bbr(d){var x,w=$.boC(),v=J.rE(d,y.D)
-for(x=0;x<d;++x)v[x]=w.uC(255)
-return C.qm.ghF().bB(v)},
-atG(){var x,w,v,u=this,t="\n          \n          ",s=u.d=u.bbr(10),r=u.a,q=r.c,p=!r.dy,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
+bbP(d){var x,w=$.bp0(),v=J.rG(d,y.D)
+for(x=0;x<d;++x)v[x]=w.uG(255)
+return C.qn.ghG().bB(v)},
+atW(){var x,w,v,u=this,t="\n          \n          ",s=u.d=u.bbP(10),r=u.a,q=r.c,p=!r.dy,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 l=l?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 n=n?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ay)q=B.dWa(q)
+if(r.ay)q=B.dX1(q)
 r=y.x
 x=A.c(["    .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  "],r)
 if(u.a.ay)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -199,7 +199,7 @@ if(u.a.ch)x.push("    html, body {\n      overflow: hidden;\n      overscroll-be
 w=C.c.il(x)
 s=A.c(["      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('pagehide', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n          window.removeEventListener('load', handleOnLoad);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\""+s+'")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n\n        '+o+"\n        \n        "+m+"\n        \n        \n        \n        "+k+'\n        \n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "'+s+'", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toIframe: getWidth"}), "*");\n          \n          '+l+t+n+t+p+"\n        }\n      </script>\n    ","    <script type=\"text/javascript\">\n      document.addEventListener('wheel', function(e) {\n        e.ctrlKey && e.preventDefault();\n      }, {\n        passive: false,\n      });\n      window.addEventListener('keydown', disableZoomControl);\n      \n      window.addEventListener('pagehide', (event) => {\n        window.removeEventListener('keydown', disableZoomControl);\n      });\n      \n      function disableZoomControl(event) {\n        if (event.metaKey || event.ctrlKey) {\n          switch (event.key) {\n            case '=':\n            case '-':\n              event.preventDefault();\n              break;\n          }\n        }\n      }\n    </script>\n  ","    <script type=\"text/javascript\">\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ",'      <script type="text/javascript">\n        const displayWidth = '+A.e(u.a.d)+";\n    \n        const sizeUnits = ['px', 'in', 'cm', 'mm', 'pt', 'pc'];\n    \n        function convertToPx(value, unit) {\n          switch (unit.toLowerCase()) {\n            case 'px': return value;\n            case 'in': return value * 96;\n            case 'cm': return value * 37.8;\n            case 'mm': return value * 3.78;\n            case 'pt': return value * (96 / 72);\n            case 'pc': return value * (96 / 6);\n            default: return value;\n          }\n        }\n    \n        function removeWidthHeightFromStyle(style) {\n          // Remove width and height properties from style string\n          style = style.replace(/width\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');\n          style = style.replace(/height\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');\n          style = style.trim();\n          if (style.length && !style.endsWith(';')) {\n            style += ';';\n          }\n          return style;\n        }\n    \n        function extractWidthHeightFromStyle(style) {\n          // Extract width and height values with units from style string\n          const result = {};\n          const widthMatch = style.match(/width\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);\n          const heightMatch = style.match(/height\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);\n    \n          if (widthMatch) {\n            const value = parseFloat(widthMatch[1]);\n            const unit = widthMatch[2];\n            if (!isNaN(value) && unit) {\n              result['width'] = { value, unit };\n            }\n          }\n    \n          if (heightMatch) {\n            const value = parseFloat(heightMatch[1]);\n            const unit = heightMatch[2];\n            if (!isNaN(value) && unit) {\n              result['height'] = { value, unit };\n            }\n          }\n    \n          return result;\n        }\n    \n        function normalizeStyleAttribute(attrs) {\n          // Normalize style attribute to ensure proper responsive behavior\n          let style = attrs['style'];\n          \n          if (!style) {\n            attrs['style'] = 'max-width:100%;height:auto;display:inline;';\n            return;\n          }\n    \n          style = style.trim();\n          const dimensions = extractWidthHeightFromStyle(style);\n          const hasWidth = dimensions.hasOwnProperty('width');\n    \n          if (hasWidth) {\n            const widthData = dimensions['width'];\n            const widthPx = convertToPx(widthData.value, widthData.unit);\n    \n            if (displayWidth !== undefined &&\n                widthPx > displayWidth &&\n                sizeUnits.includes(widthData.unit)) {\n              style = removeWidthHeightFromStyle(style).trim();\n            }\n          }\n    \n          // Ensure proper style string formatting\n          if (style.length && !style.endsWith(';')) {\n            style += ';';\n          }\n    \n          // Add responsive defaults if missing\n          if (!style.includes('max-width')) {\n            style += 'max-width:100%;';\n          }\n    \n          if (!style.includes('height')) {\n            style += 'height:auto;';\n          }\n    \n          if (!style.includes('display')) {\n            style += 'display:inline;';\n          }\n    \n          attrs['style'] = style;\n        }\n    \n        function normalizeWidthHeightAttribute(attrs) {\n          // Normalize width/height attributes and remove if necessary\n          const widthStr = attrs['width'];\n          const heightStr = attrs['height'];\n    \n          // Remove attribute if value is null or undefined\n          if (widthStr === null || widthStr === undefined) {\n            delete attrs['width'];\n          } else if (displayWidth !== undefined) {\n            const widthValue = parseFloat(widthStr);\n            if (!isNaN(widthValue)) {\n              if (widthValue > displayWidth) {\n                delete attrs['width'];\n                delete attrs['height'];\n              }\n            }\n          }\n    \n          // Remove height attribute if value is null or undefined\n          if (heightStr === null || heightStr === undefined) {\n            delete attrs['height'];\n          }\n        }\n    \n        function normalizeImageSize(attrs) {\n          // Apply both style and attribute normalization\n          normalizeWidthHeightAttribute(attrs);\n          normalizeStyleAttribute(attrs);\n        }\n    \n        function applyImageNormalization() {\n          // Process all images on the page\n          document.querySelectorAll('img').forEach(img => {\n            const attrs = {\n              style: img.getAttribute('style'),\n              width: img.getAttribute('width'),\n              height: img.getAttribute('height')\n            };\n    \n            normalizeImageSize(attrs);\n    \n            // Handle style attribute\n            if (attrs.style !== null && attrs.style !== undefined) {\n              img.setAttribute('style', attrs.style);\n            } else {\n              img.removeAttribute('style');\n            }\n    \n            // Handle width attribute\n            if ('width' in attrs && attrs.width !== null && attrs.width !== undefined) {\n              img.setAttribute('width', attrs.width);\n            } else {\n              img.removeAttribute('width');\n            }\n    \n            // Handle height attribute\n            if ('height' in attrs && attrs.height !== null && attrs.height !== undefined) {\n              img.setAttribute('height', attrs.height);\n            } else {\n              img.removeAttribute('height');\n            }\n          });\n        }\n        \n        function safeApplyImageNormalization() {\n          // Error-safe wrapper for the normalization function\n          try {\n            applyImageNormalization();\n          } catch (e) {\n            console.error('Image normalization failed:', e);\n          }\n        }\n        \n        // Run normalization when page loads\n        window.onload = safeApplyImageNormalization;\n      </script>\n    "],r)
 if(u.a.ay)s.push("    <script>\n      document.addEventListener('DOMContentLoaded', function() {\n        const buttons = document.querySelectorAll('.quote-toggle-button');\n        buttons.forEach(button => {\n          button.onclick = function() {\n            const blockquote = this.nextElementSibling;\n            if (blockquote && blockquote.tagName === 'BLOCKQUOTE') {\n              this.classList.toggle('collapsed');\n              if (this.classList.contains('collapsed')) {\n                this.title = 'Show trimmed content';\n              } else {\n                this.title = 'Hide expanded content';\n              }\n            }\n          };\n        });\n      });\n    </script>")
-if(u.a.ax!=null){r=B.dxz()||B.dxA()
+if(u.a.ax!=null){r=B.dyb()||B.dyc()
 p=u.d
 s.push(r?'    <script type="text/javascript">\n      let lastY = 0;\n      let lastTime = 0;\n      let velocity = 0;\n    \n      function onTouchStart(e) { \n        lastY = e.touches[0].clientY;\n        lastTime = performance.now();\n        velocity = 0;\n      }\n    \n      function onTouchMove(e) { \n        const now = performance.now();\n        const y = e.touches[0].clientY;\n        const dy = lastY - y;\n        const dt = now - lastTime;\n    \n        if (dt > 0) {\n          velocity = dy / dt; // px per ms\n          velocity = Math.max(Math.min(velocity, 2), -2); // clamp velocity\n        }\n    \n        lastY = y;\n        lastTime = now;\n    \n        window.parent.postMessage(JSON.stringify({\n          view: "'+p+'",\n          type: "toDart: onScrollChanged",\n          deltaY: dy,\n        }), \'*\');\n      }\n    \n      function onTouchEnd(e) { \n        window.parent.postMessage(JSON.stringify({\n          view: "'+p+"\",\n          type: \"toDart: onScrollEnd\",\n          velocity: velocity,\n        }), '*');\n      }\n    \n      window.addEventListener('touchstart', onTouchStart, { passive: true });\n      window.addEventListener('touchmove', onTouchMove, { passive: true });\n      window.addEventListener('touchend', onTouchEnd, { passive: true });\n    \n      window.addEventListener('pagehide', () => {\n        window.removeEventListener('touchstart', onTouchStart);\n        window.removeEventListener('touchmove', onTouchMove);\n        window.removeEventListener('touchend', onTouchEnd);\n      });\n    </script>\n\n  ":'    <script type="text/javascript">\n      function onWheel(e) { \n        const deltaY = event.deltaY;\n        window.parent.postMessage(JSON.stringify({\n          "view": "'+p+'",\n          "type": "toDart: onScrollChanged",\n          "deltaY": deltaY\n        }), "*");\n      }\n      \n      window.addEventListener(\'wheel\', onWheel, { passive: true });\n      \n      window.addEventListener(\'pagehide\', (event) => {\n        window.removeEventListener(\'wheel\', onWheel);\n      });\n    </script>\n  ')}if(u.a.Q!=null)s.push("    <script type=\"text/javascript\">\n      window.addEventListener('keydown', handleIframeKeydown);\n      \n      window.addEventListener('pagehide', (event) => {\n        window.removeEventListener('keydown', handleIframeKeydown);\n      });\n      \n      function handleIframeKeydown(event) {\n        const payload = {\n          view: '"+u.d+"',\n          type: 'toDart: iframeKeydown',\n          key: event.key,\n          code: event.code,\n          shift: event.shiftKey\n        };\n        window.parent.postMessage(JSON.stringify(payload), \"*\");\n      }\n    </script>\n  ")
 v=C.c.il(s)
@@ -215,63 +215,63 @@ r=m?"    body {\n      font-weight: 400;\n      font-size: "+r+"px;\n      font-
 o=o===C.aB?'dir="rtl"':""
 n=n!=null?"margin: "+A.e(n)+";":""
 u.w='      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n            @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Regular.ttf") format("truetype");\n      font-weight: 400;\n      font-style: normal;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Medium.ttf") format("truetype");\n      font-weight: 500;\n      font-style: medium;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-SemiBold.ttf") format("truetype");\n      font-weight: 600;\n      font-style: semi-bold;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Bold.ttf") format("truetype");\n      font-weight: 700;\n      font-style: bold;\n    }\n    \n    body {\n      font-family: \'Inter\', sans-serif;\n    }\n  \n        \n        '+r+"\n        \n        .tmail-content {\n          min-height: "+A.e(s)+"px;\n          min-width: "+p+"px;\n          overflow: auto;\n          overflow-wrap: break-word;\n          word-break: break-word;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n        \n        pre {\n          white-space: pre-wrap;\n        }\n        \n        table {\n          white-space: normal !important;\n        }\n              \n        @media only screen and (max-width: 600px) {\n          table {\n            width: 100% !important;\n          }\n          \n          a {\n            width: -webkit-fill-available !important;\n          }\n        }\n        \n        "+w+"\n      </style>\n      </head>\n      <body "+o+' style = "overflow-x: hidden; '+n+'";>\n      <div class="tmail-content">'+q+"</div>\n      "+v+"\n      </body>\n      </html> \n    "
-u.r=A.bI(!0,y.e)},
+u.r=A.bH(!0,y.e)},
 t(d){var x=this
-x.wx(d)
-if(x.a.dy)return x.aoy()
-else return A.fb(new B.cXa(x))},
-aoy(){var x,w=this,v=null,u=A.J(w).l(0),t=w.e
+x.wE(d)
+if(x.a.dy)return x.aoO()
+else return A.fc(new B.cXN(x))},
+aoO(){var x,w=this,v=null,u=A.J(w).l(0),t=w.e
 t===$&&A.d()
 A.x(u+"::_buildHtmlElementView: ActualHeight: "+A.e(t),C.h)
 t=A.c([],y.u)
 u=w.w
-if((u==null?v:C.d.aK(u).length!==0)===!0)t.push(A.XD(new B.cX6(w),w.r,y.e))
-if(w.x)t.push(D.a3K)
+if((u==null?v:C.d.aL(u).length!==0)===!0)t.push(A.XL(new B.cXJ(w),w.r,y.e))
+if(w.x)t.push(D.a3Q)
 x=new A.cA(C.ac,v,C.a2,C.G,t,v)
 w.a.toString
 u=w.f
 u===$&&A.d()
-return new A.b1(u,v,x,v)},
+return new A.b2(u,v,x,v)},
 p(){this.w=null
 var x=this.z
 x===$&&A.d()
 x.ao(0)
-this.aG()},
-gt8(){return this.a.CW}}
-B.awg.prototype={
-aA(){this.aM()
-if(this.a.CW)this.vh()},
+this.aH()},
+gta(){return this.a.CW}}
+B.awB.prototype={
+aA(){this.aN()
+if(this.a.CW)this.vl()},
 iI(){var x=this.iJ$
 if(x!=null){x.aV()
-x.ia()
-this.iJ$=null}this.pe()}}
-B.Zo.prototype={
-aID(d,e,f){return this.a.toLowerCase()===e.toLowerCase()&&this.c===f},
-Ao(d,e){return this.aID(0,e,!1)},
+x.ib()
+this.iJ$=null}this.pi()}}
+B.Zv.prototype={
+aIT(d,e,f){return this.a.toLowerCase()===e.toLowerCase()&&this.c===f},
+As(d,e){return this.aIT(0,e,!1)},
 gB(){return[this.a,this.b,this.c]}}
-B.bbd.prototype={}
-var z=a.updateTypes(["~(qs)"])
-B.cX7.prototype={
+B.bbz.prototype={}
+var z=a.updateTypes(["~(qu)"])
+B.cXK.prototype={
 $0(){var x=this.a
 x.e=this.b
 x.x=!1},
 $S:0}
-B.cX8.prototype={
+B.cXL.prototype={
 $0(){this.a.x=!1},
 $S:0}
-B.cX9.prototype={
+B.cXM.prototype={
 $0(){return this.a.f=this.b},
 $S:0}
-B.cXa.prototype={
+B.cXN.prototype={
 $2(d,e){var x=this.a,w=x.y
 w===$&&A.d()
 x.y=Math.min(e.d,w)
-return x.aoy()},
-$S:216}
-B.cX6.prototype={
+return x.aoO()},
+$S:203}
+B.cXJ.prototype={
 $2(d,e){var x,w,v,u,t=null
 if(e.b!=null){x=this.a
-w=A.du_(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.q),new B.cX5(x),"iframe")
+w=A.duB(!0,new A.b7(A.e(x.w)+"-"+A.e(x.a.a),y.q),new B.cXI(x),"iframe")
 v=x.a.dx
 u=x.e
 x=x.f
@@ -279,9 +279,9 @@ if(v!=null){u===$&&A.d()
 x===$&&A.d()
 return A.aa(t,w,C.k,t,new A.av(0,1/0,0,v),t,t,u,t,t,t,t,t,x)}else{u===$&&A.d()
 x===$&&A.d()
-return new A.b1(x,u,w,t)}}else return C.y},
-$S:201}
-B.cX5.prototype={
+return new A.b2(x,u,w,t)}}else return C.y},
+$S:188}
+B.cXI.prototype={
 $1(d){var x,w
 y.C.a(d)
 x=this.a
@@ -301,22 +301,22 @@ x=d.style
 x.width="100%"
 x=d.style
 x.height="100%"},
-$S:468};(function aliases(){var x=B.awg.prototype
-x.b_2=x.aA})();(function installTearOffs(){var x=a._instance_1u
-x(B.aru.prototype,"gbfe","bff",0)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
-v(B.Ns,A.ag)
-v(B.awg,A.af)
-v(B.aru,B.awg)
-u(A.vr,[B.cX7,B.cX8,B.cX9])
-u(A.vs,[B.cXa,B.cX6])
-v(B.cX5,A.oU)
-v(B.bbd,A.a3)
-v(B.Zo,B.bbd)
-x(B.awg,A.r8)
-w(B.bbd,A.q)})()
-A.Eg(b.typeUniverse,JSON.parse('{"Ns":{"ag":[],"j":[],"k":[]},"aru":{"af":["Ns"]},"Zo":{"q":[]}}'))
-var y={C:A.aq("yz"),x:A.aq("P<f>"),u:A.aq("P<j>"),B:A.aq("qs"),q:A.aq("b6<f>"),f:A.aq("a53<i7>"),e:A.aq("C"),D:A.aq("D")};(function constants(){D.aSI=new A.b1(30,30,C.rq,null)
-D.aKF=new A.Z(C.cv,D.aSI,null)
-D.a3K=new A.dH(C.db,null,null,D.aKF,null)})()};
+$S:765};(function aliases(){var x=B.awB.prototype
+x.b_p=x.aA})();(function installTearOffs(){var x=a._instance_1u
+x(B.arP.prototype,"gbfE","bfF",0)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
+v(B.NC,A.ag)
+v(B.awB,A.af)
+v(B.arP,B.awB)
+u(A.vt,[B.cXK,B.cXL,B.cXM])
+u(A.vu,[B.cXN,B.cXJ])
+v(B.cXI,A.oX)
+v(B.bbz,A.a2)
+v(B.Zv,B.bbz)
+x(B.awB,A.ra)
+w(B.bbz,A.q)})()
+A.El(b.typeUniverse,JSON.parse('{"NC":{"ag":[],"j":[],"k":[]},"arP":{"af":["NC"]},"Zv":{"q":[]}}'))
+var y={C:A.ap("yG"),x:A.ap("P<f>"),u:A.ap("P<j>"),B:A.ap("qu"),q:A.ap("b7<f>"),f:A.ap("a5g<i9>"),e:A.ap("C"),D:A.ap("D")};(function constants(){D.aT0=new A.b2(30,30,C.rr,null)
+D.aKQ=new A.Z(C.cv,D.aT0,null)
+D.a3Q=new A.dI(C.db,null,null,D.aKQ,null)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"X2Hw9m2EOT9KF3uo76ZiRWgJ+zA=");
+a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"za3qzgV1Jz6b85H9cLQHaSw0KeM=");
