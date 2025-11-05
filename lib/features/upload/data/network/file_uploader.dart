@@ -147,8 +147,8 @@ class FileUploader {
           resultJson: resultJson,
           fileName: argsUpload.fileInfo.fileName);
       }
-    } on DioError catch (exception) {
-      logError('FileUploader::_handleUploadAttachmentAction():DioError: $exception');
+    } on DioException catch (exception) {
+      logError('FileUploader::_handleUploadAttachmentAction():DioException: $exception');
 
       throw exception.copyWith(
         requestOptions: exception.requestOptions.copyWith(data: ''));

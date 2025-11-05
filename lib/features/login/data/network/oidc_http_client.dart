@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:core/data/model/query/query_parameter.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:dio/dio.dart' show DioException;
 import 'package:get/get_connect/http/src/exceptions/exceptions.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
@@ -14,10 +15,9 @@ import 'package:model/oidc/response/oidc_user_info.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
-import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
-import 'package:dio/dio.dart' show DioError;
 
 class OIDCHttpClient {
 
@@ -45,7 +45,7 @@ class OIDCHttpClient {
     } on FormatException catch (exception) {
       log('checkOIDCIsAvailable(): error while parsing server response (JSON expected): ${exception.message}');
       throw InvalidOIDCResponseException();
-    } on DioError catch (exception) {
+    } on DioException catch (exception) {
       if (exception.error is HandshakeException) {
         throw exception.error!;
       } else if (exception.error is SocketException) {

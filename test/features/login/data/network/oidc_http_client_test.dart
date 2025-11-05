@@ -20,11 +20,11 @@ void main() {
     test(
       'should throw CanNotFoundOIDCLinks '
       'when checkOIDCIsAvailable() is called '
-      'and dioClient throw DioError '
+      'and dioClient throw DioException '
       'and status code is 404',
     () {
       // arrange
-      when(dioClient.get(any)).thenThrow(DioError(
+      when(dioClient.get(any)).thenThrow(DioException(
         requestOptions: requestOptions,
         response: Response(requestOptions: requestOptions, statusCode: 404)));
 
@@ -37,11 +37,11 @@ void main() {
     test(
       'should throw CanRetryOIDCException '
       'when checkOIDCIsAvailable() is called '
-      'and dioClient throw DioError '
+      'and dioClient throw DioException '
       'and status code is not 404',
     () {
       // arrange
-      when(dioClient.get(any)).thenThrow(DioError(
+      when(dioClient.get(any)).thenThrow(DioException(
         requestOptions: requestOptions,
         response: Response(requestOptions: requestOptions, statusCode: 403)));
 
@@ -54,7 +54,7 @@ void main() {
     test(
       'should throw CanRetryOIDCException '
       'when checkOIDCIsAvailable() is called '
-      'and dioClient throw exception that is not DioError',
+      'and dioClient throw exception that is not DioException',
     () {
       // arrange
       when(dioClient.get(any)).thenThrow(Exception());
