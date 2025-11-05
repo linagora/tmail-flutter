@@ -68,7 +68,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+      ref: upgrade-dio-to-v5.2.0
 
   contacts_service:
     git:
@@ -115,7 +115,7 @@ dependencies:
 
   flutter_svg: 2.1.0
 
-  dio: 5.0.0
+  dio: 5.2.0
 
   equatable: 2.0.5
 
@@ -263,6 +263,8 @@ dependencies:
   flutter_custom_tab_bar: 1.2.1
 
   sentry_flutter: 9.8.0
+
+  sentry_dio: 9.8.0
 
 dev_dependencies:
   flutter_test:

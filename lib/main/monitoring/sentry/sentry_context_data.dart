@@ -15,7 +15,7 @@ class SentryContextData {
 
   Map<String, dynamic> toMap() {
     return {
-      if (errorType != null) 'errorType': statusCode,
+      if (errorType != null) 'errorType': errorType,
       if (errorMessage != null) 'errorMessage': errorMessage,
       if (statusCode != null) 'statusCode': statusCode,
       if (additionalInfo != null && additionalInfo!.isNotEmpty)

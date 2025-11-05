@@ -31,6 +31,17 @@ class SentryManager {
     }
   }
 
+  /// Forwards to SentryReporter to log a message.
+  Future<void> logMessage(
+    String message,
+    List<dynamic> args, {
+    SentryLogLevel level = SentryLogLevel.info,
+  }) async {
+    if (PlatformInfo.isWeb) {
+      await SentryReporter.logSentry(message, args, level: level);
+    }
+  }
+
   /// Sets the current user context once after login.
   Future<void> setUser(SentryUser sentryUser) async {
     try {

@@ -18,6 +18,8 @@ class SentryInitializer {
         options.profilesSampleRate = config.profilesSampleRate;
         options.enableLogs = config.enableLogs;
         options.debug = config.isDebug;
+        options.attachScreenshot = config.attachScreenshot;
+        options.maxRequestBodySize = MaxRequestBodySize.small;
 
         // Automatically enable breadcrumbs that are appropriate for the current platform
         options.enableBreadcrumbTrackingForCurrentPlatform();
