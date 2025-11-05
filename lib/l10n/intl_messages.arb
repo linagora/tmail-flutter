@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-10-29T10:59:38.089168",
+  "@@last_modified": "2025-11-05T13:34:06.612241",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2688,13 +2688,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "We're sorry, there are no emails in your current folder",
+  "noEmailInYourCurrentFolder": "There are no emails in your current folder",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "We're sorry, there are no emails that match your current filter.",
+  "noEmailMatchYourCurrentFilter": "There are no emails that match your current filter.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],

@@ -2741,13 +2741,13 @@ class AppLocalizations {
 
   String get noEmailInYourCurrentFolder {
     return Intl.message(
-      'We\'re sorry, there are no emails in your current folder',
+      'There are no emails in your current folder',
       name: 'noEmailInYourCurrentFolder');
   }
 
   String get noEmailMatchYourCurrentFilter {
     return Intl.message(
-      'We\'re sorry, there are no emails that match your current filter.',
+      'There are no emails that match your current filter.',
       name: 'noEmailMatchYourCurrentFilter');
   }
 
