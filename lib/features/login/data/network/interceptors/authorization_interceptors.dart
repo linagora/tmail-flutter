@@ -84,7 +84,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) async {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
     try {
       final requestOptions = err.requestOptions;
@@ -168,7 +168,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       }
       if (e is ServerError || e is TemporarilyUnavailable) {
         return super.onError(
-          DioError(requestOptions: err.requestOptions, error: e),
+          DioException(requestOptions: err.requestOptions, error: e),
           handler,
         );
       } else {
