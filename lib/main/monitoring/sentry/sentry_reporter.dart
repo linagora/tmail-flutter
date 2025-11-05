@@ -14,7 +14,7 @@ class SentryReporter {
     try {
       await Sentry.configureScope((scope) {
         if (context != null) {
-          scope.setContexts('context', context.toMap());
+          scope.setContexts('Reported Exception', context.toMap());
         }
       });
 
@@ -34,7 +34,7 @@ class SentryReporter {
     try {
       await Sentry.configureScope((scope) {
         if (context != null) {
-          scope.setContexts('context', context.toMap());
+          scope.setContexts('Reported Message', context.toMap());
         }
       });
 
@@ -64,6 +64,32 @@ class SentryReporter {
       log('[SentryReporter] Added breadcrumb: $message');
     } catch (err, st) {
       logError('[SentryReporter] Failed to add breadcrumb: $err, $st');
+    }
+  }
+
+  /// Send log information to Sentry
+  static Future<void> logSentry(
+    String message,
+    List<dynamic> args, {
+    SentryLogLevel level = SentryLogLevel.info,
+  }) async {
+    try {
+      switch (level) {
+        case SentryLogLevel.info:
+          Sentry.logger.fmt.info(message, args);
+        case SentryLogLevel.trace:
+          Sentry.logger.fmt.trace(message, args);
+        case SentryLogLevel.debug:
+          Sentry.logger.fmt.debug(message, args);
+        case SentryLogLevel.warn:
+          Sentry.logger.fmt.warn(message, args);
+        case SentryLogLevel.error:
+          Sentry.logger.fmt.error(message, args);
+        case SentryLogLevel.fatal:
+          Sentry.logger.fmt.fatal(message, args);
+      }
+    } catch (err, st) {
+      logError('[SentryReporter] Log to Sentry failed: $err, $st');
     }
   }
 }

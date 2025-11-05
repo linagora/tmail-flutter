@@ -19,11 +19,14 @@ class SentryConfig {
   // Optional profiling
   final double profilesSampleRate;
 
-  // Enable logs to be sent to Sentry
+  // Enable logs to be sent to Sentry. To use Sentry.logger.fmt
   final bool enableLogs;
 
   // Debug logs during development
   final bool isDebug;
+
+  // Automatically attaches a screenshot when capturing an error or exception.
+  final bool attachScreenshot;
 
   SentryConfig({
     required this.dsn,
@@ -33,6 +36,7 @@ class SentryConfig {
     this.profilesSampleRate = 1.0,
     this.enableLogs = true,
     this.isDebug = BuildUtils.isDebugMode,
+    this.attachScreenshot = true,
   });
 
   /// Load configuration from an env file.

@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/status/http_status.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
@@ -28,7 +29,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
   }
 
   void handleDioError(dynamic error, dynamic stackTrace) {
-    if (error is DioError) {
+    if (error is DioException) {
       logError(
         'RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
       );
@@ -86,28 +87,38 @@ class RemoteExceptionThrower extends ExceptionThrower {
       }
     }
 
-    reportToSentry(error, stackTrace);
+    if (error is SetMethodException) {
+      final setError = error.mapErrors.values.firstOrNull;
+      reportToSentry(
+        error,
+        stackTrace,
+        errorType: setError?.type.value,
+        errorMessage: setError?.description,
+      );
+    } else {
+      reportToSentry(error, stackTrace);
+    }
 
     throw error;
   }
 
-  void _handleDioErrorWithoutResponse(DioError error, dynamic stackTrace) {
+  void _handleDioErrorWithoutResponse(DioException error, dynamic stackTrace) {
     switch (error.type) {
-      case DioErrorType.connectionTimeout:
+      case DioExceptionType.connectionTimeout:
         reportToSentry(
           error,
           stackTrace,
           errorType: error.type.name,
         );
         throw ConnectionTimeout(message: error.message);
-      case DioErrorType.connectionError:
+      case DioExceptionType.connectionError:
         reportToSentry(
           error,
           stackTrace,
           errorType: error.type.name,
         );
         throw ConnectionError(message: error.message);
-      case DioErrorType.badResponse:
+      case DioExceptionType.badResponse:
         throw const BadCredentialsException();
       default:
         final underlyingError = error.error;

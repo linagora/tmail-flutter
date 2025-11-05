@@ -15,14 +15,14 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+      ref: upgrade-dio-to-v5.2.0
 
   ### Dependencies from pub.dev ###
   equatable: 2.0.5
 
   json_annotation: 4.8.0
 
-  dio: 5.0.0
+  dio: 5.2.0
 
   http_mock_adapter: 0.4.2
 

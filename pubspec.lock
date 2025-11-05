@@ -451,10 +451,10 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: "9fdbf71baeb250fc9da847f6cb2052196f62c19906a3657adfc18631a667d316"
+      sha256: e44ce32c01f02c54a101551def8586f15d6189b4f999d4420aad38995ac62e6d
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "5.2.0"
   dispose_scope:
     dependency: transitive
     description:
@@ -1362,8 +1362,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "446efbbccdde981371b4d2a636762184adf6e926"
+      ref: "upgrade-dio-to-v5.2.0"
+      resolved-ref: "38ccd89aa92285e1f8c69ed57d67c1338c53073f"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.3.6"
@@ -2022,6 +2022,14 @@ packages:
     description:
       name: sentry
       sha256: "10a0bc25f5f21468e3beeae44e561825aaa02cdc6829438e73b9b64658ff88d9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.8.0"
+  sentry_dio:
+    dependency: "direct main"
+    description:
+      name: sentry_dio
+      sha256: bee438fd790c534da77f0a6c9cd04c54c818184b8a54bbe7d916489c8aad56a0
       url: "https://pub.dev"
     source: hosted
     version: "9.8.0"
