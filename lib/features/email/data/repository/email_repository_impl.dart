@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:core/data/model/source_type/data_source_type.dart';
-import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
@@ -14,8 +13,6 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/account/account_request.dart';
-import 'package:model/email/attachment.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
@@ -133,22 +130,6 @@ class EmailRepositoryImpl extends EmailRepository {
     }
 
     return result;
-  }
-
-  @override
-  Future<DownloadedResponse> exportAttachment(
-      Attachment attachment,
-      AccountId accountId,
-      String baseDownloadUrl,
-      AccountRequest accountRequest,
-      CancelToken cancelToken
-  ) {
-    return emailDataSource[DataSourceType.network]!.exportAttachment(
-      attachment,
-      accountId,
-      baseDownloadUrl,
-      accountRequest,
-      cancelToken);
   }
 
   @override
@@ -493,22 +474,6 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<void> printEmail(EmailPrint emailPrint) {
     return _printFileDataSource.printEmail(emailPrint);
   }
-
-  @override
-  Future<DownloadedResponse> exportAllAttachments(
-    AccountId accountId,
-    EmailId emailId,
-    String baseDownloadAllUrl,
-    String outputFileName,
-    AccountRequest accountRequest, {
-    CancelToken? cancelToken,
-  }) => emailDataSource[DataSourceType.network]!.exportAllAttachments(
-    accountId,
-    emailId,
-    baseDownloadAllUrl,
-    outputFileName,
-    accountRequest,
-  );
 
   @override
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {

@@ -16,8 +16,6 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_entire_message_as_document_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
@@ -26,9 +24,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -111,23 +106,12 @@ class EmailInteractorBindings extends InteractorsBindings {
   void bindingsInteractor() {
     Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => ExportAttachmentInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<CredentialRepository>(),
-        Get.find<AccountRepository>(),
-        Get.find<AuthenticationOIDCRepository>(),
-    ));
     Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => GetStoredEmailStateInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => StoreOpenedEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => PrintEmailInteractor(Get.find<EmailRepository>()));
     IdentityInteractorsBindings().dependencies();
-    Get.lazyPut(() => ExportAllAttachmentsInteractor(
-      Get.find<EmailRepository>(),
-      Get.find<AccountRepository>(),
-      Get.find<AuthenticationOIDCRepository>(),
-      Get.find<CredentialRepository>()));
     if (PlatformInfo.isIOS) {
       Get.lazyPut(() => GetEntireMessageAsDocumentInteractor(
         Get.find<EmailRepository>(),

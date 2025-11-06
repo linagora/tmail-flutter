@@ -1,0 +1,101 @@
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/account_request.dart';
+import 'package:model/account/authentication_type.dart';
+import 'package:model/account/password.dart';
+import 'package:model/download/download_task_id.dart';
+import 'package:model/email/attachment.dart';
+import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
+import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
+import 'package:tmail_ui_user/features/download/domain/repository/download_repository.dart';
+
+class DownloadAttachmentForWebInteractor {
+  final DownloadRepository downloadRepository;
+  final CredentialRepository credentialRepository;
+  final AccountRepository _accountRepository;
+  final AuthenticationOIDCRepository _authenticationOIDCRepository;
+
+  DownloadAttachmentForWebInteractor(
+      this.downloadRepository,
+      this.credentialRepository,
+      this._accountRepository,
+      this._authenticationOIDCRepository);
+
+  Stream<Either<Failure, Success>> execute(
+    DownloadTaskId taskId,
+    Attachment attachment,
+    AccountId accountId,
+    String baseDownloadUrl, {
+    StreamController<Either<Failure, Success>>? onReceiveController,
+    CancelToken? cancelToken,
+    bool previewerSupported = false,
+    DownloadSourceView? sourceView,
+  }) async* {
+    try {
+      final loadingState = Right<Failure, Success>(
+        StartDownloadAttachmentForWeb(
+          taskId,
+          attachment,
+          cancelToken,
+          previewerSupported,
+          sourceView,
+        ),
+      );
+      yield loadingState;
+      onReceiveController?.add(loadingState);
+
+      final currentAccount = await _accountRepository.getCurrentAccount();
+      AccountRequest? accountRequest;
+
+      if (currentAccount.authenticationType == AuthenticationType.oidc) {
+        final tokenOidc = await _authenticationOIDCRepository.getStoredTokenOIDC(currentAccount.id);
+        accountRequest = AccountRequest.withOidc(token: tokenOidc);
+      } else {
+        final authenticationInfoCache = await credentialRepository.getAuthenticationInfoStored();
+        accountRequest = AccountRequest.withBasic(
+          userName: UserName(authenticationInfoCache.username),
+          password: Password(authenticationInfoCache.password),
+        );
+      }
+
+      final bytesDownloaded = await downloadRepository.downloadAttachmentForWeb(
+        taskId,
+        attachment,
+        accountId,
+        baseDownloadUrl,
+        accountRequest,
+        onReceiveController: onReceiveController,
+        cancelToken: cancelToken
+      );
+
+      yield Right<Failure, Success>(
+        DownloadAttachmentForWebSuccess(
+          taskId,
+          attachment,
+          bytesDownloaded,
+          previewerSupported,
+          sourceView,
+        )
+      );
+    } catch (exception) {
+      yield Left<Failure, Success>(
+        DownloadAttachmentForWebFailure(
+          attachment: attachment,
+          taskId: taskId,
+          sourceView: sourceView,
+          cancelToken: cancelToken,
+          exception: exception,
+        )
+      );
+    }
+  }
+}

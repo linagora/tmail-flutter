@@ -6,9 +6,9 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:tmail_ui_user/features/email/domain/state/parse_email_by_blob_id_state.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/download_repository.dart';
+import 'package:tmail_ui_user/features/download/domain/state/parse_email_by_blob_id_state.dart';
+import 'package:tmail_ui_user/features/download/domain/usecase/parse_email_by_blob_id_interactor.dart';
+import 'package:tmail_ui_user/features/download/domain/repository/download_repository.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';

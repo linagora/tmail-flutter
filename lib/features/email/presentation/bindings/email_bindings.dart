@@ -1,7 +1,5 @@
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
@@ -22,12 +20,10 @@ class EmailBindings extends Bindings {
     Get.put(SingleEmailController(
       Get.find<GetEmailContentInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
-      Get.find<ExportAttachmentInteractor>(),
       Get.find<MarkAsStarEmailInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<StoreOpenedEmailInteractor>(),
       Get.find<PrintEmailInteractor>(),
-      Get.find<ExportAllAttachmentsInteractor>(),
       currentEmailId: currentEmailId,
     ), tag: tag);
   }

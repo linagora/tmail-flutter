@@ -2,7 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
+import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 
 class DownloadAttachmentLoadingBar extends StatelessWidget {
 

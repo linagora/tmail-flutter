@@ -23,8 +23,8 @@ import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_ex
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/parse_email_by_blob_id_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/preview_email_from_eml_file_state.dart';
+import 'package:tmail_ui_user/features/download/domain/state/parse_email_by_blob_id_state.dart';
+import 'package:tmail_ui_user/features/download/domain/state/preview_email_from_eml_file_state.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
@@ -12,8 +11,6 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/account/account_request.dart';
-import 'package:model/email/attachment.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
@@ -50,14 +47,6 @@ abstract class EmailRepository {
     AccountId accountId,
     List<EmailId> emailIds,
     ReadActions readActions,
-  );
-
-  Future<DownloadedResponse> exportAttachment(
-    Attachment attachment,
-    AccountId accountId,
-    String baseDownloadUrl,
-    AccountRequest accountRequest,
-    CancelToken cancelToken
   );
 
   Future<({
@@ -169,15 +158,6 @@ abstract class EmailRepository {
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId);
 
   Future<void> printEmail(EmailPrint emailPrint);
-
-  Future<DownloadedResponse> exportAllAttachments(
-    AccountId accountId,
-    EmailId emailId,
-    String baseDownloadAllUrl,
-    String outputFileName,
-    AccountRequest accountRequest,
-    {CancelToken? cancelToken}
-  );
 
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest);
 }
