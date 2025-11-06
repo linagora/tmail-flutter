@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_e
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/preview_upload_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/remove_draggable_email_address_between_recipient_fields_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
@@ -64,6 +65,22 @@ class ComposerView extends GetWidget<ComposerController> {
           child: PointerInterceptor(
             child: const SizedBox.expand(),
           ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
+
+    final attachmentWidget = Obx(() {
+      if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+        return AttachmentComposerWidget(
+          listFileUploaded: controller.uploadController.listUploadAttachments,
+          isCollapsed: controller.isAttachmentCollapsed,
+          onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+          onPreviewAttachmentAction: (id) =>
+              controller.previewUploadFile(context, id),
+          onToggleExpandAttachmentAction: (isCollapsed) =>
+              controller.isAttachmentCollapsed = isCollapsed,
         );
       } else {
         return const SizedBox.shrink();
@@ -251,18 +268,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                   }
                                 ),
                               ),
-                              Obx(() {
-                                if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                                  return AttachmentComposerWidget(
-                                    listFileUploaded: controller.uploadController.listUploadAttachments,
-                                    isCollapsed: controller.isAttachmentCollapsed,
-                                    onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
-                                    onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
-                                  );
-                                } else {
-                                  return const SizedBox.shrink();
-                                }
-                              }),
+                              attachmentWidget,
                               Obx(() {
                                 if (controller.richTextWebController!.isFormattingOptionsEnabled) {
                                   return ToolbarRichTextWidget(
@@ -504,18 +510,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         }
                                       ),
                                     ),
-                                    Obx(() {
-                                      if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                                        return AttachmentComposerWidget(
-                                          listFileUploaded: controller.uploadController.listUploadAttachments,
-                                          isCollapsed: controller.isAttachmentCollapsed,
-                                          onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
-                                          onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
-                                        );
-                                      } else {
-                                        return const SizedBox.shrink();
-                                      }
-                                    }),
+                                    attachmentWidget,
                                     Obx(() {
                                       if (controller.richTextWebController!.isFormattingOptionsEnabled) {
                                         return ToolbarRichTextWidget(
@@ -785,18 +780,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         }
                                       ),
                                     ),
-                                    Obx(() {
-                                      if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                                        return AttachmentComposerWidget(
-                                          listFileUploaded: controller.uploadController.listUploadAttachments,
-                                          isCollapsed: controller.isAttachmentCollapsed,
-                                          onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
-                                          onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
-                                        );
-                                      } else {
-                                        return const SizedBox.shrink();
-                                      }
-                                    }),
+                                    attachmentWidget,
                                     Obx(() {
                                       if (controller.richTextWebController!.isFormattingOptionsEnabled) {
                                         return ToolbarRichTextWidget(

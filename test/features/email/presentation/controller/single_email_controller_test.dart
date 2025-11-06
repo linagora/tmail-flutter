@@ -29,8 +29,6 @@ import 'package:tmail_ui_user/features/email/domain/state/get_email_content_stat
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
@@ -45,7 +43,7 @@ import 'package:tmail_ui_user/features/login/data/network/interceptors/authoriza
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
+import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -72,7 +70,6 @@ const fallbackGenerators = {
 @GenerateNiceMocks([
   MockSpec<GetEmailContentInteractor>(),
   MockSpec<MarkAsEmailReadInteractor>(),
-  MockSpec<ExportAttachmentInteractor>(),
   MockSpec<MarkAsStarEmailInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<StoreOpenedEmailInteractor>(),
@@ -100,7 +97,6 @@ const fallbackGenerators = {
   MockSpec<CalendarEventDataSource>(),
   MockSpec<DioClient>(),
   MockSpec<TwakeAppManager>(),
-  MockSpec<ExportAllAttachmentsInteractor>(),
   MockSpec<FileUploader>(),
 ])
 void main() {
@@ -108,7 +104,6 @@ void main() {
 
   final getEmailContentInteractor = MockGetEmailContentInteractor();
   final markAsEmailReadInteractor = MockMarkAsEmailReadInteractor();
-  final exportAttachmentInteractor = MockExportAttachmentInteractor();
   final markAsStarEmailInteractor = MockMarkAsStarEmailInteractor();
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
   final storeOpenedEmailInteractor = MockStoreOpenedEmailInteractor();
@@ -131,8 +126,6 @@ void main() {
   final applicationManager = MockApplicationManager();
   final mockToastManager = MockToastManager();
   final mockTwakeAppManager = MockTwakeAppManager();
-
-  final exportAllAttachmentsInteractor = MockExportAllAttachmentsInteractor();
 
   late SingleEmailController singleEmailController;
 
@@ -178,12 +171,10 @@ void main() {
     singleEmailController = SingleEmailController(
       getEmailContentInteractor,
       markAsEmailReadInteractor,
-      exportAttachmentInteractor,
       markAsStarEmailInteractor,
       getAllIdentitiesInteractor,
       storeOpenedEmailInteractor,
       printEmailInteractor,
-      exportAllAttachmentsInteractor,
     );
   });
 

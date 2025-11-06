@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_unescape_html_transformer.dart';
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -26,12 +23,12 @@ import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
 import 'package:jmap_dart_client/jmap/mdn/mdn.dart';
 import 'package:model/error_type_handler/unknown_uri_exception.dart';
 import 'package:model/model.dart';
-import 'package:open_file/open_file.dart' as open_file;
-import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
+import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
+import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
@@ -43,9 +40,6 @@ import 'package:tmail_ui_user/features/email/domain/state/calendar_event_counter
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_maybe_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reject_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/export_all_attachments_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_entire_message_as_document_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -57,8 +51,6 @@ import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_stat
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_counter_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_entire_message_as_document_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
@@ -71,7 +63,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_mail_action_by_shortcut_action_extension.dart';
@@ -84,12 +75,11 @@ import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscrib
 import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
-import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_download_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_download_attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
@@ -121,12 +111,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
-  final ExportAttachmentInteractor _exportAttachmentInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final PrintEmailInteractor _printEmailInteractor;
-  final ExportAllAttachmentsInteractor _exportAllAttachmentsInteractor;
   final EmailId? _currentEmailId;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
@@ -193,12 +181,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   SingleEmailController(
     this._getEmailContentInteractor,
     this._markAsEmailReadInteractor,
-    this._exportAttachmentInteractor,
     this._markAsStarEmailInteractor,
     this._getAllIdentitiesInteractor,
     this._storeOpenedEmailInteractor,
-    this._printEmailInteractor,
-    this._exportAllAttachmentsInteractor, {
+    this._printEmailInteractor, {
     EmailId? currentEmailId,
   }) : _currentEmailId = currentEmailId;
 
@@ -236,10 +222,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _getEmailContentOfflineSuccess(success);
     } else if (success is MarkAsEmailReadSuccess) {
       _handleMarkAsEmailReadCompleted(success);
-    } else if (success is ExportAttachmentSuccess) {
-      _exportAttachmentSuccessAction(success);
-    } else if (success is ExportAllAttachmentsSuccess) {
-      _exportAllAttachmentsSuccessAction(success);
     } else if (success is MarkAsStarEmailSuccess) {
       _markAsEmailStarSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
@@ -267,10 +249,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void handleFailureViewState(Failure failure) {
     if (failure is MarkAsEmailReadFailure) {
       _handleMarkAsEmailReadFailure(failure);
-    } else if (failure is ExportAttachmentFailure) {
-      _exportAttachmentFailureAction(failure);
-    } else if (failure is ExportAllAttachmentsFailure) {
-      _exportAllAttachmentsFailureAction(failure);
     } else if (failure is ParseCalendarEventFailure) {
       _handleParseCalendarEventFailure(failure);
     } else if (failure is GetEmailContentFailure) {
@@ -697,173 +675,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _threadDetailController?.markCollapsedEmailReadSuccess(success);
   }
 
-  void exportAttachment(Attachment attachment) {
-    final cancelToken = CancelToken();
-    _showDownloadingFileDialog(attachment.name ?? '', cancelToken: cancelToken);
-    _exportAttachmentAction(attachment, cancelToken);
-  }
-
-  void _showDownloadingFileDialog(String attachmentName, {CancelToken? cancelToken}) {
-    if (cancelToken != null) {
-      Get.dialog(
-        PointerInterceptor(
-          child: Builder(
-            builder: (context) {
-              final appLocalizations = AppLocalizations.of(context);
-              return (DownloadingFileDialogBuilder()
-                    ..key(const Key('downloading_file_dialog'))
-                    ..title(appLocalizations.preparing_to_export)
-                    ..content(appLocalizations.downloading_file(attachmentName))
-                    ..actionText(appLocalizations.cancel)
-                    ..addCancelDownloadActionClick(() {
-                      cancelToken.cancel([
-                        appLocalizations.user_cancel_download_file,
-                      ]);
-                      popBack();
-                    }))
-                  .build();
-            },
-          ),
-        ),
-        barrierDismissible: false,
-      );
-    } else {
-      Get.dialog(
-        PointerInterceptor(
-          child: Builder(
-            builder: (context) {
-              final appLocalizations = AppLocalizations.of(context);
-              return (DownloadingFileDialogBuilder()
-                    ..key(const Key('downloading_file_for_web_dialog'))
-                    ..title(appLocalizations.preparing_to_save)
-                    ..content(
-                      appLocalizations.downloading_file(attachmentName),
-                    ))
-                  .build();
-            },
-          ),
-        ),
-      );
-    }
-  }
-
-  void _exportAttachmentAction(Attachment attachment, CancelToken cancelToken) {
-    if (accountId != null && session != null) {
-      try {
-        final baseDownloadUrl = session!.getDownloadUrl(
-          jmapUrl: dynamicUrlInterceptors.jmapUrl,
-        );
-        consumeState(_exportAttachmentInteractor.execute(
-          attachment,
-          accountId!,
-          baseDownloadUrl,
-          cancelToken,
-        ));
-      } catch (e) {
-        logError('SingleEmailController::_exportAttachmentAction(): $e');
-        consumeState(Stream.value(Left(ExportAttachmentFailure(e))));
-      }
-    } else {
-      consumeState(Stream.value(Left(ExportAttachmentFailure(NotFoundAccountIdException()))));
-    }
-  }
-
-  void exportAllAttachments(String outputFileName) {
-    final cancelToken = CancelToken();
-    _showDownloadingFileDialog(outputFileName, cancelToken: cancelToken);
-    _exportAllAttachmentsAction(outputFileName, cancelToken);
-  }
-
-  void _exportAllAttachmentsAction(String outputFileName, CancelToken cancelToken) {
-    if (accountId == null || session == null) {
-      consumeState(Stream.value(Left(ExportAllAttachmentsFailure(
-        exception: NotFoundSessionException(),
-      ))));
-      return;
-    }
-
-    final downloadAllSupported = session!.isDownloadAllSupported(accountId);
-    if (!downloadAllSupported) {
-      consumeState(Stream.value(Left(ExportAllAttachmentsFailure())));
-      return;
-    }
-    
-    final baseDownloadAllUrl = session!.getDownloadAllCapability(accountId)!.endpoint!;
-    consumeState(_exportAllAttachmentsInteractor.execute(
-      accountId!,
-      currentEmail!.id!,
-      baseDownloadAllUrl,
-      outputFileName,
-      cancelToken: cancelToken,
-    ));
-  }
-
-  void _exportAttachmentFailureAction(ExportAttachmentFailure failure) {
-    if (failure.exception is! CancelDownloadFileException) {
-      if (Get.isDialogOpen == true) {
-        popBack();
-      }
-
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).attachment_download_failed);
-      }
-    }
-  }
-
-  void _exportAttachmentSuccessAction(ExportAttachmentSuccess success) async {
-    popBack();
-    _openDownloadedPreviewWorkGroupDocument(success.downloadedResponse);
-  }
-
-  void _exportAllAttachmentsFailureAction(ExportAllAttachmentsFailure failure) {
-    if (failure.exception is! CancelDownloadFileException) {
-      popBack();
-
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).attachment_download_failed);
-      }
-    }
-  }
-
-  void _exportAllAttachmentsSuccessAction(ExportAllAttachmentsSuccess success) {
-    popBack();
-    _saveFileToStorage(success.downloadedResponse.filePath);
-  }
-
-  void _openDownloadedPreviewWorkGroupDocument(DownloadedResponse downloadedResponse) async {
-    log('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): $downloadedResponse');
-    final filePath = downloadedResponse.filePath;
-    final mediaType = downloadedResponse.mediaType;
-
-    if (mediaType == null) {
-      _saveFileToStorage(filePath);
-      return;
-    }
-
-    final openResult = await open_file.OpenFile.open(
-      filePath,
-      type: Platform.isAndroid ? mediaType.mimeType : null,
-      // "xdg" is default value
-      linuxDesktopName: Platform.isIOS
-          ? mediaType.getDocumentUti().value ?? 'xdg'
-          : 'xdg',
-    );
-
-    if (openResult.type != open_file.ResultType.done) {
-      logError('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): no preview available');
-      _saveFileToStorage(filePath);
-    }
-  }
-
-  Future<void> _saveFileToStorage(String filePath) async {
-    final params = SaveFileDialogParams(sourceFilePath: filePath);
-    await FlutterFileDialog.saveFile(params: params);
-  }
-
   bool isDownloadAllSupported() {
     return session?.isDownloadAllSupported(accountId) ?? false;
   }
@@ -1059,7 +870,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _printEmail(presentationEmail);
         break;
       case EmailActionType.downloadMessageAsEML:
-        mailboxDashBoardController.downloadMessageAsEML(presentationEmail);
+        mailboxDashBoardController.downloadMessageAsEML(
+          presentationEmail: presentationEmail,
+          showBottomDownloadProgressBar: true,
+        );
         break;
       case EmailActionType.editAsNewEmail:
         _editAsNewEmail(presentationEmail);
@@ -1100,8 +914,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  Future<void> openMailToLink(Uri? uri) =>
-      mailboxDashBoardController.openMailToLink(uri);
+  void openMailToLink(Uri? uri) {
+    if (uri == null) return;
+    mailboxDashBoardController.openComposerFromMailToLink(uri);
+  }
 
   void deleteEmailPermanently(PresentationEmail email) {
     emailActionReactor.deleteEmailPermanently(
@@ -1618,66 +1434,34 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     Attachment attachment,
     {bool previewerSupported = false}
   ) {
-    if (PlatformInfo.isWeb) {
-      mailboxDashBoardController.downloadAttachmentForWeb(
-        attachment: attachment,
-        previewerSupported: previewerSupported,
-      );
-    } else if (PlatformInfo.isMobile) {
-      exportAttachment(attachment);
-    } else {
-      log('$runtimeType::handleDownloadAttachmentAction: THE PLATFORM IS SUPPORTED');
-    }
+    mailboxDashBoardController.downloadAttachment(
+      attachment: attachment,
+      previewerSupported: previewerSupported,
+      showBottomDownloadProgressBar: true,
+      sourceView: DownloadSourceView.emailView,
+    );
   }
 
   void handleDownloadAllAttachmentsAction(String outputFileName) {
-    if (PlatformInfo.isWeb) {
-      mailboxDashBoardController.downloadAllAttachmentsForWeb(
-        outputFileName: outputFileName,
-        currentEmail: currentEmail,
-      );
-    } else if (PlatformInfo.isMobile) {
-      exportAllAttachments(outputFileName);
-    } else {
-      log('EmailView::handleDownloadAllAttachmentsAction: THE PLATFORM IS SUPPORTED');
-    }
+    mailboxDashBoardController.downloadAllAttachments(
+      outputFileName: outputFileName,
+      emailId: currentEmail?.id,
+      showBottomDownloadProgressBar: true,
+    );
   }
 
   void handleViewAttachmentAction(BuildContext context, Attachment attachment) {
-    mailboxDashBoardController.previewAttachmentAction(
+    mailboxDashBoardController.previewAttachment(
       context: context,
       attachment: attachment,
-      onDownloadAttachment: (attachment) {
+      sourceView: DownloadSourceView.emailView,
+      onPreviewOrDownloadAction: (attachment, isPreview) {
         handleDownloadAttachmentAction(
           attachment,
-          previewerSupported: attachment.isPreviewSupported,
+          previewerSupported: isPreview,
         );
       },
     );
-  }
-
-  Future<void> _openEMLPreviewer(BuildContext context, Uri? uri) async {
-    log('SingleEmailController::_openEMLPreviewer:uri = $uri');
-    if (uri == null) return;
-
-    final blobId = uri.path;
-    log('SingleEmailController::_openEMLPreviewer:blobId = $blobId');
-    if (blobId.isEmpty) return;
-
-    mailboxDashBoardController.previewEMLFileAction(
-      appLocalizations: AppLocalizations.of(context),
-      blobId: Id(blobId),
-    );
-  }
-
-  Future<void> _downloadAttachmentInEMLPreview(Uri? uri) async {
-    log('SingleEmailController::_downloadAttachmentInEMLPreview:uri = $uri');
-    if (uri == null) return;
-
-    final attachment = EmailUtils.parsingAttachmentByUri(uri);
-    if (attachment == null) return;
-
-    handleDownloadAttachmentAction(attachment);
   }
 
   void handleMailToAttendees(CalendarOrganizer? organizer, List<CalendarAttendee>? attendees) {
@@ -1745,9 +1529,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             content: success.messageDocument,
           ),
           imagePaths: imagePaths,
-          onMailtoAction: openMailToLink,
-          onPreviewAction: (uri) => _openEMLPreviewer(context, uri),
-          onDownloadAction: _downloadAttachmentInEMLPreview,
+          onMailtoAction: (uri) async => openMailToLink(uri),
+          onDownloadFileAction: handleDownloadAttachmentAction,
         );
       },
       onFailure: (_) {

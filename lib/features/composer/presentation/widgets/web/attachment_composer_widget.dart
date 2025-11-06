@@ -16,6 +16,7 @@ class AttachmentComposerWidget extends StatefulWidget {
   final bool isCollapsed;
   final OnDeleteAttachmentAction onDeleteAttachmentAction;
   final OnToggleExpandAttachmentAction onToggleExpandAttachmentAction;
+  final OnPreviewAttachmentAction onPreviewAttachmentAction;
 
   const AttachmentComposerWidget({
     super.key,
@@ -23,6 +24,7 @@ class AttachmentComposerWidget extends StatefulWidget {
     required this.isCollapsed,
     required this.onDeleteAttachmentAction,
     required this.onToggleExpandAttachmentAction,
+    required this.onPreviewAttachmentAction,
   });
 
   @override
@@ -76,6 +78,7 @@ class _AttachmentComposerWidgetState extends State<AttachmentComposerWidget> {
                   runSpacing: AttachmentComposerWidgetStyle.listItemSpace,
                   children: widget.listFileUploaded
                     .map((file) => AttachmentItemComposerWidget(
+                      imagePaths: _imagePaths,
                       fileIcon: file.getIcon(_imagePaths),
                       fileName: file.fileName,
                       fileSize: filesize(file.fileSize),
@@ -83,6 +86,7 @@ class _AttachmentComposerWidgetState extends State<AttachmentComposerWidget> {
                       percentUploading: file.percentUploading,
                       uploadTaskId: file.uploadTaskId,
                       onDeleteAttachmentAction: widget.onDeleteAttachmentAction,
+                      onPreviewAttachmentAction: widget.onPreviewAttachmentAction,
                     ))
                     .toList(),
                 ),

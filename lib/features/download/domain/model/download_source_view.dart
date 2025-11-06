@@ -1,0 +1,4 @@
+enum DownloadSourceView {
+  emailView,
+  composerView;
+}

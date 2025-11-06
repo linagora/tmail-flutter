@@ -57,11 +57,12 @@ import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
-import 'package:tmail_ui_user/features/email/domain/state/download_all_attachments_for_web_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
+import 'package:tmail_ui_user/features/download/domain/state/download_all_attachments_for_web_state.dart';
+import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -343,12 +344,18 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
             progress = (downloaded / total) * 100;
           }
           log('EmailAPI::downloadFileForWeb(): progress = ${progress.round()}%');
-          onReceiveController?.add(Right(DownloadingAttachmentForWeb(
-              taskId,
-              attachment,
-              progress,
-              downloaded,
-              total)));
+          onReceiveController?.add(
+            Right(
+              DownloadingAttachmentForWeb(
+                taskId,
+                attachment,
+                progress,
+                downloaded,
+                total,
+                DownloadSourceView.emailView,
+              ),
+            ),
+          );
         }
     );
 

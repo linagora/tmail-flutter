@@ -40,6 +40,14 @@ extension SessionExtension on Session {
     return downloadUrlDecode;
   }
 
+  String getSafetyDownloadUrl({String? jmapUrl}) {
+    try {
+      return getDownloadUrl(jmapUrl: jmapUrl);
+    } catch(_) {
+      return '';
+    }
+  }
+
   Uri getUploadUri(AccountId accountId, {String? jmapUrl}) {
     final Uri uploadUrlValid;
     if (jmapUrl != null) {

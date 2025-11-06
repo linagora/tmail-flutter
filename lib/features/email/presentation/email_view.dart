@@ -336,7 +336,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               Obx(() => CalendarEventDetailWidget(
                 calendarEvent: calendarEvent,
                 emailContent: controller.currentEmailLoaded.value?.htmlContent ?? '',
-                onMailtoDelegateAction: controller.openMailToLink,
+                onMailtoDelegateAction: (uri) async => controller.openMailToLink(uri),
                 presentationEmail: controller.currentEmail,
                 scrollController: scrollController,
                 isInsideThreadDetailView: isInsideThreadDetailView,
@@ -385,7 +385,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                             contentPadding: 0,
                             useDefaultFontStyle: true,
                             maxHtmlContentHeight: ConstantsUI.htmlContentMaxHeight,
-                            onMailtoDelegateAction: controller.openMailToLink,
+                            onMailtoDelegateAction: (uri) async => controller.openMailToLink(uri),
                             onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                             onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                             keepAlive: isInsideThreadDetailView,
@@ -423,7 +423,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     direction: AppUtils.getCurrentDirection(context),
                     contentPadding: 0,
                     useDefaultFontStyle: true,
-                    onMailtoDelegateAction: controller.openMailToLink,
+                    onMailtoDelegateAction: (uri) async => controller.openMailToLink(uri),
                     keepAlive: isInsideThreadDetailView,
                     enableQuoteToggle: true,
                     onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
@@ -474,8 +474,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               ),
           onTapShowAllAttachmentFile: controller.showAllAttachmentsAction,
           onTapHideAllAttachments: controller.hideAllAttachmentsAction,
-          showDownloadAllAttachmentsButton:
-          controller.downloadAllButtonIsEnabled(),
+          showDownloadAllAttachmentsButton: controller.downloadAllButtonIsEnabled(),
           onTapDownloadAllButton: () =>
               controller.handleDownloadAllAttachmentsAction(
                 'TwakeMail-${DateTime.now()}',
