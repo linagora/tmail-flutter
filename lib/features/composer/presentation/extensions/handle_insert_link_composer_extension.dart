@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension HandleInsertLinkComposerExtension on ComposerController {
   void openInsertLink() {
-    richTextWebController?.editorController.openInsertLinkDialog();
+    richTextWebController?.openInsertLink();
   }
 
   LinkOverlayOptions createLinkOverlayOptions(BuildContext context) {

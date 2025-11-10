@@ -16,6 +16,7 @@ class EventBodyContentWidget extends StatelessWidget {
   final OnMailtoDelegateAction? onMailtoDelegateAction;
   final ScrollController? scrollController;
   final bool isInsideThreadDetailView;
+  final OnIFrameClickAction? onIFrameClickAction;
 
   const EventBodyContentWidget({
     super.key,
@@ -23,6 +24,7 @@ class EventBodyContentWidget extends StatelessWidget {
     this.onMailtoDelegateAction,
     this.scrollController,
     this.isInsideThreadDetailView = false,
+    this.onIFrameClickAction,
   });
 
   @override
@@ -51,9 +53,11 @@ class EventBodyContentWidget extends StatelessWidget {
                   widthContent: constraints.maxWidth,
                   contentHtml: content,
                   useDefaultFontStyle: true,
+                  useLinkTooltipOverlay: true,
                   mailtoDelegate: onMailtoDelegateAction,
                   direction: AppUtils.getCurrentDirection(context),
                   scrollController: scrollController,
+                  onIFrameClickAction: onIFrameClickAction,
                 );
               })
             )
