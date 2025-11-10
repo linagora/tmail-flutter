@@ -405,4 +405,18 @@ class HtmlInteraction {
       }
     </script>
   ''';
+
+  static String scriptsHandleIframeClickListener(String viewId) => '''
+    <script type="text/javascript">
+      document.addEventListener('click', function (e) {
+        try {
+          const payload = {
+            view: '$viewId',
+            type: 'toDart: iframeClick',
+          };
+          window.parent.postMessage(JSON.stringify(payload), "*");
+        } catch (_) {}
+      });
+    </script>
+  ''';
 }
