@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-11-05T13:34:06.612241",
+  "@@last_modified": "2025-11-10T12:07:59.064737",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5066,6 +5066,48 @@
   },
   "favoriteMailboxDisplayName": "Starred",
   "@favoriteMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertLink": "Insert link",
+  "@insertLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "goTo": "Go to",
+  "@goTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "change": "Change",
+  "@change": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeLink": "Remove link",
+  "@removeLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "text": "Text",
+  "@text": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "typeOrPasteLink": "Type or paste a link",
+  "@typeOrPasteLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "apply": "Apply",
+  "@apply": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
