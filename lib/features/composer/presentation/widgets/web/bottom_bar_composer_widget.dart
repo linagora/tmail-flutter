@@ -30,6 +30,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback printDraftAction;
   final VoidCallback toggleMarkAsImportantAction;
   final VoidCallback saveAsTemplateAction;
+  final VoidCallback onOpenInsertLink;
   final OnMenuChanged? onPopupMenuChanged;
 
   const BottomBarComposerWidget({
@@ -52,6 +53,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.printDraftAction,
     required this.toggleMarkAsImportantAction,
     required this.saveAsTemplateAction,
+    required this.onOpenInsertLink,
     this.onPopupMenuChanged,
   });
 
@@ -107,6 +109,22 @@ class BottomBarComposerWidget extends StatelessWidget {
               iconSize: BottomBarComposerWidgetStyle.iconSize,
               tooltipMessage: AppLocalizations.of(context).insertImage,
               onTapActionCallback: insertImageAction,
+            ),
+          ),
+          const SizedBox(width: BottomBarComposerWidgetStyle.space),
+          AbsorbPointer(
+            absorbing: isCodeViewEnabled,
+            child: TMailButtonWidget.fromIcon(
+              icon: imagePaths.icInsertLink,
+              iconColor: isCodeViewEnabled
+                  ? BottomBarComposerWidgetStyle.disabledIconColor
+                  : BottomBarComposerWidgetStyle.iconColor,
+              borderRadius: BottomBarComposerWidgetStyle.iconRadius,
+              backgroundColor: Colors.transparent,
+              padding: BottomBarComposerWidgetStyle.iconPadding,
+              iconSize: BottomBarComposerWidgetStyle.iconSize,
+              tooltipMessage: AppLocalizations.of(context).insertLink,
+              onTapActionCallback: onOpenInsertLink,
             ),
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
