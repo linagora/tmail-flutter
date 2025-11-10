@@ -29,6 +29,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? height;
   final double? horizontalPadding;
+  final LinkOverlayOptions? linkOverlayOptions;
   final OnDragEnterListener? onDragEnter;
   final OnDragOverListener? onDragOver;
   final OnPasteImageSuccessAction? onPasteImageSuccessAction;
@@ -51,6 +52,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
     this.onEditorTextSizeChanged,
     this.height,
     this.horizontalPadding,
+    this.linkOverlayOptions,
     this.onDragEnter,
     this.onDragOver,
     this.onPasteImageSuccessAction,
@@ -82,6 +84,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorTextSizeChanged: onEditorTextSizeChanged,
           height: height,
           horizontalPadding: horizontalPadding,
+          linkOverlayOptions: linkOverlayOptions,
           onDragEnter: onDragEnter,
           onDragOver: onDragOver,
           onPasteImageSuccessAction: onPasteImageSuccessAction,
@@ -113,6 +116,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onEditorTextSizeChanged: onEditorTextSizeChanged,
             height: height,
             horizontalPadding: horizontalPadding,
+            linkOverlayOptions: linkOverlayOptions,
             onDragEnter: onDragEnter,
             onDragOver: onDragOver,
             onPasteImageSuccessAction: onPasteImageSuccessAction,
@@ -146,6 +150,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorTextSizeChanged: onEditorTextSizeChanged,
                 height: height,
                 horizontalPadding: horizontalPadding,
+                linkOverlayOptions: linkOverlayOptions,
                 onDragEnter: onDragEnter,
                 onDragOver: onDragOver,
                 onPasteImageSuccessAction: onPasteImageSuccessAction,
@@ -185,6 +190,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               onEditorTextSizeChanged: onEditorTextSizeChanged,
               height: height,
               horizontalPadding: horizontalPadding,
+              linkOverlayOptions: linkOverlayOptions,
               onDragEnter: onDragEnter,
               onDragOver: onDragOver,
               onPasteImageSuccessAction: onPasteImageSuccessAction,
@@ -219,6 +225,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorTextSizeChanged: onEditorTextSizeChanged,
                 height: height,
                 horizontalPadding: horizontalPadding,
+                linkOverlayOptions: linkOverlayOptions,
                 onDragEnter: onDragEnter,
                 onDragOver: onDragOver,
                 onPasteImageSuccessAction: onPasteImageSuccessAction,
@@ -243,6 +250,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorTextSizeChanged: onEditorTextSizeChanged,
           height: height,
           horizontalPadding: horizontalPadding,
+          linkOverlayOptions: linkOverlayOptions,
           onDragEnter: onDragEnter,
           onDragOver: onDragOver,
           onPasteImageSuccessAction: onPasteImageSuccessAction,

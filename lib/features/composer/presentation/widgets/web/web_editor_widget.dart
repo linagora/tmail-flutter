@@ -39,6 +39,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? height;
   final double? horizontalPadding;
+  final LinkOverlayOptions? linkOverlayOptions;
   final OnDragEnterListener? onDragEnter;
   final OnDragOverListener? onDragOver;
   final OnPasteImageSuccessAction? onPasteImageSuccessAction;
@@ -60,6 +61,7 @@ class WebEditorWidget extends StatefulWidget {
     this.onEditorTextSizeChanged,
     this.height,
     this.horizontalPadding,
+    this.linkOverlayOptions,
     this.onDragEnter,
     this.onDragOver,
     this.onPasteImageSuccessAction,
@@ -141,6 +143,9 @@ class _WebEditorState extends State<WebEditorWidget> {
           useDefaultFontStyle: true,
           customScrollbar: true,
         ),
+        useLinkTooltipOverlay: true,
+        linkOverlayOptions: widget.linkOverlayOptions
+            ?? const LinkOverlayOptions(),
         spellCheck: true,
         disableDragAndDrop: true,
         normalizeHtmlTextWhenDropping: true,
