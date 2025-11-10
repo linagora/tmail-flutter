@@ -16,6 +16,7 @@ import 'package:universal_html/html.dart' as html;
 typedef OnClickHyperLinkAction = Function(Uri?);
 typedef OnMailtoClicked = void Function(Uri? uri);
 typedef OnIFrameKeyboardShortcutAction = void Function(KeyShortcut keyShortcut);
+typedef OnIFrameClickAction = void Function();
 
 class HtmlContentViewerOnWeb extends StatefulWidget {
 
@@ -34,6 +35,8 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
 
   final OnIFrameKeyboardShortcutAction? onIFrameKeyboardShortcutAction;
 
+  final OnIFrameClickAction? onIFrameClickAction;
+
   // if widthContent is bigger than width of htmlContent, set this to true let widget able to resize to width of htmlContent
   final bool allowResizeToDocumentSize;
 
@@ -47,6 +50,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final double offsetHtmlContentHeight;
   final double? viewMaxHeight;
   final bool autoAdjustHeight;
+  final bool useLinkTooltipOverlay;
 
   const HtmlContentViewerOnWeb({
     Key? key,
@@ -65,12 +69,14 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.keepAlive = false,
     this.disableScrolling = false,
     this.autoAdjustHeight = false,
+    this.useLinkTooltipOverlay = false,
     this.fontSize = 14,
     this.htmlContentMinHeight = ConstantsUI.htmlContentMinHeight,
     this.htmlContentMinWidth = ConstantsUI.htmlContentMinWidth,
     this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
     this.viewMaxHeight,
     this.onIFrameKeyboardShortcutAction,
+    this.onIFrameClickAction,
   }) : super(key: key);
 
   @override
@@ -123,6 +129,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         return;
       } else if (_isIframeKeyboardEventTriggered(type)) {
         _handleOnIFrameKeyboardEvent(data);
+        return;
+      } else if (_isIframeClickEventTriggered(type)) {
+        _handleOnIFrameClickEvent(data);
         return;
       }
 
@@ -288,6 +297,20 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
   }
 
+  bool _isIframeClickEventTriggered(String? type) {
+    return widget.useLinkTooltipOverlay &&
+        type?.contains('toDart: iframeClick') == true;
+  }
+
+  void _handleOnIFrameClickEvent(dynamic data) {
+    try {
+      log('$runtimeType::_handleOnIFrameClickEvent: $data');
+      widget.onIFrameClickAction?.call();
+    } catch (e) {
+      logError('$runtimeType::_handleOnIFrameClickEvent: Exception = $e');
+    }
+  }
+
   @override
   void didUpdateWidget(covariant HtmlContentViewerOnWeb oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -431,6 +454,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
               ),
       if (widget.onIFrameKeyboardShortcutAction != null)
         HtmlInteraction.scriptHandleIframeKeyboardListener(_createdViewId),
+      if (widget.useLinkTooltipOverlay)
+        HtmlInteraction.scriptsHandleIframeClickListener(_createdViewId),
     ].join();
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(

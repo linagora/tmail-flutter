@@ -1,3 +1,4 @@
+import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
@@ -18,6 +19,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
   final PresentationEmail? presentationEmail;
   final ScrollController? scrollController;
   final bool isInsideThreadDetailView;
+  final OnIFrameClickAction? onIFrameClickAction;
 
   const CalendarEventDetailWidget({
     super.key,
@@ -27,6 +29,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
     this.presentationEmail,
     this.scrollController,
     this.isInsideThreadDetailView = false,
+    this.onIFrameClickAction,
   });
 
   @override
@@ -65,6 +68,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
                 onMailtoDelegateAction: onMailtoDelegateAction,
                 scrollController: scrollController,
                 isInsideThreadDetailView: isInsideThreadDetailView,
+                onIFrameClickAction: onIFrameClickAction,
               )
             ),
         ],
