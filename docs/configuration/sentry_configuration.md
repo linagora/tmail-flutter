@@ -3,7 +3,6 @@
 ## Context
 - **Twake Mail** uses **Sentry** to collect and track application errors and performance issues.
 - Developers need to configure environment variables for **Sentry** service to enable monitoring and debugging.
-- The **backend** or **frontend** build pipeline must provide these values when deploying or running the app.
 
 ## How to config
 

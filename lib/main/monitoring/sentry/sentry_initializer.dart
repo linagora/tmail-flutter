@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/main/monitoring/sentry/sentry_config.dart';
 
 class SentryInitializer {
   /// Initialize Sentry
-  static Future<void> init(VoidCallback runAppCallback) async {
+  static Future<bool> init(VoidCallback runAppCallback) async {
     final config = await SentryConfig.load();
 
     await SentryFlutter.init(
@@ -36,6 +36,8 @@ class SentryInitializer {
         );
       },
     );
+
+    return config.isAvailable;
   }
 
   /// Handler executed before sending an event to Sentry

@@ -853,16 +853,14 @@ class MailboxDashBoardController extends ReloadableController
     accountId.value = currentAccountId;
     synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
 
-    if (PlatformInfo.isWeb) {
-      SentryManager.instance.setUser(
-        SentryUser(
-          email: session.getOwnEmailAddressOrEmpty(),
-          id: currentAccountId.asString,
-          name: session.getUserDisplayName(),
-          username: session.username.value,
-        )
-      );
-    }
+    SentryManager.instance.setUser(
+      SentryUser(
+        id: currentAccountId.asString,
+        name: session.getUserDisplayName(),
+        username: session.username.value,
+        email: session.getOwnEmailAddressOrEmpty(),
+      )
+    );
 
     _setUpMinInputLengthAutocomplete();
     injectAutoCompleteBindings(session, currentAccountId);
