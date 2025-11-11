@@ -685,14 +685,31 @@ class HtmlUtils {
       });
     </script>''';
 
-  static String extractPlainText(String html) {
+  static String extractPlainText(
+    String html, {
+    bool removeQuotes = true,
+    bool removeStyle = true,
+    bool removeScript = true,
+  }) {
     var cleaned = html;
-    // Delete the blockquote and the content inside
-    final blockquoteRegex = RegExp(
-      r'<blockquote[\s\S]*?</blockquote>',
-      caseSensitive: false,
-    );
-    cleaned = html.replaceAll(blockquoteRegex, '');
+
+    if (cleaned.isEmpty) return '';
+
+    // Parse DOM
+    final doc = parser.parse(cleaned);
+
+    // Remove unwanted nodes by CSS selector
+    if (removeQuotes) {
+      doc.querySelectorAll('blockquote').forEach((e) => e.remove());
+    }
+    if (removeStyle) {
+      doc.querySelectorAll('style').forEach((e) => e.remove());
+    }
+    if (removeScript) {
+      doc.querySelectorAll('script').forEach((e) => e.remove());
+    }
+
+    cleaned = doc.outerHtml;
 
     // Decode HTML entities up to 5 times (&amp; → &, &nbsp; → space, &lt;div&gt; → <div>, ...)
     int iterations = 0;
