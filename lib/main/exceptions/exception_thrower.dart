@@ -12,9 +12,11 @@ abstract class ExceptionThrower {
     String? errorType,
     String? errorMessage,
     int? statusCode,
+    String? source,
     Map<String, dynamic>? additionalInfo,
   }) {
     final context = SentryContextData(
+      source: source,
       errorType: errorType,
       errorMessage: errorMessage,
       statusCode: statusCode,

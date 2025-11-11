@@ -28,6 +28,9 @@ class SentryConfig {
   // Automatically attaches a screenshot when capturing an error or exception.
   final bool attachScreenshot;
 
+  // Check if Sentry is available
+  final bool isAvailable;
+
   SentryConfig({
     required this.dsn,
     required this.environment,
@@ -36,7 +39,8 @@ class SentryConfig {
     this.profilesSampleRate = 1.0,
     this.enableLogs = true,
     this.isDebug = BuildUtils.isDebugMode,
-    this.attachScreenshot = true,
+    this.attachScreenshot = false,
+    this.isAvailable = false,
   });
 
   /// Load configuration from an env file.
@@ -46,7 +50,8 @@ class SentryConfig {
     final sentryAvailable =
         dotenv.get('SENTRY_AVAILABLE', fallback: 'unsupported');
 
-    if (sentryAvailable != 'supported') {
+    final isAvailable = sentryAvailable == 'supported';
+    if (!isAvailable) {
       throw Exception('Sentry is not available');
     }
 
@@ -65,6 +70,7 @@ class SentryConfig {
       dsn: sentryDSN,
       environment: sentryEnvironment,
       release: appVersion,
+      isAvailable: isAvailable,
     );
   }
 }

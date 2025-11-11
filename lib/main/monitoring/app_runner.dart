@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/monitoring/sentry/sentry_manager.dart';
@@ -29,12 +28,7 @@ Future<void> runAppWithMonitoring(Future<void> Function() runTmail) async {
       return true; // Prevent app from crashing
     };
 
-    if (PlatformInfo.isWeb) {
-      // Initialize Sentry
-      await SentryManager.instance.initialize(runTmail);
-    } else {
-      await runTmail();
-    }
+    await SentryManager.instance.initialize(runTmail);
   }, (error, stack) async {
     logError('Uncaught zone error: $error\n$stack');
     await SentryManager.instance.reportError(error, stack);

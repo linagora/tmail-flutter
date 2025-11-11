@@ -1,5 +1,4 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/main/monitoring/sentry/sentry_context_data.dart';
 import 'package:tmail_ui_user/main/monitoring/sentry/sentry_initializer.dart';
@@ -11,11 +10,15 @@ class SentryManager {
 
   static final SentryManager instance = SentryManager._();
 
+  bool isSentryAvailable = false;
+
   /// Initializes Sentry SDK via SentryInitializer.
   Future<void> initialize(Future<void> Function() appRunner) async {
     try {
-      await SentryInitializer.init(appRunner);
-    } catch (_) {
+      isSentryAvailable = await SentryInitializer.init(appRunner);
+      log('[SentryManager] Sentry initialized: $isSentryAvailable');
+    } catch (e) {
+      logError('[SentryManager] Failed to initialize Sentry: $e');
       await appRunner();
     }
   }
@@ -26,7 +29,7 @@ class SentryManager {
     StackTrace? stackTrace,
     SentryContextData? context,
   ]) async {
-    if (PlatformInfo.isWeb) {
+    if (isSentryAvailable) {
       await SentryReporter.reportError(exception, stackTrace, context);
     }
   }
@@ -37,7 +40,7 @@ class SentryManager {
     List<dynamic> args, {
     SentryLogLevel level = SentryLogLevel.info,
   }) async {
-    if (PlatformInfo.isWeb) {
+    if (isSentryAvailable) {
       await SentryReporter.logSentry(message, args, level: level);
     }
   }
@@ -45,20 +48,24 @@ class SentryManager {
   /// Sets the current user context once after login.
   Future<void> setUser(SentryUser sentryUser) async {
     try {
-      await Sentry.configureScope((scope) {
-        scope.setUser(sentryUser);
-      });
-      log('[SentryManager] User set: ${sentryUser.email}');
+      if (isSentryAvailable) {
+        await Sentry.configureScope((scope) {
+          scope.setUser(sentryUser);
+        });
+        log('[SentryManager] User set: ${sentryUser.email}');
+      }
     } catch (_) {}
   }
 
   /// Clears user context on logout.
   Future<void> clearUser() async {
     try {
-      await Sentry.configureScope((scope) {
-        scope.setUser(null);
-      });
-      log('[SentryManager] Cleared user context');
+      if (isSentryAvailable) {
+        await Sentry.configureScope((scope) {
+          scope.setUser(null);
+        });
+        log('[SentryManager] Cleared user context');
+      }
     } catch (_) {}
   }
 }

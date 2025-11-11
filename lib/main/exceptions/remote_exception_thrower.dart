@@ -43,9 +43,9 @@ class RemoteExceptionThrower extends ExceptionThrower {
             error,
             stackTrace,
             statusCode: statusCode,
-            additionalInfo: {
-              'errorDescription': response.statusMessage,
-            },
+            errorType: '$statusCode',
+            errorMessage: response.statusMessage,
+            source: 'Network:DioException',
           );
         }
 
@@ -75,6 +75,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
         stackTrace,
         errorType: errorResponse.type.value,
         errorMessage: errorResponse.description,
+        source: 'Network:JMAPMethodResponseException',
       );
 
       if (errorResponse is CannotCalculateChangesMethodResponse) {
@@ -94,6 +95,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
         stackTrace,
         errorType: setError?.type.value,
         errorMessage: setError?.description,
+        source: 'Network:JMAPSetMethodException',
       );
     } else {
       reportToSentry(error, stackTrace);
@@ -109,6 +111,8 @@ class RemoteExceptionThrower extends ExceptionThrower {
           error,
           stackTrace,
           errorType: error.type.name,
+          errorMessage: error.message,
+          source: 'Network:DioException',
         );
         throw ConnectionTimeout(message: error.message);
       case DioExceptionType.connectionError:
@@ -116,6 +120,8 @@ class RemoteExceptionThrower extends ExceptionThrower {
           error,
           stackTrace,
           errorType: error.type.name,
+          errorMessage: error.message,
+          source: 'Network:DioException',
         );
         throw ConnectionError(message: error.message);
       case DioExceptionType.badResponse:
@@ -127,15 +133,22 @@ class RemoteExceptionThrower extends ExceptionThrower {
             error,
             stackTrace,
             errorType: error.type.name,
-            errorMessage: 'SocketException',
+            errorMessage: error.message,
+            source: 'Network:DioException:SocketException',
           );
           throw const SocketError();
         } else if (underlyingError is OAuthAuthorizationError) {
           reportToSentry(
             error,
             stackTrace,
+            statusCode: underlyingError is ServerError
+                ? 500
+                : underlyingError is TemporarilyUnavailable
+                    ? 503
+                    : null,
             errorType: underlyingError.error,
             errorMessage: underlyingError.errorDescription,
+            source: 'Network:DioException:OAuthAuthorizationError',
           );
           throw underlyingError;
         } else if (underlyingError != null) {
@@ -144,10 +157,12 @@ class RemoteExceptionThrower extends ExceptionThrower {
             stackTrace,
             errorType: error.type.name,
             errorMessage: underlyingError.toString(),
+            source: 'Network:DioException:UnderlyingError',
           );
           throw UnknownError(message: underlyingError);
         } else {
-          reportToSentry(error, stackTrace);
+          reportToSentry(error, stackTrace, errorType: error.type.name,
+            errorMessage: error.toString(), source: 'Network:DioException:UnknownError',);
           throw const UnknownError();
         }
     }

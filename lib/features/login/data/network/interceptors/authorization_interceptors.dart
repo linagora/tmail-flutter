@@ -153,26 +153,31 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return super.onError(err, handler);
       }
-    } catch (e, stackTrace) {
-      logError('AuthorizationInterceptors::onError:Exception: $e');
-      if (PlatformInfo.isWeb) {
-        SentryManager.instance.reportError(
-          e,
-          stackTrace,
-          SentryContextData(
-            errorType: e.runtimeType.toString(),
-            errorMessage: e.toString(),
-            statusCode: err.response?.statusCode,
-          ),
-        );
-      }
-      if (e is ServerError || e is TemporarilyUnavailable) {
+    } catch (exception, stackTrace) {
+      logError('AuthorizationInterceptors::onError:Exception: $exception');
+
+      SentryManager.instance.reportError(
+        exception,
+        stackTrace,
+        SentryContextData(
+          source: 'AuthorizationInterceptors',
+          errorType: exception is OAuthAuthorizationError
+              ? exception.error
+              : exception.runtimeType.toString(),
+          errorMessage: exception is OAuthAuthorizationError
+              ? exception.errorDescription
+              : exception.toString(),
+          statusCode: err.response?.statusCode,
+        ),
+      );
+
+      if (exception is ServerError || exception is TemporarilyUnavailable) {
         return super.onError(
-          DioException(requestOptions: err.requestOptions, error: e),
+          DioException(requestOptions: err.requestOptions, error: exception),
           handler,
         );
       } else {
-        return super.onError(err.copyWith(error: e), handler);
+        return super.onError(err.copyWith(error: exception), handler);
       }
     }
   }
@@ -186,17 +191,16 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         return mapUploadExtra[FileUploader.streamDataExtraKey];
       }
     } catch (e, stackTrace) {
-      log('AuthorizationInterceptors::_getDataUploadRequest: Exception = $e');
-      if (PlatformInfo.isWeb) {
-        SentryManager.instance.reportError(
-          e,
-          stackTrace,
-          SentryContextData(
-            errorType: 'AuthorizationInterceptors.getDataUploadRequest',
-            errorMessage: e.toString(),
-          ),
-        );
-      }
+      logError('AuthorizationInterceptors::_getDataUploadRequest: Exception = $e');
+      SentryManager.instance.reportError(
+        e,
+        stackTrace,
+        SentryContextData(
+          source: 'AuthorizationInterceptors',
+          errorType: 'ExceptionUploadFile',
+          errorMessage: e.toString(),
+        ),
+      );
       return null;
     }
   }
