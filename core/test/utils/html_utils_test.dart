@@ -232,7 +232,6 @@ void main() {
       expect(HtmlUtils.extractPlainText(html), 'Before Hello After');
     });
 
-
     test('handles emoji correctly', () {
       const html = '''
         <p>Hello 🌍🚀</p>
@@ -318,8 +317,203 @@ void main() {
     });
 
     test('keeps unknown tags as plain text', () {
+      // Unknown HTML tags should be keep as html text,
+      // not stripped or removed by the extractor.
       const html = '<heloloasdadadadadsad>dab';
-      expect(HtmlUtils.extractPlainText(html), '<heloloasdadadadadsad>dab');
+      expect(
+        HtmlUtils.extractPlainText(html),
+        '<heloloasdadadadadsad>dab</heloloasdadadadadsad>',
+      );
+    });
+
+    test('removes deeply nested blockquotes with mixed content', () {
+      const html = '''
+      <p>Intro</p>
+      <blockquote>
+        <div>Level1</div>
+        <blockquote>
+          <p>Level2</p>
+          <blockquote>
+            <span>Level3</span>
+            <blockquote>
+              <i>Level4</i>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+      </blockquote>
+      <p>Outro</p>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Intro Outro');
+    });
+
+    test('removes adjacent blockquotes and preserves surrounding text', () {
+      const html = '''
+      <div>Top</div>
+      <blockquote><p>Q1</p></blockquote>
+      <blockquote><p>Q2</p></blockquote>
+      <blockquote><p>Q3</p></blockquote>
+      <div>Bottom</div>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Top Bottom');
+    });
+
+    test('removes blockquote with attributes and cite', () {
+      const html = '''
+      <p>Start</p>
+      <blockquote type="cite" style="border-left:2px solid #eee;">
+        <cite>On Nov 10 ...</cite>
+        <div>Quoted text</div>
+      </blockquote>
+      <p>End</p>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Start End');
+    });
+
+    test('keeps content when removeQuotes=false', () {
+      const html = '''
+      <p>A</p>
+      <blockquote><p>B inside quote</p></blockquote>
+      <p>C</p>
+    ''';
+      expect(
+        HtmlUtils.extractPlainText(html, removeQuotes: false),
+        'A B inside quote C',
+      );
+    });
+
+    test('keeps content of encoded blockquotes since they are not real tags', () {
+      const html = '''
+      <p>Before</p>
+      &amp;lt;blockquote&amp;gt;Inner from encoded quote&amp;lt;/blockquote&amp;gt;
+      <p>After</p>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Before Inner from encoded quote After');
+    });
+
+    test('handles multiple encoded tags that become real tags then stripped', () {
+      const html = '''
+      &amp;lt;div&amp;gt;A&amp;lt;/div&amp;gt;&amp;lt;span&amp;gt;B&amp;lt;/span&amp;gt;
+    ''';
+      // After decoding twice: <div>A</div><span>B</span> → "A B"
+      expect(HtmlUtils.extractPlainText(html), 'A B');
+    });
+
+    test('removes style and script tags when enabled', () {
+      const html = '''
+      <p>Keep</p>
+      <style>.x{color:red} body{margin:0}</style>
+      <script>console.log('hi')</script>
+      <p>Me</p>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Keep Me');
+    });
+
+    test('keeps style content when removeStyle=false', () {
+      const html = '''
+      <p>Top</p>
+      <style>.x { color: red } /* CSS */</style>
+      <p>Bottom</p>
+    ''';
+      // When removeStyle=false, style content remains after tag stripping.
+      expect(
+        HtmlUtils.extractPlainText(html, removeStyle: false),
+        'Top <style>.x { color: red } /* CSS */</style> Bottom',
+      );
+    });
+
+    test('keeps script content when removeScript=false', () {
+      const html = '''
+      <p>Hello</p>
+      <script>var x = 1 < 2 && 3 > 2; alert(x);</script>
+      <p>World</p>
+    ''';
+      expect(
+        HtmlUtils.extractPlainText(html, removeScript: false),
+        'Hello <script>var x = 1 < 2 && 3 > 2; alert(x);</script> World',
+      );
+    });
+
+    test('collapses multiple <br> tags into a single space', () {
+      const html = '''
+      Hello<br><br/><br   />World
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Hello World');
+    });
+
+    test('handles mixed languages inside and outside quotes', () {
+      const html = '''
+      <p>Xin chào</p>
+      <blockquote><p>Bonjour (quoted)</p></blockquote>
+      <p>こんにちは</p>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Xin chào こんにちは');
+    });
+
+    test('handles messy whitespace around quotes and tags', () {
+      const html = '''
+      <div> A  </div>
+      <blockquote>
+         <p>   should be gone   </p>
+      </blockquote>
+      <span>   B   </span>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'A B');
+    });
+
+    test('ignores disclaimers when wrapped inside blockquotes', () {
+      const html = '''
+      <p>Keep</p>
+      <blockquote>
+        <div style="margin:5px; font-size:11px; color:#104c88;">
+          Ce message et les éventuels documents joints...
+        </div>
+      </blockquote>
+      <p>Text</p>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Keep Text');
+    });
+
+    test('keeps disclaimers that are not wrapped in blockquotes', () {
+      const html = '''
+      <p>Top</p>
+      <div style="font-size:11px">Ce message et les éventuels documents joints...</div>
+      <p>Bottom</p>
+    ''';
+      expect(HtmlUtils.extractPlainText(html),
+          'Top Ce message et les éventuels documents joints... Bottom');
+    });
+
+    test('removes malformed nested blockquotes completely', () {
+      const html = '''
+      <p>Intro</p>
+      <blockquote>
+        <div>Q1
+          <blockquote>Q2
+            <blockquote>Q3</blockquote
+          ></blockquote>
+        </div>
+      </blockquote>
+      <p>Outro</p>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Intro Outro');
+    });
+
+    test('leaves unknown entities untouched while decoding known ones', () {
+      const html = '''
+      <p>&copy; 2025 &unknown; &amp; &lt;tag&gt;</p>
+    ''';
+      // &copy; → ©, &amp; → &, &lt;tag&gt; → <tag>, unknown entities stay as-is
+      expect(HtmlUtils.extractPlainText(html), '© 2025 &unknown; & <tag>');
+    });
+
+    test('keeps unknown tags as html text even when adjacent', () {
+      const html = '<abc>a</abc><xyz>b</xyz>';
+      expect(HtmlUtils.extractPlainText(html), '<abc>a</abc><xyz>b</xyz>');
+    });
+
+    test('handles encoded unknown tags that become html text after decoding', () {
+      const html = '&amp;lt;weird&amp;gt;X&amp;lt;/weird&amp;gt;Y';
+      expect(HtmlUtils.extractPlainText(html), '<weird>X</weird>Y');
     });
   });
 
