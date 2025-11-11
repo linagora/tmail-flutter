@@ -105,7 +105,7 @@ dependencies:
   ### Dependencies from pub.dev ###
   super_tag_editor: 1.1.0
 
-  super_dns_client: 0.3.3
+  super_dns_client: 0.3.6
 
   external_app_launcher: 4.0.3
 
