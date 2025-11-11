@@ -2169,10 +2169,10 @@ packages:
     dependency: "direct main"
     description:
       name: super_dns_client
-      sha256: fe51cb3da20be471ca1d72293bf0f86ddff015fbc1644b586cdb695e85433b9c
+      sha256: dbb9d36e91c22dcd3455b930efbc3c6f68074a91d4e7e11efb89d721387f3593
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3"
+    version: "0.3.6"
   super_ip:
     dependency: transitive
     description:

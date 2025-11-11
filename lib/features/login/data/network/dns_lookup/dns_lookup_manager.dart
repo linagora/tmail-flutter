@@ -33,13 +33,13 @@ class DnsLookupManager {
     const debug = BuildUtils.isDebugMode;
     switch (priority) {
       case DnsLookupPriority.system:
-        return SystemUdpSrvClient(debugMode: debug);
+        return SystemUdpSrvClient(debugMode: debug, timeout: _defaultTimeout);
       case DnsLookupPriority.publicUdp:
-        return PublicUdpSrvClient(debugMode: debug);
+        return PublicUdpSrvClient(debugMode: debug, timeout: _defaultTimeout);
       case DnsLookupPriority.publicDoh:
-        return DnsOverHttpsBinaryClient(debugMode: debug);
+        return DnsOverHttpsBinaryClient(debugMode: debug, timeout: _defaultTimeout);
       case DnsLookupPriority.cloud:
-        return DnsOverHttps.google(debugMode: debug);
+        return DnsOverHttps.empty(debugMode: debug, timeout: _defaultTimeout);
     }
   }
 
@@ -56,31 +56,18 @@ class DnsLookupManager {
 
     for (final priority in priorities) {
       final client = createClient(priority);
-      log('$runtimeType::lookupJmapUrl → 🔍 Trying ${priority.label} (timeout: ${_defaultTimeout.inSeconds}s)...');
+      log('$runtimeType::lookupJmapUrl → 🔍 Trying ${priority.label} (timeout: ${client.timeout.inSeconds}s)...');
 
       try {
         final records = client is DnsOverHttps
-            ? await client.lookupSrvParallel(jmapHostName).timeout(
-                _defaultTimeout,
-                onTimeout: () {
-                  throw TimeoutException(
-                      'Lookup timed out after ${_defaultTimeout.inSeconds}s');
-                },
-              )
-            : await client.lookupSrv(jmapHostName).timeout(
-                _defaultTimeout,
-                onTimeout: () {
-                  throw TimeoutException(
-                      'Lookup timed out after ${_defaultTimeout.inSeconds}s');
-                },
-              );
+            ? await client.lookupSrvMulti(jmapHostName)
+            : await client.lookupSrv(jmapHostName);
 
-        if (records.isNotEmpty) {
-          final target = records.first.target;
+        final target = records.firstOrNull?.target ?? '';
+        if (target.isNotEmpty) {
           log('$runtimeType::lookupJmapUrl → ✅ Success via ${priority.label}: $target');
           return target;
         }
-
         log('$runtimeType::lookupJmapUrl → ⚠️ No records via ${priority.label}, continuing...');
       } on TimeoutException catch (_) {
         logError(
@@ -92,6 +79,6 @@ class DnsLookupManager {
     }
 
     log('$runtimeType::lookupJmapUrl → 🚨 All DNS lookups failed for $jmapHostName');
-    return '';
+    throw Exception('DNS lookup failed for $jmapHostName');
   }
 }
