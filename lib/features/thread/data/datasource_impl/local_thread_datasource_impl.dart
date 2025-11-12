@@ -95,7 +95,10 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
         sort: sort,
         filterOption: filterOption ?? FilterMessageOption.all,
         limit: limit);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -113,7 +116,10 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
         updated: updated,
         created: created,
         destroyed: destroyed);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -139,6 +145,9 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
         accountId: accountId,
         userName: session.username,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

@@ -18,6 +18,9 @@ class TMailContactDataSourceImpl extends AutoCompleteDataSource {
     return Future.sync(() async {
       final listContacts = await _contactAPI.getAutoComplete(autoCompletePattern);
       return listContacts.map((contact) => contact.toEmailAddress()).toList();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

@@ -21,7 +21,10 @@ class HiveAccountDatasourceImpl extends AccountDatasource {
   Future<PersonalAccount> getCurrentAccount() {
     return Future.sync(() async {
       return await _accountCacheManager.getCurrentAccount();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -32,13 +35,19 @@ class HiveAccountDatasourceImpl extends AccountDatasource {
         await _iosSharingManager.saveKeyChainSharingSession(newCurrentAccount);
       }
       return Future.value(null);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> deleteCurrentAccount(String accountId) {
     return Future.sync(() async {
       return await _accountCacheManager.deleteCurrentAccount(accountId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

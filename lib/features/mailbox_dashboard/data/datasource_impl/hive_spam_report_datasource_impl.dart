@@ -36,7 +36,10 @@ class HiveSpamReportDataSourceImpl extends SpamReportDataSource {
   Future<Mailbox> getSpamMailboxCached(AccountId accountId, UserName userName) {
     return Future.sync(() async {
       return await _mailboxCacheManager.getSpamMailbox(accountId, userName);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override

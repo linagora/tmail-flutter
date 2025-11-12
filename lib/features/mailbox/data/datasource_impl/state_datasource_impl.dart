@@ -26,7 +26,10 @@ class StateDataSourceImpl extends StateDataSource {
   Future<State?> getState(AccountId accountId, UserName userName, StateType stateType) {
     return Future.sync(() async {
       return await _stateCacheManager.getState(accountId, userName, stateType);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -40,6 +43,9 @@ class StateDataSourceImpl extends StateDataSource {
         }
       }
       return Future.value(null);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

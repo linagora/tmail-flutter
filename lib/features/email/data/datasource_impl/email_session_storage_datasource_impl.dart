@@ -207,7 +207,10 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
         emlPreviewer.id,
         jsonEncode(emlPreviewer.toJson()),
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -220,7 +223,10 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
     return Future.sync(() {
       final data = _sessionStorageManager.get(keyStored);
       return EMLPreviewer.fromJson(jsonDecode(data));
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override

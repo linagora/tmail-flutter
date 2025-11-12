@@ -23,7 +23,10 @@ class FcmDatasourceImpl extends FCMDatasource {
   Future<FirebaseRegistration> getFirebaseRegistrationByDeviceId(DeviceClientId deviceId) {
     return Future.sync(() async {
       return await _fcmApi.getFirebaseRegistrationByDeviceId(deviceId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -50,7 +53,10 @@ class FcmDatasourceImpl extends FCMDatasource {
         newFcmToken: newTokenRequest.firebaseRegistration.token,
         newTypes: newTokenRequest.firebaseRegistration.types,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
   
   @override
@@ -67,14 +73,20 @@ class FcmDatasourceImpl extends FCMDatasource {
   Future<void> destroyFirebaseRegistration(FirebaseRegistrationId registrationId) {
     return Future.sync(() async {
       return await _fcmApi.destroyFirebaseRegistration(registrationId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> updateFirebaseRegistrationToken(UpdateTokenExpiredTimeRequest expiredTimeRequest) {
     return Future.sync(() async {
       return await _fcmApi.updateFirebaseRegistrationToken(expiredTimeRequest);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override

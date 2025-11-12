@@ -28,28 +28,40 @@ class IdentityDataSourceImpl extends IdentityDataSource {
   Future<IdentitiesResponse> getAllIdentities(Session session, AccountId accountId, {Properties? properties}) {
     return Future.sync(() async {
       return await _identityAPI.getAllIdentities(session, accountId, properties: properties);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<Identity> createNewIdentity(Session session, AccountId accountId, CreateNewIdentityRequest identityRequest) {
     return Future.sync(() async {
       return await _identityAPI.createNewIdentity(session, accountId, identityRequest);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<bool> deleteIdentity(Session session, AccountId accountId, IdentityId identityId) {
     return Future.sync(() async {
       return await _identityAPI.deleteIdentity(session, accountId, identityId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<bool> editIdentity(Session session, AccountId accountId, EditIdentityRequest editIdentityRequest) {
     return Future.sync(() async {
       return await _identityAPI.editIdentity(session, accountId, editIdentityRequest);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -60,6 +72,9 @@ class IdentityDataSourceImpl extends IdentityDataSource {
         transformConfiguration: TransformConfiguration.forSignatureIdentity(),
       );
       return identitySignature.newSignature(signatureUnescape);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

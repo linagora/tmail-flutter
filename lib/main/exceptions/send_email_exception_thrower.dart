@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SendEmailExceptionThrower extends RemoteExceptionThrower {
   @override
-  FutureOr<void> throwException(error, stackTrace) async {
+  Future<void> throwException(error, stackTrace) async {
     log('SendEmailExceptionThrower::throwException(): $error | stackTrace: $stackTrace');
     final networkConnectionController = getBinding<NetworkConnectionController>();
     final realtimeNetworkConnectionStatus = await networkConnectionController?.hasInternetConnection();

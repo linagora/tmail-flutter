@@ -20,7 +20,10 @@ class CalendarEventDataSourceImpl extends CalendarEventDataSource {
   Future<List<BlobCalendarEvent>> parse(AccountId accountId, Set<Id> blobIds) {
     return Future.sync(() async {
       return await _calendarEventAPI.parse(accountId, blobIds);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
   
   @override
@@ -30,7 +33,10 @@ class CalendarEventDataSourceImpl extends CalendarEventDataSource {
     String? language) {
     return Future.sync(() async {
       return await _calendarEventAPI.acceptEventInvitation(accountId, blobIds, language);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -40,7 +46,10 @@ class CalendarEventDataSourceImpl extends CalendarEventDataSource {
     String? language) {
     return Future.sync(() async {
       return await _calendarEventAPI.maybeEventInvitation(accountId, blobIds, language);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -50,7 +59,10 @@ class CalendarEventDataSourceImpl extends CalendarEventDataSource {
     String? language) {
     return Future.sync(() async {
       return await _calendarEventAPI.rejectEventInvitation(accountId, blobIds, language);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
   
   @override
@@ -60,6 +72,9 @@ class CalendarEventDataSourceImpl extends CalendarEventDataSource {
   ) {
     return Future.sync(() async {
       return await _calendarEventAPI.acceptCounterEvent(accountId, blobIds);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }
