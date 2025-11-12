@@ -51,9 +51,9 @@ extension DateTimeNullableExtension on DateTime? {
 
   String toPatternForEmailView() {
     if (this?.isThisYear() == true) {
-      return 'dd MMM, HH:mm a';
+      return 'dd MMM, hh:mm a';
     } else {
-      return 'dd MMM yyyy, HH:mm a';
+      return 'dd MMM yyyy, hh:mm a';
     }
   }
 
