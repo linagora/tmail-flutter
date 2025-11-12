@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
@@ -91,6 +92,9 @@ class CredentialBindings extends InteractorsBindings {
       Get.find<AuthenticationOIDCRepository>(),
     ));
     Get.put(RemoveAuthDestinationUrlInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
+    Get.put(GetOidcUserInfoInteractor(
       Get.find<AuthenticationOIDCRepository>(),
     ));
   }
