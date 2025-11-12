@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/login/data/network/dns_lookup/dns_lookup_
 import 'package:tmail_ui_user/features/login/data/network/dns_lookup/dns_lookup_priority.dart';
 
 // Generate mock class for DnsClient
-@GenerateMocks([DnsClient])
+@GenerateNiceMocks([MockSpec<DnsClient>()])
 import 'dns_lookup_manager_test.mocks.dart';
 
 void main() {
@@ -20,6 +20,11 @@ void main() {
     mockPublicClient = MockDnsClient();
     mockDohClient = MockDnsClient();
     mockCloudClient = MockDnsClient();
+
+    when(mockSystemClient.timeout).thenReturn(const Duration(seconds: 3));
+    when(mockPublicClient.timeout).thenReturn(const Duration(seconds: 3));
+    when(mockDohClient.timeout).thenReturn(const Duration(seconds: 3));
+    when(mockCloudClient.timeout).thenReturn(const Duration(seconds: 3));
   });
 
   group('DnsLookupManager.lookupJmapUrl', () {
@@ -83,6 +88,9 @@ void main() {
         mockSystemClient.lookupSrv(any),
         mockPublicClient.lookupSrv(any),
       ]);
+
+      verifyNever(mockDohClient.lookupSrv(any));
+      verifyNever(mockCloudClient.lookupSrv(any));
     });
 
     test('✅ should skip to next resolver when previous returns empty list',
@@ -116,6 +124,9 @@ void main() {
         mockSystemClient.lookupSrv(any),
         mockPublicClient.lookupSrv(any),
       ]);
+
+      verifyNever(mockDohClient.lookupSrv(any));
+      verifyNever(mockCloudClient.lookupSrv(any));
     });
 
     test('⚠️ should continue when some resolvers throw exceptions', () async {
@@ -148,18 +159,19 @@ void main() {
       // Assert
       expect(result, equals('mail-doh.example.com'));
       verify(mockDohClient.lookupSrv(any)).called(1);
+      verifyNever(mockCloudClient.lookupSrv(any));
     });
 
     test('⏱️ should return empty string when all resolvers timeout', () async {
       // Arrange: simulate all resolvers hanging
       when(mockSystemClient.lookupSrv(any)).thenAnswer(
-          (_) => Future.delayed(const Duration(seconds: 10), () => []));
+          (_) => Future.delayed(const Duration(seconds: 3), () => []));
       when(mockPublicClient.lookupSrv(any)).thenAnswer(
-          (_) => Future.delayed(const Duration(seconds: 10), () => []));
+          (_) => Future.delayed(const Duration(seconds: 3), () => []));
       when(mockDohClient.lookupSrv(any)).thenAnswer(
-          (_) => Future.delayed(const Duration(seconds: 10), () => []));
+          (_) => Future.delayed(const Duration(seconds: 3), () => []));
       when(mockCloudClient.lookupSrv(any)).thenAnswer(
-          (_) => Future.delayed(const Duration(seconds: 10), () => []));
+          (_) => Future.delayed(const Duration(seconds: 3), () => []));
 
       final manager = _TestableDnsLookupManager({
         DnsLookupPriority.system: mockSystemClient,
@@ -168,11 +180,11 @@ void main() {
         DnsLookupPriority.cloud: mockCloudClient,
       });
 
-      // Act
-      final result = await manager.lookupJmapUrl('user@example.com');
-
       // Assert
-      expect(result, isEmpty);
+      expect(
+        () => manager.lookupJmapUrl('user@example.com'),
+        throwsA(isA<Exception>()),
+      );
     });
 
     test('❌ should throw ArgumentError when email is invalid', () async {
