@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/login/data/network/interceptors/authoriza
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
@@ -72,6 +73,7 @@ const fallbackGenerators = {
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
   MockSpec<UpdateAccountCacheInteractor>(),
+  MockSpec<GetOidcUserInfoInteractor>(),
 
   // Identities controller mockspecs
   MockSpec<GetAllIdentitiesInteractor>(),
@@ -157,6 +159,7 @@ void main() {
     Get.put<GetSessionInteractor>(MockGetSessionInteractor());
     Get.put<GetAuthenticatedAccountInteractor>(MockGetAuthenticatedAccountInteractor());
     Get.put<UpdateAccountCacheInteractor>(MockUpdateAccountCacheInteractor());
+    Get.put<GetOidcUserInfoInteractor>(MockGetOidcUserInfoInteractor());
 
     // mock identities controller
     mockGetAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
