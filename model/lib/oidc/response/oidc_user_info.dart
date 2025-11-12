@@ -14,19 +14,26 @@ class OidcUserInfo with EquatableMixin {
 
   final String? name;
 
+  @JsonKey(name: 'preferred_username')
+  final String? preferredUsername;
+
   @JsonKey(name: 'given_name')
   final String? givenName;
 
   @JsonKey(name: 'family_name')
   final String? familyName;
 
+  final String? workplaceFqdn;
+
   const OidcUserInfo({
     this.id,
     this.sub,
     this.name,
+    this.preferredUsername,
     this.givenName,
     this.familyName,
     this.email,
+    this.workplaceFqdn,
   });
 
   /// Factory for creating object from JSON
@@ -41,8 +48,10 @@ class OidcUserInfo with EquatableMixin {
         id,
         sub,
         name,
+        preferredUsername,
         givenName,
         familyName,
         email,
+        workplaceFqdn,
       ];
 }
