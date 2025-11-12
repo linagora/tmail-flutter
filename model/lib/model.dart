@@ -78,6 +78,7 @@ export 'oidc/request/oidc_request.dart';
 export 'oidc/response/oidc_discovery_response.dart';
 export 'oidc/response/oidc_link_dto.dart';
 export 'oidc/response/oidc_response.dart';
+export 'oidc/response/oidc_user_info.dart';
 export 'oidc/token_id.dart';
 export 'oidc/token_oidc.dart';
 // Upload
