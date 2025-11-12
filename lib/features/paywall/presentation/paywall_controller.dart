@@ -1,6 +1,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/web_link_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -39,10 +41,7 @@ class PaywallController extends BaseController {
     paywallUrlPattern = newPattern;
     if (isRetryGetPaywallUrl) {
       isRetryGetPaywallUrl = false;
-      final qualifiedPaywall = paywallUrlPattern!.getQualifiedUrl(
-        ownerEmail: ownEmailAddress,
-        domainName: RouteUtils.getRootDomain(),
-      );
+      final qualifiedPaywall = getPaywallUrl(paywallUrlPattern!);
       AppUtils.launchLink(qualifiedPaywall);
     }
   }
@@ -88,13 +87,33 @@ class PaywallController extends BaseController {
       _showMessagePaywallUrlNotAvailable(context: context);
       return;
     }
+    final qualifiedPaywall = getPaywallUrl(paywallUrlPattern!);
+    AppUtils.launchLink(qualifiedPaywall);
+  }
 
-    final qualifiedPaywall = paywallUrlPattern!.getQualifiedUrl(
+  String getPaywallUrl(PaywallUrlPattern pattern) {
+    final defaultUrl = pattern.getQualifiedUrl(
       ownerEmail: ownEmailAddress,
       domainName: RouteUtils.getRootDomain(),
     );
 
-    AppUtils.launchLink(qualifiedPaywall);
+    try {
+      final workplaceFqdn = twakeAppManager.oidcUserInfo?.workplaceFqdn?.trim();
+      if (workplaceFqdn == null || workplaceFqdn.isEmpty) {
+        return defaultUrl;
+      }
+
+      final paywallUrl = WebLinkGenerator.safeGenerateWebLink(
+        workplaceFqdn: workplaceFqdn,
+        pathname: 'paywall',
+      );
+
+      // Fallback if generated URL is empty or invalid
+      return paywallUrl.isNotEmpty ? paywallUrl : defaultUrl;
+    } catch (e) {
+      logError('$runtimeType::getPaywallUrl: Failed to generate paywall URL: $e');
+      return defaultUrl;
+    }
   }
 
   void _handleRetryGetPaywallUrl() {
