@@ -46,4 +46,6 @@ abstract class AuthenticationOIDCRepository {
   Future<String> getAuthenticationInfo();
 
   Future<void> removeAuthDestinationUrl();
+
+  Future<OidcUserInfo> fetchUserInfo(String userInfoEndpoint);
 }
