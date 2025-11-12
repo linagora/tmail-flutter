@@ -2,11 +2,9 @@ import 'package:core/utils/web_link_generator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('WebLinkGenerator (with workplaceFqdn)', () {
-    const generator = WebLinkGenerator();
-
+  group('WebLinkGenerator', () {
     test('should generate correct link for flat subdomain', () {
-      final result = generator.generateWebLink(
+      final result = WebLinkGenerator.generateWebLink(
         workplaceFqdn: 'alice.example.app',
         searchParams: [
           ['sharecode', 'sharingIsCaring'],
@@ -24,7 +22,7 @@ void main() {
     });
 
     test('should prepend slash to path and hash if missing', () {
-      final result = generator.generateWebLink(
+      final result = WebLinkGenerator.generateWebLink(
         workplaceFqdn: 'bob.example.tools',
         pathname: 'files',
         hash: 'folder/123',
@@ -35,7 +33,7 @@ void main() {
     });
 
     test('should work with no search params', () {
-      final result = generator.generateWebLink(
+      final result = WebLinkGenerator.generateWebLink(
         workplaceFqdn: 'charlie.domain.com',
         slug: 'settings',
       );
@@ -43,9 +41,9 @@ void main() {
       expect(result, 'https://charlie-settings.domain.com/');
     });
 
-    test('should throw when workplaceFqdn is empty', () {
+    test('✅ should throw when workplaceFqdn is empty', () {
       expect(
-        () => generator.generateWebLink(
+        () => WebLinkGenerator.generateWebLink(
           workplaceFqdn: '',
           slug: 'notes',
         ),
@@ -55,7 +53,7 @@ void main() {
 
     test('should throw when workplaceFqdn only contains TLD', () {
       expect(
-        () => generator.generateWebLink(
+        () => WebLinkGenerator.generateWebLink(
           workplaceFqdn: 'com',
           slug: 'notes',
         ),
@@ -65,7 +63,7 @@ void main() {
 
     test('should throw when workplaceFqdn has no dot', () {
       expect(
-        () => generator.generateWebLink(
+        () => WebLinkGenerator.generateWebLink(
           workplaceFqdn: 'localhost',
           slug: 'notes',
         ),
@@ -74,7 +72,7 @@ void main() {
     });
 
     test('should handle malformed FQDN gracefully (multiple dots)', () {
-      final result = generator.generateWebLink(
+      final result = WebLinkGenerator.generateWebLink(
         workplaceFqdn: '....example..app',
         slug: 'notes',
       );
@@ -84,7 +82,7 @@ void main() {
     });
 
     test('should ignore malformed searchParams', () {
-      final result = generator.generateWebLink(
+      final result = WebLinkGenerator.generateWebLink(
         workplaceFqdn: 'dave.example.app',
         slug: 'drive',
         searchParams: [
@@ -97,7 +95,7 @@ void main() {
     });
 
     test('should not add fragment when hash is empty string', () {
-      final result = generator.generateWebLink(
+      final result = WebLinkGenerator.generateWebLink(
         workplaceFqdn: 'eve.example.app',
         slug: 'settings',
         hash: '',
@@ -106,8 +104,35 @@ void main() {
       expect(result, 'https://eve-settings.example.app/');
     });
 
+    test('should keep original host when slug is null', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'alice.example.app',
+        slug: null,
+      );
+
+      expect(result, 'https://alice.example.app/');
+    });
+
+    test('should keep original host when slug is empty', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'alice.example.app',
+        slug: '',
+      );
+
+      expect(result, 'https://alice.example.app/');
+    });
+
+    test('should keep original host when slug is only whitespace', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'bob.example.app',
+        slug: '   ',
+      );
+
+      expect(result, 'https://bob.example.app/');
+    });
+
     test('safeGenerateWebLink should return empty string on invalid FQDN', () {
-      final result = generator.safeGenerateWebLink(
+      final result = WebLinkGenerator.safeGenerateWebLink(
         workplaceFqdn: '',
         slug: 'notes',
       );
@@ -115,22 +140,31 @@ void main() {
       expect(result, '');
     });
 
-    test('safeGenerateWebLink should return empty string on missing slug', () {
-      final result = generator.safeGenerateWebLink(
+    test('safeGenerateWebLink should return valid URL on missing slug', () {
+      final result = WebLinkGenerator.safeGenerateWebLink(
         workplaceFqdn: 'alice.example.app',
         slug: '',
       );
 
-      expect(result, '');
+      expect(result, 'https://alice.example.app/');
     });
 
     test('safeGenerateWebLink should still return valid URL when input ok', () {
-      final result = generator.safeGenerateWebLink(
+      final result = WebLinkGenerator.safeGenerateWebLink(
         workplaceFqdn: 'bob.example.app',
         slug: 'drive',
       );
 
       expect(result, 'https://bob-drive.example.app/');
+    });
+
+    test('safeGenerateWebLink should handle slug = null gracefully', () {
+      final result = WebLinkGenerator.safeGenerateWebLink(
+        workplaceFqdn: 'example.com',
+        slug: null,
+      );
+
+      expect(result, 'https://example.com/');
     });
   });
 }
