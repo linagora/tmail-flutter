@@ -2,16 +2,14 @@ import 'package:core/core.dart';
 
 /// Utility class for generating web links in flat subdomain format.
 class WebLinkGenerator {
-  const WebLinkGenerator();
-
   /// Ensures that a path starts with `/`.
-  String ensureFirstSlash(String? path) {
+  static String ensureFirstSlash(String? path) {
     if (path == null || path.isEmpty) return '/';
     return path.startsWith('/') ? path : '/$path';
   }
 
   /// Validates if a given FQDN looks valid (has at least 2 parts and non-empty).
-  bool isValidFqdn(String fqdn) {
+  static bool isValidFqdn(String fqdn) {
     if (fqdn.trim().isEmpty || !fqdn.contains('.')) return false;
     final parts = fqdn.split('.').where((p) => p.trim().isNotEmpty).toList();
     return parts.length >= 2;
@@ -20,9 +18,9 @@ class WebLinkGenerator {
   /// Generates a web link based on a workplace FQDN and app slug.
   ///
   /// Throws [ArgumentError] when input is invalid.
-  String generateWebLink({
+  static String generateWebLink({
     required String workplaceFqdn,
-    required String slug,
+    String? slug,
     String? pathname,
     String? hash,
     List<List<String>>? searchParams,
@@ -31,16 +29,22 @@ class WebLinkGenerator {
       throw ArgumentError('Invalid workplace FQDN: $workplaceFqdn');
     }
 
-    final hostParts = workplaceFqdn
-        .split('.')
-        .where((p) => p.trim().isNotEmpty)
-        .toList();
+    // Start from the base host
+    String newHost = workplaceFqdn;
 
-    hostParts[0] = '${hostParts[0]}-$slug';
-    final newHost = hostParts.join('.');
+    // Only modify the host when slug is non-null and not empty
+    if (slug != null && slug.trim().isNotEmpty) {
+      final hostParts =
+          workplaceFqdn.split('.').where((p) => p.trim().isNotEmpty).toList();
+
+      // Insert slug as a prefix to the first part (flat subdomain)
+      hostParts[0] = '${hostParts[0]}-$slug';
+      newHost = hostParts.join('.');
+    }
 
     final safePath = ensureFirstSlash(pathname);
-    final safeHash = (hash == null || hash.isEmpty) ? null : ensureFirstSlash(hash);
+    final safeHash =
+        (hash == null || hash.isEmpty) ? null : ensureFirstSlash(hash);
 
     final queryParams = <String, String>{};
     for (final param in searchParams ?? const []) {
@@ -61,16 +65,14 @@ class WebLinkGenerator {
   /// A safe version of [generateWebLink] that **never throws**.
   ///
   /// Returns `''` (empty string) when an error occurs.
-  String safeGenerateWebLink({
+  static String safeGenerateWebLink({
     required String workplaceFqdn,
-    required String slug,
+    String? slug,
     String? pathname,
     String? hash,
     List<List<String>>? searchParams,
   }) {
     try {
-      if (slug.trim().isEmpty) return '';
-
       return generateWebLink(
         workplaceFqdn: workplaceFqdn,
         slug: slug,
