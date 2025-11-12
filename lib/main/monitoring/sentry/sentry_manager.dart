@@ -10,13 +10,15 @@ class SentryManager {
 
   static final SentryManager instance = SentryManager._();
 
-  bool isSentryAvailable = false;
+  bool _isSentryAvailable = false;
+
+  bool get isSentryAvailable => _isSentryAvailable;
 
   /// Initializes Sentry SDK via SentryInitializer.
   Future<void> initialize(Future<void> Function() appRunner) async {
     try {
-      isSentryAvailable = await SentryInitializer.init(appRunner);
-      log('[SentryManager] Sentry initialized: $isSentryAvailable');
+      _isSentryAvailable = await SentryInitializer.init(appRunner);
+      log('[SentryManager] Sentry initialized: $_isSentryAvailable');
     } catch (e) {
       logError('[SentryManager] Failed to initialize Sentry: $e');
       await appRunner();
@@ -29,7 +31,7 @@ class SentryManager {
     StackTrace? stackTrace,
     SentryContextData? context,
   ]) async {
-    if (isSentryAvailable) {
+    if (_isSentryAvailable) {
       await SentryReporter.reportError(exception, stackTrace, context);
     }
   }
@@ -40,7 +42,7 @@ class SentryManager {
     List<dynamic> args, {
     SentryLogLevel level = SentryLogLevel.info,
   }) async {
-    if (isSentryAvailable) {
+    if (_isSentryAvailable) {
       await SentryReporter.logSentry(message, args, level: level);
     }
   }
@@ -48,7 +50,7 @@ class SentryManager {
   /// Sets the current user context once after login.
   Future<void> setUser(SentryUser sentryUser) async {
     try {
-      if (isSentryAvailable) {
+      if (_isSentryAvailable) {
         await Sentry.configureScope((scope) {
           scope.setUser(sentryUser);
         });
@@ -60,7 +62,7 @@ class SentryManager {
   /// Clears user context on logout.
   Future<void> clearUser() async {
     try {
-      if (isSentryAvailable) {
+      if (_isSentryAvailable) {
         await Sentry.configureScope((scope) {
           scope.setUser(null);
         });
