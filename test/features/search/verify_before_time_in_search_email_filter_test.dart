@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
@@ -133,6 +134,7 @@ const fallbackGenerators = {
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
   MockSpec<UpdateAccountCacheInteractor>(),
+  MockSpec<GetOidcUserInfoInteractor>(),
   MockSpec<EmailReceiveManager>(),
   MockSpec<DownloadController>(fallbackGenerators: fallbackGenerators),
   MockSpec<AppGridDashboardController>(fallbackGenerators: fallbackGenerators),
@@ -198,6 +200,7 @@ void main() {
   final MockGetSessionInteractor getSessionInteractor = MockGetSessionInteractor();
   final MockGetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
   final MockUpdateAccountCacheInteractor updateAccountCacheInteractor = MockUpdateAccountCacheInteractor();
+  final MockGetOidcUserInfoInteractor getOidcUserInfoInteractor = MockGetOidcUserInfoInteractor();
   final MockRemoveEmailDraftsInteractor removeEmailDraftsInteractor = MockRemoveEmailDraftsInteractor();
   final MockEmailReceiveManager emailReceiveManager = MockEmailReceiveManager();
   final MockDownloadController downloadController = MockDownloadController();
@@ -353,6 +356,7 @@ void main() {
     Get.put<GetSessionInteractor>(getSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
     Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
+    Get.put<GetOidcUserInfoInteractor>(getOidcUserInfoInteractor);
     Get.put<ComposerManager>(composerManager);
     Get.put<GetAuthenticationInfoInteractor>(getAuthenticationInfoInteractor);
     Get.put<GetStoredOidcConfigurationInteractor>(getStoredOidcConfigurationInteractor);
