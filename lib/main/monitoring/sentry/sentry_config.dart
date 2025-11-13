@@ -48,9 +48,9 @@ class SentryConfig {
     await AppUtils.loadConfigFromEnv();
 
     final sentryAvailable =
-        dotenv.get('SENTRY_AVAILABLE', fallback: 'unsupported');
+        dotenv.get('SENTRY_ENABLED', fallback: 'false');
 
-    final isAvailable = sentryAvailable == 'supported';
+    final isAvailable = sentryAvailable == 'true';
     if (!isAvailable) {
       throw Exception('Sentry is not available');
     }
