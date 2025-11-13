@@ -41,7 +41,10 @@ class SessionStorageComposerDatasourceImpl
       } else {
         throw NotFoundInWebSessionException();
       }
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -61,7 +64,10 @@ class SessionStorageComposerDatasourceImpl
         composerCacheKey: jsonEncode(composerCache.toJson())
       };
       html.window.sessionStorage.addAll(entries);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
   
   @override
@@ -74,7 +80,10 @@ class SessionStorageComposerDatasourceImpl
         htmlContent: htmlContent,
         transformConfiguration: transformConfiguration,
         mapCidImageDownloadUrl: mapUrlDownloadCID);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -87,7 +96,10 @@ class SessionStorageComposerDatasourceImpl
       ).toString();
 
       html.window.sessionStorage.removeWhere((key, value) => key.startsWith(keyWithIdentity));
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -101,6 +113,9 @@ class SessionStorageComposerDatasourceImpl
       ).toString();
 
       html.window.sessionStorage.removeWhere((key, value) => key == keyWithIdentity);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

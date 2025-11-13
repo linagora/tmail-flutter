@@ -25,7 +25,10 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<void> persistLanguage(Locale localeCurrent) {
     return Future.sync(() async {
       return await _languageCacheManager.persistLanguage(localeCurrent);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -45,13 +48,19 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
         );
       }
       return await _preferencesSettingManager.loadPreferences();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<PreferencesSetting> getLocalSettings() {
     return Future.sync(() async {
       return await _preferencesSettingManager.loadPreferences();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

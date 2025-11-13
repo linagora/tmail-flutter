@@ -17,13 +17,19 @@ class HiveCacheVersionClient extends CacheVersionClient {
     return Future.sync(() {
       final latestVersion = _sharedPreferences.getInt(versionKey);
       return latestVersion;
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<bool> storeVersion(int newVersion) {
     return Future.sync(() async {
       return await _sharedPreferences.setInt(versionKey, newVersion);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

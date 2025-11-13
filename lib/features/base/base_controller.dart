@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'package:core/core.dart';
-import 'package:flutter/services.dart' as services;
+
 import 'package:contact/contact/model/capability_contact.dart';
+import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
 import 'package:fcm/model/firebase_registration_id.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' as services;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
@@ -25,9 +26,11 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/model/login_source.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/auto_refresh_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
@@ -57,8 +60,8 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -153,7 +156,8 @@ abstract class BaseController extends GetxController
   bool validateUrgentException(dynamic exception) {
     return exception is NoNetworkError
       || exception is BadCredentialsException
-      || exception is ConnectionError;
+      || exception is ConnectionError
+      || exception is ClientAuthenticationException;
   }
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
@@ -170,10 +174,14 @@ abstract class BaseController extends GetxController
 
   void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
     logError('$runtimeType::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception');
-    if (exception is ConnectionError) {
+    if (exception is NoNetworkError) {
+      _handleNotNetworkErrorException();
+    } else if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       handleBadCredentialsException();
+    } else if (exception is ClientAuthenticationException) {
+      handleClientAuthenticationException(exception);
     }
   }
 
@@ -185,13 +193,17 @@ abstract class BaseController extends GetxController
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       handleBadCredentialsException();
+    } else if (exception is ClientAuthenticationException) {
+      handleClientAuthenticationException(exception);
     }
   }
 
-  Future<void> _executeBeforeReconnectAndLogOut() async {
+  Future<void> _executeBeforeReconnectAndLogOut({
+    LoginSource source = LoginSource.manual,
+  }) async {
     twakeAppManager.setExecutingBeforeReconnect(true);
     await executeBeforeReconnect();
-    clearDataAndGoToLoginPage();
+    clearDataAndGoToLoginPage(source: source);
   }
 
   void onCancelReconnectWhenSessionExpired() {}
@@ -214,29 +226,49 @@ abstract class BaseController extends GetxController
         leadingSVGIcon: imagePaths.icNotConnection,
         backgroundColor: AppColor.textFieldErrorBorderColor,
         textColor: Colors.white,
-        infinityToast: true);
+        infinityToast: PlatformInfo.isWeb,
+      );
     }
   }
 
   void handleBadCredentialsException() {
     log('$runtimeType::handleBadCredentialsException:');
     if (twakeAppManager.hasComposer) {
-      _performSaveAndReconnection();
+      _performSaveAndReconnection(source: LoginSource.auto);
     } else {
-      _performReconnection();
+      _performReconnection(source: LoginSource.auto);
     }
   }
 
-  void _performSaveAndReconnection() {
+  void handleClientAuthenticationException(
+    ClientAuthenticationException exception,
+  ) {
+    final message = exception.message;
+    final firstErrorCode = exception.code;
+    final secondErrorCode = exception.secondErrorCode;
+    log('$runtimeType::handleClientAuthenticationException: Message is $message, [$firstErrorCode - $secondErrorCode]');
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        '$message [$firstErrorCode - $secondErrorCode]',
+      );
+    }
+  }
+
+  void _performSaveAndReconnection({
+    LoginSource source = LoginSource.manual,
+  }) {
     if (PlatformInfo.isWeb) {
-      _executeBeforeReconnectAndLogOut();
+      _executeBeforeReconnectAndLogOut(source: source);
     } else if (PlatformInfo.isMobile) {
-      clearDataAndGoToLoginPage();
+      clearDataAndGoToLoginPage(source: source);
     }
   }
 
-  void _performReconnection() {
-    clearDataAndGoToLoginPage();
+  void _performReconnection({
+    LoginSource source = LoginSource.manual,
+  }) {
+    clearDataAndGoToLoginPage(source: source);
   }
 
   void onDataFailureViewState(Failure failure) {
@@ -397,9 +429,24 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void removeAllPageAndGoToLogin() {
+  void removeAllPageAndGoToLogin({
+    LoginSource source = LoginSource.manual,
+  }) {
     if (PlatformInfo.isMobile) {
-      pushAndPopAll(AppRoutes.twakeWelcome);
+      final jmapUrl = dynamicUrlInterceptors.jmapUrl ?? '';
+
+      final isAutoRefresh = source == LoginSource.auto &&
+          Get.currentRoute != AppRoutes.login &&
+          jmapUrl.isNotEmpty;
+
+      if (isAutoRefresh) {
+        pushAndPopAll(
+          AppRoutes.login,
+          arguments: AutoRefreshArguments(jmapUrl),
+        );
+      } else {
+        pushAndPopAll(AppRoutes.twakeWelcome);
+      }
     } else {
       navigateToLoginPage();
     }
@@ -541,10 +588,12 @@ abstract class BaseController extends GetxController
     await beforeReconnectManager?.executeBeforeReconnectListeners();
   }
 
-  Future<void> clearDataAndGoToLoginPage() async {
-    log('$runtimeType::clearDataAndGoToLoginPage:');
+  Future<void> clearDataAndGoToLoginPage({
+    LoginSource source = LoginSource.manual,
+  }) async {
+    log('$runtimeType::clearDataAndGoToLoginPage: Login source is $source');
     await clearAllData();
-    removeAllPageAndGoToLogin();
+    removeAllPageAndGoToLogin(source: source);
   }
 
   Future<void> clearAllData() async {

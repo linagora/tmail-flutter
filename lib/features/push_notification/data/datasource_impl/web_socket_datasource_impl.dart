@@ -35,7 +35,10 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
       await webSocketChannel.ready;
 
       return webSocketChannel;
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   void _verifyWebSocketCapabilities(Session session, AccountId accountId) {

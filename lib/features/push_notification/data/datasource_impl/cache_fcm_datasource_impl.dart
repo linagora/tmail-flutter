@@ -24,21 +24,30 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   Future<void> storeStateToRefresh(AccountId accountId, UserName userName, TypeName typeName, jmap.State newState) {
     return Future.sync(() async {
       return await _firebaseCacheManager.storeStateToRefresh(accountId, userName, typeName, newState);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
     return Future.sync(() async {
       return await _firebaseCacheManager.getStateToRefresh(accountId, userName, typeName);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> deleteStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) {
     return Future.sync(() async {
       return await _firebaseCacheManager.deleteStateToRefresh(accountId, userName, typeName);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -55,7 +64,10 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   Future<void> storeFirebaseRegistration(FirebaseRegistration firebaseRegistration) {
    return Future.sync(() async {
       return await _firebaseCacheManager.storeFirebaseRegistration(firebaseRegistration.toFirebaseRegistrationCache());
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
   
   @override
@@ -63,7 +75,10 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
     return Future.sync(() async {
       final firebaseRegistrationCache = await _firebaseCacheManager.getStoredFirebaseRegistration();
       return firebaseRegistrationCache.toFirebaseRegistration();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -80,6 +95,9 @@ class CacheFCMDatasourceImpl extends FCMDatasource {
   Future<void> deleteFirebaseRegistrationCache() {
     return Future.sync(() async {
       return await _firebaseCacheManager.deleteFirebaseRegistration();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }
