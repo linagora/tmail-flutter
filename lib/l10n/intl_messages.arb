@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-11-05T13:34:06.612241",
+  "@@last_modified": "2025-11-12T23:59:36.025917",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5066,6 +5066,12 @@
   },
   "favoriteMailboxDisplayName": "Starred",
   "@favoriteMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageYourTwakeAccount": "Manage your Twake account",
+  "@manageYourTwakeAccount": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

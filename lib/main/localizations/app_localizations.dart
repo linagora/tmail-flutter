@@ -5366,4 +5366,11 @@ class AppLocalizations {
       name: 'favoriteMailboxDisplayName',
     );
   }
+
+  String get manageYourTwakeAccount {
+    return Intl.message(
+      'Manage your Twake account',
+      name: 'manageYourTwakeAccount',
+    );
+  }
 }
