@@ -4,7 +4,7 @@
 - **Twake Mail** uses **Sentry** to collect and track application errors and performance issues.
 - Developers need to configure environment variables for **Sentry** service to enable monitoring and debugging.
 
-## How to config
+## How to configure
 
 ### 1. Add environment variables for Sentry service
 Create or edit the file [`sentry.env`](https://github.com/linagora/tmail-flutter/blob/master/configurations/sentry.env) with the following content:
@@ -22,7 +22,7 @@ SENTRY_ENVIRONMENT=<environment_name>
 In [`env.file`](https://github.com/linagora/tmail-flutter/blob/master/env.file), ensure the following line is present:
 
 ```bash
-SENTRY_AVAILABLE=supported
+SENTRY_ENABLED=true | false
 ```
 
 ### 3. Verification
