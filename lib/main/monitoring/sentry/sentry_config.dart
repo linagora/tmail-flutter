@@ -51,14 +51,12 @@ class SentryConfig {
         dotenv.get('SENTRY_ENABLED', fallback: 'false');
 
     final isAvailable = sentryAvailable == 'true';
+    final sentryDSN = dotenv.get('SENTRY_DSN', fallback: '');
+    final sentryEnvironment = dotenv.get('SENTRY_ENVIRONMENT', fallback: '');
+
     if (!isAvailable) {
       throw Exception('Sentry is not available');
     }
-
-    await AppUtils.loadSentryConfigFileToEnv();
-
-    final sentryDSN = dotenv.get('SENTRY_DSN', fallback: '');
-    final sentryEnvironment = dotenv.get('SENTRY_ENVIRONMENT', fallback: '');
 
     if (sentryDSN.trim().isEmpty || sentryEnvironment.trim().isEmpty) {
       throw Exception('Sentry configuration is missing');
