@@ -325,6 +325,12 @@ class RichTextWebController extends GetxController {
 
   bool get isFormattingOptionsEnabled => formattingOptionsState.value == FormattingOptionsState.enabled;
 
+  void openInsertLink() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    editorController.setFocus();
+    editorController.openInsertLinkDialog();
+  }
+
   @override
   void onClose() {
     menuParagraphController.dispose();

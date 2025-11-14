@@ -261,6 +261,8 @@ extension AppColor on Color {
   static const gray9AA7B6 = Color(0xFF9AA7B6);
   static const redFF3347 = Color(0xFFFF3347);
   static const gray686E76 = Color(0xFF686E76);
+  static const gray900 = Color(0xFF222222);
+  static const gray400 = Color(0xFF939393);
   static const lightGrayEBEDF0 = Color(0xFFEBEDF0);
   static const gray99A2AD = Color(0xFF99A2AD);
   static const textSecondary = Color(0xFF1C1B1F);

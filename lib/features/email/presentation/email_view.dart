@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/handle_on_iframe_click_in_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/validate_display_free_busy_message_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
@@ -340,6 +341,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 presentationEmail: controller.currentEmail,
                 scrollController: scrollController,
                 isInsideThreadDetailView: isInsideThreadDetailView,
+                onIFrameClickAction: controller.handleOnIFrameClick,
               )),
             ],
           )
@@ -361,8 +363,10 @@ class EmailView extends GetWidget<SingleEmailController> {
                     useDefaultFontStyle: true,
                     scrollController: scrollController,
                     enableQuoteToggle: true,
+                    useLinkTooltipOverlay: true,
                     fontSize: isMobileResponsive ? 16 : 14,
                     onIFrameKeyboardShortcutAction: onIFrameKeyboardShortcutAction,
+                    onIFrameClickAction: controller.handleOnIFrameClick,
                   ),
                 );
               } else if (PlatformInfo.isIOS) {

@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wra
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_insert_link_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
@@ -248,6 +249,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                       onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
                                       height: constraintsEditor.maxHeight,
                                       horizontalPadding: ComposerStyle.mobileEditorHorizontalPadding,
+                                      linkOverlayOptions: controller.createLinkOverlayOptions(context),
                                       onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
                                       onDragOver: controller.handleOnDragOverHtmlEditorWeb,
                                       onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
@@ -489,6 +491,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                               onEditorTextSizeChanged: controller.richTextWebController?.onEditorTextSizeChanged,
                                               height: constraintsEditor.maxHeight,
                                               horizontalPadding: ComposerStyle.desktopEditorHorizontalPadding,
+                                              linkOverlayOptions: controller.createLinkOverlayOptions(context),
                                               onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
                                               onDragOver: controller.handleOnDragOverHtmlEditorWeb,
                                               onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
@@ -551,6 +554,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
+                              onOpenInsertLink: controller.openInsertLink,
                             )),
                           ],
                         ),
@@ -760,6 +764,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                             onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
                                             height: constraintsBody.maxHeight,
                                             horizontalPadding: ComposerStyle.desktopEditorHorizontalPadding,
+                                            linkOverlayOptions: controller.createLinkOverlayOptions(context),
                                             onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
                                             onDragOver: controller.handleOnDragOverHtmlEditorWeb,
                                             onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
@@ -821,6 +826,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
+                              onOpenInsertLink: controller.openInsertLink,
                             )),
                           ],
                         ),

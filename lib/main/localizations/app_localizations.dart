@@ -5366,4 +5366,53 @@ class AppLocalizations {
       name: 'favoriteMailboxDisplayName',
     );
   }
+
+  String get insertLink {
+    return Intl.message(
+      'Insert link',
+      name: 'insertLink',
+    );
+  }
+
+  String get goTo {
+    return Intl.message(
+      'Go to',
+      name: 'goTo',
+    );
+  }
+
+  String get change {
+    return Intl.message(
+      'Change',
+      name: 'change',
+    );
+  }
+
+  String get removeLink {
+    return Intl.message(
+      'Remove link',
+      name: 'removeLink',
+    );
+  }
+
+  String get text {
+    return Intl.message(
+      'Text',
+      name: 'text',
+    );
+  }
+
+  String get typeOrPasteLink {
+    return Intl.message(
+      'Type or paste a link',
+      name: 'typeOrPasteLink',
+    );
+  }
+
+  String get apply {
+    return Intl.message(
+      'Apply',
+      name: 'apply',
+    );
+  }
 }
