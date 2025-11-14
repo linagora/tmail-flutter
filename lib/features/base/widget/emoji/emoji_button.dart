@@ -8,6 +8,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnEmojiSelected = Function(String emoji);
+typedef OnRecentEmojiSelected = Future<Category?> Function();
 
 class EmojiButton extends StatefulWidget {
   final EmojiData emojiData;
@@ -19,6 +20,7 @@ class EmojiButton extends StatefulWidget {
   final Color? iconColor;
   final String? iconTooltipMessage;
   final EdgeInsetsGeometry? iconPadding;
+  final OnRecentEmojiSelected? onRecentEmojiSelected;
 
   const EmojiButton({
     Key? key,
@@ -31,6 +33,7 @@ class EmojiButton extends StatefulWidget {
     this.iconColor,
     this.iconPadding,
     this.iconTooltipMessage,
+    this.onRecentEmojiSelected,
   }) : super(key: key);
 
   @override
@@ -45,6 +48,7 @@ class _EmojiButtonState extends State<EmojiButton>
   final GlobalKey _buttonKey = GlobalKey();
   OverlayEntry? _overlayEntry;
   bool _isDialogVisible = false;
+  Future<Category?>? _recentEmoji;
 
   late final AnimationController _animationController = AnimationController(
     vsync: this,
@@ -56,6 +60,17 @@ class _EmojiButtonState extends State<EmojiButton>
   late final Animation<double> _fadeAnimation =
       Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
 
+  Future<void> _loadRecentEmoji() async {
+    if (widget.onRecentEmojiSelected != null) {
+      final category = await widget.onRecentEmojiSelected!();
+      if (category != null) {
+        _recentEmoji = Future.value(category);
+        return;
+      }
+    }
+    _recentEmoji = Future.value(null);
+  }
+
   void _toggleEmojiDialog() {
     if (_isDialogVisible) {
       _closeDialog();
@@ -64,7 +79,7 @@ class _EmojiButtonState extends State<EmojiButton>
     }
   }
 
-  void _openDialog() {
+  Future<void> _openDialog() async {
     widget.onPickerOpen();
 
     if (!mounted || _isDialogVisible) return;
@@ -97,6 +112,8 @@ class _EmojiButtonState extends State<EmojiButton>
         top = 8;
       }
     }
+
+    await _loadRecentEmoji();
 
     _overlayEntry = OverlayEntry(
       builder: (context) {
@@ -191,6 +208,7 @@ class _EmojiButtonState extends State<EmojiButton>
                         onEmojiSelected: (emojiId, emoji) {
                           widget.onEmojiSelected(emoji);
                         },
+                        recentEmoji: _recentEmoji,
                       ),
                     ),
                   ),
@@ -202,9 +220,11 @@ class _EmojiButtonState extends State<EmojiButton>
       },
     );
 
-    Overlay.maybeOf(context, rootOverlay: true)?.insert(_overlayEntry!);
+    if (mounted) {
+      Overlay.maybeOf(context, rootOverlay: true)?.insert(_overlayEntry!);
+    }
     _animationController.forward(from: 0);
-    setState(() => _isDialogVisible = true);
+    if (mounted) setState(() => _isDialogVisible = true);
   }
 
   Future<void> _closeDialog() async {
@@ -220,6 +240,7 @@ class _EmojiButtonState extends State<EmojiButton>
     _overlayEntry?.remove();
     _overlayEntry = null;
     _animationController.dispose();
+    _recentEmoji = null;
     super.dispose();
   }
 

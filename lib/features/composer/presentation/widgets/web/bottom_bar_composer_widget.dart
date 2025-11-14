@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
@@ -16,6 +17,7 @@ import 'package:tmail_ui_user/main/utils/asset_manager.dart';
 class BottomBarComposerWidget extends StatelessWidget {
 
   final ImagePaths imagePaths;
+  final ResponsiveUtils responsiveUtils;
   final bool isCodeViewEnabled;
   final bool isEmailChanged;
   final bool isFormattingOptionsEnabled;
@@ -38,10 +40,12 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback onPickerOpen;
   final OnMenuChanged? onPopupMenuChanged;
   final OnOpenAiAssistantModal? onOpenAiAssistantModal;
+  final OnRecentEmojiSelected? onRecentEmojiSelected;
 
   const BottomBarComposerWidget({
     super.key,
     required this.imagePaths,
+    required this.responsiveUtils,
     required this.isCodeViewEnabled,
     required this.isEmailChanged,
     required this.isFormattingOptionsEnabled,
@@ -64,6 +68,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.onPickerOpen,
     this.onPopupMenuChanged,
     this.onOpenAiAssistantModal,
+    this.onRecentEmojiSelected,
   });
 
   @override
@@ -120,7 +125,9 @@ class BottomBarComposerWidget extends StatelessWidget {
               onTapActionCallback: insertImageAction,
             ),
           ),
-          if (PlatformInfo.isWeb && AssetManager().emojiData != null)
+          if (PlatformInfo.isWeb &&
+              !responsiveUtils.isMobile(context) &&
+              AssetManager().emojiData != null)
             ...[
               const SizedBox(width: BottomBarComposerWidgetStyle.space),
               EmojiButton(
@@ -133,6 +140,7 @@ class BottomBarComposerWidget extends StatelessWidget {
                 iconPadding: BottomBarComposerWidgetStyle.iconPadding,
                 onEmojiSelected: onEmojiSelected,
                 onPickerOpen: onPickerOpen,
+                onRecentEmojiSelected: onRecentEmojiSelected,
               ),
             ],
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
