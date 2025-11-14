@@ -5366,4 +5366,11 @@ class AppLocalizations {
       name: 'favoriteMailboxDisplayName',
     );
   }
+
+  String get emoji {
+    return Intl.message(
+      'Emoji',
+      name: 'emoji',
+    );
+  }
 }

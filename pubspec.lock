@@ -487,6 +487,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.3"
+  easy_debounce:
+    dependency: transitive
+    description:
+      name: easy_debounce
+      sha256: f082609cfb8f37defb9e37fc28bc978c6712dedf08d4c5a26f820fa10165a236
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   email_recovery:
     dependency: "direct main"
     description:
@@ -781,6 +789,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.12.0"
+  flutter_emoji_mart:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "120bc036ea15045c686c2b1b3d399ac290c4465d"
+      url: "git@github.com:linagora/emoji_mart.git"
+    source: git
+    version: "1.0.2"
   flutter_file_dialog:
     dependency: "direct main"
     description:
@@ -1098,6 +1115,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.2"
+  flutter_sticky_header:
+    dependency: transitive
+    description:
+      name: flutter_sticky_header
+      sha256: fb4fda6164ef3e5fc7ab73aba34aad253c17b7c6ecf738fa26f1a905b7d2d1e2
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -1144,10 +1169,10 @@ packages:
     dependency: "direct main"
     description:
       name: focus_detector_v2
-      sha256: "4fed0ad4ef4996711880e26bd8450eb86199acc4f25eafbf49a17d4758f9d139"
+      sha256: d4abc4c755ba894238ab92f42f6eee7ade78aa285199e112f45926c7053f90c6
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0+2"
+    version: "3.1.0+1"
   focused_menu_custom:
     dependency: "direct main"
     description:
@@ -1257,10 +1282,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "33c6f89b1a2cf47f8c148939268488b2bbc19144"
+      resolved-ref: d6fb8943cbde91ea0cdf6914bca06c895d27e1ce
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "3.3.0"
+    version: "3.3.1"
   html_unescape:
     dependency: transitive
     description:
@@ -1421,7 +1446,7 @@ packages:
       path: "."
       ref: master
       resolved-ref: "66d09a271f20243badd92352a8bb5866b430020d"
-      url: "https://github.com/linagora/linagora-design-flutter.git"
+      url: "git@github.com:linagora/linagora-design-flutter.git"
     source: git
     version: "0.0.1"
   linkify:
@@ -1993,6 +2018,14 @@ packages:
       url: "https://github.com/linagora/dart-neats.git"
     source: git
     version: "2.1.0"
+  scroll_to_index:
+    dependency: transitive
+    description:
+      name: scroll_to_index
+      sha256: b707546e7500d9f070d63e5acf74fd437ec7eeeb68d3412ef7b0afada0b4f176
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   server_settings:
     dependency: "direct main"
     description:
@@ -2101,6 +2134,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  sliver_tools:
+    dependency: transitive
+    description:
+      name: sliver_tools
+      sha256: eae28220badfb9d0559207badcbbc9ad5331aac829a88cb0964d330d2a4636a6
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.12"
   source_gen:
     dependency: transitive
     description:
@@ -2390,6 +2431,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  value_layout_builder:
+    dependency: transitive
+    description:
+      name: value_layout_builder
+      sha256: ab4b7d98bac8cefeb9713154d43ee0477490183f5aa23bb4ffa5103d9bbf6275
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   vector_graphics:
     dependency: transitive
     description:
@@ -2426,10 +2475,10 @@ packages:
     dependency: transitive
     description:
       name: visibility_detector
-      sha256: "15c54a459ec2c17b4705450483f3d5a2858e733aee893dcee9d75fd04814940d"
+      sha256: dd5cc11e13494f432d15939c3aa8ae76844c42b723398643ce9addb88a5ed420
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3"
+    version: "0.4.0+2"
   vm_service:
     dependency: transitive
     description:

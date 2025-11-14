@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_w
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
+import 'package:tmail_ui_user/features/reactions/data/local/reaction_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 
@@ -94,6 +95,7 @@ class LocalBindings extends Bindings {
     Get.put(SessionHiveCacheClient());
     Get.put(SessionCacheManager(Get.find<SessionHiveCacheClient>()));
     Get.put(LocalSortOrderManager(Get.find<SharedPreferences>()));
+    Get.put(ReactionsCacheManager(Get.find<SharedPreferences>()));
     Get.put(CachingManager(
       Get.find<MailboxCacheManager>(),
       Get.find<StateCacheManager>(),
