@@ -40,14 +40,6 @@ class AppUtils {
     }
   }
 
-  static Future<void> loadSentryConfigFileToEnv() async  {
-    try {
-      await dotenv.load(fileName: AppConfig.sentryConfigurationPath);
-    } catch (e) {
-      logError('AppUtils::loadSentryConfigFileToEnv:Exception = $e');
-    }
-  }
-
   static Future<String> getAppVersion() async  {
     try {
       final packageInfo = await PackageInfo.fromPlatform();

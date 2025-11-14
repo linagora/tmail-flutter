@@ -7,7 +7,7 @@
 ## How to configure
 
 ### 1. Add environment variables for Sentry service
-Create or edit the file [`sentry.env`](https://github.com/linagora/tmail-flutter/blob/master/configurations/sentry.env) with the following content:
+Edit the file [`env.file`](https://github.com/linagora/tmail-flutter/blob/master/env.file) with the following content:
 
 ```bash
 SENTRY_DSN=<your_sentry_dsn>
