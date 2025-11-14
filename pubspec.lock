@@ -487,6 +487,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.3"
+  easy_debounce:
+    dependency: transitive
+    description:
+      name: easy_debounce
+      sha256: f082609cfb8f37defb9e37fc28bc978c6712dedf08d4c5a26f820fa10165a236
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   email_recovery:
     dependency: "direct main"
     description:
@@ -781,6 +789,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.12.0"
+  flutter_emoji_mart:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "120bc036ea15045c686c2b1b3d399ac290c4465d"
+      url: "git@github.com:linagora/emoji_mart.git"
+    source: git
+    version: "1.0.2"
   flutter_file_dialog:
     dependency: "direct main"
     description:
@@ -1098,6 +1115,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.2"
+  flutter_sticky_header:
+    dependency: transitive
+    description:
+      name: flutter_sticky_header
+      sha256: fb4fda6164ef3e5fc7ab73aba34aad253c17b7c6ecf738fa26f1a905b7d2d1e2
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -1421,7 +1446,7 @@ packages:
       path: "."
       ref: master
       resolved-ref: "66d09a271f20243badd92352a8bb5866b430020d"
-      url: "https://github.com/linagora/linagora-design-flutter.git"
+      url: "git@github.com:linagora/linagora-design-flutter.git"
     source: git
     version: "0.0.1"
   linkify:
@@ -2001,6 +2026,14 @@ packages:
       url: "https://github.com/linagora/dart-neats.git"
     source: git
     version: "2.1.0"
+  scroll_to_index:
+    dependency: transitive
+    description:
+      name: scroll_to_index
+      sha256: b707546e7500d9f070d63e5acf74fd437ec7eeeb68d3412ef7b0afada0b4f176
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   server_settings:
     dependency: "direct main"
     description:
@@ -2109,6 +2142,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  sliver_tools:
+    dependency: transitive
+    description:
+      name: sliver_tools
+      sha256: eae28220badfb9d0559207badcbbc9ad5331aac829a88cb0964d330d2a4636a6
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.12"
   source_gen:
     dependency: transitive
     description:
@@ -2398,6 +2439,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  value_layout_builder:
+    dependency: transitive
+    description:
+      name: value_layout_builder
+      sha256: ab4b7d98bac8cefeb9713154d43ee0477490183f5aa23bb4ffa5103d9bbf6275
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   vector_graphics:
     dependency: transitive
     description:
