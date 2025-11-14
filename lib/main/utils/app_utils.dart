@@ -33,6 +33,7 @@ class AppUtils {
   }
 
   static void launchLink(String url, {bool isNewTab = true}) {
+    log('AppUtils::launchLink: url = $url');
     if (PlatformInfo.isWeb && HtmlUtils.isSafariBelow17()) {
       html.window.open(url, isNewTab ? '_blank' : '_self');
     } else {

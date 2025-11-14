@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+
+import 'package:core/utils/app_logger.dart';
 
 /// Utility class for generating web links in flat subdomain format.
 class WebLinkGenerator {

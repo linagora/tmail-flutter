@@ -30,6 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/b
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_storage_menu_visible_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_bindings.dart';
@@ -154,11 +155,10 @@ class ManageAccountDashBoardController extends ReloadableController
     paywallController = PaywallController(
       ownEmailAddress: ownEmailAddress.value,
     );
-    paywallController?.loadPaywallUrl();
 
     if (quota != null) {
       octetsQuota.value = quota;
-    } else {
+    } else if (isStorageCapabilitySupported) {
       getQuotas(accountId.value);
     }
   }
@@ -194,7 +194,9 @@ class ManageAccountDashBoardController extends ReloadableController
     injectVacationBindings(session, accountId);
     injectForwardBindings(session, accountId);
     injectRuleFilterBindings(session, accountId);
-    injectQuotaBindings();
+    if (isStorageCapabilitySupported) {
+      injectQuotaBindings();
+    }
   }
 
   @override

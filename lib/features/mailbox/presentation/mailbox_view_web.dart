@@ -62,7 +62,7 @@ class MailboxView extends BaseMailboxView {
                   onTapAction: () => controller
                       .mailboxDashBoardController
                       .paywallController
-                      ?.navigateToPaywall(context),
+                      ?.navigateToPaywall(),
                 );
               } else {
                 return const SizedBox.shrink();

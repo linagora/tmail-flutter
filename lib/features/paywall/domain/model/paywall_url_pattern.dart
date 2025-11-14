@@ -13,7 +13,7 @@ class PaywallUrlPattern with EquatableMixin {
     final mailAddress = _getMailAddress(ownerEmail: ownerEmail);
     return PaywallUtils.buildPaywallUrlFromTemplate(
       template: pattern,
-      localPart: mailAddress?.localPart,
+      localPart: mailAddress?.localPart.replaceAll('.', ''),
       domainName: domainName ?? mailAddress?.domain.domainName,
     );
   }

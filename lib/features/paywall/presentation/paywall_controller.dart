@@ -17,56 +17,34 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 class PaywallController extends BaseController {
   final String ownEmailAddress;
 
-  PaywallUrlPattern? paywallUrlPattern;
-  bool isRetryGetPaywallUrl = false;
-
   PaywallController({required this.ownEmailAddress});
 
-  void loadPaywallUrl() {
+  void _loadPaywallUrl() {
     final getPaywallUrlInteractor = getBinding<GetPaywallUrlInteractor>();
     final jmapUrl = dynamicUrlInterceptors.jmapUrl;
 
     if (getPaywallUrlInteractor != null && jmapUrl != null) {
       consumeState(getPaywallUrlInteractor.execute(jmapUrl));
     } else {
-      paywallUrlPattern = null;
-      if (isRetryGetPaywallUrl) {
-        _showMessagePaywallUrlNotAvailable();
-        isRetryGetPaywallUrl = false;
-      }
+      _loadPaywallUrlFailure();
     }
   }
 
-  void loadPaywallUrlSuccess(PaywallUrlPattern newPattern) {
-    paywallUrlPattern = newPattern;
-    if (isRetryGetPaywallUrl) {
-      isRetryGetPaywallUrl = false;
-      final qualifiedPaywall = getPaywallUrl(paywallUrlPattern!);
-      AppUtils.launchLink(qualifiedPaywall);
-    }
+  void _loadPaywallUrlSuccess(PaywallUrlPattern newPattern) {
+    _redirectPaywallPage(newPattern);
   }
 
-  void loadPaywallUrlFailure() {
-    paywallUrlPattern = null;
-    if (isRetryGetPaywallUrl) {
-      _showMessagePaywallUrlNotAvailable();
-      isRetryGetPaywallUrl = false;
-    }
+  void _loadPaywallUrlFailure() {
+    _showMessagePaywallUrlNotAvailable();
   }
 
-  void _showMessagePaywallUrlNotAvailable({BuildContext? context}) {
-    final overlayContext = context ?? currentOverlayContext;
-    AppLocalizations? appLocalizations;
-    if (context != null) {
-      appLocalizations = AppLocalizations.of(context);
-    } else if (currentContext != null) {
-      appLocalizations = AppLocalizations.of(currentContext!);
-    }
+  void _showMessagePaywallUrlNotAvailable() {
+    if (currentOverlayContext == null || currentContext == null) return;
 
-    if (overlayContext == null || appLocalizations == null) return;
-
+    final appLocalizations = AppLocalizations.of(currentContext!);
+    
     appToast.showToastMessage(
-      overlayContext,
+      currentOverlayContext!,
       appLocalizations.paywallUrlNotAvailable,
       actionName: appLocalizations.retry,
       onActionClick: _handleRetryGetPaywallUrl,
@@ -82,49 +60,54 @@ class PaywallController extends BaseController {
     );
   }
 
-  void navigateToPaywall(BuildContext context) {
-    if (paywallUrlPattern == null) {
-      _showMessagePaywallUrlNotAvailable(context: context);
-      return;
-    }
-    final qualifiedPaywall = getPaywallUrl(paywallUrlPattern!);
-    AppUtils.launchLink(qualifiedPaywall);
-  }
-
-  String getPaywallUrl(PaywallUrlPattern pattern) {
-    final defaultUrl = pattern.getQualifiedUrl(
-      ownerEmail: ownEmailAddress,
-      domainName: RouteUtils.getRootDomain(),
-    );
-
+  void navigateToPaywall() {
     try {
       final workplaceFqdn = twakeAppManager.oidcUserInfo?.workplaceFqdn?.trim();
       if (workplaceFqdn == null || workplaceFqdn.isEmpty) {
-        return defaultUrl;
+        _navigateToPaywallUseEcoSystem();
+        return;
+      } else {
+        _navigateToPaywallUseWorkplaceFqdn(workplaceFqdn);
       }
-
-      final paywallUrl = WebLinkGenerator.safeGenerateWebLink(
-        workplaceFqdn: workplaceFqdn,
-        pathname: 'paywall',
-      );
-
-      // Fallback if generated URL is empty or invalid
-      return paywallUrl.isNotEmpty ? paywallUrl : defaultUrl;
     } catch (e) {
-      logError('$runtimeType::getPaywallUrl: Failed to generate paywall URL: $e');
-      return defaultUrl;
+      logError('$runtimeType::navigateToPaywall: Failed to navigate to paywall $e');
+      _navigateToPaywallUseEcoSystem();
     }
   }
 
+  void _navigateToPaywallUseWorkplaceFqdn(String workplaceFqdn) {
+    final paywallUrl = WebLinkGenerator.safeGenerateWebLink(
+      workplaceFqdn: workplaceFqdn,
+      pathname: '/settings/premium',
+    );
+
+    if (paywallUrl.isNotEmpty) {
+      AppUtils.launchLink(paywallUrl);
+    } else {
+      _navigateToPaywallUseEcoSystem();
+    }
+  }
+
+  void _navigateToPaywallUseEcoSystem() {
+    _loadPaywallUrl();
+  }
+  
+  void _redirectPaywallPage(PaywallUrlPattern urlPattern) {
+    final qualifiedPaywall = urlPattern.getQualifiedUrl(
+      ownerEmail: ownEmailAddress,
+      domainName: RouteUtils.getRootDomain(),
+    );
+    AppUtils.launchLink(qualifiedPaywall);
+  }
+
   void _handleRetryGetPaywallUrl() {
-    isRetryGetPaywallUrl = true;
-    loadPaywallUrl();
+    _loadPaywallUrl();
   }
 
   @override
   void handleSuccessViewState(Success success) {
     if (success is GetPaywallUrlSuccess) {
-      loadPaywallUrlSuccess(success.paywallUrlPattern);
+      _loadPaywallUrlSuccess(success.paywallUrlPattern);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -133,28 +116,9 @@ class PaywallController extends BaseController {
   @override
   void handleFailureViewState(Failure failure) {
     if (failure is GetPaywallUrlFailure) {
-      loadPaywallUrlFailure();
+      _loadPaywallUrlFailure();
     } else {
       super.handleFailureViewState(failure);
     }
-  }
-
-  @override
-  void handleErrorViewState(Object error, StackTrace stackTrace) {
-    super.handleErrorViewState(error, stackTrace);
-    isRetryGetPaywallUrl = false;
-  }
-
-  @override
-  void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
-    super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
-    isRetryGetPaywallUrl = false;
-  }
-
-  @override
-  void onClose() {
-    paywallUrlPattern = null;
-    isRetryGetPaywallUrl = false;
-    super.onClose();
   }
 }

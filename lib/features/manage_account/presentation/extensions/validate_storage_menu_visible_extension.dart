@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/exceptions/quotas_exception.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/list_quotas_extensions.dart';
@@ -13,9 +12,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 extension ValidateStorageMenuVisibleExtension
     on ManageAccountDashBoardController {
   void injectQuotaBindings() {
-    if (isStorageCapabilitySupported) {
-      QuotasInteractorBindings().dependencies();
-    }
+    QuotasInteractorBindings().dependencies();
   }
 
   void getQuotas(AccountId? accountId) {
@@ -27,7 +24,7 @@ extension ValidateStorageMenuVisibleExtension
     }
 
     getQuotasInteractor = getBinding<GetQuotasInteractor>();
-    if (getQuotasInteractor == null || !isStorageCapabilitySupported) {
+    if (getQuotasInteractor == null) {
       consumeState(
         Stream.value(Left(GetQuotasFailure(QuotasNotSupportedException))),
       );

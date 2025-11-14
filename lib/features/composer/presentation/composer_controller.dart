@@ -1049,7 +1049,7 @@ class ComposerController extends BaseController
         popBack();
 
         if (needIncreaseMySpace) {
-          mailboxDashBoardController.paywallController?.navigateToPaywall(context);
+          mailboxDashBoardController.paywallController?.navigateToPaywall();
         } else {
           _autoFocusFieldWhenLauncher();
         }
@@ -1332,7 +1332,7 @@ class ComposerController extends BaseController
             popBack();
 
             if (needIncreaseMySpace) {
-              mailboxDashBoardController.paywallController?.navigateToPaywall(context);
+              mailboxDashBoardController.paywallController?.navigateToPaywall();
             } else {
               _autoFocusFieldWhenLauncher();
             }
@@ -2279,7 +2279,7 @@ class ComposerController extends BaseController
           popBack();
 
           if (needIncreaseMySpace) {
-            mailboxDashBoardController.paywallController?.navigateToPaywall(context);
+            mailboxDashBoardController.paywallController?.navigateToPaywall();
           } else {
             _autoFocusFieldWhenLauncher();
           }

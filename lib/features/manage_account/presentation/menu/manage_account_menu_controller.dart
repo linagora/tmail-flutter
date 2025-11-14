@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ManageAccountMenuController extends GetxController with ContactSupportMixin {
@@ -33,7 +34,7 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
     _quotaRxWorker = ever(
       dashBoardController.octetsQuota,
       (octetsQuota) {
-        if (octetsQuota != null) {
+        if (octetsQuota != null && octetsQuota.storageAvailable) {
           _addStorageToMenuList();
         }
       },

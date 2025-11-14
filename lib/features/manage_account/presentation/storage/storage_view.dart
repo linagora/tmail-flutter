@@ -89,8 +89,8 @@ class StorageView extends GetWidget<StorageController> with AppLoaderMixin {
                               return UpgradeStorageWidget(
                                 imagePaths: controller.imagePaths,
                                 isMobile: isMobile,
-                                onUpgradeStorageAction: () =>
-                                    controller.onUpgradeStorage(context),
+                                onUpgradeStorageAction:
+                                  controller.onUpgradeStorage,
                               );
                             } else {
                               return const SizedBox.shrink();

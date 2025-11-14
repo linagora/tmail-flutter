@@ -872,12 +872,11 @@ class MailboxDashBoardController extends ReloadableController
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
       _storeSessionAction(session);
-    } else {
-      paywallController = PaywallController(
-        ownEmailAddress: ownEmailAddress.value,
-      );
-      paywallController?.loadPaywallUrl();
     }
+
+    paywallController = PaywallController(
+      ownEmailAddress: ownEmailAddress.value,
+    );
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
