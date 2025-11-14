@@ -404,6 +404,10 @@ flutter:
       fonts:
         - asset: assets/fonts/fallback/NotoSansEgyptianHieroglyphs-Regular.ttf
 
+    - family: NotoColorEmoji
+      fonts:
+        - asset: assets/fonts/fallback/NotoColorEmoji-Regular.ttf
+
     - family: NotoEmoji
       fonts:
         - asset: assets/fonts/fallback/NotoEmoji-Regular.ttf
