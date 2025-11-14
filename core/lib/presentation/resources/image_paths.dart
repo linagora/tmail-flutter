@@ -280,6 +280,8 @@ class ImagePaths {
   String get icLabel => _getImagePath('ic_label.svg');
   String get icColorPicker => _getImagePath('ic_color_picker.svg');
   String get icThumbsUp => _getImagePath('ic_thumbs_up.svg');
+  String get icEmoji => _getImagePath('ic_emoji.svg');
+  String get icSearchEmojiEmpty => _getImagePath('ic_search_emoji_empty.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

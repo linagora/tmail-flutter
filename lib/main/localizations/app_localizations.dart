@@ -5769,4 +5769,11 @@ class AppLocalizations {
       name: 'deleteALabelFailure',
     );
   }
+
+  String get emoji {
+    return Intl.message(
+      'Emoji',
+      name: 'emoji',
+    );
+  }
 }

@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/main.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
-import 'package:tmail_ui_user/main/utils/asset_preloader.dart';
+import 'package:tmail_ui_user/main/utils/asset_manager.dart';
 import 'package:tmail_ui_user/main/utils/cozy_integration.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:worker_manager/worker_manager.dart';
@@ -24,7 +24,7 @@ Future<void> runTmailPreload() async {
     MainBindings().dependencies(),
     HiveCacheConfig.instance.setUp(),
     EnvLoader.loadEnvFile(),
-    if (PlatformInfo.isWeb) AssetPreloader.preloadHtmlEditorAssets(),
+    if (PlatformInfo.isWeb) AssetManager().preloadAllAssets(),
   ], eagerError: false);
 
   await Get.find<Executor>().warmUp(log: BuildUtils.isDebugMode);
