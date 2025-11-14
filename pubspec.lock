@@ -1144,10 +1144,10 @@ packages:
     dependency: "direct main"
     description:
       name: focus_detector_v2
-      sha256: "4fed0ad4ef4996711880e26bd8450eb86199acc4f25eafbf49a17d4758f9d139"
+      sha256: d4abc4c755ba894238ab92f42f6eee7ade78aa285199e112f45926c7053f90c6
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0+2"
+    version: "3.1.0+1"
   focused_menu_custom:
     dependency: "direct main"
     description:
@@ -1256,11 +1256,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "feature/summernote-link-tooltip-overlay"
-      resolved-ref: c498d93f9fd8508c4142dcb6ec8b508da3b47660
+      ref: main
+      resolved-ref: "023ac84f36fea1b89819b5cf2a1c42061d970a1f"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "3.3.0"
+    version: "3.3.2"
   html_unescape:
     dependency: transitive
     description:
@@ -2434,10 +2434,10 @@ packages:
     dependency: transitive
     description:
       name: visibility_detector
-      sha256: "15c54a459ec2c17b4705450483f3d5a2858e733aee893dcee9d75fd04814940d"
+      sha256: dd5cc11e13494f432d15939c3aa8ae76844c42b723398643ce9addb88a5ed420
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3"
+    version: "0.4.0+2"
   vm_service:
     dependency: transitive
     description:
