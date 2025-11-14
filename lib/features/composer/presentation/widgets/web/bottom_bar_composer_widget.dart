@@ -1,14 +1,17 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/widget/emoji/emoji_button.dart';
 import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/asset_manager.dart';
 
 class BottomBarComposerWidget extends StatelessWidget {
 
@@ -109,6 +112,22 @@ class BottomBarComposerWidget extends StatelessWidget {
               onTapActionCallback: insertImageAction,
             ),
           ),
+          if (PlatformInfo.isWeb && AssetManager().emojiData != null)
+            ...[
+              const SizedBox(width: BottomBarComposerWidgetStyle.space),
+              EmojiButton(
+                emojiData: AssetManager().emojiData!,
+                emojiSvgAssetPath: imagePaths.icEmoji,
+                emojiSearchEmptySvgAssetPath: imagePaths.icSearchEmojiEmpty,
+                iconColor: BottomBarComposerWidgetStyle.iconColor,
+                iconSize: BottomBarComposerWidgetStyle.iconSize,
+                iconTooltipMessage: AppLocalizations.of(context).emoji,
+                iconPadding: BottomBarComposerWidgetStyle.iconPadding,
+                onEmojiSelected: (emoji) {
+                  log('BottomBarComposerWidget::onEmojiSelected:Emoji: $emoji');
+                },
+              ),
+            ],
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           PopupMenuOverlayWidget(
             controller: menuMoreOptionController,

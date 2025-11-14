@@ -5069,5 +5069,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "emoji": "Emoji",
+  "@emoji": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
