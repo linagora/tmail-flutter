@@ -105,7 +105,7 @@ class PaywallController extends BaseController {
 
       final paywallUrl = WebLinkGenerator.safeGenerateWebLink(
         workplaceFqdn: workplaceFqdn,
-        pathname: 'paywall',
+        pathname: '/settings/premium',
       );
 
       // Fallback if generated URL is empty or invalid
