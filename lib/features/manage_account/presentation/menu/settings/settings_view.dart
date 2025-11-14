@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/preferences/p
 import 'package:tmail_ui_user/features/manage_account/presentation/storage/storage_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
+import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 
 class SettingsView extends GetWidget<SettingsController> {
   const SettingsView({Key? key}) : super(key: key);
@@ -141,7 +142,9 @@ class SettingsView extends GetWidget<SettingsController> {
         case AccountMenuItem.notification:
           return const NotificationView();
         case AccountMenuItem.storage:
-          if (controller.manageAccountDashboardController.isStorageCapabilitySupported) {
+          if (controller.manageAccountDashboardController.octetsQuota.value != null &&
+              controller.manageAccountDashboardController.octetsQuota.value?.storageAvailable == true &&
+              controller.manageAccountDashboardController.isStorageCapabilitySupported) {
             return const StorageView();
           } else {
             return const SizedBox.shrink();

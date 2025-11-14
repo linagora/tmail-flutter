@@ -2,7 +2,6 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -104,8 +103,8 @@ class QuotasController extends BaseController {
       mailboxDashBoardController.validateUserHasIsAlreadyHighestSubscription();
   }
 
-  void handleManageMyStorage(BuildContext context) {
-    mailboxDashBoardController.paywallController?.navigateToPaywall(context);
+  void handleManageMyStorage() {
+    mailboxDashBoardController.paywallController?.navigateToPaywall();
   }
 
   void closeBanner() {

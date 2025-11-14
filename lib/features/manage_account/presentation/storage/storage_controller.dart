@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -17,7 +16,7 @@ class StorageController extends BaseController with SaaSPremiumMixin {
     return isPremiumAvailable(accountId: accountId, session: session);
   }
 
-  void onUpgradeStorage(BuildContext context) {
-    dashBoardController.paywallController?.navigateToPaywall(context);
+  void onUpgradeStorage() {
+    dashBoardController.paywallController?.navigateToPaywall();
   }
 }

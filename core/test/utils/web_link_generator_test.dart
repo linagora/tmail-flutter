@@ -41,7 +41,7 @@ void main() {
       expect(result, 'https://charlie-settings.domain.com/');
     });
 
-    test('✅ should throw when workplaceFqdn is empty', () {
+    test('should throw when workplaceFqdn is empty', () {
       expect(
         () => WebLinkGenerator.generateWebLink(
           workplaceFqdn: '',
@@ -131,6 +131,108 @@ void main() {
       expect(result, 'https://bob.example.app/');
     });
 
+
+    test('generateWebLink should include path and no hash when hash is null', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'alice.example.app',
+        slug: 'notes',
+        pathname: 'welcome',
+        hash: null,
+      );
+
+      expect(result, 'https://alice-notes.example.app/welcome');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('generateWebLink should include path and no hash when hash is empty', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'bob.example.app',
+        slug: 'drive',
+        pathname: 'folder/123',
+        hash: '',
+      );
+
+      expect(result, 'https://bob-drive.example.app/folder/123');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('generateWebLink should return root path when pathname is null', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'charlie.example.app',
+        slug: 'settings',
+        pathname: null,
+      );
+
+      expect(result, 'https://charlie-settings.example.app/');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('generateWebLink should include path and no hash when slug is null and only pathname is provided', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'alice.example.app',
+        slug: null,
+        pathname: 'welcome',
+      );
+
+      expect(result, 'https://alice.example.app/welcome');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('generateWebLink should include path and no hash when slug is empty and only pathname is provided', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'bob.example.app',
+        slug: '',
+        pathname: 'dashboard',
+      );
+
+      expect(result, 'https://bob.example.app/dashboard');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('generateWebLink should handle multi-segment pathname with leading slash when slug is null', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'alice.example.app',
+        slug: null,
+        pathname: '/name1/name2',
+      );
+
+      expect(result, 'https://alice.example.app/name1/name2');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('generateWebLink should handle multi-segment pathname without leading slash when slug is null', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'bob.example.app',
+        slug: null,
+        pathname: 'name1/name2',
+      );
+
+      expect(result, 'https://bob.example.app/name1/name2');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('generateWebLink should handle deep multi-segment pathname with leading slash when slug is empty', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'charlie.example.app',
+        slug: '',
+        pathname: '/a/b/c/d',
+      );
+
+      expect(result, 'https://charlie.example.app/a/b/c/d');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('generateWebLink should handle deep multi-segment pathname without leading slash when slug is empty', () {
+      final result = WebLinkGenerator.generateWebLink(
+        workplaceFqdn: 'dave.example.app',
+        slug: '',
+        pathname: 'a/b/c/d',
+      );
+
+      expect(result, 'https://dave.example.app/a/b/c/d');
+      expect(result.contains('#'), isFalse);
+    });
+
     test('safeGenerateWebLink should return empty string on invalid FQDN', () {
       final result = WebLinkGenerator.safeGenerateWebLink(
         workplaceFqdn: '',
@@ -166,5 +268,85 @@ void main() {
 
       expect(result, 'https://example.com/');
     });
+
+    test('safeGenerateWebLink should include path and no hash when hash is null', () {
+      final result = WebLinkGenerator.safeGenerateWebLink(
+        workplaceFqdn: 'dave.example.app',
+        slug: 'profile',
+        pathname: 'user/info',
+        hash: null,
+      );
+
+      expect(result, 'https://dave-profile.example.app/user/info');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('safeGenerateWebLink should include path and no hash when hash is empty', () {
+      final result = WebLinkGenerator.safeGenerateWebLink(
+        workplaceFqdn: 'eve.example.app',
+        slug: 'docs',
+        pathname: 'help',
+        hash: '',
+      );
+
+      expect(result, 'https://eve-docs.example.app/help');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('safeGenerateWebLink should return root path when pathname is null', () {
+      final result = WebLinkGenerator.safeGenerateWebLink(
+        workplaceFqdn: 'frank.example.app',
+        slug: 'notes',
+        pathname: null,
+      );
+
+      expect(result, 'https://frank-notes.example.app/');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('safeGenerateWebLink should handle no slug and only pathname (slug = null)', () {
+      final result = WebLinkGenerator.safeGenerateWebLink(
+        workplaceFqdn: 'charlie.example.app',
+        slug: null,
+        pathname: 'home',
+      );
+
+      expect(result, 'https://charlie.example.app/home');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('safeGenerateWebLink should handle no slug and only pathname (slug = empty string)', () {
+      final result = WebLinkGenerator.safeGenerateWebLink(
+        workplaceFqdn: 'dave.example.app',
+        slug: '',
+        pathname: 'portal',
+      );
+
+      expect(result, 'https://dave.example.app/portal');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('safeGenerateWebLink should handle multi-segment pathname with leading slash and no slug', () {
+      final result = WebLinkGenerator.safeGenerateWebLink(
+        workplaceFqdn: 'eve.example.app',
+        slug: null,
+        pathname: '/x/y/z',
+      );
+
+      expect(result, 'https://eve.example.app/x/y/z');
+      expect(result.contains('#'), isFalse);
+    });
+
+    test('safeGenerateWebLink should handle multi-segment pathname without leading slash and no slug', () {
+      final result = WebLinkGenerator.safeGenerateWebLink(
+        workplaceFqdn: 'frank.example.app',
+        slug: null,
+        pathname: 'x/y/z',
+      );
+
+      expect(result, 'https://frank.example.app/x/y/z');
+      expect(result.contains('#'), isFalse);
+    });
+
   });
 }

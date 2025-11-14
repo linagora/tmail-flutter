@@ -80,8 +80,8 @@ class QuotasBannerWidget extends StatelessWidget {
                                   backgroundColor: QuotasBannerStyles.backgroundColor,
                                   textStyle: QuotasBannerStyles.manageStorageButtonTextStyle,
                                   padding: EdgeInsets.zero,
-                                  onTapActionCallback: () =>
-                                    _quotasController.handleManageMyStorage(context),
+                                  onTapActionCallback:
+                                    _quotasController.handleManageMyStorage,
                                 ),
                               ],
                             ),

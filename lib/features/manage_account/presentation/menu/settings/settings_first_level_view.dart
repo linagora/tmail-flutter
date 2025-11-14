@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/setting_first_level_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
@@ -140,14 +141,27 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             ),
           ]);
         }),
+        if (PlatformInfo.isWeb)
+          ...[
+            divider,
+            _buildSettingItem(
+              context: context,
+              menuItem: AccountMenuItem.keyboardShortcuts,
+              appLocalizations: appLocalizations,
+            ),
+          ],
         Obx(() {
-          if (controller.manageAccountDashboardController.octetsQuota.value != null) {
+          final octetsQuota = controller
+              .manageAccountDashboardController
+              .octetsQuota
+              .value;
+
+          if (octetsQuota != null && octetsQuota.storageAvailable) {
             return Column(children: [
               divider,
               _buildSettingItem(
-                key: const ValueKey('setting_storage'),
                 context: context,
-                menuItem: AccountMenuItem.keyboardShortcuts,
+                menuItem: AccountMenuItem.storage,
                 appLocalizations: appLocalizations,
               ),
             ]);

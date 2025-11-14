@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/preferences/p
 import 'package:tmail_ui_user/features/manage_account/presentation/storage/storage_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
+import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 
 class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardController> {
 
@@ -171,7 +172,9 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         case AccountMenuItem.mailboxVisibility:
           return MailboxVisibilityView();
         case AccountMenuItem.storage:
-          if (controller.isStorageCapabilitySupported) {
+          if (controller.octetsQuota.value != null &&
+              controller.octetsQuota.value?.storageAvailable == true &&
+              controller.isStorageCapabilitySupported) {
             return const StorageView();
           } else {
             return const SizedBox.shrink();
