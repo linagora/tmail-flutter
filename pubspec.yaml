@@ -92,7 +92,12 @@ dependencies:
 
   linagora_design_flutter:
     git:
-      url: https://github.com/linagora/linagora-design-flutter.git
+      url: git@github.com:linagora/linagora-design-flutter.git
+      ref: master
+
+  flutter_emoji_mart:
+    git:
+      url: git@github.com:linagora/emoji_mart.git
       ref: master
 
   ### Original dependency is abandoned, so we use fork
@@ -195,7 +200,7 @@ dependencies:
 
   focused_menu_custom: 1.2.0
 
-  focus_detector_v2: 3.0.0+2
+  focus_detector_v2: 3.1.0+1
 
   universal_html: 2.2.4
 
