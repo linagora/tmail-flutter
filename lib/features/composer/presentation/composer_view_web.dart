@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_insert_link_composer_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_insert_emoji_to_editor_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
@@ -555,6 +556,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
+                              onEmojiSelected: controller.insertEmojiToEditor,
+                              onPickerOpen: controller.handleOpenEmojiPicker,
                             )),
                           ],
                         ),
@@ -827,6 +830,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
+                              onEmojiSelected: controller.insertEmojiToEditor,
+                              onPickerOpen: controller.handleOpenEmojiPicker,
                             )),
                           ],
                         ),

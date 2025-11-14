@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +33,8 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleMarkAsImportantAction;
   final VoidCallback saveAsTemplateAction;
   final VoidCallback onOpenInsertLink;
+  final OnEmojiSelected onEmojiSelected;
+  final VoidCallback onPickerOpen;
   final OnMenuChanged? onPopupMenuChanged;
 
   const BottomBarComposerWidget({
@@ -57,6 +58,8 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.toggleMarkAsImportantAction,
     required this.saveAsTemplateAction,
     required this.onOpenInsertLink,
+    required this.onEmojiSelected,
+    required this.onPickerOpen,
     this.onPopupMenuChanged,
   });
 
@@ -125,9 +128,8 @@ class BottomBarComposerWidget extends StatelessWidget {
                 iconSize: BottomBarComposerWidgetStyle.iconSize,
                 iconTooltipMessage: AppLocalizations.of(context).emoji,
                 iconPadding: BottomBarComposerWidgetStyle.iconPadding,
-                onEmojiSelected: (emoji) {
-                  log('BottomBarComposerWidget::onEmojiSelected:Emoji: $emoji');
-                },
+                onEmojiSelected: onEmojiSelected,
+                onPickerOpen: onPickerOpen,
               ),
             ],
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
