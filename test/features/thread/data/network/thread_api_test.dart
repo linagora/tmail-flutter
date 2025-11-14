@@ -613,7 +613,7 @@ void main() {
             propertiesCreated: defaultCreatedProperties,
             propertiesUpdated: defaultUpdatedProperties,
           ),
-          headers: dioAdapterHeaders..addAll({'content-length': 1245}),
+          headers: dioAdapterHeaders,
         );
 
         // act
@@ -662,7 +662,7 @@ void main() {
             propertiesCreated: defaultCreatedProperties,
             propertiesUpdated: defaultUpdatedProperties,
           ),
-          headers: dioAdapterHeaders..addAll({'content-length': 1245}),
+          headers: dioAdapterHeaders
         );
 
         // act
@@ -714,7 +714,7 @@ void main() {
           data: generateRequest(
             propertiesCreated: defaultCreatedProperties,
           ),
-          headers: dioAdapterHeaders..addAll({'content-length': 798}),
+          headers: dioAdapterHeaders
         );
 
         // act
@@ -752,7 +752,7 @@ void main() {
             generateResponse(),
           ),
           data: generateRequest(),
-          headers: dioAdapterHeaders..addAll({'content-length': 355}),
+          headers: dioAdapterHeaders
         );
 
         // act

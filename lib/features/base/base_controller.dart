@@ -55,6 +55,7 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/monitoring/sentry/sentry_manager.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -543,6 +544,7 @@ abstract class BaseController extends GetxController
 
   Future<void> clearDataAndGoToLoginPage() async {
     log('$runtimeType::clearDataAndGoToLoginPage:');
+    SentryManager.instance.clearUser();
     await clearAllData();
     removeAllPageAndGoToLogin();
   }

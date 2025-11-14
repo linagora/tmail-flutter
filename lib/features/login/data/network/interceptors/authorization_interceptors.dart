@@ -17,6 +17,8 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/main/monitoring/sentry/sentry_context_data.dart';
+import 'package:tmail_ui_user/main/monitoring/sentry/sentry_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
@@ -82,7 +84,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) async {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
     try {
       final requestOptions = err.requestOptions;
@@ -151,15 +153,31 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return super.onError(err, handler);
       }
-    } catch (e) {
-      logError('AuthorizationInterceptors::onError:Exception: $e');
-      if (e is ServerError || e is TemporarilyUnavailable) {
+    } catch (exception, stackTrace) {
+      logError('AuthorizationInterceptors::onError:Exception: $exception');
+
+      SentryManager.instance.reportError(
+        exception,
+        stackTrace,
+        SentryContextData(
+          source: 'AuthorizationInterceptors',
+          errorType: exception is OAuthAuthorizationError
+              ? exception.error
+              : exception.runtimeType.toString(),
+          errorMessage: exception is OAuthAuthorizationError
+              ? exception.errorDescription
+              : exception.toString(),
+          statusCode: err.response?.statusCode,
+        ),
+      );
+
+      if (exception is ServerError || exception is TemporarilyUnavailable) {
         return super.onError(
-          DioError(requestOptions: err.requestOptions, error: e),
+          DioException(requestOptions: err.requestOptions, error: exception),
           handler,
         );
       } else {
-        return super.onError(err.copyWith(error: e), handler);
+        return super.onError(err.copyWith(error: exception), handler);
       }
     }
   }
@@ -172,8 +190,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return mapUploadExtra[FileUploader.streamDataExtraKey];
       }
-    } catch(e) {
-      log('AuthorizationInterceptors::_getDataUploadRequest: Exception = $e');
+    } catch (e, stackTrace) {
+      logError('AuthorizationInterceptors::_getDataUploadRequest: Exception = $e');
+      SentryManager.instance.reportError(
+        e,
+        stackTrace,
+        SentryContextData(
+          source: 'AuthorizationInterceptors',
+          errorType: 'ExceptionUploadFile',
+          errorMessage: e.toString(),
+        ),
+      );
       return null;
     }
   }

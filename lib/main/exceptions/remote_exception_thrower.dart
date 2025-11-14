@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/status/http_status.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
@@ -23,12 +24,12 @@ class RemoteExceptionThrower extends ExceptionThrower {
       logError('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
       throw const NoNetworkError();
     } else {
-      handleDioError(error);
+      handleDioError(error, stackTrace);
     }
   }
 
-  void handleDioError(dynamic error) {
-    if (error is DioError) {
+  void handleDioError(dynamic error, dynamic stackTrace) {
+    if (error is DioException) {
       logError(
         'RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
       );
@@ -37,6 +38,17 @@ class RemoteExceptionThrower extends ExceptionThrower {
       final statusCode = response?.statusCode;
 
       if (response != null) {
+        if (statusCode != HttpStatus.unauthorized) {
+          reportToSentry(
+            error,
+            stackTrace,
+            statusCode: statusCode,
+            errorType: '$statusCode',
+            errorMessage: response.statusMessage,
+            source: 'Network:DioException',
+          );
+        }
+
         switch (statusCode) {
           case HttpStatus.internalServerError:
             throw const InternalServerError();
@@ -52,11 +64,20 @@ class RemoteExceptionThrower extends ExceptionThrower {
         }
       }
 
-      return _handleDioErrorWithoutResponse(error);
+      return _handleDioErrorWithoutResponse(error, stackTrace);
     }
 
     if (error is ErrorMethodResponseException) {
       final errorResponse = error.errorResponse as ErrorMethodResponse;
+
+      reportToSentry(
+        error,
+        stackTrace,
+        errorType: errorResponse.type.value,
+        errorMessage: errorResponse.description,
+        source: 'Network:JMAPMethodResponseException',
+      );
+
       if (errorResponse is CannotCalculateChangesMethodResponse) {
         throw CannotCalculateChangesMethodResponseException();
       } else {
@@ -67,26 +88,81 @@ class RemoteExceptionThrower extends ExceptionThrower {
       }
     }
 
+    if (error is SetMethodException) {
+      final setError = error.mapErrors.values.firstOrNull;
+      reportToSentry(
+        error,
+        stackTrace,
+        errorType: setError?.type.value,
+        errorMessage: setError?.description,
+        source: 'Network:JMAPSetMethodException',
+      );
+    } else {
+      reportToSentry(error, stackTrace);
+    }
+
     throw error;
   }
 
-  void _handleDioErrorWithoutResponse(DioError error) {
+  void _handleDioErrorWithoutResponse(DioException error, dynamic stackTrace) {
     switch (error.type) {
-      case DioErrorType.connectionTimeout:
+      case DioExceptionType.connectionTimeout:
+        reportToSentry(
+          error,
+          stackTrace,
+          errorType: error.type.name,
+          errorMessage: error.message,
+          source: 'Network:DioException',
+        );
         throw ConnectionTimeout(message: error.message);
-      case DioErrorType.connectionError:
+      case DioExceptionType.connectionError:
+        reportToSentry(
+          error,
+          stackTrace,
+          errorType: error.type.name,
+          errorMessage: error.message,
+          source: 'Network:DioException',
+        );
         throw ConnectionError(message: error.message);
-      case DioErrorType.badResponse:
+      case DioExceptionType.badResponse:
         throw const BadCredentialsException();
       default:
         final underlyingError = error.error;
         if (underlyingError is SocketException) {
+          reportToSentry(
+            error,
+            stackTrace,
+            errorType: error.type.name,
+            errorMessage: error.message,
+            source: 'Network:DioException:SocketException',
+          );
           throw const SocketError();
         } else if (underlyingError is OAuthAuthorizationError) {
+          reportToSentry(
+            error,
+            stackTrace,
+            statusCode: underlyingError is ServerError
+                ? 500
+                : underlyingError is TemporarilyUnavailable
+                    ? 503
+                    : null,
+            errorType: underlyingError.error,
+            errorMessage: underlyingError.errorDescription,
+            source: 'Network:DioException:OAuthAuthorizationError',
+          );
           throw underlyingError;
         } else if (underlyingError != null) {
+          reportToSentry(
+            error,
+            stackTrace,
+            errorType: error.type.name,
+            errorMessage: underlyingError.toString(),
+            source: 'Network:DioException:UnderlyingError',
+          );
           throw UnknownError(message: underlyingError);
         } else {
+          reportToSentry(error, stackTrace, errorType: error.type.name,
+            errorMessage: error.toString(), source: 'Network:DioException:UnknownError',);
           throw const UnknownError();
         }
     }
