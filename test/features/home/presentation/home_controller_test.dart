@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -58,6 +59,7 @@ import 'home_controller_test.mocks.dart';
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
   MockSpec<UpdateAccountCacheInteractor>(),
+  MockSpec<GetOidcUserInfoInteractor>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
   MockSpec<ApplicationManager>(),
@@ -80,6 +82,7 @@ void main() {
   late MockGetSessionInteractor mockGetSessionInteractor;
   late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
   late MockUpdateAccountCacheInteractor mockUpdateAccountCacheInteractor;
+  late MockGetOidcUserInfoInteractor mockGetOidcUserInfoInteractor;
 
   late MockCachingManager mockCachingManager;
   late MockLanguageCacheManager mockLanguageCacheManager;
@@ -109,6 +112,7 @@ void main() {
     mockGetSessionInteractor = MockGetSessionInteractor();
     mockGetAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
     mockUpdateAccountCacheInteractor = MockUpdateAccountCacheInteractor();
+    mockGetOidcUserInfoInteractor = MockGetOidcUserInfoInteractor();
 
     //mock base controller
     mockCachingManager = MockCachingManager();
@@ -129,6 +133,7 @@ void main() {
     Get.put<GetSessionInteractor>(mockGetSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
     Get.put<UpdateAccountCacheInteractor>(mockUpdateAccountCacheInteractor);
+    Get.put<GetOidcUserInfoInteractor>(mockGetOidcUserInfoInteractor);
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);

@@ -2,6 +2,7 @@ import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/response/oidc_user_info.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
@@ -173,5 +174,15 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
         LoginConstants.AUTH_DESTINATION_KEY,
       );
     }).catchError(_cacheExceptionThrower.throwException);
+  }
+
+  @override
+  Future<OidcUserInfo> fetchUserInfo(String userInfoEndpoint) {
+    return Future.sync(() async {
+      return await _oidcHttpClient.fetchUserInfo(userInfoEndpoint);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

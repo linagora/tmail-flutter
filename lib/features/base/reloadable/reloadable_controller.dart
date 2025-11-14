@@ -14,9 +14,11 @@ import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart'
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_oidc_user_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/update_authentication_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -26,6 +28,7 @@ abstract class ReloadableController extends BaseController {
   final GetSessionInteractor getSessionInteractor = Get.find<GetSessionInteractor>();
   final GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
   final UpdateAccountCacheInteractor _updateAccountCacheInteractor = Get.find<UpdateAccountCacheInteractor>();
+  final GetOidcUserInfoInteractor _getOidcUserInfoInteractor = Get.find<GetOidcUserInfoInteractor>();
 
   @override
   void handleFailureViewState(Failure failure) {
@@ -40,6 +43,8 @@ abstract class ReloadableController extends BaseController {
       _handleUpdateAccountCacheCompleted(
         session: failure.session,
         apiUrl: failure.apiUrl);
+    } else if (failure is GetOidcUserInfoFailure) {
+      twakeAppManager.clearOidcUserInfo();
     } else {
       super.handleFailureViewState(failure);
     }
@@ -63,6 +68,9 @@ abstract class ReloadableController extends BaseController {
       _handleUpdateAccountCacheCompleted(
         session: success.session,
         apiUrl: success.apiUrl);
+    } else if (success is GetOidcUserInfoSuccess) {
+      log('$runtimeType::handleSuccessViewState:GetOidcUserInfoSuccess: OidcUserInfo = ${success.oidcUserInfo.toJson().toString()}');
+      twakeAppManager.setOidcUserInfo(success.oidcUserInfo);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -118,11 +126,17 @@ abstract class ReloadableController extends BaseController {
     if (tokenOIDC != null && oidcConfiguration != null) {
       authorizationInterceptors.setTokenAndAuthorityOidc(newToken: tokenOIDC, newConfig: oidcConfiguration);
       authorizationIsolateInterceptors.setTokenAndAuthorityOidc(newToken: tokenOIDC, newConfig: oidcConfiguration);
+
+      getOidcUserInfo(oidcConfiguration);
     }
   }
 
   void getSessionAction() {
     consumeState(getSessionInteractor.execute());
+  }
+
+  void getOidcUserInfo(OIDCConfiguration oidcConfiguration) {
+    consumeState(_getOidcUserInfoInteractor.execute(oidcConfiguration));
   }
 
   void handleGetSessionFailure(GetSessionFailure failure) {
@@ -176,6 +190,7 @@ abstract class ReloadableController extends BaseController {
       newConfig: oidcConfiguration,
     );
 
+    getOidcUserInfo(oidcConfiguration);
     getSessionAction();
   }
 }

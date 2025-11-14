@@ -10,6 +10,7 @@ import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/response/oidc_user_info.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
@@ -82,6 +83,16 @@ class OIDCHttpClient {
       return OIDCDiscoveryResponse.fromJson(result);
     } else {
       return OIDCDiscoveryResponse.fromJson(jsonDecode(result));
+    }
+  }
+
+  Future<OidcUserInfo> fetchUserInfo(String userInfoEndpoint) async {
+    final result = await _dioClient.get(userInfoEndpoint);
+
+    if (result is Map<String, dynamic>) {
+      return OidcUserInfo.fromJson(result);
+    } else {
+      return OidcUserInfo.fromJson(jsonDecode(result));
     }
   }
 }
