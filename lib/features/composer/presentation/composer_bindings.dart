@@ -62,6 +62,7 @@ import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_work
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
+import 'package:tmail_ui_user/features/reactions/presentation/reactions_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_datasource.dart';
@@ -309,6 +310,10 @@ class ComposerBindings extends BaseBindings {
       Get.find<ComposerRepository>(tag: composerId),
       Get.find<EmailRepository>(tag: composerId),
     ), tag: composerId);
+
+    if (PlatformInfo.isWeb) {
+      ReactionsInteractorBindings(composerId: composerId).dependencies();
+    }
   }
 
   @override
@@ -404,5 +409,9 @@ class ComposerBindings extends BaseBindings {
 
     IdentityInteractorsBindings(composerId: composerId).dispose();
     PreferencesInteractorsBindings(composerId: composerId).dispose();
+
+    if (PlatformInfo.isWeb) {
+      ReactionsInteractorBindings(composerId: composerId).dispose();
+    }
   }
 }
