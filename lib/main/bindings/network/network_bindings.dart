@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/push_notification/data/network/web_socket
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
+import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/send_email_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -127,6 +128,7 @@ class NetworkBindings extends Bindings {
     Get.put(ServerSettingsAPI(Get.find<HttpClient>()));
     Get.put(WebSocketApi(Get.find<DioClient>()));
     Get.put(LinagoraEcosystemApi(Get.find<DioClient>()));
+    Get.put(FileUploader(Get.find<DioClient>(), Get.find<FileUtils>()));
   }
 
   void _bindingConnection() {
