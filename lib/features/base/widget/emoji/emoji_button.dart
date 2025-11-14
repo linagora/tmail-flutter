@@ -15,6 +15,7 @@ class EmojiButton extends StatefulWidget {
   final String? emojiSvgAssetPath;
   final String? emojiSearchEmptySvgAssetPath;
   final OnEmojiSelected onEmojiSelected;
+  final VoidCallback onPickerOpen;
   final double? iconSize;
   final Color? iconColor;
   final String? iconTooltipMessage;
@@ -24,6 +25,7 @@ class EmojiButton extends StatefulWidget {
     Key? key,
     required this.emojiData,
     required this.onEmojiSelected,
+    required this.onPickerOpen,
     this.emojiSvgAssetPath,
     this.emojiSearchEmptySvgAssetPath,
     this.iconSize,
@@ -64,6 +66,8 @@ class _EmojiButtonState extends State<EmojiButton>
   }
 
   void _openDialog() {
+    widget.onPickerOpen();
+
     if (!mounted || _isDialogVisible) return;
 
     final ctx = _buttonKey.currentContext;
@@ -169,7 +173,6 @@ class _EmojiButtonState extends State<EmojiButton>
                         },
                         onEmojiSelected: (emojiId, emoji) {
                           widget.onEmojiSelected(emoji);
-                          _closeDialog();
                         },
                       ),
                     ),

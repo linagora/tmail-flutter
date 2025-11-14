@@ -317,6 +317,11 @@ class RichTextWebController extends GetxController {
     }
   }
 
+  void insertEmoji(String emoji) {
+    editorController.setFocus();
+    editorController.insertHtml(emoji);
+  }
+
   bool get isFormattingOptionsEnabled => formattingOptionsState.value == FormattingOptionsState.enabled;
 
   @override
