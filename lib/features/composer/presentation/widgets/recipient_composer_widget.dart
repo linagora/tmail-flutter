@@ -299,30 +299,26 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                     },
                   );
 
-                  if (PlatformInfo.isWeb || widget.isTestingForWeb) {
-                    return DragTarget<DraggableEmailAddress>(
-                      builder: (context, candidateData, rejectedData) {
-                        return tagEditor;
-                      },
-                      onAcceptWithDetails: (draggableEmailAddress) =>
-                          _handleAcceptDraggableEmailAddressAction(
-                              draggableEmailAddress.data,
-                              stateSetter,
-                          ),
-                      onLeave: (draggableEmailAddress) {
-                        if (_isDragging) {
-                          stateSetter(() => _isDragging = false);
-                        }
-                      },
-                      onMove: (details) {
-                        if (!_isDragging) {
-                          stateSetter(() => _isDragging = true);
-                        }
-                      },
-                    );
-                  } else {
-                    return tagEditor;
-                  }
+                  return DragTarget<DraggableEmailAddress>(
+                    builder: (context, candidateData, rejectedData) {
+                      return tagEditor;
+                    },
+                    onAcceptWithDetails: (draggableEmailAddress) =>
+                        _handleAcceptDraggableEmailAddressAction(
+                            draggableEmailAddress.data,
+                            stateSetter,
+                        ),
+                    onLeave: (draggableEmailAddress) {
+                      if (_isDragging) {
+                        stateSetter(() => _isDragging = false);
+                      }
+                    },
+                    onMove: (details) {
+                      if (!_isDragging) {
+                        stateSetter(() => _isDragging = true);
+                      }
+                    },
+                  );
                 },
               )
             )
