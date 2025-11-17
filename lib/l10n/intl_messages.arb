@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-11-10T12:07:59.064737",
+  "@@last_modified": "2025-11-12T23:59:36.025917",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5108,6 +5108,12 @@
   },
   "apply": "Apply",
   "@apply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageYourTwakeAccount": "Manage your Twake account",
+  "@manageYourTwakeAccount": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

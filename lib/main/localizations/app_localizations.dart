@@ -5415,4 +5415,11 @@ class AppLocalizations {
       name: 'apply',
     );
   }
+
+  String get manageYourTwakeAccount {
+    return Intl.message(
+      'Manage your Twake account',
+      name: 'manageYourTwakeAccount',
+    );
+  }
 }

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/setting_user_info_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/setting_first_level_tile_builder.dart';
@@ -36,25 +37,46 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
       key: const Key('setting_menu'),
       child: Column(children: [
         Obx(() {
-          String accountDisplayName = controller
+          String ownEmailAddress = controller
             .manageAccountDashboardController
             .ownEmailAddress
             .value;
 
-          if (accountDisplayName.trim().isEmpty) {
-            accountDisplayName = controller
+          if (ownEmailAddress.trim().isEmpty) {
+            ownEmailAddress = controller
               .manageAccountDashboardController
               .sessionCurrent
               ?.getOwnEmailAddressOrUsername() ?? '';
           }
-          return UserInformationWidget(
-            ownEmailAddress: accountDisplayName,
-            padding: SettingsUtils.getPaddingInFirstLevel(
-              context,
-              controller.responsiveUtils,
-            ),
-            titlePadding: const EdgeInsetsDirectional.only(start: 16),
-          );
+
+          if (PlatformInfo.isMobile) {
+            final ownDisplayName = controller
+              .manageAccountDashboardController
+              .sessionCurrent
+              ?.getUserDisplayName() ?? '';
+
+            final oidcUserInfo = controller
+              .manageAccountDashboardController
+              .twakeAppManager
+              .oidcUserInfo;
+
+            return SettingUserInfoWidget(
+              ownEmailAddress: ownEmailAddress,
+              ownDisplayName: ownDisplayName,
+              imagePaths: controller.imagePaths,
+              oidcUserInfo: oidcUserInfo,
+              onOpenCommonSetting: controller.goToCommonSetting,
+            );
+          } else {
+            return UserInformationWidget(
+              ownEmailAddress: ownEmailAddress,
+              padding: SettingsUtils.getPaddingInFirstLevel(
+                context,
+                controller.responsiveUtils,
+              ),
+              titlePadding: const EdgeInsetsDirectional.only(start: 16),
+            );
+          }
         }),
         divider,
         _buildSettingItem(
