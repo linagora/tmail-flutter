@@ -5047,7 +5047,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailHasBeenUnstarred": "邮件已移除星标‌",
+  "mailHasBeenUnstarred": "邮件已移除星标",
   "@mailHasBeenUnstarred": {
     "type": "text",
     "placeholders_order": [],
