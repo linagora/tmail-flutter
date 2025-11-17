@@ -1,3 +1,33 @@
+## [0.22.0] - 2025-11-17
+### Added
+  - TF-4148: Add link to common settings in mobile application
+  - TF-4145: Add OIDC user info endpoint & paywall URL with FQDN validation
+  - TF-4142: Implement hyperlink insertion in composer
+  - TF-4064: Support drag & drop email addresses in composer on mobile
+  - TF-4082: Save and restore text formatting menu state in composer
+  - TF-4050: Preview and download uploaded files in composer on web
+  - TF-1715: Add Favorite folder with star email support
+  - TF-4053: Implement move folder content feature
+  - TF-4011: Support Tab shortcut key in tag input field
+  - TF-4122: Display CTA to download mobile application
+  - TF-3996: Add dividers for items in context menu on desktop
+  - TF-3976: Support native DNS resolvers without Cloudflare/Google dependency
+  - TF-3911: Add keyboard shortcuts support & shortcuts dictionary in settings
+
+  ## Fixed
+  - TF-4146: Handle time for email view
+  - TF-4139: Fix attachment reminder mistakenly shown when replying
+  - TF-4128: Separate download handling into independent class on web
+  - TF-4124: Fix localhost addresses email validation
+  - TF-4122: Replace deprecated apple-mobile-web-app-capable meta tag
+  - TF-4117: Fix UI blocking when opening recipient modal in composer
+  - TF-4004: Apply new UI for delete rule email dialog as confirm modal
+  - TF-3976: Fix URL lookup failure when DNS resolution fails
+  - TF-3871: Fix blue bar displays wrongly for event counter
+  - Fix email subject text cut off at the bottom on web
+  - Fix duplicated email subject after enabling thread mode
+  - Fix hide storage section when quota is empty
+
 ## [0.20.1] - 2025-10-24
 ### Added
 - Translation: Chinese, French, Vietnamese, Russian, Ukrainian, Irish
