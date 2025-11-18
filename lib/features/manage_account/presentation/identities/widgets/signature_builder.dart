@@ -1,5 +1,7 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
@@ -55,6 +57,11 @@ class SignatureBuilder extends StatelessWidget {
         keepAlive: true,
         disableScrolling: true,
         autoAdjustHeight: true,
+        iframeTooltipOptions: IframeTooltipOptions(
+          tooltipTextStyle: ThemeUtils.textStyleInter400.copyWith(
+            color: Colors.white,
+          ),
+        ),
       );
 
       return Stack(

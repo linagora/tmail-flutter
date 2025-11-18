@@ -1,6 +1,8 @@
 
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
+import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/download/domain/state/get_preview_email_eml_content_shared_state.dart';
@@ -61,6 +63,11 @@ class EmailPreviewerView extends GetWidget<EmailPreviewerController> {
       useDefaultFontStyle: true,
       direction: AppUtils.getCurrentDirection(context),
       onClickHyperLinkAction: controller.onClickHyperLink,
+      iframeTooltipOptions: IframeTooltipOptions(
+        tooltipTextStyle: ThemeUtils.textStyleInter400.copyWith(
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }

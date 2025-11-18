@@ -111,6 +111,7 @@ export 'presentation/views/semantics/checkbox_semantics.dart';
 export 'presentation/views/semantics/text_field_semantics.dart';
 export 'presentation/views/semantics/icon_semantics.dart';
 export 'presentation/views/shortcut/key_shortcut.dart';
+export 'presentation/views/tooltip/iframe_tooltip_overlay.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';
