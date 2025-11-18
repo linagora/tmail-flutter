@@ -850,7 +850,7 @@ e5t(d,e){var w=x.w
 if(A.L(d,B.v,w).w.a.a<600)return D.ala
 else if(A.L(d,B.v,w).w.a.a>=1200)return D.akn
 else return D.alu},
-dkg(){var w=$.fV().ir("FORWARD_WARNING_MESSAGE","")
+dkh(){var w=$.fV().ir("FORWARD_WARNING_MESSAGE","")
 if(B.d.aH(w).length===0)return null
 return w}},D,G,H,F,E,I
 J=c[1]
@@ -915,7 +915,7 @@ s=t.x
 t=t.as===B.a_?t.w:v
 return C.dRT(A.a9(v,u.aA(),B.k,v,v,v,v,t,v,v,v,v,v,s),new C.cMS(w))},
 b13(d,e){var w=this.a.as===B.a_?B.fj:B.aF,v=x.p
-return A.dfH(0,w,null,B.x1,null,B.G,e,A.c([A.dtq(A.ctF(A.c([this.b0S()],v),!0,!0,!0))],v))},
+return A.dfI(0,w,null,B.x1,null,B.G,e,A.c([A.dtq(A.ctF(A.c([this.b0S()],v),!0,!0,!0))],v))},
 blP(d){if(this.gBj()===d)return
 this.a.toString
 this.aZv(d)},
@@ -1218,7 +1218,7 @@ u=t.b.test(u)?B.K:B.rI
 w=A.ae(A.i3(w),q,1,B.E,q,!0,$.aN().b3(B.n,14,B.A),q,q,q)
 t=A.bj("assets/images/ic_close.svg",B.t,A.dG(B.dr),B.O,20,q,q,20)
 s=$.aN().b3(B.n,14,B.A)
-return new A.W(D.H5,A.dl_(v,r.b2u(),t,w,B.c_,s,B.AF,new C.bxo(r),u,new A.dX(A.eW(20),r.b2v())),q)},
+return new A.W(D.H5,A.dl0(v,r.b2u(),t,w,B.c_,s,B.AF,new C.bxo(r),u,new A.dX(A.eW(20),r.b2v())),q)},
 b2u(){var w,v,u
 if(this.d)return B.dU
 else{w=this.c.b
@@ -1367,7 +1367,7 @@ v=w.a(q.get(r)).J
 v===$&&A.d()
 A.v(r)
 u=w.a(q.get(r)).y2.O$
-u=u==null?null:A.deR(u)
+u=u==null?null:A.deS(u)
 if(u==null)u=""
 A.v(r)
 t=w.a(q.get(r)).y2.cq
@@ -1400,7 +1400,7 @@ w=s.a.d
 v=A.dB(B.n)
 A.y(d,B.e,x.J).toString
 u=A.u("Enter name or email address",r,"hintInputAutocompleteContact",r,r)
-t=A.df7(!1,!1,!1,B.m,10,r,w,B.aO,B.ej,!0,B.cc,new C.cJz(s),r,s.r,B.aO,A.iG(r,B.cN,r,r,r,r,r,r,!0,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,A.dB(B.X),u,r,r,r,r,r,r,r,r,r,!0,!0,r,r,r,r,r,r,r,r,r,r,r,r,r),!0,!1,s.f,B.pR,q,s.gaZU(),20,new C.cJA(s),new C.cJB(s),r,r,new C.cJC(s,d),new C.cJD(s,d),new C.cJE(),r,B.bF,!1,r,new C.cJF(s),60,B.yf,B.ka,B.m,r,350,16,new C.cJG(s),12,B.dH,v,!0,x.Q)
+t=A.df8(!1,!1,!1,B.m,10,r,w,B.aO,B.ej,!0,B.cc,new C.cJz(s),r,s.r,B.aO,A.iG(r,B.cN,r,r,r,r,r,r,!0,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,A.dB(B.X),u,r,r,r,r,r,r,r,r,r,!0,!0,r,r,r,r,r,r,r,r,r,r,r,r,r),!0,!1,s.f,B.pR,q,s.gaZU(),20,new C.cJA(s),new C.cJB(s),r,r,new C.cJC(s,d),new C.cJD(s,d),new C.cJE(),r,B.bF,!1,r,new C.cJF(s),60,B.yf,B.ka,B.m,r,350,16,new C.cJG(s),12,B.dH,v,!0,x.Q)
 s.a.toString
 return A.L(d,B.v,x.w).w.a.gbj()<600?A.aC(A.c([t,B.jy,s.amt(d)],x.p),B.F,B.l,B.z,0,B.u):A.f5(new C.cJH(s,t))},
 aZW(d){var w
@@ -1505,7 +1505,7 @@ bsG(d,e,f){var w=0,v=A.q(x.n),u,t,s,r,q,p
 var $async$WF=A.h(function(g,h){if(g===1)return A.n(h,v)
 while(true)switch(w){case 0:p=x.J
 A.y(f,B.e,p).toString
-u=C.dkg()
+u=C.dkh()
 t=u==null
 s=!t?null:A.u("You are redirecting emails to another domain.",null,"dialogWarningTitleForForwardsToOtherDomains",null,null)
 r=t?A.u("This could be a security threat or considered illegal data extraction. Do you want to proceed?",null,"dialogWarningMessageForForwardsToOtherDomains",null,null):u
@@ -1552,7 +1552,7 @@ C.aGy.prototype={
 u(d){var w,v,u=null,t=this.b7K(d,this.d),s=A.L(d,B.v,x.w).w
 s=s.a.a>=1200?B.o:B.F
 w=A.bj("assets/images/ic_info_circle_outline.svg",B.t,A.dG(B.dr),B.O,20,u,u,20)
-v=C.dkg()
+v=C.dkh()
 if(v==null){A.y(d,B.e,x.J).toString
 v=A.u("You are redirecting emails to another domain. This could be a security threat or considered illegal data extraction.",u,"messageWarningDialogForForwardsToOtherDomains",u,u)}return A.a9(u,A.ap(A.c([w,B.a4,A.ay(A.ae(v,u,u,u,u,u,$.h0().aC0(B.X,0),u,u,u),1)],x.p),s,u,B.l,B.p,0,u),B.k,u,u,E.DW,u,u,u,t,D.amx,u,u,1/0)},
 b7K(d,e){var w=x.w,v=A.L(d,B.v,w).w
@@ -1834,7 +1834,7 @@ return A.fi(A.L(d,B.v,v).w.a.gbj()<600?q:A.ap(A.c([new A.cA(1,B.Y,q,s),B.dE],r),
 aaY(d){return A.aC(A.c([new A.av(new C.c51(this,d),null),new A.av(new C.c52(this,d),null)],x.p),B.o,B.l,B.z,0,B.u)},
 a7B(d,e,f){switch(e.a){case 0:return this.bix(e,d,f)
 default:return A.aC(A.c([new A.av(new C.c5_(this,e),null),new A.av(new C.c50(this,e,d,f),null)],x.p),B.o,B.l,B.p,0,B.u)}},
-asO(d,e,f,g){var w=A.ddR(d),v=A.a2q(this.asP(e,f),new A.b6(w+"_mailbox_list",x.O))
+asO(d,e,f,g){var w=A.ddS(d),v=A.a2q(this.asP(e,f),new A.b6(w+"_mailbox_list",x.O))
 if(g!=null)return new A.W(g,v,null)
 else return v},
 bix(d,e,f){return this.asO(d,e,f,null)},
@@ -2209,13 +2209,13 @@ v=w.a(q.get(s)).R.ax
 A.v(s)
 u=w.a(q.get(s)).J
 t=A.e7(d)
-t=A.ddf(t==null?B.x:t,0)
-u=A.ddd(!0,t,'    <style>\n          @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Regular.ttf") format("truetype");\n      font-weight: 400;\n      font-style: normal;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Medium.ttf") format("truetype");\n      font-weight: 500;\n      font-style: medium;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-SemiBold.ttf") format("truetype");\n      font-weight: 600;\n      font-style: semi-bold;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Bold.ttf") format("truetype");\n      font-weight: 700;\n      font-style: bold;\n    }\n    \n    body {\n      font-family: \'Inter\', sans-serif;\n    }\n  \n      \n      \n      \n      \n    </style>\n  ',!1,!1,"",u,B.zA,!0,!0,!1,!0,!1,r)
+t=A.ddg(t==null?B.x:t,0)
+u=A.dde(!0,t,'    <style>\n          @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Regular.ttf") format("truetype");\n      font-weight: 400;\n      font-style: normal;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Medium.ttf") format("truetype");\n      font-weight: 500;\n      font-style: medium;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-SemiBold.ttf") format("truetype");\n      font-weight: 600;\n      font-style: semi-bold;\n    }\n    \n    @font-face {\n      font-family: \'Inter\';\n      src: url("/assets/fonts/Inter/Inter-Bold.ttf") format("truetype");\n      font-weight: 700;\n      font-style: bold;\n    }\n    \n    body {\n      font-family: \'Inter\', sans-serif;\n    }\n  \n      \n      \n      \n      \n    </style>\n  ',!1,!1,"",u,B.zA,!0,!0,!1,!0,!1,r)
 A.v(s)
 t=w.a(q.get(s)).R
 t=t==null?r:t.gPZ()
 A.v(s)
-return A.ddc(A.dbz(r,r,w.a(q.get(s)).gbWk(),t,r,r,r,new C.cDS(s,d),r,r,r,r,r,r,r,r,r,r,r),v,u,B.zg,D.b1C,D.aJQ)},
+return A.ddd(A.dbz(r,r,w.a(q.get(s)).gbWk(),t,r,r,r,new C.cDS(s,d),r,r,r,r,r,r,r,r,r,r,r),v,u,B.zg,D.b1C,D.aJQ)},
 b8r(d,e){var w=x.w,v=A.L(d,B.v,w).w
 if(v.a.a>=1200)return D.akb
 else if(A.L(d,B.v,w).w.a.a<600)return B.hI
@@ -2335,7 +2335,7 @@ if(s>q){o===$&&A.d()
 w=o.a
 v=1-(q-o.b.aY(0,w.gi(w)))/(r.a-s)}else{o===$&&A.d()
 q=o.a
-v=J.dH8(J.djK(o.b.aY(0,q.gi(q)),s),r.a-s)}s=p.x
+v=J.dH8(J.djL(o.b.aY(0,q.gi(q)),s),r.a-s)}s=p.x
 s===$&&A.d()
 r=t.d
 s=s.JR(r)
@@ -2707,7 +2707,7 @@ A.v(q)
 t=J.aj(w.a(p.get(q)).ar.gi(0),e)
 A.v(q)
 s=w.a(p.get(q)).y2.O$
-s=s==null?null:A.deR(s)
+s=s==null?null:A.deS(s)
 if(s==null)s=""
 A.v(q)
 r=w.a(p.get(q)).a8.gi(0)
@@ -3002,7 +3002,7 @@ $S:6}
 C.c5_.prototype={
 $0(){var w=this.b,v=this.a,u=$.a8()
 A.v(v)
-return A.ddS(w,A.aeW(w,A.m(v).h("R.S").a(u.a.get(v)).a8.gi(0)),40,B.W,8,!1,null,new C.c4Z(v),B.j6,!0)},
+return A.ddT(w,A.aeW(w,A.m(v).h("R.S").a(u.a.get(v)).a8.gi(0)),40,B.W,8,!1,null,new C.c4Z(v),B.j6,!0)},
 $S:329}
 C.c4Z.prototype={
 $2(d,e){var w,v,u=this.a,t=$.a8()
@@ -3083,7 +3083,7 @@ $S:0}
 C.c5b.prototype={
 $1(d){var w=this.a,v=$.a8()
 A.v(w)
-return A.dd0(A.m(w).h("R.S").a(v.a.get(w)),d,this.b)},
+return A.dd1(A.m(w).h("R.S").a(v.a.get(w)),d,this.b)},
 $S:293}
 C.c5g.prototype={
 $0(){var w,v,u,t,s,r,q=null,p=this.a,o=$.a8()
@@ -3102,7 +3102,7 @@ v.toString
 A.v(p)
 r=w.a(o.get(p)).a_.gi(0)!==B.er?new C.c5d(p):q
 A.v(p)
-return F.a2W(w.a(o.get(p)).gHz(),r,!0,q,new A.aI(t,s,16,u),q,v)}else{if((u?q:F.dfB(v))===!0){A.v(p)
+return F.a2W(w.a(o.get(p)).gHz(),r,!0,q,new A.aI(t,s,16,u),q,v)}else{if((u?q:F.dfC(v))===!0){A.v(p)
 p=w.a(o.get(p)).a_.gi(0)===B.er}else p=!1
 if(p){p=this.b
 o=p?0:16
@@ -3210,7 +3210,7 @@ $S:392}
 C.c5t.prototype={
 $1(d){var w=this.a,v=$.a8()
 A.v(w)
-A.dd0(A.m(w).h("R.S").a(v.a.get(w)).ax,B.uW,this.b)},
+A.dd1(A.m(w).h("R.S").a(v.a.get(w)).ax,B.uW,this.b)},
 $S:392}
 C.cs8.prototype={
 $0(){var w,v,u,t=this.a,s=$.a8()
@@ -3295,7 +3295,7 @@ $0(){var w=this.a,v=$.a8()
 A.v(w)
 w=A.m(w).h("R.S").a(v.a.get(w))
 v=this.c
-if(v===B.qb)A.dd0(w.ax,B.uW,this.b)
+if(v===B.qb)A.dd1(w.ax,B.uW,this.b)
 else w.ax.aje(v)
 return null},
 $S:0}
@@ -3344,7 +3344,7 @@ if(q===!0){r=t?8:0
 q=t?0:16
 u.toString
 w=v.a_.gi(0)!==B.er?new C.csj(v):s
-return F.a2W(v.gHz(),w,!0,s,new A.aI(12,r,12,q),s,u)}else if((r?s:F.dfB(u))===!0&&v.a_.gi(0)===B.er){r=t?8:0
+return F.a2W(v.gHz(),w,!0,s,new A.aI(12,r,12,q),s,u)}else if((r?s:F.dfC(u))===!0&&v.a_.gi(0)===B.er){r=t?8:0
 q=t?0:16
 u.toString
 return F.a2W(s,s,!0,D.VJ,new A.aI(12,r,12,q),B.rF,u)}else return B.y},
@@ -3887,4 +3887,4 @@ D.b1S=new A.b6("setting_profiles",x.O)
 D.b1T=new A.b6("settings_close_button",x.O)})();(function lazyInitializers(){var w=a.lazyFinal
 w($,"eHX","blT",()=>A.eI(0,0,0,300,0,0))})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_10",e:"endPart",h:b})})($__dart_deferred_initializers__,"Hj6QkDVI6HPvACVyx0f3fWGaF6o=");
+a.eventLog.push({p:"main.dart.js_10",e:"endPart",h:b})})($__dart_deferred_initializers__,"ExImbyg3ecb/H2nmFx18385/Eeg=");
