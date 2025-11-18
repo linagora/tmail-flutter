@@ -212,8 +212,6 @@ class ThreadDetailController extends BaseController {
         );
       }
     });
-
-    onKeyboardShortcutInit();
   }
 
   bool _validateLoadThread(ThreadId? threadId) {
