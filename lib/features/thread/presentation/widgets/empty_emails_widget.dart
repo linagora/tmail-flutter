@@ -13,6 +13,7 @@ class EmptyEmailsWidget extends StatelessWidget {
   final bool isSearchActive;
   final bool isFilterMessageActive;
   final bool isNetworkConnectionAvailable;
+  final bool isFavoriteFolder;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -22,6 +23,7 @@ class EmptyEmailsWidget extends StatelessWidget {
     this.isSearchActive = false,
     this.isFilterMessageActive = false,
     this.isNetworkConnectionAvailable = true,
+    this.isFavoriteFolder = false,
   }) : super(key: key);
 
   @override
@@ -43,7 +45,7 @@ class EmptyEmailsWidget extends StatelessWidget {
             padding: EmptyEmailsWidgetStyles.labelPadding,
             child: Text(
               key: const Key('empty_email_message'),
-              _getMessageEmptyEmail(context),
+              _getMessageEmptyEmail(AppLocalizations.of(context)),
               style: ThemeUtils.textStyleInter600(),
               textAlign: TextAlign.center,
             ),
@@ -51,7 +53,7 @@ class EmptyEmailsWidget extends StatelessWidget {
           if (_showEmailSubMessage)
             Text(
               key: const Key('empty_email_sub_message'),
-              AppLocalizations.of(context).startToComposeEmails,
+              _getSubMessageEmptyEmail(AppLocalizations.of(context)),
               style: ThemeUtils.textStyleInter400.copyWith(
                 letterSpacing: -0.15,
                 fontSize: 16,
@@ -76,21 +78,33 @@ class EmptyEmailsWidget extends StatelessWidget {
     );
   }
 
-  bool get _showEmailSubMessage => isNetworkConnectionAvailable &&
-      !isFilterMessageActive &&
-      !isSearchActive;
+  bool get _showEmailSubMessage =>
+      (isNetworkConnectionAvailable &&
+          !isFilterMessageActive &&
+          !isSearchActive) ||
+      (isFavoriteFolder && !isFilterMessageActive);
 
-  String _getMessageEmptyEmail(BuildContext context) {
+  String _getMessageEmptyEmail(AppLocalizations appLocalizations) {
     if (!isNetworkConnectionAvailable) {
-      return AppLocalizations.of(context).no_internet_connection_try_again_later;
+      return appLocalizations.no_internet_connection_try_again_later;
     }
     
     if (isSearchActive) {
-      return AppLocalizations.of(context).no_emails_matching_your_search;
+      return appLocalizations.no_emails_matching_your_search;
     } else if (isFilterMessageActive) {
-      return AppLocalizations.of(context).noEmailMatchYourCurrentFilter;
+      return appLocalizations.noEmailMatchYourCurrentFilter;
+    } else if (isFavoriteFolder) {
+      return appLocalizations.youDoNotHaveAnyFavoritesEmails;
     } else {
-      return AppLocalizations.of(context).youDoNotHaveAnyEmailInYourCurrentFolder;
+      return appLocalizations.youDoNotHaveAnyEmailInYourCurrentFolder;
+    }
+  }
+
+  String _getSubMessageEmptyEmail(AppLocalizations appLocalizations) {
+    if (isFavoriteFolder) {
+      return appLocalizations.startToAddFavoritesEmails;
+    } else {
+      return appLocalizations.startToComposeEmails;
     }
   }
 }

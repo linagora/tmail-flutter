@@ -5422,4 +5422,18 @@ class AppLocalizations {
       name: 'manageYourTwakeAccount',
     );
   }
+
+  String get youDoNotHaveAnyFavoritesEmails {
+    return Intl.message(
+      'You don’t have any favorites emails.',
+      name: 'youDoNotHaveAnyFavoritesEmails',
+    );
+  }
+
+  String get startToAddFavoritesEmails {
+    return Intl.message(
+      'Start to add favorites emails',
+      name: 'startToAddFavoritesEmails',
+    );
+  }
 }

@@ -744,7 +744,8 @@ class ThreadView extends GetWidget<ThreadController>
         }
 
         if (success is GetAllEmailSuccess
-            && success.currentMailboxId != controller.selectedMailboxId) {
+            && success.currentMailboxId != controller.selectedMailboxId &&
+            controller.selectedMailbox?.isFavorite != true) {
           return const SizedBox.shrink();
         } else {
           return PullToRefreshWidget(
@@ -759,6 +760,7 @@ class ThreadView extends GetWidget<ThreadController>
               isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
               isSearchActive: controller.isSearchActive,
               isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
+              isFavoriteFolder: controller.selectedMailbox?.isFavorite == true,
             ),
           );
         }
