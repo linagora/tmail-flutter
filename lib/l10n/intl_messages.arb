@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-11-12T23:59:36.025917",
+  "@@last_modified": "2025-11-18T16:44:44.341535",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5114,6 +5114,18 @@
   },
   "manageYourTwakeAccount": "Manage your Twake account",
   "@manageYourTwakeAccount": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyFavoritesEmails": "You don’t have any favorites emails.",
+  "@youDoNotHaveAnyFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToAddFavoritesEmails": "Start to add favorites emails",
+  "@startToAddFavoritesEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
