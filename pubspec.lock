@@ -1256,8 +1256,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "023ac84f36fea1b89819b5cf2a1c42061d970a1f"
+      ref: "fix/summernote-link-popover-not-affect-image"
+      resolved-ref: ffff7c64bceb04ad61420fe419aa7af0a9fab128
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "3.3.2"
