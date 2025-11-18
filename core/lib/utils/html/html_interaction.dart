@@ -419,4 +419,39 @@ class HtmlInteraction {
       });
     </script>
   ''';
+
+  static String scriptsHandleIframeLinkHoverListener(String viewId) => '''
+    <script type="text/javascript">
+      document.addEventListener("mouseover", function (e) {
+        const target = e.target;
+        if (target.tagName.toLowerCase() === "a") {
+          const rect = target.getBoundingClientRect();
+          
+          const payload = {
+            view: '$viewId',
+            type: 'toDart: iframeLinkHover',
+            url: target.href,
+            rect: {
+              x: rect.x,
+              y: rect.y,
+              width: rect.width,
+              height: rect.height
+            }
+          };
+          window.parent.postMessage(JSON.stringify(payload), "*");
+        }
+      });
+    
+      document.addEventListener("mouseout", function (e) {
+        const target = e.target;
+        if (target.tagName.toLowerCase() === "a") {
+          const payload = {
+            view: '$viewId',
+            type: 'toDart: iframeLinkOut'
+          };
+          window.parent.postMessage(JSON.stringify(payload), "*");
+        }
+      });
+    </script>
+  ''';
 }

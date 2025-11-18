@@ -12,7 +12,6 @@ import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading
 import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading_image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_max_width_in_image_style_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_style_tag_outside_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/remove_tooltip_link_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/signature_transformers.dart';
@@ -43,8 +42,6 @@ class TransformConfiguration {
   ) => TransformConfiguration([], textTransformers);
 
   factory TransformConfiguration.forReplyForwardEmail() => TransformConfiguration.fromDomTransformers([
-    if (PlatformInfo.isWeb)
-      const RemoveTooltipLinkTransformer(),
     const SignatureTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
     const NormalizeLineHeightInStyleTransformer(),
@@ -74,7 +71,7 @@ class TransformConfiguration {
       const RemoveScriptTransformer(),
       const BlockQuotedTransformer(),
       const BlockCodeTransformer(),
-      SanitizeHyperLinkTagInHtmlTransformer(useTooltip: true),
+      SanitizeHyperLinkTagInHtmlTransformer(),
       const ImageTransformer(),
       const AddLazyLoadingForBackgroundImageTransformer(),
       const RemoveCollapsedSignatureButtonTransformer(),
@@ -89,8 +86,6 @@ class TransformConfiguration {
   );
 
   factory TransformConfiguration.forPrintEmail() => TransformConfiguration.fromDomTransformers([
-    if (PlatformInfo.isWeb)
-      const RemoveTooltipLinkTransformer(),
     const RemoveLazyLoadingForBackgroundImageTransformer(),
     const RemoveLazyLoadingImageTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
@@ -103,7 +98,7 @@ class TransformConfiguration {
        const RemoveScriptTransformer(),
        const BlockQuotedTransformer(),
        const BlockCodeTransformer(),
-       SanitizeHyperLinkTagInHtmlTransformer(useTooltip: PlatformInfo.isWeb),
+       SanitizeHyperLinkTagInHtmlTransformer(),
        const ImageTransformer(),
      ],
    );
@@ -139,7 +134,7 @@ class TransformConfiguration {
     const RemoveScriptTransformer(),
     const BlockQuotedTransformer(),
     const BlockCodeTransformer(),
-    SanitizeHyperLinkTagInHtmlTransformer(useTooltip: PlatformInfo.isWeb),
+    SanitizeHyperLinkTagInHtmlTransformer(),
     const ImageTransformer(),
     const AddLazyLoadingForBackgroundImageTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),

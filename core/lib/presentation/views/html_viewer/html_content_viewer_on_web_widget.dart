@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/shortcut/key_shortcut.dart';
+import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
@@ -51,6 +52,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final double? viewMaxHeight;
   final bool autoAdjustHeight;
   final bool useLinkTooltipOverlay;
+  final IframeTooltipOptions? iframeTooltipOptions;
 
   const HtmlContentViewerOnWeb({
     Key? key,
@@ -77,6 +79,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.viewMaxHeight,
     this.onIFrameKeyboardShortcutAction,
     this.onIFrameClickAction,
+    this.iframeTooltipOptions,
   }) : super(key: key);
 
   @override
@@ -103,12 +106,19 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   static const String onScrollChangedEvent = 'onScrollChanged';
   static const String onScrollEndEvent = 'onScrollEnd';
 
+  IframeTooltipOverlay? _tooltipOverlay;
+
   @override
   void initState() {
     super.initState();
     _actualHeight = widget.heightContent;
     _actualWidth = widget.widthContent;
     minHeight = widget.htmlContentMinHeight;
+    if (PlatformInfo.isWebDesktop) {
+      _tooltipOverlay = IframeTooltipOverlay(
+        options: widget.iframeTooltipOptions ?? const IframeTooltipOptions(),
+      );
+    }
     _setUpWeb();
     _onMessageSubscription = html.window.onMessage.listen(_handleMessageEvent);
   }
@@ -132,6 +142,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         return;
       } else if (_isIframeClickEventTriggered(type)) {
         _handleOnIFrameClickEvent(data);
+        return;
+      } else if (_isIframeLinkHoverEventTriggered(type)) {
+        _handleOnIFrameLinkHoverEvent(data);
+        return;
+      } else if (_isIframeLinkOutEventTriggered(type)) {
+        _handleOnIFrameLinkOutEvent(data);
         return;
       }
 
@@ -311,6 +327,46 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
   }
 
+  bool _isIframeLinkHoverEventTriggered(String? type) {
+    return type?.contains('toDart: iframeLinkHover') == true;
+  }
+
+  bool _isIframeLinkOutEventTriggered(String? type) {
+    return type?.contains('toDart: iframeLinkOut') == true;
+  }
+
+  void _handleOnIFrameLinkHoverEvent(dynamic data) {
+    try {
+      log('$runtimeType::_handleOnIFrameLinkHoverEvent: $data');
+      final url = data['url'] ?? '';
+      final rectData = data['rect'];
+
+      if (rectData != null) {
+        final rect = Rect.fromLTWH(
+          rectData['x']?.toDouble() ?? 0,
+          rectData['y']?.toDouble() ?? 0,
+          rectData['width']?.toDouble() ?? 0,
+          rectData['height']?.toDouble() ?? 0,
+        );
+
+        if (mounted) {
+          _tooltipOverlay?.show(context, url, rect);
+        }
+      }
+    } catch (e) {
+      logError('$runtimeType::_handleOnIFrameLinkHoverEvent: Exception = $e');
+    }
+  }
+
+  void _handleOnIFrameLinkOutEvent(dynamic data) {
+    try {
+      log('$runtimeType::_handleOnIFrameLinkOutEvent: $data');
+      _tooltipOverlay?.hide();
+    } catch (e) {
+      logError('$runtimeType::_handleOnIFrameLinkOutEvent: Exception = $e');
+    }
+  }
+
   @override
   void didUpdateWidget(covariant HtmlContentViewerOnWeb oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -430,7 +486,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         : content;
 
     final combinedCss = [
-      HtmlTemplate.tooltipLinkCss,
       if (widget.enableQuoteToggle) HtmlUtils.quoteToggleStyle,
       if (widget.disableScrolling) HtmlTemplate.disableScrollingStyleCSS,
     ].join();
@@ -456,6 +511,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         HtmlInteraction.scriptHandleIframeKeyboardListener(_createdViewId),
       if (widget.useLinkTooltipOverlay)
         HtmlInteraction.scriptsHandleIframeClickListener(_createdViewId),
+      if (PlatformInfo.isWebDesktop)
+        HtmlInteraction.scriptsHandleIframeLinkHoverListener(_createdViewId),
     ].join();
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
@@ -567,6 +624,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   void dispose() {
     _htmlData = null;
     _onMessageSubscription.cancel();
+    if (PlatformInfo.isWebDesktop) {
+      _tooltipOverlay?.hide();
+      _tooltipOverlay = null;
+    }
     super.dispose();
   }
 

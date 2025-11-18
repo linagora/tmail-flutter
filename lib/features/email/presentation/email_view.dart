@@ -1,7 +1,9 @@
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:core/presentation/views/tooltip/iframe_tooltip_overlay.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -367,6 +369,11 @@ class EmailView extends GetWidget<SingleEmailController> {
                     fontSize: isMobileResponsive ? 16 : 14,
                     onIFrameKeyboardShortcutAction: onIFrameKeyboardShortcutAction,
                     onIFrameClickAction: controller.handleOnIFrameClick,
+                    iframeTooltipOptions: IframeTooltipOptions(
+                      tooltipTextStyle: ThemeUtils.textStyleInter400.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 );
               } else if (PlatformInfo.isIOS) {
