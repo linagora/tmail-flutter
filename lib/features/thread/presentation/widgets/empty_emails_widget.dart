@@ -78,11 +78,14 @@ class EmptyEmailsWidget extends StatelessWidget {
     );
   }
 
-  bool get _showEmailSubMessage =>
-      (isNetworkConnectionAvailable &&
-          !isFilterMessageActive &&
-          !isSearchActive) ||
-      (isFavoriteFolder && !isFilterMessageActive);
+  bool get _showEmailSubMessage {
+    if (isFilterMessageActive) return false;
+
+    final showNetwork = isNetworkConnectionAvailable && !isSearchActive;
+    final showFavorite = isFavoriteFolder;
+
+    return showNetwork || showFavorite;
+  }
 
   String _getMessageEmptyEmail(AppLocalizations appLocalizations) {
     if (!isNetworkConnectionAvailable) {
