@@ -325,8 +325,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
           ),
           if (widget.prefix == widget.prefixRootState && _isWeb && !isMobileResponsive)
             ..._buildListPrefixWidgets(),
-          if (widget.prefix == widget.prefixRootState && (isMobileResponsive || widget.isTestingForWeb))
-            _buildExpandButton(),
+          if (_isShowExpandButton(isMobileResponsive)) _buildExpandButton(),
           if (widget.prefix != widget.prefixRootState && _isWeb && !isMobileResponsive)
             TMailButtonWidget.fromIcon(
               icon: widget.imagePaths.icClose,
@@ -398,6 +397,24 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
           onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.replyTo),
         ),
     ];
+  }
+
+  bool _isShowExpandButton(bool isMobileResponsive) {
+    final onlyCcEnabled = widget.toState == PrefixRecipientState.disabled &&
+        widget.ccState == PrefixRecipientState.enabled;
+
+    final onlyBccEnabled = widget.toState == PrefixRecipientState.disabled &&
+        widget.ccState == PrefixRecipientState.disabled &&
+        widget.bccState == PrefixRecipientState.enabled;
+
+    final shouldCheckPrefix = switch (widget.prefix) {
+      PrefixEmailAddress.to => widget.toState == PrefixRecipientState.enabled,
+      PrefixEmailAddress.cc => onlyCcEnabled,
+      PrefixEmailAddress.bcc => onlyBccEnabled,
+      _ => false,
+    };
+
+    return shouldCheckPrefix && (isMobileResponsive || widget.isTestingForWeb);
   }
 
   Widget _buildExpandButton() {

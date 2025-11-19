@@ -591,7 +591,7 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.richTextController.hideRichTextView();
       }
       autoCreateEmailTag();
-      triggerHideRecipientsFiledsWhenUnfocus();
+      triggerHideRecipientsFieldsWhenUnfocus();
     }
   }
 
@@ -1440,7 +1440,7 @@ class ComposerController extends BaseController
 
   void clickOutsideComposer() {
     clearFocus();
-    triggerHideRecipientsFiledsWhenUnfocus();
+    triggerHideRecipientsFieldsWhenUnfocus();
     if (PlatformInfo.isWeb) {
       refocusKeyboardShortcutFocus();
     }
@@ -1718,7 +1718,7 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.richTextController.showDeviceKeyboard);
     }
     autoCreateEmailTag();
-    triggerHideRecipientsFiledsWhenUnfocus();
+    triggerHideRecipientsFieldsWhenUnfocus();
   }
 
   void _onChangeCursorOnMobile(List<int>? coordinates, BuildContext context) {
@@ -1850,7 +1850,7 @@ class ComposerController extends BaseController
       popBack();
     }
     autoCreateEmailTag();
-    triggerHideRecipientsFiledsWhenUnfocus();
+    triggerHideRecipientsFieldsWhenUnfocus();
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {
@@ -2300,13 +2300,6 @@ class ComposerController extends BaseController
         }
       },
     );
-  }
-
-  void handleEnableRecipientsInputAction(bool isEnabled) {
-    fromRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
-    ccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
-    bccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
-    replyToRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
   }
 
   @override
