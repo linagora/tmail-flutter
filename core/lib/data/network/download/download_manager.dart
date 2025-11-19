@@ -143,7 +143,7 @@ class DownloadManager {
         );
       }
     } catch (exception) {
-      logError('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
+      logWarning('DownloadManager::openDownloadedFileWeb(): ERROR: $exception');
       rethrow;
     }
   }
@@ -153,7 +153,7 @@ class DownloadManager {
       final contentType = responseBody.headers[Headers.contentTypeHeader];
       return MediaType.parse(contentType!.first);
     } catch (e) {
-      logError('DownloadManager::_extractMediaTypeFromResponse(): $e');
+      logWarning('DownloadManager::_extractMediaTypeFromResponse(): $e');
       return null;
     }
   }

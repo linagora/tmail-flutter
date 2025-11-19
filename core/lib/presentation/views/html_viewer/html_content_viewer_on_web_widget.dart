@@ -150,7 +150,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         _handleHyperLinkEvent(data['url']);
       }
     } catch (e) {
-      logError('$runtimeType::_handleMessageEvent:Exception = $e');
+      logWarning('$runtimeType::_handleMessageEvent:Exception = $e');
     }
   }
 
@@ -196,7 +196,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
         }
       }
     } catch (e) {
-      logError('$runtimeType::_handleIframeOnScrollChangedListener:Exception = $e');
+      logWarning('$runtimeType::_handleIframeOnScrollChangedListener:Exception = $e');
     }
   }
 
@@ -293,7 +293,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       log('$runtimeType::_handleOnIFrameKeyboardEvent:📥 Shortcut pressed: $shortcut');
       widget.onIFrameKeyboardShortcutAction?.call(shortcut);
     } catch (e) {
-      logError('$runtimeType::_handleOnIFrameKeyboardEvent: Exception = $e');
+      logWarning('$runtimeType::_handleOnIFrameKeyboardEvent: Exception = $e');
     }
   }
 
@@ -307,7 +307,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
       log('$runtimeType::_handleOnIFrameClickEvent: $data');
       widget.onIFrameClickAction?.call();
     } catch (e) {
-      logError('$runtimeType::_handleOnIFrameClickEvent: Exception = $e');
+      logWarning('$runtimeType::_handleOnIFrameClickEvent: Exception = $e');
     }
   }
 

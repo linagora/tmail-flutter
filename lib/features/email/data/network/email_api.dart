@@ -668,7 +668,7 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
         cancelToken: cancelToken
       );
     } catch (e) {
-      logError('EmailAPI::updateEmailDrafts: Exception = $e');
+      logWarning('EmailAPI::updateEmailDrafts: Exception = $e');
     }
 
     return emailCreated;
@@ -713,7 +713,7 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
         cancelToken: cancelToken
       );
     } catch (e) {
-      logError('EmailAPI::updateEmailTemplate: Exception = $e');
+      logWarning('EmailAPI::updateEmailTemplate: Exception = $e');
     }
 
     return emailCreated;

@@ -84,7 +84,7 @@ class EmailRepositoryImpl extends EmailRepository {
           [emailRequest.emailIdAnsweredOrForwarded!],
         );
       } catch (e) {
-        logError('EmailRepositoryImpl::sendEmail::markAsAnswered:Exception $e');
+        logWarning('EmailRepositoryImpl::sendEmail::markAsAnswered:Exception $e');
       }
     } else if (emailRequest.isEmailForwarded) {
       try {
@@ -94,7 +94,7 @@ class EmailRepositoryImpl extends EmailRepository {
           [emailRequest.emailIdAnsweredOrForwarded!],
         );
       } catch (e) {
-        logError('EmailRepositoryImpl::sendEmail::markAsForwarded:Exception $e');
+        logWarning('EmailRepositoryImpl::sendEmail::markAsForwarded:Exception $e');
       }
     }
 
@@ -126,7 +126,7 @@ class EmailRepositoryImpl extends EmailRepository {
         readActions,
       );
     } catch (e) {
-      logError('EmailRepositoryImpl::markAsRead:exception $e');
+      logWarning('EmailRepositoryImpl::markAsRead:exception $e');
     }
 
     return result;
@@ -168,7 +168,7 @@ class EmailRepositoryImpl extends EmailRepository {
           ),
         );
     } catch (e) {
-      logError('EmailRepositoryImpl::moveToMailbox:exception $e');
+      logWarning('EmailRepositoryImpl::moveToMailbox:exception $e');
     }
 
     return result;
@@ -198,7 +198,7 @@ class EmailRepositoryImpl extends EmailRepository {
         markStarAction
       );
     } catch (e) {
-      logError('EmailRepositoryImpl::markAsStar:exception $e');
+      logWarning('EmailRepositoryImpl::markAsStar:exception $e');
     }
     return result;
   }
@@ -241,7 +241,7 @@ class EmailRepositoryImpl extends EmailRepository {
         cancelToken: cancelToken
       );
     } catch (e) {
-      logError('EmailRepositoryImpl::saveEmailAsDrafts:exception $e');
+      logWarning('EmailRepositoryImpl::saveEmailAsDrafts:exception $e');
     }
     return result;
   }
@@ -267,7 +267,7 @@ class EmailRepositoryImpl extends EmailRepository {
         cancelToken: cancelToken
       );
     } catch (e) {
-      logError('EmailRepositoryImpl::removeEmailDrafts:exception $e');
+      logWarning('EmailRepositoryImpl::removeEmailDrafts:exception $e');
     }
     return result;
   }
@@ -295,7 +295,7 @@ class EmailRepositoryImpl extends EmailRepository {
         oldEmailId,
       );
     } catch (e) {
-      logError('EmailRepositoryImpl::updateEmailDrafts:exception $e');
+      logWarning('EmailRepositoryImpl::updateEmailDrafts:exception $e');
     }
     return result;
   }
@@ -326,7 +326,7 @@ class EmailRepositoryImpl extends EmailRepository {
         cancelToken: cancelToken
       );
     } catch (e) {
-      logError('EmailRepositoryImpl::saveEmailAsTemplate:exception $e');
+      logWarning('EmailRepositoryImpl::saveEmailAsTemplate:exception $e');
     }
     return result;
   }
@@ -354,7 +354,7 @@ class EmailRepositoryImpl extends EmailRepository {
         oldEmailId,
       );
     } catch (e) {
-      logError('EmailRepositoryImpl::updateEmailTemplate:exception $e');
+      logWarning('EmailRepositoryImpl::updateEmailTemplate:exception $e');
     }
     return result;
   }
@@ -378,7 +378,7 @@ class EmailRepositoryImpl extends EmailRepository {
       await emailDataSource[DataSourceType.hiveCache]
         !.deleteMultipleEmailsPermanently(session, accountId, result.emailIdsSuccess);
     } catch (e) {
-      logError('EmailRepositoryImpl::deleteMultipleEmailsPermanently:exception $e');
+      logWarning('EmailRepositoryImpl::deleteMultipleEmailsPermanently:exception $e');
     }
 
     return result;
@@ -404,7 +404,7 @@ class EmailRepositoryImpl extends EmailRepository {
         emailId,
       );
     } catch (e) {
-      logError('EmailRepositoryImpl::deleteEmailPermanently:exception $e');
+      logWarning('EmailRepositoryImpl::deleteEmailPermanently:exception $e');
     }
 
     return result;

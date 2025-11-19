@@ -499,7 +499,7 @@ class EmailDataSourceImpl extends EmailDataSource {
 
       return listEmailContent.asHtmlString;
     } catch (e) {
-      logError('EmailDataSourceImpl::_transformEmailContent:Exception = $e');
+      logWarning('EmailDataSourceImpl::_transformEmailContent:Exception = $e');
       return '';
     }
   }

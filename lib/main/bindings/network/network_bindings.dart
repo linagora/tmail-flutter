@@ -38,7 +38,6 @@ import 'package:tmail_ui_user/features/server_settings/data/network/server_setti
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/send_email_exception_thrower.dart';
-import 'package:tmail_ui_user/main/monitoring/sentry/sentry_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:worker_manager/worker_manager.dart';

@@ -65,7 +65,7 @@ class PreviewEmlFileUtils {
           ${listAttachment?.isNotEmpty == true ? _createAttachmentsElement(listAttachment: listAttachment ?? [], titleAttachment: titleAttachment) : ''}
       ''');
     } catch (e) {
-      logError('PreviewEmlFileUtils::_createEmailElement: Exception = $e');
+      logWarning('PreviewEmlFileUtils::_createEmailElement: Exception = $e');
       return null;
     }
   }
@@ -78,7 +78,7 @@ class PreviewEmlFileUtils {
         </div>
       ''';
     } catch (e) {
-      logError('PreviewEmlFileUtils::_createRecipientHtmlTag: Exception = $e');
+      logWarning('PreviewEmlFileUtils::_createRecipientHtmlTag: Exception = $e');
       return '';
     }
   }
@@ -127,7 +127,7 @@ class PreviewEmlFileUtils {
         </div>
       ''';
     } catch (e) {
-      logError('PreviewEmlFileUtils::_createAttachmentsElement: Exception = $e');
+      logWarning('PreviewEmlFileUtils::_createAttachmentsElement: Exception = $e');
       return '';
     }
   }

@@ -26,7 +26,7 @@ extension URIExtension on Uri {
     try {
       return origin.isNotEmpty;
     } catch (e) {
-      logError('URIExtension::hasOrigin:Exception = $e');
+      logWarning('URIExtension::hasOrigin:Exception = $e');
       return false;
     }
   }

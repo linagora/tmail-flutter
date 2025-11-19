@@ -275,13 +275,13 @@ class _WebEditorState extends State<WebEditorWidget> {
           _signatureTooltipReady = true;
           _signatureTooltipEntry?.markNeedsBuild();
         } catch (e) {
-          logError(
+          logWarning(
             '_WebEditorState::_showTooltipAtPosition:addPostFrameCallback:Exception = $e',
           );
         }
       });
     } catch (e) {
-      logError('_WebEditorState::_showTooltipAtPosition:Exception = $e');
+      logWarning('_WebEditorState::_showTooltipAtPosition:Exception = $e');
     }
   }
 

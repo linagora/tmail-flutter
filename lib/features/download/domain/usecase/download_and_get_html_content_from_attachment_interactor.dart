@@ -87,7 +87,7 @@ class DownloadAndGetHtmlContentFromAttachmentInteractor {
         ));
       }
     } catch (e) {
-      logError('GetHtmlContentFromAttachmentInteractor:exception: $e');
+      logWarning('GetHtmlContentFromAttachmentInteractor:exception: $e');
       yield Left(DownloadAndGetHtmlContentFromAttachmentFailure(
         exception: e,
         blobId: attachment.blobId,

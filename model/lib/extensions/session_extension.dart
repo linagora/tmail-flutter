@@ -90,7 +90,7 @@ extension SessionExtension on Session {
         return username.value;
       }
     } catch (e) {
-      logError('SessionExtension::getUserDisplayName:Exception: $e');
+      logWarning('SessionExtension::getUserDisplayName:Exception: $e');
       return '';
     }
   }
@@ -99,7 +99,7 @@ extension SessionExtension on Session {
     try {
       return getOwnEmailAddress();
     } catch (e) {
-      logError('SessionExtension::getOwnEmailAddressOrEmpty:Exception: $e');
+      logWarning('SessionExtension::getOwnEmailAddressOrEmpty:Exception: $e');
       return '';
     }
   }
@@ -145,7 +145,7 @@ extension SessionExtension on Session {
 
       return '$userName@$domain';
     } catch (e) {
-      logError('$runtimeType::generateOwnEmailAddressFromDomain: Exception: $e');
+      logWarning('$runtimeType::generateOwnEmailAddressFromDomain: Exception: $e');
       return '';
     }
   }
@@ -218,7 +218,7 @@ extension SessionExtension on Session {
         CapabilityIdentifier.jmapCore
       )?.maxObjectsInGet;
     } catch (e) {
-      logError('SessionExtensions::getMaxObjectsInGet():Exception: $e');
+      logWarning('SessionExtensions::getMaxObjectsInGet():Exception: $e');
       return null;
     }
   }

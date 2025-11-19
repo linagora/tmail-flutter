@@ -62,7 +62,7 @@ class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
         return DeepLinkData(actionType: DeepLinkActionType.unknown);
       }
     } catch (e) {
-      logError('DeepLinksManager::parseDeepLink:Exception = $e');
+      logWarning('DeepLinksManager::parseDeepLink:Exception = $e');
       return null;
     }
   }

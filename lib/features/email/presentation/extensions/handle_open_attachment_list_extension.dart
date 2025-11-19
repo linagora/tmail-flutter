@@ -15,7 +15,7 @@ extension HandleOpenAttachmentListExtension on SingleEmailController {
   }) {
     final scrollController = threadDetailController?.scrollController;
     if (scrollController == null || !scrollController.hasClients) {
-      logError(
+      logWarning(
           '$runtimeType::jumpToAttachmentList(): scrollController is null');
       return;
     }

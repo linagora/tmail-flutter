@@ -19,6 +19,6 @@ class BeforeReconnectManager {
 
   Future<void> executeBeforeReconnectListeners() async {
     await Future.wait(_listeners.map((listener) => listener.call()))
-      .onError((error, stackTrace) => [logError(error.toString())]);
+      .onError((error, stackTrace) => [logWarning(error.toString())]);
   }
 }

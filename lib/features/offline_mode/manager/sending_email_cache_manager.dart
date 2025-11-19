@@ -115,7 +115,7 @@ class SendingEmailCacheManager extends CacheManagerInteraction {
       await _hiveCacheClient.insertMultipleItem(legacyMapItems);
       log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_hiveCacheClient.tableName}" → IsolatedHive DONE');
     } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_hiveCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_hiveCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 }

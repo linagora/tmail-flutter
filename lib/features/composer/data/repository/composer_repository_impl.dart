@@ -102,7 +102,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
         uploadUri: uploadUri,
       );
     } catch (e) {
-      logError('ComposerRepositoryImpl::_replaceImageBase64ToImageCID: Exception: $e');
+      logWarning('ComposerRepositoryImpl::_replaceImageBase64ToImageCID: Exception: $e');
       return Future.value(
         Tuple2(
           emailContent,
@@ -119,7 +119,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
     try {
       return _htmlDataSource.removeCollapsedExpandedSignatureEffect(emailContent: emailContent);
     } catch (e) {
-      logError('ComposerRepositoryImpl::_removeCollapsedExpandedSignatureEffect: Exception: $e');
+      logWarning('ComposerRepositoryImpl::_removeCollapsedExpandedSignatureEffect: Exception: $e');
       return Future.value(emailContent);
     }
   }
@@ -129,7 +129,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
     try {
       return _htmlDataSource.removeStyleLazyLoadDisplayInlineImages(emailContent: emailContent);
     } catch (e) {
-      logError('ComposerRepositoryImpl::removeStyleLazyLoadDisplayInlineImages: Exception: $e');
+      logWarning('ComposerRepositoryImpl::removeStyleLazyLoadDisplayInlineImages: Exception: $e');
       return Future.value(emailContent);
     }
   }

@@ -68,7 +68,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
         yield dartz.Left<Failure, Success>(GenerateEmailFailure(CannotCreateEmailObjectException()));
       }
     } catch (e) {
-      logError('CreateNewAndSaveEmailToDraftsInteractor::execute: Exception: $e');
+      logWarning('CreateNewAndSaveEmailToDraftsInteractor::execute: Exception: $e');
       if (e is UnknownError && e.message is List<SavingEmailToDraftsCanceledException>) {
         if (createEmailRequest.draftsEmailId == null) {
           yield dartz.Left<Failure, Success>(SaveEmailAsDraftsFailure(SavingEmailToDraftsCanceledException()));
@@ -94,7 +94,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
       );
       return emailCreated;
     } catch (e) {
-      logError('CreateNewAndSaveEmailToDraftsInteractor::_createEmailObject: Exception: $e');
+      logWarning('CreateNewAndSaveEmailToDraftsInteractor::_createEmailObject: Exception: $e');
       return null;
     }
   }

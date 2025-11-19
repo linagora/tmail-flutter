@@ -23,7 +23,7 @@ class RemoveCollapsedSignatureButtonTransformer extends DomTransformer {
         element.remove();
       }));
     } catch (e) {
-      logError('$runtimeType::process:Exception = $e');
+      logWarning('$runtimeType::process:Exception = $e');
     }
   }
 }

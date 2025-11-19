@@ -77,7 +77,7 @@ class _SavingTemplateDialogViewState extends State<SavingTemplateDialogView> {
   }
 
   void _handleErrorStream(Object error, StackTrace stackTrace) {
-    logError('SavingTemplateDialogView::_handleErrorStream: Exception = $error');
+    logWarning('SavingTemplateDialogView::_handleErrorStream: Exception = $error');
     popBack(result: SaveTemplateEmailFailure(exception: error));
   }
 

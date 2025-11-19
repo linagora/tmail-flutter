@@ -78,7 +78,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
       log('MailboxRepositoryImpl::_getAllMailboxFromCache: MAILBOX_CACHED = ${cacheMailboxResponse.mailboxes.length} | STATE_CACHED = ${cacheMailboxResponse.state?.value}');
       return cacheMailboxResponse;
     } catch (e) {
-      logError('MailboxRepositoryImpl::_getAllMailboxFromCache: Exception: $e');
+      logWarning('MailboxRepositoryImpl::_getAllMailboxFromCache: Exception: $e');
       return null;
     }
   }
@@ -106,7 +106,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
       await _syncNewMailboxesInCache(accountId, userName, newMailboxes);
       await _syncNewMailboxStateInCache(accountId, userName, newState);
     } catch (e) {
-      logError('MailboxRepositoryImpl::_syncNewInCache: Exception = $e');
+      logWarning('MailboxRepositoryImpl::_syncNewInCache: Exception = $e');
     }
   }
 
@@ -220,7 +220,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
       await mapDataSource[DataSourceType.local]
         !.renameMailbox(session, accountId, request);
     } catch (e) {
-      logError('MailboxRepositoryImpl::renameMailbox: Exception: $e');
+      logWarning('MailboxRepositoryImpl::renameMailbox: Exception: $e');
     }
 
     return result;
@@ -257,7 +257,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
         ) ?? Future.value(),
       ]);
     } catch (e) {
-      logError('MailboxRepositoryImpl::markAsMailboxRead: Exception: $e');
+      logWarning('MailboxRepositoryImpl::markAsMailboxRead: Exception: $e');
     }
     return result;
   }

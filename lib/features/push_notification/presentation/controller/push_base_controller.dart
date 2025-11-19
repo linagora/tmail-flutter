@@ -34,7 +34,7 @@ abstract class PushBaseController {
   void handleSuccessViewState(Success success);
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {
-    logError('PushBaseController::handleErrorViewState():error: $error | stackTrace: $stackTrace');
+    logWarning('PushBaseController::handleErrorViewState():error: $error | stackTrace: $stackTrace');
   }
 
   void initialize({AccountId? accountId, Session? session}) {

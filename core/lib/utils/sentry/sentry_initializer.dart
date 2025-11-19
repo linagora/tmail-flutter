@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:tmail_ui_user/main.dart';
-import 'package:tmail_ui_user/main/main_entry.dart';
-import 'package:tmail_ui_user/main/monitoring/sentry/sentry_config.dart';
 
 class SentryInitializer {
   /// Initialize Sentry
-  static Future<bool> init(VoidCallback runAppCallback) async {
+  static Future<bool> init(FutureOr<void> Function() appRunner) async {
     final config = await SentryConfig.load();
 
     await SentryFlutter.init(
@@ -27,14 +26,7 @@ class SentryInitializer {
         // Assign the callback to process events before sending them to Sentry
         options.beforeSend = _beforeSendHandler;
       },
-      appRunner: () async {
-        await runTmailPreload(); // Prepare before UI starts
-        runApp(
-          SentryWidget(
-            child: const TMailApp(),
-          ),
-        );
-      },
+      appRunner: appRunner,
     );
 
     return config.isAvailable;

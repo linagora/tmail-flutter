@@ -4,13 +4,10 @@ import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 class CacheExceptionThrower extends ExceptionThrower {
   @override
   throwException(dynamic error, dynamic stackTrace) {
-    logError('CacheExceptionThrower::throwException():error: $error | stackTrace: $stackTrace');
-    reportToSentry(
-      error,
-      stackTrace,
-      errorType: error.runtimeType.toString(),
-      errorMessage: error.toString(),
-      source: 'CacheException',
+    logError(
+      'CacheExceptionThrower::throwException():error: $error | stackTrace: $stackTrace',
+      exception: error,
+      stackTrace: stackTrace,
     );
     throw error;
   }

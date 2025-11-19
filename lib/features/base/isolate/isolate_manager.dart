@@ -21,7 +21,7 @@ abstract class IsolateManager {
       IsolateNameServer.registerPortWithName(_eventReceivePort.sendPort, isolateIdentityName);
       _streamSubscription = _eventReceivePort.listen(onData, onError: onError, onDone: onDone);
     } catch (e) {
-      logError('IsolateManager::initial():EXCEPTION: $e');
+      logWarning('IsolateManager::initial():EXCEPTION: $e');
     }
   }
 
@@ -32,10 +32,10 @@ abstract class IsolateManager {
       if (sendPort != null) {
         sendPort.send(value);
       } else {
-        logError('IsolateManager::addEvent(): sendPort is null');
+        logWarning('IsolateManager::addEvent(): sendPort is null');
       }
     } catch (e) {
-      logError('IsolateManager::addEvent():EXCEPTION: $e');
+      logWarning('IsolateManager::addEvent():EXCEPTION: $e');
     }
   }
 

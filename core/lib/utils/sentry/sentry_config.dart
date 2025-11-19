@@ -1,6 +1,7 @@
+import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/build_utils.dart';
+import 'package:core/utils/config/env_loader.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 /// Holds configuration values for initializing Sentry.
 class SentryConfig {
@@ -45,10 +46,9 @@ class SentryConfig {
 
   /// Load configuration from an env file.
   static Future<SentryConfig> load() async {
-    await AppUtils.loadConfigFromEnv();
+    await EnvLoader.loadConfigFromEnv();
 
-    final sentryAvailable =
-        dotenv.get('SENTRY_ENABLED', fallback: 'false');
+    final sentryAvailable = dotenv.get('SENTRY_ENABLED', fallback: 'false');
 
     final isAvailable = sentryAvailable == 'true';
     final sentryDSN = dotenv.get('SENTRY_DSN', fallback: '');
@@ -62,7 +62,7 @@ class SentryConfig {
       throw Exception('Sentry configuration is missing');
     }
 
-    final appVersion = await AppUtils.getAppVersion();
+    final appVersion = await ApplicationManager().getVersion();
 
     return SentryConfig(
       dsn: sentryDSN,

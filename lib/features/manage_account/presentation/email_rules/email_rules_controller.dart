@@ -55,7 +55,7 @@ class EmailRulesController extends BaseController {
       _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
       _editEmailRuleFilterInteractor = Get.find<EditEmailRuleFilterInteractor>();
     } catch (e) {
-      logError('EmailRulesController::onInit(): ${e.toString()}');
+      logWarning('EmailRulesController::onInit(): ${e.toString()}');
     }
   }
 

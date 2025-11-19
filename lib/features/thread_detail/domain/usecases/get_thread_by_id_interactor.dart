@@ -43,7 +43,7 @@ class GetThreadByIdInteractor {
         emailsInThreadDetailInfo: result,
       ));
     } catch (e) {
-      logError('GetEmailIdsByThreadIdInteractor::execute(): Exception: $e');
+      logWarning('GetEmailIdsByThreadIdInteractor::execute(): Exception: $e');
       yield Left(GetThreadByIdFailure(
         exception: e,
         onRetry: execute(

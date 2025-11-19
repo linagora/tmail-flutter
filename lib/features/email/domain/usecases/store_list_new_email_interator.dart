@@ -41,7 +41,7 @@ class StoreListNewEmailInteractor {
       await _emailRepository.getStoredNewEmail(session, accountId, detailedEmail.emailId);
       return true;
     } catch (err) {
-      logError('StoreNewEmailInteractor::_isNewEmailAlreadyStored():EXCEPTION: $err');
+      logWarning('StoreNewEmailInteractor::_isNewEmailAlreadyStored():EXCEPTION: $err');
       return false;
     }
   }

@@ -93,7 +93,7 @@ class CalendarEventAPI {
         methodCallId,
         GetCalendarEventAttendanceResponse.deserialize);
     } catch (e) {
-      logError('CalendarEventAPI.parse free/busy query error: $e');
+      logWarning('CalendarEventAPI.parse free/busy query error: $e');
       return null;
     }
   }

@@ -108,7 +108,7 @@ class FCMCacheManager extends CacheManagerInteraction {
       await _fcmCacheClient.insertMultipleItem(legacyMapItems);
       log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_fcmCacheClient.tableName}" → IsolatedHive DONE');
     } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_fcmCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_fcmCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 
@@ -121,7 +121,7 @@ class FCMCacheManager extends CacheManagerInteraction {
       await _firebaseRegistrationCacheClient.insertMultipleItem(legacyMapItems);
       log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_firebaseRegistrationCacheClient.tableName}" → IsolatedHive DONE');
     } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_firebaseRegistrationCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_firebaseRegistrationCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 }

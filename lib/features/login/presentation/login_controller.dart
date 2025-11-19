@@ -211,7 +211,7 @@ class LoginController extends ReloadableController {
 
   @override
   void handleUrgentException({Failure? failure, Exception? exception}) {
-    logError('LoginController::handleUrgentException:Exception: $exception | Failure: $failure');
+    logWarning('LoginController::handleUrgentException:Exception: $exception | Failure: $failure');
     if (failure is CheckOIDCIsAvailableFailure) {
       _handleCheckOIDCIsAvailableFailure(failure);
     } else if (failure is GetOIDCConfigurationFromBaseUrlFailure) {
@@ -300,7 +300,7 @@ class LoginController extends ReloadableController {
       featureFailure = failure;
       tryGetOIDCConfigurationFromBaseUrl(_currentBaseUrl!);
     } catch (e) {
-      logError('LoginController::_handleCheckOIDCIsAvailableFailure:Exception = $e');
+      logWarning('LoginController::_handleCheckOIDCIsAvailableFailure:Exception = $e');
       handleOIDCIsNotAvailable(failure);
     }
   }

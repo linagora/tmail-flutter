@@ -101,6 +101,10 @@ dependencies:
 
   web: 1.1.1
 
+  flutter_dotenv: 5.0.2
+
+  sentry_flutter: 9.8.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

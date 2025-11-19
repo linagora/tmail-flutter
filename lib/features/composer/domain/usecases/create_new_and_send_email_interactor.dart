@@ -65,7 +65,7 @@ class CreateNewAndSendEmailInteractor {
         yield dartz.Left<Failure, Success>(GenerateEmailFailure(CannotCreateEmailObjectException()));
       }
     } catch (e) {
-      logError('CreateNewAndSendEmailInteractor::execute: Exception: $e');
+      logWarning('CreateNewAndSendEmailInteractor::execute: Exception: $e');
       if (e is UnknownError && e.message is List<SendingEmailCanceledException>) {
         yield dartz.Left<Failure, Success>(SendEmailFailure(
           exception: SendingEmailCanceledException(),
@@ -92,7 +92,7 @@ class CreateNewAndSendEmailInteractor {
       final sendingEmailArgument = createEmailRequest.toSendingEmailArguments(emailObject: emailCreated);
       return sendingEmailArgument;
     } catch (e) {
-      logError('CreateNewAndSendEmailInteractor::_createEmailObject: Exception: $e');
+      logWarning('CreateNewAndSendEmailInteractor::_createEmailObject: Exception: $e');
       return null;
     }
   }
@@ -111,7 +111,7 @@ class CreateNewAndSendEmailInteractor {
         cancelToken: cancelToken
       );
     } catch (e) {
-      logError('CreateNewAndSendEmailInteractor::_deleteOldDraftsEmail: Exception: $e');
+      logWarning('CreateNewAndSendEmailInteractor::_deleteOldDraftsEmail: Exception: $e');
     }
   }
 }

@@ -63,7 +63,7 @@ class OidcConfigurationCacheManager extends CacheManagerInteraction {
       await _oidcConfigurationCacheClient.insertMultipleItem(legacyMapItems);
       log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_oidcConfigurationCacheClient.tableName}" → IsolatedHive DONE');
     } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_oidcConfigurationCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_oidcConfigurationCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 }

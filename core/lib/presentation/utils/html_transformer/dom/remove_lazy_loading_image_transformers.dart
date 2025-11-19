@@ -21,7 +21,7 @@ class RemoveLazyLoadingImageTransformer extends DomTransformer {
         element.attributes.remove('loading');
       }));
     } catch (e) {
-      logError('$runtimeType::process:Exception = $e');
+      logWarning('$runtimeType::process:Exception = $e');
     }
   }
 }

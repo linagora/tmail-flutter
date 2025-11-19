@@ -82,7 +82,7 @@ class WebLinkGenerator {
         searchParams: searchParams,
       );
     } catch (e) {
-      logError('[WebLinkGenerator] Error: $e');
+      logWarning('[WebLinkGenerator] Error: $e');
       return '';
     }
   }

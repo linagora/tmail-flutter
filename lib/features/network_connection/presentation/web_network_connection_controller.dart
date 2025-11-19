@@ -60,7 +60,7 @@ class NetworkConnectionController extends GetxController {
         _handleNetworkConnectionState();
       },
       onError: (error, stackTrace) {
-        logError('NetworkConnectionController::_listenNetworkConnectionChanged()::onConnectivityChanged:error: $error | stackTrace: $stackTrace');
+        logWarning('NetworkConnectionController::_listenNetworkConnectionChanged()::onConnectivityChanged:error: $error | stackTrace: $stackTrace');
       }
     );
   }

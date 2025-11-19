@@ -45,7 +45,7 @@ class GetEmailsByIdsInteractor {
         updateCurrentThreadDetail: updateCurrentThreadDetail,
       ));
     } catch (e) {
-      logError('GetEmailsByIdsInteractor::execute(): Exception: $e');
+      logWarning('GetEmailsByIdsInteractor::execute(): Exception: $e');
       yield Left(GetEmailsByIdsFailure(
         exception: e,
         onRetry: execute(session, accountId, emailIds, properties: properties),

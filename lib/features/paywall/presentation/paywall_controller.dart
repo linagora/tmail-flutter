@@ -70,7 +70,7 @@ class PaywallController extends BaseController {
         _navigateToPaywallUseWorkplaceFqdn(workplaceFqdn);
       }
     } catch (e) {
-      logError('$runtimeType::navigateToPaywall: Failed to navigate to paywall $e');
+      logWarning('$runtimeType::navigateToPaywall: Failed to navigate to paywall $e');
       _navigateToPaywallUseEcoSystem();
     }
   }
