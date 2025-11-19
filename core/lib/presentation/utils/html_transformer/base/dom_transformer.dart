@@ -41,7 +41,7 @@ abstract class DomTransformer {
         return null;
       }
     } catch (e) {
-      logError('DomTransformer::findImageUrlFromStyleTag:Exception: $e');
+      logWarning('DomTransformer::findImageUrlFromStyleTag:Exception: $e');
       return null;
     }
   }

@@ -66,7 +66,7 @@ class CleanUpPublicAssetsInteractor {
       yield Right(CleanUpPublicAssetsSuccessState());
 
     } catch (exception) {
-      logError('CleanUpPublicAssetsInteractor::execute():error: $exception');
+      logWarning('CleanUpPublicAssetsInteractor::execute():error: $exception');
       yield Left(CleanUpPublicAssetsFailureState(exception: exception));
     }
   }

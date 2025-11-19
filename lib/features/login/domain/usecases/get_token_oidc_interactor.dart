@@ -53,14 +53,14 @@ class GetTokenOIDCInteractor {
         baseUri,
       ));
     } on PlatformException catch (e) {
-      logError('GetTokenOIDCInteractor::execute(): PlatformException ${e.message} - ${e.stacktrace}');
+      logWarning('GetTokenOIDCInteractor::execute(): PlatformException ${e.message} - ${e.stacktrace}');
       if (NoSuitableBrowserForOIDCException.verifyException(e)) {
         yield Left<Failure, Success>(GetTokenOIDCFailure(NoSuitableBrowserForOIDCException()));
       } else {
         yield Left<Failure, Success>(GetTokenOIDCFailure(e));
       }
     } catch (e) {
-      logError('GetTokenOIDCInteractor::execute(): $e');
+      logWarning('GetTokenOIDCInteractor::execute(): $e');
       yield Left<Failure, Success>(GetTokenOIDCFailure(e));
     }
   }

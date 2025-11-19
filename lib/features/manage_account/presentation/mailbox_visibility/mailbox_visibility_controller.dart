@@ -59,7 +59,7 @@ class MailboxVisibilityController extends BaseMailboxController {
       _subscribeMailboxInteractor = Get.find<SubscribeMailboxInteractor>();
       _subscribeMultipleMailboxInteractor = Get.find<SubscribeMultipleMailboxInteractor>();
     } catch (e) {
-      logError('MailboxVisibilityController::onInit(): ${e.toString()}');
+      logWarning('MailboxVisibilityController::onInit(): ${e.toString()}');
     }
   }
 

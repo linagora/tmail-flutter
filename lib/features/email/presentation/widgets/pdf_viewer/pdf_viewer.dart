@@ -161,7 +161,7 @@ class _PDFViewerState extends State<PDFViewer> {
               previewerOptions: PreviewerOptions(
                 previewerState: previewerState,
                 onError: (error) {
-                  logError('_PDFViewerState::build:openData:onError:: $error');
+                  logWarning('_PDFViewerState::build:openData:onError:: $error');
                   _pdfViewStateNotifier.value = DownloadAttachmentForWebFailure(exception: error);
                 },
                 errorMessage: AppLocalizations.of(context).noPreviewAvailable,

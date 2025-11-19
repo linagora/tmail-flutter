@@ -41,14 +41,14 @@ void main() {
   const responseStatusCode500 = 500;
   const responseStatusCode200 = 200;
 
-  final dioError401 = DioError(
+  final dioError401 = DioException(
     error: {'message': 'Token Expired'},
     requestOptions: RequestOptions(path: baseUrl, method: 'POST'),
     response: Response(
       statusCode: responseStatusCode401,
       requestOptions: RequestOptions(path: baseUrl)
     ),
-    type: DioErrorType.badResponse,
+    type: DioExceptionType.badResponse,
   );
 
   final dataRequestSuccessfully = {'message': 'Request successfully!'};
@@ -240,24 +240,24 @@ void main() {
 
         expect(
           () async => await dio.post(baseUrl),
-          throwsA(predicate<DioError>((error) => error.response?.statusCode == responseStatusCode401))
+          throwsA(predicate<DioException>((error) => error.response?.statusCode == responseStatusCode401))
         );
       });
     });
   });
 
   group('AuthorizationInterceptor: multiple requests queued on onError', () {
-    final requestOneDioError401 = DioError(
+    final requestOneDioError401 = DioException(
       error: {'message': 'Token Expired'},
       requestOptions: RequestOptions(path: '$baseUrl/1', method: 'POST'),
       response: Response(
           statusCode: responseStatusCode401,
           requestOptions: RequestOptions(path: '$baseUrl/1')
       ),
-      type: DioErrorType.badResponse,
+      type: DioExceptionType.badResponse,
     );
 
-    final requestTwoDioError401 = DioError(
+    final requestTwoDioError401 = DioException(
       error: {'message': 'Token Expired'},
       requestOptions: RequestOptions(
           path: '$baseUrl/2',
@@ -268,7 +268,7 @@ void main() {
           statusCode: responseStatusCode401,
           requestOptions: RequestOptions(path: '$baseUrl/2')
       ),
-      type: DioErrorType.badResponse,
+      type: DioExceptionType.badResponse,
     );
 
     test('GIVEN 2 requests have token expired\n'
@@ -367,7 +367,7 @@ void main() {
           dio.post('$baseUrl/1',),
           dio.post('$baseUrl/2',)
         ]),
-        throwsA(predicate<DioError>(
+        throwsA(predicate<DioException>(
           (dioError) => dioError.error is AccessTokenInvalidException))
       );
 

@@ -47,7 +47,7 @@ class LocalizationService extends Translations {
 
       return defaultLocale;
     } catch (e) {
-      logError('LocalizationService::getInitialLocale:Exception is $e');
+      logWarning('LocalizationService::getInitialLocale:Exception is $e');
       return defaultLocale;
     }
   }
@@ -57,7 +57,7 @@ class LocalizationService extends Translations {
       final languageCacheManager = getBinding<LanguageCacheManager>();
       return languageCacheManager?.getStoredLanguage();
     } catch (e) {
-      logError('LocalizationService::getCachedLocale: Exception: $e');
+      logWarning('LocalizationService::getCachedLocale: Exception: $e');
       return null;
     }
   }
@@ -92,7 +92,7 @@ class LocalizationService extends Translations {
 
       _useDefaultLocale();
     } catch (e) {
-      logError('LocalizationService::initializeAppLanguage: Exception: $e');
+      logWarning('LocalizationService::initializeAppLanguage: Exception: $e');
       _useDefaultLocale();
     }
   }

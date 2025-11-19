@@ -63,7 +63,7 @@ class _PrintDraftDialogViewState extends State<PrintDraftDialogView> {
   }
 
   void _handleErrorStream(Object error, StackTrace stackTrace) {
-    logError('_PrintDraftDialogViewState::_handleErrorStream: Exception = $error');
+    logWarning('_PrintDraftDialogViewState::_handleErrorStream: Exception = $error');
     popBack(result: PrintEmailFailure(exception: error));
   }
 

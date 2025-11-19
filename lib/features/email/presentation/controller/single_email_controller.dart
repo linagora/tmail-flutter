@@ -482,7 +482,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           transformConfiguration
         ));
       } catch (e) {
-        logError('SingleEmailController::_getEmailContentAction(): $e');
+        logWarning('SingleEmailController::_getEmailContentAction(): $e');
         consumeState(Stream.value(Left(GetEmailContentFailure(
           e,
           onRetry: e is UnknownUriException

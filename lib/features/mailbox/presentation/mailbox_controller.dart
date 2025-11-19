@@ -581,7 +581,7 @@ class MailboxController extends BaseMailboxController
         onDataFailureViewState(refreshState);
       }
     } catch (e, stackTrace) {
-      logError('MailboxController::_processMailboxStateQueue:Error processing state: $e');
+      logWarning('MailboxController::_processMailboxStateQueue:Error processing state: $e');
       onError(e, stackTrace);
     }
     if (currentMailboxState != null) {
@@ -637,7 +637,7 @@ class MailboxController extends BaseMailboxController
         mailboxDashBoardController.setOutboxMailbox(mailboxDashBoardController.mapMailboxById[outboxMailboxIdByRole]!);
       }
     } catch (e) {
-      logError('MailboxController::_setOutboxMailbox: Not found outbox mailbox');
+      logWarning('MailboxController::_setOutboxMailbox: Not found outbox mailbox');
       mailboxDashBoardController.setOutboxMailbox(null);
     }
   }
@@ -1308,7 +1308,7 @@ class MailboxController extends BaseMailboxController
   Future<void> _updateMailboxIdsBlockNotificationToKeychain(List<PresentationMailbox> mailboxes) async {
     _iosSharingManager = getBinding<IOSSharingManager>();
     if (accountId == null || _iosSharingManager == null || mailboxes.isEmpty) {
-      logError('MailboxController::_updateMailboxIdsBlockNotificationToKeychain: AccountId = $accountId | IosSharingManager = $_iosSharingManager | Mailboxes = ${mailboxes.length}');
+      logWarning('MailboxController::_updateMailboxIdsBlockNotificationToKeychain: AccountId = $accountId | IosSharingManager = $_iosSharingManager | Mailboxes = ${mailboxes.length}');
       return;
     }
 

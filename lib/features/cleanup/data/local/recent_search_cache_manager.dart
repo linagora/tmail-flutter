@@ -112,7 +112,7 @@ class RecentSearchCacheManager extends CacheManagerInteraction {
       await _recentSearchCacheClient.insertMultipleItem(legacyMapItems);
       log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_recentSearchCacheClient.tableName}" → IsolatedHive DONE');
     } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_recentSearchCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_recentSearchCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 }

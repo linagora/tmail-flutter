@@ -43,7 +43,7 @@ class TryGuessingWebFingerInteractor {
         yield Right(TryGuessingWebFingerSuccess(firstNonNullResponse));
       }
     } catch (e) {
-      logError('$runtimeType::execute(): Exception = $e');
+      logWarning('$runtimeType::execute(): Exception = $e');
       yield Left(TryGuessingWebFingerFailure(exception: e));
     }
   }

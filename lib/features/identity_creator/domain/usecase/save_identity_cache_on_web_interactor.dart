@@ -26,7 +26,7 @@ class SaveIdentityCacheOnWebInteractor {
         identityCache: identityCache);
       yield Right(SaveIdentityCacheOnWebSuccess());
     } catch (exception) {
-      logError("$runtimeType::execute: $exception");
+      logWarning("$runtimeType::execute: $exception");
       yield Left(SaveIdentityCacheOnWebFailure(exception: exception));
     }
   }

@@ -42,7 +42,7 @@ mixin HandleSetErrorMixin {
       handlers!.firstWhere((handler) => handler.call(setError));
       return const None<MapEntry<Id, SetError>>();
     } catch (e) {
-      logError('HandleSetErrorMixin::chainHandle(): [Exception] $e');
+      logWarning('HandleSetErrorMixin::chainHandle(): [Exception] $e');
       return Some<MapEntry<Id, SetError>>(setError);
     }
   }
@@ -50,7 +50,7 @@ mixin HandleSetErrorMixin {
   void _handleRemainedError(SetMethodErrorHandler? unCatchErrorHandler, Option<MapEntry<Id, SetError>> optionError) {
     final remainedError = optionError.toNullable();
     if (remainedError != null) {
-      logError('HandleSetErrorMixin::_handleRemainedError(): $remainedError');
+      logWarning('HandleSetErrorMixin::_handleRemainedError(): $remainedError');
       unCatchErrorHandler?.call(remainedError);
     }
   }
@@ -73,7 +73,7 @@ mixin HandleSetErrorMixin {
         }
       );
     }
-    logError('HandleSetErrorMixin::handleSetResponse():remainedErrors: $remainedErrors');
+    logWarning('HandleSetErrorMixin::handleSetResponse():remainedErrors: $remainedErrors');
     return remainedErrors;
   }
 }

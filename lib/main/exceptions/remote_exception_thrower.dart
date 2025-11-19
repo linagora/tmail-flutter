@@ -17,19 +17,23 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
   @override
   throwException(dynamic error, dynamic stackTrace) {
-    logError('RemoteExceptionThrower::throwException():error: $error | stackTrace: $stackTrace');
+    logError(
+      'RemoteExceptionThrower::throwException():error: $error | stackTrace: $stackTrace',
+      exception: error,
+      stackTrace: stackTrace,
+    );
     final networkConnectionController = getBinding<NetworkConnectionController>();
     if (networkConnectionController?.isNetworkConnectionAvailable() == false) {
-      logError('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
+      logWarning('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
       throw const NoNetworkError();
     } else {
-      handleDioError(error);
+      handleDioError(error, stackTrace);
     }
   }
 
-  void handleDioError(dynamic error) {
-    if (error is DioError) {
-      logError(
+  void handleDioError(dynamic error, dynamic stackTrace) {
+    if (error is DioException) {
+      logWarning(
         'RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
       );
 
@@ -52,11 +56,12 @@ class RemoteExceptionThrower extends ExceptionThrower {
         }
       }
 
-      return _handleDioErrorWithoutResponse(error);
+      return _handleDioErrorWithoutResponse(error, stackTrace);
     }
 
     if (error is ErrorMethodResponseException) {
       final errorResponse = error.errorResponse as ErrorMethodResponse;
+
       if (errorResponse is CannotCalculateChangesMethodResponse) {
         throw CannotCalculateChangesMethodResponseException();
       } else {
@@ -70,13 +75,13 @@ class RemoteExceptionThrower extends ExceptionThrower {
     throw error;
   }
 
-  void _handleDioErrorWithoutResponse(DioError error) {
+  void _handleDioErrorWithoutResponse(DioException error, dynamic stackTrace) {
     switch (error.type) {
-      case DioErrorType.connectionTimeout:
+      case DioExceptionType.connectionTimeout:
         throw ConnectionTimeout(message: error.message);
-      case DioErrorType.connectionError:
+      case DioExceptionType.connectionError:
         throw ConnectionError(message: error.message);
-      case DioErrorType.badResponse:
+      case DioExceptionType.badResponse:
         throw const BadCredentialsException();
       default:
         final underlyingError = error.error;

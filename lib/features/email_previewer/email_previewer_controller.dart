@@ -294,7 +294,7 @@ class EmailPreviewerController extends ReloadableController {
         ),
       ));
     } catch (e) {
-      logError('EmailPreviewerController::_handleParseEmailByBlobIdSuccess(): $e');
+      logWarning('EmailPreviewerController::_handleParseEmailByBlobIdSuccess(): $e');
       consumeState(Stream.value(Left(PreviewEmailFromEmlFileFailure(e))));
     }
   }
@@ -336,7 +336,7 @@ class EmailPreviewerController extends ReloadableController {
               onReceiveController: _downloadAttachmentStreamController!)
           .listen(_handleDownloadAttachmentViewState);
     } catch (e) {
-      logError('EmailPreviewerController::_handleParseEmailByBlobIdSuccess(): $e');
+      logWarning('EmailPreviewerController::_handleParseEmailByBlobIdSuccess(): $e');
       consumeState(Stream.value(Left(DownloadAttachmentForWebFailure(
           attachment: attachment,
           taskId: attachment.downloadTaskId,

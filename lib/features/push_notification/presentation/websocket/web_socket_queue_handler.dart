@@ -44,7 +44,7 @@ class WebSocketQueueHandler {
         _messageQueue.removeFirst();
       }
     } catch (e) {
-      logError('WebSocketQueueHandler::enqueue:Exception = $e');
+      logWarning('WebSocketQueueHandler::enqueue:Exception = $e');
     }
 
     log('WebSocketQueueHandler::enqueue(): ${message.id}');
@@ -67,7 +67,7 @@ class WebSocketQueueHandler {
         try {
           await processMessageCallback(message);
         } catch (e, stackTrace) {
-          logError('WebSocketQueueHandler::_processQueue:Error processing message ${message.id}: $e');
+          logWarning('WebSocketQueueHandler::_processQueue:Error processing message ${message.id}: $e');
           onErrorCallback?.call(e, stackTrace);
         } finally {
           _addToProcessedMessages(message.id);
@@ -90,7 +90,7 @@ class WebSocketQueueHandler {
         _processedMessageIds.removeFirst();
       }
     } catch (e) {
-      logError('WebSocketQueueHandler::_addToProcessedMessages:Exception = $e');
+      logWarning('WebSocketQueueHandler::_addToProcessedMessages:Exception = $e');
     }
 
     _processedMessageIds.add(messageId);
@@ -116,7 +116,7 @@ class WebSocketQueueHandler {
       }
       log('WebSocketQueueHandler::removeMessagesUpToCurrent:Updated Queue: $queueSize');
     } catch (e) {
-      logError('WebSocketQueueHandler::removeMessagesUpToCurrent:Exception = $e');
+      logWarning('WebSocketQueueHandler::removeMessagesUpToCurrent:Exception = $e');
     }
   }
 

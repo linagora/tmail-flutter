@@ -70,7 +70,7 @@ class Domain with EquatableMixin {
       InternetAddress(value);
       return true;
     } catch (e) {
-      logError('Domain::validIPAddress: Exception = $e');
+      logWarning('Domain::validIPAddress: Exception = $e');
       return false;
     }
   }

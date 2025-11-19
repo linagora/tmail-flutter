@@ -28,7 +28,7 @@ class EncryptionKeyCacheManager extends CacheManagerInteraction {
       await _encryptionKeyCacheClient.insertMultipleItem(legacyMapItems);
       log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_encryptionKeyCacheClient.tableName}" → IsolatedHive DONE');
     } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_encryptionKeyCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_encryptionKeyCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 }

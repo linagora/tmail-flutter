@@ -29,6 +29,7 @@ import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/transformers.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
@@ -379,7 +380,7 @@ class MailboxDashBoardController extends ReloadableController
     _registerStreamListener();
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await applicationManager.initUserAgent();
+      await ApplicationManager().initUserAgent();
     });
     super.onInit();
   }
@@ -601,7 +602,7 @@ class MailboxDashBoardController extends ReloadableController
       .listen(
         _emailReceiveManager.setPendingFileInfo,
         onError: (err) {
-          logError('MailboxDashBoardController::_registerReceivingFileSharingStream::receivingFileSharingStream:Exception = $err');
+          logWarning('MailboxDashBoardController::_registerReceivingFileSharingStream::receivingFileSharingStream:Exception = $err');
         },
       );
 
@@ -610,7 +611,7 @@ class MailboxDashBoardController extends ReloadableController
       .listen(
         _handleReceivingFileSharing,
         onError: (err) {
-          logError('MailboxDashBoardController::_registerReceivingFileSharingStream::pendingSharedFileInfo:Exception = $err');
+          logWarning('MailboxDashBoardController::_registerReceivingFileSharingStream::pendingSharedFileInfo:Exception = $err');
         },
       );
   }
@@ -814,7 +815,7 @@ class MailboxDashBoardController extends ReloadableController
       _getAllVacationInteractor = Get.find<GetAllVacationInteractor>();
       _updateVacationInteractor = Get.find<UpdateVacationInteractor>();
     } catch (e) {
-      logError('MailboxDashBoardController::injectVacationBindings(): $e');
+      logWarning('MailboxDashBoardController::injectVacationBindings(): $e');
     }
   }
 
@@ -825,7 +826,7 @@ class MailboxDashBoardController extends ReloadableController
       await LocalNotificationManager.instance.recreateStreamController();
       _registerLocalNotificationStreamListener();
     } catch (e) {
-      logError('MailboxDashBoardController::injectFCMBindings(): $e');
+      logWarning('MailboxDashBoardController::injectFCMBindings(): $e');
     }
   }
 
@@ -850,6 +851,15 @@ class MailboxDashBoardController extends ReloadableController
     sessionCurrent = session;
     accountId.value = currentAccountId;
     synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
+
+    SentryManager.instance.setUser(
+      SentryUser(
+        id: currentAccountId.asString,
+        name: session.getUserDisplayName(),
+        username: session.username.value,
+        email: session.getOwnEmailAddressOrEmpty(),
+      )
+    );
 
     _setUpMinInputLengthAutocomplete();
     injectAutoCompleteBindings(session, currentAccountId);
@@ -1918,7 +1928,7 @@ class MailboxDashBoardController extends ReloadableController
       }
       return null;
     } catch (e) {
-      logError('MailboxDashBoardController::maxSizeAttachmentsPerEmail(): [Exception] $e');
+      logWarning('MailboxDashBoardController::maxSizeAttachmentsPerEmail(): [Exception] $e');
       return null;
     }
   }
@@ -2491,7 +2501,7 @@ class MailboxDashBoardController extends ReloadableController
   bool get isDraggingMailbox => _isDraggingMailbox.value;
 
   void _handleSendEmailFailure(SendEmailFailure failure) {
-    logError('MailboxDashBoardController::_handleSendEmailFailure():failure: $failure');
+    logWarning('MailboxDashBoardController::_handleSendEmailFailure():failure: $failure');
     if (PlatformInfo.isMobile) {
       storeSendingEmailInCaseOfSendingFailureInMobile(failure);
     }
@@ -2500,7 +2510,7 @@ class MailboxDashBoardController extends ReloadableController
       return;
     }
     final exception = failure.exception;
-    logError('MailboxDashBoardController::_handleSendEmailFailure():exception: $exception');
+    logWarning('MailboxDashBoardController::_handleSendEmailFailure():exception: $exception');
     if (exception is SetMethodException) {
       final listErrors = exception.mapErrors.values.toList();
       final toastSuccess = _handleSetErrors(listErrors);
@@ -2542,13 +2552,13 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _handleSaveEmailAsDraftsFailure(SaveEmailAsDraftsFailure failure) {
-    logError('MailboxDashBoardController::_handleSaveEmailAsDraftsFailure():failure: $failure');
+    logWarning('MailboxDashBoardController::_handleSaveEmailAsDraftsFailure():failure: $failure');
     if (currentContext == null) {
       clearState();
       return;
     }
     final exception = failure.exception;
-    logError('MailboxDashBoardController::_handleSaveEmailAsDraftsFailure():exception: $exception');
+    logWarning('MailboxDashBoardController::_handleSaveEmailAsDraftsFailure():exception: $exception');
     if (exception is SetMethodException) {
       final listErrors = exception.mapErrors.values.toList();
       final toastSuccess = _handleSetErrors(listErrors);
@@ -2563,13 +2573,13 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _handleUpdateEmailAsDraftsFailure(UpdateEmailDraftsFailure failure) {
-    logError('MailboxDashBoardController::_handleUpdateEmailAsDraftsFailure():failure: $failure');
+    logWarning('MailboxDashBoardController::_handleUpdateEmailAsDraftsFailure():failure: $failure');
     if (currentContext == null) {
       clearState();
       return;
     }
     final exception = failure.exception;
-    logError('MailboxDashBoardController::_handleUpdateEmailAsDraftsFailure():exception: $exception');
+    logWarning('MailboxDashBoardController::_handleUpdateEmailAsDraftsFailure():exception: $exception');
     if (exception is SetMethodException) {
       final listErrors = exception.mapErrors.values.toList();
       final toastSuccess = _handleSetErrors(listErrors);
@@ -2657,7 +2667,7 @@ class MailboxDashBoardController extends ReloadableController
         sendingEmail
       ));
     } else {
-      logError('MailboxDashBoardController::_handleUpdateSendingEmail(): StoredSendingId is null');
+      logWarning('MailboxDashBoardController::_handleUpdateSendingEmail(): StoredSendingId is null');
       _handleStoreSendingEmail(
         session,
         accountId,
@@ -2789,7 +2799,7 @@ class MailboxDashBoardController extends ReloadableController
   void openDialogEmptySpamFolder(BuildContext context) {
     final spamMailbox = selectedMailbox.value;
     if (spamMailbox == null || !spamMailbox.isSpam) {
-      logError('MailboxDashBoardController::openDialogEmptySpamFolder: Selected mailbox is not spam');
+      logWarning('MailboxDashBoardController::openDialogEmptySpamFolder: Selected mailbox is not spam');
       return;
 
     }
@@ -2870,7 +2880,7 @@ class MailboxDashBoardController extends ReloadableController
     try {
       return sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl) ?? '';
     } catch (e) {
-      logError('MailboxDashboardController::baseDownloadUrl(): $e');
+      logWarning('MailboxDashboardController::baseDownloadUrl(): $e');
       return '';
     }
   }
@@ -3383,7 +3393,7 @@ class MailboxDashBoardController extends ReloadableController
     _refreshActionEventController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();
-    applicationManager.releaseUserAgent();
+    ApplicationManager().releaseUserAgent();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     _identities = null;
     outboxMailbox = null;

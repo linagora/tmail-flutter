@@ -46,7 +46,7 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
       await _tokenOidcCacheClient.insertMultipleItem(legacyMapItems);
       log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_tokenOidcCacheClient.tableName}" → IsolatedHive DONE');
     } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_tokenOidcCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_tokenOidcCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 }

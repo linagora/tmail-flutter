@@ -14,7 +14,7 @@ class CozyIntegration {
       await cozyConfig.injectCozyScript(AppConfig.cozyExternalBridgeVersion);
       await cozyConfig.initialize();
     } catch (e) {
-      logError('CozyIntegration::integrateCozy:Exception = $e');
+      logWarning('CozyIntegration::integrateCozy:Exception = $e');
     }
   }
 }

@@ -106,7 +106,7 @@ class EmailUtils {
       MailAddress mailAddress = MailAddress.validateAddress(address);
       return GetUtils.isEmail(mailAddress.stripDetails().asString()) && mailAddress.asString().isNotEmpty;
     } catch(e) {
-      logError('EmailUtils::isEmailAddressValid: Exception = $e');
+      logWarning('EmailUtils::isEmailAddressValid: Exception = $e');
       return false;
     }
   }
@@ -137,7 +137,7 @@ class EmailUtils {
 
       return matches.map((match) => match.group(1)!).toList();
     } catch (e) {
-      logError('EmailUtils::extractMailtoLinksFromListPost:Exception = $e');
+      logWarning('EmailUtils::extractMailtoLinksFromListPost:Exception = $e');
       return [];
     }
   }
@@ -174,7 +174,7 @@ class EmailUtils {
         bccMailAddresses: bccMailAddresses
       );
     } catch (e) {
-      logError('EmailUtils::extractRecipientsFromListMailtoLink:Exception = $e');
+      logWarning('EmailUtils::extractRecipientsFromListMailtoLink:Exception = $e');
       return (
         toMailAddresses: [],
         ccMailAddresses: [],
@@ -207,7 +207,7 @@ class EmailUtils {
         bccMailAddresses: navigationRouter.bcc ?? [],
       );
     } catch (e) {
-      logError('EmailUtils::extractRecipientsFromMailtoLink:Exception = $e');
+      logWarning('EmailUtils::extractRecipientsFromMailtoLink:Exception = $e');
       return (
         toMailAddresses: [],
         ccMailAddresses: [],
@@ -240,7 +240,7 @@ class EmailUtils {
         type: type?.isNotEmpty == true ? MediaType.parse(type!) : null,
       );
     } catch (e) {
-      logError('EmailUtils::parsingAttachmentByUri:Exception = $e:');
+      logWarning('EmailUtils::parsingAttachmentByUri:Exception = $e:');
       return null;
     }
   }
@@ -329,7 +329,7 @@ class EmailUtils {
       MailAddress mailAddress = MailAddress.validateAddress(emailAddress);
       return mailAddress.domain.asString();
     } catch (e) {
-      logError('EmailUtils::getDomainByEmailAddress:Exception is $e');
+      logWarning('EmailUtils::getDomainByEmailAddress:Exception is $e');
       return '';
     }
   }

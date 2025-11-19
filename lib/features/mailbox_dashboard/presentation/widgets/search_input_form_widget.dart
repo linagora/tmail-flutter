@@ -113,7 +113,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           final userName = _dashBoardController.sessionCurrent?.username;
 
           if (accountId == null || userName == null) {
-            logError('SearchInputFormWidget::fetchRecentActionCallback: accountId or userName is null');
+            logWarning('SearchInputFormWidget::fetchRecentActionCallback: accountId or userName is null');
             return <RecentSearch>[];
           } else {
             return _searchController.getAllRecentSearchAction(
@@ -196,7 +196,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     final userName = _dashBoardController.sessionCurrent?.username;
 
     if (accountId == null || userName == null) {
-      logError('SearchInputFormWidget::_saveRecentSearch: accountId or userName is null');
+      logWarning('SearchInputFormWidget::_saveRecentSearch: accountId or userName is null');
       return;
     }
 

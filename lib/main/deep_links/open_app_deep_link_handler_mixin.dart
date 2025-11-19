@@ -1,10 +1,10 @@
 import 'package:core/presentation/extensions/either_view_state_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:rich_text_composer/views/commons/logger.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/auto_sign_in_via_deep_link_interactor.dart';
@@ -42,7 +42,7 @@ mixin OpenAppDeepLinkHandlerMixin {
         username: usernameDecoded,
       );
     } catch (e) {
-      logError('DeepLinksManager::parseOpenAppDeepLink:Exception = $e');
+      logWarning('DeepLinksManager::parseOpenAppDeepLink:Exception = $e');
       return null;
     }
   }
@@ -106,7 +106,7 @@ mixin OpenAppDeepLinkHandlerMixin {
         onFailure: (failure) => onFailureCallback.call(),
       );
     } catch (e) {
-      logError('DeepLinksManager::_autoSignInViaDeepLink:Exception = $e');
+      logWarning('DeepLinksManager::_autoSignInViaDeepLink:Exception = $e');
       onFailureCallback.call();
     }
   }

@@ -16,7 +16,7 @@ class GetAppDashboardConfigurationInteractor {
       final linagoraApps = await _appGridRepository.getLinagoraApplicationsFromEnvironment(path);
       yield Right(GetAppDashboardConfigurationSuccess(linagoraApps.apps));
     } catch (e) {
-      logError('GetAppDashboardConfigurationInteractor::execute(): $e');
+      logWarning('GetAppDashboardConfigurationInteractor::execute(): $e');
       yield Left(GetAppDashboardConfigurationFailure(e));
     }
   }

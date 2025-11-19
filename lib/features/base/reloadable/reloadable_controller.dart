@@ -33,13 +33,13 @@ abstract class ReloadableController extends BaseController {
   @override
   void handleFailureViewState(Failure failure) {
     if (isNotSignedIn(failure)) {
-      logError('$runtimeType::handleFailureViewState():Failure = $failure');
+      logWarning('$runtimeType::handleFailureViewState():Failure = $failure');
       goToLogin();
     } else if (failure is GetSessionFailure) {
-      logError('$runtimeType::handleFailureViewState():Failure = $failure');
+      logWarning('$runtimeType::handleFailureViewState():Failure = $failure');
       handleGetSessionFailure(failure);
     } else if (failure is UpdateAccountCacheFailure) {
-      logError('$runtimeType::handleFailureViewState():Failure = $failure');
+      logWarning('$runtimeType::handleFailureViewState():Failure = $failure');
       _handleUpdateAccountCacheCompleted(
         session: failure.session,
         apiUrl: failure.apiUrl);
@@ -153,7 +153,7 @@ abstract class ReloadableController extends BaseController {
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapVacationResponse]);
       VacationInteractorsBindings().dependencies();
     } catch(e) {
-      logError('$runtimeType::injectVacationBindings(): exception: $e');
+      logWarning('$runtimeType::injectVacationBindings(): exception: $e');
     }
   }
 

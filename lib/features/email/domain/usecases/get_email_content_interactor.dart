@@ -106,7 +106,7 @@ class GetEmailContentInteractor {
         ));
       }
     } catch (e) {
-      logError('GetEmailContentInteractor::_getContentEmailFromServer():EXCEPTION: $e');
+      logWarning('GetEmailContentInteractor::_getContentEmailFromServer():EXCEPTION: $e');
       yield Left<Failure, Success>(GetEmailContentFailure(
         e,
         onRetry: execute(
@@ -149,7 +149,7 @@ class GetEmailContentInteractor {
         )
       ));
     } catch (e) {
-      logError('GetEmailContentInteractor::_getStoredOpenedEmail():EXCEPTION: $e');
+      logWarning('GetEmailContentInteractor::_getStoredOpenedEmail():EXCEPTION: $e');
       yield* _getStoredNewEmail(
         session,
         accountId,
@@ -190,7 +190,7 @@ class GetEmailContentInteractor {
         )
       ));
     } catch (e) {
-      logError('GetEmailContentInteractor::_getStoredNewEmail():EXCEPTION: $e');
+      logWarning('GetEmailContentInteractor::_getStoredNewEmail():EXCEPTION: $e');
       yield* _getContentEmailFromServer(
         session,
         accountId,

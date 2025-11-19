@@ -70,10 +70,10 @@ class DnsLookupManager {
         }
         log('$runtimeType::lookupJmapUrl → ⚠️ No records via ${priority.label}, continuing...');
       } on TimeoutException catch (_) {
-        logError(
+        logWarning(
             '$runtimeType::lookupJmapUrl → ⏱️ ${priority.label} lookup timed out');
       } catch (error, stack) {
-        logError(
+        logWarning(
             '$runtimeType::lookupJmapUrl → ❌ ${priority.label} lookup failed: $error, $stack');
       }
     }

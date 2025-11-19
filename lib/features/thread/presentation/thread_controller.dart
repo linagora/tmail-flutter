@@ -222,7 +222,7 @@ class ThreadController extends BaseController with EmailActionController {
   @override
   void handleErrorViewState(Object error, StackTrace stackTrace) {
     super.handleErrorViewState(error, stackTrace);
-    logError('ThreadController::handleErrorViewState(): error: $error | stackTrace: $stackTrace');
+    logWarning('ThreadController::handleErrorViewState(): error: $error | stackTrace: $stackTrace');
     _resetLoadingMore();
     _handleErrorGetAllOrRefreshChangesEmail(error, stackTrace);
   }
@@ -474,7 +474,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _handleErrorGetAllOrRefreshChangesEmail(Object error, StackTrace stackTrace) async {
-    logError('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
+    logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
       await cachingManager.clearAllEmailAndStateCache(
         accountId: _accountId,
@@ -715,7 +715,7 @@ class ThreadController extends BaseController with EmailActionController {
         await _refreshChangeListEmail();
       }
     } catch (e, stackTrace) {
-      logError('ThreadController::_handleWebSocketMessage:Error processing state: $e');
+      logWarning('ThreadController::_handleWebSocketMessage:Error processing state: $e');
       onError(e, stackTrace);
     } finally {
       if (mailboxDashBoardController.currentEmailState != null) {
@@ -1382,7 +1382,7 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxContain: mailboxContain,
       ));
     } else {
-      logError('ThreadController::_getEmailByIdFromLocationBar: session & accountId is NULL');
+      logWarning('ThreadController::_getEmailByIdFromLocationBar: session & accountId is NULL');
       popAndPush(AppRoutes.unknownRoutePage);
     }
   }

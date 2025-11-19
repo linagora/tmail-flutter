@@ -21,7 +21,7 @@ dependencies:
 
   json_annotation: 4.8.0
 
-  dio: 5.0.0
+  dio: 5.2.0
 
   http_mock_adapter: 0.4.2
 

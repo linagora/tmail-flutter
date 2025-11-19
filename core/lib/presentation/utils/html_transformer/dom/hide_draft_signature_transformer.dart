@@ -27,7 +27,7 @@ class HideDraftSignatureTransformer extends DomTransformer {
         signature.attributes['style'] = '$currentStyle; display: none;';
       }
     } catch (e) {
-      logError('$runtimeType::process:Exception = $e');
+      logWarning('$runtimeType::process:Exception = $e');
     }
   }
 }

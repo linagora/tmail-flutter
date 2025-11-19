@@ -62,7 +62,7 @@ class SendingQueueController extends BaseController {
     _sendingQueueIsolateManager?.initial(
       onData: _handleSendingQueueEvent,
       onError: (error, stackTrace) {
-        logError('SendingQueueController::onInit():onError:error: $error | stackTrace: $stackTrace');
+        logWarning('SendingQueueController::onInit():onError:error: $error | stackTrace: $stackTrace');
       }
     );
   }
@@ -91,7 +91,7 @@ class SendingQueueController extends BaseController {
         }
       }
     } catch (e) {
-      logError('SendingQueueController::_handleSendingQueueEvent(): EXCEPTION: $e');
+      logWarning('SendingQueueController::_handleSendingQueueEvent(): EXCEPTION: $e');
     }
   }
 

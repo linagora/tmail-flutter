@@ -59,7 +59,7 @@ class SaveTemplateEmailInteractor {
         yield Right(SaveTemplateEmailSuccess(emailTemplateSaved.id!));
       }
     } catch (e) {
-      logError('SaveTemplateEmailInteractor::execute(): $e');
+      logWarning('SaveTemplateEmailInteractor::execute(): $e');
       if (createEmailRequest.templateEmailId != null) {
         yield Left(UpdateTemplateEmailFailure(exception: e));
       } else {
@@ -76,7 +76,7 @@ class SaveTemplateEmailInteractor {
         isTemplate: true);
       return emailCreated;
     } catch (e) {
-      logError('CreateNewAndSaveEmailToDraftsInteractor::_createEmailObject: Exception: $e');
+      logWarning('CreateNewAndSaveEmailToDraftsInteractor::_createEmailObject: Exception: $e');
       return null;
     }
   }

@@ -40,7 +40,7 @@ class LocalNotificationManager {
         await _createAndroidNotificationChannel(groupId);
       }
     } catch (e) {
-      logError('LocalNotificationManager::setUp(): ERROR: ${e.toString()}');
+      logWarning('LocalNotificationManager::setUp(): ERROR: ${e.toString()}');
     }
   }
 
@@ -49,7 +49,7 @@ class LocalNotificationManager {
       _notificationAppLaunchDetails = await _localNotificationsPlugin.getNotificationAppLaunchDetails();
       return _notificationAppLaunchDetails?.notificationResponse;
     } catch (e) {
-      logError('LocalNotificationManager::getCurrentNotificationResponse(): ERROR: ${e.toString()}');
+      logWarning('LocalNotificationManager::getCurrentNotificationResponse(): ERROR: ${e.toString()}');
     }
     return null;
   }

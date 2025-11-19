@@ -71,7 +71,7 @@ class NetworkConnectionController extends GetxController {
         _setNetworkConnectivityState(result);
       },
       onError: (error, stackTrace) {
-        logError('NetworkConnectionController::_listenNetworkConnectionChanged()::onConnectivityChanged:error: $error | stackTrace: $stackTrace');
+        logWarning('NetworkConnectionController::_listenNetworkConnectionChanged()::onConnectivityChanged:error: $error | stackTrace: $stackTrace');
       }
     );
 
@@ -81,7 +81,7 @@ class NetworkConnectionController extends GetxController {
         _setInternetConnectivityStatus(status);
       },
       onError: (error, stackTrace) {
-        logError('NetworkConnectionController::_listenNetworkConnectionChanged()::onStatusChange:error: $error | stackTrace: $stackTrace');
+        logWarning('NetworkConnectionController::_listenNetworkConnectionChanged()::onStatusChange:error: $error | stackTrace: $stackTrace');
       }
     );
   }

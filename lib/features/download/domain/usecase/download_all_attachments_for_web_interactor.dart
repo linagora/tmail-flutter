@@ -77,7 +77,7 @@ class DownloadAllAttachmentsForWebInteractor {
 
       yield Right(DownloadAllAttachmentsForWebSuccess(taskId: taskId));
     } catch (e) {
-      logError('DownloadAllAttachmentsForWebInteractor::execute():EXCEPTION: $e');
+      logWarning('DownloadAllAttachmentsForWebInteractor::execute():EXCEPTION: $e');
       yield Left(DownloadAllAttachmentsForWebFailure(
         exception: e,
         taskId: taskId,

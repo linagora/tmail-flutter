@@ -82,8 +82,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    logError(
+      'AuthorizationInterceptors::onError(): DIO_ERROR = $err',
+      exception: err.error,
+      stackTrace: err.stackTrace,
+    );
     try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
@@ -151,15 +155,19 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return super.onError(err, handler);
       }
-    } catch (e) {
-      logError('AuthorizationInterceptors::onError:Exception: $e');
-      if (e is ServerError || e is TemporarilyUnavailable) {
+    } catch (exception, stackTrace) {
+      logError(
+        'AuthorizationInterceptors::onError:Exception: $exception',
+        exception: exception,
+        stackTrace: stackTrace,
+      );
+      if (exception is ServerError || exception is TemporarilyUnavailable) {
         return super.onError(
-          DioError(requestOptions: err.requestOptions, error: e),
+          DioException(requestOptions: err.requestOptions, error: exception),
           handler,
         );
       } else {
-        return super.onError(err.copyWith(error: e), handler);
+        return super.onError(err.copyWith(error: exception), handler);
       }
     }
   }
@@ -172,8 +180,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return mapUploadExtra[FileUploader.streamDataExtraKey];
       }
-    } catch(e) {
-      log('AuthorizationInterceptors::_getDataUploadRequest: Exception = $e');
+    } catch (e, stackTrace) {
+      logError(
+        'AuthorizationInterceptors::_getDataUploadRequest: Exception = $e',
+        exception: e,
+        stackTrace: stackTrace,
+      );
       return null;
     }
   }

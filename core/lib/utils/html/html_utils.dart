@@ -519,7 +519,7 @@ class HtmlUtils {
 
       return true;
     } catch (e) {
-      logError('AppUtils::openNewWindowByUrl:Exception = $e');
+      logWarning('AppUtils::openNewWindowByUrl:Exception = $e');
       return false;
     }
   }
@@ -531,7 +531,7 @@ class HtmlUtils {
         titleElements.first.text = title;
       }
     } catch (e) {
-      logError('AppUtils::setWindowBrowserTitle:Exception = $e');
+      logWarning('AppUtils::setWindowBrowserTitle:Exception = $e');
     }
   }
 
@@ -539,7 +539,7 @@ class HtmlUtils {
     try {
       return htmlUnescape.convert(input);
     } catch (e) {
-      logError('HtmlUtils::unescapeHtml:Exception = $e');
+      logWarning('HtmlUtils::unescapeHtml:Exception = $e');
       return input;
     }
   }
@@ -566,7 +566,7 @@ class HtmlUtils {
       log('HtmlUtils::isOldSafari:Version = $version');
       return version != null && version < 17;
     } catch (e) {
-      logError('HtmlUtils::isOldSafari:Exception = $e');
+      logWarning('HtmlUtils::isOldSafari:Exception = $e');
       return false;
     }
   }
@@ -752,7 +752,7 @@ class HtmlUtils {
 
       return container.innerHtml;
     } catch (e) {
-      logError('HtmlUtils::wrapPlainTextLinks:Exception = $e');
+      logWarning('HtmlUtils::wrapPlainTextLinks:Exception = $e');
       return htmlString;
     }
   }

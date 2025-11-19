@@ -35,7 +35,7 @@ class FcmReceiver {
       log('FcmReceiver::_getInitialToken:token: $token');
       return token;
     } catch (e) {
-      logError('FcmReceiver::_getInitialToken: TYPE = ${e.runtimeType} | Exception = $e');
+      logWarning('FcmReceiver::_getInitialToken: TYPE = ${e.runtimeType} | Exception = $e');
       return null;
     }
   }

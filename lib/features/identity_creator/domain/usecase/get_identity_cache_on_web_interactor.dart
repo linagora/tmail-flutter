@@ -24,7 +24,7 @@ class GetIdentityCacheOnWebInteractor {
       
       yield Right(GetIdentityCacheOnWebSuccess(result));
     } catch (exception) {
-      logError("$runtimeType::execute: $exception");
+      logWarning("$runtimeType::execute: $exception");
       yield Left(GetIdentityCacheOnWebFailure(exception: exception));
     }
   }
