@@ -34,7 +34,6 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
 
   void onKeyboardShortcutInit() {
     if (PlatformInfo.isWeb) {
-      onKeyboardShortcutDispose();
       keyboardShortcutFocusNode = FocusNode();
       shortcutActionEventController =
           StreamController<MailViewShortcutActionViewEvent>();
