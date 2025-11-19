@@ -4,6 +4,7 @@ import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleRecipientsCollapsedExtensions on ComposerController {
   List<EmailAddress> get allListEmailAddress =>
@@ -52,9 +53,21 @@ extension HandleRecipientsCollapsedExtensions on ComposerController {
       replyToRecipientState.value = PrefixRecipientState.enabled;
     }
 
+    if (currentContext != null &&
+        responsiveUtils.isMobile(currentContext!) &&
+        isAllRecipientInputEnabled) {
+      fromRecipientState.value = PrefixRecipientState.enabled;
+    }
+
     updatePrefixRootState();
     requestFocusRecipientInput();
   }
+
+  bool get isAllRecipientInputEnabled =>
+      toRecipientState.value == PrefixRecipientState.enabled &&
+      ccRecipientState.value == PrefixRecipientState.enabled &&
+      bccRecipientState.value == PrefixRecipientState.enabled &&
+      replyToRecipientState.value == PrefixRecipientState.enabled;
 
   void updatePrefixRootState() {
     if (toRecipientState.value == PrefixRecipientState.enabled) {
@@ -98,7 +111,7 @@ extension HandleRecipientsCollapsedExtensions on ComposerController {
     }
   }
 
-  void triggerHideRecipientsFiledsWhenUnfocus() {
+  void triggerHideRecipientsFieldsWhenUnfocus() {
     if (isRecipientsEmptyExceptReplyTo) {
       hideAllRecipientsFieldsExceptTo();
     } else if (isRecipientsWithoutReplyToNotEmpty) {
@@ -122,5 +135,45 @@ extension HandleRecipientsCollapsedExtensions on ComposerController {
     bccRecipientState.value = PrefixRecipientState.disabled;
     replyToRecipientState.value = PrefixRecipientState.disabled;
     recipientsCollapsedState.value = PrefixRecipientState.disabled;
+  }
+
+  void handleEnableRecipientsInputOnMobileAction(bool isEnabled) {
+    PrefixRecipientState from;
+    PrefixRecipientState to;
+    PrefixRecipientState cc;
+    PrefixRecipientState bcc;
+    PrefixRecipientState replyTo;
+
+    if (!isEnabled) {
+      from = PrefixRecipientState.enabled;
+      to = PrefixRecipientState.enabled;
+      cc = PrefixRecipientState.enabled;
+      bcc = PrefixRecipientState.enabled;
+      replyTo = PrefixRecipientState.enabled;
+    } else if (listCcEmailAddress.isNotEmpty) {
+      from = PrefixRecipientState.disabled;
+      to = PrefixRecipientState.disabled;
+      cc = PrefixRecipientState.enabled;
+      bcc = PrefixRecipientState.disabled;
+      replyTo = PrefixRecipientState.disabled;
+    } else if (listBccEmailAddress.isNotEmpty) {
+      from = PrefixRecipientState.disabled;
+      to = PrefixRecipientState.disabled;
+      cc = PrefixRecipientState.disabled;
+      bcc = PrefixRecipientState.enabled;
+      replyTo = PrefixRecipientState.disabled;
+    } else {
+      from = PrefixRecipientState.disabled;
+      to = PrefixRecipientState.enabled;
+      cc = PrefixRecipientState.disabled;
+      bcc = PrefixRecipientState.disabled;
+      replyTo = PrefixRecipientState.disabled;
+    }
+
+    fromRecipientState.value = from;
+    toRecipientState.value = to;
+    ccRecipientState.value = cc;
+    bccRecipientState.value = bcc;
+    replyToRecipientState.value = replyTo;
   }
 }
