@@ -5282,7 +5282,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keyboardShortcutsSettingExplanation": "Actions sur la liste de mails et les mails",
+  "keyboardShortcutsSettingExplanation": "Actions sur la boîte de messagerie et les e-mails",
   "@keyboardShortcutsSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -5300,7 +5300,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageManagementAndSelection": "Gestion des mails & Sélection",
+  "messageManagementAndSelection": "Gestion des messages & Sélection",
   "@messageManagementAndSelection": {
     "type": "text",
     "placeholders_order": [],
@@ -5318,7 +5318,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "closeMailComposer": "Fermer l'éditeur de mail",
+  "closeMailComposer": "Fermer l'éditeur de message",
   "@closeMailComposer": {
     "type": "text",
     "placeholders_order": [],
@@ -5384,7 +5384,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveFolderContentToastMessage": "Echec lors du déplacement de tous les mails.",
+  "moveFolderContentToastMessage": "Échec lors du déplacement de tous les e-mails vers un autre dossier.",
   "@moveFolderContentToastMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -5440,6 +5440,24 @@
   },
   "manageYourTwakeAccount": "Gestion de votre compte Twake",
   "@manageYourTwakeAccount": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keyboardShortcuts": "Raccourcis clavier",
+  "@keyboardShortcuts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteMessage": "Supprimer le message",
+  "@deleteMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolderContent": "Déplacer le contenu du dossier",
+  "@moveFolderContent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
