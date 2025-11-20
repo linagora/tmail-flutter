@@ -16,6 +16,22 @@ class StorageController extends BaseController with SaaSPremiumMixin {
     return isPremiumAvailable(accountId: accountId, session: session);
   }
 
+  bool validateUserHasIsAlreadyHighestSubscription() {
+    final accountId = dashBoardController.accountId.value;
+    final session = dashBoardController.sessionCurrent;
+
+    if (accountId == null || session == null) {
+      return false;
+    }
+
+    return isAlreadyHighestSubscription(accountId: accountId, session: session);
+  }
+
+  bool get isUpgradeStorageIsDisabled {
+    return !validatePremiumIsAvailable() ||
+        validateUserHasIsAlreadyHighestSubscription();
+  }
+
   void onUpgradeStorage() {
     dashBoardController.paywallController?.navigateToPaywall();
   }
