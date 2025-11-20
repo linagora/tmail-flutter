@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
@@ -83,7 +84,8 @@ void main() {
       final emptyEmailMessageWidget = tester.widget<Text>(emptyEmailMessageWidgetFinder);
       expect(
         emptyEmailMessageWidget.data,
-        'We\'re sorry, there are no emails that match your current filter.');
+        AppLocalizations().noEmailMatchYourCurrentFilter,
+      );
     });
 
     testWidgets(
