@@ -1257,10 +1257,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "4c45f22279ab4079db50e1f376dd5f00fbed0fdb"
+      resolved-ref: "9db9bc96bf126d7c2d8547895476615cf63e925b"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "3.3.3"
+    version: "3.3.4"
   html_unescape:
     dependency: transitive
     description:
