@@ -5299,5 +5299,185 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "keyboardShortcuts": "Сочетания клавиш",
+  "@keyboardShortcuts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keyboardShortcutsSettingExplanation": "Действия с почтовым ящиком и письмами",
+  "@keyboardShortcutsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "navigationAndClosing": "Навигация и Закрытие",
+  "@navigationAndClosing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "readingAndReplying": "Чтение и Ответ",
+  "@readingAndReplying": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageManagementAndSelection": "Управление сообщениями и Выбор",
+  "@messageManagementAndSelection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "navigation": "Навигация",
+  "@navigation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reading": "Чтение",
+  "@reading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeMailComposer": "Закрыть редактор пиьсма",
+  "@closeMailComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeFocusFromSearch": "Убрать фокус из поиска",
+  "@removeFocusFromSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeModalWindow": "Закрыть модальное окно",
+  "@closeModalWindow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openNewMessage": "Открыть новое сообщение",
+  "@openNewMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailComposer": "Редактор письма",
+  "@mailComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "focusOnSearch": "Фокус на поиске",
+  "@focusOnSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openedModal": "Открытое модальное окно",
+  "@openedModal": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxList": "Список почтовых ящиков",
+  "@mailboxList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openedMailView": "Вид открытого письма",
+  "@openedMailView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxListWithSelectedMail": "Список почтовых ящиков (выбранное письмо)",
+  "@mailboxListWithSelectedMail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replyToAll": "Ответить всем",
+  "@replyToAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteMessage": "Удалить сообщение",
+  "@deleteMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolderContent": "Переместить содержимое папки",
+  "@moveFolderContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolderContentToastMessage": "Не удалось переместить все письма из этой папки в другую папку.",
+  "@moveFolderContentToastMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "favoriteMailboxDisplayName": "Избранное",
+  "@favoriteMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertLink": "Вставить ссылку",
+  "@insertLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "goTo": "Перейти к",
+  "@goTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "change": "Изменить",
+  "@change": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeLink": "Удалить ссылку",
+  "@removeLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "text": "Текст",
+  "@text": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "typeOrPasteLink": "Введите или вставьте ссылку",
+  "@typeOrPasteLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "apply": "Применить",
+  "@apply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageYourTwakeAccount": "Управляйте учетной записью Twake",
+  "@manageYourTwakeAccount": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
