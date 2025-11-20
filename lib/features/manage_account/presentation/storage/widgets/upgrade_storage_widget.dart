@@ -9,6 +9,8 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class UpgradeStorageWidget extends StatelessWidget {
   final ImagePaths imagePaths;
   final bool isMobile;
+  final bool isPremiumAvailable;
+  final bool isQuotaExceeds90Percent;
   final VoidCallback onUpgradeStorageAction;
 
   const UpgradeStorageWidget({
@@ -16,6 +18,8 @@ class UpgradeStorageWidget extends StatelessWidget {
     required this.imagePaths,
     required this.onUpgradeStorageAction,
     this.isMobile = false,
+    this.isPremiumAvailable = false,
+    this.isQuotaExceeds90Percent = false,
   });
 
   @override
@@ -27,40 +31,44 @@ class UpgradeStorageWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SvgPicture.asset(
-                imagePaths.icWarning,
-                width: 16,
-                height: 16,
-                fit: BoxFit.fill,
-              ),
-              const SizedBox(width: 7),
-              Expanded(
-                child: Text(
-                  appLocalizations.storageIsAlmostFullMessage,
-                  style: ThemeUtils.textStyleInter600().copyWith(
-                    color: AppColor.m3Neutral40,
-                    fontSize: 12,
-                    height: 16 / 12,
-                    letterSpacing: 0.4,
+          if (isQuotaExceeds90Percent)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SvgPicture.asset(
+                  imagePaths.icWarning,
+                  width: 16,
+                  height: 16,
+                  fit: BoxFit.fill,
+                ),
+                const SizedBox(width: 7),
+                Expanded(
+                  child: Text(
+                    appLocalizations.storageIsAlmostFullMessage,
+                    style: ThemeUtils.textStyleInter600().copyWith(
+                      color: AppColor.m3Neutral40,
+                      fontSize: 12,
+                      height: 16 / 12,
+                      letterSpacing: 0.4,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Container(
-            constraints: const BoxConstraints(minWidth: 179),
-            height: 48,
-            child: ConfirmDialogButton(
-              label: appLocalizations.upgradeStorage,
-              backgroundColor: AppColor.primaryMain,
-              textColor: Colors.white,
-              onTapAction: onUpgradeStorageAction,
+              ],
             ),
-          ),
+          if (isPremiumAvailable)
+            Container(
+              constraints: const BoxConstraints(minWidth: 179),
+              margin: isQuotaExceeds90Percent
+                  ? const EdgeInsetsDirectional.only(start: 16)
+                  : null,
+              height: 48,
+              child: ConfirmDialogButton(
+                label: appLocalizations.upgradeStorage,
+                backgroundColor: AppColor.primaryMain,
+                textColor: Colors.white,
+                onTapAction: onUpgradeStorageAction,
+              ),
+            ),
         ],
       ),
     );

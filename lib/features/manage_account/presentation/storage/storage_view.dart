@@ -83,19 +83,16 @@ class StorageView extends GetWidget<StorageController> with AppLoaderMixin {
                             quota: octetsQuota,
                             isMobile: isMobile,
                           ),
-                          Obx(() {
-                            if (controller.validatePremiumIsAvailable() &&
-                                PlatformInfo.isWeb) {
-                              return UpgradeStorageWidget(
-                                imagePaths: controller.imagePaths,
-                                isMobile: isMobile,
-                                onUpgradeStorageAction:
-                                  controller.onUpgradeStorage,
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          })
+                          UpgradeStorageWidget(
+                            imagePaths: controller.imagePaths,
+                            isMobile: isMobile,
+                            isPremiumAvailable: PlatformInfo.isWeb &&
+                                !controller.isUpgradeStorageIsDisabled,
+                            isQuotaExceeds90Percent:
+                              octetsQuota.allowedDisplayToQuotaBanner,
+                            onUpgradeStorageAction:
+                                controller.onUpgradeStorage,
+                          ),
                         ],
                       ),
                     ),
