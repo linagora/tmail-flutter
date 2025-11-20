@@ -5052,5 +5052,185 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "keyboardShortcuts": "键盘快捷键",
+  "@keyboardShortcuts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keyboardShortcutsSettingExplanation": "邮箱和邮件操作",
+  "@keyboardShortcutsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "navigationAndClosing": "导航和关闭",
+  "@navigationAndClosing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "readingAndReplying": "阅读和回复",
+  "@readingAndReplying": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageManagementAndSelection": "邮件管理和选择",
+  "@messageManagementAndSelection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "navigation": "导航",
+  "@navigation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reading": "阅读",
+  "@reading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeMailComposer": "关闭邮件编辑器",
+  "@closeMailComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeFocusFromSearch": "离开搜索框",
+  "@removeFocusFromSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeModalWindow": "关闭模态窗口",
+  "@closeModalWindow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openNewMessage": "打开新邮件",
+  "@openNewMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailComposer": "邮件编辑器",
+  "@mailComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "focusOnSearch": "聚焦搜索框",
+  "@focusOnSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openedModal": "已打开的模态窗口",
+  "@openedModal": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxList": "邮箱列表",
+  "@mailboxList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openedMailView": "已打开的邮件视图",
+  "@openedMailView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxListWithSelectedMail": "邮箱列表（已选邮件）",
+  "@mailboxListWithSelectedMail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replyToAll": "全部回复",
+  "@replyToAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteMessage": "删除邮件",
+  "@deleteMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolderContent": "移动文件夹内容",
+  "@moveFolderContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolderContentToastMessage": "无法将此文件夹中的所有邮件移动到另一个文件夹。",
+  "@moveFolderContentToastMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "favoriteMailboxDisplayName": "星标邮件",
+  "@favoriteMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertLink": "插入链接",
+  "@insertLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "goTo": "转到",
+  "@goTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "change": "更改",
+  "@change": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeLink": "移除链接",
+  "@removeLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "text": "文本",
+  "@text": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "typeOrPasteLink": "输入或粘贴链接",
+  "@typeOrPasteLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "apply": "应用",
+  "@apply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageYourTwakeAccount": "管理您的 Twake 账号",
+  "@manageYourTwakeAccount": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
