@@ -5281,5 +5281,47 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "keyboardShortcutsSettingExplanation": "Actions sur la liste de mails et les mails",
+  "@keyboardShortcutsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "navigationAndClosing": "Navigation & Fermeture",
+  "@navigationAndClosing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "readingAndReplying": "Lecture & Réponse",
+  "@readingAndReplying": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageManagementAndSelection": "Gestion des mails & Sélection",
+  "@messageManagementAndSelection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "navigation": "Navigation",
+  "@navigation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reading": "Lecture",
+  "@reading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeMailComposer": "Fermer l'éditeur de mail",
+  "@closeMailComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
