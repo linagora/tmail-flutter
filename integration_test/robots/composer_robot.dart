@@ -121,8 +121,12 @@ class ComposerRobot extends CoreRobot {
     await $(#save_as_draft_popup_item).tap();
   }
 
-  Future<void> tapRecipientExpandButton() async {
+  Future<void> tapToRecipientExpandButton() async {
     await $(#prefix_to_recipient_expand_button).tap();
+  }
+
+  Future<void> tapCcRecipientExpandButton() async {
+    await $(#prefix_cc_recipient_expand_button).tap();
   }
 
   Future<void> tapFromFieldPopupMenu() async {
