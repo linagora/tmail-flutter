@@ -1623,7 +1623,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enableSpamReport": "Cumasaigh tuairisc turscair",
+  "enableSpamReport": "Cumasaigh tuarascáil turscair",
   "@enableSpamReport": {
     "type": "text",
     "placeholders_order": [],
@@ -5055,6 +5055,186 @@
   },
   "mailHasBeenUnstarred": "Baineadh an réalta as ríomhphost",
   "@mailHasBeenUnstarred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keyboardShortcuts": "Aicearraí méarchláir",
+  "@keyboardShortcuts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "keyboardShortcutsSettingExplanation": "Gníomhartha bosca poist agus ríomhphoist",
+  "@keyboardShortcutsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "navigationAndClosing": "Loingseoireacht & Dúnadh",
+  "@navigationAndClosing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "readingAndReplying": "Léamh & Freagairt",
+  "@readingAndReplying": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageManagementAndSelection": "Bainistiú & Roghnú Teachtaireachtaí",
+  "@messageManagementAndSelection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "navigation": "Loingseoireacht",
+  "@navigation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reading": "Léitheoireacht",
+  "@reading": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeMailComposer": "Dún cumadóir ríomhphoist",
+  "@closeMailComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeFocusFromSearch": "Bain fócas den chuardach",
+  "@removeFocusFromSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeModalWindow": "Dún fuinneog mhódúil",
+  "@closeModalWindow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openNewMessage": "Oscail teachtaireacht nua",
+  "@openNewMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailComposer": "Cumadóir ríomhphoist",
+  "@mailComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "focusOnSearch": "Dírigh ar chuardach",
+  "@focusOnSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openedModal": "Modúil oscailte",
+  "@openedModal": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxList": "Liosta bosca poist",
+  "@mailboxList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openedMailView": "Radharc ríomhphoist oscailte",
+  "@openedMailView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailboxListWithSelectedMail": "Liosta bosca poist (ríomhphost roghnaithe)",
+  "@mailboxListWithSelectedMail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replyToAll": "Freagra a thabhairt do chách",
+  "@replyToAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteMessage": "Scrios an teachtaireacht",
+  "@deleteMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolderContent": "Bog ábhar an fhillteáin",
+  "@moveFolderContent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolderContentToastMessage": "Theip ar bhogadh gach ríomhphost ón bhfillteán seo go fillteán eile.",
+  "@moveFolderContentToastMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "favoriteMailboxDisplayName": "Réalta",
+  "@favoriteMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertLink": "Cuir nasc isteach",
+  "@insertLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "goTo": "Téigh go",
+  "@goTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "change": "Athraigh",
+  "@change": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeLink": "Bain an nasc",
+  "@removeLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "text": "Téacs",
+  "@text": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "typeOrPasteLink": "Clóscríobh nó greamaigh nasc",
+  "@typeOrPasteLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "apply": "Cuir i bhfeidhm",
+  "@apply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manageYourTwakeAccount": "Bainistigh do chuntas Twake",
+  "@manageYourTwakeAccount": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
