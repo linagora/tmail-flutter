@@ -1256,11 +1256,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "fix/summernote-link-popover-not-affect-image"
-      resolved-ref: ffff7c64bceb04ad61420fe419aa7af0a9fab128
+      ref: main
+      resolved-ref: "4c45f22279ab4079db50e1f376dd5f00fbed0fdb"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "3.3.2"
+    version: "3.3.3"
   html_unescape:
     dependency: transitive
     description:
