@@ -55,7 +55,7 @@ class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
     await composerRobot.addSubject(subject);
     await composerRobot.addContent(subject);
 
-    await composerRobot.tapRecipientExpandButton();
+    await composerRobot.tapToRecipientExpandButton();
     await $.pumpAndSettle();
     await _expectIdentityVisible(identity1);
 
@@ -81,7 +81,7 @@ class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
 
     await composerRobot.grantContactPermission();
 
-    await composerRobot.tapRecipientExpandButton();
+    await composerRobot.tapToRecipientExpandButton();
     await $.pumpAndSettle();
     await _expectIdentityVisible(identity2);
   }
