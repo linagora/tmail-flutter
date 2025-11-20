@@ -20,29 +20,45 @@ jobs:
           - os: android
             runner: ubuntu-latest
           - os: ios
-            runner: macos-14 # Use macos-14 runners because Xcode 16 only exists on macOS 14+.
+            runner: macos-14 # Xcode 16 is only available on macOS 14+
       fail-fast: false
 
     environment: prod
 
     steps:
+      # 🔄 Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup flutter
+      # 🧰 Setup SSH (required for private git@ dependencies during prebuild)
+      - name: Set up SSH for private Git dependencies
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      # ⚙️ Add GitHub to known hosts (avoid "Host key verification failed")
+      - name: Add GitHub to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      # 🚀 Setup Flutter SDK
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
-          cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
-          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+          cache-key: deps-${{ hashFiles('**/pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
 
+      # 🔥 Setup Firebase environment (required by setup-firebase.sh)
       - name: Setup Firebase env
         env:
           FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
         run: ./scripts/setup-firebase.sh
 
+      # 💎 Setup Fastlane (used for release and deployment)
       - name: Setup Fastlane
         uses: ruby/setup-ruby@v1
         with:
@@ -50,6 +66,7 @@ jobs:
           bundler-cache: true
           working-directory: ${{ matrix.os }}
 
+      # ☕️ Setup Java (only for Android)
       - name: Setup Java
         if: matrix.os == 'android'
         uses: actions/setup-java@v4
@@ -57,12 +74,14 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
+      # 🍏 Select Xcode version (only for iOS)
       - name: Select Xcode version
         if: matrix.os == 'ios'
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
 
+      # 🤖 Setup Android environment (Play Store credentials)
       - name: Setup Android environment
         if: matrix.os == 'android'
         env:
@@ -71,14 +90,17 @@ jobs:
         run: ../scripts/setup-android.sh
         working-directory: ${{ matrix.os }}
 
+      # 🍎 Setup iOS environment (certificates and provisioning)
       - name: Setup iOS environment
         if: matrix.os == 'ios'
         run: ../scripts/setup-ios.sh
         working-directory: ${{ matrix.os }}
 
+      # 🧱 Prebuild step (fetch deps, run build_runner, intl generation)
       - name: Run prebuild
         run: ./scripts/prebuild.sh
 
+      # 🚀 Build and deploy release (App Store / Play Store)
       - name: Build and deploy
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}

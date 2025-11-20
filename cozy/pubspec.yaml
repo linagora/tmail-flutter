@@ -12,7 +12,7 @@ dependencies:
 
   linagora_design_flutter:
     git:
-      url: https://github.com/linagora/linagora-design-flutter.git
+      url: git@github.com:linagora/linagora-design-flutter.git
       ref: master
 
 dev_dependencies:

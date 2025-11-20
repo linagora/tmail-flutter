@@ -16,6 +16,7 @@ class ConstantsUI {
     'NotoSansSC', // Simplified Chinese (zh_Hans)
     'NotoSansMath', // Math symbols (∑, ∫, √, etc.)
     'NotoSansEgyptianHieroglyphs', // Egyptian Hieroglyphs (𓀀)
+    'NotoColorEmoji', // Color emoji
     'NotoEmoji', // Monochrome emoji
     'NotoSansSymbols', // Miscellaneous symbols and arrows
     'NotoSansSymbols2', // Extended symbol support

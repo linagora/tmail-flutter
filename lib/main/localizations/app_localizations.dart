@@ -5422,4 +5422,11 @@ class AppLocalizations {
       name: 'manageYourTwakeAccount',
     );
   }
+
+  String get emoji {
+    return Intl.message(
+      'Emoji',
+      name: 'emoji',
+    );
+  }
 }

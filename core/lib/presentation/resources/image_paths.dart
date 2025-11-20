@@ -261,6 +261,8 @@ class ImagePaths {
   String get icRemoveLink => _getImagePath('ic_remove_link.svg');
   String get icText => _getImagePath('ic_text.svg');
   String get icUser => _getImagePath('ic_user.svg');
+  String get icEmoji => _getImagePath('ic_emoji.svg');
+  String get icSearchEmojiEmpty => _getImagePath('ic_search_emoji_empty.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

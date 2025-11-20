@@ -3,7 +3,7 @@ on:
     paths:
       - "**/*.dart"
 
-name: Deploy PR on Github Pages
+name: Deploy PR on GitHub Pages
 
 env:
   FLUTTER_VERSION: 3.32.8
@@ -20,7 +20,7 @@ jobs:
       url: ${{ steps.configure.outputs.URL }}
 
     steps:
-      # 🧹 Free up space before building
+      # 🧹 Free up disk space before building to avoid "No space left" errors
       - name: Free up disk space before build
         run: |
           echo "=== Disk space before cleanup ==="
@@ -33,36 +33,52 @@ jobs:
           echo "=== Disk space after cleanup ==="
           df -h
 
-      # 🔄 Checkout code
+      # 🔄 Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🧰 Setup Flutter
+      # 🧰 Setup SSH for private Git dependencies (required for git@github.com)
+      - name: Set up SSH for private Git dependencies
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      # ⚙️ Add GitHub to known hosts to prevent "Host key verification failed"
+      - name: Add GitHub to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      # 🚀 Setup Flutter SDK
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
-          cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
-          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+          cache-key: deps-${{ hashFiles('**/pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
 
       # 🧹 Clean Flutter cache before building
       - name: Flutter clean
         run: flutter clean
 
-      # 📦 Run prebuild (if any)
+      # 🧹 Optionally clean pub cache to avoid stale SSH clones
+      - name: Clean pub cache
+        run: flutter pub cache clean || true
+
+      # 📦 Run prebuild script (if any, e.g. code generation, assets)
       - name: Run prebuild
         run: ./scripts/prebuild.sh
 
-      # ⚙️ Configure environment for PR
+      # ⚙️ Configure web environment for PR deployment
       - name: Configure environments
         id: configure
         env:
           FOLDER: ${{ github.event.pull_request.number }}
         run: ./scripts/configure-web-environment.sh
 
-      # 🧱 Build Flutter Web (release)
+      # 🧱 Build Flutter Web (release mode)
       - name: Build Web (Release)
         env:
           FOLDER: ${{ github.event.pull_request.number }}
@@ -73,7 +89,7 @@ jobs:
           echo "=== Disk usage after build ==="
           df -h
 
-      # 🚀 Deploy to GitHub Pages
+      # 🚀 Deploy to GitHub Pages (each PR has its own subfolder)
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -82,7 +98,7 @@ jobs:
           keep_files: true
           publish_dir: "build/web"
 
-      # 🧹 Clean up after build to save space
+      # 🧹 Cleanup after build to free up disk space
       - name: Cleanup after deploy
         if: always()
         run: |
@@ -91,7 +107,7 @@ jobs:
           echo "=== Disk usage after cleanup ==="
           df -h
 
-      # 💬 Create or update comments on PR
+      # 💬 Find existing deployment comment on PR (if exists)
       - name: Find deployment comment
         uses: peter-evans/find-comment@v3
         id: fc
@@ -100,6 +116,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body-includes: "This PR has been deployed to"
 
+      # 💬 Create or update the comment with the PR deployment URL
       - name: Create or update deployment comment
         uses: peter-evans/create-or-update-comment@v4
         with:
