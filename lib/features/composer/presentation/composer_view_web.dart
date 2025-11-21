@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/list_recipi
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
+import 'package:tmail_ui_user/features/ai/presentation/widgets/ai_scribe_suggestion_modal.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/bottom_bar_composer_widget.dart';
@@ -266,6 +267,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                         ),
                                       onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                       onKeyDownEditorAction: controller.onKeyDownEditorAction,
+                                      imagePaths: controller.imagePaths,
+                                      onTextSelectionChanged: controller.handleTextSelection,
+                                      onAIScribeAction: controller.handleAIScribeActionClick,
                                     ));
                                   }
                                 ),
@@ -330,6 +334,17 @@ class ComposerView extends GetWidget<ComposerController> {
                             } else {
                               return const SizedBox.shrink();
                             }
+                          }),
+                          Obx(() {
+                            if (controller.aiScribeSuggestion.value != null) {
+                              return AIScribeSuggestionModal(
+                                suggestion: controller.aiScribeSuggestion.value!,
+                                onClose: controller.closeAIScribeSuggestionModal,
+                                onInsert: controller.insertAIScribeSuggestion,
+                                imagePaths: controller.imagePaths,
+                              );
+                            }
+                            return const SizedBox.shrink();
                           }),
                         ],
                       ),
@@ -508,6 +523,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                                 ),
                                               onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                               onKeyDownEditorAction: controller.onKeyDownEditorAction,
+                                              imagePaths: controller.imagePaths,
+                                              onTextSelectionChanged: controller.handleTextSelection,
+                                              onAIScribeAction: controller.handleAIScribeActionClick,
                                             );
                                           });
                                         }
@@ -600,6 +618,17 @@ class ComposerView extends GetWidget<ComposerController> {
                           } else {
                             return const SizedBox.shrink();
                           }
+                        }),
+                        Obx(() {
+                          if (controller.aiScribeSuggestion.value != null) {
+                            return AIScribeSuggestionModal(
+                              suggestion: controller.aiScribeSuggestion.value!,
+                              onClose: controller.closeAIScribeSuggestionModal,
+                              onInsert: controller.insertAIScribeSuggestion,
+                              imagePaths: controller.imagePaths,
+                            );
+                          }
+                          return const SizedBox.shrink();
                         }),
                       ],
                     ),
@@ -781,6 +810,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                               ),
                                             onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                             onKeyDownEditorAction: controller.onKeyDownEditorAction,
+                                            imagePaths: controller.imagePaths,
+                                            onTextSelectionChanged: controller.handleTextSelection,
+                                            onAIScribeAction: controller.handleAIScribeActionClick,
                                           ));
                                         }
                                       ),
@@ -871,6 +903,17 @@ class ComposerView extends GetWidget<ComposerController> {
                           } else {
                             return const SizedBox.shrink();
                           }
+                        }),
+                        Obx(() {
+                          if (controller.aiScribeSuggestion.value != null) {
+                            return AIScribeSuggestionModal(
+                              suggestion: controller.aiScribeSuggestion.value!,
+                              onClose: controller.closeAIScribeSuggestionModal,
+                              onInsert: controller.insertAIScribeSuggestion,
+                              imagePaths: controller.imagePaths,
+                            );
+                          }
+                          return const SizedBox.shrink();
                         }),
                       ],
                     ),

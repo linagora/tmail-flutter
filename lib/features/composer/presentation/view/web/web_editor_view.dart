@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/html_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
@@ -36,6 +37,9 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final OnPasteImageFailureAction? onPasteImageFailureAction;
   final OnInitialContentLoadComplete? onInitialContentLoadComplete;
   final OnKeyDownEditorAction? onKeyDownEditorAction;
+  final ImagePaths? imagePaths;
+  final OnTextSelectionChanged? onTextSelectionChanged;
+  final OnAIScribeAction? onAIScribeAction;
 
   const WebEditorView({
     super.key,
@@ -59,6 +63,9 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
     this.onPasteImageFailureAction,
     this.onInitialContentLoadComplete,
     this.onKeyDownEditorAction,
+    this.imagePaths,
+    this.onTextSelectionChanged,
+    this.onAIScribeAction,
   });
 
   @override
@@ -91,6 +98,9 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onPasteImageFailureAction: onPasteImageFailureAction,
           onInitialContentLoadComplete: onInitialContentLoadComplete,
           onKeyDownEditorAction: onKeyDownEditorAction,
+          imagePaths: imagePaths,
+          onTextSelectionChanged: onTextSelectionChanged,
+          onAIScribeAction: onAIScribeAction,
         );
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
@@ -123,6 +133,9 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onPasteImageFailureAction: onPasteImageFailureAction,
             onInitialContentLoadComplete: onInitialContentLoadComplete,
             onKeyDownEditorAction: onKeyDownEditorAction,
+            imagePaths: imagePaths,
+            onTextSelectionChanged: onTextSelectionChanged,
+            onAIScribeAction: onAIScribeAction,
           ),
           (success) {
             if (success is GetEmailContentLoading) {
@@ -157,6 +170,9 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onPasteImageFailureAction: onPasteImageFailureAction,
                 onInitialContentLoadComplete: onInitialContentLoadComplete,
                 onKeyDownEditorAction: onKeyDownEditorAction,
+                imagePaths: imagePaths,
+                onTextSelectionChanged: onTextSelectionChanged,
+                onAIScribeAction: onAIScribeAction,
               );
             }
           }
@@ -197,6 +213,9 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               onPasteImageFailureAction: onPasteImageFailureAction,
               onInitialContentLoadComplete: onInitialContentLoadComplete,
               onKeyDownEditorAction: onKeyDownEditorAction,
+              imagePaths: imagePaths,
+              onTextSelectionChanged: onTextSelectionChanged,
+              onAIScribeAction: onAIScribeAction,
             );
           },
           (success) {
@@ -232,6 +251,9 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onPasteImageFailureAction: onPasteImageFailureAction,
                 onInitialContentLoadComplete: onInitialContentLoadComplete,
                 onKeyDownEditorAction: onKeyDownEditorAction,
+                imagePaths: imagePaths,
+                onTextSelectionChanged: onTextSelectionChanged,
+                onAIScribeAction: onAIScribeAction,
               );
             }
           }
@@ -257,6 +279,9 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onPasteImageFailureAction: onPasteImageFailureAction,
           onInitialContentLoadComplete: onInitialContentLoadComplete,
           onKeyDownEditorAction: onKeyDownEditorAction,
+          imagePaths: imagePaths,
+          onTextSelectionChanged: onTextSelectionChanged,
+          onAIScribeAction: onAIScribeAction,
         );
     }
   }

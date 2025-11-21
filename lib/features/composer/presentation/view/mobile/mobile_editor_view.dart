@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/html_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
@@ -19,6 +20,9 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
   final OnCreatedEditorAction onCreatedEditorAction;
   final OnLoadCompletedEditorAction onLoadCompletedEditorAction;
   final OnEditorContentHeightChanged? onEditorContentHeightChanged;
+  final ImagePaths? imagePaths;
+  final OnTextSelectionChanged? onTextSelectionChanged;
+  final OnAIScribeAction? onAIScribeAction;
 
   const MobileEditorView({
     super.key,
@@ -27,6 +31,9 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
     this.arguments,
     this.contentViewState,
     this.onEditorContentHeightChanged,
+    this.imagePaths,
+    this.onTextSelectionChanged,
+    this.onAIScribeAction,
   });
 
   @override
@@ -147,6 +154,9 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
       onCreatedEditorAction: onCreatedEditorAction,
       onLoadCompletedEditorAction: onLoadCompletedEditorAction,
       onEditorContentHeightChanged: onEditorContentHeightChanged,
+      imagePaths: imagePaths,
+      onTextSelectionChanged: onTextSelectionChanged,
+      onAIScribeAction: onAIScribeAction,
     );
   }
 }

@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/tabl
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
+import 'package:tmail_ui_user/features/ai/presentation/widgets/ai_scribe_suggestion_modal.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -50,10 +51,12 @@ class ComposerView extends GetWidget<ComposerController> {
         childBuilder: (_, constraints) => SafeArea(
           left: !controller.responsiveUtils.isLandscapeMobile(context),
           right: !controller.responsiveUtils.isLandscapeMobile(context),
-          child: Container(
-            color: ComposerStyle.mobileBackgroundColor,
-            child: Column(
-              children: [
+          child: Stack(
+            children: [
+              Container(
+                color: ComposerStyle.mobileBackgroundColor,
+                child: Column(
+                  children: [
                 if (controller.responsiveUtils.isLandscapeMobile(context))
                   Obx(() => LandscapeAppBarComposerWidget(
                     imagePaths: controller.imagePaths,
@@ -242,6 +245,9 @@ class ComposerView extends GetWidget<ComposerController> {
                               onCreatedEditorAction: controller.onCreatedMobileEditorAction,
                               onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                               onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
+                              imagePaths: controller.imagePaths,
+                              onTextSelectionChanged: controller.handleTextSelection,
+                              onAIScribeAction: controller.handleAIScribeActionClick,
                             ),
                           )),
                           Obx(() {
@@ -261,7 +267,21 @@ class ComposerView extends GetWidget<ComposerController> {
                     ),
                   )
                 )
-              ])
+                  ],
+                ),
+              ),
+              Obx(() {
+                if (controller.aiScribeSuggestion.value != null) {
+                  return AIScribeSuggestionModal(
+                    suggestion: controller.aiScribeSuggestion.value!,
+                    onClose: controller.closeAIScribeSuggestionModal,
+                    onInsert: controller.insertAIScribeSuggestion,
+                    imagePaths: controller.imagePaths,
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
+            ],
           ),
         ),
       ),
@@ -269,188 +289,206 @@ class ComposerView extends GetWidget<ComposerController> {
         keyboardRichTextController: controller.richTextMobileTabletController!.richTextController,
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onClearFocusAction: controller.clearFocus,
-        childBuilder: (_, constraints) => ColoredBox(
-          color: ComposerStyle.mobileBackgroundColor,
-          child: Column(
-            children: [
-              Obx(() => TabletAppBarComposerWidget(
-                imagePaths: controller.imagePaths,
-                emailSubject: controller.subjectEmail.value ?? '',
-                onCloseViewAction: () => controller.handleClickCloseComposer(context),
-                constraints: constraints,
-                isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
-                attachFileAction: () => controller.openPickAttachmentMenu(
-                  context,
-                  _pickAttachmentsActionTiles(context)
-                ),
-                insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
-              )),
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: controller.scrollController,
-                  physics: const ClampingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Obx(() => Column(
+        childBuilder: (_, constraints) => Stack(
+          children: [
+            ColoredBox(
+              color: ComposerStyle.mobileBackgroundColor,
+              child: Column(
+                children: [
+                  Obx(() => TabletAppBarComposerWidget(
+                    imagePaths: controller.imagePaths,
+                    emailSubject: controller.subjectEmail.value ?? '',
+                    onCloseViewAction: () => controller.handleClickCloseComposer(context),
+                    constraints: constraints,
+                    isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
+                    attachFileAction: () => controller.openPickAttachmentMenu(
+                      context,
+                      _pickAttachmentsActionTiles(context)
+                    ),
+                    insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
+                  )),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: controller.scrollController,
+                      physics: const ClampingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (controller.fromRecipientState.value == PrefixRecipientState.enabled)
-                            FromComposerDropDownWidget(
-                              items: controller.listFromIdentities,
-                              itemSelected: controller.identitySelected.value,
-                              dropdownKey: controller.identityDropdownKey,
-                              imagePaths: controller.imagePaths,
-                              padding: ComposerStyle.mobileRecipientPadding,
-                              margin: ComposerStyle.mobileRecipientMargin,
-                              onChangeIdentity: controller.onChangeIdentity,
+                          Obx(() => Column(
+                            children: [
+                              if (controller.fromRecipientState.value == PrefixRecipientState.enabled)
+                                FromComposerDropDownWidget(
+                                  items: controller.listFromIdentities,
+                                  itemSelected: controller.identitySelected.value,
+                                  dropdownKey: controller.identityDropdownKey,
+                                  imagePaths: controller.imagePaths,
+                                  padding: ComposerStyle.mobileRecipientPadding,
+                                  margin: ComposerStyle.mobileRecipientMargin,
+                                  onChangeIdentity: controller.onChangeIdentity,
+                                ),
+                              Obx(() {
+                                if (controller.recipientsCollapsedState.value == PrefixRecipientState.enabled) {
+                                  return RecipientsCollapsedComposerWidget(
+                                    listEmailAddress: controller.allListEmailAddressWithoutReplyTo,
+                                    margin: ComposerStyle.mobileRecipientMargin,
+                                    onShowAllRecipientsAction: controller.showFullRecipients,
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                              Obx(() {
+                                if (controller.toRecipientState.value == PrefixRecipientState.enabled) {
+                                  return _buildRecipientComposerWidget(
+                                    prefix: PrefixEmailAddress.to,
+                                    controller: controller,
+                                    maxWidth: constraints.maxWidth,
+                                    listEmailAddress: controller.listToEmailAddress,
+                                    textController: controller.toEmailAddressController,
+                                    focusNode: controller.toAddressFocusNode,
+                                    focusNodeKeyboard: controller.toAddressFocusNodeKeyboard,
+                                    keyTagEditor: controller.keyToEmailTagEditor,
+                                    nextFocusNode: controller.getNextFocusOfToEmailAddress(),
+                                    isMobile: true,
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                              Obx(() {
+                                if (controller.ccRecipientState.value == PrefixRecipientState.enabled) {
+                                  return _buildRecipientComposerWidget(
+                                    prefix: PrefixEmailAddress.cc,
+                                    controller: controller,
+                                    maxWidth: constraints.maxWidth,
+                                    listEmailAddress: controller.listCcEmailAddress,
+                                    textController: controller.ccEmailAddressController,
+                                    focusNode: controller.ccAddressFocusNode,
+                                    focusNodeKeyboard: controller.ccAddressFocusNodeKeyboard,
+                                    keyTagEditor: controller.keyCcEmailTagEditor,
+                                    nextFocusNode: controller.getNextFocusOfCcEmailAddress(),
+                                    isMobile: true,
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                              Obx(() {
+                                if (controller.bccRecipientState.value == PrefixRecipientState.enabled) {
+                                  return _buildRecipientComposerWidget(
+                                    prefix: PrefixEmailAddress.bcc,
+                                    controller: controller,
+                                    maxWidth: constraints.maxWidth,
+                                    listEmailAddress: controller.listBccEmailAddress,
+                                    textController: controller.bccEmailAddressController,
+                                    focusNode: controller.bccAddressFocusNode,
+                                    focusNodeKeyboard: controller.bccAddressFocusNodeKeyboard,
+                                    keyTagEditor: controller.keyBccEmailTagEditor,
+                                    nextFocusNode: controller.getNextFocusOfBccEmailAddress(),
+                                    isMobile: true,
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                              Obx(() {
+                                if (controller.replyToRecipientState.value == PrefixRecipientState.enabled) {
+                                  return _buildRecipientComposerWidget(
+                                    prefix: PrefixEmailAddress.replyTo,
+                                    controller: controller,
+                                    maxWidth: constraints.maxWidth,
+                                    listEmailAddress: controller.listReplyToEmailAddress,
+                                    textController: controller.replyToEmailAddressController,
+                                    focusNode: controller.replyToAddressFocusNode,
+                                    focusNodeKeyboard: controller.replyToAddressFocusNodeKeyboard,
+                                    keyTagEditor: controller.keyReplyToEmailTagEditor,
+                                    nextFocusNode: controller.subjectEmailInputFocusNode,
+                                    isMobile: true,
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                            ],
+                          )),
+                          SubjectComposerWidget(
+                            focusNode: controller.subjectEmailInputFocusNode,
+                            textController: controller.subjectEmailInputController,
+                            onTextChange: controller.setSubjectEmail,
+                            padding: ComposerStyle.mobileSubjectPadding,
+                            margin: ComposerStyle.mobileSubjectMargin,
+                          ),
+                          Obx(() {
+                            if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+                              return MobileAttachmentComposerWidget(
+                                listFileUploaded: controller.uploadController.listUploadAttachments,
+                                onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                          Obx(() => Center(
+                            child: InsertImageLoadingBarWidget(
+                              uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
+                              viewState: controller.viewState.value,
+                              margin: ComposerStyle.insertImageLoadingBarMargin,
                             ),
+                          )),
+                          Obx(() => Padding(
+                            padding: ComposerStyle.mobileEditorPadding,
+                            child: MobileEditorView(
+                              arguments: controller.composerArguments.value,
+                              contentViewState: controller.emailContentsViewState.value,
+                              onCreatedEditorAction: controller.onCreatedMobileEditorAction,
+                              onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
+                              onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
+                              imagePaths: controller.imagePaths,
+                              onTextSelectionChanged: controller.handleTextSelection,
+                              onAIScribeAction: controller.handleAIScribeActionClick,
+                            ),
+                          )),
                           Obx(() {
-                            if (controller.recipientsCollapsedState.value == PrefixRecipientState.enabled) {
-                              return RecipientsCollapsedComposerWidget(
-                                listEmailAddress: controller.allListEmailAddressWithoutReplyTo,
-                                margin: ComposerStyle.mobileRecipientMargin,
-                                onShowAllRecipientsAction: controller.showFullRecipients,
+                            if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
+                              return ViewEntireMessageWithMessageClippedWidget(
+                                buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
+                                onViewEntireMessageAction: controller.viewEntireContent,
+                                topPadding: 12,
                               );
                             } else {
                               return const SizedBox.shrink();
                             }
                           }),
-                          Obx(() {
-                            if (controller.toRecipientState.value == PrefixRecipientState.enabled) {
-                              return _buildRecipientComposerWidget(
-                                prefix: PrefixEmailAddress.to,
-                                controller: controller,
-                                maxWidth: constraints.maxWidth,
-                                listEmailAddress: controller.listToEmailAddress,
-                                textController: controller.toEmailAddressController,
-                                focusNode: controller.toAddressFocusNode,
-                                focusNodeKeyboard: controller.toAddressFocusNodeKeyboard,
-                                keyTagEditor: controller.keyToEmailTagEditor,
-                                nextFocusNode: controller.getNextFocusOfToEmailAddress(),
-                                isMobile: true,
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                          Obx(() {
-                            if (controller.ccRecipientState.value == PrefixRecipientState.enabled) {
-                              return _buildRecipientComposerWidget(
-                                prefix: PrefixEmailAddress.cc,
-                                controller: controller,
-                                maxWidth: constraints.maxWidth,
-                                listEmailAddress: controller.listCcEmailAddress,
-                                textController: controller.ccEmailAddressController,
-                                focusNode: controller.ccAddressFocusNode,
-                                focusNodeKeyboard: controller.ccAddressFocusNodeKeyboard,
-                                keyTagEditor: controller.keyCcEmailTagEditor,
-                                nextFocusNode: controller.getNextFocusOfCcEmailAddress(),
-                                isMobile: true,
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                          Obx(() {
-                            if (controller.bccRecipientState.value == PrefixRecipientState.enabled) {
-                              return _buildRecipientComposerWidget(
-                                prefix: PrefixEmailAddress.bcc,
-                                controller: controller,
-                                maxWidth: constraints.maxWidth,
-                                listEmailAddress: controller.listBccEmailAddress,
-                                textController: controller.bccEmailAddressController,
-                                focusNode: controller.bccAddressFocusNode,
-                                focusNodeKeyboard: controller.bccAddressFocusNodeKeyboard,
-                                keyTagEditor: controller.keyBccEmailTagEditor,
-                                nextFocusNode: controller.getNextFocusOfBccEmailAddress(),
-                                isMobile: true,
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                          Obx(() {
-                            if (controller.replyToRecipientState.value == PrefixRecipientState.enabled) {
-                              return _buildRecipientComposerWidget(
-                                prefix: PrefixEmailAddress.replyTo,
-                                controller: controller,
-                                maxWidth: constraints.maxWidth,
-                                listEmailAddress: controller.listReplyToEmailAddress,
-                                textController: controller.replyToEmailAddressController,
-                                focusNode: controller.replyToAddressFocusNode,
-                                focusNodeKeyboard: controller.replyToAddressFocusNodeKeyboard,
-                                keyTagEditor: controller.keyReplyToEmailTagEditor,
-                                nextFocusNode: controller.subjectEmailInputFocusNode,
-                                isMobile: true,
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
+                          SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
                         ],
-                      )),
-                      SubjectComposerWidget(
-                        focusNode: controller.subjectEmailInputFocusNode,
-                        textController: controller.subjectEmailInputController,
-                        onTextChange: controller.setSubjectEmail,
-                        padding: ComposerStyle.mobileSubjectPadding,
-                        margin: ComposerStyle.mobileSubjectMargin,
                       ),
-                      Obx(() {
-                        if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                          return MobileAttachmentComposerWidget(
-                            listFileUploaded: controller.uploadController.listUploadAttachments,
-                            onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                      Obx(() => Center(
-                        child: InsertImageLoadingBarWidget(
-                          uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
-                          viewState: controller.viewState.value,
-                          margin: ComposerStyle.insertImageLoadingBarMargin,
-                        ),
-                      )),
-                      Obx(() => Padding(
-                        padding: ComposerStyle.mobileEditorPadding,
-                        child: MobileEditorView(
-                          arguments: controller.composerArguments.value,
-                          contentViewState: controller.emailContentsViewState.value,
-                          onCreatedEditorAction: controller.onCreatedMobileEditorAction,
-                          onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
-                          onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
-                        ),
-                      )),
-                      Obx(() {
-                        if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
-                          return ViewEntireMessageWithMessageClippedWidget(
-                            buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
-                            onViewEntireMessageAction: controller.viewEntireContent,
-                            topPadding: 12,
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                      SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
-                    ],
+                    )
                   ),
-                )
-              ),
-              Obx(() => TabletBottomBarComposerWidget(
-                imagePaths: controller.imagePaths,
-                hasReadReceipt: controller.hasRequestReadReceipt.value,
-                isMarkAsImportant: controller.isMarkAsImportant.value,
-                deleteComposerAction: controller.handleClickDeleteComposer,
-                saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
-                sendMessageAction: () => controller.handleClickSendButton(context),
-                requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
-                toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
-              )),
-            ]
-          )
+                  Obx(() => TabletBottomBarComposerWidget(
+                    imagePaths: controller.imagePaths,
+                    hasReadReceipt: controller.hasRequestReadReceipt.value,
+                    isMarkAsImportant: controller.isMarkAsImportant.value,
+                    deleteComposerAction: controller.handleClickDeleteComposer,
+                    saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
+                    sendMessageAction: () => controller.handleClickSendButton(context),
+                    requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
+                    toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
+                  )),
+                ]
+              )
+            ),
+            Obx(() {
+              if (controller.aiScribeSuggestion.value != null) {
+                return AIScribeSuggestionModal(
+                  suggestion: controller.aiScribeSuggestion.value!,
+                  onClose: controller.closeAIScribeSuggestionModal,
+                  onInsert: controller.insertAIScribeSuggestion,
+                  imagePaths: controller.imagePaths,
+                );
+              }
+              return const SizedBox.shrink();
+            }),
+          ],
         ),
       ),
     );

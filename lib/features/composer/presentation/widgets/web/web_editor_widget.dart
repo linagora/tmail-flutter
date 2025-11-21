@@ -1,14 +1,20 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:tmail_ui_user/features/ai/presentation/model/ai_scribe_menu_action.dart';
+import 'package:tmail_ui_user/features/ai/presentation/styles/ai_scribe_styles.dart';
+import 'package:tmail_ui_user/features/ai/presentation/widgets/ai_scribe_menu_content.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mixins/ai_scribe_overlay_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/signature_tooltip_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 typedef OnChangeContentEditorAction = Function(String? text);
 typedef OnInitialContentEditorAction = Function(String text);
@@ -24,6 +30,8 @@ typedef OnPasteImageFailureAction = Function(
     UploadError uploadError);
 typedef OnInitialContentLoadComplete = Function(String text);
 typedef OnKeyDownEditorAction = Function(int? keyCode);
+typedef OnTextSelectionChanged = Function(String? selectedText);
+typedef OnAIScribeAction = Function(AIScribeMenuAction action);
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -46,6 +54,9 @@ class WebEditorWidget extends StatefulWidget {
   final OnPasteImageFailureAction? onPasteImageFailureAction;
   final OnInitialContentLoadComplete? onInitialContentLoadComplete;
   final OnKeyDownEditorAction? onKeyDownEditorAction;
+  final ImagePaths? imagePaths;
+  final OnTextSelectionChanged? onTextSelectionChanged;
+  final OnAIScribeAction? onAIScribeAction;
 
   const WebEditorWidget({
     super.key,
@@ -68,24 +79,76 @@ class WebEditorWidget extends StatefulWidget {
     this.onPasteImageFailureAction,
     this.onInitialContentLoadComplete,
     this.onKeyDownEditorAction,
+    this.imagePaths,
+    this.onTextSelectionChanged,
+    this.onAIScribeAction,
   });
 
   @override
   State<WebEditorWidget> createState() => _WebEditorState();
 }
 
-class _WebEditorState extends State<WebEditorWidget> {
+class _WebEditorState extends State<WebEditorWidget> with AIScribeOverlayMixin {
 
   static const double _defaultHtmlEditorHeight = 550;
 
   late HtmlEditorController _editorController;
   bool _dropListenerRegistered = false;
+  bool _selectionChangeListenerRegistered = false;
   Function(Event)? _dropListener;
+  Function(Event)? _selectionChangeListener;
 
   OverlayEntry? _signatureTooltipEntry;
   final GlobalKey _signatureTooltipKey = GlobalKey();
   double _signatureTooltipLeft = 0;
   bool _signatureTooltipReady = false;
+
+  @override
+  ImagePaths? get aiScribeImagePaths => widget.imagePaths;
+
+  @override
+  Function(AIScribeMenuAction)? get aiScribeActionCallback => widget.onAIScribeAction;
+
+  @override
+  Function(String?)? get textSelectionChangedCallback => widget.onTextSelectionChanged;
+
+  @override
+  Widget buildAIScribeButtonWrapper({
+    required BuildContext context,
+    required Widget child,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: PointerInterceptor(child: child),
+    );
+  }
+
+  @override
+  Widget buildAIScribeMenu({
+    required BuildContext context,
+    required Function(AIScribeMenuAction) onActionSelected,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: PointerInterceptor(
+        child: MouseRegion(
+          child: Material(
+            elevation: 1,
+            borderRadius: BorderRadius.circular(AIScribeSizes.menuBorderRadius),
+            child: IntrinsicWidth(
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 200),
+                child: AIScribeMenuContent(
+                  onActionSelected: onActionSelected,
+                  useSubmenuItemStyle: false,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -100,6 +163,19 @@ class _WebEditorState extends State<WebEditorWidget> {
     };
     if (_dropListener != null) {
       window.addEventListener("message", _dropListener!);
+    }
+
+    _selectionChangeListener = (event) {
+      if (event is MessageEvent) {
+        final data = jsonDecode(event.data);
+
+        if (data['name'] == HtmlUtils.registerSelectionChangeListener.name) {
+          parseSelectionData(data);
+        }
+      }
+    };
+    if (_selectionChangeListener != null) {
+      window.addEventListener("message", _selectionChangeListener!);
     }
   }
 
@@ -120,7 +196,12 @@ class _WebEditorState extends State<WebEditorWidget> {
       window.removeEventListener("message", _dropListener!);
       _dropListener = null;
     }
+    if (_selectionChangeListener != null) {
+      window.removeEventListener("message", _selectionChangeListener!);
+      _selectionChangeListener = null;
+    }
     _hideSignatureTooltip();
+    disposeAIScribeOverlays();
     super.dispose();
   }
 
@@ -164,6 +245,10 @@ class _WebEditorState extends State<WebEditorWidget> {
             script: HtmlUtils.unregisterDropListener.script,
           ),
           WebScript(
+            name: HtmlUtils.registerSelectionChangeListener.name,
+            script: HtmlUtils.registerSelectionChangeListener.script,
+          ),
+          WebScript(
             name: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).name,
             script: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).script,
           ),
@@ -183,6 +268,11 @@ class _WebEditorState extends State<WebEditorWidget> {
             _editorController.evaluateJavascriptWeb(
               HtmlUtils.registerDropListener.name);
             _dropListenerRegistered = true;
+          }
+          if (!_selectionChangeListenerRegistered) {
+            _editorController.evaluateJavascriptWeb(
+              HtmlUtils.registerSelectionChangeListener.name);
+            _selectionChangeListenerRegistered = true;
           }
         },
         onFocus: widget.onFocus,

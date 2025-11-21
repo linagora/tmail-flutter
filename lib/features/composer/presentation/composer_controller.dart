@@ -78,6 +78,11 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_li
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
+import 'package:tmail_ui_user/features/ai/data/datasource_impl/ai_datasource_impl.dart';
+import 'package:tmail_ui_user/features/ai/data/repository/ai_repository_impl.dart';
+import 'package:tmail_ui_user/features/ai/domain/state/generate_ai_text_state.dart';
+import 'package:tmail_ui_user/features/ai/domain/usecases/generate_ai_text_interactor.dart';
+import 'package:tmail_ui_user/features/ai/presentation/model/ai_scribe_menu_action.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -150,6 +155,8 @@ class ComposerController extends BaseController
   final replyToRecipientState = PrefixRecipientState.disabled.obs;
   final recipientsCollapsedState = PrefixRecipientState.disabled.obs;
   final prefixRootState = PrefixEmailAddress.to.obs;
+  final selectedText = Rxn<String>();
+  final aiScribeSuggestion = Rxn<String>();
   final identitySelected = Rxn<Identity>();
   final listFromIdentities = RxList<Identity>();
   final isEmailChanged = Rx<bool>(false);
@@ -1706,6 +1713,62 @@ class ComposerController extends BaseController
   void handleClickDeleteComposer() {
     clearFocus();
     _closeComposerAction();
+  }
+
+  GenerateAITextInteractor _createSelectionAIInteractor() {
+    final dio = Dio();
+    final dataSource = AIDataSourceImpl(
+      dio: dio,
+    );
+    final repository = AIScribeRepositoryImpl(dataSource);
+    return GenerateAITextInteractor(repository);
+  }
+
+  void handleTextSelection(String? text) {
+    selectedText.value = text;
+  }
+
+  void handleAIScribeActionClick(AIScribeMenuAction action) async {
+    final selection = selectedText.value;
+    if (selection != null && selection.isNotEmpty) {
+      try {
+        final interactor = _createSelectionAIInteractor();
+        final result = await interactor.execute(action, selection);
+
+        result.fold(
+          (failure) {
+            print('ComposerController::handleAIScribeActionClick: Error = $failure');
+          },
+          (success) {
+            if (success is GenerateAITextSuccess) {
+              print('ComposerController::handleAIScribeActionClick: AI response = ${success.response.result}');
+              aiScribeSuggestion.value = success.response.result;
+            }
+          },
+        );
+      } catch (e) {
+        print('ComposerController::handleAIScribeActionClick: Error = $e');
+      }
+    }
+  }
+
+  void insertAIScribeSuggestion() {
+    final value = aiScribeSuggestion.value;
+    if (value != null && value.isNotEmpty) {
+      final htmlContent = value.replaceAll('\n', '<br>');
+
+      if (PlatformInfo.isWeb) {
+        richTextWebController?.editorController.insertHtml(htmlContent);
+      } else {
+        richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
+      }
+    }
+
+    closeAIScribeSuggestionModal();
+  }
+
+  void closeAIScribeSuggestionModal() {
+    aiScribeSuggestion.value = null;
   }
 
   Future<void> _onEditorFocusOnMobile() async {
