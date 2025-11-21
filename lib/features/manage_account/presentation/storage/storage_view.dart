@@ -68,6 +68,10 @@ class StorageView extends GetWidget<StorageController> with AppLoaderMixin {
                     .value;
 
                 if (octetsQuota != null && octetsQuota.storageAvailable) {
+                  final isPremiumAvailable = PlatformInfo.isWeb &&
+                      !controller.isUpgradeStorageIsDisabled;
+                  final isQuotaExceeds90Percent = octetsQuota.allowedDisplayToQuotaBanner;
+
                   return SingleChildScrollView(
                     child: Padding(
                       padding: _getPadding(
@@ -83,16 +87,15 @@ class StorageView extends GetWidget<StorageController> with AppLoaderMixin {
                             quota: octetsQuota,
                             isMobile: isMobile,
                           ),
-                          UpgradeStorageWidget(
-                            imagePaths: controller.imagePaths,
-                            isMobile: isMobile,
-                            isPremiumAvailable: PlatformInfo.isWeb &&
-                                !controller.isUpgradeStorageIsDisabled,
-                            isQuotaExceeds90Percent:
-                              octetsQuota.allowedDisplayToQuotaBanner,
-                            onUpgradeStorageAction:
-                                controller.onUpgradeStorage,
-                          ),
+                          if (isPremiumAvailable || isQuotaExceeds90Percent)
+                            UpgradeStorageWidget(
+                              imagePaths: controller.imagePaths,
+                              isMobile: isMobile,
+                              isPremiumAvailable: isPremiumAvailable,
+                              isQuotaExceeds90Percent: isQuotaExceeds90Percent,
+                              onUpgradeStorageAction:
+                                  controller.onUpgradeStorage,
+                            ),
                         ],
                       ),
                     ),
