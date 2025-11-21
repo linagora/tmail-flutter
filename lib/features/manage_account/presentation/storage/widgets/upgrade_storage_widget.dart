@@ -25,51 +25,71 @@ class UpgradeStorageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
-    return SizedBox(
-      width: isMobile ? double.infinity : 439,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (isQuotaExceeds90Percent)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SvgPicture.asset(
-                  imagePaths.icWarning,
-                  width: 16,
-                  height: 16,
-                  fit: BoxFit.fill,
-                ),
-                const SizedBox(width: 7),
-                Expanded(
-                  child: Text(
-                    appLocalizations.storageIsAlmostFullMessage,
-                    style: ThemeUtils.textStyleInter600().copyWith(
-                      color: AppColor.m3Neutral40,
-                      fontSize: 12,
-                      height: 16 / 12,
-                      letterSpacing: 0.4,
-                    ),
-                  ),
-                ),
-              ],
+
+    final widgets = [
+      if (isQuotaExceeds90Percent) _buildWarning(context, appLocalizations),
+      if (isPremiumAvailable) _buildUpgradeButton(appLocalizations),
+    ];
+
+    if (widgets.isEmpty) return const SizedBox.shrink();
+
+    final body = widgets.length == 1
+        ? widgets.first
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: widgets,
+          );
+
+    return isQuotaExceeds90Percent
+        ? SizedBox(
+            width: isMobile ? double.infinity : 439,
+            child: body,
+          )
+        : body;
+  }
+
+  Widget _buildWarning(
+    BuildContext context,
+    AppLocalizations appLocalizations,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SvgPicture.asset(
+          imagePaths.icWarning,
+          width: 16,
+          height: 16,
+          fit: BoxFit.fill,
+        ),
+        const SizedBox(width: 7),
+        Expanded(
+          child: Text(
+            appLocalizations.storageIsAlmostFullMessage,
+            style: ThemeUtils.textStyleInter600().copyWith(
+              color: AppColor.m3Neutral40,
+              fontSize: 12,
+              height: 16 / 12,
+              letterSpacing: 0.4,
             ),
-          if (isPremiumAvailable)
-            Container(
-              constraints: const BoxConstraints(minWidth: 179),
-              margin: isQuotaExceeds90Percent
-                  ? const EdgeInsetsDirectional.only(start: 16)
-                  : null,
-              height: 48,
-              child: ConfirmDialogButton(
-                label: appLocalizations.upgradeStorage,
-                backgroundColor: AppColor.primaryMain,
-                textColor: Colors.white,
-                onTapAction: onUpgradeStorageAction,
-              ),
-            ),
-        ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUpgradeButton(AppLocalizations appLocalizations) {
+    return Container(
+      margin: isQuotaExceeds90Percent
+          ? const EdgeInsetsDirectional.only(top: 16)
+          : null,
+      height: 48,
+      constraints: const BoxConstraints(minWidth: 179),
+      child: ConfirmDialogButton(
+        label: appLocalizations.upgradeStorage,
+        backgroundColor: AppColor.primaryMain,
+        textColor: Colors.white,
+        onTapAction: onUpgradeStorageAction,
       ),
     );
   }
