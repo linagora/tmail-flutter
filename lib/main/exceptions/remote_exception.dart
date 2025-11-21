@@ -9,6 +9,7 @@ abstract class RemoteException with EquatableMixin implements Exception {
   static const internalServerError = 'Internal Server Error';
   static const noNetworkError = 'No network error';
   static const badCredentials = 'Bad credentials';
+  static const badResponse = 'Bad response';
   static const socketException = 'Socket exception';
 
   final Object? message;
@@ -26,6 +27,10 @@ class BadCredentialsException extends RemoteException {
 
 class UnknownError extends RemoteException {
   const UnknownError({int? code, Object? message}) : super(code: code, message: message);
+}
+
+class BadResponseException extends RemoteException {
+  const BadResponseException({String? message}) : super(message: message ?? RemoteException.badResponse);
 }
 
 class ConnectionError extends RemoteException {
@@ -62,4 +67,14 @@ class CannotCalculateChangesMethodResponseException extends MethodLevelErrors {
 
 class NoNetworkError extends RemoteException {
   const NoNetworkError() : super(message: RemoteException.noNetworkError);
+}
+
+class ClientAuthenticationException extends RemoteException {
+  final String? secondErrorCode;
+
+  const ClientAuthenticationException({
+    super.code,
+    super.message,
+    this.secondErrorCode,
+  });
 }

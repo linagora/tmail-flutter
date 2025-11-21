@@ -172,7 +172,10 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
         emlPreviewer.id,
         jsonEncode(emlPreviewer.toJson()),
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -220,7 +223,10 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       final data = _localStorageManager.get(keyStored);
       return EMLPreviewer.fromJson(jsonDecode(data));
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -232,7 +238,10 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
   Future<void> removePreviewEmailEMLContentShared(String keyStored) {
     return Future.sync(() async {
       return _localStorageManager.remove(keyStored);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -326,7 +335,10 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
       );
 
       return htmlDocument;
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
   
   @override

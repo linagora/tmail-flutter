@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
+import 'package:tmail_ui_user/main/exceptions/chained_request_error.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 import '../../fixtures/account_fixtures.dart';
@@ -367,8 +368,8 @@ void main() {
           dio.post('$baseUrl/1',),
           dio.post('$baseUrl/2',)
         ]),
-        throwsA(predicate<DioError>(
-          (dioError) => dioError.error is AccessTokenInvalidException))
+        throwsA(predicate<ChainedRequestError>(
+          (requestError) => requestError.secondaryError is AccessTokenInvalidException))
       );
 
       verifyZeroInteractions(authenticationClient);

@@ -21,7 +21,10 @@ class HiveSessionDataSourceImpl extends SessionDataSource {
   Future<void> storeSession(Session session) {
     return Future.sync(() async {
       return _sessionCacheManager.insertSession(session.toHiveObj());
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -29,6 +32,9 @@ class HiveSessionDataSourceImpl extends SessionDataSource {
     return Future.sync(() async {
       final sessionHiveObj = await _sessionCacheManager.getStoredSession();
       return sessionHiveObj.toSession();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

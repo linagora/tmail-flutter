@@ -30,27 +30,39 @@ class CleanupDataSourceImpl extends CleanupDataSource {
   Future<void> cleanEmailCache(EmailCleanupRule cleanupRule) {
     return Future.sync(() async {
       return await emailCacheManager.clean(cleanupRule);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> cleanRecentSearchCache(RecentSearchCleanupRule cleanupRule) {
     return Future.sync(() async {
       return await recentSearchCacheManager.clean(cleanupRule);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> cleanRecentLoginUrlCache(RecentLoginUrlCleanupRule cleanupRule) {
     return Future.sync(() async {
       return await recentLoginUrlCacheManager.clean(cleanupRule);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> cleanRecentLoginUsernameCache(RecentLoginUsernameCleanupRule cleanupRule) {
     return Future.sync(() async {
       return await recentLoginUsernameCacheManager.clean(cleanupRule);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }
