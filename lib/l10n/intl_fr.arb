@@ -5461,5 +5461,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "youDoNotHaveAnyFavoritesEmails": "Vous n'avez aucun e-mail favori.",
+  "@youDoNotHaveAnyFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToAddFavoritesEmails": "Commencez à ajouter des e-mails favoris",
+  "@startToAddFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
