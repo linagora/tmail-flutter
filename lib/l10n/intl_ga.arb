@@ -5238,5 +5238,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "youDoNotHaveAnyFavoritesEmails": "Níl aon ríomhphoist is fearr leat.",
+  "@youDoNotHaveAnyFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToAddFavoritesEmails": "Tosaigh ag cur ríomhphoist is fearr leat leis",
+  "@startToAddFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
