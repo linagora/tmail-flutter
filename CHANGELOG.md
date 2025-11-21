@@ -1,3 +1,15 @@
+## [0.22.1] - 2025-11-21
+### Added
+- Translation: vi, ru, fr, uk, cn
+
+### Fixed
+- Memory leak in focus node in ThreadDetailController
+- Storage full message
+- Empty state when no email in Favorites
+- Cannot open inserted link in composer 
+- Resize image in composer
+- Tooltip for link 
+
 ## [0.22.0] - 2025-11-17
 ### Added
   - TF-4148: Add link to common settings in mobile application
