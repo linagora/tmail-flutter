@@ -1,5 +1,6 @@
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
 extension CloseThreadDetailAction on ThreadDetailController {
@@ -14,6 +15,8 @@ extension CloseThreadDetailAction on ThreadDetailController {
     Future.delayed(Duration.zero, () {
       mailboxDashBoardController.dispatchEmailUIAction(EmailUIAction());
     });
+
+    onKeyboardShortcutDispose();
 
     reset();
   }

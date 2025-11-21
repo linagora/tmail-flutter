@@ -56,6 +56,7 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
   void onKeyboardShortcutDispose() {
     if (PlatformInfo.isWeb) {
       keyboardShortcutFocusNode?.dispose();
+      keyboardShortcutFocusNode = null;
       shortcutActionEventSubscription?.cancel();
       shortcutActionEventController?.close();
     }

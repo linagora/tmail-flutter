@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
 extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
@@ -23,6 +24,7 @@ extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
     }
 
     emailIdsPresentation.clear();
+    onKeyboardShortcutInit();
     scrollController ??= ScrollController();
 
     if (currentExpandedEmailId.value == null) {
