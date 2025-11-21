@@ -5467,5 +5467,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "youDoNotHaveAnyFavoritesEmails": "Bạn không có thư quan trọng.",
+  "@youDoNotHaveAnyFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToAddFavoritesEmails": "Bắt đầu thêm các thư quan trọng",
+  "@startToAddFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
