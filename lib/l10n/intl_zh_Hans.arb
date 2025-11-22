@@ -5232,5 +5232,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "youDoNotHaveAnyFavoritesEmails": "您没有任何星标邮件。",
+  "@youDoNotHaveAnyFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToAddFavoritesEmails": "开始添加星标邮件",
+  "@startToAddFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
