@@ -14,3 +14,7 @@ JmapRequestBuilder createBuilder(Dio dio) {
     ProcessingInvocation(),
   );
 }
+
+Map<String, String> createJMAPHeader() {
+  return {"accept": "application/json;jmapVersion=rfc-8621"};
+}

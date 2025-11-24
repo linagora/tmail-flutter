@@ -61,7 +61,7 @@ void main() {
         data: buildPayload({
           "4f29": {"displayName": "Important", "color": "#00ccdd"}
         }),
-        headers: {"accept": "application/json;jmapVersion=rfc-8621"},
+        headers: createJMAPHeader(),
       );
 
       final builder = createBuilder(dio);
@@ -119,6 +119,7 @@ void main() {
           "A": {"displayName": "Tag A", "color": "#111111"},
           "B": {"displayName": "Tag B", "color": "#222222"},
         }),
+        headers: createJMAPHeader(),
       );
 
       final builder = createBuilder(dio);
@@ -159,6 +160,7 @@ void main() {
         data: buildPayload({
           "A": {"displayName": "Err", "color": "#dddddd"}
         }),
+        headers: createJMAPHeader(),
       );
 
       final builder = createBuilder(dio);
