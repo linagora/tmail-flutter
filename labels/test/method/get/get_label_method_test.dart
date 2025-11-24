@@ -1,32 +1,19 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
-import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
-import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:labels/labels.dart';
 import 'package:labels/method/get/get_label_method.dart';
 import 'package:labels/method/get/get_label_response.dart';
 
+import '../method_fixtures.dart';
+
 void main() {
-  group('GetLabelMethod – additional test cases', () {
+  group('GetLabelMethod', () {
     final accountId = AccountId(
       Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6'),
     );
-
-    Dio createDio() {
-      final dio = Dio(BaseOptions(method: 'POST'))
-        ..options.baseUrl = 'http://domain.com/jmap';
-      return dio;
-    }
-
-    JmapRequestBuilder createBuilder(Dio dio) {
-      return JmapRequestBuilder(
-        HttpClient(dio),
-        ProcessingInvocation(),
-      );
-    }
 
     Map<String, dynamic> buildRequestPayload({
       required List<String> ids,
@@ -54,8 +41,18 @@ void main() {
       final dio = createDio();
       final adapter = DioAdapter(dio: dio);
 
-      final labelA = Label(Id('A'), 'Label A', 'labelA', HexColor('#111111'));
-      final labelB = Label(Id('B'), 'Label B', 'labelB', HexColor('#222222'));
+      final labelA = Label(
+        id: Id('A'),
+        keyword: 'labelA',
+        displayName: 'Label A',
+        color: HexColor('#111111'),
+      );
+      final labelB = Label(
+        id: Id('B'),
+        keyword: 'labelB',
+        displayName: 'Label B',
+        color: HexColor('#222222'),
+      );
 
       adapter.onPost(
         '',
