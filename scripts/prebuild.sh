@@ -5,7 +5,7 @@ set -e
 set -x
 
 # Add additional modules to the end of this, seperated by space
-modules=("core" "model" "contact" "forward" "rule_filter" "fcm" "email_recovery" "server_settings" "scribe" )
+modules=("core" "model" "contact" "forward" "rule_filter" "fcm" "email_recovery" "server_settings" "scribe" "labels")
 
 for mod in "${modules[@]}"; do
     (
