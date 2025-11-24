@@ -13,6 +13,7 @@ part 'get_label_response.g.dart';
     AccountIdConverter(),
     IdConverter(),
   ],
+  createToJson: false,
 )
 class GetLabelResponse extends GetResponse<Label> {
   GetLabelResponse(super.accountId, super.state, super.list, super.notFound);
@@ -23,8 +24,6 @@ class GetLabelResponse extends GetResponse<Label> {
   static GetLabelResponse deserialize(Map<String, dynamic> json) {
     return GetLabelResponse.fromJson(json);
   }
-
-  Map<String, dynamic> toJson() => _$GetLabelResponseToJson(this);
 
   @override
   List<Object?> get props => [accountId, state, list, notFound];

@@ -12,6 +12,7 @@ part 'changes_label_response.g.dart';
     AccountIdConverter(),
     IdConverter(),
   ],
+  createToJson: false,
 )
 class ChangesLabelResponse extends ChangesResponse {
   ChangesLabelResponse(
