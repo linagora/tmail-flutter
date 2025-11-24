@@ -82,6 +82,7 @@ import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_l
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
@@ -225,6 +226,7 @@ class MailboxDashBoardController extends ReloadableController
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
+  final LabelController labelController = Get.find<LabelController>();
   final ComposerManager composerManager = Get.find<ComposerManager>();
   final getAuthenticationInfoInteractor =
       Get.find<GetAuthenticationInfoInteractor>();
@@ -877,6 +879,14 @@ class MailboxDashBoardController extends ReloadableController
     paywallController = PaywallController(
       ownEmailAddress: ownEmailAddress.value,
     );
+
+    final isLabelCapabilitySupported = labelController
+        .isLabelCapabilitySupported(session, currentAccountId);
+
+    if (isLabelCapabilitySupported) {
+      labelController.injectLabelsBindings();
+      labelController.getAllLabels(currentAccountId);
+    }
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {

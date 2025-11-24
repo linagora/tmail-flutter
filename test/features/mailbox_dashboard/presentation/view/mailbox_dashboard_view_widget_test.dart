@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_i
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -151,6 +152,7 @@ const fallbackGenerators = {
   MockSpec<DownloadController>(fallbackGenerators: fallbackGenerators),
   MockSpec<AppGridDashboardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<SpamReportController>(fallbackGenerators: fallbackGenerators),
+  MockSpec<LabelController>(fallbackGenerators: fallbackGenerators),
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
   MockSpec<QuickSearchEmailInteractor>(),
   MockSpec<SaveRecentSearchInteractor>(),
@@ -235,6 +237,7 @@ void main() {
   final downloadController = MockDownloadController();
   final appGridDashboardController = MockAppGridDashboardController();
   final spamReportController = MockSpamReportController();
+  final labelController = MockLabelController();
   final networkConnectionController = MockNetworkConnectionController();
 
   final quickSearchEmailInteractor = MockQuickSearchEmailInteractor();
@@ -322,6 +325,7 @@ void main() {
       Get.put<DownloadController>(downloadController);
       Get.put<AppGridDashboardController>(appGridDashboardController);
       Get.put<SpamReportController>(spamReportController);
+      Get.put<LabelController>(labelController);
       Get.put<NetworkConnectionController>(networkConnectionController);
       Get.put<CachingManager>(cachingManager);
       Get.put<LanguageCacheManager>(languageCacheManager);
