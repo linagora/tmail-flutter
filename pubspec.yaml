@@ -57,6 +57,9 @@ dependencies:
   scribe:
     path: scribe
 
+  labels:
+    path: labels
+
   ### Dependencies from git ###
   rich_text_composer:
     git:
