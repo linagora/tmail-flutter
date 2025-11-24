@@ -178,7 +178,7 @@ packages:
     source: hosted
     version: "0.10.1"
   dio:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: dio
       sha256: "9fdbf71baeb250fc9da847f6cb2052196f62c19906a3657adfc18631a667d316"
@@ -259,6 +259,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  http_mock_adapter:
+    dependency: "direct dev"
+    description:
+      name: http_mock_adapter
+      sha256: "0e7eaa5d77a273af1c2b5ec5066578faaa73039b63ccda5263c200756f24441a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.2"
   http_multi_server:
     dependency: transitive
     description:
