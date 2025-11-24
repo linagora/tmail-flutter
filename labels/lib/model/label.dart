@@ -16,12 +16,17 @@ part 'label.g.dart';
   ],
 )
 class Label with EquatableMixin {
-  final Id id;
-  final String displayName;
-  final String keyword;
+  final Id? id;
+  final String? keyword;
+  final String? displayName;
   final HexColor? color;
 
-  Label(this.id, this.displayName, this.keyword, this.color);
+  Label({
+    this.id,
+    this.keyword,
+    this.displayName,
+    this.color,
+  });
 
   factory Label.fromJson(Map<String, dynamic> json) => _$LabelFromJson(json);
 
@@ -30,8 +35,8 @@ class Label with EquatableMixin {
   @override
   List<Object?> get props => [
         id,
-        displayName,
         keyword,
+        displayName,
         color,
       ];
 }
