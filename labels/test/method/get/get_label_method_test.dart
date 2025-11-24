@@ -88,6 +88,7 @@ void main() {
           },
         ),
         data: buildRequestPayload(ids: ['A', 'B']),
+        headers: createJMAPHeader(),
       );
 
       final builder = createBuilder(dio);
@@ -135,6 +136,7 @@ void main() {
           },
         ),
         data: buildRequestPayload(ids: ['X1', 'X2']),
+        headers: createJMAPHeader(),
       );
 
       final builder = createBuilder(dio);
@@ -183,6 +185,7 @@ void main() {
           },
         ),
         data: buildRequestPayload(ids: ['A']),
+        headers: createJMAPHeader(),
       );
 
       final builder = createBuilder(dio);
@@ -213,6 +216,7 @@ void main() {
         '',
         (server) => server.reply(500, {}),
         data: buildRequestPayload(ids: ['A']),
+        headers: createJMAPHeader(),
       );
 
       final builder = createBuilder(dio);
