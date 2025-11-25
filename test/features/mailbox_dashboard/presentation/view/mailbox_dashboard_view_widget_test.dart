@@ -451,6 +451,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(mailboxDashboardController.labelController.labels).thenReturn(RxList([]));
         when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
@@ -527,6 +528,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(mailboxDashboardController.labelController.labels).thenReturn(RxList([]));
         when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
@@ -590,6 +592,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(mailboxDashboardController.labelController.labels).thenReturn(RxList([]));
         when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
@@ -650,6 +653,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(mailboxDashboardController.labelController.labels).thenReturn(RxList([]));
         when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
@@ -706,6 +710,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(mailboxDashboardController.labelController.labels).thenReturn(RxList([]));
         when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
