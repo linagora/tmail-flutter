@@ -4,11 +4,13 @@ import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/desktop_list_email_action_hover_widget.dart';
@@ -26,6 +28,7 @@ class EmailTileBuilder extends StatefulWidget {
   final bool isDrag;
   final bool isShowingEmailContent;
   final bool isSenderImportantFlagEnabled;
+  final List<Label>? labels;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
@@ -34,6 +37,7 @@ class EmailTileBuilder extends StatefulWidget {
     required this.presentationEmail,
     required this.selectAllMode,
     required this.isShowingEmailContent,
+    this.labels,
     this.searchQuery,
     this.isSearchEmailRunning = false,
     this.isSenderImportantFlagEnabled = true,
@@ -362,32 +366,100 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
   }
 
   Widget _buildSubjectAndContent() {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Row(children: [
+    final emailTitle = widget.presentationEmail.getEmailTitle();
+
+    return Row(
+      children: [
         if (widget.presentationEmail.hasCalendarEvent)
-          buildCalendarEventIcon(context: context, presentationEmail: widget.presentationEmail),
-        if (widget.presentationEmail.isMarkAsImportant && widget.isSenderImportantFlagEnabled)
+          buildCalendarEventIcon(
+            context: context,
+            presentationEmail: widget.presentationEmail,
+          ),
+        if (widget.presentationEmail.isMarkAsImportant &&
+            widget.isSenderImportantFlagEnabled)
           buildMarkAsImportantIcon(context),
-        if (widget.presentationEmail.getEmailTitle().isNotEmpty)
-            Container(
-              constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
-              padding: const EdgeInsetsDirectional.only(end: 12),
-              child: buildEmailTitle(
-                context,
-                widget.presentationEmail,
-                widget.isSearchEmailRunning,
-                widget.searchQuery
-              )),
         Expanded(
-          child: buildEmailPartialContent(
-            context,
-            widget.presentationEmail,
-            widget.isSearchEmailRunning,
-            widget.searchQuery
+          child: LayoutBuilder(
+            builder: (_, constraints) {
+              final maxWidth = constraints.maxWidth;
+              double horizontalPadding = 12;
+              final maxWidthNoPadding = maxWidth - horizontalPadding * 2;
+
+              final labelTagsMaxWidth = emailTitle.isNotEmpty
+                  ? maxWidthNoPadding * 0.4
+                  : maxWidthNoPadding * 0.5;
+
+              final emailTitleMaxWidth = widget.labels?.isNotEmpty == true
+                  ? maxWidthNoPadding * 0.4
+                  : maxWidthNoPadding * 0.5;
+
+              return Row(
+                children: [
+                  if (widget.labels?.isNotEmpty == true) ...[
+                    Container(
+                      constraints: BoxConstraints(
+                        maxWidth: labelTagsMaxWidth,
+                      ),
+                      padding: EdgeInsetsDirectional.only(
+                        end: horizontalPadding,
+                      ),
+                      child: LabelTagListWidget(tags: widget.labels!),
+                    ),
+                    if (emailTitle.isNotEmpty)
+                      Container(
+                        constraints: BoxConstraints(
+                          maxWidth: emailTitleMaxWidth,
+                        ),
+                        padding: EdgeInsetsDirectional.only(
+                          end: horizontalPadding,
+                        ),
+                        child: buildEmailTitle(
+                          context,
+                          widget.presentationEmail,
+                          widget.isSearchEmailRunning,
+                          widget.searchQuery,
+                        ),
+                      ),
+                    Expanded(
+                      child: buildEmailPartialContent(
+                        context,
+                        widget.presentationEmail,
+                        widget.isSearchEmailRunning,
+                        widget.searchQuery,
+                      ),
+                    ),
+                  ] else ...[
+                    if (emailTitle.isNotEmpty)
+                      Container(
+                        constraints: BoxConstraints(
+                          maxWidth: emailTitleMaxWidth,
+                        ),
+                        padding: EdgeInsetsDirectional.only(
+                          end: horizontalPadding,
+                        ),
+                        child: buildEmailTitle(
+                          context,
+                          widget.presentationEmail,
+                          widget.isSearchEmailRunning,
+                          widget.searchQuery,
+                        ),
+                      ),
+                    Expanded(
+                      child: buildEmailPartialContent(
+                        context,
+                        widget.presentationEmail,
+                        widget.isSearchEmailRunning,
+                        widget.searchQuery,
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            },
           ),
         ),
-      ]);
-    });
+      ],
+    );
   }
 
   Widget _buildAvatarIcon({
