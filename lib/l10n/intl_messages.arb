@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-11-20T14:48:58.635692",
+  "@@last_modified": "2025-11-25T16:41:03.318468",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5126,6 +5126,18 @@
   },
   "startToAddFavoritesEmails": "Start to add favorites emails",
   "@startToAddFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labels": "Labels",
+  "@labels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newLabel": "New label",
+  "@newLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

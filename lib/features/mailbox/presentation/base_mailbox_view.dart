@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/labels_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
@@ -333,7 +334,34 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
               ? buildFolders(context)
               : const Offstage(),
         )),
+        buildLabelsBar(context, isDesktop),
       ]),
     );
+  }
+
+  Widget buildLabelsBar(BuildContext context, bool isDesktop) {
+    return Obx(() {
+      if (controller.mailboxDashBoardController.isLabelCapabilitySupported) {
+        final labelController = controller
+            .mailboxDashBoardController
+            .labelController;
+
+        final labelListExpandMode = labelController.labelListExpandMode.value;
+
+        return LabelsBarWidget(
+          imagePaths: controller.imagePaths,
+          isDesktop: isDesktop,
+          height: isDesktop ? 48 : 40,
+          padding: isDesktop
+              ? null
+              : const EdgeInsetsDirectional.only(start: 24, end: 12),
+          labelStyle: isDesktop ? null : ThemeUtils.textStyleInter500(),
+          expandMode: labelListExpandMode,
+          onToggleLabelListState: labelController.toggleLabelListState,
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 }
