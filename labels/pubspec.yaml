@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  core:
+    path: ../core
+
   ### Dependencies from git ###
   jmap_dart_client:
     git:

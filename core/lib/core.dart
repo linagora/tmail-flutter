@@ -18,6 +18,7 @@ export 'presentation/extensions/map_extensions.dart';
 export 'presentation/extensions/either_view_state_extension.dart';
 export 'presentation/extensions/media_type_extension.dart';
 export 'presentation/extensions/scroll_controller_extension.dart';
+export 'presentation/extensions/hex_color_extension.dart';
 
 // Exceptions
 export 'domain/exceptions/download_file_exception.dart';
@@ -63,6 +64,7 @@ export 'utils/web_link_generator.dart';
 export 'utils/sentry/sentry_manager.dart';
 export 'utils/config/env_loader.dart';
 export 'utils/sentry/sentry_dio_helper.dart';
+export 'utils/widget_utils.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
