@@ -21,9 +21,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenuContent> {
   AIScribeMenuCategory? _expandedCategory;
 
   void _toggleCategory(AIScribeMenuCategory category) {
-    setState(() {
-      _expandedCategory = _expandedCategory == category ? null : category;
-    });
+    _expandedCategory = _expandedCategory == category ? null : category;
   }
 
   @override

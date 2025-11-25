@@ -58,11 +58,11 @@ class _MobileEditorState extends State<MobileEditorWidget> with AIScribeOverlayM
   @override
   Widget buildAIScribeMenu({
     required BuildContext context,
-    required Function(AIScribeMenuAction) onActionSelected,
+    required AIScribeActionCallback onActionSelected,
   }) {
     return Material(
       elevation: 1,
-      borderRadius: BorderRadius.circular(AIScribeSizes.menuBorderRadius),
+      borderRadius: const BorderRadius.all(Radius.circular(AIScribeSizes.menuBorderRadius)),
       child: Container(
         width: 240,
         constraints: const BoxConstraints(

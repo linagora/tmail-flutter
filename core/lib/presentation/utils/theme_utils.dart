@@ -318,6 +318,13 @@ class ThemeUtils {
     color: AppColor.gray424244.withValues(alpha: 0.9),
   );
 
+  static TextStyle textStyleAIScribeSuggestion({Color? color}) => defaultTextStyleInterFont.copyWith(
+    fontWeight: FontWeight.w400,
+    fontSize: 15,
+    height: 1.6,
+    color: color,
+  );
+
   static TextStyle defaultTextStyleInterFont = TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontFamilyFallback: ConstantsUI.fontFamilyFallback,

@@ -3,19 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/ai/presentation/model/ai_scribe_menu_action.dart';
 import 'package:tmail_ui_user/features/ai/presentation/widgets/ai_scribe_button.dart';
 
+typedef AIScribeActionCallback = void Function(AIScribeMenuAction);
+typedef TextSelectionChangedCallback = void Function(String?);
+
 mixin AIScribeOverlayMixin<T extends StatefulWidget> on State<T> {
   OverlayEntry? _aiScribeButtonOverlay;
   OverlayEntry? _aiScribeMenuOverlay;
 
   ImagePaths? get aiScribeImagePaths;
 
-  Function(AIScribeMenuAction)? get aiScribeActionCallback;
+  AIScribeActionCallback? get aiScribeActionCallback;
 
-  Function(String?)? get textSelectionChangedCallback;
+  TextSelectionChangedCallback? get textSelectionChangedCallback;
 
   Widget buildAIScribeMenu({
     required BuildContext context,
-    required Function(AIScribeMenuAction) onActionSelected,
+    required AIScribeActionCallback onActionSelected,
   });
 
   void disposeAIScribeOverlays() {
@@ -39,32 +42,36 @@ mixin AIScribeOverlayMixin<T extends StatefulWidget> on State<T> {
   }
 
   void parseSelectionData(Map<dynamic, dynamic> data) {
-    final hasSelection = data['hasSelection'] as bool? ?? false;
+    try {
+      final hasSelection = data['hasSelection'] as bool? ?? false;
 
-    if (hasSelection) {
-      final selectedText = data['selectedText'] as String?;
-      final coordinatesData = data['coordinates'];
+      if (hasSelection) {
+        final selectedText = data['selectedText'] as String?;
+        final coordinatesData = data['coordinates'];
 
-      if (coordinatesData != null) {
-        final x = (coordinatesData['x'] as num?)?.toDouble();
-        final y = (coordinatesData['y'] as num?)?.toDouble();
-        final width = (coordinatesData['width'] as num?)?.toDouble();
-        final height = (coordinatesData['height'] as num?)?.toDouble();
+        if (coordinatesData != null) {
+          final x = (coordinatesData['x'] as num?)?.toDouble();
+          final y = (coordinatesData['y'] as num?)?.toDouble();
+          final width = (coordinatesData['width'] as num?)?.toDouble();
+          final height = (coordinatesData['height'] as num?)?.toDouble();
 
-        if (selectedText != null && x != null && y != null) {
-          final coordinates = {
-            'x': x,
-            'y': y,
-            'width': width ?? 0.0,
-            'height': height ?? 0.0,
-          };
-          onSelectionChanged(true, selectedText, coordinates);
-          return;
+          if (selectedText != null && x != null && y != null) {
+            final coordinates = {
+              'x': x,
+              'y': y,
+              'width': width ?? 0.0,
+              'height': height ?? 0.0,
+            };
+            onSelectionChanged(true, selectedText, coordinates);
+            return;
+          }
         }
       }
-    }
 
-    onSelectionChanged(false, null, null);
+      onSelectionChanged(false, null, null);
+    } catch (e) {
+      onSelectionChanged(false, null, null);
+    }
   }
 
   void showAIScribeButton(Map<String, double>? coordinates) {
@@ -76,7 +83,9 @@ mixin AIScribeOverlayMixin<T extends StatefulWidget> on State<T> {
       return;
     }
 
-    final overlay = Overlay.of(context);
+    final overlay = Overlay.maybeOf(context);
+    if (overlay == null) return;
+
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
@@ -111,7 +120,9 @@ mixin AIScribeOverlayMixin<T extends StatefulWidget> on State<T> {
 
     if (coordinates == null) return;
 
-    final overlay = Overlay.of(context);
+    final overlay = Overlay.maybeOf(context);
+    if (overlay == null) return;
+
     final renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 

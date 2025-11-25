@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class AIScribeColors {
@@ -36,10 +37,8 @@ class AIScribeTextStyles {
     color: AIScribeColors.textPrimary,
   );
 
-  static const resultContent = TextStyle(
-    fontSize: 15,
+  static TextStyle resultContent = ThemeUtils.textStyleAIScribeSuggestion(
     color: AIScribeColors.textPrimary,
-    height: 1.6,
   );
 }
 
