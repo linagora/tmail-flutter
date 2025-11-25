@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load_more_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_load_more_segments.dart';
@@ -44,6 +45,11 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       final isFirstEmailInThreadDetail = indexOfEmailId == 0;
 
       if (presentationEmail.emailInThreadStatus == EmailInThreadStatus.collapsed) {
+        final allLabels = mailboxDashBoardController.labelController.labels;
+        final emailLabels = isFirstEmailInThreadDetail
+            ? emailIdsPresentation.values.last?.getLabelList(allLabels)
+            : null;
+
         return ThreadDetailCollapsedEmail(
           presentationEmail: presentationEmail.copyWith(
             subject: isFirstEmailInThreadDetail
@@ -57,6 +63,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
             mailboxDashBoardController.mapMailboxById,
           ),
           emailLoaded: null,
+          labels: emailLabels,
           onEmailActionClick: threadDetailOnEmailActionClick,
           openEmailAddressDetailAction: (_, emailAddress) {
             openEmailAddressDetailAction(emailAddress);
