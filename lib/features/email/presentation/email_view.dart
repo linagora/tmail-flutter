@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_on_iframe_click_in_email_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/validate_display_free_busy_message_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
@@ -240,18 +241,27 @@ class EmailView extends GetWidget<SingleEmailController> {
     ScrollController? scrollController,
   }) {
     final isMobileResponsive = controller.responsiveUtils.isMobile(context);
+    final isWebDesktop = controller.responsiveUtils.isWebDesktop(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         if (!isInsideThreadDetailView || isFirstEmailInThreadDetail)
-          EmailSubjectWidget(
-            presentationEmail: presentationEmail.copyWith(
-              subject: threadSubject,
-            ),
-            isMobileResponsive: isMobileResponsive,
-          ),
+          Obx(() {
+            final allLabels =
+                controller.mailboxDashBoardController.labelController.labels;
+            final emailLabels = presentationEmail.getLabelList(allLabels);
+
+            return EmailSubjectWidget(
+              presentationEmail: presentationEmail.copyWith(
+                subject: threadSubject,
+              ),
+              isMobileResponsive: isMobileResponsive,
+              isWebDesktop: isWebDesktop,
+              labels: emailLabels,
+            );
+          }),
         Obx(() => InformationSenderAndReceiverBuilder(
           emailSelected: presentationEmail,
           imagePaths: controller.imagePaths,
