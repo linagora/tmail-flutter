@@ -18,6 +18,8 @@ class LabelWidget extends StatelessWidget {
     this.isTruncateLabel = false,
   });
 
+  factory LabelWidget.create(Label label) => LabelWidget(label: label);
+
   @override
   Widget build(BuildContext context) {
     final showTooltip =
