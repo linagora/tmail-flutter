@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -19,6 +20,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
   final bool isDrag;
   final bool isShowingEmailContent;
   final bool isSenderImportantFlagEnabled;
+  final List<Label>? labels;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
@@ -27,6 +29,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
     required this.presentationEmail,
     required this.selectAllMode,
     required this.isShowingEmailContent,
+    this.labels,
     this.searchQuery,
     this.isSearchEmailRunning = false,
     this.isSenderImportantFlagEnabled = true,

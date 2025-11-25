@@ -1,8 +1,11 @@
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/list_keyword_identifier_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 
 extension PresentationEmailExtension on PresentationEmail {
   ({
@@ -152,5 +155,20 @@ extension PresentationEmailExtension on PresentationEmail {
       bcc: newBccAddress.withoutMe(userName),
       replyTo: [],
     );
+  }
+
+  List<Label> getLabelList(List<Label> labels) {
+    if (keywords?.isNotEmpty != true || labels.isEmpty) return const [];
+
+    final enabledKeywordListString =
+        keywords!.enabledKeywords.keywordListString;
+
+    if (enabledKeywordListString.isEmpty) return const [];
+
+    return labels
+        .where((label) =>
+            label.keyword != null &&
+            enabledKeywordListString.contains(label.keyword))
+        .toList();
   }
 }
