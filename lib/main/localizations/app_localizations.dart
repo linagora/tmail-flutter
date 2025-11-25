@@ -5499,4 +5499,18 @@ class AppLocalizations {
       name: 'aiNeedsActionSettingExplanation',
     );
   }
+
+  String get labels {
+    return Intl.message(
+      'Labels',
+      name: 'labels',
+    );
+  }
+
+  String get newLabel {
+    return Intl.message(
+      'New label',
+      name: 'newLabel',
+    );
+  }
 }
