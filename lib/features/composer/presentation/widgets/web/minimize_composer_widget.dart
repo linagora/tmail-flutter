@@ -68,16 +68,6 @@ class MinimizeComposerWidget extends StatelessWidget {
               onTapActionCallback: () => onChangeDisplayModeAction(ScreenDisplayMode.normal)
             ),
             const SizedBox(width: MinimizeComposerWidgetStyle.space),
-            TMailButtonWidget.fromIcon(
-              icon: imagePaths.icDoubleArrowDown,
-              backgroundColor: Colors.transparent,
-              tooltipMessage: AppLocalizations.of(context).hide,
-              iconSize: MinimizeComposerWidgetStyle.iconSize,
-              iconColor: MinimizeComposerWidgetStyle.iconColor,
-              padding: MinimizeComposerWidgetStyle.iconPadding,
-              onTapActionCallback: () => onChangeDisplayModeAction(ScreenDisplayMode.hidden),
-            ),
-            const SizedBox(width: MinimizeComposerWidgetStyle.space),
             Expanded(child: TitleComposerWidget(emailSubject: emailSubject)),
           ]
         )
