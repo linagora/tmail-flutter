@@ -12,6 +12,7 @@ class LabelsBarWidget extends StatelessWidget {
   final ImagePaths imagePaths;
   final bool isDesktop;
   final double? height;
+  final int countLabels;
   final EdgeInsetsGeometry? padding;
   final TextStyle? labelStyle;
   final ExpandMode? expandMode;
@@ -22,6 +23,7 @@ class LabelsBarWidget extends StatelessWidget {
     super.key,
     required this.imagePaths,
     this.isDesktop = false,
+    this.countLabels = 0,
     this.height,
     this.padding,
     this.labelStyle,
@@ -65,7 +67,7 @@ class LabelsBarWidget extends StatelessWidget {
       height: height ?? 48,
       child: Row(
         children: [
-          if (expandMode != null)
+          if (expandMode != null && countLabels > 0)
             Expanded(
               child: Row(
                 children: [
