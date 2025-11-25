@@ -5135,5 +5135,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "labels": "Labels",
+  "@labels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newLabel": "New label",
+  "@newLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

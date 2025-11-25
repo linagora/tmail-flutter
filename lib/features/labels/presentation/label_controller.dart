@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:labels/model/label.dart';
 import 'package:labels/utils/labels_constants.dart';
+import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
@@ -14,6 +15,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LabelController extends BaseController {
   final labels = <Label>[].obs;
+  final labelListExpandMode = Rx(ExpandMode.EXPAND);
 
   GetAllLabelInteractor? _getAllLabelInteractor;
 
@@ -30,6 +32,12 @@ class LabelController extends BaseController {
     if (_getAllLabelInteractor == null) return;
 
     consumeState(_getAllLabelInteractor!.execute(accountId));
+  }
+
+  void toggleLabelListState() {
+    labelListExpandMode.value = labelListExpandMode.value == ExpandMode.COLLAPSE
+        ? ExpandMode.EXPAND
+        : ExpandMode.COLLAPSE;
   }
 
   @override
