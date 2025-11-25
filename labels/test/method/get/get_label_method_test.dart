@@ -4,8 +4,6 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:labels/labels.dart';
-import 'package:labels/method/get/get_label_method.dart';
-import 'package:labels/method/get/get_label_response.dart';
 
 import '../method_fixtures.dart';
 
