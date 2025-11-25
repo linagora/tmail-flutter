@@ -3,6 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
@@ -21,6 +22,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
     this.openEmailAddressDetailAction,
     this.mailboxContain,
     this.emailLoaded,
+    this.labels,
     this.onEmailActionClick,
     this.onToggleThreadDetailCollapseExpand,
   });
@@ -33,6 +35,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
   final PresentationMailbox? mailboxContain;
   final EmailLoaded? emailLoaded;
   final OnEmailActionClick? onEmailActionClick;
+  final List<Label>? labels;
   final VoidCallback? onToggleThreadDetailCollapseExpand;
 
   String get preview => presentationEmail.getPartialContent();
@@ -40,6 +43,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMobileResponsive = responsiveUtils.isMobile(context);
+    final isWebDesktop = responsiveUtils.isWebDesktop(context);
 
     return DecoratedBox(
       decoration: const BoxDecoration(
@@ -61,6 +65,8 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
               EmailSubjectWidget(
                 presentationEmail: presentationEmail,
                 isMobileResponsive: isMobileResponsive,
+                isWebDesktop: isWebDesktop,
+                labels: labels,
               ),
             InformationSenderAndReceiverBuilder(
               emailSelected: presentationEmail,
