@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart'
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
@@ -621,20 +622,27 @@ class ThreadView extends GetWidget<ThreadController>
           presentationEmail,
           direction,
         ),
-        child: EmailTileBuilder(
-          key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
-          presentationEmail: presentationEmail,
-          selectAllMode: selectModeAll,
-          isShowingEmailContent: isShowingEmailContent,
-          isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
-          searchQuery: controller.searchQuery,
-          mailboxContain: presentationEmail.mailboxContain,
-          isSearchEmailRunning: isSearchEmailRunning,
-          isAINeedsActionEnabled: isAINeedsActionEnabled,
-          emailActionClick: _handleEmailActionClicked,
-          onMoreActionClick: (email, position) =>
-              _handleEmailContextMenuAction(context, email, position),
-        ),
+        child: Obx(() {
+          final allLabels =
+              controller.mailboxDashBoardController.labelController.labels;
+          final emailLabels = presentationEmail.getLabelList(allLabels);
+
+          return EmailTileBuilder(
+            key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
+            presentationEmail: presentationEmail,
+            selectAllMode: selectModeAll,
+            isShowingEmailContent: isShowingEmailContent,
+            isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
+            searchQuery: controller.searchQuery,
+            mailboxContain: presentationEmail.mailboxContain,
+            isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
+            isAINeedsActionEnabled: isAINeedsActionEnabled,
+            labels: emailLabels,
+            emailActionClick: _handleEmailActionClicked,
+            onMoreActionClick: (email, position) =>
+                _handleEmailContextMenuAction(context, email, position),
+          );
+        }),
       );
     });
   }
