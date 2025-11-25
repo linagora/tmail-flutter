@@ -880,13 +880,17 @@ class MailboxDashBoardController extends ReloadableController
       ownEmailAddress: ownEmailAddress.value,
     );
 
-    final isLabelCapabilitySupported = labelController
-        .isLabelCapabilitySupported(session, currentAccountId);
-
     if (isLabelCapabilitySupported) {
       labelController.injectLabelsBindings();
       labelController.getAllLabels(currentAccountId);
     }
+  }
+
+  bool get isLabelCapabilitySupported {
+    if (accountId.value == null || sessionCurrent == null) return false;
+
+    return labelController
+        .isLabelCapabilitySupported(sessionCurrent!, accountId.value!);
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
