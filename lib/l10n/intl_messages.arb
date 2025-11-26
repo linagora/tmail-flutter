@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-11-26T12:04:43.359806",
+  "@@last_modified": "2025-11-26T15:12:48.143180",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5186,6 +5186,18 @@
   },
   "tagNameAlreadyExists": "A tag with this name already exists. Please choose a different name.",
   "@tagNameAlreadyExists": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseCustomColour": "Choose custom colour",
+  "@chooseCustomColour": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColourForThisLabel": "Choose a colour for this label",
+  "@chooseAColourForThisLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
