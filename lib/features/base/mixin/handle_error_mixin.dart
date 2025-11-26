@@ -1,5 +1,6 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/method/response/set_response.dart';
@@ -75,5 +76,27 @@ mixin HandleSetErrorMixin {
     }
     logWarning('HandleSetErrorMixin::handleSetResponse():remainedErrors: $remainedErrors');
     return remainedErrors;
+  }
+
+  parseErrorForSetResponse(SetResponse? response, Id requestId) {
+    final mapError =
+        response?.notCreated ?? response?.notUpdated ?? response?.notDestroyed;
+    if (mapError != null && mapError.containsKey(requestId)) {
+      final setError = mapError[requestId];
+      log('HandleSetErrorMixin::parseErrorForSetResponse():setError: $setError');
+      if (setError?.type == ErrorMethodResponse.invalidArguments) {
+        throw InvalidArgumentsMethodResponse(
+          description: setError?.description,
+        );
+      } else if (setError?.type == ErrorMethodResponse.invalidResultReference) {
+        throw InvalidResultReferenceMethodResponse(
+          description: setError?.description,
+        );
+      } else {
+        throw UnknownMethodResponse(description: setError?.description);
+      }
+    } else {
+      throw UnknownMethodResponse();
+    }
   }
 }

@@ -3,4 +3,6 @@ import 'package:labels/model/label.dart';
 
 abstract class LabelRepository {
   Future<List<Label>> getAllLabels(AccountId accountId);
+
+  Future<Label> createNewLabel(AccountId accountId, Label labelData);
 }
