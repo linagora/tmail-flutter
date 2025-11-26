@@ -75,6 +75,7 @@ export 'presentation/views/responsive/responsive_widget.dart';
 export 'presentation/views/list/tree_view.dart';
 export 'presentation/views/button/icon_button_web.dart';
 export 'presentation/views/button/tmail_button_widget.dart';
+export 'presentation/views/button/default_close_button_widget.dart';
 export 'presentation/views/image/avatar_builder.dart';
 export 'presentation/views/list/sliver_grid_delegate_fixed_height.dart';
 export 'presentation/views/list/no_stretch_scroll_behavior.dart';
@@ -87,6 +88,7 @@ export 'presentation/views/dialog/downloading_file_dialog_builder.dart';
 export 'presentation/views/dialog/confirmation_dialog_builder.dart';
 export 'presentation/views/dialog/edit_text_dialog_builder.dart';
 export 'presentation/views/dialog/color_picker_dialog_builder.dart';
+export 'presentation/views/dialog/modal_list_action_button_widget.dart';
 export 'presentation/views/html_viewer/html_content_viewer_widget.dart';
 export 'presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 export 'presentation/views/floating_button/scrolling_floating_button_animated.dart';
@@ -116,6 +118,7 @@ export 'presentation/views/shortcut/key_shortcut.dart';
 export 'presentation/views/tooltip/iframe_tooltip_overlay.dart';
 export 'presentation/views/color/color_circle_widget.dart';
 export 'presentation/views/color/colors_map_widget.dart';
+export 'presentation/views/color/color_picker_modal.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';
