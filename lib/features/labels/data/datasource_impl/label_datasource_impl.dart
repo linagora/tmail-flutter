@@ -19,4 +19,14 @@ class LabelDatasourceImpl extends LabelDatasource {
       throw error;
     });
   }
+
+  @override
+  Future<Label> createNewLabel(AccountId accountId, Label labelData) {
+    return Future.sync(() async {
+      return await _labelApi.createNewLabel(accountId, labelData);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
+  }
 }
