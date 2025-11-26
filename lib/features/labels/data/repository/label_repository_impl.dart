@@ -12,4 +12,9 @@ class LabelRepositoryImpl extends LabelRepository {
   Future<List<Label>> getAllLabels(AccountId accountId) {
     return _labelDatasource.getAllLabels(accountId);
   }
+
+  @override
+  Future<Label> createNewLabel(AccountId accountId, Label labelData) {
+    return _labelDatasource.createNewLabel(accountId, labelData);
+  }
 }
