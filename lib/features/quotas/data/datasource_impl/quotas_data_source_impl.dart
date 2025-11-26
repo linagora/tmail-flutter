@@ -14,6 +14,9 @@ class QuotasDataSourceImpl  extends QuotasDataSource {
   Future<List<Quota>> getQuotas(AccountId accountId) {
     return Future.sync(() async {
       return await _quotasAPI.getQuotas(accountId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

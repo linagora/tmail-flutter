@@ -32,7 +32,10 @@ class SearchDataSourceImpl extends SearchDataSource {
         userName,
         recentSearch,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -51,20 +54,29 @@ class SearchDataSourceImpl extends SearchDataSource {
         limit: limit,
         pattern: pattern,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<void> storeEmailSortOrder(EmailSortOrderType sortOrderType) {
     return Future.sync(() async {
       return await _localSortOrderManager.storeEmailSortOrderIfChanged(sortOrderType);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
   Future<EmailSortOrderType> getStoredEmailSortOrder() {
     return Future.sync(() {
       return _localSortOrderManager.getStoredEmailSortOrder();
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

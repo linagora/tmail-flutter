@@ -19,7 +19,10 @@ class ForwardingDataSourceImpl extends ForwardingDataSource {
   Future<TMailForward> getForward(AccountId accountId) {
     return Future.sync(() async {
       return await _forwardingAPI.getForward(accountId);
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -32,7 +35,10 @@ class ForwardingDataSourceImpl extends ForwardingDataSource {
         accountId,
         deleteRequest.newTMailForward,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -45,7 +51,10 @@ class ForwardingDataSourceImpl extends ForwardingDataSource {
         accountId,
         addRequest.newTMailForward,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 
   @override
@@ -58,6 +67,9 @@ class ForwardingDataSourceImpl extends ForwardingDataSource {
         accountId,
         editRequest.newTMailForward,
       );
-    }).catchError(_exceptionThrower.throwException);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

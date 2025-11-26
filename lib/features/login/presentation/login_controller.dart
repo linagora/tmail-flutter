@@ -53,6 +53,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_fi
 import 'package:tmail_ui_user/features/login/presentation/extensions/generate_oidc_guessing_urls.dart';
 import 'package:tmail_ui_user/features/login/presentation/extensions/handle_openid_configuration.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/auto_refresh_arguments.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
@@ -140,6 +141,8 @@ class LoginController extends ReloadableController {
       if (PlatformInfo.isWeb) {
         _checkOIDCIsAvailable();
       }
+    } else if (arguments is AutoRefreshArguments) {
+      _handleDNSLookupToGetJmapUrlSuccess(arguments.jmapUrl);
     } else if (PlatformInfo.isWeb) {
       _getAuthenticationInfo();
     }
@@ -194,7 +197,7 @@ class LoginController extends ReloadableController {
     } else if (success is AuthenticationUserSuccess) {
       _loginSuccessAction(success);
     } else if (success is DNSLookupToGetJmapUrlSuccess) {
-      _handleDNSLookupToGetJmapUrlSuccess(success);
+      _handleDNSLookupToGetJmapUrlSuccess(success.jmapUrl);
     } else if (success is TryGuessingWebFingerSuccess) {
       onBaseUrlChange(success.oidcResponse.subject);
       getOIDCConfiguration(success.oidcResponse);
@@ -549,8 +552,8 @@ class LoginController extends ReloadableController {
     }
   }
 
-  void _handleDNSLookupToGetJmapUrlSuccess(DNSLookupToGetJmapUrlSuccess success) {
-    onBaseUrlChange(success.jmapUrl);
+  void _handleDNSLookupToGetJmapUrlSuccess(String jmapUrl) {
+    onBaseUrlChange(jmapUrl);
     _checkOIDCIsAvailable();
   }
 
