@@ -74,11 +74,19 @@ class CachingManager {
 
   Future<void> clearAll() async {
     await Future.wait([
+      clearMailDataCached(),
+      _fcmCacheManager.clear(),
+      _accountCacheManager.clear(),
+      if (PlatformInfo.isIOS)
+        _keychainSharingManager.delete()
+    ], eagerError: true);
+  }
+
+  Future<void> clearMailDataCached() async {
+    await Future.wait([
       _stateCacheManager.clear(),
       _mailboxCacheManager.clear(),
       _emailCacheManager.clear(),
-      _fcmCacheManager.clear(),
-      _accountCacheManager.clear(),
       if (PlatformInfo.isMobile)
         ...[
           _sessionCacheManager.clear(),
@@ -86,8 +94,6 @@ class CachingManager {
           _openedEmailCacheManager.clear(),
           _sendingEmailCacheManager.clearAllSendingEmails(),
         ],
-      if (PlatformInfo.isIOS)
-        _keychainSharingManager.delete()
     ], eagerError: true);
   }
 
