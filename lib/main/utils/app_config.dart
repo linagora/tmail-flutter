@@ -77,4 +77,7 @@ class AppConfig {
   static bool get isCozyIntegrationEnabled => dotenv.get('COZY_INTEGRATION', fallback: 'false') == 'true';
 
   static String get cozyExternalBridgeVersion => dotenv.get('COZY_EXTERNAL_BRIDGE_VERSION', fallback: '0.16.1');
+
+  static bool get isForceEmailQueryEnabled =>
+      dotenv.get('FORCE_EMAIL_QUERY', fallback: 'false') == 'true';
 }
