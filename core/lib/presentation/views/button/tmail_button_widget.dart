@@ -110,6 +110,7 @@ class TMailButtonWidget extends StatelessWidget {
     EdgeInsetsGeometry? margin,
     Color? hoverColor,
     Alignment? alignment,
+    BoxBorder? border,
   }) {
     return TMailButtonWidget(
       key: key,
@@ -137,6 +138,7 @@ class TMailButtonWidget extends StatelessWidget {
       margin: margin,
       hoverColor: hoverColor,
       alignment: alignment,
+      border: border,
     );
   }
 

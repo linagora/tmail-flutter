@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -11,12 +12,14 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LabelController extends BaseController {
   final labels = <Label>[].obs;
   final labelListExpandMode = Rx(ExpandMode.EXPAND);
+  final isCreateNewLabelModalVisible = RxBool(false);
 
   GetAllLabelInteractor? _getAllLabelInteractor;
 
@@ -39,6 +42,22 @@ class LabelController extends BaseController {
     labelListExpandMode.value = labelListExpandMode.value == ExpandMode.COLLAPSE
         ? ExpandMode.EXPAND
         : ExpandMode.COLLAPSE;
+  }
+
+  Future<void> openCreateNewLabelModal() async {
+    if (PlatformInfo.isWeb) {
+      isCreateNewLabelModalVisible.value = true;
+    }
+
+    await Get.generalDialog(
+      barrierDismissible: true,
+      barrierLabel: 'create-new-label-modal',
+      pageBuilder: (_, __, ___) => CreateNewLabelModal(labels: labels),
+    ).whenComplete(() {
+      if (PlatformInfo.isWeb) {
+        isCreateNewLabelModalVisible.value = false;
+      }
+    });
   }
 
   @override

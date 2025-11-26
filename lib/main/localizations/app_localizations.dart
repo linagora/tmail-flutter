@@ -5471,4 +5471,60 @@ class AppLocalizations {
       name: 'newLabel',
     );
   }
+
+  String get labelName {
+    return Intl.message(
+      'Label name',
+      name: 'labelName',
+    );
+  }
+
+  String get pleaseEnterNameYourNewLabel {
+    return Intl.message(
+      'Please enter the name of your new label',
+      name: 'pleaseEnterNameYourNewLabel',
+    );
+  }
+
+  String get chooseALabelColor {
+    return Intl.message(
+      'Choose a label color',
+      name: 'chooseALabelColor',
+    );
+  }
+
+  String get createLabel {
+    return Intl.message(
+      'Create label',
+      name: 'createLabel',
+    );
+  }
+
+  String get createANewLabel {
+    return Intl.message(
+      'Create a new label',
+      name: 'createANewLabel',
+    );
+  }
+
+  String get organizeYourInboxWithACustomCategory {
+    return Intl.message(
+      'Organize your inbox with a custom category',
+      name: 'organizeYourInboxWithACustomCategory',
+    );
+  }
+
+  String get tagNameCannotContainSpecialCharacters {
+    return Intl.message(
+      'Tag name cannot contain special characters',
+      name: 'tagNameCannotContainSpecialCharacters',
+    );
+  }
+
+  String get tagNameAlreadyExists {
+    return Intl.message(
+      'A tag with this name already exists. Please choose a different name.',
+      name: 'tagNameAlreadyExists',
+    );
+  }
 }
