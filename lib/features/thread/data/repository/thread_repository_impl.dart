@@ -138,6 +138,83 @@ class ThreadRepositoryImpl extends ThreadRepository {
     yield newEmailResponse;
   }
 
+  @override
+  Stream<EmailsResponse> forceQueryAllEmailsForWeb({
+    required Session session,
+    required AccountId accountId,
+    UnsignedInt? limit,
+    int? position,
+    Set<Comparator>? sort,
+    EmailFilter? emailFilter,
+    Properties? propertiesCreated,
+  }) async* {
+    final localDataSource = mapDataSource[DataSourceType.local];
+    final networkDataSource = mapDataSource[DataSourceType.network];
+
+    if (localDataSource == null || networkDataSource == null) {
+      logError(
+        'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+        'Missing required data sources (local or network).',
+      );
+      return;
+    }
+
+    // Load cached emails + cached state
+    final cachedList = await localDataSource.getAllEmailCache(
+      accountId,
+      session.username,
+      inMailboxId: emailFilter?.mailboxId,
+      sort: sort,
+      limit: limit,
+      filterOption: emailFilter?.filterOption,
+    );
+
+    final cachedState = await stateDataSource.getState(
+      accountId,
+      session.username,
+      StateType.email,
+    );
+
+    final localResponse = EmailsResponse(
+      emailList: cachedList,
+      state: cachedState,
+    );
+
+    log(
+      'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+      'Local cache count = ${cachedList.length}; '
+      'State = ${cachedState?.value}',
+    );
+
+    if (localResponse.hasEmails()) {
+      yield localResponse;
+    }
+
+    // Query fresh emails from server
+    final serverResponse = await networkDataSource.getAllEmail(
+      session,
+      accountId,
+      limit: limit,
+      position: position,
+      sort: sort,
+      filter: emailFilter?.filter,
+      properties: propertiesCreated,
+    );
+
+    final serverCount = serverResponse.emailList?.length ?? 0;
+
+    log(
+      'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+      'Server email count = $serverCount',
+    );
+
+    // Combine server list + keep existing state
+    yield EmailsResponse(
+      emailList: serverResponse.emailList,
+      state: cachedState,
+    );
+  }
+
   bool _isApproveFilterOption(FilterMessageOption? filterOption, List<Email>? listEmailResponse) {
     return filterOption != FilterMessageOption.all && listEmailResponse!.isNotEmpty;
   }

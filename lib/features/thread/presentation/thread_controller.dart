@@ -71,6 +71,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:universal_html/html.dart' as html;
 
 typedef StartRangeSelection = int;
@@ -261,6 +262,7 @@ class ThreadController extends BaseController with EmailActionController {
         resetToOriginalValue();
         getAllEmailAction(
           getLatestChanges: mailboxDashBoardController.isFirstSessionLoad,
+          forceEmailQuery: forceEmailQuery,
         );
         mailboxDashBoardController.setIsFirstSessionLoad(false);
       } else if (mailbox == null) { // disable current mailbox when search active
@@ -335,7 +337,7 @@ class ThreadController extends BaseController with EmailActionController {
       if (action is RefreshChangeEmailAction) {
         _refreshEmailChanges(newState: action.newState);
       } else if (action is RefreshAllEmailAction) {
-        refreshAllEmail();
+        refreshAllEmail(forceEmailQuery: forceEmailQuery);
         mailboxDashBoardController.clearEmailUIAction();
       }
     });
@@ -454,6 +456,9 @@ class ThreadController extends BaseController with EmailActionController {
     handleLoadMoreEmailsRequest();
   }
 
+  bool get forceEmailQuery =>
+      PlatformInfo.isWeb && AppConfig.isForceEmailQueryEnabled;
+
   void _handleErrorGetAllOrRefreshChangesEmail(Object error, StackTrace stackTrace) async {
     logError('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
@@ -543,6 +548,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void getAllEmailAction({
     bool getLatestChanges = true,
+    bool forceEmailQuery = false,
   }) {
     log('ThreadController::_getAllEmailAction:getLatestChanges = $getLatestChanges');
     if (_session != null &&_accountId != null) {
@@ -562,6 +568,7 @@ class ThreadController extends BaseController with EmailActionController {
           _accountId!,
         ),
         getLatestChanges: getLatestChanges,
+        forceEmailQuery: forceEmailQuery,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -596,7 +603,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void refreshAllEmail() {
+  void refreshAllEmail({bool forceEmailQuery = false}) {
     if (searchController.isSearchEmailRunning) {
       consumeState(Stream.value(Right(SearchingState())));
     } else {
@@ -610,7 +617,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched);
     } else {
-      getAllEmailAction();
+      getAllEmailAction(forceEmailQuery: forceEmailQuery);
     }
   }
 
