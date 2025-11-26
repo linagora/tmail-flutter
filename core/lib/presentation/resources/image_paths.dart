@@ -262,6 +262,7 @@ class ImagePaths {
   String get icText => _getImagePath('ic_text.svg');
   String get icUser => _getImagePath('ic_user.svg');
   String get icTag => _getImagePath('ic_tag.svg');
+  String get icColorPicker => _getImagePath('ic_color_picker.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

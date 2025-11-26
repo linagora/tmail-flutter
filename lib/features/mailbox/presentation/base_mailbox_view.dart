@@ -361,6 +361,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           expandMode: labelListExpandMode,
           countLabels: countLabels,
           onToggleLabelListState: labelController.toggleLabelListState,
+          onAddNewLabel: labelController.openCreateNewLabelModal,
         );
       } else {
         return const SizedBox.shrink();

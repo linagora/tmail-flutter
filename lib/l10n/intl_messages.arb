@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-11-25T16:41:03.318468",
+  "@@last_modified": "2025-11-26T12:04:43.359806",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5138,6 +5138,54 @@
   },
   "newLabel": "New label",
   "@newLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelName": "Label name",
+  "@labelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseEnterNameYourNewLabel": "Please enter the name of your new label",
+  "@pleaseEnterNameYourNewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseALabelColor": "Choose a label color",
+  "@chooseALabelColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabel": "Create label",
+  "@createLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewLabel": "Create a new label",
+  "@createANewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizeYourInboxWithACustomCategory": "Organize your inbox with a custom category",
+  "@organizeYourInboxWithACustomCategory": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tagNameCannotContainSpecialCharacters": "Tag name cannot contain special characters",
+  "@tagNameCannotContainSpecialCharacters": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tagNameAlreadyExists": "A tag with this name already exists. Please choose a different name.",
+  "@tagNameAlreadyExists": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

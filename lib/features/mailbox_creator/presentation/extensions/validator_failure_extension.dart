@@ -48,4 +48,18 @@ extension ValicatorFailureExtension on VerifyNameFailure {
       return '';
     }
   }
+
+  String getMessageLabelError(AppLocalizations appLocalizations) {
+    if (exception is EmptyNameException) {
+      return appLocalizations.this_field_cannot_be_blank;
+    } else if (exception is DuplicatedNameException) {
+      return appLocalizations.tagNameAlreadyExists;
+    } else if (exception is SpecialCharacterException) {
+      return appLocalizations.tagNameCannotContainSpecialCharacters;
+    } else if (exception is NameWithSpaceOnlyException) {
+      return appLocalizations.thisFieldCannotContainOnlySpaces;
+    } else {
+      return '';
+    }
+  }
 }
