@@ -117,6 +117,8 @@ export 'presentation/views/semantics/text_field_semantics.dart';
 export 'presentation/views/semantics/icon_semantics.dart';
 export 'presentation/views/shortcut/key_shortcut.dart';
 export 'presentation/views/tooltip/iframe_tooltip_overlay.dart';
+export 'presentation/views/color/color_circle_widget.dart';
+export 'presentation/views/color/colors_map_widget.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';
