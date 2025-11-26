@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/labels/domain/repository/label_repository
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:uuid/uuid.dart';
 
 class LabelInteractorBindings extends InteractorsBindings {
   @override
@@ -18,7 +19,7 @@ class LabelInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => LabelApi(Get.find<HttpClient>()));
+    Get.lazyPut(() => LabelApi(Get.find<HttpClient>(), Get.find<Uuid>()));
     Get.lazyPut(
       () => LabelDatasourceImpl(
         Get.find<LabelApi>(),
