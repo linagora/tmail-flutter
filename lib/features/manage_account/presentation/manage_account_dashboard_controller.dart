@@ -1,4 +1,4 @@
-
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
@@ -106,6 +106,13 @@ class ManageAccountDashBoardController extends ReloadableController
     log('ManageAccountDashBoardController::handleReloaded:');
     _setUpComponentsFromSession(session);
     _getParametersRouter();
+  }
+
+  @override
+  Future<void> onBeforeUnloadBrowserListener(html.Event event) async {
+    if (PlatformInfo.isWeb && AppConfig.isForceEmailQueryEnabled) {
+      await cachingManager.clearAllEmailAndStateCache();
+    }
   }
 
   void _getArguments() {
