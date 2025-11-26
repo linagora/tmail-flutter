@@ -2,15 +2,21 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/color/color_circle_widget.dart';
+import 'package:core/presentation/views/color/color_picker_modal.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ColorsMapWidget extends StatefulWidget {
-  final Color? initialColor;
+  final ImagePaths imagePaths;
+  final Color? customColor;
+  final VoidCallback? onOpenColorPicker;
+  final OnSelectColorCallback? onSelectColorCallback;
 
   const ColorsMapWidget({
     super.key,
-    this.initialColor,
+    required this.imagePaths,
+    this.customColor,
+    this.onOpenColorPicker,
+    this.onSelectColorCallback,
   });
 
   @override
@@ -41,14 +47,21 @@ class _ColorsMapWidgetState extends State<ColorsMapWidget> {
     Color(0xFF646580),
   ];
 
-  final _imagePaths = Get.find<ImagePaths>();
-
   final ValueNotifier<Color?> _selectedColor = ValueNotifier(null);
+  List<Color> _colorList = <Color>[];
 
   @override
   void initState() {
     super.initState();
-    _selectedColor.value = widget.initialColor;
+    _setUpColorList();
+  }
+
+  @override
+  void didUpdateWidget(covariant ColorsMapWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.customColor != widget.customColor) {
+      _setUpColorList();
+    }
   }
 
   @override
@@ -58,7 +71,7 @@ class _ColorsMapWidgetState extends State<ColorsMapWidget> {
       runSpacing: 10,
       children: [
         TMailButtonWidget.fromIcon(
-          icon: _imagePaths.icCloseDialog,
+          icon: widget.imagePaths.icCloseDialog,
           iconColor: AppColor.m3SurfaceBackground.withValues(alpha: 0.48),
           iconSize: 18.46,
           width: 40,
@@ -68,7 +81,7 @@ class _ColorsMapWidgetState extends State<ColorsMapWidget> {
           border: Border.all(width: 2, color: AppColor.grayCDCDCD),
           onTapActionCallback: _clearColor,
         ),
-        ..._defaultColors
+        ..._colorList
             .map(
               (color) => ValueListenableBuilder(
                 valueListenable: _selectedColor,
@@ -77,7 +90,7 @@ class _ColorsMapWidgetState extends State<ColorsMapWidget> {
                     color: color,
                     isSelected: color == value,
                     onTap: () => _selectColor(color),
-                    imagePaths: _imagePaths,
+                    imagePaths: widget.imagePaths,
                   );
                 },
               ),
@@ -99,29 +112,35 @@ class _ColorsMapWidgetState extends State<ColorsMapWidget> {
             ),
           ),
           child: TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icColorPicker,
+            icon: widget.imagePaths.icColorPicker,
             iconColor: AppColor.textSecondary,
             iconSize: 18.46,
-            width: 40,
-            height: 40,
+            width: 38,
+            height: 38,
             borderRadius: 100,
             backgroundColor: Colors.white,
-            onTapActionCallback: _openColorPicker,
+            onTapActionCallback: widget.onOpenColorPicker,
           ),
         ),
       ],
     );
   }
 
+  void _setUpColorList() {
+    final custom = widget.customColor;
+    _colorList = custom != null ? [custom, ..._defaultColors] : _defaultColors;
+    _selectedColor.value = custom;
+  }
+
   void _selectColor(Color color) {
     _selectedColor.value = color;
+    widget.onSelectColorCallback?.call(color);
   }
 
   void _clearColor() {
     _selectedColor.value = null;
+    widget.onSelectColorCallback?.call(null);
   }
-
-  void _openColorPicker() {}
 
   @override
   void dispose() {
