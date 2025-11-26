@@ -250,8 +250,12 @@ class LoginController extends ReloadableController {
   }
 
   @override
-  void handleReloaded(Session session) {
+  Future<void> handleReloaded(Session session) async {
     SmartDialog.dismiss();
+
+    if (PlatformInfo.isWeb && AppConfig.isForceEmailQueryEnabled) {
+      await cachingManager.clearAllEmailAndStateCache();
+    }
 
     popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
