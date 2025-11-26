@@ -603,7 +603,11 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void refreshAllEmail({bool forceEmailQuery = false}) {
+  Future<void> refreshAllEmail({bool forceEmailQuery = false}) async {
+    if (forceEmailQuery) {
+      await cachingManager.clearAllEmailAndStateCache();
+    }
+
     if (searchController.isSearchEmailRunning) {
       consumeState(Stream.value(Right(SearchingState())));
     } else {
