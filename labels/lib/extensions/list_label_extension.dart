@@ -9,4 +9,8 @@ extension ListLabelExtension on List<Label> {
       (label, otherLabel) => label.compareAlphabetically(otherLabel),
     );
   }
+
+  List<String> get displayNameNotNullList => map((label) => label.safeDisplayName)
+      .where((name) => name.isNotEmpty)
+      .toList();
 }

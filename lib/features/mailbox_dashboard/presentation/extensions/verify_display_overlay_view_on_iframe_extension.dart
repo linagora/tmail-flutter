@@ -9,6 +9,7 @@ extension VerifyDisplayOverlayViewOnIframeExtension
         isAppGridDialogDisplayed.isTrue ||
         isDrawerOpened.isTrue ||
         isContextMenuOpened.isTrue ||
-        isPopupMenuOpened.isTrue;
+        isPopupMenuOpened.isTrue ||
+        labelController.isCreateNewLabelModalVisible.isTrue;
   }
 }
