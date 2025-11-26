@@ -4,15 +4,16 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/views/button/default_close_button_widget.dart';
+import 'package:core/presentation/views/color/color_picker_modal.dart';
 import 'package:core/presentation/views/color/colors_map_widget.dart';
+import 'package:core/presentation/views/dialog/modal_list_action_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:labels/extensions/list_label_extension.dart';
 import 'package:labels/model/label.dart';
-import 'package:tmail_ui_user/features/base/widget/default_field/default_close_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
-import 'package:tmail_ui_user/features/base/widget/modal_list_action_button_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
@@ -37,11 +38,14 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   final _imagePaths = Get.find<ImagePaths>();
   final _verifyNameInteractor = Get.find<VerifyNameInteractor>();
 
-  final ValueNotifier<String?> _labelNameErrorText = ValueNotifier(null);
+  final ValueNotifier<String?> _labelNameErrorTextNotifier =
+      ValueNotifier(null);
+  final ValueNotifier<Color?> _labelSelectedColorNotifier = ValueNotifier(null);
   final TextEditingController _nameInputController = TextEditingController();
   final FocusNode _nameInputFocusNode = FocusNode();
 
   List<String> _labelDisplayNameList = <String>[];
+  Color? _selectedColor;
 
   @override
   void initState() {
@@ -107,10 +111,10 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                 ),
                 Center(
                   child: Padding(
-                    padding: EdgeInsetsDirectional.only(
+                    padding: const EdgeInsetsDirectional.only(
                       start: 32,
                       end: 32,
-                      bottom: isMobile ? 32 : 48,
+                      bottom: 24,
                     ),
                     child: Text(
                       appLocalizations.organizeYourInboxWithACustomCategory,
@@ -137,7 +141,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ValueListenableBuilder(
-                            valueListenable: _labelNameErrorText,
+                            valueListenable: _labelNameErrorTextNotifier,
                             builder: (_, errorText, __) {
                               return LabelInputFieldBuilder(
                                 label: appLocalizations.labelName,
@@ -185,7 +189,18 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                                       start: 32,
                                       end: 16,
                                     ),
-                              child: const ColorsMapWidget(),
+                              child: ValueListenableBuilder(
+                                valueListenable: _labelSelectedColorNotifier,
+                                builder: (_, value, __) {
+                                  return ColorsMapWidget(
+                                    imagePaths: _imagePaths,
+                                    customColor: value,
+                                    onOpenColorPicker: () =>
+                                        _openColorPickerModal(appLocalizations),
+                                    onSelectColorCallback: _updateLabelColor,
+                                  );
+                                },
+                              ),
                             ),
                           ),
                           ModalListActionButtonWidget(
@@ -230,8 +245,13 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   }
 
   void _onLabelNameInputChanged(
-      AppLocalizations appLocalizations, String value) {
-    _labelNameErrorText.value = _verifyLabelName(appLocalizations, value);
+    AppLocalizations appLocalizations,
+    String value,
+  ) {
+    _labelNameErrorTextNotifier.value = _verifyLabelName(
+      appLocalizations,
+      value,
+    );
   }
 
   String? _verifyLabelName(AppLocalizations appLocalizations, String value) {
@@ -269,11 +289,35 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
     popBack();
   }
 
+  void _updateLabelColor(Color? color) {
+    _selectedColor = color;
+  }
+
+  void _onLabelColorChanged(Color? color) {
+    _updateLabelColor(color);
+    _labelSelectedColorNotifier.value = color;
+  }
+
+  Future<void> _openColorPickerModal(AppLocalizations appLocalizations) async {
+    await Get.generalDialog(
+      barrierDismissible: true,
+      barrierLabel: 'color-picker-modal',
+      pageBuilder: (_, __, ___) => ColorPickerModal(
+        imagePaths: _imagePaths,
+        modalTitle: appLocalizations.chooseCustomColour,
+        modalSubtitle: appLocalizations.chooseAColourForThisLabel,
+        initialColor: _selectedColor,
+        onSelectColorCallback: _onLabelColorChanged,
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _nameInputFocusNode.dispose();
     _nameInputController.dispose();
-    _labelNameErrorText.dispose();
+    _labelNameErrorTextNotifier.dispose();
+    _labelSelectedColorNotifier.dispose();
     _labelDisplayNameList = [];
     super.dispose();
   }

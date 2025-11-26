@@ -5569,4 +5569,18 @@ class AppLocalizations {
       name: 'tagNameAlreadyExists',
     );
   }
+
+  String get chooseCustomColour {
+    return Intl.message(
+      'Choose custom colour',
+      name: 'chooseCustomColour',
+    );
+  }
+
+  String get chooseAColourForThisLabel {
+    return Intl.message(
+      'Choose a colour for this label',
+      name: 'chooseAColourForThisLabel',
+    );
+  }
 }
