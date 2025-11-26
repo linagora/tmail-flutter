@@ -5243,5 +5243,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "chooseCustomColour": "Choose custom colour",
+  "@chooseCustomColour": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColourForThisLabel": "Choose a colour for this label",
+  "@chooseAColourForThisLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
