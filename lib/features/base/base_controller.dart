@@ -440,6 +440,8 @@ abstract class BaseController extends GetxController
       return;
     }
 
+    await clearAllMailDataCached();
+
     _isFcmEnabled = _isFcmActivated(session, accountId);
     if (isAuthenticatedWithOidc) {
       consumeState(logoutOidcInteractor.execute());
@@ -544,6 +546,17 @@ abstract class BaseController extends GetxController
     log('$runtimeType::clearDataAndGoToLoginPage:');
     await clearAllData();
     removeAllPageAndGoToLogin();
+  }
+
+  Future<void> clearAllMailDataCached() async {
+    try {
+      await cachingManager.clearMailDataCached();
+      if (PlatformInfo.isMobile) {
+        await cachingManager.clearAllFileInStorage();
+      }
+    } catch (e) {
+      logError('BaseController::clearAllMailDataCached:Exception = $e');
+    }
   }
 
   Future<void> clearAllData() async {
