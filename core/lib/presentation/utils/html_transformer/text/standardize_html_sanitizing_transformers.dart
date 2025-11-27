@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/html_sanitize_config.dart';
 import 'package:core/presentation/utils/html_transformer/sanitize_html.dart';
 
 class StandardizeHtmlSanitizingTransformers extends TextTransformer {
@@ -34,10 +35,18 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
   const StandardizeHtmlSanitizingTransformers();
 
   @override
-  String process(String text, HtmlEscape htmlEscape) =>
-    SanitizeHtml().process(
+  String process(String text, HtmlEscape htmlEscape) {
+    final preservedTags = HtmlSanitizeConfig.loadPreservedHtmlTags();
+
+    final mergedTags = <String>{
+      ...mailAllowedHtmlTags,
+      ...preservedTags,
+    }.toList();
+
+    return SanitizeHtml().process(
       inputHtml: text,
       allowAttributes: mailAllowedHtmlAttributes,
-      allowTags: mailAllowedHtmlTags,
+      allowTags: mergedTags,
     );
+  }
 }
