@@ -1,6 +1,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/hex_color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:labels/model/hex_color.dart';
 import 'package:labels/model/label.dart';
 
 extension LabelExtension on Label {
@@ -22,5 +24,19 @@ extension LabelExtension on Label {
     } else {
       return Colors.white;
     }
+  }
+
+  Label copyWith({
+    Id? id,
+    String? keyword,
+    String? displayName,
+    HexColor? color,
+  }) {
+    return Label(
+      id: id ?? this.id,
+      displayName: displayName ?? this.displayName,
+      keyword: keyword ?? this.keyword,
+      color: color ?? this.color,
+    );
   }
 }

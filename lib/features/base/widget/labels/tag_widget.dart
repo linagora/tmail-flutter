@@ -1,5 +1,6 @@
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/labels/presentation/utils/label_utils.dart';
 
 class TagWidget extends StatelessWidget {
   final String text;
@@ -26,7 +27,7 @@ class TagWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget labelText = Text(
-      isTruncateText ? _truncateName(text) : text,
+      isTruncateText ? LabelUtils.truncateLabel(text) : text,
       style: ThemeUtils.textStyleContentCaption().copyWith(
         color: textColor,
       ),
