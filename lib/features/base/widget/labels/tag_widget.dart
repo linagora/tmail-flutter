@@ -1,5 +1,6 @@
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/labels/presentation/utils/label_utils.dart';
 
 class TagWidget extends StatelessWidget {
   final String text;
@@ -7,6 +8,8 @@ class TagWidget extends StatelessWidget {
   final Color? backgroundColor;
   final Color? textColor;
   final double? maxWidth;
+  final bool isTruncateText;
+  final bool showTooltip;
 
   const TagWidget({
     super.key,
@@ -15,10 +18,28 @@ class TagWidget extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.maxWidth,
+    this.isTruncateText = false,
+    this.showTooltip = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    Widget labelText = Text(
+      isTruncateText ? LabelUtils.truncateLabel(text) : text,
+      style: ThemeUtils.textStyleContentCaption().copyWith(
+        color: textColor,
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+
+    if (showTooltip) {
+      labelText = Tooltip(
+        message: text,
+        child: labelText,
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor,
@@ -27,14 +48,7 @@ class TagWidget extends StatelessWidget {
       constraints:
           maxWidth != null ? BoxConstraints(maxWidth: maxWidth!) : null,
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-      child: Text(
-        text,
-        style: ThemeUtils.textStyleContentCaption().copyWith(
-          color: textColor,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      child: labelText,
     );
   }
 }
