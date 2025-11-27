@@ -159,21 +159,39 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return;
     }
 
-    // Load cached emails + cached state
-    final cachedList = await localDataSource.getAllEmailCache(
-      accountId,
-      session.username,
-      inMailboxId: emailFilter?.mailboxId,
-      sort: sort,
-      limit: limit,
-      filterOption: emailFilter?.filterOption,
-    );
+    List<Email> cachedList = const [];
+    jmap.State? cachedState;
 
-    final cachedState = await stateDataSource.getState(
-      accountId,
-      session.username,
-      StateType.email,
-    );
+    // Load cached emails
+    try {
+      cachedList = await localDataSource.getAllEmailCache(
+        accountId,
+        session.username,
+        inMailboxId: emailFilter?.mailboxId,
+        sort: sort,
+        limit: limit,
+        filterOption: emailFilter?.filterOption,
+      );
+    } catch (_) {
+      logError(
+        'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+        'Failed to load cached emails',
+      );
+    }
+
+    // Load cached state
+    try {
+      cachedState = await stateDataSource.getState(
+        accountId,
+        session.username,
+        StateType.email,
+      );
+    } catch (_) {
+      logError(
+        'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+        'Failed to load cached email state',
+      );
+    }
 
     final localResponse = EmailsResponse(
       emailList: cachedList,
@@ -211,7 +229,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     // Combine server list + keep existing state
     yield EmailsResponse(
       emailList: serverResponse.emailList,
-      state: cachedState,
+      state: cachedState ?? serverResponse.state,
     );
   }
 
