@@ -151,6 +151,10 @@ class HtmlUtils {
           white-space: normal !important;
         }
         
+        table, td, th {
+          word-break: normal !important;
+        }
+        
         ${styleCSS ?? ''}
       </style>
       </head>
