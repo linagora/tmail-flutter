@@ -394,18 +394,6 @@ void main() {
       expect(result.hiddenCount, 2);
     });
 
-    test('safeComputeDisplayedTags falls back gracefully on exception', () {
-      final result = LabelUtils.safeComputeDisplayedTags(
-        tags: [Label(displayName: 'A'), Label(displayName: 'B')],
-        maxWidth: 100,
-        textStyle: const TextStyle(),
-        measureWidth: (_) => throw Exception('boom'),
-      );
-
-      expect(result.displayed.single.safeDisplayName, 'A');
-      expect(result.hiddenCount, 1);
-    });
-
     test('respects tagMaxWidth by clamping oversized label width', () {
       final tags = [
         label('SUPER_LONG_TAG_NAME'),
@@ -477,6 +465,222 @@ void main() {
         true,
         reason: 'computeDisplayedTags took too long',
       );
+    });
+  });
+
+  group('LabelUtils.safeComputeDisplayedTags', () {
+    test('should falls back gracefully on exception', () {
+      final result = LabelUtils.safeComputeDisplayedTags(
+        tags: [Label(displayName: 'A'), Label(displayName: 'B')],
+        maxWidth: 100,
+        textStyle: const TextStyle(),
+        measureWidth: (_) => throw Exception('boom'),
+      );
+
+      expect(result.displayed.single.safeDisplayName, 'A');
+      expect(result.hiddenCount, 1);
+    });
+  });
+
+  group('LabelUtils.computeDisplayedLabelsByMaxDisplay', () {
+    test('returns empty result when labels list is empty', () {
+      final result = LabelUtils.computeDisplayedLabelsByMaxDisplay(labels: []);
+
+      expect(result.displayed, isEmpty);
+      expect(result.hiddenCount, 0);
+    });
+
+    test('returns all labels when length <= maxDisplay', () {
+      final labels = [
+        label('A'),
+        label('B'),
+      ];
+
+      final result = LabelUtils.computeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: 3,
+      );
+
+      expect(result.displayed.length, 2);
+      expect(result.displayed.map((e) => e.displayName), ['A', 'B']);
+      expect(result.hiddenCount, 0);
+    });
+
+    test('limits displayed to maxDisplay when list exceeds maxDisplay', () {
+      final labels = [
+        label('A'),
+        label('B'),
+        label('C'),
+        label('D'),
+      ];
+
+      final result = LabelUtils.computeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: 3,
+      );
+
+      expect(result.displayed.length, 3);
+      expect(result.displayed.map((e) => e.displayName), ['A', 'B', 'C']);
+      expect(result.hiddenCount, 1);
+    });
+
+    test('computes hiddenCount correctly for larger list', () {
+      final labels = [
+        label('A'),
+        label('B'),
+        label('C'),
+        label('D'),
+        label('E'),
+      ];
+
+      final result = LabelUtils.computeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: 3,
+      );
+
+      expect(result.displayed.length, 3);
+      expect(result.displayed.map((e) => e.displayName), ['A', 'B', 'C']);
+      expect(result.hiddenCount, 2);
+    });
+
+    test('works correctly when maxDisplay = 1', () {
+      final labels = [
+        label('A'),
+        label('B'),
+        label('C'),
+      ];
+
+      final result = LabelUtils.computeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: 1,
+      );
+
+      expect(result.displayed.length, 1);
+      expect(result.displayed.first.displayName, 'A');
+      expect(result.hiddenCount, 2);
+    });
+
+    test('works correctly when maxDisplay is larger than list size', () {
+      final labels = [
+        label('A'),
+      ];
+
+      final result = LabelUtils.computeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: 10,
+      );
+
+      expect(result.displayed.length, 1);
+      expect(result.displayed.map((e) => e.displayName), ['A']);
+      expect(result.hiddenCount, 0);
+    });
+
+    test('throws RangeError when maxDisplay < 0', () {
+      final labels = [
+        label('A'),
+        label('B'),
+        label('C'),
+      ];
+
+      expect(
+        () => LabelUtils.computeDisplayedLabelsByMaxDisplay(
+          labels: labels,
+          maxDisplay: -1,
+        ),
+        throwsA(isA<RangeError>()),
+      );
+    });
+  });
+
+  group('LabelUtils.safeComputeDisplayedLabelsByMaxDisplay', () {
+    test('returns empty result when labels list is empty', () {
+      final result =
+          LabelUtils.safeComputeDisplayedLabelsByMaxDisplay(labels: []);
+
+      expect(result.displayed, isEmpty);
+      expect(result.hiddenCount, 0);
+    });
+
+    test('returns normal compute result when no exception occurs', () {
+      final labels = [
+        label('A'),
+        label('B'),
+        label('C'),
+      ];
+
+      final result = LabelUtils.safeComputeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: 2,
+      );
+
+      expect(result.displayed.length, 2);
+      expect(result.displayed.map((e) => e.displayName), ['A', 'B']);
+      expect(result.hiddenCount, 1);
+    });
+
+    test(
+        'fallback when computeDisplayedLabelsByMaxDisplay throws and labels empty',
+        () {
+      expect(
+        () => LabelUtils.safeComputeDisplayedLabelsByMaxDisplay(
+          labels: [],
+          maxDisplay: -999,
+        ),
+        returnsNormally,
+      );
+
+      final result = LabelUtils.safeComputeDisplayedLabelsByMaxDisplay(
+        labels: [],
+        maxDisplay: -999,
+      );
+
+      expect(result.displayed, isEmpty);
+      expect(result.hiddenCount, 0);
+    });
+
+    test('fallback returns first label and hiddenCount when exception occurs',
+        () {
+      final labels = [
+        label('A'),
+        label('B'),
+        label('C'),
+      ];
+
+      final result = LabelUtils.safeComputeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: -1,
+      );
+
+      expect(result.displayed.length, 1);
+      expect(result.displayed.first.displayName, 'A');
+      expect(result.hiddenCount, 2);
+    });
+
+    test('fallback works correctly when only one label exists', () {
+      final labels = [label('A')];
+
+      final result = LabelUtils.safeComputeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: -1,
+      );
+
+      expect(result.displayed.length, 1);
+      expect(result.displayed.first.displayName, 'A');
+      expect(result.hiddenCount, 0);
+    });
+
+    test('normal path works when maxDisplay > list size', () {
+      final labels = [
+        label('A'),
+      ];
+
+      final result = LabelUtils.safeComputeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: 10,
+      );
+
+      expect(result.displayed.length, 1);
+      expect(result.hiddenCount, 0);
     });
   });
 }
