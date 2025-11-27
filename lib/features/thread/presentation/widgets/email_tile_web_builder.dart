@@ -28,6 +28,7 @@ class EmailTileBuilder extends StatefulWidget {
   final bool isDrag;
   final bool isShowingEmailContent;
   final bool isSenderImportantFlagEnabled;
+  final bool autoWrapTagsByMaxWidth;
   final List<Label>? labels;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
@@ -41,6 +42,7 @@ class EmailTileBuilder extends StatefulWidget {
     this.searchQuery,
     this.isSearchEmailRunning = false,
     this.isSenderImportantFlagEnabled = true,
+    this.autoWrapTagsByMaxWidth = false,
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
@@ -97,84 +99,78 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                   ),
                 ),
                 Expanded(
-                  child: Column(children: [
-                    Row(children: [
-                      if (!widget.presentationEmail.hasRead)
-                        Padding(
-                          padding: const EdgeInsetsDirectional.only(end: 5),
-                          child: buildIconUnreadStatus(),
-                        ),
-                      Expanded(
-                        child: buildInformationSender(
-                          context,
-                          widget.presentationEmail,
-                          widget.mailboxContain,
-                          widget.isSearchEmailRunning,
-                          widget.searchQuery
-                        )
-                      ),
-                      buildIconAnsweredOrForwarded(
-                        width: 16,
-                        height: 16,
-                        presentationEmail: widget.presentationEmail
-                      ),
-                      if (widget.presentationEmail.hasAttachment == true)
-                        Padding(
-                          padding: const EdgeInsetsDirectional.only(start: 8),
-                          child: buildIconAttachment(),
-                        ),
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                          end: 4,
-                          start: 8
-                        ),
-                        child: buildDateTime(context, widget.presentationEmail)
-                      ),
-                      buildIconChevron()
-                    ]),
-                    const SizedBox(height: 2),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.presentationEmail.hasCalendarEvent)
-                          buildCalendarEventIcon(
-                            context: context,
-                            presentationEmail: widget.presentationEmail
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [
+                        if (!widget.presentationEmail.hasRead)
+                          Padding(
+                            padding: const EdgeInsetsDirectional.only(end: 5),
+                            child: buildIconUnreadStatus(),
                           ),
-                        if (widget.presentationEmail.isMarkAsImportant && widget.isSenderImportantFlagEnabled)
-                          buildMarkAsImportantIcon(context),
                         Expanded(
-                          child: buildEmailTitle(
+                          child: buildInformationSender(
                             context,
                             widget.presentationEmail,
+                            widget.mailboxContain,
                             widget.isSearchEmailRunning,
                             widget.searchQuery
                           )
                         ),
-                        buildMailboxContain(
-                          context,
-                          widget.isSearchEmailRunning,
-                          widget.presentationEmail
+                        buildIconAnsweredOrForwarded(
+                          width: 16,
+                          height: 16,
+                          presentationEmail: widget.presentationEmail
                         ),
-                        if (widget.presentationEmail.hasStarred)
+                        if (widget.presentationEmail.hasAttachment == true)
                           Padding(
                             padding: const EdgeInsetsDirectional.only(start: 8),
-                            child: buildIconStar(),
+                            child: buildIconAttachment(),
                           ),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Row(children: [
-                      Expanded(
-                        child: buildEmailPartialContent(
-                          context,
-                          widget.presentationEmail,
-                          widget.isSearchEmailRunning,
-                          widget.searchQuery
-                        )
+                        Padding(
+                          padding: const EdgeInsetsDirectional.only(
+                            end: 4,
+                            start: 8
+                          ),
+                          child: buildDateTime(context, widget.presentationEmail)
+                        ),
+                        buildIconChevron()
+                      ]),
+                      const SizedBox(height: 2),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.presentationEmail.hasCalendarEvent)
+                            buildCalendarEventIcon(
+                              context: context,
+                              presentationEmail: widget.presentationEmail
+                            ),
+                          if (widget.presentationEmail.isMarkAsImportant && widget.isSenderImportantFlagEnabled)
+                            buildMarkAsImportantIcon(context),
+                          Expanded(
+                            child: buildEmailTitle(
+                              context,
+                              widget.presentationEmail,
+                              widget.isSearchEmailRunning,
+                              widget.searchQuery
+                            )
+                          ),
+                          buildMailboxContain(
+                            context,
+                            widget.isSearchEmailRunning,
+                            widget.presentationEmail
+                          ),
+                          if (widget.presentationEmail.hasStarred)
+                            Padding(
+                              padding: const EdgeInsetsDirectional.only(start: 8),
+                              child: buildIconStar(),
+                            ),
+                        ],
                       ),
-                    ]),
-                  ]),
+                      const SizedBox(height: 2),
+                      _buildPartialContentMobile(context),
+                    ],
+                  ),
                 )
               ]
             ),
@@ -189,6 +185,8 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
         isShowingEmailContent: widget.isShowingEmailContent,
         isDrag: widget.isDrag,
         isSenderImportantFlagEnabled: widget.isSenderImportantFlagEnabled,
+        autoWrapTagsByMaxWidth: widget.autoWrapTagsByMaxWidth,
+        labels: widget.labels,
         padding: widget.padding,
         searchQuery: widget.searchQuery,
         mailboxContain: widget.mailboxContain,
@@ -312,7 +310,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                   )
                 ),
                 const SizedBox(width: 24),
-                Expanded(child: _buildSubjectAndContent()),
+                Expanded(child: _buildSubjectAndContent(context)),
                 const SizedBox(width: 16),
                 ValueListenableBuilder(
                   valueListenable: _hoverNotifier,
@@ -365,8 +363,9 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
     return widget.mailboxContain?.isTrash == true || widget.mailboxContain?.isDrafts == true || widget.mailboxContain?.isSpam == true;
   }
 
-  Widget _buildSubjectAndContent() {
+  Widget _buildSubjectAndContent(BuildContext context) {
     final emailTitle = widget.presentationEmail.getEmailTitle();
+    final emailPartialContent = widget.presentationEmail.getPartialContent();
 
     return Row(
       children: [
@@ -381,84 +380,178 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
         Expanded(
           child: LayoutBuilder(
             builder: (_, constraints) {
+              const horizontalPadding = 12.0;
+
               final maxWidth = constraints.maxWidth;
-              double horizontalPadding = 12;
               final maxWidthNoPadding = maxWidth - horizontalPadding * 2;
 
-              final labelTagsMaxWidth = emailTitle.isNotEmpty
-                  ? maxWidthNoPadding * 0.4
-                  : maxWidthNoPadding * 0.5;
+              final hasLabels = widget.labels?.isNotEmpty == true;
+              final isAutoWrap = widget.autoWrapTagsByMaxWidth;
+              final hasTitle = emailTitle.isNotEmpty;
+              final hasContent = emailPartialContent.isNotEmpty;
 
-              final emailTitleMaxWidth = widget.labels?.isNotEmpty == true
-                  ? maxWidthNoPadding * 0.4
-                  : maxWidthNoPadding * 0.5;
+              final labelTagsMaxWidth =
+                  hasTitle ? maxWidthNoPadding * 0.4 : maxWidthNoPadding * 0.5;
+
+              final emailTitleMaxWidth =
+                  hasLabels ? maxWidthNoPadding * 0.4 : maxWidthNoPadding * 0.5;
 
               return Row(
                 children: [
-                  if (widget.labels?.isNotEmpty == true) ...[
-                    Container(
-                      constraints: BoxConstraints(
-                        maxWidth: labelTagsMaxWidth,
-                      ),
-                      padding: EdgeInsetsDirectional.only(
-                        end: horizontalPadding,
-                      ),
-                      child: LabelTagListWidget(tags: widget.labels!),
+                  if (hasLabels)
+                    _buildLabelsDesktop(
+                      context: context,
+                      maxWidth: labelTagsMaxWidth,
+                      horizontalPadding: horizontalPadding,
+                      isAutoWrap: isAutoWrap,
                     ),
-                    if (emailTitle.isNotEmpty)
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: emailTitleMaxWidth,
-                        ),
-                        padding: EdgeInsetsDirectional.only(
-                          end: horizontalPadding,
-                        ),
-                        child: buildEmailTitle(
-                          context,
-                          widget.presentationEmail,
-                          widget.isSearchEmailRunning,
-                          widget.searchQuery,
-                        ),
-                      ),
-                    Expanded(
-                      child: buildEmailPartialContent(
-                        context,
-                        widget.presentationEmail,
-                        widget.isSearchEmailRunning,
-                        widget.searchQuery,
-                      ),
+                  if (hasTitle)
+                    _buildTitleDesktop(
+                      context: context,
+                      maxWidth: emailTitleMaxWidth,
+                      horizontalPadding: horizontalPadding,
+                      hasContent: hasContent,
                     ),
-                  ] else ...[
-                    if (emailTitle.isNotEmpty)
-                      Container(
-                        constraints: BoxConstraints(
-                          maxWidth: emailTitleMaxWidth,
-                        ),
-                        padding: EdgeInsetsDirectional.only(
-                          end: horizontalPadding,
-                        ),
-                        child: buildEmailTitle(
-                          context,
-                          widget.presentationEmail,
-                          widget.isSearchEmailRunning,
-                          widget.searchQuery,
-                        ),
-                      ),
-                    Expanded(
-                      child: buildEmailPartialContent(
-                        context,
-                        widget.presentationEmail,
-                        widget.isSearchEmailRunning,
-                        widget.searchQuery,
-                      ),
-                    ),
-                  ],
+                  if (hasContent)
+                    _buildPartialContentDesktop(context),
                 ],
               );
             },
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildLabelsDesktop({
+    required BuildContext context,
+    required double maxWidth,
+    required double horizontalPadding,
+    required bool isAutoWrap,
+  }) {
+    final labels = widget.labels;
+    if (labels == null || labels.isEmpty) return const SizedBox.shrink();
+
+    final child = LabelTagListWidget(
+      tags: labels,
+      autoWrapTagsByMaxWidth: widget.autoWrapTagsByMaxWidth,
+      isDesktop: responsiveUtils.isDesktop(context),
+    );
+
+    if (isAutoWrap) {
+      return Container(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        padding: EdgeInsetsDirectional.only(end: horizontalPadding),
+        child: child,
+      );
+    }
+
+    return Padding(
+      padding: EdgeInsetsDirectional.only(end: horizontalPadding),
+      child: child,
+    );
+  }
+
+  Widget _buildTitleDesktop({
+    required BuildContext context,
+    required double maxWidth,
+    required double horizontalPadding,
+    bool hasContent = false,
+  }) {
+    if (hasContent) {
+      return Container(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        padding: EdgeInsetsDirectional.only(end: horizontalPadding),
+        child: buildEmailTitle(
+          context,
+          widget.presentationEmail,
+          widget.isSearchEmailRunning,
+          widget.searchQuery,
+        ),
+      );
+    } else {
+      return Expanded(
+        child: Padding(
+          padding: EdgeInsetsDirectional.only(end: horizontalPadding),
+          child: buildEmailTitle(
+            context,
+            widget.presentationEmail,
+            widget.isSearchEmailRunning,
+            widget.searchQuery,
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildPartialContentDesktop(BuildContext context) {
+    return Expanded(
+      child: buildEmailPartialContent(
+        context,
+        widget.presentationEmail,
+        widget.isSearchEmailRunning,
+        widget.searchQuery,
+      ),
+    );
+  }
+
+  Widget _buildPartialContentMobile(BuildContext context) {
+    final labels = widget.labels;
+    final hasLabels = labels?.isNotEmpty == true;
+    final hasContent = widget.presentationEmail.getPartialContent().isNotEmpty;
+    final isAutoWrap = widget.autoWrapTagsByMaxWidth;
+    final isDesktop = responsiveUtils.isDesktop(context);
+
+    final partialContent = buildEmailPartialContent(
+      context,
+      widget.presentationEmail,
+      widget.isSearchEmailRunning,
+      widget.searchQuery,
+    );
+
+    if (!hasLabels) {
+      return hasContent ? partialContent : const SizedBox.shrink();
+    }
+
+    if (!hasContent) {
+      return LabelTagListWidget(
+        tags: labels!,
+        autoWrapTagsByMaxWidth: isAutoWrap,
+        isDesktop: isDesktop,
+      );
+    }
+
+    if (!isAutoWrap) {
+      return Row(
+        children: [
+          Flexible(child: partialContent),
+          const SizedBox(width: 12),
+          LabelTagListWidget(
+            tags: labels!,
+            autoWrapTagsByMaxWidth: isAutoWrap,
+            isDesktop: isDesktop,
+          ),
+        ],
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        return Row(
+          children: [
+            Expanded(child: partialContent),
+            const SizedBox(width: 12),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
+              child: LabelTagListWidget(
+                tags: labels!,
+                autoWrapTagsByMaxWidth: isAutoWrap,
+                isDesktop: isDesktop,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

@@ -73,7 +73,7 @@ class LabelUtils {
       }
 
       final remainingCount = total - 1;
-      final plus = _buildPlusLabel(remainingCount);
+      final plus = buildPlusLabel(remainingCount);
 
       double plusWidth = effectiveMeasure(plus);
       if (plusMaxWidth != null) {
@@ -97,7 +97,7 @@ class LabelUtils {
 
     // Normal shrink logic
     while (fitCount > 0) {
-      final plus = _buildPlusLabel(remaining);
+      final plus = buildPlusLabel(remaining);
 
       double plusWidth = effectiveMeasure(plus);
       if (plusMaxWidth != null) {
@@ -151,7 +151,7 @@ class LabelUtils {
         plusMaxWidth: plusMaxWidth,
         measureWidth: measureWidth,
       );
-    } catch (_, __) {
+    } catch (_) {
       if (tags.isEmpty) {
         return (displayed: const [], hiddenCount: 0);
       }
@@ -186,8 +186,61 @@ class LabelUtils {
     return (fitCount: fit, usedWidth: used);
   }
 
-  static Label _buildPlusLabel(int n) => Label(
+  static Label buildPlusLabel(int n) => Label(
         id: Id(LabelExtension.moreLabelId),
         displayName: n > 999 ? '+999+' : '+$n',
       );
+
+  static ({
+    List<Label> displayed,
+    int hiddenCount,
+  }) computeDisplayedLabelsByMaxDisplay({
+    required List<Label> labels,
+    int maxDisplay = 3,
+  }) {
+    if (labels.isEmpty) {
+      return (displayed: [], hiddenCount: 0);
+    }
+
+    final limited =
+        labels.length <= maxDisplay ? labels : labels.take(maxDisplay).toList();
+
+    final hiddenCount =
+        labels.length > maxDisplay ? labels.length - maxDisplay : 0;
+
+    return (displayed: limited, hiddenCount: hiddenCount);
+  }
+
+  static ({
+    List<Label> displayed,
+    int hiddenCount,
+  }) safeComputeDisplayedLabelsByMaxDisplay({
+    required List<Label> labels,
+    int maxDisplay = 3,
+  }) {
+    try {
+      return computeDisplayedLabelsByMaxDisplay(
+        labels: labels,
+        maxDisplay: maxDisplay,
+      );
+    } catch (_) {
+      if (labels.isEmpty) {
+        return (displayed: const [], hiddenCount: 0);
+      }
+
+      return (
+        displayed: [labels.first],
+        hiddenCount: labels.length - 1,
+      );
+    }
+  }
+
+  static String truncateLabel(String name, {int maxLength = 16}) {
+    try {
+      if (name.length <= maxLength) return name;
+      return '${name.substring(0, maxLength - 1)}...';
+    } catch (_) {
+      return name;
+    }
+  }
 }
