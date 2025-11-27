@@ -3,12 +3,14 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/widget/labels/ai_action_tag_widget.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -24,6 +26,8 @@ class WebTabletBodyEmailItemWidget extends StatefulWidget {
   final bool isDrag;
   final bool isSenderImportantFlagEnabled;
   final bool shouldShowAIAction;
+  final bool autoWrapTagsByMaxWidth;
+  final List<Label>? labels;
   final EdgeInsetsGeometry? padding;
   final SearchQuery? searchQuery;
   final PresentationMailbox? mailboxContain;
@@ -39,6 +43,8 @@ class WebTabletBodyEmailItemWidget extends StatefulWidget {
     required this.isShowingEmailContent,
     required this.isDrag,
     required this.isSenderImportantFlagEnabled,
+    required this.autoWrapTagsByMaxWidth,
+    required this.labels,
     required this.padding,
     required this.searchQuery,
     required this.mailboxContain,
@@ -102,6 +108,7 @@ class _WebTabletBodyEmailItemWidgetState
                   ),
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(children: [
                           if (!widget.presentationEmail.hasRead)
@@ -158,22 +165,7 @@ class _WebTabletBodyEmailItemWidgetState
                           ],
                         ),
                         const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: buildEmailPartialContent(
-                                context,
-                                widget.presentationEmail,
-                                widget.isSearchEmailRunning,
-                                widget.searchQuery,
-                              ),
-                            ),
-                            if (widget.shouldShowAIAction)
-                              const AiActionTagWidget(
-                                margin: EdgeInsetsDirectional.only(start: 8),
-                              ),
-                          ],
-                        ),
+                        _buildPartialContent(context),
                       ],
                     ),
                   )
@@ -383,5 +375,93 @@ class _WebTabletBodyEmailItemWidgetState
         _popupMenuVisible = visible;
       });
     }
+  }
+
+  Widget _buildPartialContent(BuildContext context) {
+    final labels = widget.labels;
+    final hasLabels = labels?.isNotEmpty == true;
+    final isAutoWrap = widget.autoWrapTagsByMaxWidth;
+    final isDesktop = responsiveUtils.isDesktop(context);
+
+    final hasContent = widget.presentationEmail.getPartialContent().isNotEmpty;
+
+    final partialContent = buildEmailPartialContent(
+      context,
+      widget.presentationEmail,
+      widget.isSearchEmailRunning,
+      widget.searchQuery,
+    );
+
+    if (!hasLabels) {
+      return Row(
+        children: [
+          if (hasContent)
+            Flexible(child: partialContent),
+          if (widget.shouldShowAIAction)
+            const AiActionTagWidget(
+              margin: EdgeInsetsDirectional.only(start: 8),
+            ),
+        ],
+      );
+    }
+
+    if (!hasContent) {
+      return Row(
+        children: [
+          if (widget.shouldShowAIAction)
+            const AiActionTagWidget(
+              margin: EdgeInsetsDirectional.only(start: 8),
+            ),
+          Flexible(
+            child: LabelTagListWidget(
+              tags: labels!,
+              autoWrapTagsByMaxWidth: isAutoWrap,
+              isDesktop: isDesktop,
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (!isAutoWrap) {
+      return Row(
+        children: [
+          Flexible(child: partialContent),
+          if (widget.shouldShowAIAction)
+            const AiActionTagWidget(
+              margin: EdgeInsetsDirectional.only(start: 8),
+            ),
+          const SizedBox(width: 12),
+          LabelTagListWidget(
+            tags: labels!,
+            autoWrapTagsByMaxWidth: isAutoWrap,
+            isDesktop: isDesktop,
+          ),
+        ],
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        return Row(
+          children: [
+            Expanded(child: partialContent),
+            if (widget.shouldShowAIAction)
+              const AiActionTagWidget(
+                margin: EdgeInsetsDirectional.only(start: 8),
+              ),
+            const SizedBox(width: 12),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
+              child: LabelTagListWidget(
+                tags: labels!,
+                autoWrapTagsByMaxWidth: isAutoWrap,
+                isDesktop: isDesktop,
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

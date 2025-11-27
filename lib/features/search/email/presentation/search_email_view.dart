@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -654,7 +655,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
     );
   }
 
-  Widget _buildListEmailBody(BuildContext context, List<PresentationEmail> listPresentationEmail) {
+  Widget _buildListEmailBody(
+    BuildContext context,
+    List<PresentationEmail> listPresentationEmail,
+  ) {
     return NotificationListener<ScrollNotification>(
         key: const Key('search_email_list_notification_listener'),
         onNotification: (ScrollNotification scrollInfo) {
@@ -678,11 +682,15 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           separatorBuilder: (context, index) {
             return Obx(() {
               final isMobile = PlatformInfo.isMobile;
+              final isLastItem = index == listPresentationEmail.length - 1;
               final isInactive =
                   controller.selectionMode.value == SelectMode.INACTIVE;
 
-              final dividerColor =
-                  isMobile ? null : (isInactive ? null : Colors.white);
+              final showDivider = !isLastItem;
+
+              final dividerColor = isMobile
+                  ? null
+                  : (showDivider && isInactive ? null : Colors.white);
 
               final padding = isMobile
                   ? SearchEmailUtils.getPaddingItemListMobile(
@@ -693,6 +701,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                       context,
                       controller.responsiveUtils,
                     );
+
+              if (!showDivider) {
+                return const SizedBox.shrink();
+              }
 
               return Padding(
                 padding: padding,
@@ -720,6 +732,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
         final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
+        final allLabels = dashboardController.labelController.labels;
+
+        final emailLabels = presentationEmail.getLabelList(allLabels);
+
         return EmailTileBuilder(
           presentationEmail: presentationEmail,
           selectAllMode: controller.selectionMode.value,
@@ -728,6 +744,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
           isSearchEmailRunning: true,
           isAINeedsActionEnabled: isAINeedsActionEnabled,
+          labels: emailLabels,
           padding: SearchEmailViewStyle.getPaddingSearchResultList(
             context,
             controller.responsiveUtils,
