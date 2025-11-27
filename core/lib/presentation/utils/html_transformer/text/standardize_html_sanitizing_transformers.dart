@@ -28,6 +28,7 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
     'main',
     'footer',
     'supress_time_adjustment',
+    'form',
   ];
 
   const StandardizeHtmlSanitizingTransformers();
