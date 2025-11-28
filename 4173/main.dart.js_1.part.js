@@ -393,7 +393,7 @@ case C.Ar:A.v(v)
 w=x.a(u.get(v)).gaJ8()
 A.v(v)
 return new B.anp(w,x.a(u.get(v)).fx,null)
-default:return C.y}},
+default:return C.x}},
 $S:6}
 B.c_Z.prototype={
 $0(){var x,w,v=this.a,u=$.a8()
@@ -414,7 +414,7 @@ case C.Ar:A.v(v)
 w=x.a(u.get(v)).gaJ8()
 A.v(v)
 return new B.anp(w,x.a(u.get(v)).fx,null)
-default:return C.y}},
+default:return C.x}},
 $S:6}
 B.c_W.prototype={
 $0(){var x,w=this.a,v=$.a8()
@@ -426,7 +426,7 @@ B.c_U.prototype={
 $1(d){var x=this.a,w=$.a8()
 A.v(x)
 switch(A.m(x).h("S.S").a(w.a.get(x)).e_.gi(0)){case C.kB:return x.aAL(this.b)
-default:return C.y}},
+default:return C.x}},
 $S:121}
 B.c_V.prototype={
 $1(d){var x,w
@@ -435,7 +435,7 @@ else{x=this.a
 w=$.a8()
 A.v(x)
 switch(A.m(x).h("S.S").a(w.a.get(x)).e_.gi(0)){case C.kB:return x.aAL(this.b)
-default:return C.y}}},
+default:return C.x}}},
 $S:68}
 B.cg5.prototype={
 $0(){return A.xc("https://github.com/linagora/tmail-flutter/blob/master/privacy.md")},
@@ -531,4 +531,4 @@ D.b1s=new A.b6("loginSubmitForm",y.O)
 D.b1u=new A.b6("login_password_input",y.O)
 D.b1v=new A.b6("login_username_input",y.O)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"TjGDf80z37xvImo6WsWyLI9FPd0=");
+a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"/uMLd1nlH6gxeMbFUsMI5Pll0ZQ=");
