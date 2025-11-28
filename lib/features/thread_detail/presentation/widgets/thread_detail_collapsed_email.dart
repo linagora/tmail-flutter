@@ -43,7 +43,6 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMobileResponsive = responsiveUtils.isMobile(context);
-    final isWebDesktop = responsiveUtils.isWebDesktop(context);
 
     return DecoratedBox(
       decoration: const BoxDecoration(
@@ -65,7 +64,6 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
               EmailSubjectWidget(
                 presentationEmail: presentationEmail,
                 isMobileResponsive: isMobileResponsive,
-                isWebDesktop: isWebDesktop,
                 labels: labels,
               ),
             InformationSenderAndReceiverBuilder(
