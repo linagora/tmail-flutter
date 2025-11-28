@@ -71,7 +71,7 @@ x=w.a
 w.e=x.e
 w.f=x.d
 w.y=x.ch
-w.apQ()
+w.apR()
 x=window
 x.toString
 x=A.hL(x,"message",w.gb8x(),!1,y.B)
@@ -140,7 +140,7 @@ v.bm(d)
 x=d.f
 A.y("_HtmlContentViewerOnWebState::didUpdateWidget():Old-Direction: "+x.l(0)+" | Current-Direction: "+v.a.f.l(0),C.f)
 w=v.a
-if(w.c!==d.c||w.f!==x)v.apQ()
+if(w.c!==d.c||w.f!==x)v.apR()
 x=v.a
 w=x.e
 if(w!==d.e)v.e=w
@@ -149,7 +149,7 @@ if(x!==d.d)v.f=x},
 b4T(d){var x,w=$.bih(),v=J.qG(d,y.D)
 for(x=0;x<d;++x)v[x]=w.tA(255)
 return C.pJ.ghk().bF(v)},
-apQ(){var x,w,v,u,t=this,s="\n          \n          ",r=t.d=t.b4T(10),q=t.a,p=q.c,o=!q.db,n=o?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",m=q.x!=null,l=m?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",k=q.y!=null,j=k?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
+apR(){var x,w,v,u,t=this,s="\n          \n          ",r=t.d=t.b4T(10),q=t.a,p=q.c,o=!q.db,n=o?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",m=q.x!=null,l=m?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",k=q.y!=null,j=k?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+r+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 k=k?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 m=m?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 o=o?"resizeObserver.observe(document.body);":""
@@ -176,9 +176,9 @@ t.w='      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewpo
 t.r=A.bM(!0,y.e)},
 v(d){var x=this
 x.vG(d)
-if(x.a.db)return x.akP()
+if(x.a.db)return x.akQ()
 else return new A.eF(new B.cLV(x),null)},
-akP(){var x,w=this,v=null,u=A.I(w).l(0),t=w.e
+akQ(){var x,w=this,v=null,u=A.I(w).l(0),t=w.e
 t===$&&A.d()
 A.y(u+"::_buildHtmlElementView: ActualHeight: "+A.e(t),C.f)
 t=A.c([],y.u)
@@ -219,7 +219,7 @@ B.cLV.prototype={
 $2(d,e){var x=this.a,w=x.y
 w===$&&A.d()
 x.y=Math.min(e.d,w)
-return x.akP()},
+return x.akQ()},
 $S:215}
 B.cLR.prototype={
 $2(d,e){var x,w,v,u,t=null
@@ -269,4 +269,4 @@ var y={C:A.an("uL"),x:A.an("O<f>"),u:A.an("O<j>"),B:A.an("pG"),q:A.an("b6<f>"),f
 D.aHS=new A.V(C.cn,D.aPc,null)
 D.a1G=new A.dz(C.cX,null,null,D.aHS,null)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"ELlkG7avMfaLRnHpH/1tRB4Gt6A=");
+a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"52AyzWve38MdcDlYOmCERkPTTso=");
