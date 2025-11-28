@@ -7,20 +7,18 @@ import 'package:tmail_ui_user/features/labels/presentation/widgets/label_widget.
 class EmailSubjectWidget extends StatelessWidget {
   final PresentationEmail presentationEmail;
   final bool isMobileResponsive;
-  final bool isWebDesktop;
   final List<Label>? labels;
 
   const EmailSubjectWidget({
     super.key,
     required this.presentationEmail,
     this.isMobileResponsive = false,
-    this.isWebDesktop = false,
     this.labels,
   });
 
-  bool get _hasLabels => labels?.isNotEmpty == true;
-
   String get _title => presentationEmail.getEmailTitle();
+
+  bool get _hasLabels => labels?.isNotEmpty == true;
 
   @override
   Widget build(BuildContext context) {
@@ -28,25 +26,36 @@ class EmailSubjectWidget extends StatelessWidget {
         ? EmailSubjectStyles.mobilePadding
         : EmailSubjectStyles.padding;
 
-    if (_title.isEmpty) {
-      return _hasLabels && isWebDesktop
-          ? Padding(
-              padding: padding,
-              child: _buildLabelsOnly(),
-            )
-          : const SizedBox.shrink();
-    }
-
-    if (_hasLabels && isWebDesktop) {
-      return Padding(
-        padding: padding,
-        child: _buildTitleWithLabels(),
-      );
+    if (_title.isEmpty && !_hasLabels) {
+      return const SizedBox.shrink();
     }
 
     return Padding(
       padding: padding,
-      child: _buildTitle(),
+      child: _buildContent(),
+    );
+  }
+
+  Widget _buildContent() {
+    final hasTitle = _title.isNotEmpty;
+    final hasLabels = _hasLabels;
+
+    if (hasTitle && !hasLabels) {
+      return _buildTitle();
+    }
+
+    if (!hasTitle && hasLabels) {
+      return _buildLabels();
+    }
+
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        _buildTitle(),
+        ..._buildLabelWidgets(),
+      ],
     );
   }
 
@@ -58,24 +67,16 @@ class EmailSubjectWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildLabelsOnly() {
+  Widget _buildLabels() {
     return Wrap(
       spacing: 10,
       runSpacing: 10,
       crossAxisAlignment: WrapCrossAlignment.center,
-      children: labels!.map(LabelWidget.create).toList(),
+      children: _buildLabelWidgets(),
     );
   }
 
-  Widget _buildTitleWithLabels() {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        _buildTitle(),
-        ...labels!.map(LabelWidget.create),
-      ],
-    );
+  List<Widget> _buildLabelWidgets() {
+    return labels?.map(LabelWidget.create).toList() ?? const [];
   }
 }

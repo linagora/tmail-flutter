@@ -241,7 +241,6 @@ class EmailView extends GetWidget<SingleEmailController> {
     ScrollController? scrollController,
   }) {
     final isMobileResponsive = controller.responsiveUtils.isMobile(context);
-    final isWebDesktop = controller.responsiveUtils.isWebDesktop(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +257,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                 subject: threadSubject,
               ),
               isMobileResponsive: isMobileResponsive,
-              isWebDesktop: isWebDesktop,
               labels: emailLabels,
             );
           }),
