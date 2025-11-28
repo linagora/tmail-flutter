@@ -20,6 +20,7 @@ void main() {
       'section',
       'google-sheets-html-origin',
       'supress_time_adjustment',
+      'form',
     ];
     const listOnEventAttributes = [
       'mousedown',
@@ -198,6 +199,16 @@ void main() {
       final result = transformer.process(inputHtml, htmlEscape);
 
       expect(result, equals('<supress_time_adjustment></supress_time_adjustment>'));
+    });
+
+    test(
+      'SHOULD persist form tag and remove href attribute of A tag '
+      'WHEN href is invalid',
+    () {
+      const inputHtml = '<form href="javascript:alert(1)"></form>';
+      final result = transformer.process(inputHtml, htmlEscape);
+
+      expect(result, equals('<form></form>'));
     });
   });
 }
