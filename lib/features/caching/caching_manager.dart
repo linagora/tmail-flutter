@@ -98,47 +98,37 @@ class CachingManager {
   }
 
   Future<void> clearEmailAndStateCache({AccountId? accountId, UserName? userName}) {
-    log('CachingManager::clearEmailAndStateCache:userName = $userName');
-    if (accountId != null && userName != null) {
-      final emailKey = TupleKey(accountId.asString, userName.value).encodeKey;
-      final stateKey = StateType.email.getTupleKeyStored(accountId, userName);
+    log('CachingManager::clearEmailAndStateCache:userName=$userName');
 
-      return Future.wait([
-        _emailCacheManager.deleteByKey(emailKey),
-        _stateCacheManager.deleteByKey(stateKey),
-        if (PlatformInfo.isMobile)
-          clearFCMEmailStateCache(accountId: accountId, userName: userName),
-      ]);
-    } else {
-      final stateKey = StateType.email.getTupleKeyStoredWithoutAccount();
-      return Future.wait([
-        _emailCacheManager.clear(),
-        _stateCacheManager.deleteByKey(stateKey),
-        if (PlatformInfo.isMobile) clearFCMEmailStateCache(),
-      ]);
-    }
+    final hasUserContext = accountId != null && userName != null;
+
+    return Future.wait([
+      if (hasUserContext)
+        ..._clearEmailAndStateWithUser(accountId, userName)
+      else
+        ..._clearEmailAndStateWithoutUser(),
+
+      if (PlatformInfo.isMobile)
+        clearFCMEmailStateCache(accountId: accountId, userName: userName),
+    ]);
   }
 
   Future<void> clearDetailedEmailCache({AccountId? accountId, UserName? userName}) {
-    log('CachingManager::clearDetailedEmailCache:userName = $userName');
-    if (accountId != null && userName != null) {
-      final emailKey = TupleKey(accountId.asString, userName.value).encodeKey;
-      return Future.wait([
-        _newEmailCacheManager.deleteByKey(emailKey),
-        _openedEmailCacheManager.deleteByKey(emailKey),
-        clearAllFileInStorage(),
-      ]);
-    } else {
-      return Future.wait([
-        _newEmailCacheManager.clear(),
-        _openedEmailCacheManager.clear(),
-        clearAllFileInStorage(),
-      ]);
-    }
+    log('CachingManager::clearDetailedEmailCache:userName=$userName');
+
+    final hasUserContext = accountId != null && userName != null;
+
+    return Future.wait([
+      if (hasUserContext)
+        ..._clearDetailedEmailWithUser(accountId, userName)
+      else
+        ..._clearDetailedEmailWithoutUser(),
+    ]);
   }
 
   Future<void> clearAllEmailAndStateCache({AccountId? accountId, UserName? userName}) {
-    log('CachingManager::clearAllEmailAndStateCache:userName = $userName');
+    log('CachingManager::clearAllEmailAndStateCache:userName=$userName');
+
     return Future.wait([
       clearEmailAndStateCache(accountId: accountId, userName: userName),
       if (PlatformInfo.isMobile)
@@ -148,7 +138,7 @@ class CachingManager {
 
   Future<void> clearMailboxCache() {
     return Future.wait([
-      _stateCacheManager.deleteByKey(
+      _stateCacheManager.deleteContainKey(
         StateType.mailbox.getTupleKeyStoredWithoutAccount(),
       ),
       _mailboxCacheManager.clear(),
@@ -171,19 +161,69 @@ class CachingManager {
     await _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName);
     await _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName);
   }
-  
-  Future<void> clearFCMEmailStateCache({AccountId? accountId, UserName? userName}) async {
-    if (accountId != null && userName != null) {
+
+  Future<void> clearFCMEmailStateCache({
+    AccountId? accountId,
+    UserName? userName,
+  }) async {
+    final hasUserContext = accountId != null && userName != null;
+
+    if (hasUserContext) {
       await _fcmCacheManager.deleteByKey(
-        TypeName.emailDelivery.getTupleKeyStored(accountId, userName));
+        TypeName.emailDelivery.getTupleKeyStored(accountId, userName),
+      );
       await _fcmCacheManager.deleteByKey(
-        TypeName.emailType.getTupleKeyStored(accountId, userName));
+        TypeName.emailType.getTupleKeyStored(accountId, userName),
+      );
     } else {
-      await _fcmCacheManager.deleteByKey(
-        TypeName.emailDelivery.getTupleKeyStoredWithoutAccount());
-      await _fcmCacheManager.deleteByKey(
-        TypeName.emailType.getTupleKeyStoredWithoutAccount());
+      await _fcmCacheManager.deleteContainKey(
+        TypeName.emailDelivery.getTupleKeyStoredWithoutAccount(),
+      );
+      await _fcmCacheManager.deleteContainKey(
+        TypeName.emailType.getTupleKeyStoredWithoutAccount(),
+      );
     }
+  }
+
+  List<Future<void>> _clearEmailAndStateWithUser(
+    AccountId accountId,
+    UserName userName,
+  ) {
+    final emailKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    final stateKey = StateType.email.getTupleKeyStored(accountId, userName);
+
+    return [
+      _emailCacheManager.deleteContainKey(emailKey),
+      _stateCacheManager.deleteByKey(stateKey),
+    ];
+  }
+
+  List<Future<void>> _clearEmailAndStateWithoutUser() {
+    final stateKey = StateType.email.getTupleKeyStoredWithoutAccount();
+    return [
+      _emailCacheManager.clear(),
+      _stateCacheManager.deleteContainKey(stateKey),
+    ];
+  }
+
+  List<Future<void>> _clearDetailedEmailWithUser(
+    AccountId accountId,
+    UserName userName,
+  ) {
+    final emailKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    return [
+      _newEmailCacheManager.deleteContainKey(emailKey),
+      _openedEmailCacheManager.deleteContainKey(emailKey),
+      clearAllFileInStorage(),
+    ];
+  }
+
+  List<Future<void>> _clearDetailedEmailWithoutUser() {
+    return [
+      _newEmailCacheManager.clear(),
+      _openedEmailCacheManager.clear(),
+      clearAllFileInStorage(),
+    ];
   }
 
   Future<void> clearLoginRecentData() async {
