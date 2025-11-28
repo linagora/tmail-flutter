@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:get/get.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/calendar_event_capability.dart';
@@ -163,6 +164,15 @@ extension SessionExtension on Session {
   }
 
   AccountId get accountId => personalAccount.accountId;
+
+  AccountId? get safeAccountId {
+    try {
+      return personalAccount.accountId;
+    } catch (e) {
+      logError('SessionExtension::safeAccountId:Exception: $e');
+      return null;
+    }
+  }
 
   ({
     bool isAvailable,

@@ -89,7 +89,7 @@ class OpenedEmailCacheManager extends CacheManagerInteraction {
 
   Future<void> clear() => _cacheClient.clearAllData();
 
-  Future<void> deleteByKey(String key) =>
+  Future<void> deleteContainKey(String key) =>
       _cacheClient.clearAllDataContainKey(key);
 
   @override

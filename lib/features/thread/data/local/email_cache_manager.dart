@@ -93,7 +93,7 @@ class EmailCacheManager extends CacheManagerInteraction {
 
   Future<void> clear() => _emailCacheClient.clearAllData();
 
-  Future<void> deleteByKey(String key) =>
+  Future<void> deleteContainKey(String key) =>
       _emailCacheClient.clearAllDataContainKey(key);
 
   Future<void> storeEmail(AccountId accountId, UserName userName, EmailCache emailCache) {

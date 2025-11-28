@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/password.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
@@ -241,7 +242,10 @@ class LoginController extends ReloadableController {
     SmartDialog.dismiss();
 
     if (PlatformInfo.isWeb && AppConfig.isForceEmailQueryEnabled) {
-      await cachingManager.clearAllEmailAndStateCache();
+      await cachingManager.clearAllEmailAndStateCache(
+        accountId: session.safeAccountId,
+        userName: session.username
+      );
     }
 
     popAndPush(
