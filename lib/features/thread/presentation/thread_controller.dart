@@ -609,7 +609,10 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> refreshAllEmail({bool forceEmailQuery = false}) async {
     if (forceEmailQuery) {
-      await cachingManager.clearAllEmailAndStateCache();
+      await cachingManager.clearAllEmailAndStateCache(
+        accountId: mailboxDashBoardController.accountId.value,
+        userName: mailboxDashBoardController.sessionCurrent?.username,
+      );
     }
 
     if (searchController.isSearchEmailRunning) {
