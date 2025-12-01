@@ -4840,7 +4840,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "threadToggleDescription": "Activité les fil de discussion",
+  "threadToggleDescription": "Activer les fils de discussion",
   "@threadToggleDescription": {
     "type": "text",
     "placeholders_order": [],
