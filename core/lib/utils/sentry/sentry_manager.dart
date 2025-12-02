@@ -31,8 +31,8 @@ class SentryManager {
       if (!_isSentryAvailable) {
         await fallBackRunner();
       }
-    } catch (e, st) {
-      logError('[SentryManager] Init failed', exception: e, stackTrace: st);
+    } catch (e) {
+      logWarning('[SentryManager] Init failed. Exception $e');
       await fallBackRunner();
     }
   }
@@ -90,8 +90,8 @@ class SentryManager {
     try {
       await Sentry.configureScope((scope) => scope.setUser(user));
       log('[SentryManager] User set: ${user.email}');
-    } catch (e, st) {
-      logError('[SentryManager] Set user failed', exception: e, stackTrace: st);
+    } catch (e) {
+      logWarning('[SentryManager] Set user failed. Exception: $e');
     }
   }
 
@@ -101,12 +101,8 @@ class SentryManager {
     try {
       await Sentry.configureScope((scope) => scope.setUser(null));
       log('[SentryManager] User cleared');
-    } catch (e, st) {
-      logError(
-        '[SentryManager] Clear user failed',
-        exception: e,
-        stackTrace: st,
-      );
+    } catch (e) {
+      logWarning('[SentryManager] Clear user failed. Exception: $e');
     }
   }
 }
