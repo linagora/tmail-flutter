@@ -480,10 +480,7 @@ class ThreadController extends BaseController with EmailActionController {
   void _handleErrorGetAllOrRefreshChangesEmail(Object error, StackTrace stackTrace) async {
     logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
-      await cachingManager.clearAllEmailAndStateCache(
-        accountId: _accountId,
-        userName: _session?.username,
-      );
+      await cachingManager.clearAllEmailAndStateCache();
       getAllEmailAction();
     } else if (error is MethodLevelErrors) {
       if (currentOverlayContext != null && error.message != null) {
@@ -609,10 +606,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> refreshAllEmail({bool forceEmailQuery = false}) async {
     if (forceEmailQuery) {
-      await cachingManager.clearAllEmailAndStateCache(
-        accountId: mailboxDashBoardController.accountId.value,
-        userName: mailboxDashBoardController.sessionCurrent?.username,
-      );
+      await cachingManager.clearAllEmailAndStateCache();
     }
 
     if (searchController.isSearchEmailRunning) {

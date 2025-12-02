@@ -24,7 +24,7 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
     log('TokenOidcCacheManager::persistOneTokenOidc(): $tokenOIDC');
-    await _tokenOidcCacheClient.clearAllData();
+    await clear();
     log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');
     log('TokenOidcCacheManager::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
     log('TokenOidcCacheManager::persistOneTokenOidc(): token: ${tokenOIDC.token}');
@@ -32,7 +32,7 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
     log('TokenOidcCacheManager::persistOneTokenOidc(): done');
   }
 
-  Future<void> deleteTokenOidc() async {
+  Future<void> clear() async {
     await _tokenOidcCacheClient.clearAllData();
   }
 

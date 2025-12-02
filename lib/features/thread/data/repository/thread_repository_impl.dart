@@ -148,36 +148,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     EmailFilter? emailFilter,
     Properties? propertiesCreated,
   }) async* {
-    final localDataSource = mapDataSource[DataSourceType.local];
-    final networkDataSource = mapDataSource[DataSourceType.network];
-
-    if (localDataSource == null || networkDataSource == null) {
-      logError(
-        'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
-        'Missing required data sources (local or network).',
-      );
-      return;
-    }
-
-    List<Email> cachedList = const [];
     jmap.State? cachedState;
-
-    // Load cached emails
-    try {
-      cachedList = await localDataSource.getAllEmailCache(
-        accountId,
-        session.username,
-        inMailboxId: emailFilter?.mailboxId,
-        sort: sort,
-        limit: limit,
-        filterOption: emailFilter?.filterOption,
-      );
-    } catch (_) {
-      logError(
-        'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
-        'Failed to load cached emails',
-      );
-    }
 
     // Load cached state
     try {
@@ -187,29 +158,19 @@ class ThreadRepositoryImpl extends ThreadRepository {
         StateType.email,
       );
     } catch (_) {
-      logError(
+      logWarning(
         'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
         'Failed to load cached email state',
       );
     }
 
-    final localResponse = EmailsResponse(
-      emailList: cachedList,
-      state: cachedState,
-    );
-
     log(
       'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
-      'Local cache count = ${cachedList.length}; '
-      'State = ${cachedState?.value}',
+      'State cache = ${cachedState?.value}',
     );
 
-    if (localResponse.hasEmails()) {
-      yield localResponse;
-    }
-
     // Query fresh emails from server
-    final serverResponse = await networkDataSource.getAllEmail(
+    final serverResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
       session,
       accountId,
       limit: limit,
@@ -588,13 +549,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<void> clearEmailCacheAndStateCache(
-    AccountId accountId,
-    Session session,
-  ) => mapDataSource[DataSourceType.local]!.clearEmailCacheAndStateCache(
-    accountId,
-    session,
-  );
+  Future<void> clearEmailCacheAndStateCache() =>
+      mapDataSource[DataSourceType.local]!.clearEmailCacheAndStateCache();
 
   @override
   Stream<EmailsResponse> loadAllEmailInFolderWithoutCache({

@@ -131,7 +131,7 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   @override
   Future<void> deleteOidcConfiguration() {
     return Future.sync(() async {
-      return await _oidcConfigurationCacheManager.deleteOidcConfiguration();
+      return await _oidcConfigurationCacheManager.clear();
     }).catchError(_cacheExceptionThrower.throwException);
   }
 
@@ -163,7 +163,7 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   @override
   Future<void> deleteTokenOIDC() {
     return Future.sync(() async {
-      return await _tokenOidcCacheManager.deleteTokenOidc();
+      return await _tokenOidcCacheManager.clear();
     }).catchError(_cacheExceptionThrower.throwException);
   }
 
