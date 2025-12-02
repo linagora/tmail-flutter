@@ -7,8 +7,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
-import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -33,8 +31,8 @@ import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/list_id_extension.dart';
-import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
@@ -43,24 +41,7 @@ import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_exte
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-mixin MailAPIMixin on HandleSetErrorMixin {
-  int getMaxObjectsInSetMethod(Session session, AccountId accountId) {
-    final coreCapability = session.getCapabilityProperties<CoreCapability>(
-      accountId,
-      CapabilityIdentifier.jmapCore,
-    );
-    final maxObjectsInSetMethod =
-        coreCapability?.maxObjectsInSet?.value.toInt() ??
-            CapabilityIdentifierExtension.defaultMaxObjectsInSet;
-
-    final minOfMaxObjectsInSetMethod = min(
-      maxObjectsInSetMethod,
-      CapabilityIdentifierExtension.defaultMaxObjectsInSet,
-    );
-    log('$runtimeType::_getMaxObjectsInSetMethod:minOfMaxObjectsInSetMethod = $minOfMaxObjectsInSetMethod');
-    return minOfMaxObjectsInSetMethod;
-  }
-
+mixin MailAPIMixin on HandleSetErrorMixin, SessionMixin {
   Future<({List<EmailId> emailIdsSuccess, Map<Id, SetError> mapErrors})>
       moveEmailsBetweenMailboxes({
     required HttpClient httpClient,
