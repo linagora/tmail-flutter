@@ -35,7 +35,7 @@ class CleanAndGetEmailsInMailboxInteractor {
     try {
       yield Right<Failure, Success>(CleanAndGetAllEmailLoading());
 
-      await _threadRepository.clearEmailCacheAndStateCache(accountId, session);
+      await _threadRepository.clearEmailCacheAndStateCache();
 
       yield* _getEmailsInMailboxInteractor.execute(
         session,

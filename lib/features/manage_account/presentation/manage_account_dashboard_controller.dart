@@ -111,10 +111,7 @@ class ManageAccountDashBoardController extends ReloadableController
   @override
   Future<void> onBeforeUnloadBrowserListener(html.Event event) async {
     if (PlatformInfo.isWeb && AppConfig.isForceEmailQueryEnabled) {
-      await cachingManager.clearAllEmailAndStateCache(
-        accountId: accountId.value,
-        userName: sessionCurrent?.username,
-      );
+      await cachingManager.clearAllEmailAndStateCache();
     }
   }
 

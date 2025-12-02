@@ -43,12 +43,9 @@ class OidcConfigurationCacheManager extends CacheManagerInteraction {
     );
   }
 
-  Future<void> deleteOidcConfiguration() async {
-    log('OidcConfigurationCacheManager::deleteOidcConfiguration()');
+  Future<void> clear() async {
     await Future.wait([
-      _oidcConfigurationCacheClient.deleteItem(
-        CachingConstants.oidcConfigurationCacheKeyName,
-      ),
+      _oidcConfigurationCacheClient.clearAllData(),
       _sharedPreferences.remove(OIDCConstant.keyAuthorityOidc),
     ]);
   }
