@@ -551,9 +551,9 @@ abstract class BaseController extends GetxController
     try {
       await Future.wait([
         if (isAuthenticatedWithOidc)
-          deleteCredentialInteractor.execute()
+          deleteAuthorityOidcInteractor.execute()
         else
-          deleteAuthorityOidcInteractor.execute(),
+          deleteCredentialInteractor.execute(),
         cachingManager.clearAll(),
         languageCacheManager.removeLanguage(),
       ]);
