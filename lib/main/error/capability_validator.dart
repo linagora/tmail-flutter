@@ -43,6 +43,7 @@ extension CapabilityIdentifierExtension on CapabilityIdentifier {
 
   static const int defaultMaxCallsInRequest = 1;
   static const int defaultMaxObjectsInSet = 50;
+  static const int defaultMaxObjectsInGet = 50;
 
   bool isSupported(Session session, AccountId accountId) {
     try {
