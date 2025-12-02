@@ -1,51 +1,70 @@
 import 'dart:async';
-
+import 'package:core/utils/build_utils.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-final logHistory = _Dispatcher('');
+void log(String value, {Level level = Level.info, bool webConsole = false}) {
+  final isWeb = PlatformInfo.isWeb;
 
-void log(String? value, {Level level = Level.info}) {
-  if (!kDebugMode) return;
-
-  String logsStr = value ?? '';
-  logHistory.value = '$logsStr\n${logHistory.value}';
-
-  if (PlatformInfo.isWeb) {
+  if (webConsole && isWeb) {
     switch (level) {
-      case Level.wtf:
-        logsStr = '\x1B[31m!!!CRITICAL!!! $logsStr\x1B[0m';
-        break;
       case Level.error:
-        logsStr = '\x1B[31m$logsStr\x1B[0m';
+      case Level.wtf:
+        html.window.console.error('[TwakeMail] $value');
         break;
       case Level.warning:
-        logsStr = '\x1B[33m$logsStr\x1B[0m';
+        html.window.console.warn('[TwakeMail] $value');
         break;
       case Level.info:
-        logsStr = '\x1B[32m$logsStr\x1B[0m';
+        html.window.console.info('[TwakeMail] $value');
         break;
       case Level.debug:
-        logsStr = '\x1B[34m$logsStr\x1B[0m';
+      case Level.verbose:
+        html.window.console.debug('[TwakeMail] $value');
+        break;
+    }
+    return;
+  }
+
+  if (!BuildUtils.isDebugMode) return;
+
+  String formatted = value;
+
+  if (isWeb) {
+    switch (level) {
+      case Level.wtf:
+        formatted = '\x1B[31m!!!CRITICAL!!! $formatted\x1B[0m';
+        break;
+      case Level.error:
+        formatted = '\x1B[31m$formatted\x1B[0m';
+        break;
+      case Level.warning:
+        formatted = '\x1B[33m$formatted\x1B[0m';
+        break;
+      case Level.info:
+        formatted = '\x1B[32m$formatted\x1B[0m';
+        break;
+      case Level.debug:
+        formatted = '\x1B[34m$formatted\x1B[0m';
         break;
       case Level.verbose:
         break;
     }
   } else {
-    switch (level) {
-      case Level.error:
-        logsStr = '[ERROR] $logsStr';
-        break;
-      default:
-        break;
+    if (level == Level.error) {
+      formatted = '[ERROR] $formatted';
     }
   }
   // ignore: avoid_print
-  print('[TwakeMail] $logsStr');
+  print('[TwakeMail] $formatted');
 }
 
-void logError(String? value) => log(value, level: Level.error);
+void logError(String value, {bool webConsole = false}) => log(
+      value,
+      level: Level.error,
+      webConsole: webConsole,
+    );
 
 // Take from: https://flutter.dev/docs/testing/errors
 void initLogger(VoidCallback runApp) {
@@ -59,10 +78,6 @@ void initLogger(VoidCallback runApp) {
   }, (error, stack) {
     logError('AppLogger::initLogger::runZonedGuarded:onError: $error | stack: $stack');
   });
-}
-
-class _Dispatcher extends ValueNotifier<String> {
-  _Dispatcher(String value) : super(value);
 }
 
 
