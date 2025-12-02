@@ -24,8 +24,8 @@ class AuthenticationInfoCacheManager extends CacheManagerInteraction {
     }
   }
 
-  Future<void> removeAuthenticationInfo() {
-    return _authenticationInfoCacheClient.deleteItem(AuthenticationInfoCache.keyCacheValue);
+  Future<void> clear() {
+    return _authenticationInfoCacheClient.clearAllData();
   }
 
   @override

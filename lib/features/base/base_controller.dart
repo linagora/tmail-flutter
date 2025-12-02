@@ -440,7 +440,7 @@ abstract class BaseController extends GetxController
       return;
     }
 
-    await clearAllMailDataCached();
+    await cachingManager.clearMailDataCached();
 
     _isFcmEnabled = _isFcmActivated(session, accountId);
     if (isAuthenticatedWithOidc) {
@@ -495,11 +495,10 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> _handleDeleteFCMAndClearData() async {
-    await Future.wait([
-      if (_isFcmEnabled)
-        _handleDeleteFCMRegistration(),
-      clearAllData(),
-    ]);
+    if (_isFcmEnabled) {
+      await _handleDeleteFCMRegistration();
+    }
+    clearAllData();
   }
 
   Future<void> _handleDeleteFCMRegistration() async {
@@ -548,55 +547,22 @@ abstract class BaseController extends GetxController
     removeAllPageAndGoToLogin();
   }
 
-  Future<void> clearAllMailDataCached() async {
-    try {
-      await cachingManager.clearMailDataCached();
-      if (PlatformInfo.isMobile) {
-        await cachingManager.clearAllFileInStorage();
-      }
-    } catch (e) {
-      logError('BaseController::clearAllMailDataCached:Exception = $e');
-    }
-  }
-
   Future<void> clearAllData() async {
     try {
-      if (isAuthenticatedWithOidc) {
-        await _clearOidcAuthData();
-      } else {
-        await _clearBasicAuthData();
-      }
+      await Future.wait([
+        if (isAuthenticatedWithOidc)
+          deleteCredentialInteractor.execute()
+        else
+          deleteAuthorityOidcInteractor.execute(),
+        cachingManager.clearAll(),
+        languageCacheManager.removeLanguage(),
+      ]);
+      authorizationInterceptors.clear();
+      authorizationIsolateInterceptors.clear();
+      await cachingManager.closeHive();
     } catch (e) {
-      logError('BaseController::clearAllData:Exception = $e');
+      logError('BaseController::clearAllData: Cannot clear all data: $e');
     }
-  }
-
-  Future<void> _clearBasicAuthData() async {
-    await Future.wait([
-      deleteCredentialInteractor.execute(),
-      cachingManager.clearAll(),
-      languageCacheManager.removeLanguage(),
-    ]);
-    if (PlatformInfo.isMobile) {
-      await cachingManager.clearAllFileInStorage();
-    }
-    authorizationInterceptors.clear();
-    authorizationIsolateInterceptors.clear();
-    await cachingManager.closeHive();
-  }
-
-  Future<void> _clearOidcAuthData() async {
-    await Future.wait([
-      deleteAuthorityOidcInteractor.execute(),
-      cachingManager.clearAll(),
-      languageCacheManager.removeLanguage(),
-    ]);
-    if (PlatformInfo.isMobile) {
-      await cachingManager.clearAllFileInStorage();
-    }
-    authorizationIsolateInterceptors.clear();
-    authorizationInterceptors.clear();
-    await cachingManager.closeHive();
   }
 
   int getMinInputLengthAutocomplete({

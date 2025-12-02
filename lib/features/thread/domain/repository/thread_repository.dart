@@ -91,5 +91,5 @@ abstract class ThreadRepository {
     StreamController<dartz.Either<Failure, Success>> onProgressController
   );
 
-  Future<void> clearEmailCacheAndStateCache(AccountId accountId, Session session);
+  Future<void> clearEmailCacheAndStateCache();
 }
