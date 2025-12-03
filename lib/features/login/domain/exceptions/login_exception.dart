@@ -21,3 +21,5 @@ class NoSuitableBrowserForOIDCException implements Exception {
   }
 }
 
+class NotFoundCompanyServerLoginInfoException implements Exception {}
+
