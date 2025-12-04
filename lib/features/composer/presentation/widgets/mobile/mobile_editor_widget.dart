@@ -2,20 +2,23 @@
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mixins/text_selection_mixin.dart';
 
 typedef OnCreatedEditorAction = Function(BuildContext context, HtmlEditorApi editorApi, String content);
 typedef OnLoadCompletedEditorAction = Function(HtmlEditorApi editorApi, WebUri? url);
 typedef OnEditorContentHeightChanged = Function(double height);
+typedef OnTextSelectionChanged = Function(TextSelectionData?);
 
-class MobileEditorWidget extends StatelessWidget {
-
+class MobileEditorWidget extends StatefulWidget {
   final String content;
   final TextDirection direction;
   final OnCreatedEditorAction onCreatedEditorAction;
   final OnLoadCompletedEditorAction onLoadCompletedEditorAction;
   final OnEditorContentHeightChanged? onEditorContentHeightChanged;
+  final OnTextSelectionChanged? onTextSelectionChanged;
 
   const MobileEditorWidget({
     super.key,
@@ -24,7 +27,44 @@ class MobileEditorWidget extends StatelessWidget {
     required this.onCreatedEditorAction,
     required this.onLoadCompletedEditorAction,
     this.onEditorContentHeightChanged,
+    this.onTextSelectionChanged,
   });
+
+  @override
+  State<MobileEditorWidget> createState() => _MobileEditorState();
+}
+
+class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMixin {
+
+  HtmlEditorApi? _editorApi;
+
+  @override
+  void Function(TextSelectionData?)? get onSelectionChanged => widget.onTextSelectionChanged;
+
+  void _setupSelectionListener() async {
+    if (_editorApi == null) {
+      return;
+    }
+
+    final webViewController = _editorApi?.webViewController;
+    if (webViewController == null) return;
+
+    webViewController.addJavaScriptHandler(
+      handlerName: HtmlUtils.registerSelectionChangeListener.name,
+      callback: (args) {
+        if (!mounted) return;
+
+        if (args.isNotEmpty) {
+          final data = args[0] as Map<dynamic, dynamic>;
+          handleSelectionChange(data);
+        }
+      },
+    );
+
+    await webViewController.evaluateJavascript(
+      source: HtmlUtils.registerSelectionChangeListener.script,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +73,18 @@ class MobileEditorWidget extends StatelessWidget {
       minHeight: 550,
       maxHeight: PlatformInfo.isIOS ? ConstantsUI.composerHtmlContentMaxHeight : null,
       addDefaultSelectionMenuItems: false,
-      initialContent: content,
+      initialContent: widget.content,
       customStyleCss: HtmlTemplate.mobileCustomInternalStyleCSS(
-        direction: direction,
+        direction: widget.direction,
         useDefaultFontStyle: true,
       ),
-      onCreated: (editorApi) => onCreatedEditorAction.call(context, editorApi, content),
-      onCompleted: onLoadCompletedEditorAction,
-      onContentHeightChanged: PlatformInfo.isIOS ? onEditorContentHeightChanged : null,
+      onCreated: (editorApi) {
+        _editorApi = editorApi;
+        widget.onCreatedEditorAction.call(context, editorApi, widget.content);
+        _setupSelectionListener();
+      },
+      onCompleted: widget.onLoadCompletedEditorAction,
+      onContentHeightChanged: PlatformInfo.isIOS ? widget.onEditorContentHeightChanged : null,
     );
   }
 }
