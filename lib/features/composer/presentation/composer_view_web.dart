@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe_button.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
@@ -267,6 +268,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         ),
                                       onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                       onKeyDownEditorAction: controller.onKeyDownEditorAction,
+                                      onTextSelectionChanged: controller.handleTextSelection,
                                     ));
                                   }
                                 ),
@@ -332,6 +334,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               return const SizedBox.shrink();
                             }
                           }),
+                          _buildAIScribeSelectionButton(context),
                         ],
                       ),
                     ),
@@ -509,6 +512,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                                 ),
                                               onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                               onKeyDownEditorAction: controller.onKeyDownEditorAction,
+                                              onTextSelectionChanged: controller.handleTextSelection,
                                             );
                                           });
                                         }
@@ -604,6 +608,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
+                        _buildAIScribeSelectionButton(context),
                       ],
                     ),
                   ),
@@ -784,6 +789,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                               ),
                                             onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                             onKeyDownEditorAction: controller.onKeyDownEditorAction,
+                                            onTextSelectionChanged: controller.handleTextSelection,
                                           ));
                                         }
                                       ),
@@ -877,6 +883,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
+                        _buildAIScribeSelectionButton(context),
                       ],
                     ),
                   )
@@ -948,5 +955,41 @@ class ComposerView extends GetWidget<ComposerController> {
       onDeleteEmailAddressTypeAction: controller.deleteEmailAddressType,
       onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputOnMobileAction,
     ));
+  }
+
+  Widget _buildAIScribeSelectionButton(BuildContext context) {
+    return Obx(() {
+      if (controller.hasTextSelection.value &&
+          controller.textSelectionCoordinates.value != null) {
+        final coordinates = controller.textSelectionCoordinates.value!;
+        return PositionedDirectional(
+          start: coordinates.dx,
+          top: coordinates.dy,
+          child: PointerInterceptor(
+            child: Builder(
+              builder: (buttonContext) {
+                return AIScribeButton(
+                  imagePaths: controller.imagePaths,
+                  onTap: () {
+                    final RenderBox? renderBox = buttonContext.findRenderObject() as RenderBox?;
+                    if (renderBox != null) {
+                      final position = renderBox.localToGlobal(Offset.zero);
+                      controller.showAIScribeMenuForSelectedText(
+                        context,
+                        buttonPosition: position,
+                      );
+                    } else {
+                      controller.showAIScribeMenuForSelectedText(context);
+                    }
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 }

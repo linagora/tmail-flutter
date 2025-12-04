@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_content_height_exceeded_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
@@ -235,28 +236,38 @@ class ComposerView extends GetWidget<ComposerController> {
                               ))
                             ],
                           ),
-                          Obx(() => Padding(
-                            padding: ComposerStyle.mobileEditorPadding,
-                            child: MobileEditorView(
-                              arguments: controller.composerArguments.value,
-                              contentViewState: controller.emailContentsViewState.value,
-                              onCreatedEditorAction: controller.onCreatedMobileEditorAction,
-                              onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
-                              onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
-                            ),
-                          )),
-                          Obx(() {
-                            if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
-                              return ViewEntireMessageWithMessageClippedWidget(
-                                buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
-                                onViewEntireMessageAction: controller.viewEntireContent,
-                                topPadding: 12,
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                          SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
+                          Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  Obx(() => Padding(
+                                    padding: ComposerStyle.mobileEditorPadding,
+                                    child: MobileEditorView(
+                                      arguments: controller.composerArguments.value,
+                                      contentViewState: controller.emailContentsViewState.value,
+                                      onCreatedEditorAction: controller.onCreatedMobileEditorAction,
+                                      onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
+                                      onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
+                                      onTextSelectionChanged: controller.handleTextSelection,
+                                    ),
+                                  )),
+                                  Obx(() {
+                                    if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
+                                      return ViewEntireMessageWithMessageClippedWidget(
+                                        buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
+                                        onViewEntireMessageAction: controller.viewEntireContent,
+                                        topPadding: 12,
+                                      );
+                                    } else {
+                                      return const SizedBox.shrink();
+                                    }
+                                  }),
+                                  SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
+                                ],
+                              ),
+                              _buildAIScribeSelectionButton(context),
+                            ],
+                          )
                         ],
                       ),
                     ),
@@ -414,28 +425,38 @@ class ComposerView extends GetWidget<ComposerController> {
                           margin: ComposerStyle.insertImageLoadingBarMargin,
                         ),
                       )),
-                      Obx(() => Padding(
-                        padding: ComposerStyle.mobileEditorPadding,
-                        child: MobileEditorView(
-                          arguments: controller.composerArguments.value,
-                          contentViewState: controller.emailContentsViewState.value,
-                          onCreatedEditorAction: controller.onCreatedMobileEditorAction,
-                          onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
-                          onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
-                        ),
-                      )),
-                      Obx(() {
-                        if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
-                          return ViewEntireMessageWithMessageClippedWidget(
-                            buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
-                            onViewEntireMessageAction: controller.viewEntireContent,
-                            topPadding: 12,
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                      SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
+                      Stack(
+                        children: [
+                          Column(
+                            children: [
+                              Obx(() => Padding(
+                                padding: ComposerStyle.mobileEditorPadding,
+                                child: MobileEditorView(
+                                  arguments: controller.composerArguments.value,
+                                  contentViewState: controller.emailContentsViewState.value,
+                                  onCreatedEditorAction: controller.onCreatedMobileEditorAction,
+                                  onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
+                                  onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
+                                  onTextSelectionChanged: controller.handleTextSelection,
+                                ),
+                              )),
+                              Obx(() {
+                                if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
+                                  return ViewEntireMessageWithMessageClippedWidget(
+                                    buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
+                                    onViewEntireMessageAction: controller.viewEntireContent,
+                                    topPadding: 12,
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                              SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
+                            ],
+                          ),
+                          _buildAIScribeSelectionButton(context),
+                        ],
+                      ),
                     ],
                   ),
                 )
@@ -532,5 +553,41 @@ class ComposerView extends GetWidget<ComposerController> {
       onDeleteEmailAddressTypeAction: controller.deleteEmailAddressType,
       onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputOnMobileAction,
     ));
+  }
+
+  Widget _buildAIScribeSelectionButton(BuildContext context) {
+    return Obx(() {
+      if (controller.hasTextSelection.value &&
+          controller.textSelectionCoordinates.value != null) {
+        final coordinates = controller.textSelectionCoordinates.value!;
+        // Account for the horizontal padding around the editor
+        const editorHorizontalPadding = 12.0;
+        return PositionedDirectional(
+          start: coordinates.dx + editorHorizontalPadding,
+          top: coordinates.dy,
+          child: Builder(
+            builder: (buttonContext) {
+              return AIScribeButton(
+                imagePaths: controller.imagePaths,
+                onTap: () {
+                  final RenderBox? renderBox = buttonContext.findRenderObject() as RenderBox?;
+                  if (renderBox != null) {
+                    final position = renderBox.localToGlobal(Offset.zero);
+                    controller.showAIScribeMenuForSelectedText(
+                      context,
+                      buttonPosition: position,
+                    );
+                  } else {
+                    controller.showAIScribeMenuForSelectedText(context);
+                  }
+                },
+              );
+            },
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 }
