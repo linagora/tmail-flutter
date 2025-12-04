@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/list_recipi
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
+import 'package:scribe/scribe.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/bottom_bar_composer_widget.dart';
@@ -555,6 +556,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
+                              onOpenAIScribe: () => controller.showAIScribeMenuForFullText(context),
+                              aiScribeButtonKey: controller.aiScribeButtonKey,
                             )),
                           ],
                         ),
@@ -827,6 +830,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
+                              onOpenAIScribe: () => controller.showAIScribeMenuForFullText(context),
+                              aiScribeButtonKey: controller.aiScribeButtonKey,
                             )),
                           ],
                         ),

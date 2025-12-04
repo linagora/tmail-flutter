@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-12-10T16:32:00.611716",
+  "@@last_modified": "2025-12-10T10:22:35.345340",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5126,6 +5126,12 @@
   },
   "startToAddFavoritesEmails": "Start to add favorites emails",
   "@startToAddFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiAssistant": "AI assistant",
+  "@aiAssistant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

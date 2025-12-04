@@ -27,6 +27,7 @@ import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
@@ -89,6 +90,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_template_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
+import 'package:scribe/scribe.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/save_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart';
@@ -198,6 +200,7 @@ class ComposerController extends BaseController
   final GlobalKey<TagsEditorState> keyReplyToEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey headerEditorMobileWidgetKey = GlobalKey();
   final GlobalKey<DropdownButton2State> identityDropdownKey = GlobalKey<DropdownButton2State>();
+  final GlobalKey aiScribeButtonKey = GlobalKey();
   final double defaultPaddingCoordinateYCursorEditor = 8;
 
   FocusNode? subjectEmailInputFocusNode;
@@ -857,6 +860,57 @@ class ComposerController extends BaseController
       logError('ComposerController::getContentInEditor:Exception = $e');
       return '';
     }
+  }
+
+  Future<String> getTextOnlyContentInEditor() async {
+    try {
+      final htmlContent = await getContentInEditor();
+
+      String textContent = htmlContent.replaceAll(RegExp(r'<[^>]*>'), '');
+
+      textContent = textContent
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'");
+
+      return textContent.trim();
+    } catch (e) {
+      logError('ComposerController::getTextOnlyContentInEditor:Exception = $e');
+      return '';
+    }
+  }
+
+  void insertTextInEditor(String text) {
+    final htmlContent = text.replaceAll('\n', '<br>');
+
+    if (PlatformInfo.isWeb) {
+      richTextWebController?.editorController.insertHtml(htmlContent);
+    } else {
+      richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
+    }
+  }
+
+  void showAIScribeMenuForFullText(BuildContext context) async {
+    final fullText = await getTextOnlyContentInEditor();
+
+    final RenderBox? renderBox = aiScribeButtonKey.currentContext?.findRenderObject() as RenderBox?;
+    Offset? buttonPosition;
+    if (renderBox != null) {
+      buttonPosition = renderBox.localToGlobal(Offset.zero);
+    }
+  
+    if (!context.mounted) return;
+
+    showAIScribeDialog(
+      context: context,
+      imagePaths: imagePaths,
+      content: fullText,
+      onInsertText: insertTextInEditor,
+      buttonPosition: buttonPosition,
+    );
   }
 
   Future<void> _prepareToSendMessages(BuildContext context) async {
