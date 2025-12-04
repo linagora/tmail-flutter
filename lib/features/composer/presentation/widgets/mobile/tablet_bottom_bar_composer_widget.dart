@@ -14,6 +14,8 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
   final VoidCallback sendMessageAction;
   final VoidCallback requestReadReceiptAction;
   final VoidCallback toggleMarkAsImportantAction;
+  final VoidCallback? onOpenAIScribe;
+  final GlobalKey? aiScribeButtonKey;
 
   const TabletBottomBarComposerWidget({
     super.key,
@@ -25,6 +27,8 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
     required this.sendMessageAction,
     required this.requestReadReceiptAction,
     required this.toggleMarkAsImportantAction,
+    this.onOpenAIScribe,
+    this.aiScribeButtonKey,
   });
 
   @override
@@ -71,6 +75,18 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
               : AppLocalizations.of(context).turnOnRequestReadReceipt,
             onTapActionCallback: requestReadReceiptAction,
           ),
+          if (onOpenAIScribe != null) ...[
+            const SizedBox(width: TabletBottomBarComposerWidgetStyle.space),
+            TMailButtonWidget.fromIcon(
+              key: aiScribeButtonKey,
+              icon: imagePaths.icSparkle,
+              borderRadius: TabletBottomBarComposerWidgetStyle.iconRadius,
+              padding: TabletBottomBarComposerWidgetStyle.iconPadding,
+              iconSize: TabletBottomBarComposerWidgetStyle.iconSize,
+              tooltipMessage: 'AI Assistant',
+              onTapActionCallback: onOpenAIScribe!,
+            ),
+          ],
           const SizedBox(width: TabletBottomBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
             icon: imagePaths.icSaveToDraft,
