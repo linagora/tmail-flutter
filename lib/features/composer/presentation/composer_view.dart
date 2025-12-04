@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_c
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
+import 'package:scribe/scribe.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
@@ -448,6 +449,8 @@ class ComposerView extends GetWidget<ComposerController> {
                 sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                 toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
+                onOpenAIScribe: () => controller.showAIScribeMenuForFullText(context),
+                aiScribeButtonKey: controller.aiScribeButtonKey,
               )),
             ]
           )

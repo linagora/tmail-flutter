@@ -31,6 +31,8 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleMarkAsImportantAction;
   final VoidCallback saveAsTemplateAction;
   final VoidCallback onOpenInsertLink;
+  final VoidCallback? onOpenAIScribe;
+  final GlobalKey? aiScribeButtonKey;
   final OnMenuChanged? onPopupMenuChanged;
 
   const BottomBarComposerWidget({
@@ -54,6 +56,8 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.toggleMarkAsImportantAction,
     required this.saveAsTemplateAction,
     required this.onOpenInsertLink,
+    this.onOpenAIScribe,
+    this.aiScribeButtonKey,
     this.onPopupMenuChanged,
   });
 
@@ -127,6 +131,25 @@ class BottomBarComposerWidget extends StatelessWidget {
               onTapActionCallback: onOpenInsertLink,
             ),
           ),
+          if (onOpenAIScribe != null) ...[
+            const SizedBox(width: BottomBarComposerWidgetStyle.space),
+            AbsorbPointer(
+              absorbing: isCodeViewEnabled,
+              child: TMailButtonWidget.fromIcon(
+                key: aiScribeButtonKey,
+                icon: imagePaths.icSparkle,
+                iconColor: isCodeViewEnabled
+                    ? BottomBarComposerWidgetStyle.disabledIconColor
+                    : BottomBarComposerWidgetStyle.iconColor,
+                borderRadius: BottomBarComposerWidgetStyle.iconRadius,
+                backgroundColor: Colors.transparent,
+                padding: BottomBarComposerWidgetStyle.iconPadding,
+                iconSize: BottomBarComposerWidgetStyle.iconSize,
+                tooltipMessage: AppLocalizations.of(context).aiAssistant,
+                onTapActionCallback: onOpenAIScribe!,
+              ),
+            ),
+          ],
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           PopupMenuOverlayWidget(
             controller: menuMoreOptionController,
