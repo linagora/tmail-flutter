@@ -19,6 +19,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
   final OnCreatedEditorAction onCreatedEditorAction;
   final OnLoadCompletedEditorAction onLoadCompletedEditorAction;
   final OnEditorContentHeightChanged? onEditorContentHeightChanged;
+  final OnTextSelectionChanged? onTextSelectionChanged;
 
   const MobileEditorView({
     super.key,
@@ -27,6 +28,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
     this.arguments,
     this.contentViewState,
     this.onEditorContentHeightChanged,
+    this.onTextSelectionChanged,
   });
 
   @override
@@ -147,6 +149,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
       onCreatedEditorAction: onCreatedEditorAction,
       onLoadCompletedEditorAction: onLoadCompletedEditorAction,
       onEditorContentHeightChanged: onEditorContentHeightChanged,
+      onTextSelectionChanged: onTextSelectionChanged,
     );
   }
 }
