@@ -6,6 +6,7 @@ import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mixins/text_selection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/signature_tooltip_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
@@ -24,6 +25,7 @@ typedef OnPasteImageFailureAction = Function(
     UploadError uploadError);
 typedef OnInitialContentLoadComplete = Function(String text);
 typedef OnKeyDownEditorAction = Function(int? keyCode);
+typedef OnTextSelectionChanged = Function(TextSelectionData?);
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -46,6 +48,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnPasteImageFailureAction? onPasteImageFailureAction;
   final OnInitialContentLoadComplete? onInitialContentLoadComplete;
   final OnKeyDownEditorAction? onKeyDownEditorAction;
+  final OnTextSelectionChanged? onTextSelectionChanged;
 
   const WebEditorWidget({
     super.key,
@@ -68,19 +71,22 @@ class WebEditorWidget extends StatefulWidget {
     this.onPasteImageFailureAction,
     this.onInitialContentLoadComplete,
     this.onKeyDownEditorAction,
+    this.onTextSelectionChanged,
   });
 
   @override
   State<WebEditorWidget> createState() => _WebEditorState();
 }
 
-class _WebEditorState extends State<WebEditorWidget> {
+class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
 
   static const double _defaultHtmlEditorHeight = 550;
 
   late HtmlEditorController _editorController;
   bool _dropListenerRegistered = false;
+  bool _selectionChangeListenerRegistered = false;
   Function(Event)? _dropListener;
+  Function(Event)? _selectionChangeListener;
 
   OverlayEntry? _signatureTooltipEntry;
   final GlobalKey _signatureTooltipKey = GlobalKey();
@@ -88,9 +94,13 @@ class _WebEditorState extends State<WebEditorWidget> {
   bool _signatureTooltipReady = false;
 
   @override
+  void Function(TextSelectionData?)? get onSelectionChanged => widget.onTextSelectionChanged;
+
+  @override
   void initState() {
     super.initState();
     _editorController = widget.editorController;
+  
     _dropListener = (event) {
       if (event is MessageEvent) {
         if (jsonDecode(event.data)['name'] == HtmlUtils.registerDropListener.name) {
@@ -100,6 +110,19 @@ class _WebEditorState extends State<WebEditorWidget> {
     };
     if (_dropListener != null) {
       window.addEventListener("message", _dropListener!);
+    }
+
+    _selectionChangeListener = (event) {
+      if (event is MessageEvent) {
+        final data = jsonDecode(event.data);
+
+        if (data['name'] == HtmlUtils.registerSelectionChangeListener.name) {
+          handleSelectionChange(data);
+        }
+      }
+    };
+    if (_selectionChangeListener != null) {
+      window.addEventListener("message", _selectionChangeListener!);
     }
   }
 
@@ -119,6 +142,10 @@ class _WebEditorState extends State<WebEditorWidget> {
     if (_dropListener != null) {
       window.removeEventListener("message", _dropListener!);
       _dropListener = null;
+    }
+    if (_selectionChangeListener != null) {
+      window.removeEventListener("message", _selectionChangeListener!);
+      _selectionChangeListener = null;
     }
     _hideSignatureTooltip();
     super.dispose();
@@ -164,6 +191,10 @@ class _WebEditorState extends State<WebEditorWidget> {
             script: HtmlUtils.unregisterDropListener.script,
           ),
           WebScript(
+            name: HtmlUtils.registerSelectionChangeListener.name,
+            script: HtmlUtils.registerSelectionChangeListener.script,
+          ),
+          WebScript(
             name: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).name,
             script: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).script,
           ),
@@ -183,6 +214,11 @@ class _WebEditorState extends State<WebEditorWidget> {
             _editorController.evaluateJavascriptWeb(
               HtmlUtils.registerDropListener.name);
             _dropListenerRegistered = true;
+          }
+          if (!_selectionChangeListenerRegistered) {
+            _editorController.evaluateJavascriptWeb(
+              HtmlUtils.registerSelectionChangeListener.name);
+            _selectionChangeListenerRegistered = true;
           }
         },
         onFocus: widget.onFocus,
