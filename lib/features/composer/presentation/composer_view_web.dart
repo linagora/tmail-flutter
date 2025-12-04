@@ -267,6 +267,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         ),
                                       onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                       onKeyDownEditorAction: controller.onKeyDownEditorAction,
+                                      onTextSelectionChanged: controller.handleTextSelection,
                                     ));
                                   }
                                 ),
@@ -332,6 +333,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               return const SizedBox.shrink();
                             }
                           }),
+                          _buildAIScribeSelectionButton(context),
                         ],
                       ),
                     ),
@@ -509,6 +511,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                                 ),
                                               onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                               onKeyDownEditorAction: controller.onKeyDownEditorAction,
+                                              onTextSelectionChanged: controller.handleTextSelection,
                                             );
                                           });
                                         }
@@ -604,6 +607,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
+                        _buildAIScribeSelectionButton(context),
                       ],
                     ),
                   ),
@@ -784,6 +788,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                               ),
                                             onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                             onKeyDownEditorAction: controller.onKeyDownEditorAction,
+                                            onTextSelectionChanged: controller.handleTextSelection,
                                           ));
                                         }
                                       ),
@@ -877,6 +882,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
+                        _buildAIScribeSelectionButton(context),
                       ],
                     ),
                   )
@@ -948,5 +954,41 @@ class ComposerView extends GetWidget<ComposerController> {
       onDeleteEmailAddressTypeAction: controller.deleteEmailAddressType,
       onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputOnMobileAction,
     ));
+  }
+
+  Widget _buildAIScribeSelectionButton(BuildContext context) {
+    return Obx(() {
+      if (controller.hasTextSelection.value &&
+          controller.textSelectionCoordinates.value != null) {
+        final coordinates = controller.textSelectionCoordinates.value!;
+        return Positioned(
+          left: coordinates.dx,
+          top: coordinates.dy,
+          child: PointerInterceptor(
+            child: Builder(
+              builder: (buttonContext) {
+                return AIScribeButton(
+                  imagePaths: controller.imagePaths,
+                  onTap: () {
+                    final RenderBox? renderBox = buttonContext.findRenderObject() as RenderBox?;
+                    if (renderBox != null) {
+                      final position = renderBox.localToGlobal(Offset.zero);
+                      controller.showAIScribeMenuForSelectedText(
+                        context,
+                        buttonPosition: position,
+                      );
+                    } else {
+                      controller.showAIScribeMenuForSelectedText(context);
+                    }
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 }

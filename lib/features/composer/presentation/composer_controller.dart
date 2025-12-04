@@ -85,6 +85,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/saved_composi
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/editor_view_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mixins/text_selection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_template_dialog_view.dart';
@@ -156,6 +157,10 @@ class ComposerController extends BaseController
   final isEmailChanged = Rx<bool>(false);
   final isMarkAsImportant = Rx<bool>(false);
   final isContentHeightExceeded = Rx<bool>(false);
+
+  final selectedText = Rxn<String>();
+  final hasTextSelection = false.obs;
+  final textSelectionCoordinates = Rxn<Offset>();
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final LocalImagePickerInteractor _localImagePickerInteractor;
@@ -910,6 +915,43 @@ class ComposerController extends BaseController
       onInsertText: insertTextInEditor,
       buttonPosition: buttonPosition,
     );
+  }
+
+
+
+  void showAIScribeMenuForSelectedText(BuildContext context, {Offset? buttonPosition}) {
+    final selection = selectedText.value;
+    if (selection == null || selection.isEmpty) {
+      return;
+    }
+
+    showAIScribeDialog(
+      context: context,
+      imagePaths: imagePaths,
+      content: selection,
+      onInsertText: insertTextInEditor,
+      buttonPosition: buttonPosition,
+    );
+  }
+
+  void handleTextSelection(TextSelectionData? textSelectionData) {
+    if (textSelectionData != null) {
+      hasTextSelection.value = textSelectionData.hasSelection;
+      selectedText.value = textSelectionData.selectedText;
+
+      if (textSelectionData.coordinates != null) {
+        textSelectionCoordinates.value = Offset(
+          textSelectionData.coordinates!.x,
+          textSelectionData.coordinates!.y + 6,
+        );
+      } else {
+        textSelectionCoordinates.value = null;
+      }
+    } else {
+      hasTextSelection.value = false;
+      selectedText.value = null;
+      textSelectionCoordinates.value = null;
+    }
   }
 
   Future<void> _prepareToSendMessages(BuildContext context) async {
