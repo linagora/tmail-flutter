@@ -48,6 +48,80 @@ class HtmlUtils {
       editor.parentNode.replaceChild(newEditor, editor);''',
     name: 'unregisterDropListener');
 
+  static const registerSelectionChangeListener = (
+    script: '''
+      let lastSelectedText = '';
+
+      document.addEventListener('selectionchange', function() {
+        const selection = window.getSelection();
+        const selectedText = selection ? selection.toString().trim() : '';
+
+        if (selectedText === lastSelectedText) {
+          return;
+        }
+        lastSelectedText = selectedText;
+
+        if (selectedText.length > 0 && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const rects = range.getClientRects();
+
+          if (rects.length > 0) {
+            const rect = rects[rects.length - 1];
+
+            // When iframe
+            if (window.parent) {
+              window.parent.postMessage(
+                JSON.stringify({
+                  name: 'onSelectionChange',
+                  hasSelection: true,
+                  selectedText: selectedText,
+                  coordinates: {
+                    x: rect.right,
+                    y: rect.bottom,
+                    width: rect.width,
+                    height: rect.height
+                  }
+                }),
+                "*"
+              )
+            }
+
+            // When WebView
+            if (window.flutter_inappwebview) {
+              window.flutter_inappwebview.callHandler('onSelectionChange', {
+                hasSelection: true,
+                selectedText: selectedText,
+                coordinates: {
+                  x: rect.right,
+                  y: rect.bottom,
+                  width: rect.width,
+                  height: rect.height
+                }
+              });
+            }
+          }
+        } else {
+          // When iframe
+          if (window.parent) {
+            window.parent.postMessage(
+              JSON.stringify({
+                name: 'onSelectionChange',
+                hasSelection: false
+              }),
+              "*"
+            )
+          }
+
+          // When WebView
+          if (window.flutter_inappwebview) {
+            window.flutter_inappwebview.callHandler('onSelectionChange', {
+              hasSelection: false
+            });
+          }
+        }
+      });''',
+    name: 'onSelectionChange');
+
   static recalculateEditorHeight({double? maxHeight}) => (
     script: '''
       const editable = document.querySelector('.note-editable');
