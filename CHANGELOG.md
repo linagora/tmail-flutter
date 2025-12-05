@@ -1,3 +1,7 @@
+## [0.19.8] - 2025-12-05
+### Fixed
+- Enable/Disable fetch email in each folder by `FORCE_EMAIL_QUERY`
+
 ## [0.19.7] - 2025-11-03
 ### Fixed
 - UI be blocked by when overlay recipient modal in composer
