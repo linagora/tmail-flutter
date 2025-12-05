@@ -18,7 +18,6 @@ import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
 import 'package:jmap_dart_client/jmap/mdn/mdn.dart';
 import 'package:model/error_type_handler/unknown_uri_exception.dart';
@@ -65,6 +64,7 @@ import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_even
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/handle_email_action_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_mail_action_by_shortcut_action_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_open_attachment_list_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/update_attendance_status_extension.dart';
@@ -82,7 +82,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_download_attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
@@ -223,7 +222,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (success is MarkAsEmailReadSuccess) {
       _handleMarkAsEmailReadCompleted(success);
     } else if (success is MarkAsStarEmailSuccess) {
-      _markAsEmailStarSuccess(success);
+      markAsEmailStarSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
       _getAllIdentitiesSuccess(success);
     } else if (success is SendReceiptToSenderSuccess) {
@@ -781,30 +780,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _threadDetailController?.closeThreadDetailAction();
       }
     }
-  }
-
-  void _markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
-    final newKeywords = {
-      KeyWordIdentifier.emailFlagged:
-        success.markStarAction == MarkStarAction.markStar,
-    };
-
-    final newEmail = currentEmail?.updateKeywords(newKeywords);
-    final emailId = newEmail?.id;
-    if (emailId == null) return;
-
-    if (PlatformInfo.isMobile && !isThreadDetailEnabled) {
-      mailboxDashBoardController.selectedEmail.value?.resyncKeywords(newKeywords);
-    } else {
-      _threadDetailController?.emailIdsPresentation[emailId] = newEmail;
-    }
-
-    mailboxDashBoardController.updateEmailFlagByEmailIds(
-      [emailId],
-      markStarAction: success.markStarAction,
-    );
-
-    toastManager.showMessageSuccess(success);
   }
 
   void handleEmailAction(

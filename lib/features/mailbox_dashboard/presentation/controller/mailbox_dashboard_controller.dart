@@ -455,12 +455,14 @@ class MailboxDashBoardController extends ReloadableController
         success.markStarAction,
         success.countMarkStarSuccess,
         success.emailIds,
+        isThread: success.isThread,
       );
     } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
       _markAsStarMultipleEmailSuccess(
         success.markStarAction,
         success.countMarkStarSuccess,
         success.successEmailIds,
+        isThread: success.isThread,
       );
     } else if (success is MoveMultipleEmailToMailboxAllSuccess ||
         success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
@@ -1271,10 +1273,11 @@ class MailboxDashBoardController extends ReloadableController
   void _markAsStarMultipleEmailSuccess(
     MarkStarAction markStarAction,
     int countMarkStarSuccess,
-    List<EmailId> emailIds,
-  ) {
+    List<EmailId> emailIds, {
+    bool isThread = false,
+  }) {
     updateEmailFlagByEmailIds(emailIds, markStarAction: markStarAction);
-    if (currentOverlayContext != null && currentContext != null) {
+    if (!isThread && currentOverlayContext != null && currentContext != null) {
       final message = markStarAction == MarkStarAction.unMarkStar
         ? AppLocalizations.of(currentContext!).marked_unstar_multiple_item(countMarkStarSuccess)
         : AppLocalizations.of(currentContext!).marked_star_multiple_item(countMarkStarSuccess);

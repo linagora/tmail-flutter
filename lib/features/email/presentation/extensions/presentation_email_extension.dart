@@ -1,4 +1,5 @@
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
@@ -152,5 +153,21 @@ extension PresentationEmailExtension on PresentationEmail {
       bcc: newBccAddress.withoutMe(userName),
       replyTo: [],
     );
+  }
+
+  PresentationEmail star() {
+    final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
+      keywords ?? {},
+    )..[KeyWordIdentifier.emailFlagged] = true;
+
+    return copyWith(keywords: updatedKeywords);
+  }
+
+  PresentationEmail unstar() {
+    final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
+      keywords ?? {},
+    )..remove(KeyWordIdentifier.emailFlagged);
+
+    return copyWith(keywords: updatedKeywords);
   }
 }

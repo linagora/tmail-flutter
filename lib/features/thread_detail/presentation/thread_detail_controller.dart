@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mark_multiple_emails_read_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_refresh_thread_detail_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_thread_action_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/quick_create_rule_from_collapsed_email_success.dart';
@@ -227,6 +228,7 @@ class ThreadDetailController extends BaseController {
 
   void reset() {
     emailIdsPresentation.clear();
+    emailsInThreadDetailInfo.clear();
     scrollController?.dispose();
     scrollController = null;
     currentExpandedEmailId.value = null;
@@ -259,6 +261,9 @@ class ThreadDetailController extends BaseController {
       );
     } else if (success is CreateNewRuleFilterSuccess) {
       quickCreateRuleFromCollapsedEmailSuccess(success);
+    } else if (success is MarkAsStarMultipleEmailAllSuccess ||
+        success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
+      handleMarkThreadAsStarredSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }

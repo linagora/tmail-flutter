@@ -17,8 +17,9 @@ class MarkAsStarMultipleEmailInteractor {
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
-    MarkStarAction markStarAction
-  ) async* {
+    MarkStarAction markStarAction, {
+    bool isThread = false,
+  }) async* {
     try {
       yield Right(LoadingMarkAsStarMultipleEmailAll());
 
@@ -29,6 +30,7 @@ class MarkAsStarMultipleEmailInteractor {
           emailIds.length,
           markStarAction,
           result.emailIdsSuccess,
+          isThread: isThread,
         ));
       } else if (result.emailIdsSuccess.isEmpty) {
         yield Left(MarkAsStarMultipleEmailAllFailure(markStarAction));
@@ -37,6 +39,7 @@ class MarkAsStarMultipleEmailInteractor {
           result.emailIdsSuccess.length,
           markStarAction,
           result.emailIdsSuccess,
+          isThread: isThread,
         ));
       }
     } catch (e) {
