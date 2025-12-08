@@ -23,26 +23,25 @@ class LabelListItem extends StatelessWidget {
     final borderRadius = BorderRadius.all(
       Radius.circular(
         isDesktop
-            ? MailboxItemWidgetStyles.mobileBorderRadius
-            : MailboxItemWidgetStyles.borderRadius,
+            ? MailboxItemWidgetStyles.borderRadius
+            : MailboxItemWidgetStyles.mobileBorderRadius,
       ),
     );
 
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
-        onTap: () {},
         borderRadius: borderRadius,
         child: Container(
           decoration: BoxDecoration(borderRadius: borderRadius),
           padding: EdgeInsetsDirectional.symmetric(
             horizontal: isDesktop
-                ? MailboxItemWidgetStyles.mobileItemPadding
-                : MailboxItemWidgetStyles.itemPadding,
+                ? MailboxItemWidgetStyles.itemPadding
+                : MailboxItemWidgetStyles.mobileItemPadding,
           ),
           height: isDesktop
-              ? MailboxItemWidgetStyles.mobileHeight
-              : MailboxItemWidgetStyles.height,
+              ? MailboxItemWidgetStyles.height
+              : MailboxItemWidgetStyles.mobileHeight,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -51,8 +50,8 @@ class LabelListItem extends StatelessWidget {
                 color: label.backgroundColor,
                 padding: EdgeInsetsDirectional.only(
                   end: isDesktop
-                      ? MailboxItemWidgetStyles.labelIconSpace
-                      : MailboxItemWidgetStyles.mobileLabelIconSpace,
+                      ? MailboxItemWidgetStyles.mobileLabelIconSpace
+                      : MailboxItemWidgetStyles.labelIconSpace,
                 ),
               ),
               Expanded(
