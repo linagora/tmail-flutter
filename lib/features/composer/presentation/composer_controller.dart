@@ -866,10 +866,7 @@ class ComposerController extends BaseController
     }
   }
 
-  Future<String> getTextOnlyContentInEditor() async {
-    try {
-      final htmlContent = await getContentInEditor();
-
+  String convertHtmlContentToTextContent(String htmlContent) {
       String textContent = htmlContent.replaceAll(RegExp(r'<[^>]*>'), '');
 
       textContent = textContent
@@ -881,6 +878,15 @@ class ComposerController extends BaseController
         .replaceAll('&#39;', "'");
 
       return textContent.trim();
+  }
+
+  Future<String> getTextOnlyContentInEditor() async {
+    try {
+      final htmlContent = await getContentInEditor();
+
+      String textContent  = convertHtmlContentToTextContent(htmlContent);
+
+      return textContent;
     } catch (e) {
       logError('ComposerController::getTextOnlyContentInEditor:Exception = $e');
       return '';
@@ -917,8 +923,6 @@ class ComposerController extends BaseController
     );
   }
 
-
-
   void showAIScribeMenuForSelectedText(BuildContext context, {Offset? buttonPosition}) {
     final selection = selectedText.value;
     if (selection == null || selection.isEmpty) {
@@ -942,7 +946,7 @@ class ComposerController extends BaseController
       if (textSelectionData.coordinates != null) {
         textSelectionCoordinates.value = Offset(
           textSelectionData.coordinates!.x,
-          textSelectionData.coordinates!.y + 6,
+          textSelectionData.coordinates!.y,
         );
       } else {
         textSelectionCoordinates.value = null;
