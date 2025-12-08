@@ -1,9 +1,9 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
-import '../constants/ai_prompts.dart';
-import '../repository/ai_scribe_repository.dart';
-import '../state/generate_ai_text_state.dart';
-import '../../presentation/model/ai_action.dart';
+import 'package:scribe/scribe/ai/domain/constants/ai_prompts.dart';
+import 'package:scribe/scribe/ai/domain/repository/ai_scribe_repository.dart';
+import 'package:scribe/scribe/ai/domain/state/generate_ai_text_state.dart';
+import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
 
 class GenerateAITextInteractor {
   final AIScribeRepository _repository;

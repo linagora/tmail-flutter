@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import '../model/ai_scribe_menu_action.dart';
-import '../styles/ai_scribe_styles.dart';
+import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
+import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
 
 class AIScribeMenu extends StatefulWidget {
   final Function(AIScribeMenuAction) onActionSelected;

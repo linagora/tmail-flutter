@@ -1,4 +1,4 @@
-import 'ai_message.dart';
+import 'package:scribe/scribe/ai/data/model/ai_message.dart';
 
 class AIAPIRequest {
   final List<AIMessage> messages;

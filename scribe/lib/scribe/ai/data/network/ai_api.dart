@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import '../model/ai_api_response.dart';
-import '../model/ai_api_request.dart';
+import 'package:scribe/scribe/ai/data/model/ai_api_response.dart';
+import 'package:scribe/scribe/ai/data/model/ai_api_request.dart';
 
 class AIApi {
   final Dio _dio;

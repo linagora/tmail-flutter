@@ -1,9 +1,9 @@
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import '../styles/ai_scribe_styles.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
 
 typedef OnInsertTextCallback = void Function(String text);
 

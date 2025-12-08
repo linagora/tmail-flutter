@@ -1,17 +1,17 @@
+import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
-import '../../data/datasource_impl/ai_datasource_impl.dart';
-import '../../data/repository/ai_repository_impl.dart';
-import '../../domain/state/generate_ai_text_state.dart';
-import '../../domain/usecases/generate_ai_text_interactor.dart';
-import '../model/ai_action.dart';
-import '../model/ai_scribe_menu_action.dart';
-import 'ai_scribe_bar.dart';
-import 'ai_scribe_menu.dart';
-import 'ai_scribe_suggestion.dart';
+import 'package:scribe/scribe/ai/data/datasource_impl/ai_datasource_impl.dart';
+import 'package:scribe/scribe/ai/data/repository/ai_repository_impl.dart';
+import 'package:scribe/scribe/ai/domain/state/generate_ai_text_state.dart';
+import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
+import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
+import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe_bar.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe_menu.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe_suggestion.dart';
 
 typedef AIScribeResultCallback = void Function(String result);
 
