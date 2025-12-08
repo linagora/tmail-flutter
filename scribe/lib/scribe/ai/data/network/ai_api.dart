@@ -28,12 +28,7 @@ class AIApi {
     );
 
     if (response.statusCode == 200) {
-      final parsedResponse = AIApiResponse.parse(response.data);
-      if (parsedResponse != null) {
-        return parsedResponse;
-      } else {
-        throw Exception('Empty response from AI service');
-      }
+      return AIApiResponse.fromJson(response.data);
     } else {
       throw Exception('AI API returned status code: ${response.statusCode}');
     }

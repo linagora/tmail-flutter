@@ -1,31 +1,44 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'ai_api_response.g.dart';
+
+@JsonSerializable()
 class AIApiResponse {
-  final String content;
+  final List<Choice> choices;
 
   const AIApiResponse({
+    required this.choices
+  });
+
+  factory AIApiResponse.fromJson(Map<String, dynamic> json) => _$AIApiResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AIApiResponseToJson(this);
+
+  String? get content => choices.isNotEmpty ? choices[0].message.content : null;
+}
+
+@JsonSerializable()
+class Choice {
+  final Message message;
+
+  const Choice({
+    required this.message
+  });
+
+  factory Choice.fromJson(Map<String, dynamic> json) => _$ChoiceFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ChoiceToJson(this);
+}
+
+@JsonSerializable()
+class Message {
+  final String content;
+
+  const Message({
     required this.content
   });
 
-  static AIApiResponse? parse(Map<String, dynamic> json) {
-    final choices = json['choices'] as List<dynamic>?;
-    if (choices == null || choices.isEmpty) {
-      return null;
-    }
+  factory Message.fromJson(Map<String, dynamic> json) => _$MessageFromJson(json);
 
-    final firstChoice = choices[0] as Map<String, dynamic>?;
-    if (firstChoice == null) {
-      return null;
-    }
-
-    final message = firstChoice['message'] as Map<String, dynamic>?;
-    if (message == null) {
-      return null;
-    }
-
-    final content = message['content'] as String?;
-    if (content == null || content.isEmpty) {
-      return null;
-    }
-
-    return AIApiResponse(content: content);
-  }
+  Map<String, dynamic> toJson() => _$MessageToJson(this);
 }
