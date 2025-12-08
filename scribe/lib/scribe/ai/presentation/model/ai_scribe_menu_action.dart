@@ -10,10 +10,8 @@ enum AIScribeMenuAction {
   translateFrench,
   translateEnglish,
   translateRussian,
-  translateVietnamese,
-}
+  translateVietnamese;
 
-extension AIScribeMenuActionExtension on AIScribeMenuAction {
   String get label {
     switch (this) {
       case AIScribeMenuAction.correctGrammar:
@@ -61,7 +59,6 @@ extension AIScribeMenuActionExtension on AIScribeMenuAction {
       case AIScribeMenuAction.translateRussian:
       case AIScribeMenuAction.translateVietnamese:
         return AIScribeMenuCategory.translate;
-
     }
   }
 
@@ -79,10 +76,8 @@ enum AIScribeMenuCategory {
   correctGrammar,
   improve,
   changeTone,
-  translate,
-}
+  translate;
 
-extension AIScribeMenuCategoryExtension on AIScribeMenuCategory {
   String get label {
     switch (this) {
       case AIScribeMenuCategory.correctGrammar:
