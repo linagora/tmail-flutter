@@ -260,13 +260,13 @@ r=B.cuH(!0,"assets/images/ic_integration.svg",E.on,48,A.u("Multiple integrations
 A.v(p)
 v.a(w.get(p)).toString
 q=y.p
-r=A.aD(A.c([x,new A.W(D.alY,u,o),new A.W(C.hL,t,o),new A.W(C.hL,s,o),new A.W(C.hL,r,o),new A.W(D.am6,A.bi("assets/images/ic_login_graphic.svg",C.v,o,C.O,o,o,o,o),o)],q),C.E,C.aO,C.p,0,C.u)
+r=A.aD(A.c([x,new A.W(D.alY,u,o),new A.W(C.hL,t,o),new A.W(C.hL,s,o),new A.W(C.hL,r,o),new A.W(D.am6,A.bi("assets/images/ic_login_graphic.svg",C.v,o,C.O,o,o,o,o),o)],q),C.E,C.aP,C.p,0,C.u)
 s=F.bom(o,o)
 A.y(d,C.e,n).toString
 s=A.a9(o,A.aD(A.c([new A.W(D.amh,s,o),new A.W(D.yk,A.ad(A.u("Sign In",o,"signIn",o,o),o,o,o,o,o,$.aN().b3(C.n,32,C.oL),o,o,o),o),new A.av(new B.c07(p),o),new A.av(new B.c08(p,d),o),p.amO(d),D.VJ,D.Dx],q),C.o,C.l,C.p,0,C.u),C.ap,o,o,D.aQv,o,684,o,o,D.amH,o,o,458)
 A.v(p)
 v.a(w.get(p)).toString
-return new A.W(D.amg,A.ao(A.c([new A.W(D.alR,r,o),A.aD(A.c([s,new A.W(D.am7,A.bi("assets/images/power_by_linagora.svg",C.v,o,C.O,44,o,o,97),o)],q),C.o,C.l,C.p,0,C.u)],q),C.E,o,C.aO,C.p,0,o),o)},
+return new A.W(D.amg,A.ao(A.c([new A.W(D.alR,r,o),A.aD(A.c([s,new A.W(D.am7,A.bi("assets/images/power_by_linagora.svg",C.v,o,C.O,44,o,o,97),o)],q),C.o,C.l,C.p,0,C.u)],q),C.E,o,C.aP,C.p,0,o),o)},
 amO(d){return new A.av(new B.c04(this,d),null)}}
 B.aRN.prototype={
 u(d){var x,w,v,u=null,t=y.J
@@ -531,4 +531,4 @@ D.b1t=new A.b6("loginSubmitForm",y.O)
 D.b1v=new A.b6("login_password_input",y.O)
 D.b1w=new A.b6("login_username_input",y.O)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"06IDPO7L66YXKhUqg3HPIR4GLTo=");
+a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"8EHtGNfsyA0hviZphdP7CaFCnao=");
