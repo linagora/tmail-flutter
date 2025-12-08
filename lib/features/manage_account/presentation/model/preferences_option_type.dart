@@ -10,7 +10,8 @@ enum PreferencesOptionType {
   thread(isLocal: true),
   spamReport(isLocal: true),
   aiScribe(isLocal: true),
-  aiNeedsAction(isLocal: false);
+  aiNeedsAction(isLocal: false),
+  label(isLocal: true);
 
   final bool isLocal;
 
@@ -30,6 +31,8 @@ enum PreferencesOptionType {
         return appLocalizations.aiScribe;
       case PreferencesOptionType.aiNeedsAction:
         return appLocalizations.aiNeedsAction;
+      case PreferencesOptionType.label:
+        return appLocalizations.labelVisibility;
     }
   }
 
@@ -47,6 +50,8 @@ enum PreferencesOptionType {
         return appLocalizations.aiScribeSettingExplanation;
       case PreferencesOptionType.aiNeedsAction:
         return appLocalizations.aiNeedsActionSettingExplanation;
+      case PreferencesOptionType.label:
+        return appLocalizations.labelVisibilitySettingExplanation;
     }
   }
 
@@ -64,6 +69,8 @@ enum PreferencesOptionType {
         return appLocalizations.aiScribeToggleDescription;
       case PreferencesOptionType.aiNeedsAction:
         return appLocalizations.aiNeedsActionToggleDescription;
+      case PreferencesOptionType.label:
+        return appLocalizations.labelVisibilityToggleDescription;
     }
   }
 
@@ -84,6 +91,8 @@ enum PreferencesOptionType {
         return preferencesSetting.aiScribeConfig.isEnabled;
       case PreferencesOptionType.aiNeedsAction:
         return settingOption?.isAINeedsActionEnabled ?? false;
+      case PreferencesOptionType.label:
+        return preferencesSetting.labelConfig.isEnabled;
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -20,6 +21,8 @@ class PreferencesSettingManager {
       '${_preferencesSettingKey}_TEXT_FORMATTING_MENU';
   static const String _preferencesSettingAIScribeKey =
       '${_preferencesSettingKey}_AI_SCRIBE';
+  static const String _preferencesSettingLabelKey =
+      '${_preferencesSettingKey}_LABEL';
 
   const PreferencesSettingManager(this._sharedPreferences);
 
@@ -46,6 +49,8 @@ class PreferencesSettingManager {
             return TextFormattingMenuConfig.fromJson(jsonDecoded);
           case _preferencesSettingAIScribeKey:
             return AIScribeConfig.fromJson(jsonDecoded);
+          case _preferencesSettingLabelKey:
+            return LabelConfig.fromJson(jsonDecoded);
           default:
             return DefaultPreferencesConfig.fromJson(jsonDecoded);
         }
@@ -60,33 +65,27 @@ class PreferencesSettingManager {
     return PreferencesSetting(listConfigs);
   }
 
-  Future<void> savePreferences(PreferencesConfig config) async {
+  String _getPreferencesConfig(PreferencesConfig config) {
     if (config is ThreadDetailConfig) {
-      await _sharedPreferences.setString(
-        _preferencesSettingThreadKey,
-        jsonEncode(config.toJson()),
-      );
+      return _preferencesSettingThreadKey;
     } else if (config is SpamReportConfig) {
-      await _sharedPreferences.setString(
-        _preferencesSettingSpamReportKey,
-        jsonEncode(config.toJson()),
-      );
+      return _preferencesSettingSpamReportKey;
     } else if (config is TextFormattingMenuConfig) {
-      await _sharedPreferences.setString(
-        _preferencesSettingTextFormattingMenuKey,
-        jsonEncode(config.toJson()),
-      );
+      return _preferencesSettingTextFormattingMenuKey;
     } else if (config is AIScribeConfig) {
-      await _sharedPreferences.setString(
-        _preferencesSettingAIScribeKey,
-        jsonEncode(config.toJson()),
-      );
+      return _preferencesSettingAIScribeKey;
+    } else if (config is LabelConfig) {
+      return _preferencesSettingLabelKey;
     } else {
-      await _sharedPreferences.setString(
-        _preferencesSettingKey,
-        jsonEncode(config.toJson()),
-      );
+      return _preferencesSettingKey;
     }
+  }
+
+  Future<void> savePreferences(PreferencesConfig config) async {
+    await _sharedPreferences.setString(
+      _getPreferencesConfig(config),
+      jsonEncode(config.toJson()),
+    );
   }
 
   Future<void> updateThread(bool isEnabled) async {
@@ -163,6 +162,24 @@ class PreferencesSettingManager {
 
   Future<void> updateAIScribe(bool isEnabled) async {
     final currentConfig = await getAIScribeConfig();
+    final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
+    await savePreferences(updatedConfig);
+  }
+
+  Future<LabelConfig> getLabelConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingLabelKey,
+    );
+
+    return jsonString == null
+        ? LabelConfig.initial()
+        : LabelConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updateLabel(bool isEnabled) async {
+    final currentConfig = await getLabelConfig();
     final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
     await savePreferences(updatedConfig);
   }
