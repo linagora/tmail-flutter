@@ -5217,5 +5217,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "labelVisibility": "Label visibility",
+  "@labelVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilitySettingExplanation": "Show labels assigned to emails directly in your message list for easier categorization.",
+  "@labelVisibilitySettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilityToggleDescription": "Display labels",
+  "@labelVisibilityToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
