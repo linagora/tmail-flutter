@@ -10,20 +10,18 @@ dependencies:
   flutter:
     sdk: flutter
 
-  ### Dependencies from git ###
-  jmap_dart_client:
-    git:
-      url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+  ### Local dependencies ###
+  core:
+    path: ../core
 
   ### Dependencies from pub.dev ###
-  equatable: 2.0.5
-
-  json_annotation: 4.8.0
+  dartz: 0.10.1
 
   dio: 5.0.0
 
-  http_mock_adapter: 0.4.2
+  flutter_dotenv: 5.0.2
+
+  pointer_interceptor: 0.10.1+2
 
 dev_dependencies:
   flutter_test:
@@ -32,8 +30,6 @@ dev_dependencies:
   build_runner: 2.4.10
 
   json_serializable: 6.6.1
-
-  mockito: 5.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
