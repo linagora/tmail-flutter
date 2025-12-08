@@ -26,5 +26,5 @@ class GetCompanyServerLoginInfoFailure extends FeatureFailure {
   }) : super(exception: exception);
 
   @override
-  List<Object> get props => [exception, popAllRoute];
+  List<Object> get props => [super.props, popAllRoute];
 }
