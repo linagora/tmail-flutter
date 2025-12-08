@@ -179,6 +179,7 @@ class ComposerController extends BaseController
   final String? composerId;
   final ComposerArguments? composerArgs;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
+  final GenerateAITextInteractor _generateAITextInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -286,6 +287,7 @@ class ComposerController extends BaseController
     this.printEmailInteractor,
     this._composerRepository,
     this._saveTemplateEmailInteractor,
+    this._generateAITextInteractor,
     {
       this.composerId,
       this.composerArgs,
@@ -919,6 +921,7 @@ class ComposerController extends BaseController
       imagePaths: imagePaths,
       content: fullText,
       onInsertText: insertTextInEditor,
+      interactor: _generateAITextInteractor,
       buttonPosition: buttonPosition,
     );
   }
@@ -934,6 +937,7 @@ class ComposerController extends BaseController
       imagePaths: imagePaths,
       content: selection,
       onInsertText: insertTextInEditor,
+      interactor: _generateAITextInteractor,
       buttonPosition: buttonPosition,
     );
   }

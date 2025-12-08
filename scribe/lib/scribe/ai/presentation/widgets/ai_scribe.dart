@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:scribe/scribe/ai/data/datasource_impl/ai_datasource_impl.dart';
-import 'package:scribe/scribe/ai/data/repository/ai_repository_impl.dart';
 import 'package:scribe/scribe/ai/domain/state/generate_ai_text_state.dart';
 import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
@@ -20,6 +17,7 @@ Future<void> showAIScribeDialog({
   required ImagePaths imagePaths,
   required String content,
   required AIScribeResultCallback onInsertText,
+  required GenerateAITextInteractor interactor,
   List<AIScribeMenuCategory>? availableCategories,
   Offset? buttonPosition,
 }) async {
@@ -114,7 +112,7 @@ Future<void> showAIScribeDialog({
     context: context,
     barrierDismissible: true,
     builder: (context) {
-      final suggestionFuture = _executeAIRequest(selectedAction, content);
+      final suggestionFuture = _executeAIRequest(interactor, selectedAction, content);
       final title = selectedAction.label;
 
       final modalContent = AIScribeSuggestion(
@@ -172,14 +170,10 @@ Future<void> showAIScribeDialog({
 }
 
 Future<String> _executeAIRequest(
+  GenerateAITextInteractor interactor,
   AIAction action,
   String content,
 ) async {
-  final dio = Dio();
-  final dataSource = AIDataSourceImpl(dio: dio);
-  final repository = AIScribeRepositoryImpl(dataSource);
-  final interactor = GenerateAITextInteractor(repository);
-
   final result = await interactor.execute(action, content);
 
   return result.fold(
