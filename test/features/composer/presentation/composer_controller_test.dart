@@ -68,6 +68,7 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/session_fixtures.dart';
@@ -178,6 +179,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<PrintEmailInteractor>(),
   MockSpec<ComposerRepository>(),
   MockSpec<SaveTemplateEmailInteractor>(),
+  MockSpec<GenerateAITextInteractor>(),
 
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
@@ -223,6 +225,7 @@ void main() {
   late MockPrintEmailInteractor mockPrintEmailInteractor;
   late MockComposerRepository mockComposerRepository;
   late MockSaveTemplateEmailInteractor mockSaveTemplateEmailInteractor;
+  late MockGenerateAITextInteractor mockGenerateAITextInteractor;
 
   // Declaration Getx dependencies
   final mockMailboxDashBoardController = MockMailboxDashBoardController();
@@ -293,6 +296,7 @@ void main() {
     mockPrintEmailInteractor = MockPrintEmailInteractor();
     mockComposerRepository = MockComposerRepository();
     mockSaveTemplateEmailInteractor = MockSaveTemplateEmailInteractor();
+    mockGenerateAITextInteractor = MockGenerateAITextInteractor();
 
     composerController = ComposerController(
       mockLocalFilePickerInteractor,
@@ -310,6 +314,7 @@ void main() {
       mockPrintEmailInteractor,
       mockComposerRepository,
       mockSaveTemplateEmailInteractor,
+      mockGenerateAITextInteractor,
     );
 
     mockHtmlEditorApi = MockHtmlEditorApi();
