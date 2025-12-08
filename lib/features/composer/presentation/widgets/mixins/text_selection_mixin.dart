@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+typedef OnTextSelectionChanged = Function(TextSelectionData?);
+
 class TextSelectionData {
   final bool hasSelection;
   final String? selectedText;
@@ -68,7 +70,7 @@ class TextSelectionCoordinates {
 }
 
 mixin TextSelectionMixin<T extends StatefulWidget> on State<T> {
-  void Function(TextSelectionData?)? get onSelectionChanged => null;
+  OnTextSelectionChanged? get onSelectionChanged => null;
 
   void handleSelectionChange(Map<dynamic, dynamic> data) {
     final selectionData = TextSelectionData.fromMap(data);
