@@ -43,15 +43,14 @@ class LabelListItem extends StatelessWidget {
               ? MailboxItemWidgetStyles.height
               : MailboxItemWidgetStyles.mobileHeight,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               LabelIconWidget(
                 icon: imagePaths.icTag,
                 color: label.backgroundColor,
                 padding: EdgeInsetsDirectional.only(
                   end: isDesktop
-                      ? MailboxItemWidgetStyles.mobileLabelIconSpace
-                      : MailboxItemWidgetStyles.labelIconSpace,
+                      ? MailboxItemWidgetStyles.labelIconSpace
+                      : MailboxItemWidgetStyles.mobileLabelIconSpace,
                 ),
               ),
               Expanded(
