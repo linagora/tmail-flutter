@@ -9,12 +9,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/oidc/oidc_configuration.dart';
-import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/remove_company_server_login_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
@@ -35,6 +35,8 @@ class TwakeWelcomeController extends ReloadableController {
 
   final SignInTwakeWorkplaceInteractor _signInTwakeWorkplaceInteractor;
   final SignUpTwakeWorkplaceInteractor _signUpTwakeWorkplaceInteractor;
+
+  RemoveCompanyServerLoginInfoInteractor? _removeCompanyServerLoginInfoInteractor;
 
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
@@ -81,7 +83,10 @@ class TwakeWelcomeController extends ReloadableController {
   }
 
   void _handleAutoSignInViaDeepLinkSuccess(AutoSignInViaDeepLinkSuccess success) {
-    _synchronizeTokenAndGetSession(
+    if (PlatformInfo.isMobile) {
+      removeCompanyServerLoginInfo();
+    }
+    synchronizeTokenAndGetSession(
       baseUri: success.baseUri,
       tokenOIDC: success.tokenOIDC,
       oidcConfiguration: success.oidcConfiguration,
@@ -140,16 +145,30 @@ class TwakeWelcomeController extends ReloadableController {
     ));
   }
 
+  void removeCompanyServerLoginInfo() {
+    _removeCompanyServerLoginInfoInteractor =
+        getBinding<RemoveCompanyServerLoginInfoInteractor>();
+    if (_removeCompanyServerLoginInfoInteractor != null) {
+      consumeState(_removeCompanyServerLoginInfoInteractor!.execute());
+    }
+  }
+
   @override
   void handleSuccessViewState(Success success) {
     if (success is SignInTwakeWorkplaceSuccess) {
-      _synchronizeTokenAndGetSession(
+      if (PlatformInfo.isMobile) {
+        removeCompanyServerLoginInfo();
+      }
+      synchronizeTokenAndGetSession(
         baseUri: success.baseUri,
         tokenOIDC: success.tokenOIDC,
         oidcConfiguration: success.oidcConfiguration,
       );
     } else if (success is SignUpTwakeWorkplaceSuccess) {
-      _synchronizeTokenAndGetSession(
+      if (PlatformInfo.isMobile) {
+        removeCompanyServerLoginInfo();
+      }
+      synchronizeTokenAndGetSession(
         baseUri: success.baseUri,
         tokenOIDC: success.tokenOIDC,
         oidcConfiguration: success.oidcConfiguration,
@@ -192,20 +211,6 @@ class TwakeWelcomeController extends ReloadableController {
     super.handleUrgentExceptionOnMobile(failure: failure, exception: exception);
   }
 
-  void _synchronizeTokenAndGetSession({
-    required Uri baseUri,
-    required TokenOIDC tokenOIDC,
-    required OIDCConfiguration oidcConfiguration,
-  }) {
-    setDataToInterceptors(
-      baseUrl: baseUri.toString(),
-      tokenOIDC: tokenOIDC,
-      oidcConfiguration: oidcConfiguration,
-    );
-
-    getSessionAction();
-  }
-
   void _handleSignInTwakeWorkplaceFailure(SignInTwakeWorkplaceFailure failure) {
     SmartDialog.dismiss();
 
@@ -222,6 +227,7 @@ class TwakeWelcomeController extends ReloadableController {
   void onClose() {
     if (PlatformInfo.isMobile) {
       _deepLinkDataStreamSubscription?.cancel();
+      _removeCompanyServerLoginInfoInteractor = null;
     }
     super.onClose();
   }

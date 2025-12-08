@@ -178,19 +178,12 @@ abstract class ReloadableController extends BaseController {
     required TokenOIDC tokenOIDC,
     required OIDCConfiguration oidcConfiguration,
   }) {
-    final baseUrl = baseUri.toString();
-    dynamicUrlInterceptors.setJmapUrl(baseUrl);
-    dynamicUrlInterceptors.changeBaseUrl(baseUrl);
-    authorizationInterceptors.setTokenAndAuthorityOidc(
-      newToken: tokenOIDC,
-      newConfig: oidcConfiguration,
-    );
-    authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
-      newToken: tokenOIDC,
-      newConfig: oidcConfiguration,
+    setDataToInterceptors(
+      baseUrl: baseUri.toString(),
+      tokenOIDC: tokenOIDC,
+      oidcConfiguration: oidcConfiguration,
     );
 
-    getOidcUserInfo(oidcConfiguration);
     getSessionAction();
   }
 }

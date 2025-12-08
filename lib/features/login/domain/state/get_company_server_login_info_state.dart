@@ -6,14 +6,25 @@ class GettingCompanyServerLoginInfo extends LoadingState {}
 
 class GetCompanyServerLoginInfoSuccess extends UIState {
   final CompanyServerLoginInfo serverLoginInfo;
+  final bool popAllRoute;
 
-  GetCompanyServerLoginInfoSuccess(this.serverLoginInfo);
+  GetCompanyServerLoginInfoSuccess(
+    this.serverLoginInfo, {
+    this.popAllRoute = true,
+  });
 
   @override
-  List<Object> get props => [serverLoginInfo];
+  List<Object> get props => [serverLoginInfo, popAllRoute];
 }
 
 class GetCompanyServerLoginInfoFailure extends FeatureFailure {
-  GetCompanyServerLoginInfoFailure(dynamic exception)
-      : super(exception: exception);
+  final bool popAllRoute;
+
+  GetCompanyServerLoginInfoFailure(
+    dynamic exception, {
+    this.popAllRoute = true,
+  }) : super(exception: exception);
+
+  @override
+  List<Object> get props => [exception, popAllRoute];
 }
