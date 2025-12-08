@@ -1,6 +1,8 @@
 import 'ai_message.dart';
 
 class AIAPIRequest {
+  static const String _defaultModel = 'gpt-oss-120b';
+
   final List<AIMessage> messages;
 
   const AIAPIRequest({
@@ -9,7 +11,7 @@ class AIAPIRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      'model': 'gpt-oss-120b',
+      'model': _defaultModel,
       'messages': messages.map((m) => m.toJson()).toList(),
     };
   }
