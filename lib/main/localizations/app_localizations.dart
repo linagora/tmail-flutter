@@ -5528,4 +5528,25 @@ class AppLocalizations {
       name: 'createNewLabelFailure',
     );
   }
+
+  String get labelVisibility {
+    return Intl.message(
+      'Label visibility',
+      name: 'labelVisibility',
+    );
+  }
+
+  String get labelVisibilitySettingExplanation {
+    return Intl.message(
+      'Show labels assigned to emails directly in your message list for easier categorization.',
+      name: 'labelVisibilitySettingExplanation',
+    );
+  }
+
+  String get labelVisibilityToggleDescription {
+    return Intl.message(
+      'Display labels',
+      name: 'labelVisibilityToggleDescription',
+    );
+  }
 }

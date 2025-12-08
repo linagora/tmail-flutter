@@ -8,7 +8,8 @@ enum PreferencesOptionType {
   readReceipt(isLocal: false),
   senderPriority(isLocal: false),
   thread(isLocal: true),
-  spamReport(isLocal: true);
+  spamReport(isLocal: true),
+  label(isLocal: true);
 
   final bool isLocal;
 
@@ -24,6 +25,8 @@ enum PreferencesOptionType {
         return appLocalizations.thread;
       case PreferencesOptionType.spamReport:
         return appLocalizations.spamReports;
+      case PreferencesOptionType.label:
+        return appLocalizations.labelVisibility;
     }
   }
 
@@ -37,6 +40,8 @@ enum PreferencesOptionType {
         return appLocalizations.threadSettingExplanation;
       case PreferencesOptionType.spamReport:
         return appLocalizations.spamReportsSettingExplanation;
+      case PreferencesOptionType.label:
+        return appLocalizations.labelVisibilitySettingExplanation;
     }
   }
 
@@ -50,6 +55,8 @@ enum PreferencesOptionType {
         return appLocalizations.threadToggleDescription;
       case PreferencesOptionType.spamReport:
         return appLocalizations.spamReportToggleDescription;
+      case PreferencesOptionType.label:
+        return appLocalizations.labelVisibilityToggleDescription;
     }
   }
 
@@ -66,6 +73,8 @@ enum PreferencesOptionType {
         return preferencesSetting.threadConfig.isEnabled;
       case PreferencesOptionType.spamReport:
         return preferencesSetting.spamReportConfig.isEnabled;
+      case PreferencesOptionType.label:
+        return preferencesSetting.labelConfig.isEnabled;
     }
   }
 }
