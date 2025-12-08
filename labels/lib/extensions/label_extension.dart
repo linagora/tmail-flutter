@@ -39,4 +39,10 @@ extension LabelExtension on Label {
       color: color ?? this.color,
     );
   }
+
+  int compareAlphabetically(Label otherLabel) {
+    return safeDisplayName
+        .toLowerCase()
+        .compareTo(otherLabel.safeDisplayName.toLowerCase());
+  }
 }
