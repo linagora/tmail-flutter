@@ -37,14 +37,14 @@ _.Q=!1
 _.as=null
 _.ef$=d
 _.c=_.a=null},
-cSX:function cSX(d,e){this.a=d
-this.b=e},
-cSY:function cSY(d){this.a=d},
 cSZ:function cSZ(d,e){this.a=d
 this.b=e},
 cT_:function cT_(d){this.a=d},
-cSW:function cSW(d){this.a=d},
-cSV:function cSV(d){this.a=d},
+cT0:function cT0(d,e){this.a=d
+this.b=e},
+cT1:function cT1(d){this.a=d},
+cSY:function cSY(d){this.a=d},
+cSX:function cSX(d){this.a=d},
 avi:function avi(){},
 Yk:function Yk(d,e,f){this.a=d
 this.b=e
@@ -67,7 +67,7 @@ _.d=g
 _.e=h
 _.f=i},
 bUt:function bUt(d){this.a=d},
-dQ3(d){var x,w,v,u,t,s,r,q,p="text/html"
+dQ6(d){var x,w,v,u,t,s,r,q,p="text/html"
 if(!(B.d.t(d,A.bn("<[a-zA-Z][^>]*>",!0,!1,!1,!1))&&B.d.t(d,A.bn("</[a-zA-Z][^>]*>",!0,!1,!1,!1))))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
@@ -82,7 +82,7 @@ q=new DOMParser().parseFromString('      <button class="quote-toggle-button coll
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.dIj(v)
+v=v==null?null:J.dIn(v)
 return v==null?d:v},
 aR5(){if(!B.d.t(window.navigator.userAgent.toLowerCase(),"iphone"))var x=B.d.t(window.navigator.userAgent.toLowerCase(),"android")&&B.d.t(window.navigator.userAgent.toLowerCase(),"mobile")
 else x=!0
@@ -108,7 +108,7 @@ if(!C.aR5()&&!C.aR6()){x=w.a.fy
 w.as=new C.aJ2(x)}w.arV()
 x=window
 x.toString
-x=A.jp(x,"message",w.gbce(),!1,y._)
+x=A.jq(x,"message",w.gbce(),!1,y._)
 w.z!==$&&A.cP()
 w.z=x},
 bcf(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
@@ -128,7 +128,7 @@ t=(t==null?m:B.d.t(t,"toDart: onScrollEnd"))===!0}else t=!1
 if(t){t=n.a.ay
 t.toString
 s=J.ai(x,"velocity")
-r=J.dkD(s==null?0:s,800)
+r=J.dkF(s==null?0:s,800)
 q=t.f
 p=B.c.gbm(q).at
 p.toString
@@ -157,10 +157,10 @@ if(t)n.b9Z(J.ai(x,"width"))
 else{t=v
 if((t==null?m:B.d.t(t,"toDart: OpenLink"))===!0){t=J.ai(x,"url")
 if(t!=null&&n.c!=null&&typeof t=="string"&&B.d.bg(t,"mailto:")){q=n.a.y
-if(q!=null)q.$1(A.jn(t))}}else{t=v
+if(q!=null)q.$1(A.jo(t))}}else{t=v
 if((t==null?m:B.d.t(t,"toDart: onClickHyperLink"))===!0){t=J.ai(x,"url")
 if(t!=null&&n.c!=null&&typeof t=="string"){q=n.a.z
-if(q!=null)q.$1(A.jn(t))}}}}}}catch(o){u=A.O(o)
+if(q!=null)q.$1(A.jo(t))}}}}}}catch(o){u=A.O(o)
 A.x(A.E(n).l(0)+"::_handleMessageEvent:Exception = "+A.e(u),B.w)}},
 gasz(){var x=this.a.ay
 if(x!=null)x=x.f.length!==0===!0
@@ -174,7 +174,7 @@ r=B.c.gbm(s).at
 r.toString
 w=r+x
 r=C.aR5()||C.aR6()
-if(r){v=J.dkJ(w,B.c.gbm(s).geP(),B.c.gbm(s).ge6())
+if(r){v=J.dkL(w,B.c.gbm(s).geP(),B.c.gbm(s).ge6())
 e.iN(v,B.ae,B.od)}else if(w<B.c.gbm(s).geP())e.ih(B.c.gbm(s).geP())
 else if(w>B.c.gbm(s).ge6())e.ih(B.c.gbm(s).ge6())
 else e.ih(w)}catch(q){u=A.O(q)
@@ -191,12 +191,12 @@ u=J.a5U(v)
 t=r.y
 if(x){t===$&&A.d()
 s=u.pD(v,t)}else{t===$&&A.d()
-s=u.ne(v,t)}if(s)r.T(new C.cSX(r,v))}if(r.c!=null&&r.x)r.T(new C.cSY(r))},
+s=u.ne(v,t)}if(s)r.T(new C.cSZ(r,v))}if(r.c!=null&&r.x)r.T(new C.cT_(r))},
 b9Z(d){var x,w,v=this
 if(d==null){x=v.f
 x===$&&A.d()
 w=x}else w=d
-if(v.c!=null&&J.dkC(w,v.a.db)&&v.a.at)v.T(new C.cSZ(v,w))},
+if(v.c!=null&&J.dkE(w,v.a.db)&&v.a.at)v.T(new C.cT0(v,w))},
 bcV(d){var x,w,v,u
 try{v=J.al(d)
 x=new C.Yk(A.aJ(v.j(d,"key")),A.aJ(v.j(d,"code")),J.r(v.j(d,"shift"),!0))
@@ -249,13 +249,13 @@ if(w!==d.e)v.e=w
 x=x.d
 if(x!==d.d)v.f=x},
 b8v(d){var x,w=$.bm3(),v=J.rl(d,y.S)
-for(x=0;x<d;++x)v[x]=w.tZ(255)
+for(x=0;x<d;++x)v[x]=w.u_(255)
 return B.ql.ghI().bK(v)},
 arV(){var x,w,v,u=this,t="\n          \n          ",s=u.d=u.b8v(10),r=u.a,q=r.c,p=!r.fr,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 l=l?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 n=n?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ch)q=C.dQ3(q)
+if(r.ch)q=C.dQ6(q)
 r=y.s
 x=A.c([],r)
 if(u.a.ch)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -285,13 +285,13 @@ u.r=A.bL(!0,y.y)},
 u(d){var x=this
 x.vZ(d)
 if(x.a.fr)return x.amH()
-else return A.f5(new C.cT_(x))},
+else return A.f5(new C.cT1(x))},
 amH(){var x,w=this,v=null,u=A.E(w).l(0),t=w.e
 t===$&&A.d()
 A.x(u+"::_buildHtmlElementView: ActualHeight: "+A.e(t),B.f)
 t=A.c([],y.p)
 u=w.w
-if((u==null?v:B.d.aG(u).length!==0)===!0)t.push(A.WB(new C.cSW(w),w.r,y.y))
+if((u==null?v:B.d.aG(u).length!==0)===!0)t.push(A.WB(new C.cSY(w),w.r,y.y))
 if(w.x)t.push(D.a3o)
 x=new A.cx(B.ac,v,B.a2,B.G,t,v)
 w.a.toString
@@ -309,7 +309,7 @@ w.as=null}w.aw()},
 grG(){return this.a.cx}}
 C.avi.prototype={
 aq(){this.aI()
-if(this.a.cx)this.uG()},
+if(this.a.cx)this.uH()},
 iE(){var x=this.ef$
 if(x!=null){x.aS()
 x.i7()
@@ -327,7 +327,7 @@ A.acd(new C.bUu(n,e,f,g),y.P)
 return}x=A.oX(e,y.u)
 if(x==null)return
 w=e.gak()
-v=g.hs(w instanceof A.a4?A.dl(w.cw(0,null),B.r):B.r)
+v=g.hs(w instanceof A.a4?A.dl(w.cz(0,null),B.r):B.r)
 u=y.w
 t=A.L(e,B.t,u).w.a.a
 u=A.L(e,B.t,u).w
@@ -337,34 +337,34 @@ q=r+28+4>u.a.b
 p=q?v.b-28-4:r+4
 o=m.a=v.a
 if((o+s>t?m.a=t-s-12:o)<12)m.a=12
-m=A.mu(new C.bUv(m,n,q,p,s,f),!1,!1,!1)
+m=A.mv(new C.bUv(m,n,q,p,s,f),!1,!1,!1)
 n.a=m
 x.om(0,m)},
 fT(){var x=this.a
 if(x!=null)x.ev(0)
 this.a=null}}
 var z=a.updateTypes(["~(vJ)","~()"])
-C.cSX.prototype={
+C.cSZ.prototype={
 $0(){var x=this.a
 x.e=this.b
 x.x=!1},
 $S:0}
-C.cSY.prototype={
+C.cT_.prototype={
 $0(){this.a.x=!1},
 $S:0}
-C.cSZ.prototype={
+C.cT0.prototype={
 $0(){return this.a.f=this.b},
 $S:0}
-C.cT_.prototype={
+C.cT1.prototype={
 $2(d,e){var x=this.a,w=x.y
 w===$&&A.d()
 x.y=Math.min(e.d,w)
 return x.amH()},
 $S:210}
-C.cSW.prototype={
+C.cSY.prototype={
 $2(d,e){var x,w,v,u,t=null
 if(e.b!=null){x=this.a
-w=A.doT(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.cSV(x),"iframe")
+w=A.doW(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.cSX(x),"iframe")
 v=x.a.dy
 u=x.e
 x=x.f
@@ -374,7 +374,7 @@ return A.a9(t,w,B.k,t,new A.as(0,1/0,0,v),t,t,u,t,t,t,t,t,x)}else{u===$&&A.d()
 x===$&&A.d()
 return new A.b_(x,u,w,t)}}else return B.x},
 $S:197}
-C.cSV.prototype={
+C.cSX.prototype={
 $1(d){var x,w
 y.v.a(d)
 x=this.a
@@ -400,33 +400,33 @@ $0(){var x=this,w=x.b
 if(w.e!=null)x.a.ajH(0,w,x.c,x.d)},
 $S:9}
 C.bUv.prototype={
-$1(d){var x=this,w=null,v=x.b,u=A.ji(0,A.cW(B.c6,w,B.M,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,v.gDi(),w,w,w,w,w,w,w,w,!1,B.a3),w),t=x.a.a,s=A.c([new A.c_(0,B.a_,B.n.aC(0.15),B.r,20)],y.V)
+$1(d){var x=this,w=null,v=x.b,u=A.jj(0,A.cW(B.c6,w,B.M,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,v.gDi(),w,w,w,w,w,w,w,w,!1,B.a3),w),t=x.a.a,s=A.c([new A.c_(0,B.a_,B.n.aC(0.15),B.r,20)],y.V)
 v=v.b.e
 if(v==null)v=D.aWO
-return A.dgm(new C.bUt(x.c),new A.cx(B.ac,w,B.a2,B.G,A.c([u,A.my(w,A.d_(A.cq(B.D,!0,B.qn,A.a9(w,A.ad(x.f,w,1,B.B,w,w,v,w,w,w),B.k,w,new A.as(0,x.e,28,1/0),new A.b9(B.n,w,w,B.qn,s,w,w,B.C),w,w,w,w,B.m3,w,w,w),B.k,w,0,w,w,w,w,w,B.ax)),w,t,x.d,w)],y.p),w),B.hE,B.y_,new A.bE(0,1,y.t),y.i)},
-$S:408}
+return A.dgo(new C.bUt(x.c),new A.cx(B.ac,w,B.a2,B.G,A.c([u,A.mz(w,A.d_(A.cq(B.D,!0,B.qn,A.a9(w,A.ad(x.f,w,1,B.B,w,w,v,w,w,w),B.k,w,new A.as(0,x.e,28,1/0),new A.b9(B.n,w,w,B.qn,s,w,w,B.C),w,w,w,w,B.m3,w,w,w),B.k,w,0,w,w,w,w,w,B.ax)),w,t,x.d,w)],y.p),w),B.hE,B.y_,new A.bE(0,1,y.t),y.i)},
+$S:381}
 C.bUt.prototype={
 $3(d,e,f){var x=this.a?-1:1
-return A.mt(A.aZ_(f,new A.H(0,x*(1-e)*8)),null,e)},
-$S:416};(function aliases(){var x=C.avi.prototype
+return A.mu(A.aZ_(f,new A.H(0,x*(1-e)*8)),null,e)},
+$S:413};(function aliases(){var x=C.avi.prototype
 x.aXo=x.aq})();(function installTearOffs(){var x=a._instance_1u,w=a._instance_0u
 x(C.aqB.prototype,"gbce","bcf",0)
 w(C.aJ2.prototype,"gDi","fT",1)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
 v(C.MB,A.af)
 v(C.avi,A.ae)
 v(C.aqB,C.avi)
-u(A.v4,[C.cSX,C.cSY,C.cSZ,C.bUu])
-u(A.v5,[C.cT_,C.cSW])
-u(A.oI,[C.cSV,C.bUv,C.bUt])
+u(A.v4,[C.cSZ,C.cT_,C.cT0,C.bUu])
+u(A.v5,[C.cT1,C.cSY])
+u(A.oI,[C.cSX,C.bUv,C.bUt])
 u(A.a5,[C.b8M,C.bUr,C.aJ2])
 v(C.Yk,C.b8M)
 x(C.avi,A.qR)
 w(C.b8M,A.j)})()
 A.DJ(b.typeUniverse,JSON.parse('{"MB":{"af":[],"i":[]},"aqB":{"ae":["MB"]},"Yk":{"j":[]}}'))
 var y=(function rtii(){var x=A.ar
-return{v:x("Fj"),V:x("N<c_>"),s:x("N<f>"),p:x("N<i>"),w:x("nj"),_:x("vJ"),P:x("b4"),u:x("Gh"),t:x("bE<aq>"),O:x("b6<f>"),N:x("a4_<l9>"),y:x("B"),i:x("aq"),S:x("F")}})();(function constants(){D.aS7=new A.b_(30,30,B.ro,null)
+return{v:x("Fj"),V:x("N<c_>"),s:x("N<f>"),p:x("N<i>"),w:x("nj"),_:x("vJ"),P:x("b4"),u:x("Gh"),t:x("bE<aq>"),O:x("b6<f>"),N:x("a4_<la>"),y:x("B"),i:x("aq"),S:x("F")}})();(function constants(){D.aS7=new A.b_(30,30,B.ro,null)
 D.aK4=new A.W(B.ck,D.aS7,null)
 D.a3o=new A.dD(B.d9,null,null,D.aK4,null)
 D.aWO=new A.ah(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"pB15pObVF6BMt93IRaOGxMJPZdU=");
+a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"bdlQLktFJXaUS0YiDQVX/2BT79o=");
