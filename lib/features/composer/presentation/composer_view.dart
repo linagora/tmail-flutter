@@ -561,8 +561,8 @@ class ComposerView extends GetWidget<ComposerController> {
         final coordinates = controller.textSelectionCoordinates.value!;
         // Account for the horizontal padding around the editor
         const editorHorizontalPadding = 12.0;
-        return Positioned(
-          left: coordinates.dx + editorHorizontalPadding,
+        return PositionedDirectional(
+          start: coordinates.dx + editorHorizontalPadding,
           top: coordinates.dy,
           child: Builder(
             builder: (buttonContext) {

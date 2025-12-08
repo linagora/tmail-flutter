@@ -961,8 +961,8 @@ class ComposerView extends GetWidget<ComposerController> {
       if (controller.hasTextSelection.value &&
           controller.textSelectionCoordinates.value != null) {
         final coordinates = controller.textSelectionCoordinates.value!;
-        return Positioned(
-          left: coordinates.dx,
+        return PositionedDirectional(
+          start: coordinates.dx,
           top: coordinates.dy,
           child: PointerInterceptor(
             child: Builder(
