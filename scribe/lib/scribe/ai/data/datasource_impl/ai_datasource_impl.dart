@@ -13,8 +13,8 @@ class AIDataSourceImpl implements AIDataSource {
     required Dio dio,
   }) : _aiApi = AIApi(
           dio: dio,
-          apiKey: AppConfig.aiApiKey,
-          baseUrl: AppConfig.aiApiUrl,
+          apiKey: AIConfig.aiApiKey,
+          baseUrl: AIConfig.aiApiUrl,
         );
 
   @override

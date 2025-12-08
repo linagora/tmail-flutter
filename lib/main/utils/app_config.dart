@@ -77,10 +77,4 @@ class AppConfig {
   static bool get isCozyIntegrationEnabled => dotenv.get('COZY_INTEGRATION', fallback: 'false') == 'true';
 
   static String get cozyExternalBridgeVersion => dotenv.get('COZY_EXTERNAL_BRIDGE_VERSION', fallback: '0.16.1');
-
-  static bool get isAiEnabled => dotenv.get('AI_ENABLED', fallback: 'false') == 'true';
-
-  static String get aiApiKey => dotenv.get('AI_API_KEY', fallback: '');
- 
-  static String get aiApiUrl => dotenv.get('AI_API_URL', fallback: '');
 }
