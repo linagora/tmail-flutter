@@ -26,13 +26,13 @@ class AIScribeShadows {
 }
 
 class AIScribeTextStyles {
-  static TextStyle menuItem = ThemeUtils.textStyleAIScribeMenuItem();
-  static TextStyle suggestionTitle = ThemeUtils.textStyleAIScribeSuggestionTitle();
-  static TextStyle suggestionContent = ThemeUtils.textStyleAIScribeSuggestionContent();
+  static TextStyle menuItem = ThemeUtils.textStyleBodyBody3(color: AppColor.textPrimary);
+  static TextStyle suggestionTitle = ThemeUtils.textStyleInter700();
+  static TextStyle suggestionContent = ThemeUtils.textStyleBodyBody3(color: AppColor.textPrimary);
 }
 
 class AIScribeButtonStyles {
-  static TextStyle mainActionButtonText = ThemeUtils.textStyleAIScribeAction(color: AppColor.blue700);
+  static TextStyle mainActionButtonText = ThemeUtils.textStyleInter500().copyWith(color: AppColor.blue700);
   static const Color mainActionButtonBackgroundColor = Color(0xFFD2E9FF);
   static const EdgeInsetsGeometry mainActionButtonPadding = EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 16);
 

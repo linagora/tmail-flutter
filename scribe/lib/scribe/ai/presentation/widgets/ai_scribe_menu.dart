@@ -238,9 +238,12 @@ class _SubmenuPanelState extends State<_SubmenuPanel> {
                             horizontal: 16,
                             vertical: 8,
                           ),
-                          child: Text(
-                            action.label,
-                            style: AIScribeTextStyles.menuItem,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              action.label,
+                              style: AIScribeTextStyles.menuItem,
+                            ),
                           ),
                         ),
                       ),

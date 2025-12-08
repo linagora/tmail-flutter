@@ -318,34 +318,6 @@ class ThemeUtils {
     color: AppColor.gray424244.withValues(alpha: 0.9),
   );
 
-  static TextStyle textStyleAIScribeMenuItem() => defaultTextStyleInterFont.copyWith(
-    fontWeight: FontWeight.w400,
-    fontSize: 14,
-    height: 2.1,
-    color: AppColor.textPrimary,
-  );
-
-  static TextStyle textStyleAIScribeSuggestionTitle() => defaultTextStyleInterFont.copyWith(
-    fontWeight: FontWeight.w700,
-    fontSize: 14,
-    height: 2.2,
-    color: AppColor.textPrimary,
-  );
-
-  static TextStyle textStyleAIScribeSuggestionContent() => defaultTextStyleInterFont.copyWith(
-    fontWeight: FontWeight.w400,
-    fontSize: 14,
-    height: 2.4,
-    color: AppColor.textPrimary,
-  );
-
-  static TextStyle textStyleAIScribeAction({Color? color}) => defaultTextStyleInterFont.copyWith(
-    fontWeight: FontWeight.w500,
-    fontSize: 14,
-    height: 2.0,
-    color: color,
-  );
-
   static TextStyle defaultTextStyleInterFont = TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontFamilyFallback: ConstantsUI.fontFamilyFallback,
