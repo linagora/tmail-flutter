@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:labels/extensions/list_label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:labels/utils/labels_constants.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -43,7 +44,7 @@ class LabelController extends BaseController {
   @override
   void handleSuccessViewState(Success success) {
     if (success is GetAllLabelSuccess) {
-      labels.value = success.labels;
+      labels.value = success.labels..sortByAlphabetically();
     } else {
       super.handleSuccessViewState(success);
     }

@@ -29,6 +29,8 @@ dependencies:
 
   quiver: 3.2.1
 
+  collection: 1.19.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

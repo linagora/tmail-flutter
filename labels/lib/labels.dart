@@ -11,3 +11,4 @@ export 'package:labels/method/changes/changes_label_method.dart';
 export 'package:labels/method/changes/changes_label_response.dart';
 
 export 'package:labels/extensions/label_extension.dart';
+export 'package:labels/extensions/list_label_extension.dart';
