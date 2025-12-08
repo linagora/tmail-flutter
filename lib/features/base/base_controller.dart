@@ -17,6 +17,7 @@ import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/emit_state_mixin.dart';
+import 'package:tmail_ui_user/features/base/extensions/handle_company_server_login_info_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -25,8 +26,10 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_company_server_login_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_company_server_login_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
@@ -86,6 +89,7 @@ abstract class BaseController extends GetxController
 
   GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
   DestroyFirebaseRegistrationInteractor? _destroyFirebaseRegistrationInteractor;
+  GetCompanyServerLoginInfoInteractor? getCompanyServerLoginInfoInteractor;
 
   StreamSubscription<html.Event>? _onBeforeUnloadBrowserSubscription;
   StreamSubscription<html.Event>? _onUnloadBrowserSubscription;
@@ -264,6 +268,8 @@ abstract class BaseController extends GetxController
     } else if (failure is GetStoredFirebaseRegistrationFailure ||
         failure is DestroyFirebaseRegistrationFailure) {
       await clearDataAndGoToLoginPage();
+    } else if (failure is GetCompanyServerLoginInfoFailure) {
+      handleGetCompanyServerLoginInfoFailure();
     }
   }
 
@@ -279,6 +285,8 @@ abstract class BaseController extends GetxController
       _destroyFirebaseRegistration(success.firebaseRegistration.id!);
     } else if (success is DestroyFirebaseRegistrationSuccess) {
       await clearDataAndGoToLoginPage();
+    } else if (success is GetCompanyServerLoginInfoSuccess) {
+      handleGetCompanyServerLoginInfoSuccess(success.serverLoginInfo);
     }
   }
 
@@ -391,7 +399,7 @@ abstract class BaseController extends GetxController
 
   void goToLogin() {
     if (PlatformInfo.isMobile) {
-      navigateToTwakeWelcomePage();
+      getCompanyServerLoginInfo(popAllRoute: false);
     } else {
       navigateToLoginPage();
     }
@@ -399,7 +407,7 @@ abstract class BaseController extends GetxController
 
   void removeAllPageAndGoToLogin() {
     if (PlatformInfo.isMobile) {
-      pushAndPopAll(AppRoutes.twakeWelcome);
+      getCompanyServerLoginInfo(popAllRoute: true);
     } else {
       navigateToLoginPage();
     }

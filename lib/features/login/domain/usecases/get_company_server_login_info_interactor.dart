@@ -11,14 +11,20 @@ class GetCompanyServerLoginInfoInteractor {
 
   GetCompanyServerLoginInfoInteractor(this._serverLoginRepository);
 
-  Stream<Either<Failure, Success>> execute() async* {
+  Stream<Either<Failure, Success>> execute({bool popAllRoute = true}) async* {
     try {
       yield Right(GettingCompanyServerLoginInfo());
       final serverLoginInfo =
           await _serverLoginRepository.getCompanyServerLoginInfo();
-      yield Right(GetCompanyServerLoginInfoSuccess(serverLoginInfo));
+      yield Right(GetCompanyServerLoginInfoSuccess(
+        serverLoginInfo,
+        popAllRoute: popAllRoute,
+      ));
     } catch (exception) {
-      yield Left(GetCompanyServerLoginInfoFailure(exception));
+      yield Left(GetCompanyServerLoginInfoFailure(
+        exception,
+        popAllRoute: popAllRoute,
+      ));
     }
   }
 }

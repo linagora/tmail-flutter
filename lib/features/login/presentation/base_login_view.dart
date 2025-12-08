@@ -75,7 +75,8 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
         ..setHintText(AppLocalizations.of(context).email))
         .build(),
       debounceDuration: const Duration(milliseconds: 300),
-      suggestionsCallback: controller.getAllRecentLoginUsernameAction,
+      suggestionsCallback: (query) =>
+          controller.getAllRecentLoginUsernameAction(pattern: query),
       itemBuilder: (_, loginUsername) => RecentItemTileWidget(loginUsername),
       onSuggestionSelected: controller.selectUsernameFromSuggestion,
       noItemsFoundBuilder: (context) => const SizedBox(),

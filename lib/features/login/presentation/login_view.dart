@@ -103,7 +103,8 @@ class LoginView extends BaseLoginView {
                     textEditingController: controller.usernameInputController,
                     onTextChange: controller.onUsernameChange,
                     onTextSubmitted: (_) => controller.invokeDNSLookupToGetJmapUrl(),
-                    suggestionsCallback: controller.getAllRecentLoginUsernameAction,
+                    suggestionsCallback: (query) =>
+                        controller.getAllRecentLoginUsernameAction(pattern: query),
                     onSuggestionSelected: controller.selectUsernameFromSuggestion
                   );
                 case LoginFormType.passwordForm:

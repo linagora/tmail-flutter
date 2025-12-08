@@ -47,10 +47,13 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configurat
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/remove_company_server_login_info_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/save_company_server_login_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/try_guessing_web_finger_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/extensions/generate_oidc_guessing_urls.dart';
+import 'package:tmail_ui_user/features/login/presentation/extensions/handle_company_server_login_info_extension.dart';
 import 'package:tmail_ui_user/features/login/presentation/extensions/handle_openid_configuration.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
@@ -83,6 +86,9 @@ class LoginController extends ReloadableController {
   final SignInTwakeWorkplaceInteractor _signInTwakeWorkplaceInteractor;
   final TryGuessingWebFingerInteractor _tryGuessingWebFingerInteractor;
   final RemoveAuthDestinationUrlInteractor _removeAuthDestinationUrlInteractor;
+
+  SaveCompanyServerLoginInfoInteractor? saveLoginInfoInteractor;
+  RemoveCompanyServerLoginInfoInteractor? removeLoginInfoInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
@@ -137,7 +143,11 @@ class LoginController extends ReloadableController {
               ? LoginFormType.dnsLookupForm
               : arguments.loginFormType;
 
-      if (PlatformInfo.isWeb) {
+      if (hasPreviousCompanyServerLogin(arguments)) {
+        autoFillPreviousCompanyServerMail(arguments.loginInfo!);
+      } else if (isCompanyServerLoginFlow(arguments)) {
+        autoFillCompanyServerMail();
+      } else if (PlatformInfo.isWeb) {
         _checkOIDCIsAvailable();
       }
     } else if (PlatformInfo.isWeb) {
@@ -199,6 +209,9 @@ class LoginController extends ReloadableController {
       onBaseUrlChange(success.oidcResponse.subject);
       getOIDCConfiguration(success.oidcResponse);
     } else if (success is SignInTwakeWorkplaceSuccess) {
+      if (PlatformInfo.isMobile) {
+        removeCompanyServerLoginInfo();
+      }
       synchronizeTokenAndGetSession(
         baseUri: success.baseUri,
         tokenOIDC: success.tokenOIDC,
@@ -288,6 +301,9 @@ class LoginController extends ReloadableController {
   }
 
   void _handleAutoSignInViaDeepLinkSuccess(AutoSignInViaDeepLinkSuccess success) {
+    if (PlatformInfo.isMobile) {
+      removeCompanyServerLoginInfo();
+    }
     synchronizeTokenAndGetSession(
       baseUri: success.baseUri,
       tokenOIDC: success.tokenOIDC,
@@ -463,6 +479,11 @@ class LoginController extends ReloadableController {
   }
 
   void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
+    if (isDnsLookupFormOnMobile && _username != null) {
+      saveCompanyServerLoginInfo(_username!.value);
+    } else if (PlatformInfo.isMobile) {
+      removeCompanyServerLoginInfo();
+    }
     synchronizeTokenAndGetSession(
       baseUri: _currentBaseUrl!,
       tokenOIDC: success.tokenOIDC,
@@ -516,7 +537,7 @@ class LoginController extends ReloadableController {
     _saveLoginUsernameOnMobileInteractor.execute(RecentLoginUsername.now(userName));
   }
 
-  Future<List<RecentLoginUsername>> getAllRecentLoginUsernameAction(String pattern) async {
+  Future<List<RecentLoginUsername>> getAllRecentLoginUsernameAction({String? pattern}) async {
     return await _getAllRecentLoginUsernameOnMobileInteractor
         .execute(pattern: pattern)
         .then((result) => result.fold(
@@ -555,6 +576,10 @@ class LoginController extends ReloadableController {
   }
 
   void _handleCommonOIDCFailure() {
+    if (PlatformInfo.isMobile) {
+      removeCompanyServerLoginInfo();
+    }
+
     if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.dnsLookupForm) {
       _showPasswordForm();
     } else {
@@ -635,6 +660,8 @@ class LoginController extends ReloadableController {
     passwordInputController.dispose();
     if (PlatformInfo.isMobile) {
       _deepLinkDataStreamSubscription?.cancel();
+      saveLoginInfoInteractor = null;
+      removeLoginInfoInteractor = null;
     }
     super.onClose();
   }
