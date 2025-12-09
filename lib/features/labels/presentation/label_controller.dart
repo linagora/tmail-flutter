@@ -18,6 +18,8 @@ import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_i
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_setting_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -26,12 +28,29 @@ class LabelController extends BaseController {
   final labels = <Label>[].obs;
   final labelListExpandMode = Rx(ExpandMode.EXPAND);
   final isCreateNewLabelModalVisible = RxBool(false);
+  final isLabelSettingEnabled = RxBool(false);
 
   GetAllLabelInteractor? _getAllLabelInteractor;
   CreateNewLabelInteractor? _createNewLabelInteractor;
+  GetLabelSettingStateInteractor? _getLabelSettingStateInteractor;
 
   bool isLabelCapabilitySupported(Session session, AccountId accountId) {
     return LabelsConstants.labelsCapability.isSupported(session, accountId);
+  }
+
+  void checkLabelSettingState(AccountId accountId) {
+    _getLabelSettingStateInteractor =
+        getBinding<GetLabelSettingStateInteractor>();
+    if (_getLabelSettingStateInteractor != null) {
+      consumeState(_getLabelSettingStateInteractor!.execute(accountId));
+    } else {
+      isLabelSettingEnabled.value = false;
+      _clearLabelData();
+    }
+  }
+
+  void _clearLabelData() {
+    labels.clear();
   }
 
   void injectLabelsBindings() {
@@ -100,12 +119,23 @@ class LabelController extends BaseController {
     labels.sortByAlphabetically();
   }
 
+  void _handleGetLabelSettingStateSuccess(bool isEnabled, AccountId accountId) {
+    isLabelSettingEnabled.value = isEnabled;
+
+    if (isEnabled) {
+      injectLabelsBindings();
+      getAllLabels(accountId);
+    }
+  }
+
   @override
   void handleSuccessViewState(Success success) {
     if (success is GetAllLabelSuccess) {
       labels.value = success.labels..sortByAlphabetically();
     } else if (success is CreateNewLabelSuccess) {
       _handleCreateNewLabelSuccess(success);
+    } else if (success is GetLabelSettingStateSuccess) {
+      _handleGetLabelSettingStateSuccess(success.isEnabled, success.accountId);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -117,6 +147,9 @@ class LabelController extends BaseController {
       labels.value = [];
     } else if (failure is CreateNewLabelFailure) {
       _handleCreateNewLabelFailure(failure);
+    } else if (failure is GetLabelSettingStateFailure) {
+      isLabelSettingEnabled.value = false;
+      _clearLabelData();
     } else {
       super.handleFailureViewState(failure);
     }
@@ -126,6 +159,7 @@ class LabelController extends BaseController {
   void onClose() {
     _getAllLabelInteractor = null;
     _createNewLabelInteractor = null;
+    _getLabelSettingStateInteractor = null;
     super.onClose();
   }
 }

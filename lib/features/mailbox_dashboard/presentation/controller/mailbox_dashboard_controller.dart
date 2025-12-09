@@ -909,8 +909,7 @@ class MailboxDashBoardController extends ReloadableController
     );
 
     if (isLabelCapabilitySupported) {
-      labelController.injectLabelsBindings();
-      labelController.getAllLabels(currentAccountId);
+      labelController.checkLabelSettingState(currentAccountId);
     }
   }
 
@@ -2087,6 +2086,9 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
+    if (isLabelCapabilitySupported && accountId.value != null) {
+      labelController.checkLabelSettingState(accountId.value!);
+    }
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
@@ -2164,6 +2166,9 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
+    if (isLabelCapabilitySupported && accountId.value != null) {
+      labelController.checkLabelSettingState(accountId.value!);
+    }
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {

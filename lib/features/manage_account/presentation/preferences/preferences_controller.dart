@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -161,6 +162,9 @@ class PreferencesController extends BaseController {
         break;
       case PreferencesOptionType.aiScribe:
         config = AIScribeConfig(isEnabled: !isEnabled);
+        break;
+      case PreferencesOptionType.label:
+        config = LabelConfig(isEnabled: !isEnabled);
         break;
       default:
         break;
