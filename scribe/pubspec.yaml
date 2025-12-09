@@ -10,6 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_localizations:
+    sdk: flutter
+
   ### Local dependencies ###
   core:
     path: ../core
@@ -23,6 +26,8 @@ dependencies:
 
   pointer_interceptor: 0.10.1+2
 
+  intl: 0.20.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -30,6 +35,13 @@ dev_dependencies:
   build_runner: 2.4.10
 
   json_serializable: 6.6.1
+
+  ### Original dependency is abandoned, so we use fork
+  ### https://github.com/linagora/intl_generator/pull/1
+  intl_generator:
+    git:
+      url: https://github.com/linagora/intl_generator.git
+      ref: master
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
