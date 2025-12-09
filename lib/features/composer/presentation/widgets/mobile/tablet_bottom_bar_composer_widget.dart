@@ -83,7 +83,7 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
               borderRadius: TabletBottomBarComposerWidgetStyle.iconRadius,
               padding: TabletBottomBarComposerWidgetStyle.iconPadding,
               iconSize: TabletBottomBarComposerWidgetStyle.iconSize,
-              tooltipMessage: 'AI Assistant',
+              tooltipMessage: AppLocalizations.of(context).aiAssistant,
               onTapActionCallback: onOpenAIScribe!,
             ),
           ],

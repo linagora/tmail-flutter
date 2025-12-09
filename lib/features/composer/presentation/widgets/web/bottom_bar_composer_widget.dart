@@ -145,7 +145,7 @@ class BottomBarComposerWidget extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 padding: BottomBarComposerWidgetStyle.iconPadding,
                 iconSize: BottomBarComposerWidgetStyle.iconSize,
-                tooltipMessage: 'AI Assistant',
+                tooltipMessage: AppLocalizations.of(context).aiAssistant,
                 onTapActionCallback: onOpenAIScribe!,
               ),
             ),

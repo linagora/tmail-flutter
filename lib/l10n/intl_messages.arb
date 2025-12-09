@@ -5129,5 +5129,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "aiAssistant": "AI Assistant",
+  "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
