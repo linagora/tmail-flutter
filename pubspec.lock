@@ -2001,6 +2001,13 @@ packages:
       url: "https://github.com/linagora/dart-neats.git"
     source: git
     version: "2.1.0"
+  scribe:
+    dependency: "direct main"
+    description:
+      path: scribe
+      relative: true
+    source: path
+    version: "0.0.1"
   server_settings:
     dependency: "direct main"
     description:
