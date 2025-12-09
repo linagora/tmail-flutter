@@ -8,10 +8,12 @@ typedef OnCustomPromptCallback = void Function(String customPrompt);
 
 class AIScribeBar extends StatefulWidget {
   final OnCustomPromptCallback onCustomPrompt;
+  final ImagePaths imagePaths;
 
   const AIScribeBar({
     super.key,
     required this.onCustomPrompt,
+    required this.imagePaths,
   });
 
   @override
@@ -86,7 +88,7 @@ class _AIScribeBarState extends State<AIScribeBar> {
           ),
           const SizedBox(width: 8),
           TMailButtonWidget.fromIcon(
-            icon: ImagePaths().icSend,
+            icon: widget.imagePaths.icSend,
             iconSize: 16,
             iconColor: Colors.white,
             backgroundColor: _isButtonEnabled

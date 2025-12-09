@@ -22,6 +22,7 @@ class AIScribeMenu extends StatefulWidget {
 class _AIScribeMenuContentState extends State<AIScribeMenu> {
   AIScribeMenuCategory? _hoveredCategory;
   final Map<AIScribeMenuCategory, GlobalKey> _categoryKeys = {};
+  final GlobalKey _menuKey = GlobalKey();
   OverlayEntry? _submenuOverlay;
 
   @override
@@ -49,17 +50,18 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
 
     _removeSubmenu();
 
-    final renderBox = _categoryKeys[category]?.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
+    // Get the entire menu's bounds
+    final menuRenderBox = _menuKey.currentContext?.findRenderObject() as RenderBox?;
+    if(menuRenderBox == null) return;
 
-    final position = renderBox.localToGlobal(Offset.zero);
-    final size = renderBox.size;
+    final menuPosition = menuRenderBox.localToGlobal(Offset.zero);
+    final menuSize = menuRenderBox.size;
 
     _submenuOverlay = OverlayEntry(
       builder: (context) => _SubmenuPanel(
         category: category,
-        position: position,
-        parentSize: size,
+        position: menuPosition,
+        parentSize: menuSize,
         onActionSelected: (action) {
           _removeSubmenu();
           widget.onActionSelected(action);
@@ -93,6 +95,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
   Widget build(BuildContext context) {
     final categories = widget.availableCategories ?? AIScribeMenuCategory.values;
     return Column(
+      key: _menuKey,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: categories.map((category) {
@@ -190,19 +193,26 @@ class _SubmenuPanel extends StatefulWidget {
 class _SubmenuPanelState extends State<_SubmenuPanel> {
   @override
   Widget build(BuildContext context) {
-    const submenuWidth = 180.0;
+    const itemHeight = 48.0;
     const gap = 8.0;
+    const submenuWidth = 180.0;
+    final submenuHeight = widget.category.actions.length * itemHeight;
 
     // Position submenu to the right of the parent item
     final left = widget.position.dx + widget.parentSize.width + gap;
-    final top = widget.position.dy;
+    final top = widget.position.dy + widget.parentSize.height - submenuHeight;
 
-    // Get screen size to ensure submenu stays within bounds
     final screenSize = MediaQuery.of(context).size;
+    // If we exceed screen to the right, we position left instead of right
     final adjustedLeft = (left + submenuWidth > screenSize.width)
-        ? widget.position.dx - submenuWidth - gap // Show on left if no room on right
+        ? widget.position.dx - submenuWidth - gap
         : left;
 
+    // If we exceed screen to the top, we position at top 
+    final adjustedTop = (top < 0.0)
+      ? 0.0
+      : top;
+ 
     return Stack(
       children: [
         // Invisible barrier to close submenu when clicking outside
@@ -215,7 +225,7 @@ class _SubmenuPanelState extends State<_SubmenuPanel> {
         // Submenu content
         Positioned(
           left: adjustedLeft,
-          top: top,
+          top: adjustedTop,
           child: PointerInterceptor(
             child: Material(
               color: Colors.white,
@@ -229,7 +239,7 @@ class _SubmenuPanelState extends State<_SubmenuPanel> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: widget.category.actions.map((action) {
                     return SizedBox(
-                      height: 48,
+                      height: itemHeight,
                       child: InkWell(
                         onTap: () => widget.onActionSelected(action),
                         borderRadius: BorderRadius.circular(6),

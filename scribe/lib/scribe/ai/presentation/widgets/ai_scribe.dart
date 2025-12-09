@@ -62,6 +62,7 @@ Future<void> showAIScribeDialog({
                   onCustomPrompt: (customPrompt) {
                     Navigator.of(context).pop(CustomPromptAction(customPrompt));
                   },
+                  imagePaths: imagePaths
                 ),
               ),
             ),
@@ -182,7 +183,11 @@ Future<String> _executeAIRequest(
     },
     (success) {
       if (success is GenerateAITextSuccess) {
-        return success.response.result;
+        final result = success.response.result;
+        if (result == null) {
+          throw Exception('AI response result is null');
+        }
+        return result;
       } else {
         throw Exception('Unexpected success state: $success');
       }

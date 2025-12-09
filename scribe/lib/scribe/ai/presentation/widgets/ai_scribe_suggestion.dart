@@ -124,10 +124,12 @@ class _AIScribeSuggestionModalState extends State<AIScribeSuggestion> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildHeader(),
-        Expanded(
-          child: Center(
+        Flexible(
+          fit: FlexFit.loose,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 const Icon(Icons.error_outline, size: 32, color: Colors.red),
                 const SizedBox(height: 16),
