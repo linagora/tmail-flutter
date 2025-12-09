@@ -28,6 +28,9 @@ class AIApi {
     );
 
     if (response.statusCode == 200) {
+      if (response.data == null || response.data.isEmpty) {
+        throw Exception('AI API returned empty response');
+      }
       return AIApiResponse.fromJson(response.data);
     } else {
       throw Exception('AI API returned status code: ${response.statusCode}');
