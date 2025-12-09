@@ -79,9 +79,13 @@ mixin HandleSetErrorMixin {
   }
 
   parseErrorForSetResponse(SetResponse? response, Id requestId) {
-    final mapError =
-        response?.notCreated ?? response?.notUpdated ?? response?.notDestroyed;
-    if (mapError != null && mapError.containsKey(requestId)) {
+    final mapError = <Id, SetError>{
+      ...?response?.notCreated,
+      ...?response?.notUpdated,
+      ...?response?.notDestroyed,
+    };
+
+    if (mapError.containsKey(requestId)) {
       final setError = mapError[requestId];
       log('HandleSetErrorMixin::parseErrorForSetResponse():setError: $setError');
       if (setError?.type == ErrorMethodResponse.invalidArguments) {
