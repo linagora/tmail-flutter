@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/setting_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -52,6 +53,10 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
         await _preferencesSettingManager.updateAIScribe(
           preferencesConfig.isEnabled,
         );
+      } else if (preferencesConfig is LabelConfig) {
+        await _preferencesSettingManager.updateLabel(
+          preferencesConfig.isEnabled,
+        );
       } else {
         await _preferencesSettingManager.savePreferences(
           preferencesConfig,
@@ -89,6 +94,17 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   Future<void> saveLabelVisibility(bool visible) {
     return Future.sync(() async {
       return await _settingCacheManager.saveLabelVisibility(visible);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
+  }
+
+  @override
+  Future<bool> getLabelSettingState() {
+    return Future.sync(() async {
+      final labelConfig = await _preferencesSettingManager.getLabelConfig();
+      return labelConfig.isEnabled;
     }).catchError((error, stackTrace) async {
       await _exceptionThrower.throwException(error, stackTrace);
       throw error;

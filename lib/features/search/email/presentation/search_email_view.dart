@@ -12,6 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
@@ -727,9 +728,20 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         final isShowingEmailContent =
             dashboardController.selectedEmail.value?.id == presentationEmail.id;
 
-        final allLabels = dashboardController.labelController.labels;
+        final isLabelCapabilitySupported = dashboardController.isLabelCapabilitySupported;
 
-        final emailLabels = presentationEmail.getLabelList(allLabels);
+        final labelController = dashboardController.labelController;
+
+        final isLabelSettingEnabled =
+            labelController.isLabelSettingEnabled.isTrue;
+
+        List<Label>? emailLabels;
+
+        if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+          emailLabels = presentationEmail.getLabelList(
+            labelController.labels,
+          );
+        }
 
         return EmailTileBuilder(
           presentationEmail: presentationEmail,

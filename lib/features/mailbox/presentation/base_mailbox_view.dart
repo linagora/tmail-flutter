@@ -343,10 +343,18 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
   Widget buildLabelsBar(BuildContext context, bool isDesktop) {
     return Obx(() {
-      if (controller.mailboxDashBoardController.isLabelCapabilitySupported) {
-        final labelController =
-            controller.mailboxDashBoardController.labelController;
+      final isLabelCapabilitySupported = controller
+          .mailboxDashBoardController
+          .isLabelCapabilitySupported;
 
+      final labelController =
+          controller.mailboxDashBoardController.labelController;
+
+      final isLabelSettingEnabled = labelController
+          .isLabelSettingEnabled
+          .isTrue;
+
+      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
         final accountId = controller.accountId;
         final labelListExpandMode = labelController.labelListExpandMode.value;
         final countLabels = labelController.labels.length;
@@ -373,10 +381,18 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
   Widget buildLabelsList(BuildContext context, bool isDesktop) {
     return Obx(() {
-      if (controller.mailboxDashBoardController.isLabelCapabilitySupported) {
-        final labelController =
-            controller.mailboxDashBoardController.labelController;
+      final isLabelCapabilitySupported = controller
+          .mailboxDashBoardController
+          .isLabelCapabilitySupported;
 
+      final labelController =
+          controller.mailboxDashBoardController.labelController;
+
+      final isLabelSettingEnabled = labelController
+          .isLabelSettingEnabled
+          .isTrue;
+
+      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
         final labelListExpandMode = labelController.labelListExpandMode.value;
         final labels = labelController.labels;
 
