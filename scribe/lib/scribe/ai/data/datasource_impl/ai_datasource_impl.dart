@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
-import '../datasource/ai_datasource.dart';
-import '../model/ai_message.dart';
-import '../model/ai_api_request.dart';
-import '../network/ai_api.dart';
-import '../../domain/model/ai_response.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:scribe/scribe/ai/data/config/ai_config.dart';
+import 'package:scribe/scribe/ai/data/datasource/ai_datasource.dart';
+import 'package:scribe/scribe/ai/data/model/ai_message.dart';
+import 'package:scribe/scribe/ai/data/model/ai_api_request.dart';
+import 'package:scribe/scribe/ai/data/network/ai_api.dart';
+import 'package:scribe/scribe/ai/domain/model/ai_response.dart';
 
 class AIDataSourceImpl implements AIDataSource {
   final AIApi _aiApi;
