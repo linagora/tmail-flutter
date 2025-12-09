@@ -113,7 +113,7 @@ Future<void> showAIScribeDialog({
     barrierDismissible: true,
     builder: (context) {
       final suggestionFuture = _executeAIRequest(interactor, selectedAction, content);
-      final title = selectedAction.label;
+      final title = selectedAction.getLabel(context);
 
       final modalContent = AIScribeSuggestion(
         title: title,

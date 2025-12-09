@@ -106,7 +106,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
       return Container(
         key: _categoryKeys[category],
         child: _buildMenuItem(
-          label: category.label,
+          label: category.getLabel(context),
           hasSubmenu: true,
           isHovered: _hoveredCategory == category,
           onTap: () => _handleCategoryClick(category),
@@ -115,7 +115,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
     } else {
       // For categories without submenu (like Correct Grammar)
       return _buildMenuItem(
-        label: category.label,
+        label: category.getLabel(context),
         onTap: () {
           if (category.actions.isNotEmpty) {
             widget.onActionSelected(category.actions.first);
@@ -241,7 +241,7 @@ class _SubmenuPanelState extends State<_SubmenuPanel> {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              action.label,
+                              action.getLabel(context),
                               style: AIScribeTextStyles.menuItem,
                             ),
                           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
 
 typedef OnCustomPromptCallback = void Function(String customPrompt);
@@ -70,7 +71,7 @@ class _AIScribeBarState extends State<AIScribeBar> {
             child: TextField(
               controller: _controller,
               decoration: InputDecoration(
-                hintText: 'Help me write',
+                hintText: ScribeLocalizations.of(context)!.inputPlaceholder,
                 hintStyle: TextStyle(
                   color: AIScribeColors.textSecondary.withValues(alpha: 0.6),
                   fontSize: 14,

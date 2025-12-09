@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
+import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
@@ -75,6 +76,7 @@ class _TMailAppState extends State<TMailApp> {
       supportedLocales: LocalizationService.supportedLocales,
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
+        ScribeLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

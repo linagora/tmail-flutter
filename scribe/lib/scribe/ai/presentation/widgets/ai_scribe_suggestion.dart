@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
 
 typedef OnInsertTextCallback = void Function(String text);
@@ -57,7 +58,7 @@ class _AIScribeSuggestionModalState extends State<AIScribeSuggestion> {
               } else if (snapshot.hasData) {
                 return _buildSuccessState(snapshot.data!);
               } else {
-                return _buildErrorState('No data received');
+                return _buildErrorState(ScribeLocalizations.of(context)!.noDataReceived);
               }
             },
           ),
@@ -82,7 +83,7 @@ class _AIScribeSuggestionModalState extends State<AIScribeSuggestion> {
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
                 Text(
-                  'Generating AI response...',
+                  ScribeLocalizations.of(context)!.generatingResponse,
                   style: AIScribeTextStyles.suggestionContent,
                 ),
               ],
@@ -131,7 +132,7 @@ class _AIScribeSuggestionModalState extends State<AIScribeSuggestion> {
                 const Icon(Icons.error_outline, size: 32, color: Colors.red),
                 const SizedBox(height: 16),
                 Text(
-                  'Failed to generate AI response',
+                  ScribeLocalizations.of(context)!.failedToGenerate,
                   style: AIScribeTextStyles.suggestionContent,
                   textAlign: TextAlign.center,
                 ),
@@ -194,7 +195,7 @@ class _AIScribeSuggestionModalState extends State<AIScribeSuggestion> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           TMailButtonWidget(
-            text: 'Insert',
+            text: ScribeLocalizations.of(context)!.insertButton,
             textStyle: AIScribeButtonStyles.mainActionButtonText,
             padding: AIScribeButtonStyles.mainActionButtonPadding,
             backgroundColor: AIScribeButtonStyles.mainActionButtonBackgroundColor,

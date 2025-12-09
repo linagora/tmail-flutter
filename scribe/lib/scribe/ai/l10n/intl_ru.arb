@@ -1,0 +1,129 @@
+{
+  "@@last_modified": "2025-12-09T07:30:00.000000",
+  "categoryCorrectGrammar": "Исправить грамматику",
+  "@categoryCorrectGrammar": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryImprove": "Улучшить",
+  "@categoryImprove": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryChangeTone": "Изменить тон",
+  "@categoryChangeTone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryTranslate": "Перевести",
+  "@categoryTranslate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMakeShorter": "Сделать короче",
+  "@actionMakeShorter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionExpandContext": "Расширить контекст",
+  "@actionExpandContext": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionEmojify": "Добавить эмодзи",
+  "@actionEmojify": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionTransformToBullets": "Преобразовать в список",
+  "@actionTransformToBullets": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMoreProfessional": "Более профессионально",
+  "@actionMoreProfessional": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMoreCasual": "Более неформально",
+  "@actionMoreCasual": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMorePolite": "Более вежливо",
+  "@actionMorePolite": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageFrench": "Французский",
+  "@languageFrench": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageEnglish": "Английский",
+  "@languageEnglish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageRussian": "Русский",
+  "@languageRussian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageVietnamese": "Вьетнамский",
+  "@languageVietnamese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "inputPlaceholder": "Помогите мне написать",
+  "@inputPlaceholder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "customPromptAction": "Помогите мне написать",
+  "@customPromptAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "generatingResponse": "Генерация ответа ИИ...",
+  "@generatingResponse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "failedToGenerate": "Не удалось сгенерировать ответ ИИ",
+  "@failedToGenerate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noDataReceived": "Данные не получены",
+  "@noDataReceived": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertButton": "Вставить",
+  "@insertButton": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}

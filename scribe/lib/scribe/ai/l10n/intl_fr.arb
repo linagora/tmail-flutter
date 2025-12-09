@@ -1,0 +1,129 @@
+{
+  "@@last_modified": "2025-12-09T07:30:00.000000",
+  "categoryCorrectGrammar": "Corriger la grammaire",
+  "@categoryCorrectGrammar": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryImprove": "Améliorer",
+  "@categoryImprove": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryChangeTone": "Changer le ton",
+  "@categoryChangeTone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryTranslate": "Traduire",
+  "@categoryTranslate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMakeShorter": "Raccourcir",
+  "@actionMakeShorter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionExpandContext": "Développer",
+  "@actionExpandContext": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionEmojify": "Ajouter des émojis",
+  "@actionEmojify": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionTransformToBullets": "Transformer en liste",
+  "@actionTransformToBullets": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMoreProfessional": "Plus professionnel",
+  "@actionMoreProfessional": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMoreCasual": "Plus décontracté",
+  "@actionMoreCasual": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMorePolite": "Plus poli",
+  "@actionMorePolite": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageFrench": "Français",
+  "@languageFrench": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageEnglish": "Anglais",
+  "@languageEnglish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageRussian": "Russe",
+  "@languageRussian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageVietnamese": "Vietnamien",
+  "@languageVietnamese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "inputPlaceholder": "Aidez-moi à écrire",
+  "@inputPlaceholder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "customPromptAction": "Aidez-moi à écrire",
+  "@customPromptAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "generatingResponse": "Génération de la réponse IA...",
+  "@generatingResponse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "failedToGenerate": "Échec de la génération de la réponse IA",
+  "@failedToGenerate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noDataReceived": "Aucune donnée reçue",
+  "@noDataReceived": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertButton": "Insérer",
+  "@insertButton": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}
