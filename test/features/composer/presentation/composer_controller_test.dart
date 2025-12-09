@@ -18,11 +18,13 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
@@ -47,6 +49,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interac
 import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -95,6 +98,17 @@ class MockRichTextWebController extends Mock implements RichTextWebController {
 
   @override
   bool get codeViewEnabled => false;
+}
+
+class MockLabelController extends Mock implements LabelController {
+  @override
+  RxList<Label> get labels => RxList([]);
+
+  @override
+  Rx<ExpandMode> get labelListExpandMode => Rx(ExpandMode.EXPAND);
+
+  @override
+  RxBool get isCreateNewLabelModalVisible => RxBool(false);
 }
 
 class MockMailboxDashBoardController extends Mock implements MailboxDashBoardController {
@@ -147,6 +161,9 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   Rx<AIScribeConfig> get cachedAIScribeConfig => AIScribeConfig.initial().obs;
+
+  @override
+  LabelController get labelController => MockLabelController();
 }
 
 @GenerateNiceMocks([

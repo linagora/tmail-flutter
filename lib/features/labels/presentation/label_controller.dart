@@ -1,6 +1,8 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -9,11 +11,15 @@ import 'package:labels/model/label.dart';
 import 'package:labels/utils/labels_constants.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LabelController extends BaseController {
@@ -22,6 +28,7 @@ class LabelController extends BaseController {
   final isCreateNewLabelModalVisible = RxBool(false);
 
   GetAllLabelInteractor? _getAllLabelInteractor;
+  CreateNewLabelInteractor? _createNewLabelInteractor;
 
   bool isLabelCapabilitySupported(Session session, AccountId accountId) {
     return LabelsConstants.labelsCapability.isSupported(session, accountId);
@@ -30,6 +37,7 @@ class LabelController extends BaseController {
   void injectLabelsBindings() {
     LabelInteractorBindings().dependencies();
     _getAllLabelInteractor = getBinding<GetAllLabelInteractor>();
+    _createNewLabelInteractor = getBinding<CreateNewLabelInteractor>();
   }
 
   void getAllLabels(AccountId accountId) {
@@ -44,7 +52,7 @@ class LabelController extends BaseController {
         : ExpandMode.COLLAPSE;
   }
 
-  Future<void> openCreateNewLabelModal() async {
+  Future<void> openCreateNewLabelModal(AccountId? accountId) async {
     if (PlatformInfo.isWeb) {
       isCreateNewLabelModalVisible.value = true;
     }
@@ -52,7 +60,10 @@ class LabelController extends BaseController {
     await Get.generalDialog(
       barrierDismissible: true,
       barrierLabel: 'create-new-label-modal',
-      pageBuilder: (_, __, ___) => CreateNewLabelModal(labels: labels),
+      pageBuilder: (_, __, ___) => CreateNewLabelModal(
+        labels: labels,
+        onCreateNewLabelCallback: (label) => _createNewLabel(accountId, label),
+      ),
     ).whenComplete(() {
       if (PlatformInfo.isWeb) {
         isCreateNewLabelModalVisible.value = false;
@@ -60,10 +71,41 @@ class LabelController extends BaseController {
     });
   }
 
+  void _createNewLabel(AccountId? accountId, Label label) {
+    log('LabelController::_createNewLabel:Label: $label');
+    if (accountId == null) {
+      consumeState(
+        Stream.value(Left(CreateNewLabelFailure(NotFoundAccountIdException()))),
+      );
+    } else if (_createNewLabelInteractor == null) {
+      consumeState(
+        Stream.value(Left(CreateNewLabelFailure(InteractorNotInitialized()))),
+      );
+    } else {
+      consumeState(_createNewLabelInteractor!.execute(accountId, label));
+    }
+  }
+
+  void _handleCreateNewLabelSuccess(CreateNewLabelSuccess success) {
+    toastManager.showMessageSuccess(success);
+    _addLabelToList(success.newLabel);
+  }
+
+  void _handleCreateNewLabelFailure(CreateNewLabelFailure failure) {
+    toastManager.showMessageFailure(failure);
+  }
+
+  void _addLabelToList(Label newLabel) {
+    labels.add(newLabel);
+    labels.sortByAlphabetically();
+  }
+
   @override
   void handleSuccessViewState(Success success) {
     if (success is GetAllLabelSuccess) {
       labels.value = success.labels..sortByAlphabetically();
+    } else if (success is CreateNewLabelSuccess) {
+      _handleCreateNewLabelSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -73,6 +115,8 @@ class LabelController extends BaseController {
   void handleFailureViewState(Failure failure) {
     if (failure is GetAllLabelFailure) {
       labels.value = [];
+    } else if (failure is CreateNewLabelFailure) {
+      _handleCreateNewLabelFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -81,6 +125,7 @@ class LabelController extends BaseController {
   @override
   void onClose() {
     _getAllLabelInteractor = null;
+    _createNewLabelInteractor = null;
     super.onClose();
   }
 }

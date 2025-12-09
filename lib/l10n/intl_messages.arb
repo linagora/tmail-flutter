@@ -5184,12 +5184,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "tagNameCannotContainSpecialCharacters": "Tag name cannot contain special characters",
-  "@tagNameCannotContainSpecialCharacters": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "tagNameAlreadyExists": "A tag with this name already exists. Please choose a different name.",
   "@tagNameAlreadyExists": {
     "type": "text",
@@ -5204,6 +5198,22 @@
   },
   "chooseAColourForThisLabel": "Choose a colour for this label",
   "@chooseAColourForThisLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabelSuccessfullyMessage": "You successfully created {labelName} label",
+  "@createLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "createNewLabelFailure": "Create new label failure",
+  "@createNewLabelFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
