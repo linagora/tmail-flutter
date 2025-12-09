@@ -11,13 +11,11 @@ import 'package:core/presentation/views/dialog/modal_list_action_button_widget.d
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:labels/extensions/list_label_extension.dart';
-import 'package:labels/model/label.dart';
+import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/special_character_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
@@ -25,10 +23,17 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/v
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+typedef OnCreateNewLabelCallback = Function(Label label);
+
 class CreateNewLabelModal extends StatefulWidget {
   final List<Label> labels;
+  final OnCreateNewLabelCallback onCreateNewLabelCallback;
 
-  const CreateNewLabelModal({super.key, required this.labels});
+  const CreateNewLabelModal({
+    super.key,
+    required this.labels,
+    required this.onCreateNewLabelCallback,
+  });
 
   @override
   State<CreateNewLabelModal> createState() => _CreateNewLabelModalState();
@@ -41,6 +46,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   final ValueNotifier<String?> _labelNameErrorTextNotifier =
       ValueNotifier(null);
   final ValueNotifier<Color?> _labelSelectedColorNotifier = ValueNotifier(null);
+  final ValueNotifier<bool> _createLabelStateNotifier = ValueNotifier(false);
   final TextEditingController _nameInputController = TextEditingController();
   final FocusNode _nameInputFocusNode = FocusNode();
 
@@ -203,12 +209,20 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                               ),
                             ),
                           ),
-                          ModalListActionButtonWidget(
-                            positiveLabel: appLocalizations.createLabel,
-                            negativeLabel: appLocalizations.cancel,
-                            padding: const EdgeInsets.symmetric(vertical: 25),
-                            onPositiveAction: _onCreateNewLabel,
-                            onNegativeAction: _onCloseModal,
+                          ValueListenableBuilder(
+                            valueListenable: _createLabelStateNotifier,
+                            builder: (_, value, __) {
+                              return ModalListActionButtonWidget(
+                                positiveLabel: appLocalizations.createLabel,
+                                negativeLabel: appLocalizations.cancel,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 25,
+                                ),
+                                isPositiveActionEnabled: value,
+                                onPositiveAction: _onCreateNewLabel,
+                                onNegativeAction: _onCloseModal,
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -248,10 +262,9 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
     AppLocalizations appLocalizations,
     String value,
   ) {
-    _labelNameErrorTextNotifier.value = _verifyLabelName(
-      appLocalizations,
-      value,
-    );
+    final errorText = _verifyLabelName(appLocalizations, value);
+    _labelNameErrorTextNotifier.value = errorText;
+    _createLabelStateNotifier.value = errorText == null;
   }
 
   String? _verifyLabelName(AppLocalizations appLocalizations, String value) {
@@ -272,7 +285,6 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
         EmptyNameValidator(),
         NameWithSpaceOnlyValidator(),
         DuplicateNameValidator(_labelDisplayNameList),
-        SpecialCharacterValidator(),
       ];
 
   void _clearInputFocus() {
@@ -281,6 +293,15 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
 
   void _onCreateNewLabel() {
     _clearInputFocus();
+
+    final newLabel = Label(
+      displayName: _nameInputController.text,
+      color: _selectedColor != null
+          ? HexColor(_selectedColor!.toHexTriplet())
+          : null,
+    );
+    widget.onCreateNewLabelCallback(newLabel);
+
     popBack();
   }
 
@@ -318,6 +339,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
     _nameInputController.dispose();
     _labelNameErrorTextNotifier.dispose();
     _labelSelectedColorNotifier.dispose();
+    _createLabelStateNotifier.dispose();
     _labelDisplayNameList = [];
     super.dispose();
   }

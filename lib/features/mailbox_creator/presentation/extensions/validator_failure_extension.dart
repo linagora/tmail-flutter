@@ -54,8 +54,6 @@ extension ValicatorFailureExtension on VerifyNameFailure {
       return appLocalizations.this_field_cannot_be_blank;
     } else if (exception is DuplicatedNameException) {
       return appLocalizations.tagNameAlreadyExists;
-    } else if (exception is SpecialCharacterException) {
-      return appLocalizations.tagNameCannotContainSpecialCharacters;
     } else if (exception is NameWithSpaceOnlyException) {
       return appLocalizations.thisFieldCannotContainOnlySpaces;
     } else {
