@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
@@ -248,9 +249,22 @@ class EmailView extends GetWidget<SingleEmailController> {
       children: [
         if (!isInsideThreadDetailView || isFirstEmailInThreadDetail)
           Obx(() {
-            final allLabels =
-                controller.mailboxDashBoardController.labelController.labels;
-            final emailLabels = presentationEmail.getLabelList(allLabels);
+            final isLabelCapabilitySupported = controller
+                .mailboxDashBoardController.isLabelCapabilitySupported;
+
+            final labelController =
+                controller.mailboxDashBoardController.labelController;
+
+            final isLabelSettingEnabled =
+                labelController.isLabelSettingEnabled.isTrue;
+
+            List<Label>? emailLabels;
+
+            if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+              emailLabels = presentationEmail.getLabelList(
+                labelController.labels,
+              );
+            }
 
             return EmailSubjectWidget(
               presentationEmail: presentationEmail.copyWith(

@@ -16,4 +16,6 @@ abstract class ManageAccountDataSource {
   Future<bool> getLabelVisibility();
 
   Future<void> saveLabelVisibility(bool visible);
+
+  Future<bool> getLabelSettingState();
 }

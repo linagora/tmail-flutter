@@ -1,5 +1,6 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -15,7 +16,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_load_more_circle.dart';
 
 extension GetThreadDetailEmailViews on ThreadDetailController {
-  List<Widget> getThreadDetailEmailViews() {
+  List<Widget> getThreadDetailEmailViews({List<Label>? labels}) {
     final loadMoreSegments = Map<LoadMoreIndex, LoadMoreCount>.from(this.loadMoreSegments);
 
     return emailIdsPresentation.entries.map((entry) {
@@ -45,9 +46,8 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       final isFirstEmailInThreadDetail = indexOfEmailId == 0;
 
       if (presentationEmail.emailInThreadStatus == EmailInThreadStatus.collapsed) {
-        final allLabels = mailboxDashBoardController.labelController.labels;
-        final emailLabels = isFirstEmailInThreadDetail
-            ? emailIdsPresentation.values.last?.getLabelList(allLabels)
+        final emailLabels = labels?.isNotEmpty == true && isFirstEmailInThreadDetail
+            ? emailIdsPresentation.values.last?.getLabelList(labels!)
             : null;
 
         return ThreadDetailCollapsedEmail(

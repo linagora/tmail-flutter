@@ -5,6 +5,7 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
@@ -623,9 +624,22 @@ class ThreadView extends GetWidget<ThreadController>
           direction,
         ),
         child: Obx(() {
-          final allLabels =
-              controller.mailboxDashBoardController.labelController.labels;
-          final emailLabels = presentationEmail.getLabelList(allLabels);
+          final isLabelCapabilitySupported = controller
+              .mailboxDashBoardController.isLabelCapabilitySupported;
+
+          final labelController =
+              controller.mailboxDashBoardController.labelController;
+
+          final isLabelSettingEnabled =
+              labelController.isLabelSettingEnabled.isTrue;
+
+          List<Label>? emailLabels;
+
+          if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+            emailLabels = presentationEmail.getLabelList(
+              labelController.labels,
+            );
+          }
 
           return EmailTileBuilder(
             key: Key('email_tile_builder_${presentationEmail.id?.asString}'),

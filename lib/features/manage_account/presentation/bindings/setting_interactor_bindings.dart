@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/manage_account/data/local/preferences_set
 import 'package:tmail_ui_user/features/manage_account/data/local/setting_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_visibility_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_label_visibility_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
@@ -38,6 +39,9 @@ class SettingInteractorBindings extends InteractorsBindings {
     );
     Get.lazyPut(
       () => GetLabelVisibilityInteractor(Get.find<ManageAccountRepository>()),
+    );
+    Get.lazyPut(
+      () => GetLabelSettingStateInteractor(Get.find<ManageAccountRepository>()),
     );
   }
 

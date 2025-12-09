@@ -65,7 +65,7 @@ class PreferencesSettingManager {
     return PreferencesSetting(listConfigs);
   }
 
-  String _getPreferencesConfig(PreferencesConfig config) {
+  String _getPreferencesConfigKey(PreferencesConfig config) {
     if (config is ThreadDetailConfig) {
       return _preferencesSettingThreadKey;
     } else if (config is SpamReportConfig) {
@@ -83,7 +83,7 @@ class PreferencesSettingManager {
 
   Future<void> savePreferences(PreferencesConfig config) async {
     await _sharedPreferences.setString(
-      _getPreferencesConfig(config),
+      _getPreferencesConfigKey(config),
       jsonEncode(config.toJson()),
     );
   }

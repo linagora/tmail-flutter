@@ -17,8 +17,8 @@ import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_action_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_details_email_views.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_detail_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_detail_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/on_thread_page_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/parsing_email_opened_properties_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -101,7 +101,18 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           }
         }),
         Obx(() {
-          final threadChildren = controller.getThreadDetailEmailViews();
+          final isLabelCapabilitySupported = controller
+              .mailboxDashBoardController.isLabelCapabilitySupported;
+
+          final labelController =
+              controller.mailboxDashBoardController.labelController;
+
+          final isLabelSettingEnabled =
+              labelController.isLabelSettingEnabled.isTrue;
+
+          final threadChildren = isLabelCapabilitySupported && isLabelSettingEnabled
+            ? controller.getThreadDetailEmailViews(labels: labelController.labels)
+            : controller.getThreadDetailEmailViews();
 
           late Widget threadBody;
 
