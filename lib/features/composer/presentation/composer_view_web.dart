@@ -560,8 +560,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
-                              onOpenAIScribe: () => controller.showAIScribeMenuForFullText(context),
-                              aiScribeButtonKey: controller.aiScribeButtonKey,
+                              onOpenAIScribe: AIConfig.isAiEnabled ? () => controller.showAIScribeMenuForFullText(context) : null,
+                              aiScribeButtonKey: AIConfig.isAiEnabled ? controller.aiScribeButtonKey : null,
                             )),
                           ],
                         ),
@@ -836,8 +836,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
-                              onOpenAIScribe: () => controller.showAIScribeMenuForFullText(context),
-                              aiScribeButtonKey: controller.aiScribeButtonKey,
+                              onOpenAIScribe: AIConfig.isAiEnabled ? () => controller.showAIScribeMenuForFullText(context) : null,
+                              aiScribeButtonKey: AIConfig.isAiEnabled ? controller.aiScribeButtonKey : null,
                             )),
                           ],
                         ),
@@ -958,6 +958,10 @@ class ComposerView extends GetWidget<ComposerController> {
   }
 
   Widget _buildAIScribeSelectionButton(BuildContext context) {
+    if (!AIConfig.isAiEnabled) {
+      return const SizedBox.shrink();
+    }
+
     return Obx(() {
       if (controller.hasTextSelection.value &&
           controller.textSelectionCoordinates.value != null) {
