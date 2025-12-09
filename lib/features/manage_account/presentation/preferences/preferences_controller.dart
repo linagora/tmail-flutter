@@ -47,7 +47,7 @@ class PreferencesController extends BaseController {
     (failure) => false, 
     (success) => success is GettingServerSetting || success is UpdatingServerSetting);
 
-  final _manageAccountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final accountDashboardController = Get.find<ManageAccountDashBoardController>();
 
   @override
   void onInit() {
@@ -119,7 +119,7 @@ class PreferencesController extends BaseController {
 
   void _getSettingOption() {
     consumeState(_getLocalSettingInteractor.execute());
-    final accountId = _manageAccountDashBoardController.accountId.value;
+    final accountId = accountDashboardController.accountId.value;
     if (accountId != null) {
       consumeState(_getServerSettingInteractor.execute(accountId));
     } else {
@@ -179,8 +179,8 @@ class PreferencesController extends BaseController {
         break;
     }
 
-    final session = _manageAccountDashBoardController.sessionCurrent;
-    final accountId = _manageAccountDashBoardController.accountId.value;
+    final session = accountDashboardController.sessionCurrent;
+    final accountId = accountDashboardController.accountId.value;
     if (session != null && accountId != null && newSettingOption != null) {
       consumeState(
         _updateServerSettingInteractor.execute(
@@ -197,7 +197,6 @@ class PreferencesController extends BaseController {
       );
     }
   }
-
 
   @override
   void onClose() {

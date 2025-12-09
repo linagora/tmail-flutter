@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/setting_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -14,11 +15,13 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
 
   final LanguageCacheManager _languageCacheManager;
   final PreferencesSettingManager _preferencesSettingManager;
+  final SettingCacheManager _settingCacheManager;
   final ExceptionThrower _exceptionThrower;
 
   ManageAccountDataSourceImpl(
     this._languageCacheManager,
     this._preferencesSettingManager,
+    this._settingCacheManager,
     this._exceptionThrower
   );
 
@@ -58,5 +61,25 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       return await _preferencesSettingManager.loadPreferences();
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<bool> getLabelVisibility() {
+    return Future.sync(() async {
+      return await _settingCacheManager.getLabelVisibility();
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
+  }
+
+  @override
+  Future<void> saveLabelVisibility(bool visible) {
+    return Future.sync(() async {
+      return await _settingCacheManager.saveLabelVisibility(visible);
+    }).catchError((error, stackTrace) async {
+      await _exceptionThrower.throwException(error, stackTrace);
+      throw error;
+    });
   }
 }

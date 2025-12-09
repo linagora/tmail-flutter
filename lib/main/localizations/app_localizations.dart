@@ -5549,4 +5549,11 @@ class AppLocalizations {
       name: 'labelVisibilityToggleDescription',
     );
   }
+
+  String get theLabelFeatureIsNowAvailable {
+    return Intl.message(
+      'The label feature is now available.',
+      name: 'theLabelFeatureIsNowAvailable',
+    );
+  }
 }

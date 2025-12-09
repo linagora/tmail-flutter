@@ -9,4 +9,8 @@ abstract class ManageAccountDataSource {
   Future<PreferencesSetting> toggleLocalSettingsState(PreferencesConfig preferencesConfig);
 
   Future<PreferencesSetting> getLocalSettings();
+
+  Future<bool> getLabelVisibility();
+
+  Future<void> saveLabelVisibility(bool visible);
 }

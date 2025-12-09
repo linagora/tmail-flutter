@@ -22,12 +22,16 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_visibility_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_visibility_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_label_visibility_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_setup_label_visibility_in_setting_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
@@ -61,6 +65,8 @@ class ManageAccountDashBoardController extends ReloadableController
   UpdateVacationInteractor? _updateVacationInteractor;
   PaywallController? paywallController;
   GetQuotasInteractor? getQuotasInteractor;
+  SaveLabelVisibilityInteractor? saveLabelVisibilityInteractor;
+  GetLabelVisibilityInteractor? getLabelVisibilityInteractor;
 
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
@@ -68,6 +74,7 @@ class ManageAccountDashBoardController extends ReloadableController
   final vacationResponse = Rxn<VacationResponse>();
   final dashboardSettingAction = Rxn<UIAction>();
   final octetsQuota = Rxn<Quota>();
+  final isLabelVisibility = RxBool(false);
 
   Uri? previousUri;
   AccountMenuItem? selectedMenu;
@@ -99,6 +106,8 @@ class ManageAccountDashBoardController extends ReloadableController
       handleExportTraceLogSuccess(success);
     } else if (success is GetQuotasSuccess) {
       handleGetQuotasSuccess(success);
+    } else if (success is GetLabelVisibilitySuccess) {
+      handleGetLabelVisibilitySuccess(success.visible);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -160,6 +169,10 @@ class ManageAccountDashBoardController extends ReloadableController
       octetsQuota.value = quota;
     } else if (isStorageCapabilitySupported) {
       getQuotas(accountId.value);
+    }
+
+    if (isLabelCapabilitySupported) {
+      setUpLabelVisibility();
     }
   }
 
