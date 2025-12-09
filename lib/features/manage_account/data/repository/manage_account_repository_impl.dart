@@ -31,4 +31,14 @@ class ManageAccountRepositoryImpl extends ManageAccountRepository {
   Future<AIScribeConfig> getAiScribeConfigLocalSettings() {
     return dataSource.getAiScribeConfigLocalSettings();
   }
+
+  @override
+  Future<bool> getLabelVisibility() {
+    return dataSource.getLabelVisibility();
+  }
+
+  @override
+  Future<void> saveLabelVisibility(bool visible) {
+    return dataSource.saveLabelVisibility(visible);
+  }
 }

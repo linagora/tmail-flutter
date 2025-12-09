@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_setup_label_visibility_in_setting_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
@@ -28,21 +29,37 @@ class SettingsView extends GetWidget<SettingsController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Obx(() => SettingAppBar(
-          pageLevel: controller
+        Obx(() {
+          final labelVisibility = controller
               .manageAccountDashboardController
-              .settingsPageLevel
-              .value,
-          accountMenuItem: controller
+              .isLabelVisibility
+              .value;
+          final isLabelCapabilitySupported = controller
               .manageAccountDashboardController
-              .accountMenuItemSelected
-              .value,
-          imagePaths: controller.imagePaths,
-          responsiveUtils: controller.responsiveUtils,
-          onBackAction: () => controller.onBackSettingAction(context),
-          onExportTraceLogAction: () =>
-              controller.showExportTraceLogConfirmDialog(context),
-        )),
+              .isLabelCapabilitySupported;
+
+          final disableMultiClick =
+              labelVisibility || !isLabelCapabilitySupported;
+
+          return SettingAppBar(
+            pageLevel: controller
+                .manageAccountDashboardController
+                .settingsPageLevel
+                .value,
+            accountMenuItem: controller
+                .manageAccountDashboardController
+                .accountMenuItemSelected
+                .value,
+            imagePaths: controller.imagePaths,
+            responsiveUtils: controller.responsiveUtils,
+            onBackAction: () => controller.onBackSettingAction(context),
+            onExportTraceLogAction: () =>
+                controller.showExportTraceLogConfirmDialog(context),
+            onMultiClickAction: disableMultiClick
+              ? null
+              : controller.manageAccountDashboardController.enableLabelVisibility,
+          );
+        }),
         Obx(() {
           final dashboard = controller.manageAccountDashboardController;
           final vacation = dashboard.vacationResponse.value;
