@@ -5493,13 +5493,6 @@ class AppLocalizations {
     );
   }
 
-  String get tagNameCannotContainSpecialCharacters {
-    return Intl.message(
-      'Tag name cannot contain special characters',
-      name: 'tagNameCannotContainSpecialCharacters',
-    );
-  }
-
   String get tagNameAlreadyExists {
     return Intl.message(
       'A tag with this name already exists. Please choose a different name.',
@@ -5518,6 +5511,21 @@ class AppLocalizations {
     return Intl.message(
       'Choose a colour for this label',
       name: 'chooseAColourForThisLabel',
+    );
+  }
+
+  String createLabelSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'You successfully created $labelName label',
+      name: 'createLabelSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String get createNewLabelFailure {
+    return Intl.message(
+      'Create new label failure',
+      name: 'createNewLabelFailure',
     );
   }
 }

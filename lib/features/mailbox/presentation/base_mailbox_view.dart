@@ -347,6 +347,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         final labelController =
             controller.mailboxDashBoardController.labelController;
 
+        final accountId = controller.accountId;
         final labelListExpandMode = labelController.labelListExpandMode.value;
         final countLabels = labelController.labels.length;
 
@@ -361,7 +362,8 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           expandMode: labelListExpandMode,
           countLabels: countLabels,
           onToggleLabelListState: labelController.toggleLabelListState,
-          onAddNewLabel: labelController.openCreateNewLabelModal,
+          onAddNewLabel: () =>
+              labelController.openCreateNewLabelModal(accountId),
         );
       } else {
         return const SizedBox.shrink();
