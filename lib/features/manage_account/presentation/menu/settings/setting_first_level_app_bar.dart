@@ -1,6 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/presentation/views/button/multi_click_widget.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
@@ -11,6 +12,7 @@ class SettingFirstLevelAppBar extends StatelessWidget {
   final ImagePaths imagePaths;
   final ResponsiveUtils responsiveUtils;
   final VoidCallback onBackAction;
+  final VoidCallback? onMultiClickAction;
 
   const SettingFirstLevelAppBar({
     super.key,
@@ -18,11 +20,26 @@ class SettingFirstLevelAppBar extends StatelessWidget {
     required this.imagePaths,
     required this.responsiveUtils,
     required this.onBackAction,
+    this.onMultiClickAction,
   });
 
   @override
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
+
+    Widget titleWidget = Text(
+      accountMenuItem.getName(appLocalizations),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: ThemeUtils.textStyleM3BodyLarge,
+    );
+
+    if (onMultiClickAction != null) {
+      titleWidget = MultiClickWidget(
+        onMultiTap: onMultiClickAction!,
+        child: titleWidget,
+      );
+    }
 
     return Container(
       height: 64,
@@ -43,12 +60,7 @@ class SettingFirstLevelAppBar extends StatelessWidget {
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50),
-              child: Text(
-                accountMenuItem.getName(appLocalizations),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: ThemeUtils.textStyleM3BodyLarge,
-              ),
+              child: titleWidget,
             ),
           ),
         ],
