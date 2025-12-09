@@ -13,4 +13,6 @@ abstract class ManageAccountRepository {
   Future<bool> getLabelVisibility();
 
   Future<void> saveLabelVisibility(bool visible);
+
+  Future<bool> getLabelSettingState();
 }
