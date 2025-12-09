@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
+
 enum AIScribeMenuAction {
   correctGrammar,
   improveMakeShorter,
@@ -12,32 +15,33 @@ enum AIScribeMenuAction {
   translateRussian,
   translateVietnamese;
 
-  String get label {
+  String getLabel(BuildContext context) {
+    final localizations = ScribeLocalizations.of(context)!;
     switch (this) {
       case AIScribeMenuAction.correctGrammar:
-        return 'Correct grammar';
+        return localizations.categoryCorrectGrammar;
       case AIScribeMenuAction.improveMakeShorter:
-        return 'Make it shorter';
+        return localizations.actionMakeShorter;
       case AIScribeMenuAction.improveExpandContext:
-        return 'Expand context';
+        return localizations.actionExpandContext;
       case AIScribeMenuAction.improveEmojify:
-        return 'Emojify';
+        return localizations.actionEmojify;
       case AIScribeMenuAction.improveTransformToBullets:
-        return 'Transform to bullets';
+        return localizations.actionTransformToBullets;
       case AIScribeMenuAction.changeToneProfessional:
-        return 'More professional';
+        return localizations.actionMoreProfessional;
       case AIScribeMenuAction.changeToneCasual:
-        return 'More casual';
+        return localizations.actionMoreCasual;
       case AIScribeMenuAction.changeTonePolite:
-        return 'More polite';
+        return localizations.actionMorePolite;
       case AIScribeMenuAction.translateFrench:
-        return 'French';
+        return localizations.languageFrench;
       case AIScribeMenuAction.translateEnglish:
-        return 'English';
+        return localizations.languageEnglish;
       case AIScribeMenuAction.translateRussian:
-        return 'Russian';
+        return localizations.languageRussian;
       case AIScribeMenuAction.translateVietnamese:
-        return 'Vietnamese';
+        return localizations.languageVietnamese;
     }
   }
 
@@ -62,12 +66,12 @@ enum AIScribeMenuAction {
     }
   }
 
-  String get fullLabel {
-    final categoryLabel = category.label;
+  String getFullLabel(BuildContext context) {
+    final categoryLabel = category.getLabel(context);
     if (category.hasSubmenu) {
-      return '$categoryLabel > $label';
+      return '$categoryLabel > ${getLabel(context)}';
     } else {
-      return label;
+      return getLabel(context);
     }
   }
 }
@@ -78,16 +82,17 @@ enum AIScribeMenuCategory {
   changeTone,
   translate;
 
-  String get label {
+  String getLabel(BuildContext context) {
+    final localizations = ScribeLocalizations.of(context)!;
     switch (this) {
       case AIScribeMenuCategory.correctGrammar:
-        return 'Correct grammar';
+        return localizations.categoryCorrectGrammar;
       case AIScribeMenuCategory.improve:
-        return 'Improve';
+        return localizations.categoryImprove;
       case AIScribeMenuCategory.changeTone:
-        return 'Change tone';
+        return localizations.categoryChangeTone;
       case AIScribeMenuCategory.translate:
-        return 'Translate';
+        return localizations.categoryTranslate;
     }
   }
 

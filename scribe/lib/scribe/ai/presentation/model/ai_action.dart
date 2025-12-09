@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
 
 sealed class AIAction {
   const AIAction();
 
-  String get label;
+  String getLabel(BuildContext context);
 }
 
 class PredefinedAction extends AIAction {
@@ -12,7 +14,7 @@ class PredefinedAction extends AIAction {
   const PredefinedAction(this.action);
 
   @override
-  String get label => action.fullLabel;
+  String getLabel(BuildContext context) => action.getFullLabel(context);
 }
 
 class CustomPromptAction extends AIAction {
@@ -21,5 +23,7 @@ class CustomPromptAction extends AIAction {
   const CustomPromptAction(this.prompt);
 
   @override
-  String get label => 'Help me write';
+  String getLabel(BuildContext context) {
+    return ScribeLocalizations.of(context)!.customPromptAction;
+  }
 }
