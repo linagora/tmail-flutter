@@ -266,6 +266,13 @@ class ImagePaths {
   String get icSpellcheck => _getImagePath('ic_spellcheck.svg');
   String get icStackedLineChart => _getImagePath('ic_stacked_line_chart.svg');
   String get icTranslate => _getImagePath('ic_translate.svg');
+  String get icCheckroom => _getImagePath('ic_checkroom.svg');
+  String get icCollapsedOutline => _getImagePath('ic_collapsed_outline.svg');
+  String get icEmojiEmotions => _getImagePath('ic_emoji_emotions.svg');
+  String get icExpand => _getImagePath('ic_expand.svg');
+  String get icList => _getImagePath('ic_list.svg');
+  String get icSentimentSatisfied => _getImagePath('ic_sentiment_satisfied.svg');
+  String get icYard => _getImagePath('ic_yard.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
