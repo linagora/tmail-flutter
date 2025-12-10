@@ -18,6 +18,7 @@ Future<void> showAIScribeDialog({
   required ImagePaths imagePaths,
   required String content,
   required AIScribeResultCallback onInsertText,
+  AIScribeResultCallback? onReplaceText,
   required GenerateAITextInteractor interactor,
   List<AIScribeMenuCategory>? availableCategories,
   Offset? buttonPosition,
@@ -124,6 +125,10 @@ Future<void> showAIScribeDialog({
           onInsertText(result);
           Navigator.of(context).pop();
         },
+        onReplace: onReplaceText != null ? (result) {
+          onReplaceText(result);
+          Navigator.of(context).pop();
+        } : null,
         imagePaths: imagePaths,
       );
 

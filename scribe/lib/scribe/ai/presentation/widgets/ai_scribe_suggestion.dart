@@ -13,6 +13,7 @@ class AIScribeSuggestion extends StatefulWidget {
   final Future<String> suggestionFuture;
   final VoidCallback onClose;
   final OnInsertTextCallback onInsert;
+  final OnInsertTextCallback? onReplace;
   final ImagePaths imagePaths;
 
   const AIScribeSuggestion({
@@ -21,6 +22,7 @@ class AIScribeSuggestion extends StatefulWidget {
     required this.suggestionFuture,
     required this.onClose,
     required this.onInsert,
+    this.onReplace,
     required this.imagePaths,
   });
 
@@ -184,13 +186,27 @@ class _AIScribeSuggestionModalState extends State<AIScribeSuggestion> {
               Clipboard.setData(ClipboardData(text: suggestion));
             },
           ),
-          TMailButtonWidget(
-            text: ScribeLocalizations.of(context)!.insertButton,
-            textStyle: AIScribeButtonStyles.mainActionButtonText,
-            padding: AIScribeButtonStyles.mainActionButtonPadding,
-            backgroundColor: AIScribeButtonStyles.mainActionButtonBackgroundColor,
-            onTapActionCallback: () => widget.onInsert(suggestion),
-          )
+          Row(
+            children: [
+              if (widget.onReplace != null) ...[
+                TMailButtonWidget(
+                  text: ScribeLocalizations.of(context)!.replaceButton,
+                  textStyle: AIScribeButtonStyles.mainActionButtonText,
+                  padding: AIScribeButtonStyles.mainActionButtonPadding,
+                  backgroundColor: Colors.transparent,
+                  onTapActionCallback: () => widget.onReplace!(suggestion),
+                ),
+                const SizedBox(width: AIScribeSizes.fieldSpacing),
+              ],
+              TMailButtonWidget(
+                text: ScribeLocalizations.of(context)!.insertButton,
+                textStyle: AIScribeButtonStyles.mainActionButtonText,
+                padding: AIScribeButtonStyles.mainActionButtonPadding,
+                backgroundColor: AIScribeButtonStyles.mainActionButtonBackgroundColor,
+                onTapActionCallback: () => widget.onInsert(suggestion),
+              ),
+            ],
+          ),
         ],
       ),
     );

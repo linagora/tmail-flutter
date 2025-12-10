@@ -121,6 +121,11 @@ class ScribeLocalizations {
     return Intl.message('Insert',
         name: 'insertButton');
   }
+
+  String get replaceButton {
+    return Intl.message('Replace',
+        name: 'replaceButton');
+  }
 }
 
 class _ScribeLocalizationsDelegate extends LocalizationsDelegate<ScribeLocalizations> {
