@@ -1,5 +1,5 @@
 class AIResponse {
-  final String? result;
+  final String result;
 
   const AIResponse({required this.result});
 
