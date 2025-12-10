@@ -14,7 +14,7 @@ class AIApiResponse {
 
   Map<String, dynamic> toJson() => _$AIApiResponseToJson(this);
 
-  String? get content => choices.isNotEmpty ? choices[0].message.content : null;
+  String get content => choices.isNotEmpty ? choices[0].message.content : '';
 }
 
 @JsonSerializable()
