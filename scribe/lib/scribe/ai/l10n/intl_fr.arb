@@ -102,20 +102,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "generatingResponse": "Génération de la réponse IA...",
-  "@generatingResponse": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "failedToGenerate": "Échec de la génération de la réponse IA",
   "@failedToGenerate": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "noDataReceived": "Aucune donnée reçue",
-  "@noDataReceived": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
