@@ -111,6 +111,16 @@ class HtmlUtils {
       });''',
     name: 'onSelectionChange');
 
+  static const collapseSelectionToEnd = (
+    script: '''
+      (() => {
+        const selection = window.getSelection();
+        if (selection) {
+          selection.collapseToEnd()
+        }
+      })();''',
+    name: 'collapseSelectionToEnd');
+
   static recalculateEditorHeight({double? maxHeight}) => (
     script: '''
       const editable = document.querySelector('.note-editable');
