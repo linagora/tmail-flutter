@@ -81,7 +81,8 @@ mixin AIScribeInComposerMixin {
       context: context,
       imagePaths: imagePaths,
       content: fullText,
-      onInsertText: insertTextInEditor,
+      onInsertText: onInsertTextCallback,
+      onReplaceText: fullText.isEmpty ? null : onReplaceTextCallback,
       interactor: generateAITextInteractor,
       buttonPosition: buttonPosition,
     );
@@ -97,7 +98,8 @@ mixin AIScribeInComposerMixin {
       context: context,
       imagePaths: imagePaths,
       content: selection,
-      onInsertText: insertTextInEditor,
+      onInsertText: onInsertTextCallback,
+      onReplaceText: onReplaceTextCallback,
       interactor: generateAITextInteractor,
       buttonPosition: buttonPosition,
     );
