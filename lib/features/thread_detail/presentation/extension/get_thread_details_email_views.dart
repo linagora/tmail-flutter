@@ -46,9 +46,10 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       final isFirstEmailInThreadDetail = indexOfEmailId == 0;
 
       if (presentationEmail.emailInThreadStatus == EmailInThreadStatus.collapsed) {
-        final emailLabels = labels?.isNotEmpty == true && isFirstEmailInThreadDetail
-            ? emailIdsPresentation.values.last?.getLabelList(labels!)
-            : null;
+        final emailLabels = _getLabelsForFirstEmail(
+          isFirstEmailInThreadDetail: isFirstEmailInThreadDetail,
+          availableLabels: labels,
+        );
 
         return ThreadDetailCollapsedEmail(
           presentationEmail: presentationEmail.copyWith(
@@ -108,5 +109,19 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         scrollController: scrollController,
       );
     }).toList();
+  }
+
+  List<Label>? _getLabelsForFirstEmail({
+    required bool isFirstEmailInThreadDetail,
+    required List<Label>? availableLabels,
+  }) {
+    if (!isFirstEmailInThreadDetail ||
+        availableLabels == null ||
+        availableLabels.isEmpty) {
+      return null;
+    }
+
+    final lastEmail = emailIdsPresentation.values.last;
+    return lastEmail?.getLabelList(availableLabels);
   }
 }
