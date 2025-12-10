@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-12-09T13:09:52.614790",
+  "@@last_modified": "2025-12-10T16:32:03.004307",
   "categoryCorrectGrammar": "Correct grammar",
   "@categoryCorrectGrammar": {
     "type": "text",
@@ -102,20 +102,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "generatingResponse": "Generating AI response...",
-  "@generatingResponse": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "failedToGenerate": "Failed to generate AI response",
   "@failedToGenerate": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "noDataReceived": "No data received",
-  "@noDataReceived": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
