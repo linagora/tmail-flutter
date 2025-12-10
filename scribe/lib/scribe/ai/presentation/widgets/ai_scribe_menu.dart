@@ -72,6 +72,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
           });
           _removeSubmenu();
         },
+        imagePaths: widget.imagePaths,
       ),
     );
 
@@ -199,6 +200,7 @@ class _SubmenuPanel extends StatefulWidget {
   final Function(AIScribeMenuAction) onActionSelected;
   final VoidCallback onHover;
   final VoidCallback onDismiss;
+  final ImagePaths imagePaths;
 
   const _SubmenuPanel({
     required this.category,
@@ -207,6 +209,7 @@ class _SubmenuPanel extends StatefulWidget {
     required this.onActionSelected,
     required this.onHover,
     required this.onDismiss,
+    required this.imagePaths,
   });
 
   @override
@@ -253,19 +256,32 @@ class _SubmenuPanelState extends State<_SubmenuPanel> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: widget.category.actions.map((action) {
+                      final iconPath = action.getIconPath(widget.imagePaths);
                       return SizedBox(
                         height: AIScribeSizes.menuItemHeight,
                         child: InkWell(
                           onTap: () => widget.onActionSelected(action),
                           borderRadius: BorderRadius.circular(AIScribeSizes.menuItemBorderRadius),
-                          child: Padding(
+                          child: Container(
                             padding: AIScribeSizes.menuItemPadding,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                action.getLabel(context),
-                                style: AIScribeTextStyles.menuItem,
-                              ),
+                            child: Row(
+                              children: [
+                                if (iconPath != null) ...[
+                                  SvgPicture.asset(
+                                    iconPath,
+                                    width: AIScribeSizes.iconSize,
+                                    height: AIScribeSizes.iconSize,
+                                    colorFilter: AIScribeColors.svgColorFilter,
+                                  ),
+                                  const SizedBox(width: AIScribeSizes.fieldSpacing),
+                                ],
+                                Expanded(
+                                  child: Text(
+                                    action.getLabel(context),
+                                    style: AIScribeTextStyles.menuItem,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

@@ -75,6 +75,27 @@ enum AIScribeMenuAction {
       return getLabel(context);
     }
   }
+
+  String? getIconPath(ImagePaths imagePaths) {
+    switch (this) {
+      case AIScribeMenuAction.improveMakeShorter:
+        return imagePaths.icCollapsedOutline;
+      case AIScribeMenuAction.improveExpandContext:
+        return imagePaths.icExpand;
+      case AIScribeMenuAction.improveEmojify:
+        return imagePaths.icEmojiEmotions;
+      case AIScribeMenuAction.improveTransformToBullets:
+        return imagePaths.icList;
+      case AIScribeMenuAction.changeToneProfessional:
+        return imagePaths.icCheckroom;
+      case AIScribeMenuAction.changeToneCasual:
+        return imagePaths.icSentimentSatisfied;
+      case AIScribeMenuAction.changeTonePolite:
+        return imagePaths.icYard;
+      default:
+        return null;
+    }
+  }
 }
 
 enum AIScribeMenuCategory {
