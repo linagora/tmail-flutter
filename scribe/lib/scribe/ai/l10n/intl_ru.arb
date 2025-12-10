@@ -102,20 +102,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "generatingResponse": "Генерация ответа ИИ...",
-  "@generatingResponse": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "failedToGenerate": "Не удалось сгенерировать ответ ИИ",
   "@failedToGenerate": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "noDataReceived": "Данные не получены",
-  "@noDataReceived": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
