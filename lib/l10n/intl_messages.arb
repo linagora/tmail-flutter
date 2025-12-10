@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-11-27T11:24:30.901529",
+  "@@last_modified": "2025-12-10T10:27:38.268515",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5196,7 +5196,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createLabelSuccessfullyMessage": "You successfully created {labelName} label",
+  "createLabelSuccessfullyMessage": "You successfully created the {labelName} label",
   "@createLabelSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [

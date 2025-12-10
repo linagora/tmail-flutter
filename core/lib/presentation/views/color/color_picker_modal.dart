@@ -320,7 +320,12 @@ class _ColorPickerModalState extends State<ColorPickerModal> {
   }
 
   void _onHexColorChanged(String value) {
-    _hsvColorNotifier.value = HSVColor.fromColor(value.toColor);
+    final hex = value.trim();
+    if (hex.isEmpty) return;
+
+    try {
+      _hsvColorNotifier.value = HSVColor.fromColor(hex.toColor);
+    } catch (_) {}
   }
 
   @override
