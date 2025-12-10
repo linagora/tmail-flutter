@@ -112,19 +112,9 @@ class ScribeLocalizations {
   }
 
   // Suggestion Dialog
-  String get generatingResponse {
-    return Intl.message('Generating AI response...',
-        name: 'generatingResponse');
-  }
-
   String get failedToGenerate {
     return Intl.message('Failed to generate AI response',
         name: 'failedToGenerate');
-  }
-
-  String get noDataReceived {
-    return Intl.message('No data received',
-        name: 'noDataReceived');
   }
 
   String get insertButton {
