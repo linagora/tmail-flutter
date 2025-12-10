@@ -24,6 +24,6 @@ class CustomPromptAction extends AIAction {
 
   @override
   String getLabel(BuildContext context) {
-    return ScribeLocalizations.of(context)!.customPromptAction;
+    return ScribeLocalizations.of(context)?.customPromptAction ?? 'Help me write';
   }
 }

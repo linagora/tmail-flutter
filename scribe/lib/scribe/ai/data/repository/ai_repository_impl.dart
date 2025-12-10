@@ -9,6 +9,6 @@ class AIScribeRepositoryImpl implements AIScribeRepository {
 
   @override
   Future<AIResponse> generateText(String prompt) async {
-    return await _dataSource.request(prompt);
+    return _dataSource.request(prompt);
   }
 }
