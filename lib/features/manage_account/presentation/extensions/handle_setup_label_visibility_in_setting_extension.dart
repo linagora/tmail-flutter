@@ -18,7 +18,7 @@ extension HandleSetupLabelVisibilityInSettingExtension
   }
 
   void enableLabelVisibility() {
-    isLabelVisibility.value = true;
+    isLabelVisibilityEnabled.value = true;
 
     saveLabelVisibilityInteractor = getBinding<SaveLabelVisibilityInteractor>();
     if (saveLabelVisibilityInteractor != null) {
@@ -41,6 +41,6 @@ extension HandleSetupLabelVisibilityInSettingExtension
   }
 
   void handleGetLabelVisibilitySuccess(bool visible) {
-    isLabelVisibility.value = visible;
+    isLabelVisibilityEnabled.value = visible;
   }
 }

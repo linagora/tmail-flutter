@@ -70,22 +70,16 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
 
   @override
   Future<bool> getLabelVisibility() {
-    return Future.sync(() async {
-      return await _settingCacheManager.getLabelVisibility();
-    }).catchError((error, stackTrace) async {
-      await _exceptionThrower.throwException(error, stackTrace);
-      throw error;
-    });
+    return Future.sync(() {
+      return _settingCacheManager.getLabelVisibility();
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<void> saveLabelVisibility(bool visible) {
     return Future.sync(() async {
       return await _settingCacheManager.saveLabelVisibility(visible);
-    }).catchError((error, stackTrace) async {
-      await _exceptionThrower.throwException(error, stackTrace);
-      throw error;
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -93,9 +87,6 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
     return Future.sync(() async {
       final labelConfig = await _preferencesSettingManager.getLabelConfig();
       return labelConfig.isEnabled;
-    }).catchError((error, stackTrace) async {
-      await _exceptionThrower.throwException(error, stackTrace);
-      throw error;
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }
