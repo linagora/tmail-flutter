@@ -332,5 +332,141 @@ void main() {
         expect((e as InvalidArgumentsMethodResponse).description, testDescription);
       }
     });
+
+    test('should throw InvalidResultReferenceMethodResponse when error type is invalidResultReference in notUpdated', () {
+      final setError = SetError(ErrorMethodResponse.invalidResultReference);
+      final response = SetLabelResponse(
+        accountId,
+        notUpdated: {requestId: setError},
+      );
+
+      expect(
+            () => testHandler.parseErrorForSetResponse(response, requestId),
+        throwsA(isA<InvalidResultReferenceMethodResponse>()),
+      );
+    });
+
+    test('should throw InvalidResultReferenceMethodResponse when error type is invalidResultReference in notDestroyed', () {
+      final setError = SetError(ErrorMethodResponse.invalidResultReference);
+      final response = SetLabelResponse(
+        accountId,
+        notDestroyed: {requestId: setError},
+      );
+
+      expect(
+            () => testHandler.parseErrorForSetResponse(response, requestId),
+        throwsA(isA<InvalidResultReferenceMethodResponse>()),
+      );
+    });
+
+    test('should prefer notUpdated over notCreated when both contain same requestId', () {
+      final createdError = SetError(
+        ErrorMethodResponse.invalidArguments,
+        description: 'from notCreated',
+      );
+
+      final updatedError = SetError(
+        ErrorMethodResponse.invalidResultReference,
+        description: 'from notUpdated',
+      );
+
+      final response = SetLabelResponse(
+        accountId,
+        notCreated: {requestId: createdError},
+        notUpdated: {requestId: updatedError},
+      );
+
+      expect(
+            () => testHandler.parseErrorForSetResponse(response, requestId),
+        throwsA(
+          isA<InvalidResultReferenceMethodResponse>().having(
+                (e) => e.description,
+            'description',
+            'from notUpdated',
+          ),
+        ),
+      );
+    });
+
+    test('should prefer notDestroyed over notUpdated and notCreated when all contain same requestId', () {
+      final createdError = SetError(
+        ErrorMethodResponse.serverFail,
+        description: 'from notCreated',
+      );
+
+      final updatedError = SetError(
+        ErrorMethodResponse.invalidArguments,
+        description: 'from notUpdated',
+      );
+
+      final destroyedError = SetError(
+        ErrorMethodResponse.invalidResultReference,
+        description: 'from notDestroyed',
+      );
+
+      final response = SetLabelResponse(
+        accountId,
+        notCreated: {requestId: createdError},
+        notUpdated: {requestId: updatedError},
+        notDestroyed: {requestId: destroyedError},
+      );
+
+      expect(
+            () => testHandler.parseErrorForSetResponse(response, requestId),
+        throwsA(
+          isA<InvalidResultReferenceMethodResponse>().having(
+                (e) => e.description,
+            'description',
+            'from notDestroyed',
+          ),
+        ),
+      );
+    });
+
+    test('should throw UnknownMethodResponse when unknown error type in notUpdated', () {
+      final setError = SetError(
+        ErrorMethodResponse.serverFail,
+        description: 'unknown from notUpdated',
+      );
+
+      final response = SetLabelResponse(
+        accountId,
+        notUpdated: {requestId: setError},
+      );
+
+      expect(
+            () => testHandler.parseErrorForSetResponse(response, requestId),
+        throwsA(
+          isA<UnknownMethodResponse>().having(
+                (e) => e.description,
+            'description',
+            'unknown from notUpdated',
+          ),
+        ),
+      );
+    });
+
+    test('should throw UnknownMethodResponse when unknown error type in notDestroyed', () {
+      final setError = SetError(
+        ErrorMethodResponse.serverFail,
+        description: 'unknown from notDestroyed',
+      );
+
+      final response = SetLabelResponse(
+        accountId,
+        notDestroyed: {requestId: setError},
+      );
+
+      expect(
+            () => testHandler.parseErrorForSetResponse(response, requestId),
+        throwsA(
+          isA<UnknownMethodResponse>().having(
+                (e) => e.description,
+            'description',
+            'unknown from notDestroyed',
+          ),
+        ),
+      );
+    });
   });
 }
