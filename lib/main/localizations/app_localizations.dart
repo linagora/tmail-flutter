@@ -5516,7 +5516,7 @@ class AppLocalizations {
 
   String createLabelSuccessfullyMessage(String labelName) {
     return Intl.message(
-      'You successfully created $labelName label',
+      'You successfully created the $labelName label',
       name: 'createLabelSuccessfullyMessage',
       args: [labelName],
     );
