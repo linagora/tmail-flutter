@@ -11,6 +11,6 @@ extension ListLabelExtension on List<Label> {
   }
 
   List<String> get displayNameNotNullList => map((label) => label.safeDisplayName)
-      .where((name) => name.isNotEmpty)
+      .where((name) => name.trim().isNotEmpty)
       .toList();
 }

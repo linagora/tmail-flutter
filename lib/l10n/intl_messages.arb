@@ -5250,7 +5250,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createLabelSuccessfullyMessage": "You successfully created {labelName} label",
+  "createLabelSuccessfullyMessage": "You successfully created the {labelName} label",
   "@createLabelSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
