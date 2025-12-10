@@ -40,10 +40,7 @@ class DownloadDatasourceImpl extends DownloadDatasource {
         onReceiveController: onReceiveController,
         cancelToken: cancelToken,
       );
-    }).catchError((error, stackTrace) async {
-      await _exceptionThrower.throwException(error, stackTrace);
-      throw error;
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
@@ -67,9 +64,6 @@ class DownloadDatasourceImpl extends DownloadDatasource {
         onReceiveController: onReceiveController,
         cancelToken: cancelToken,
       );
-    }).catchError((error, stackTrace) async {
-      await _exceptionThrower.throwException(error, stackTrace);
-      throw error;
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }
