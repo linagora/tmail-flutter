@@ -1,4 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,6 +28,42 @@ mixin AIScribeInComposerMixin {
     } else {
       richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
     }
+  }
+
+  Future<void> collapseSelection() async {
+    if (PlatformInfo.isWeb) {
+      await richTextWebController?.editorController.evaluateJavascriptWeb(
+        HtmlUtils.collapseSelectionToEnd.name,
+        hasReturnValue: false,
+      );
+    } else {
+      await richTextMobileTabletController?.htmlEditorApi?.webViewController.evaluateJavascript(source: HtmlUtils.collapseSelectionToEnd.script);
+    }
+  }
+
+  void clearTextInEditor() {
+    if (PlatformInfo.isWeb) {
+      richTextWebController?.editorController.setText('');
+    } else {
+      richTextMobileTabletController?.htmlEditorApi?.setText('');
+    }
+  }
+
+  // Ensure we only insert at cursor position by collapsing selection before inserting
+  void onInsertTextCallback(String text) async {
+    await collapseSelection();
+
+    insertTextInEditor(text);
+  }
+
+  // If there is a selection, it will replace the selection, else it will replace everything
+  void onReplaceTextCallback(String text) async {
+    final selection = editorTextSelection.value?.selectedText;
+    if (selection == null || selection.isEmpty) {
+      clearTextInEditor();
+    }
+
+    insertTextInEditor(text);
   }
 
   void showAIScribeMenuForFullText(BuildContext context) async {
