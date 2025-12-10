@@ -14,19 +14,13 @@ class LabelDatasourceImpl extends LabelDatasource {
   Future<List<Label>> getAllLabels(AccountId accountId) {
     return Future.sync(() async {
       return await _labelApi.getAllLabels(accountId);
-    }).catchError((error, stackTrace) async {
-      await _exceptionThrower.throwException(error, stackTrace);
-      throw error;
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 
   @override
   Future<Label> createNewLabel(AccountId accountId, Label labelData) {
     return Future.sync(() async {
       return await _labelApi.createNewLabel(accountId, labelData);
-    }).catchError((error, stackTrace) async {
-      await _exceptionThrower.throwException(error, stackTrace);
-      throw error;
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

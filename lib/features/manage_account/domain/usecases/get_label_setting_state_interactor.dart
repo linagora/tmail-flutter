@@ -13,8 +13,8 @@ class GetLabelSettingStateInteractor {
   Stream<Either<Failure, Success>> execute(AccountId accountId) async* {
     try {
       yield Right(GettingLabelSettingState());
-      final isEnable = await _manageAccountRepository.getLabelSettingState();
-      yield Right(GetLabelSettingStateSuccess(isEnable, accountId));
+      final isEnabled = await _manageAccountRepository.getLabelSettingState();
+      yield Right(GetLabelSettingStateSuccess(isEnabled, accountId));
     } catch (e) {
       yield Left(GetLabelSettingStateFailure(e));
     }

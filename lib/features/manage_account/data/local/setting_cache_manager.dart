@@ -7,8 +7,7 @@ class SettingCacheManager {
 
   final SharedPreferences _sharedPreferences;
 
-  Future<bool> getLabelVisibility() async {
-    await _sharedPreferences.reload();
+  bool getLabelVisibility() {
     return _sharedPreferences.getBool(_labelVisibilitySettingKey) ?? false;
   }
 
