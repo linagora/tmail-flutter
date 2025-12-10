@@ -67,7 +67,7 @@ _.d=g
 _.e=h
 _.f=i},
 bUQ:function bUQ(d){this.a=d},
-dR2(d){var x,w,v,u,t,s,r,q,p="text/html"
+dR1(d){var x,w,v,u,t,s,r,q,p="text/html"
 if(!(B.d.t(d,A.bn("<[a-zA-Z][^>]*>",!0,!1,!1,!1))&&B.d.t(d,A.bn("</[a-zA-Z][^>]*>",!0,!1,!1,!1))))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
@@ -82,7 +82,7 @@ q=new DOMParser().parseFromString('      <button class="quote-toggle-button coll
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.dJi(v)
+v=v==null?null:J.dJh(v)
 return v==null?d:v},
 aRb(){if(!B.d.t(window.navigator.userAgent.toLowerCase(),"iphone"))var x=B.d.t(window.navigator.userAgent.toLowerCase(),"android")&&B.d.t(window.navigator.userAgent.toLowerCase(),"mobile")
 else x=!0
@@ -175,7 +175,7 @@ r.toString
 w=r+x
 r=C.aRb()||C.aRc()
 if(r){v=J.dlq(w,B.c.gbm(s).geN(),B.c.gbm(s).ge9())
-e.iN(v,B.ag,B.oh)}else if(w<B.c.gbm(s).geN())e.ig(B.c.gbm(s).geN())
+e.iN(v,B.ag,B.oi)}else if(w<B.c.gbm(s).geN())e.ig(B.c.gbm(s).geN())
 else if(w>B.c.gbm(s).ge9())e.ig(B.c.gbm(s).ge9())
 else e.ig(w)}catch(q){u=A.O(q)
 A.x(A.E(this).l(0)+"::_handleIframeOnScrollChangedListener:Exception = "+A.e(u),B.w)}},
@@ -255,7 +255,7 @@ as9(){var x,w,v,u=this,t="\n          \n          ",s=u.d=u.b8P(10),r=u.a,q=r.c,
 l=l?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 n=n?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ch)q=C.dR2(q)
+if(r.ch)q=C.dR1(q)
 r=y.s
 x=A.c([],r)
 if(u.a.ch)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -329,8 +329,8 @@ if(x==null)return
 w=e.gaj()
 v=g.hq(w instanceof A.a4?A.db(w.cn(0,null),B.r):B.r)
 u=y.w
-t=A.M(e,B.u,u).w.a.a
-u=A.M(e,B.u,u).w
+t=A.M(e,B.v,u).w.a.a
+u=A.M(e,B.v,u).w
 s=t<400?t-24:400
 r=v.d
 q=r+28+4>u.a.b
@@ -364,7 +364,7 @@ $S:208}
 C.cTf.prototype={
 $2(d,e){var x,w,v,u,t=null
 if(e.b!=null){x=this.a
-w=A.dpD(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.cTe(x),"iframe")
+w=A.dpC(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.cTe(x),"iframe")
 v=x.a.dy
 u=x.e
 x=x.f
@@ -400,10 +400,10 @@ $0(){var x=this,w=x.b
 if(w.e!=null)x.a.ajU(0,w,x.c,x.d)},
 $S:9}
 C.bUS.prototype={
-$1(d){var x=this,w=null,v=x.b,u=A.ji(0,A.cS(B.c8,w,B.M,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,v.gDk(),w,w,w,w,w,w,w,w,!1,B.a3),w),t=x.a.a,s=A.c([new A.bZ(0,B.Y,B.n.aC(0.15),B.r,20)],y.V)
+$1(d){var x=this,w=null,v=x.b,u=A.ji(0,A.cS(B.c7,w,B.M,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,v.gDk(),w,w,w,w,w,w,w,w,!1,B.a3),w),t=x.a.a,s=A.c([new A.bZ(0,B.Y,B.n.aC(0.15),B.r,20)],y.V)
 v=v.b.e
-if(v==null)v=D.aXd
-return A.dh4(new C.bUQ(x.c),new A.cu(B.a7,w,B.a1,B.G,A.c([u,A.lR(w,A.cN(A.ch(B.B,!0,B.qp,A.a8(w,A.ad(x.f,w,1,B.D,w,w,v,w,w,w),B.k,w,new A.as(0,x.e,28,1/0),new A.ba(B.n,w,w,B.qp,s,w,w,B.C),w,w,w,w,B.m7,w,w,w),B.k,w,0,w,w,w,w,w,B.as)),w,t,x.d,w)],y.p),w),B.hC,B.y1,new A.bE(0,1,y.t),y.i)},
+if(v==null)v=D.aXe
+return A.dh3(new C.bUQ(x.c),new A.cu(B.a7,w,B.a1,B.G,A.c([u,A.lR(w,A.cN(A.ch(B.B,!0,B.qp,A.a8(w,A.ae(x.f,w,1,B.D,w,w,v,w,w,w),B.k,w,new A.as(0,x.e,28,1/0),new A.ba(B.n,w,w,B.qp,s,w,w,B.C),w,w,w,w,B.m7,w,w,w),B.k,w,0,w,w,w,w,w,B.as)),w,t,x.d,w)],y.p),w),B.hC,B.y1,new A.bE(0,1,y.t),y.i)},
 $S:375}
 C.bUQ.prototype={
 $3(d,e,f){var x=this.a?-1:1
@@ -413,7 +413,7 @@ x.aXF=x.ap})();(function installTearOffs(){var x=a._instance_1u,w=a._instance_0u
 x(C.aqH.prototype,"gbcz","bcA",0)
 w(C.aJa.prototype,"gDk","fR",1)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
 v(C.MH,A.af)
-v(C.avo,A.ae)
+v(C.avo,A.ad)
 v(C.aqH,C.avo)
 u(A.v4,[C.cTg,C.cTh,C.cTi,C.bUR])
 u(A.v5,[C.cTj,C.cTf])
@@ -422,11 +422,11 @@ u(A.a5,[C.b8V,C.bUO,C.aJa])
 v(C.Yo,C.b8V)
 x(C.avo,A.qP)
 w(C.b8V,A.j)})()
-A.DL(b.typeUniverse,JSON.parse('{"MH":{"af":[],"i":[]},"aqH":{"ae":["MH"]},"Yo":{"j":[]}}'))
+A.DL(b.typeUniverse,JSON.parse('{"MH":{"af":[],"i":[]},"aqH":{"ad":["MH"]},"Yo":{"j":[]}}'))
 var y=(function rtii(){var x=A.ar
-return{v:x("Fl"),V:x("N<bZ>"),s:x("N<h>"),p:x("N<i>"),w:x("nl"),_:x("vJ"),P:x("b3"),u:x("Gj"),t:x("bE<aq>"),O:x("b6<h>"),N:x("a41<l8>"),y:x("B"),i:x("aq"),S:x("F")}})();(function constants(){D.aSx=new A.aV(30,30,B.rq,null)
-D.aKw=new A.X(B.cg,D.aSx,null)
-D.a3K=new A.dz(B.d9,null,null,D.aKw,null)
-D.aXd=new A.ai(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})()};
+return{v:x("Fl"),V:x("N<bZ>"),s:x("N<h>"),p:x("N<i>"),w:x("nl"),_:x("vJ"),P:x("b3"),u:x("Gj"),t:x("bE<aq>"),O:x("b6<h>"),N:x("a41<l8>"),y:x("B"),i:x("aq"),S:x("F")}})();(function constants(){D.aSy=new A.aV(30,30,B.rq,null)
+D.aKx=new A.X(B.cg,D.aSy,null)
+D.a3K=new A.dz(B.d9,null,null,D.aKx,null)
+D.aXe=new A.ai(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"dSTeCk2eYUWiyPRmmsUAaTcmhc0=");
+a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"eKh+QOEHC9GaQW53YmfFuHLXDLc=");
