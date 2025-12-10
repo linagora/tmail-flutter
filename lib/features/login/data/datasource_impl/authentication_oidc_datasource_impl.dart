@@ -180,9 +180,6 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   Future<OidcUserInfo> fetchUserInfo(String userInfoEndpoint) {
     return Future.sync(() async {
       return await _oidcHttpClient.fetchUserInfo(userInfoEndpoint);
-    }).catchError((error, stackTrace) async {
-      await _exceptionThrower.throwException(error, stackTrace);
-      throw error;
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }

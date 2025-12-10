@@ -55,7 +55,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                     Obx(
                       () {
                         final labelVisibility = controller
-                            .accountDashboardController.isLabelVisibility.value;
+                            .accountDashboardController.isLabelVisibilityEnabled.value;
 
                         final isLabelCapabilitySupported = controller
                             .accountDashboardController
@@ -79,7 +79,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                     final localSettingOption = controller.localSettings.value;
                     final isLabelVisibility = controller
                         .accountDashboardController
-                        .isLabelVisibility;
+                        .isLabelVisibilityEnabled;
 
                     if (settingOption == null &&
                         localSettingOption.configs.isEmpty) {

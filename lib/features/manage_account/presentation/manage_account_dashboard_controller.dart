@@ -76,7 +76,7 @@ class ManageAccountDashBoardController extends ReloadableController
   final vacationResponse = Rxn<VacationResponse>();
   final dashboardSettingAction = Rxn<UIAction>();
   final octetsQuota = Rxn<Quota>();
-  final isLabelVisibility = RxBool(false);
+  final isLabelVisibilityEnabled = RxBool(false);
 
   Uri? previousUri;
   AccountMenuItem? selectedMenu;

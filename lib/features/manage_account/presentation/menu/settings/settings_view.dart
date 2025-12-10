@@ -32,7 +32,7 @@ class SettingsView extends GetWidget<SettingsController> {
         Obx(() {
           final labelVisibility = controller
               .manageAccountDashboardController
-              .isLabelVisibility
+              .isLabelVisibilityEnabled
               .value;
           final isLabelCapabilitySupported = controller
               .manageAccountDashboardController

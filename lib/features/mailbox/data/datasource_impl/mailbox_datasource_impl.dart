@@ -187,9 +187,6 @@ class MailboxDataSourceImpl extends MailboxDataSource {
           onProgressController: onProgressController,
         );
       }
-    }).catchError((error, stackTrace) async {
-      await _exceptionThrower.throwException(error, stackTrace);
-      throw error;
-    });
+    }).catchError(_exceptionThrower.throwException);
   }
 }
