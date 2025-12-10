@@ -6,6 +6,7 @@ class ImagePaths {
   String get icExpandFolder => _getImagePath('ic_expand_folder.svg');
   String get icCollapseFolder => _getImagePath('ic_collapse_folder.svg');
   String get icBack => _getImagePath('ic_back.svg');
+  String get icBorderColor => _getImagePath('ic_border_color.svg');
   String get icShare => _getImagePath('ic_share.svg');
   String get icComposerClose => _getImagePath('ic_composer_close.svg');
   String get icComposerMenu => _getImagePath('ic_composer_menu.svg');
@@ -262,6 +263,9 @@ class ImagePaths {
   String get icText => _getImagePath('ic_text.svg');
   String get icUser => _getImagePath('ic_user.svg');
   String get icSparkle => _getImagePath('ic_sparkle.svg');
+  String get icSpellcheck => _getImagePath('ic_spellcheck.svg');
+  String get icStackedLineChart => _getImagePath('ic_stacked_line_chart.svg');
+  String get icTranslate => _getImagePath('ic_translate.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
