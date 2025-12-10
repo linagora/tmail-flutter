@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 
 enum AIScribeMenuAction {
@@ -125,5 +126,18 @@ enum AIScribeMenuCategory {
 
   bool get hasSubmenu {
     return actions.length > 1;
+  }
+
+  String getIconPath(ImagePaths imagePaths) {
+    switch (this) {
+      case AIScribeMenuCategory.correctGrammar:
+        return imagePaths.icSpellcheck;
+      case AIScribeMenuCategory.improve:
+        return imagePaths.icStackedLineChart;
+      case AIScribeMenuCategory.changeTone:
+        return imagePaths.icBorderColor;
+      case AIScribeMenuCategory.translate:
+        return imagePaths.icTranslate;
+    }
   }
 }

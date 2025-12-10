@@ -5,6 +5,10 @@ import 'package:core/presentation/utils/theme_utils.dart';
 class AIScribeColors {
   static const textPrimary = AppColor.textPrimary;
   static const background = Colors.white;
+  static const svgColorFilter = ColorFilter.mode(
+    Color.fromRGBO(66, 66, 68, 0.72),
+    BlendMode.srcIn,
+  );
 }
 
 class AIScribeShadows {

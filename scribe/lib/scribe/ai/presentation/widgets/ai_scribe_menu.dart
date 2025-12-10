@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
 import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
@@ -9,10 +11,12 @@ class AIScribeMenu extends StatefulWidget {
   final Function(AIScribeMenuAction) onActionSelected;
   final bool useSubmenuItemStyle;
   final List<AIScribeMenuCategory>? availableCategories;
+  final ImagePaths imagePaths;
 
   const AIScribeMenu({
     super.key,
     required this.onActionSelected,
+    required this.imagePaths,
     this.useSubmenuItemStyle = true,
     this.availableCategories,
   });
@@ -118,6 +122,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
       return Container(
         child: _buildMenuItem(
           label: category.getLabel(context),
+          iconPath: category.getIconPath(widget.imagePaths),
           hasSubmenu: true,
           isHovered: _hoveredCategory == category,
           onHover: (isHovering) => _handleCategoryHover(category, isHovering),
@@ -127,6 +132,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
       // For categories without submenu (like Correct Grammar)
       return _buildMenuItem(
         label: category.getLabel(context),
+        iconPath: category.getIconPath(widget.imagePaths),
         onTap: () {
           if (category.actions.isNotEmpty) {
             widget.onActionSelected(category.actions.first);
@@ -138,6 +144,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
 
   Widget _buildMenuItem({
     required String label,
+    required String iconPath,
     VoidCallback? onTap,
     void Function(bool)? onHover,
     bool hasSubmenu = false,
@@ -156,6 +163,13 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+              SvgPicture.asset(
+                iconPath,
+                width: AIScribeSizes.iconSize,
+                height: AIScribeSizes.iconSize,
+                colorFilter: AIScribeColors.svgColorFilter,
+              ),
+              const SizedBox(width: AIScribeSizes.fieldSpacing),
                 Expanded(
                   child: Text(
                     label,

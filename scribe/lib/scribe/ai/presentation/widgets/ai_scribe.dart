@@ -43,6 +43,7 @@ Future<void> showAIScribeDialog({
                   onActionSelected: (action) {
                     Navigator.of(context).pop(PredefinedAction(action));
                   },
+                  imagePaths: imagePaths,
                   availableCategories: availableCategories,
                 ),
               ),

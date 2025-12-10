@@ -24,6 +24,8 @@ dependencies:
 
   flutter_dotenv: 5.0.2
 
+  flutter_svg: 2.1.0
+
   get: 4.6.6
 
   pointer_interceptor: 0.10.1+2
