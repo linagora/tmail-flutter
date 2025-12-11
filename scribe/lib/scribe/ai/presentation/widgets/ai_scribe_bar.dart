@@ -22,7 +22,7 @@ class AIScribeBar extends StatefulWidget {
 
 class _AIScribeBarState extends State<AIScribeBar> {
   final TextEditingController _controller = TextEditingController();
-  bool _isButtonEnabled = false;
+  final ValueNotifier<bool> _isButtonEnabled = ValueNotifier(false);
 
   @override
   void initState() {
@@ -34,13 +34,12 @@ class _AIScribeBarState extends State<AIScribeBar> {
   void dispose() {
     _controller.removeListener(_onTextChanged);
     _controller.dispose();
+    _isButtonEnabled.dispose();
     super.dispose();
   }
 
   void _onTextChanged() {
-    setState(() {
-      _isButtonEnabled = _controller.text.trim().isNotEmpty;
-    });
+    _isButtonEnabled.value = _controller.text.trim().isNotEmpty;
   }
 
   void _onSendPressed() {
@@ -73,14 +72,19 @@ class _AIScribeBarState extends State<AIScribeBar> {
             ),
           ),
           const SizedBox(width: AIScribeSizes.fieldSpacing),
-          TMailButtonWidget.fromIcon(
-            icon: widget.imagePaths.icSend,
-            iconSize: AIScribeSizes.sendIconSize,
-            iconColor: Colors.white,
-            backgroundColor: _isButtonEnabled
-                ? AIScribeButtonStyles.sendCustomPromptBackgroundColor
-                : AIScribeButtonStyles.sendCustomPromptBackgroundColorDisabled,
-            onTapActionCallback: _isButtonEnabled ? _onSendPressed : null,
+          ValueListenableBuilder<bool>(
+            valueListenable: _isButtonEnabled,
+            builder: (context, isEnabled, child) {
+              return TMailButtonWidget.fromIcon(
+                icon: widget.imagePaths.icSend,
+                iconSize: AIScribeSizes.sendIconSize,
+                iconColor: Colors.white,
+                backgroundColor: isEnabled
+                    ? AIScribeButtonStyles.sendCustomPromptBackgroundColor
+                    : AIScribeButtonStyles.sendCustomPromptBackgroundColorDisabled,
+                onTapActionCallback: isEnabled ? _onSendPressed : null,
+              );
+            },
           )
         ],
       ),
