@@ -74,7 +74,6 @@ import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
-import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 
 class ComposerBindings extends BaseBindings {
 
@@ -339,7 +338,6 @@ class ComposerBindings extends BaseBindings {
       Get.find<PrintEmailInteractor>(tag: composerId),
       Get.find<ComposerRepository>(tag: composerId),
       Get.find<SaveTemplateEmailInteractor>(tag: composerId),
-      Get.find<GenerateAITextInteractor>(),
       composerId: composerId,
       composerArgs: composerArguments,
     ), tag: composerId);
