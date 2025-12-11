@@ -1,0 +1,40 @@
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
+
+class AddALabelToAnEmailInteractor {
+  final EmailRepository _emailRepository;
+
+  AddALabelToAnEmailInteractor(this._emailRepository);
+
+  Stream<Either<Failure, Success>> execute(
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+    String labelDisplay,
+  ) async* {
+    try {
+      yield Right(AddingALabelToAnEmail());
+      await _emailRepository.addLabelToEmail(
+        accountId,
+        emailId,
+        labelKeyword,
+      );
+      yield Right(AddALabelToAnEmailSuccess(
+        emailId,
+        labelKeyword,
+        labelDisplay,
+      ));
+    } catch (e) {
+      yield Left(AddALabelToAnEmailFailure(
+        exception: e,
+        labelDisplay: labelDisplay,
+      ));
+    }
+  }
+}

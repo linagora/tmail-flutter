@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/hex_color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/hex_color.dart';
 import 'package:labels/model/label.dart';
 
@@ -28,7 +29,7 @@ extension LabelExtension on Label {
 
   Label copyWith({
     Id? id,
-    String? keyword,
+    KeyWordIdentifier? keyword,
     String? displayName,
     HexColor? color,
   }) {
