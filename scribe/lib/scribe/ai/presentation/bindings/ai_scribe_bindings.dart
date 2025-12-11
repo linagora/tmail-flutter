@@ -7,6 +7,10 @@ import 'package:scribe/scribe/ai/domain/repository/ai_scribe_repository.dart';
 import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 
 class AIScribeBindings extends Bindings {
+  final String? scribeEndpoint;
+
+  AIScribeBindings({this.scribeEndpoint});
+
   @override
   void dependencies() {
     _bindingsDataSourceImpl();
@@ -18,7 +22,8 @@ class AIScribeBindings extends Bindings {
 
   void _bindingsDataSourceImpl() {
     Get.lazyPut<AIDataSourceImpl>(() => AIDataSourceImpl(
-      dio: Dio(), // Dedicated Dio instance without authorization interceptors
+      dio: Get.find<Dio>(),
+      endpoint: scribeEndpoint,
     ));
   }
 
