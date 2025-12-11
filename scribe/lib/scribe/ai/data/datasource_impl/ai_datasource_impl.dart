@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:scribe/scribe/ai/data/config/ai_config.dart';
 import 'package:scribe/scribe/ai/data/datasource/ai_datasource.dart';
 import 'package:scribe/scribe/ai/data/model/ai_message.dart';
 import 'package:scribe/scribe/ai/data/model/ai_api_request.dart';
@@ -11,10 +10,10 @@ class AIDataSourceImpl implements AIDataSource {
 
   AIDataSourceImpl({
     required Dio dio,
+    String? endpoint,
   }) : _aiApi = AIApi(
           dio: dio,
-          apiKey: AIConfig.aiApiKey,
-          baseUrl: AIConfig.aiApiUrl,
+          endpoint: endpoint,
         );
 
   @override
