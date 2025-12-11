@@ -5247,5 +5247,25 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "addLabelToEmailSuccessfullyMessage": "Email added to the \"{labelName}\" label",
+  "@addLabelToEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToEmailFailureMessage": "Cannot add email to the \"{labelName}\" label",
+  "@addLabelToEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
   }
 }

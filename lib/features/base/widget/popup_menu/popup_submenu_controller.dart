@@ -44,16 +44,16 @@ class PopupSubmenuController {
 
     _submenuEntry = OverlayEntry(
       builder: (_) {
-        return Positioned(
-          left: finalLeft,
+        return PositionedDirectional(
+          start: finalLeft,
           top: anchor.top,
           child: MouseRegion(
             onExit: (_) => hide(),
             child: Material(
               elevation: 8,
               color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(6)),
               ),
               child: SizedBox(
                 width: submenuWidth,
@@ -66,7 +66,7 @@ class PopupSubmenuController {
       },
     );
 
-    Overlay.of(context).insert(_submenuEntry!);
+    Overlay.maybeOf(context)?.insert(_submenuEntry!);
   }
 
   void hide() {

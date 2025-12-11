@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/send_receipt_to_sender_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/view_entire_message_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_counter_accept_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_maybe_state.dart';
@@ -48,6 +49,7 @@ import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_s
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_counter_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
@@ -65,6 +67,7 @@ import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_even
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/handle_label_for_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_mail_action_by_shortcut_action_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_open_attachment_list_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/update_attendance_status_extension.dart';
@@ -125,6 +128,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   RejectCalendarEventInteractor? _rejectCalendarEventInteractor;
   AcceptCounterCalendarEventInteractor? _acceptCounterCalendarEventInteractor;
   ThreadDetailController? _threadDetailController;
+  AddALabelToAnEmailInteractor? addALabelToAnEmailInteractor;
 
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
@@ -240,6 +244,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handlePrintEmailSuccess(success);
     } else if (success is CalendarEventReplySuccess) {
       calendarEventSuccess(success);
+    } else if (success is AddALabelToAnEmailSuccess) {
+      handleAddLabelToEmailSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -257,6 +263,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _showMessageWhenEmailPrintingFailed(failure);
     } else if (failure is CalendarEventReplyFailure) {
       _calendarEventFailure(failure);
+    } else if (failure is AddALabelToAnEmailFailure) {
+      handleAddLabelToEmailFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -1545,10 +1553,5 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       _threadDetailController?.onNextMobile();
     }
-  }
-
-  bool get isLabelFeatureEnabled {
-    return mailboxDashBoardController.isLabelCapabilitySupported &&
-        mailboxDashBoardController.labelController.isLabelSettingEnabled.isTrue;
   }
 }
