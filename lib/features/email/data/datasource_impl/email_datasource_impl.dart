@@ -22,6 +22,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
@@ -551,5 +552,16 @@ class EmailDataSourceImpl extends EmailDataSource {
   @override
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> addLabelToEmail(
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return Future.sync(() async {
+      return await emailAPI.addLabelToEmail(accountId, emailId, labelKeyword);
+    }).catchError(_exceptionThrower.throwException);
   }
 }

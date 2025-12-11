@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/labels.dart';
 
 import '../method_fixtures.dart';
@@ -41,13 +42,13 @@ void main() {
 
       final labelA = Label(
         id: Id('A'),
-        keyword: 'labelA',
+        keyword: KeyWordIdentifier('labelA'),
         displayName: 'Label A',
         color: HexColor('#111111'),
       );
       final labelB = Label(
         id: Id('B'),
-        keyword: 'labelB',
+        keyword: KeyWordIdentifier('labelB'),
         displayName: 'Label B',
         color: HexColor('#222222'),
       );

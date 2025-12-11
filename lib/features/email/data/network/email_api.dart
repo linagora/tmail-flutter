@@ -936,4 +936,30 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
       throw NotParsableBlobIdToEmailException();
     }
   }
+
+  Future<void> addLabelToEmail(
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  ) async {
+    final method = SetEmailMethod(accountId)
+      ..addUpdates({emailId.id: labelKeyword.generateLabelActionPath()});
+
+    final builder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final invocation = builder.invocation(method);
+
+    final result =
+        await (builder..usings(method.requiredCapabilities)).build().execute();
+
+    final response = result.parse<SetEmailResponse>(
+      invocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
+
+    final emailIdsUpdated = response?.updated?.keys ?? <Id>[];
+
+    if (emailIdsUpdated.isEmpty || !emailIdsUpdated.contains(emailId.id)) {
+      throw parseErrorForSetResponse(response, emailId.id);
+    }
+  }
 }
