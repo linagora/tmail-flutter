@@ -4,7 +4,66 @@ import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe.dart';
 
 void main() {
-    group('calculateModalPosition::', () {
+  group('calculateMenuDialogHeight::', () {
+    test('should calculate correct height with content and default 4 categories', () {
+      // Arrange
+      const hasContent = true;
+      const categoryCount = 4;
+
+      // Act
+      final height = calculateMenuDialogHeight(
+        hasContent: hasContent,
+        categoryCount: categoryCount,
+      );
+
+      // Assert
+      // 4 categories × 40px + 8px spacing + 48px bar = 216px
+      const expectedHeight = (4 * AIScribeSizes.menuItemHeight) +
+          AIScribeSizes.fieldSpacing +
+          AIScribeSizes.barHeight;
+      expect(height, expectedHeight);
+      expect(height, 216.0);
+    });
+
+    test('should calculate correct height with content and custom categories', () {
+      // Arrange
+      const hasContent = true;
+      const categoryCount = 2;
+
+      // Act
+      final height = calculateMenuDialogHeight(
+        hasContent: hasContent,
+        categoryCount: categoryCount,
+      );
+
+      // Assert
+      // 2 categories × 40px + 8px spacing + 48px bar = 136px
+      const expectedHeight = (2 * AIScribeSizes.menuItemHeight) +
+          AIScribeSizes.fieldSpacing +
+          AIScribeSizes.barHeight;
+      expect(height, expectedHeight);
+      expect(height, 136.0);
+    });
+
+    test('should calculate correct height without content (bar only)', () {
+      // Arrange
+      const hasContent = false;
+      const categoryCount = 4; // Should be ignored when hasContent is false
+
+      // Act
+      final height = calculateMenuDialogHeight(
+        hasContent: hasContent,
+        categoryCount: categoryCount,
+      );
+
+      // Assert
+      // Only the bar height
+      expect(height, AIScribeSizes.barHeight);
+      expect(height, 48.0);
+    });
+  });
+
+  group('calculateModalPosition::', () {
     testWidgets('should adjust left position when modal would go off-screen to the right', (tester) async {
       // Arrange
       const screenSize = Size(800, 600);
