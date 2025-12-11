@@ -12,6 +12,8 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:model/ai/ai_capability.dart';
+import 'package:model/ai/capability_ai.dart';
 import 'package:model/download_all/download_all_capability.dart';
 import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
@@ -33,6 +35,7 @@ extension SessionExtensions on Session {
     linagoraDownloadAllCapability: DownloadAllCapability.deserialize,
     capabilityServerSettings: SettingsCapability.deserialize,
     linagoraSaaSCapability: SaaSAccountCapability.deserialize,
+    capabilityAI: AICapability.deserialize,
   };
 
   Map<String, dynamic> toJson() {
@@ -162,6 +165,20 @@ extension SessionExtensions on Session {
       return saaSAccountCapability;
     } catch (e) {
       logError('SessionExtensions::getSaaSAccountCapability():[Exception] $e');
+      return null;
+    }
+  }
+
+  AICapability? getAICapability(AccountId accountId) {
+    try {
+      final aiCapability = getCapabilityProperties<AICapability>(
+        accountId,
+        capabilityAI,
+      );
+      log('SessionExtensions::getAICapability:aiCapability = $aiCapability');
+      return aiCapability;
+    } catch (e) {
+      logError('SessionExtensions::getAICapability():[Exception] $e');
       return null;
     }
   }
