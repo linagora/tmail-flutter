@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
@@ -24,6 +26,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
   final Map<AIScribeMenuCategory, GlobalKey> _categoryKeys = {};
   final GlobalKey _menuKey = GlobalKey();
   OverlayEntry? _submenuOverlay;
+  Timer? _closeTimer;
 
   @override
   void initState() {
@@ -36,6 +39,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
 
   @override
   void dispose() {
+    _closeTimer?.cancel();
     _removeSubmenu();
     super.dispose();
   }
@@ -63,9 +67,11 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
         position: menuPosition,
         parentSize: menuSize,
         onActionSelected: (action) {
+          _closeTimer?.cancel();
           _removeSubmenu();
           widget.onActionSelected(action);
         },
+        onHover: _cancelClose,
         onDismiss: () {
           setState(() {
             _hoveredCategory = null;
@@ -78,17 +84,32 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
     Overlay.of(context).insert(_submenuOverlay!);
   }
 
-  void _handleCategoryClick(AIScribeMenuCategory category) {
-    setState(() {
-      // Toggle submenu - close if already open, open if closed
-      if (_hoveredCategory == category) {
-        _hoveredCategory = null;
-        _removeSubmenu();
-      } else {
+  void _handleCategoryHover(AIScribeMenuCategory category, bool isHovering) {
+    if (isHovering) {
+      _closeTimer?.cancel();
+      _closeTimer = null;
+
+      setState(() {
         _hoveredCategory = category;
         _showSubmenu(category);
-      }
-    });
+      });
+    } else {
+      // Delay closing to allow mouse to reach submenu
+      _closeTimer?.cancel();
+      _closeTimer = Timer(const Duration(milliseconds: 150), () {
+        if (mounted && _hoveredCategory == category) {
+          setState(() {
+            _hoveredCategory = null;
+            _removeSubmenu();
+          });
+        }
+      });
+    }
+  }
+
+  void _cancelClose() {
+    _closeTimer?.cancel();
+    _closeTimer = null;
   }
 
   @override
@@ -112,7 +133,7 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
           label: category.getLabel(context),
           hasSubmenu: true,
           isHovered: _hoveredCategory == category,
-          onTap: () => _handleCategoryClick(category),
+          onHover: (isHovering) => _handleCategoryHover(category, isHovering),
         ),
       );
     } else {
@@ -130,33 +151,38 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
 
   Widget _buildMenuItem({
     required String label,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
+    void Function(bool)? onHover,
     bool hasSubmenu = false,
     bool isHovered = false
   }) {
     return SizedBox(
       height: AIScribeSizes.menuItemHeight,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AIScribeSizes.menuItemBorderRadius),
-        child: Padding(
-          padding: AIScribeSizes.menuItemPadding,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  label,
-                  style: AIScribeTextStyles.menuItem,
+      child: MouseRegion(
+        onEnter: onHover != null ? (_) => onHover(true) : null,
+        onExit: onHover != null ? (_) => onHover(false) : null,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AIScribeSizes.menuItemBorderRadius),
+          child: Padding(
+            padding: AIScribeSizes.menuItemPadding,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    label,
+                    style: AIScribeTextStyles.menuItem,
+                  ),
                 ),
-              ),
-              if (hasSubmenu)
-                const Icon(
-                  Icons.chevron_right,
-                  size: AIScribeSizes.iconSize,
-                  color: AIScribeColors.textPrimary,
-                ),
-            ],
+                if (hasSubmenu)
+                  const Icon(
+                    Icons.chevron_right,
+                    size: AIScribeSizes.iconSize,
+                    color: AIScribeColors.textPrimary,
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -170,6 +196,7 @@ class _SubmenuPanel extends StatefulWidget {
   final Offset position;
   final Size parentSize;
   final Function(AIScribeMenuAction) onActionSelected;
+  final VoidCallback onHover;
   final VoidCallback onDismiss;
 
   const _SubmenuPanel({
@@ -177,6 +204,7 @@ class _SubmenuPanel extends StatefulWidget {
     required this.position,
     required this.parentSize,
     required this.onActionSelected,
+    required this.onHover,
     required this.onDismiss,
   });
 
@@ -209,36 +237,40 @@ class _SubmenuPanelState extends State<_SubmenuPanel> {
         Positioned(
           left: adjustedLeft,
           top: adjustedTop,
-          child: PointerInterceptor(
-            child: Material(
-              color: Colors.white,
-              elevation: AIScribeSizes.dialogElevation,
-              borderRadius: BorderRadius.circular(AIScribeSizes.menuBorderRadius),
-              child: Container(
-                width: AIScribeSizes.menuWidth,
-                constraints: const BoxConstraints(maxHeight: AIScribeSizes.submenuMaxHeight),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: widget.category.actions.map((action) {
-                    return SizedBox(
-                      height: AIScribeSizes.menuItemHeight,
-                      child: InkWell(
-                        onTap: () => widget.onActionSelected(action),
-                        borderRadius: BorderRadius.circular(AIScribeSizes.menuItemBorderRadius),
-                        child: Padding(
-                          padding: AIScribeSizes.menuItemPadding,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              action.getLabel(context),
-                              style: AIScribeTextStyles.menuItem,
+          child: MouseRegion(
+            onEnter: (_) => widget.onHover(),
+            onExit: (_) => widget.onDismiss(),
+            child: PointerInterceptor(
+              child: Material(
+                color: Colors.white,
+                elevation: AIScribeSizes.dialogElevation,
+                borderRadius: BorderRadius.circular(AIScribeSizes.menuBorderRadius),
+                child: Container(
+                  width: AIScribeSizes.menuWidth,
+                  constraints: const BoxConstraints(maxHeight: AIScribeSizes.submenuMaxHeight),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: widget.category.actions.map((action) {
+                      return SizedBox(
+                        height: AIScribeSizes.menuItemHeight,
+                        child: InkWell(
+                          onTap: () => widget.onActionSelected(action),
+                          borderRadius: BorderRadius.circular(AIScribeSizes.menuItemBorderRadius),
+                          child: Padding(
+                            padding: AIScribeSizes.menuItemPadding,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                action.getLabel(context),
+                                style: AIScribeTextStyles.menuItem,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  }).toList(),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ),
