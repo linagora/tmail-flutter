@@ -159,9 +159,7 @@ class ComposerController extends BaseController
   final isMarkAsImportant = Rx<bool>(false);
   final isContentHeightExceeded = Rx<bool>(false);
 
-  final selectedText = Rxn<String>();
-  final hasTextSelection = false.obs;
-  final textSelectionCoordinates = Rxn<Offset>();
+  final editorTextSelection = Rxn<EditorTextSelection>();
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final LocalImagePickerInteractor _localImagePickerInteractor;
@@ -928,7 +926,7 @@ class ComposerController extends BaseController
   }
 
   void showAIScribeMenuForSelectedText(BuildContext context, {Offset? buttonPosition}) {
-    final selection = selectedText.value;
+    final selection = editorTextSelection.value?.selectedText;
     if (selection == null || selection.isEmpty) {
       return;
     }
@@ -944,22 +942,18 @@ class ComposerController extends BaseController
   }
 
   void handleTextSelection(TextSelectionData? textSelectionData) {
-    if (textSelectionData != null) {
-      hasTextSelection.value = textSelectionData.hasSelection;
-      selectedText.value = textSelectionData.selectedText;
-
-      if (textSelectionData.coordinates != null) {
-        textSelectionCoordinates.value = Offset(
-          textSelectionData.coordinates!.x,
-          textSelectionData.coordinates!.y,
-        );
-      } else {
-        textSelectionCoordinates.value = null;
-      }
+    if (textSelectionData != null && textSelectionData.hasSelection) {
+      editorTextSelection.value = EditorTextSelection(
+        selectedText: textSelectionData.selectedText,
+        coordinates: textSelectionData.coordinates != null
+            ? Offset(
+                textSelectionData.coordinates!.x,
+                textSelectionData.coordinates!.y,
+              )
+            : null,
+      );
     } else {
-      hasTextSelection.value = false;
-      selectedText.value = null;
-      textSelectionCoordinates.value = null;
+      editorTextSelection.value = null;
     }
   }
 
