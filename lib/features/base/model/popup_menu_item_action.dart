@@ -3,16 +3,23 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 typedef OnPopupMenuActionClick = void Function(PopupMenuItemAction action);
+typedef OnHoverShowSubmenu = void Function(GlobalKey key);
 
 abstract class PopupMenuItemAction<T> with EquatableMixin {
   final T action;
   final String? key;
   final int category;
+  final Widget? submenu;
 
-  PopupMenuItemAction(this.action, {this.key, this.category = -1});
+  PopupMenuItemAction(
+    this.action, {
+    this.key,
+    this.category = -1,
+    this.submenu,
+  });
 
   @override
-  List<Object?> get props => [action, key, category];
+  List<Object?> get props => [action, key, category, submenu];
 
   String get actionName;
 
@@ -40,9 +47,22 @@ mixin OptionalPopupSelectedIcon<T> {
   double get selectedIconSize => 16.0;
 }
 
+mixin OptionalPopupHoverIcon {
+  String get hoverIcon;
+
+  Color get hoverIconColor => AppColor.steelGrayA540;
+
+  double get hoverIconSize => 16.0;
+}
+
 abstract class PopupMenuItemActionRequiredIcon<T> extends PopupMenuItemAction<T>
-    with OptionalPopupIcon {
-  PopupMenuItemActionRequiredIcon(super.action, {super.key, super.category});
+    with OptionalPopupIcon, OptionalPopupHoverIcon {
+  PopupMenuItemActionRequiredIcon(
+    super.action, {
+    super.key,
+    super.category,
+    super.submenu,
+  });
 }
 
 abstract class PopupMenuItemActionRequiredSelectedIcon<T>
@@ -54,6 +74,7 @@ abstract class PopupMenuItemActionRequiredSelectedIcon<T>
     this.selectedAction, {
     super.key,
     super.category,
+    super.submenu,
   });
 }
 
@@ -66,6 +87,7 @@ abstract class PopupMenuItemActionRequiredFull<T> extends PopupMenuItemAction<T>
     this.selectedAction, {
     super.key,
     super.category,
+    super.submenu,
   });
 }
 
@@ -79,5 +101,6 @@ abstract class PopupMenuItemActionRequiredIconWithMultipleSelected<T>
     this.selectedActions, {
     super.key,
     super.category,
+    super.submenu,
   });
 }
