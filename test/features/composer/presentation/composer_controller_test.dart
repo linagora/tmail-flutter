@@ -8,6 +8,7 @@ import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -239,6 +240,12 @@ void main() {
 
   setUp(() {
     Get.testMode = true;
+
+    // Initialize DotEnv for testing
+    dotenv.testLoad(mergeWith: {
+      'AI_ENABLED': 'false',
+    });
+
     // Mock base controller
     mockCachingManager = MockCachingManager();
     mockLanguageCacheManager = MockLanguageCacheManager();
