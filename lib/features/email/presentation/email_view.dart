@@ -103,6 +103,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
                         isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
+                        labels: controller.mailboxDashBoardController.labelController.labels,
                         openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
                         openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
                       );
@@ -309,6 +310,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             ],
             emailIsRead: presentationEmail.hasRead,
             isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
+            labels: controller.mailboxDashBoardController.labelController.labels,
             openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
           ),
