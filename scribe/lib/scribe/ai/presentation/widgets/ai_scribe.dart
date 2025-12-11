@@ -67,7 +67,7 @@ Future<void> showAIScribeDialog({
       );
 
       if (buttonPosition != null) {
-        final position = _calculateModalPosition(
+        final position = calculateModalPosition(
           context: context,
           buttonPosition: buttonPosition,
           modalWidth: AIScribeSizes.barWidth,
@@ -127,7 +127,7 @@ Future<void> showAIScribeDialog({
             ? screenSize.width * AIScribeSizes.mobileWidthPercentage
             : AIScribeSizes.modalMaxWidthLargeScreen;
 
-        final position = _calculateModalPosition(
+        final position = calculateModalPosition(
           context: context,
           buttonPosition: buttonPosition,
           modalWidth: modalWidth,
@@ -158,7 +158,7 @@ Future<void> showAIScribeDialog({
   );
 }
 
-({double left, double bottom}) _calculateModalPosition({
+({double left, double bottom}) calculateModalPosition({
   required BuildContext context,
   required Offset buttonPosition,
   required double modalWidth,
