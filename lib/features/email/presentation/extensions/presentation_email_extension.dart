@@ -1,4 +1,5 @@
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -167,5 +168,17 @@ extension PresentationEmailExtension on PresentationEmail {
         .where((label) =>
             label.keyword != null && enabledKeywords.contains(label.keyword))
         .toList();
+  }
+
+  PresentationEmail addKeyword(KeyWordIdentifier keyword) {
+    return copyWith(
+      keywords: keywords.withKeyword(keyword),
+    );
+  }
+
+  PresentationEmail removeKeyword(KeyWordIdentifier keyword) {
+    return copyWith(
+      keywords: keywords.withoutKeyword(keyword),
+    );
   }
 }

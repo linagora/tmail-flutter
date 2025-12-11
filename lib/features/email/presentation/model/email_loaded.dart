@@ -17,6 +17,20 @@ class EmailLoaded with EquatableMixin {
     this.emailCurrent,
   });
 
+  EmailLoaded copyWith({
+    String? htmlContent,
+    List<Attachment>? attachments,
+    List<Attachment>? inlineImages,
+    Email? emailCurrent,
+  }) {
+    return EmailLoaded(
+      htmlContent: htmlContent ?? this.htmlContent,
+      attachments: attachments ?? this.attachments,
+      inlineImages: inlineImages ?? this.inlineImages,
+      emailCurrent: emailCurrent ?? this.emailCurrent,
+    );
+  }
+
   SMimeSignatureStatus? get sMimeStatus => emailCurrent?.sMimeStatus;
 
   @override
