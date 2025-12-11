@@ -69,6 +69,18 @@ class TextSelectionCoordinates {
   Offset get position => Offset(x, y);
 }
 
+class EditorTextSelection {
+  final String? selectedText;
+  final Offset? coordinates;
+
+  const EditorTextSelection({
+    this.selectedText,
+    this.coordinates,
+  });
+
+  bool get hasSelection => selectedText != null && selectedText!.isNotEmpty;
+}
+
 mixin TextSelectionMixin<T extends StatefulWidget> on State<T> {
   OnTextSelectionChanged? get onSelectionChanged => null;
 
