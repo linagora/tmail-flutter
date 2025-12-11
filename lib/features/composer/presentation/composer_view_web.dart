@@ -30,7 +30,6 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/list_recipi
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
-import 'package:scribe/scribe.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/attachment_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/bottom_bar_composer_widget.dart';
@@ -560,8 +559,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
-                              onOpenAIScribe: AIConfig.isAiEnabled ? () => controller.showAIScribeMenuForFullText(context) : null,
-                              aiScribeButtonKey: AIConfig.isAiEnabled ? controller.aiScribeButtonKey : null,
+                              onOpenAIScribe: controller.isAIScribeAvailable ? () => controller.showAIScribeMenuForFullText(context) : null,
+                              aiScribeButtonKey: controller.isAIScribeAvailable ? controller.aiScribeButtonKey : null,
                             )),
                           ],
                         ),
@@ -836,8 +835,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
-                              onOpenAIScribe: AIConfig.isAiEnabled ? () => controller.showAIScribeMenuForFullText(context) : null,
-                              aiScribeButtonKey: AIConfig.isAiEnabled ? controller.aiScribeButtonKey : null,
+                              onOpenAIScribe: controller.isAIScribeAvailable ? () => controller.showAIScribeMenuForFullText(context) : null,
+                              aiScribeButtonKey: controller.isAIScribeAvailable ? controller.aiScribeButtonKey : null,
                             )),
                           ],
                         ),
@@ -958,7 +957,7 @@ class ComposerView extends GetWidget<ComposerController> {
   }
 
   Widget _buildAIScribeSelectionButton(BuildContext context) {
-    if (!AIConfig.isAiEnabled) {
+    if (!controller.isAIScribeAvailable) {
       return const SizedBox.shrink();
     }
 
