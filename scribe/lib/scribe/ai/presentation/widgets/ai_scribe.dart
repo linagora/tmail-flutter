@@ -67,10 +67,16 @@ Future<void> showAIScribeDialog({
       );
 
       if (buttonPosition != null) {
+        final categories = availableCategories ?? AIScribeMenuCategory.values;
+        final modalHeight = hasContent
+            ? (categories.length * AIScribeSizes.menuItemHeight) + AIScribeSizes.fieldSpacing + AIScribeSizes.barHeight
+            : AIScribeSizes.barHeight;
+
         final position = calculateModalPosition(
           context: context,
           buttonPosition: buttonPosition,
           modalWidth: AIScribeSizes.barWidth,
+          modalHeight: modalHeight,
         );
 
         return PointerInterceptor(
@@ -156,6 +162,15 @@ Future<void> showAIScribeDialog({
       return Center(child: modalContent);
     },
   );
+}
+
+double calculateMenuDialogHeight({
+  required bool hasContent,
+  required int categoryCount,
+}) {
+  return hasContent
+      ? (categoryCount * AIScribeSizes.menuItemHeight) + AIScribeSizes.fieldSpacing + AIScribeSizes.barHeight
+      : AIScribeSizes.barHeight;
 }
 
 ({double left, double bottom}) calculateModalPosition({
