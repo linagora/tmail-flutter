@@ -1,6 +1,10 @@
 import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
 
+const PERFORM_TASK = "Perform only the following task:";
+const PRESERVE_LANGUAGE_PROMPT = "Do not translate. Strictly keep the original language of the input text. For example, if it's French, keep French. If it's English, keep English.";
+const DO_NOT_ADD_INFO_PROMPT = "Do not add any extra information or interpret anything beyond the explicit task.";
+
 // TODO
 // In a near future, prompts will be loaded from a remote source
 class AIPrompts {
@@ -43,31 +47,31 @@ class AIPrompts {
   }
 
   static String improveMakeShorter(String text) {
-    return 'Make the following text shorter and more concise. Output only the result. Preserve input formatting. Text:\n\n$text';
+    return '$PERFORM_TASK make the text shorter but preserve the meaning. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
   }
 
   static String improveExpandContext(String text) {
-    return 'Expand the context of the following text to make it more detailed and comprehensive. Output only the result. Preserve input formatting. Text:\n\n$text';
+    return '$PERFORM_TASK expand the context of the text to make it more detailed and comprehensive. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
   }
 
   static String improveEmojify(String text) {
-    return 'Add appropriate emojis to the following text to make it more expressive. Output only the result. Preserve input formatting. Text:\n\n$text';
+    return '$PERFORM_TASK add emojis to the important parts of the text. Do not try to rephrase or replace text. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
   }
 
   static String improveTransformToBullets(String text) {
-    return 'Transform the following text into a bulleted list format. Output only the result. Preserve input formatting. Text:\n\n$text';
+    return '$PERFORM_TASK transform the text in a bullet list. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
   }
 
   static String correctGrammar(String text) {
-    return 'Correct grammar of the following text. Output only the result. Preserve input formatting. Text:\n\n$text';
+    return '$PERFORM_TASK correct grammar and spelling. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
   }
 
   static String changeToneTo(String text, String tone) {
-    return 'Change the tone of the following text to be more $tone. Output only the result. Preserve input formatting. Text:\n\n$text';
+    return '$PERFORM_TASK change the tone to be $tone. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
   }
 
   static String translateTo(String text, String language) {
-    return 'Translate the following text to $language. Output only the result. Preserve input formatting. Text:\n\n$text';
+    return '$PERFORM_TASK translate. Translate the text to the specified language: $language. $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
   }
 
   static String buildCustomPrompt(String customPrompt, String? text) {
@@ -75,6 +79,6 @@ class AIPrompts {
       return customPrompt;
     }
 
-    return '$customPrompt\n\nText:\n\n$text';
+    return 'You help the user write an email following his instruction: $customPrompt\n\nDo not output a subject or a signature, only the content of the email. Text:\n\n$text';
   }
 }
