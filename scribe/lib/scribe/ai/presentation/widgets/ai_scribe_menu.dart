@@ -23,19 +23,9 @@ class AIScribeMenu extends StatefulWidget {
 
 class _AIScribeMenuContentState extends State<AIScribeMenu> {
   AIScribeMenuCategory? _hoveredCategory;
-  final Map<AIScribeMenuCategory, GlobalKey> _categoryKeys = {};
   final GlobalKey _menuKey = GlobalKey();
   OverlayEntry? _submenuOverlay;
   Timer? _closeTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    final categories = widget.availableCategories ?? AIScribeMenuCategory.values;
-    for (final category in categories) {
-      _categoryKeys[category] = GlobalKey();
-    }
-  }
 
   @override
   void dispose() {
@@ -119,16 +109,13 @@ class _AIScribeMenuContentState extends State<AIScribeMenu> {
       key: _menuKey,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: categories.map((category) {
-        return _buildCategoryItem(category);
-      }).toList(),
+      children: categories.map(_buildCategoryItem).toList(),
     );
   }
 
   Widget _buildCategoryItem(AIScribeMenuCategory category) {
     if (category.hasSubmenu) {
       return Container(
-        key: _categoryKeys[category],
         child: _buildMenuItem(
           label: category.getLabel(context),
           hasSubmenu: true,
