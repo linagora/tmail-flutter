@@ -9,12 +9,14 @@ class LabelListContextMenu extends StatelessWidget {
   final PresentationEmail presentationEmail;
   final List<Label> labelList;
   final ImagePaths imagePaths;
+  final OnSelectLabelAction onSelectLabelAction;
 
   const LabelListContextMenu({
     super.key,
     required this.labelList,
     required this.presentationEmail,
     required this.imagePaths,
+    required this.onSelectLabelAction,
   });
 
   @override
@@ -24,13 +26,14 @@ class LabelListContextMenu extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: labelList.length,
-      itemBuilder: (context, index) {
+      itemBuilder: (_, index) {
         final label = labelList[index];
         final isSelected = emailLabels.contains(label);
         return LabelItemContextMenu(
           label: label,
           imagePaths: imagePaths,
           isSelected: isSelected,
+          onSelectLabelAction: onSelectLabelAction,
         );
       },
     );

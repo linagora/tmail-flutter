@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/handle_label_for_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_on_iframe_click_in_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/validate_display_free_busy_message_extension.dart';
@@ -106,6 +107,12 @@ class EmailView extends GetWidget<SingleEmailController> {
                         labels: controller.mailboxDashBoardController.labelController.labels,
                         openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
                         openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
+                        onSelectLabelAction: (label, isSelected) =>
+                            controller.toggleLabelToEmail(
+                              presentationEmail.id!,
+                              label,
+                              isSelected,
+                            ),
                       );
                     },
                     supportBackAction: !isInsideThreadDetailView,
@@ -313,6 +320,12 @@ class EmailView extends GetWidget<SingleEmailController> {
             labels: controller.mailboxDashBoardController.labelController.labels,
             openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
+            onSelectLabelAction: (label, isSelected) =>
+                controller.toggleLabelToEmail(
+                  presentationEmail.id!,
+                  label,
+                  isSelected,
+                ),
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           mailboxContain: presentationEmail.findMailboxContain(
