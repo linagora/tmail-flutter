@@ -113,12 +113,18 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     }
 
     _selectionChangeListener = (event) {
-      if (event is MessageEvent) {
-        final data = jsonDecode(event.data);
+      try {
+        if (event is MessageEvent) {
+          final data = jsonDecode(event.data);
 
-        if (data['name'] == HtmlUtils.registerSelectionChangeListener.name) {
-          handleSelectionChange(data);
+          if (data['name'] == HtmlUtils.registerSelectionChangeListener.name) {
+            handleSelectionChange(data);
+          }
         }
+      } catch (e) {
+        logError(
+          '_WebEditorState::_selectionChangeListener: Unable to parse selection data = $e',
+        );
       }
     };
     if (_selectionChangeListener != null) {
