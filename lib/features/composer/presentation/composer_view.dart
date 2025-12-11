@@ -561,9 +561,11 @@ class ComposerView extends GetWidget<ComposerController> {
     }
 
     return Obx(() {
-      if (controller.hasTextSelection.value &&
-          controller.textSelectionCoordinates.value != null) {
-        final coordinates = controller.textSelectionCoordinates.value!;
+      final textSelection = controller.editorTextSelection.value;
+      if (textSelection != null &&
+          textSelection.hasSelection &&
+          textSelection.coordinates != null) {
+        final coordinates = textSelection.coordinates!;
         // Account for the horizontal padding around the editor
         const editorHorizontalPadding = 12.0;
         return PositionedDirectional(
