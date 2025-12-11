@@ -4,26 +4,25 @@ import 'package:scribe/scribe/ai/data/model/ai_api_request.dart';
 
 class AIApi {
   final Dio _dio;
-  final String _apiKey;
-  final String _baseUrl;
+  final String? _endpoint;
 
   AIApi({
     required Dio dio,
-    required String apiKey,
-    required String baseUrl,
-  })  : _dio = dio,
-        _apiKey = apiKey,
-        _baseUrl = baseUrl;
+    String? endpoint,
+  }) : _dio = dio,
+       _endpoint = endpoint;
 
-  Future<AIApiResponse> chatCompletion(AIAPIRequest request) async {
+  Future<AIApiResponse> chatCompletion(
+    AIAPIRequest request
+    ) async {
+    final url = _endpoint;
+
+    if (url == null) {
+      throw Exception('AI API is not available');
+    }
+
     final response = await _dio.post(
-      '$_baseUrl/chat/completions',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $_apiKey',
-          'Content-Type': 'application/json',
-        },
-      ),
+      url,
       data: request.toJson(),
     );
 
