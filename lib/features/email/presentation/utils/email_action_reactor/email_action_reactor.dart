@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
@@ -32,6 +33,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_submenu_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -50,6 +52,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_context_menu.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
@@ -486,6 +489,7 @@ class EmailActionReactor {
     required bool isLabelFeatureEnabled,
     required OpenBottomSheetContextMenuAction openBottomSheetContextMenu,
     required OpenPopupMenuActionGroup openPopupMenu,
+    List<Label>? labels,
   }) {
     if (currentContext == null) return;
 
@@ -566,18 +570,47 @@ class EmailActionReactor {
           imagePaths,
           key: '${actionType.name}_action',
           category: actionType.category,
+          submenu: _getEmailActionSubmenu(
+            actionType: actionType,
+            imagePaths: imagePaths,
+            presentationEmail: presentationEmail,
+            labels: labels,
+          ),
         );
       }).toList();
 
+      final submenuController = PopupSubmenuController();
+
       final popupMenuWidget = PopupMenuActionGroupWidget(
         actions: popupMenuItemEmailActions,
+        submenuController: submenuController,
         onActionSelected: (action) {
           handleEmailAction(presentationEmail, action.action);
         },
       );
 
-      openPopupMenu(currentContext!, position, popupMenuWidget);
+      openPopupMenu(
+        currentContext!,
+        position,
+        popupMenuWidget,
+      ).whenComplete(submenuController.hide);
     }
+  }
+
+  Widget? _getEmailActionSubmenu({
+    required EmailActionType actionType,
+    required ImagePaths imagePaths,
+    required PresentationEmail presentationEmail,
+    required List<Label>? labels,
+  }) {
+    if (actionType == EmailActionType.labelAs) {
+      return LabelListContextMenu(
+        labelList: labels ?? [],
+        presentationEmail: presentationEmail,
+        imagePaths: imagePaths,
+      );
+    }
+    return null;
   }
 
   bool _canDeletePermanently(

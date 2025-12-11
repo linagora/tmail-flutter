@@ -27,4 +27,7 @@ class PopupMenuItemProfileSettingTypeAction
 
   @override
   EdgeInsetsGeometry get itemPadding => const EdgeInsets.symmetric(horizontal: 16);
+
+  @override
+  String get hoverIcon => imagePaths.icThumbsUp;
 }
