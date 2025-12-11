@@ -225,7 +225,6 @@ void main() {
   late MockPrintEmailInteractor mockPrintEmailInteractor;
   late MockComposerRepository mockComposerRepository;
   late MockSaveTemplateEmailInteractor mockSaveTemplateEmailInteractor;
-  late MockGenerateAITextInteractor mockGenerateAITextInteractor;
 
   // Declaration Getx dependencies
   final mockMailboxDashBoardController = MockMailboxDashBoardController();
@@ -296,7 +295,6 @@ void main() {
     mockPrintEmailInteractor = MockPrintEmailInteractor();
     mockComposerRepository = MockComposerRepository();
     mockSaveTemplateEmailInteractor = MockSaveTemplateEmailInteractor();
-    mockGenerateAITextInteractor = MockGenerateAITextInteractor();
 
     composerController = ComposerController(
       mockLocalFilePickerInteractor,
@@ -314,7 +312,6 @@ void main() {
       mockPrintEmailInteractor,
       mockComposerRepository,
       mockSaveTemplateEmailInteractor,
-      mockGenerateAITextInteractor,
     );
 
     mockHtmlEditorApi = MockHtmlEditorApi();
