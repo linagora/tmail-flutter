@@ -14,11 +14,14 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
     MarkStarAction? markStarAction,
     bool markAsAnswered = false,
     bool markAsForwarded = false,
+    bool isLabelAdded = false,
+    KeyWordIdentifier? labelKeyword,
   }) {
     if (readAction == null &&
         markStarAction == null &&
         !markAsAnswered &&
-        !markAsForwarded) {
+        !markAsForwarded &&
+        labelKeyword == null) {
       return;
     }
 
@@ -59,6 +62,10 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
 
       if (markAsForwarded) {
         _updateKeyword(email, KeyWordIdentifier.emailForwarded, true);
+      }
+
+      if (labelKeyword != null) {
+        _updateKeyword(email, labelKeyword, isLabelAdded);
       }
     }
 

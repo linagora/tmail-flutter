@@ -5584,4 +5584,20 @@ class AppLocalizations {
       name: 'labelAs',
     );
   }
+
+  String addLabelToEmailSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'Email added to the "$labelName" label',
+      name: 'addLabelToEmailSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String addLabelToEmailFailureMessage(String labelName) {
+    return Intl.message(
+      'Cannot add email to the "$labelName" label',
+      name: 'addLabelToEmailFailureMessage',
+      args: [labelName],
+    );
+  }
 }

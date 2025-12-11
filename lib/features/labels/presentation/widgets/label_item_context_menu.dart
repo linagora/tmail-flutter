@@ -6,16 +6,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:labels/model/label.dart';
 
+typedef OnSelectLabelAction = void Function(Label label, bool isSelected);
+
 class LabelItemContextMenu extends StatelessWidget {
   final Label label;
   final ImagePaths imagePaths;
   final bool isSelected;
+  final OnSelectLabelAction onSelectLabelAction;
 
   const LabelItemContextMenu({
     super.key,
     required this.label,
     required this.imagePaths,
     required this.isSelected,
+    required this.onSelectLabelAction,
   });
 
   @override
@@ -23,7 +27,7 @@ class LabelItemContextMenu extends StatelessWidget {
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
-        onTap: () {},
+        onTap: () => onSelectLabelAction(label, !isSelected),
         child: Container(
           height: 48,
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -48,7 +52,7 @@ class LabelItemContextMenu extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
                 ),
-              )
+              ),
             ],
           ),
         ),

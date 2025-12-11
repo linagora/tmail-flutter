@@ -22,6 +22,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/parse_email_by_blob_id_state.dart';
@@ -160,7 +161,7 @@ class ToastManager {
             exception,
             useDefaultMessage: true,
           );
-    } else if (_isEmptySpamFolderFailure(exception)) {
+    } else if (_isEmptySpamFolderFailure(failure)) {
       message = message ?? appLocalizations.emptySpamFolderFailed;
     } else if (_isEmptyTrashFolderFailure(failure)) {
       message = message ?? appLocalizations.emptyTrashFolderFailed;
@@ -201,6 +202,9 @@ class ToastManager {
     } else if (failure is CreateNewLabelFailure) {
       message = message ??
           appLocalizations.createNewLabelFailure;
+    } else if (failure is AddALabelToAnEmailFailure) {
+      message = message ??
+          appLocalizations.addLabelToEmailFailureMessage(failure.labelDisplay);
     }
     log('ToastManager::showMessageFailure: Message: $message');
     if (message?.trim().isNotEmpty == true) {
@@ -267,6 +271,10 @@ class ToastManager {
     } else if (success is CreateNewLabelSuccess) {
       message = appLocalizations.createLabelSuccessfullyMessage(
         success.newLabel.safeDisplayName,
+      );
+    } else if (success is AddALabelToAnEmailSuccess) {
+      message = appLocalizations.addLabelToEmailSuccessfullyMessage(
+        success.labelDisplay,
       );
     }
     log('ToastManager::showMessageSuccess: Message: $message');

@@ -52,6 +52,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_context_menu.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_context_menu.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
@@ -490,6 +491,7 @@ class EmailActionReactor {
     required OpenBottomSheetContextMenuAction openBottomSheetContextMenu,
     required OpenPopupMenuActionGroup openPopupMenu,
     List<Label>? labels,
+    OnSelectLabelAction? onSelectLabelAction,
   }) {
     if (currentContext == null) return;
 
@@ -563,6 +565,8 @@ class EmailActionReactor {
         useGroupedActions: true,
       );
     } else {
+      final submenuController = PopupSubmenuController();
+
       final popupMenuItemEmailActions = moreActions.map((actionType) {
         return PopupMenuItemEmailAction(
           actionType,
@@ -575,11 +579,15 @@ class EmailActionReactor {
             imagePaths: imagePaths,
             presentationEmail: presentationEmail,
             labels: labels,
+            onSelectLabelAction: (label, isSelected) {
+              onSelectLabelAction?.call(label, isSelected);
+              submenuController.hide();
+              popBack();
+            },
           ),
         );
       }).toList();
 
-      final submenuController = PopupSubmenuController();
 
       final popupMenuWidget = PopupMenuActionGroupWidget(
         actions: popupMenuItemEmailActions,
@@ -602,12 +610,15 @@ class EmailActionReactor {
     required ImagePaths imagePaths,
     required PresentationEmail presentationEmail,
     required List<Label>? labels,
+    OnSelectLabelAction? onSelectLabelAction,
   }) {
-    if (actionType == EmailActionType.labelAs) {
+    if (actionType == EmailActionType.labelAs && labels?.isNotEmpty == true) {
       return LabelListContextMenu(
         labelList: labels ?? [],
         presentationEmail: presentationEmail,
         imagePaths: imagePaths,
+        onSelectLabelAction: (label, isSelected) =>
+            onSelectLabelAction?.call(label, isSelected),
       );
     }
     return null;
