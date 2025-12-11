@@ -196,4 +196,18 @@ class StringConvert {
         .map((e) => NamedAddress(name: '', address: e))
         .toList();
   }
+
+  static String convertHtmlContentToTextContent(String htmlContent) {
+    String textContent = htmlContent.replaceAll(RegExp(r'<[^>]*>'), '');
+
+    textContent = textContent
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'");
+
+    return textContent.trim();
+  }
 }
