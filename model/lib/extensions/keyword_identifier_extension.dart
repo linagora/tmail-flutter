@@ -6,37 +6,28 @@ import 'package:model/email/read_actions.dart';
 extension KeyWordIdentifierExtension on KeyWordIdentifier {
   static final unsubscribeMail = KeyWordIdentifier('\$unsubscribe');
 
-  String generatePath() {
-    return '${PatchObject.keywordsProperty}/$value';
+  String generatePath() => '${PatchObject.keywordsProperty}/$value';
+
+  /// General helper to generate a boolean patch.
+  PatchObject _boolPatch(bool? flag) {
+    return PatchObject({generatePath(): flag});
   }
 
-  PatchObject generateReadActionPath(ReadActions readActions) {
-    return PatchObject({
-      generatePath(): readActions == ReadActions.markAsRead ? true : null
-    });
+  PatchObject generateReadActionPath(ReadActions action) {
+    final isRead = action == ReadActions.markAsRead;
+    return _boolPatch(isRead ? true : null);
   }
 
-  PatchObject generateMarkStarActionPath(MarkStarAction markStarAction) {
-    return PatchObject({
-      generatePath(): markStarAction == MarkStarAction.markStar ? true : null
-    });
+  PatchObject generateMarkStarActionPath(MarkStarAction action) {
+    final isStar = action == MarkStarAction.markStar;
+    return _boolPatch(isStar ? true : null);
   }
 
-  PatchObject generateAnsweredActionPath() {
-    return PatchObject({
-      generatePath(): true
-    });
-  }
+  PatchObject generateAnsweredActionPath() => _boolPatch(true);
 
-  PatchObject generateForwardedActionPath() {
-    return PatchObject({
-      generatePath(): true
-    });
-  }
+  PatchObject generateForwardedActionPath() => _boolPatch(true);
 
-  PatchObject generateUnsubscribeActionPath() {
-    return PatchObject({
-      generatePath(): true
-    });
-  }
+  PatchObject generateUnsubscribeActionPath() => _boolPatch(true);
+
+  PatchObject generateLabelActionPath() => _boolPatch(true);
 }

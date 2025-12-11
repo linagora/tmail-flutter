@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
@@ -478,5 +479,18 @@ class EmailRepositoryImpl extends EmailRepository {
   @override
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {
     return emailDataSource[DataSourceType.local]!.generateEntireMessageAsDocument(entireMessageRequest);
+  }
+
+  @override
+  Future<void> addLabelToEmail(
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return emailDataSource[DataSourceType.network]!.addLabelToEmail(
+      accountId,
+      emailId,
+      labelKeyword,
+    );
   }
 }

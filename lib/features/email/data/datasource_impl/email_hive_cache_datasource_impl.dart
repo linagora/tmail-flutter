@@ -575,4 +575,9 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> addLabelToEmail(AccountId accountId, EmailId emailId, KeyWordIdentifier labelKeyword) {
+    throw UnimplementedError();
+  }
 }

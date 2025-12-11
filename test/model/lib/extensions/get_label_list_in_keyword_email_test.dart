@@ -8,7 +8,7 @@ void main() {
   group('getLabelList', () {
     test('returns empty when keywords is null', () {
       final email = PresentationEmail(keywords: null);
-      final labels = [Label(keyword: KeyWordIdentifier.emailFlagged.value)];
+      final labels = [Label(keyword: KeyWordIdentifier.emailFlagged)];
 
       final result = email.getLabelList(labels);
 
@@ -17,7 +17,7 @@ void main() {
 
     test('returns empty when keywords is empty', () {
       final email = PresentationEmail(keywords: {});
-      final labels = [Label(keyword: KeyWordIdentifier.emailFlagged.value)];
+      final labels = [Label(keyword: KeyWordIdentifier.emailFlagged)];
 
       final result = email.getLabelList(labels);
 
@@ -41,8 +41,8 @@ void main() {
       });
 
       final labels = [
-        Label(keyword: KeyWordIdentifier.emailFlagged.value),
-        Label(keyword: KeyWordIdentifier.emailDraft.value),
+        Label(keyword: KeyWordIdentifier.emailFlagged),
+        Label(keyword: KeyWordIdentifier.emailDraft),
       ];
 
       final result = email.getLabelList(labels);
@@ -58,9 +58,9 @@ void main() {
       });
 
       final labels = [
-        Label(keyword: KeyWordIdentifier.emailFlagged.value),
-        Label(keyword: KeyWordIdentifier.emailSeen.value),
-        Label(keyword: KeyWordIdentifier.emailDraft.value),
+        Label(keyword: KeyWordIdentifier.emailFlagged),
+        Label(keyword: KeyWordIdentifier.emailSeen),
+        Label(keyword: KeyWordIdentifier.emailDraft),
       ];
 
       final result = email.getLabelList(labels);
@@ -68,15 +68,15 @@ void main() {
       expect(result.length, 2);
       expect(
         result.map((l) => l.keyword),
-        contains(KeyWordIdentifier.emailFlagged.value),
+        contains(KeyWordIdentifier.emailFlagged),
       );
       expect(
         result.map((l) => l.keyword),
-        contains(KeyWordIdentifier.emailDraft.value),
+        contains(KeyWordIdentifier.emailDraft),
       );
       expect(
         result.map((l) => l.keyword),
-        isNot(contains(KeyWordIdentifier.emailSeen.value)),
+        isNot(contains(KeyWordIdentifier.emailSeen)),
       );
     });
 
@@ -87,13 +87,13 @@ void main() {
 
       final labels = [
         Label(),
-        Label(keyword: KeyWordIdentifier.emailFlagged.value),
+        Label(keyword: KeyWordIdentifier.emailFlagged),
       ];
 
       final result = email.getLabelList(labels);
 
       expect(result.length, 1);
-      expect(result.first.keyword, KeyWordIdentifier.emailFlagged.value);
+      expect(result.first.keyword, KeyWordIdentifier.emailFlagged);
     });
   });
 }
