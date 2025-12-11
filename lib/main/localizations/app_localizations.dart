@@ -5577,4 +5577,11 @@ class AppLocalizations {
       name: 'theLabelFeatureIsNowAvailable',
     );
   }
+
+  String get labelAs {
+    return Intl.message(
+      'Label as',
+      name: 'labelAs',
+    );
+  }
 }

@@ -1546,4 +1546,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _threadDetailController?.onNextMobile();
     }
   }
+
+  bool get isLabelFeatureEnabled {
+    return mailboxDashBoardController.isLabelCapabilitySupported &&
+        mailboxDashBoardController.labelController.isLabelSettingEnabled.isTrue;
+  }
 }

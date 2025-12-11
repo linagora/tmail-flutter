@@ -102,6 +102,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         handleEmailAction: controller.handleEmailAction,
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
+                        isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
                         openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
                         openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
                       );
@@ -307,6 +308,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               EmailActionType.deletePermanently,
             ],
             emailIsRead: presentationEmail.hasRead,
+            isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
             openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
           ),
