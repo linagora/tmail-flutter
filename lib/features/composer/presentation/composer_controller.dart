@@ -867,25 +867,11 @@ class ComposerController extends BaseController
     }
   }
 
-  String convertHtmlContentToTextContent(String htmlContent) {
-      String textContent = htmlContent.replaceAll(RegExp(r'<[^>]*>'), '');
-
-      textContent = textContent
-        .replaceAll('&nbsp;', ' ')
-        .replaceAll('&amp;', '&')
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>')
-        .replaceAll('&quot;', '"')
-        .replaceAll('&#39;', "'");
-
-      return textContent.trim();
-  }
-
   Future<String> getTextOnlyContentInEditor() async {
     try {
       final htmlContent = await getContentInEditor();
 
-      String textContent  = convertHtmlContentToTextContent(htmlContent);
+      String textContent = StringConvert.convertHtmlContentToTextContent(htmlContent);
 
       return textContent;
     } catch (e) {
