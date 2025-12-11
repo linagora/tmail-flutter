@@ -34,7 +34,6 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_c
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
-import 'package:scribe/scribe.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
@@ -470,8 +469,8 @@ class ComposerView extends GetWidget<ComposerController> {
                 sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                 toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
-                onOpenAIScribe: AIConfig.isAiEnabled ? () => controller.showAIScribeMenuForFullText(context) : null,
-                aiScribeButtonKey: AIConfig.isAiEnabled ? controller.aiScribeButtonKey : null,
+                onOpenAIScribe: controller.isAIScribeAvailable ? () => controller.showAIScribeMenuForFullText(context) : null,
+                aiScribeButtonKey: controller.isAIScribeAvailable ? controller.aiScribeButtonKey : null,
               )),
             ]
           )
@@ -556,7 +555,7 @@ class ComposerView extends GetWidget<ComposerController> {
   }
 
   Widget _buildAIScribeSelectionButton(BuildContext context) {
-    if (!AIConfig.isAiEnabled) {
+    if (!controller.isAIScribeAvailable) {
       return const SizedBox.shrink();
     }
 

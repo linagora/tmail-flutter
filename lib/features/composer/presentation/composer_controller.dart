@@ -268,6 +268,12 @@ class ComposerController extends BaseController
   String get ownEmailAddress =>
       mailboxDashBoardController.ownEmailAddress.value;
 
+  @override
+  Session? get session => mailboxDashBoardController.sessionCurrent;
+
+  @override
+  AccountId? get accountId => mailboxDashBoardController.accountId.value;
+
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
 
