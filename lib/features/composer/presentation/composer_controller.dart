@@ -27,7 +27,6 @@ import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
@@ -78,6 +77,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_em
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/ai_scribe_in_composer_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
@@ -86,7 +86,6 @@ import 'package:tmail_ui_user/features/composer/presentation/model/saved_composi
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/editor_view_mixin.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/mixins/text_selection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_template_dialog_view.dart';
@@ -132,7 +131,7 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ComposerController extends BaseController
-    with DragDropFileMixin, AutoCompleteResultMixin, EditorViewMixin
+    with DragDropFileMixin, AutoCompleteResultMixin, EditorViewMixin, AIScribeInComposerMixin
     implements BeforeReconnectHandler {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -159,8 +158,6 @@ class ComposerController extends BaseController
   final isMarkAsImportant = Rx<bool>(false);
   final isContentHeightExceeded = Rx<bool>(false);
 
-  final editorTextSelection = Rxn<EditorTextSelection>();
-
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final LocalImagePickerInteractor _localImagePickerInteractor;
   final GetEmailContentInteractor _getEmailContentInteractor;
@@ -178,7 +175,6 @@ class ComposerController extends BaseController
   final String? composerId;
   final ComposerArguments? composerArgs;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
-  final GenerateAITextInteractor _generateAITextInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -204,7 +200,6 @@ class ComposerController extends BaseController
   final GlobalKey<TagsEditorState> keyReplyToEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey headerEditorMobileWidgetKey = GlobalKey();
   final GlobalKey<DropdownButton2State> identityDropdownKey = GlobalKey<DropdownButton2State>();
-  final GlobalKey aiScribeButtonKey = GlobalKey();
   final double defaultPaddingCoordinateYCursorEditor = 8;
 
   FocusNode? subjectEmailInputFocusNode;
@@ -226,8 +221,11 @@ class ComposerController extends BaseController
   StreamSubscription<html.Event>? _subscriptionOnBlur;
   StreamSubscription<String>? _composerCacheListener;
 
+  @override
   RichTextMobileTabletController? richTextMobileTabletController;
+  @override
   RichTextWebController? richTextWebController;
+  
   CustomPopupMenuController? menuMoreOptionController;
 
   final ScrollController scrollController = ScrollController();
@@ -264,6 +262,9 @@ class ComposerController extends BaseController
 
   TransformHtmlEmailContentInteractor get transformHtmlEmailContentInteractor => _transformHtmlEmailContentInteractor;
 
+  @override
+  GenerateAITextInteractor get generateAITextInteractor => Get.find<GenerateAITextInteractor>();
+
   String get ownEmailAddress =>
       mailboxDashBoardController.ownEmailAddress.value;
 
@@ -286,7 +287,6 @@ class ComposerController extends BaseController
     this.printEmailInteractor,
     this._composerRepository,
     this._saveTemplateEmailInteractor,
-    this._generateAITextInteractor,
     {
       this.composerId,
       this.composerArgs,
@@ -867,6 +867,7 @@ class ComposerController extends BaseController
     }
   }
 
+  @override
   Future<String> getTextOnlyContentInEditor() async {
     try {
       final htmlContent = await getContentInEditor();
@@ -877,69 +878,6 @@ class ComposerController extends BaseController
     } catch (e) {
       logError('ComposerController::getTextOnlyContentInEditor:Exception = $e');
       return '';
-    }
-  }
-
-  void insertTextInEditor(String text) {
-    final htmlContent = text.replaceAll('\n', '<br>');
-
-    if (PlatformInfo.isWeb) {
-      richTextWebController?.editorController.insertHtml(htmlContent);
-    } else {
-      richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
-    }
-  }
-
-  void showAIScribeMenuForFullText(BuildContext context) async {
-    final fullText = await getTextOnlyContentInEditor();
-
-    final RenderBox? renderBox = aiScribeButtonKey.currentContext?.findRenderObject() as RenderBox?;
-    Offset? buttonPosition;
-    if (renderBox != null) {
-      buttonPosition = renderBox.localToGlobal(Offset.zero);
-    }
-  
-    if (!context.mounted) return;
-
-    showAIScribeDialog(
-      context: context,
-      imagePaths: imagePaths,
-      content: fullText,
-      onInsertText: insertTextInEditor,
-      interactor: _generateAITextInteractor,
-      buttonPosition: buttonPosition,
-    );
-  }
-
-  void showAIScribeMenuForSelectedText(BuildContext context, {Offset? buttonPosition}) {
-    final selection = editorTextSelection.value?.selectedText;
-    if (selection == null || selection.isEmpty) {
-      return;
-    }
-
-    showAIScribeDialog(
-      context: context,
-      imagePaths: imagePaths,
-      content: selection,
-      onInsertText: insertTextInEditor,
-      interactor: _generateAITextInteractor,
-      buttonPosition: buttonPosition,
-    );
-  }
-
-  void handleTextSelection(TextSelectionData? textSelectionData) {
-    if (textSelectionData != null && textSelectionData.hasSelection) {
-      editorTextSelection.value = EditorTextSelection(
-        selectedText: textSelectionData.selectedText,
-        coordinates: textSelectionData.coordinates != null
-            ? Offset(
-                textSelectionData.coordinates!.x,
-                textSelectionData.coordinates!.y,
-              )
-            : null,
-      );
-    } else {
-      editorTextSelection.value = null;
     }
   }
 
