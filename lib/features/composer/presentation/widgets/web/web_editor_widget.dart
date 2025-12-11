@@ -83,10 +83,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
   static const double _defaultHtmlEditorHeight = 550;
 
   late HtmlEditorController _editorController;
-  bool _dropListenerRegistered = false;
-  bool _selectionChangeListenerRegistered = false;
-  Function(Event)? _dropListener;
-  Function(Event)? _selectionChangeListener;
+  bool _editorListenerRegistered = false;
+  Function(Event)? _editorListener;
 
   OverlayEntry? _signatureTooltipEntry;
   final GlobalKey _signatureTooltipKey = GlobalKey();
@@ -101,34 +99,25 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     super.initState();
     _editorController = widget.editorController;
   
-    _dropListener = (event) {
-      if (event is MessageEvent) {
-        if (jsonDecode(event.data)['name'] == HtmlUtils.registerDropListener.name) {
-          _editorController.evaluateJavascriptWeb(HtmlUtils.removeLineHeight1px.name);
-        }
-      }
-    };
-    if (_dropListener != null) {
-      window.addEventListener("message", _dropListener!);
-    }
-
-    _selectionChangeListener = (event) {
+    _editorListener = (event) {
       try {
         if (event is MessageEvent) {
           final data = jsonDecode(event.data);
 
-          if (data['name'] == HtmlUtils.registerSelectionChangeListener.name) {
+          if (data['name'] == HtmlUtils.registerDropListener.name) {
+            _editorController.evaluateJavascriptWeb(HtmlUtils.removeLineHeight1px.name);
+          } else if (data['name'] == HtmlUtils.registerSelectionChangeListener.name) {
             handleSelectionChange(data);
           }
         }
       } catch (e) {
         logError(
-          '_WebEditorState::_selectionChangeListener: Unable to parse selection data = $e',
+          '_WebEditorState::_editorListener: Unable to parse message data = $e',
         );
       }
     };
-    if (_selectionChangeListener != null) {
-      window.addEventListener("message", _selectionChangeListener!);
+    if (_editorListener != null) {
+      window.addEventListener("message", _editorListener!);
     }
   }
 
@@ -145,13 +134,9 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
   void dispose() {
     _editorController.evaluateJavascriptWeb(
       HtmlUtils.unregisterDropListener.name);
-    if (_dropListener != null) {
-      window.removeEventListener("message", _dropListener!);
-      _dropListener = null;
-    }
-    if (_selectionChangeListener != null) {
-      window.removeEventListener("message", _selectionChangeListener!);
-      _selectionChangeListener = null;
+    if (_editorListener != null) {
+      window.removeEventListener("message", _editorListener!);
+      _editorListener = null;
     }
     _hideSignatureTooltip();
     super.dispose();
@@ -216,15 +201,12 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
         onChangeContent: widget.onChangeContent,
         onInit: () {
           widget.onInitial?.call(widget.content);
-          if (!_dropListenerRegistered) {
+          if (!_editorListenerRegistered) {
             _editorController.evaluateJavascriptWeb(
               HtmlUtils.registerDropListener.name);
-            _dropListenerRegistered = true;
-          }
-          if (!_selectionChangeListenerRegistered) {
             _editorController.evaluateJavascriptWeb(
               HtmlUtils.registerSelectionChangeListener.name);
-            _selectionChangeListenerRegistered = true;
+            _editorListenerRegistered = true;
           }
         },
         onFocus: widget.onFocus,
