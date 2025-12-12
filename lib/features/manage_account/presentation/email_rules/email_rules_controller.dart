@@ -98,7 +98,7 @@ class EmailRulesController extends BaseController {
       final arguments = RulesFilterCreatorArguments(accountId, session);
 
       final newRuleFilterRequest = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
+        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
         : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
 
       if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
@@ -139,7 +139,7 @@ class EmailRulesController extends BaseController {
         tMailRule: rule);
 
       final newRuleFilterRequest = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
+        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
         : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
 
       if (newRuleFilterRequest is EditEmailRuleFilterRequest) {

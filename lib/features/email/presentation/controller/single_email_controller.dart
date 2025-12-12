@@ -118,6 +118,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final PrintEmailInteractor _printEmailInteractor;
+  final AddALabelToAnEmailInteractor addALabelToAnEmailInteractor;
   final EmailId? _currentEmailId;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
@@ -128,7 +129,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   RejectCalendarEventInteractor? _rejectCalendarEventInteractor;
   AcceptCounterCalendarEventInteractor? _acceptCounterCalendarEventInteractor;
   ThreadDetailController? _threadDetailController;
-  AddALabelToAnEmailInteractor? addALabelToAnEmailInteractor;
 
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
@@ -188,6 +188,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._markAsStarEmailInteractor,
     this._getAllIdentitiesInteractor,
     this._storeOpenedEmailInteractor,
+    this.addALabelToAnEmailInteractor,
     this._printEmailInteractor, {
     EmailId? currentEmailId,
   }) : _currentEmailId = currentEmailId;
@@ -220,6 +221,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void handleSuccessViewState(Success success) {
+    log('SingleEmailController::handleSuccessViewState(): $success');
     if (success is GetEmailContentSuccess) {
       _getEmailContentSuccess(success);
     } else if (success is GetEmailContentFromCacheSuccess) {
@@ -253,6 +255,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void handleFailureViewState(Failure failure) {
+    logError('SingleEmailController::handleFailureViewState(): $failure');
     if (failure is MarkAsEmailReadFailure) {
       _handleMarkAsEmailReadFailure(failure);
     } else if (failure is ParseCalendarEventFailure) {
@@ -894,6 +897,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       case EmailActionType.forward:
       case EmailActionType.compose:
         pressEmailAction(actionType, presentationEmail);
+        break;
+      case EmailActionType.labelAs:
+        openAddLabelToEmailDialogModal(presentationEmail);
         break;
       default:
         break;

@@ -16,4 +16,8 @@ extension MapKeywordsExtension on Map<KeyWordIdentifier, bool>? {
   Map<KeyWordIdentifier, bool> withoutKeyword(KeyWordIdentifier keyword) {
     return Map<KeyWordIdentifier, bool>.from(this ?? {})..remove(keyword);
   }
+
+  void addKeyword(KeyWordIdentifier keyword) {
+    this?[keyword] = true;
+  }
 }

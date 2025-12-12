@@ -5315,5 +5315,11 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "addLabel": "Add label",
+  "@addLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

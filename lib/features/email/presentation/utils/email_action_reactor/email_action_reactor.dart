@@ -296,7 +296,7 @@ class EmailActionReactor {
     );
 
     final newRuleFilterRequest = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(
+      ? await DialogRouter().pushGeneralDialog(
           routeName: AppRoutes.rulesFilterCreator,
           arguments: arguments,
         )
@@ -593,7 +593,9 @@ class EmailActionReactor {
         actions: popupMenuItemEmailActions,
         submenuController: submenuController,
         onActionSelected: (action) {
-          handleEmailAction(presentationEmail, action.action);
+          if (action.action != EmailActionType.labelAs) {
+            handleEmailAction(presentationEmail, action.action);
+          }
         },
       );
 
@@ -738,7 +740,7 @@ class EmailActionReactor {
     );
 
     final destinationMailbox = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+      ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
       : await push(AppRoutes.destinationPicker, arguments: arguments);
 
     if (destinationMailbox is PresentationMailbox) {
