@@ -17,7 +17,7 @@ RUN flutter build web --release
 
 # Stage 2 - Create the run-time image
 FROM nginx:alpine
-RUN apk add gzip
+RUN apk update && apk add --no-cache gzip
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 
