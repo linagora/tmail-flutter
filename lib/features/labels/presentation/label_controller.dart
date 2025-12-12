@@ -1,7 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -22,12 +21,12 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_set
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LabelController extends BaseController {
   final labels = <Label>[].obs;
   final labelListExpandMode = Rx(ExpandMode.EXPAND);
-  final isCreateNewLabelModalVisible = RxBool(false);
   final isLabelSettingEnabled = RxBool(false);
 
   GetAllLabelInteractor? _getAllLabelInteractor;
@@ -72,22 +71,13 @@ class LabelController extends BaseController {
   }
 
   Future<void> openCreateNewLabelModal(AccountId? accountId) async {
-    if (PlatformInfo.isWeb) {
-      isCreateNewLabelModalVisible.value = true;
-    }
-
-    await Get.generalDialog(
-      barrierDismissible: true,
-      barrierLabel: 'create-new-label-modal',
-      pageBuilder: (_, __, ___) => CreateNewLabelModal(
+    await DialogRouter().openDialogModal(
+      child: CreateNewLabelModal(
         labels: labels,
         onCreateNewLabelCallback: (label) => _createNewLabel(accountId, label),
       ),
-    ).whenComplete(() {
-      if (PlatformInfo.isWeb) {
-        isCreateNewLabelModalVisible.value = false;
-      }
-    });
+      dialogLabel: 'create-new-label-modal',
+    );
   }
 
   void _createNewLabel(AccountId? accountId, Label label) {

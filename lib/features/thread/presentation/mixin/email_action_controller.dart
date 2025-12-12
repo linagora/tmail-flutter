@@ -160,7 +160,7 @@ mixin EmailActionController {
         mailboxIdSelected: mailboxContain.mailboxId);
 
       final destinationMailbox = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
         : await push(AppRoutes.destinationPicker, arguments: arguments);
 
       if (destinationMailbox != null &&

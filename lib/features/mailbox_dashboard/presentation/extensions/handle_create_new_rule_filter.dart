@@ -44,7 +44,7 @@ extension HandleCreateNewRuleFilter on MailboxDashBoardController {
     );
 
     final newRuleFilterRequest = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(
+      ? await DialogRouter().pushGeneralDialog(
           routeName: AppRoutes.rulesFilterCreator,
           arguments: arguments,
         )

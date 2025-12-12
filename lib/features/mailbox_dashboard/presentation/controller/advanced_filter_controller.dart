@@ -221,7 +221,7 @@ class AdvancedFilterController extends BaseController {
     );
 
     final destinationMailbox = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(
+      ? await DialogRouter().pushGeneralDialog(
           routeName: AppRoutes.destinationPicker,
           arguments: arguments)
       : await push(AppRoutes.destinationPicker, arguments: arguments);

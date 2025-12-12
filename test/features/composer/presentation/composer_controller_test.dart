@@ -106,9 +106,6 @@ class MockLabelController extends Mock implements LabelController {
 
   @override
   Rx<ExpandMode> get labelListExpandMode => Rx(ExpandMode.EXPAND);
-
-  @override
-  RxBool get isCreateNewLabelModalVisible => RxBool(false);
 }
 
 class MockMailboxDashBoardController extends Mock implements MailboxDashBoardController {
