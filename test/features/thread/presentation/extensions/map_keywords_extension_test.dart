@@ -44,10 +44,10 @@ void main() {
     });
 
     test('does not mutate original map', () {
-      final map = {
-        KeyWordIdentifier("\$flagged"): false,
-      };
       final keyword = KeyWordIdentifier("\$flagged");
+      final map = {
+        keyword: false,
+      };
 
       final result = map.withKeyword(keyword);
 
@@ -105,5 +105,58 @@ void main() {
       expect(result.containsKey(keyword), false);
       expect(map.containsKey(keyword), true); // original not mutated
     });
+  });
+
+  group('MapKeywordsExtension – nullable receiver', () {
+    final keyword = KeyWordIdentifier.emailSeen;
+
+    test(
+      'null.withKeyword(x) returns new map containing x:true',
+      () {
+        Map<KeyWordIdentifier, bool>? keywords;
+
+        final result = keywords.withKeyword(keyword);
+
+        expect(result, isNotNull);
+        expect(result.length, 1);
+        expect(result[keyword], true);
+      },
+    );
+
+    test(
+      'null.withoutKeyword(x) returns empty map (no crash)',
+      () {
+        Map<KeyWordIdentifier, bool>? keywords;
+
+        final result = keywords.withoutKeyword(keyword);
+
+        expect(result, isNotNull);
+        expect(result.isEmpty, true);
+      },
+    );
+
+    test(
+      'null.withoutKeyword(x) is idempotent',
+      () {
+        Map<KeyWordIdentifier, bool>? keywords;
+
+        final result1 = keywords.withoutKeyword(keyword);
+        final result2 = result1.withoutKeyword(keyword);
+
+        expect(result2.isEmpty, true);
+      },
+    );
+
+    test(
+      'null.withKeyword(x) followed by withoutKeyword(x) '
+      'returns empty map',
+      () {
+        Map<KeyWordIdentifier, bool>? keywords;
+
+        final result = keywords.withKeyword(keyword).withoutKeyword(keyword);
+
+        expect(result.isEmpty, true);
+      },
+    );
   });
 }

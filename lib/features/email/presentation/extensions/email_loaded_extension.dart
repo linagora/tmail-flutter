@@ -7,13 +7,13 @@ extension EmailLoadedExtension on EmailLoaded {
   EmailLoaded toggleEmailKeyword({
     required EmailId emailId,
     required KeyWordIdentifier keyword,
-    required bool isRemoved,
+    required bool remove,
   }) {
     if (emailCurrent == null || emailCurrent?.id != emailId) {
       return this;
     }
     return copyWith(
-      emailCurrent: emailCurrent?.toggleKeyword(keyword, isRemoved),
+      emailCurrent: emailCurrent?.toggleKeyword(keyword, remove),
     );
   }
 }

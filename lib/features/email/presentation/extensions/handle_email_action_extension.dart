@@ -12,13 +12,13 @@ import 'package:tmail_ui_user/features/thread_detail/domain/extensions/presentat
 
 extension HandleEmailActionExtension on SingleEmailController {
   void markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
-    toastManager.showMessageSuccess(success);
-
     _autoSyncStarToSelectedEmailOnMemory(
       markStarAction: success.markStarAction,
       emailId: success.emailId,
       starKeyword: KeyWordIdentifier.emailFlagged,
     );
+
+    toastManager.showMessageSuccess(success);
   }
 
   void _autoSyncStarToSelectedEmailOnMemory({
@@ -40,13 +40,13 @@ extension HandleEmailActionExtension on SingleEmailController {
     required KeyWordIdentifier starKeyword,
     required bool isMobileThreadDisabled,
   }) {
-    final isRemoved = markStarAction == MarkStarAction.unMarkStar;
+    final remove = markStarAction == MarkStarAction.unMarkStar;
 
     if (isMobileThreadDisabled) {
       final selectedEmail = mailboxDashBoardController.selectedEmail.value;
       if (selectedEmail?.id == emailId) {
         mailboxDashBoardController.selectedEmail.value =
-            selectedEmail?.toggleKeyword(starKeyword, isRemoved);
+            selectedEmail?.toggleKeyword(starKeyword, remove);
       }
     } else {
       final controller = threadDetailController;
@@ -55,12 +55,15 @@ extension HandleEmailActionExtension on SingleEmailController {
             controller.emailIdsPresentation.toggleEmailKeywordById(
           emailId: emailId,
           keyword: starKeyword,
-          isRemoved: isRemoved,
+          remove: remove,
         );
 
         controller.emailsInThreadDetailInfo.value =
             controller.emailsInThreadDetailInfo.toggleEmailKeywordById(
-                emailId: emailId, keyword: starKeyword, isRemoved: isRemoved);
+          emailId: emailId,
+          keyword: starKeyword,
+          remove: remove,
+        );
       }
     }
 
@@ -69,7 +72,7 @@ extension HandleEmailActionExtension on SingleEmailController {
       currentEmailLoaded.value = emailLoaded.toggleEmailKeyword(
         emailId: emailId,
         keyword: starKeyword,
-        isRemoved: isRemoved,
+        remove: remove,
       );
     }
 

@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/presentatio
 extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
   Map<EmailId, PresentationEmail?> toggleEmailKeywords({
     required KeyWordIdentifier keyword,
-    required bool isRemoved,
+    required bool remove,
   }) {
     return map((id, email) {
       if (email == null) {
@@ -14,7 +14,7 @@ extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
       }
       return MapEntry(
         id,
-        email.toggleKeyword(keyword, isRemoved),
+        email.toggleKeyword(keyword, remove),
       );
     });
   }
@@ -22,7 +22,7 @@ extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
   Map<EmailId, PresentationEmail?> toggleEmailKeywordByIds({
     required List<EmailId> ids,
     required KeyWordIdentifier keyword,
-    required bool isRemoved,
+    required bool remove,
   }) {
     final targetSet = ids.toSet();
 
@@ -32,7 +32,7 @@ extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
       }
       return MapEntry(
         id,
-        email.toggleKeyword(keyword, isRemoved),
+        email.toggleKeyword(keyword, remove),
       );
     });
   }
@@ -40,7 +40,7 @@ extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
   Map<EmailId, PresentationEmail?> toggleEmailKeywordById({
     required EmailId emailId,
     required KeyWordIdentifier keyword,
-    required bool isRemoved,
+    required bool remove,
   }) {
     return map((id, email) {
       if (id != emailId || email == null) {
@@ -48,7 +48,7 @@ extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
       }
       return MapEntry(
         id,
-        email.toggleKeyword(keyword, isRemoved),
+        email.toggleKeyword(keyword, remove),
       );
     });
   }

@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/email_property.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/smime_signature_status.dart';
@@ -275,5 +276,94 @@ void main() {
 
       expect(email.sMimeStatus, SMimeSignatureStatus.notSigned);
     });
+  });
+
+  group('EmailExtension.toggleKeyword', () {
+    final keyword = KeyWordIdentifier.emailSeen;
+
+    test(
+      'Email(keywords: null).toggleKeyword(x, false) '
+      '=> keywords contains x:true',
+      () {
+        final email = Email(keywords: null);
+
+        final result = email.toggleKeyword(keyword, false);
+
+        expect(result.keywords, isNotNull);
+        expect(result.keywords!.length, 1);
+        expect(result.keywords![keyword], true);
+      },
+    );
+
+    test(
+      'Email(keywords: {x:true}).toggleKeyword(x, true) '
+      '=> keywords does not contain x',
+      () {
+        final email = Email(
+          keywords: {
+            keyword: true,
+          },
+        );
+
+        final result = email.toggleKeyword(keyword, true);
+
+        expect(result.keywords, isNotNull);
+        expect(result.keywords!.containsKey(keyword), false);
+      },
+    );
+
+    test(
+      'Idempotency: remove keyword when already absent '
+      '=> keywords unchanged',
+      () {
+        final email = Email(
+          keywords: {
+            KeyWordIdentifier.emailFlagged: true,
+          },
+        );
+
+        final result = email.toggleKeyword(keyword, true);
+
+        expect(result.keywords!.length, 1);
+        expect(
+          result.keywords!.containsKey(KeyWordIdentifier.emailFlagged),
+          true,
+        );
+        expect(result.keywords!.containsKey(keyword), false);
+      },
+    );
+
+    test(
+      'Idempotency: add keyword when already present '
+      '=> keyword remains true, no duplication',
+      () {
+        final email = Email(
+          keywords: {
+            keyword: true,
+          },
+        );
+
+        final result = email.toggleKeyword(keyword, false);
+
+        expect(result.keywords!.length, 1);
+        expect(result.keywords![keyword], true);
+      },
+    );
+
+    test(
+      'toggleKeyword returns new Email instance '
+      '(immutability)',
+      () {
+        final email = Email(
+          keywords: {
+            keyword: true,
+          },
+        );
+
+        final result = email.toggleKeyword(keyword, true);
+
+        expect(identical(email, result), false);
+      },
+    );
   });
 }

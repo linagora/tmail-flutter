@@ -13,34 +13,36 @@ extension ListEmailInThreadDetailInfoExtension
 
   List<EmailInThreadDetailInfo> toggleEmailKeywords({
     required KeyWordIdentifier keyword,
-    required bool isRemoved,
+    required bool remove,
   }) {
-    return map((emailInfo) => emailInfo.toggleKeyword(keyword, isRemoved))
+    return map((emailInfo) => emailInfo.toggleKeyword(keyword, remove))
         .toList();
   }
 
   List<EmailInThreadDetailInfo> toggleEmailKeywordByIds({
     required List<EmailId> targetIds,
     required KeyWordIdentifier keyword,
-    required bool isRemoved,
+    required bool remove,
   }) {
+    if (targetIds.isEmpty) return this;
+
     final targetSet = targetIds.toSet();
     return map((emailInfo) {
       if (!targetSet.contains(emailInfo.emailId)) return emailInfo;
-      return emailInfo.toggleKeyword(keyword, isRemoved);
+      return emailInfo.toggleKeyword(keyword, remove);
     }).toList();
   }
 
   List<EmailInThreadDetailInfo> toggleEmailKeywordById({
     required EmailId emailId,
     required KeyWordIdentifier keyword,
-    required bool isRemoved,
+    required bool remove,
   }) {
     return map((emailInfo) {
       if (emailInfo.emailId != emailId) {
         return emailInfo;
       }
-      return emailInfo.toggleKeyword(keyword, isRemoved);
+      return emailInfo.toggleKeyword(keyword, remove);
     }).toList();
   }
 }
