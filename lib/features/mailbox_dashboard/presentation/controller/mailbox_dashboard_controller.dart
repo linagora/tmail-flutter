@@ -1342,7 +1342,7 @@ class MailboxDashBoardController extends ReloadableController
       );
 
       final destinationMailbox = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
         : await push(AppRoutes.destinationPicker, arguments: arguments);
 
       if (destinationMailbox != null &&
@@ -2201,7 +2201,7 @@ class MailboxDashBoardController extends ReloadableController
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.from_email_address_prefix.toLowerCase()}'
     );
 
-    final newListContact = await DialogRouter.pushGeneralDialog(
+    final newListContact = await DialogRouter().pushGeneralDialog(
       routeName: AppRoutes.contact,
       arguments: contactArgument);
 
@@ -2224,7 +2224,7 @@ class MailboxDashBoardController extends ReloadableController
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.to_email_address_prefix.toLowerCase()}'
     );
 
-    final newListContact = await DialogRouter.pushGeneralDialog(
+    final newListContact = await DialogRouter().pushGeneralDialog(
       routeName: AppRoutes.contact,
       arguments: contactArgument);
 
@@ -2249,7 +2249,7 @@ class MailboxDashBoardController extends ReloadableController
       mailboxIdSelected: mailboxIdSelected);
 
     final destinationMailbox = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(
+      ? await DialogRouter().pushGeneralDialog(
           routeName: AppRoutes.destinationPicker,
           arguments: destinationArgument)
       : await push(
@@ -3275,8 +3275,8 @@ class MailboxDashBoardController extends ReloadableController
     if (currentAccountId != null && currentSession != null) {
       final arguments = EmailRecoveryArguments(currentAccountId, currentSession);
 
-      final result = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(
+      final result = PlatformInfo.isWeb 
+      ? await DialogRouter().pushGeneralDialog(
           routeName: AppRoutes.emailRecovery,
           arguments: arguments,
         )

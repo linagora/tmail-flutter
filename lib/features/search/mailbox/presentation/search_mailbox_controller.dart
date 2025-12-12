@@ -827,7 +827,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       final arguments = MailboxCreatorArguments(allMailboxes, parentMailbox);
 
       final result = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.mailboxCreator, arguments: arguments)
+        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.mailboxCreator, arguments: arguments)
         : await push(AppRoutes.mailboxCreator, arguments: arguments);
 
       if (result != null && result is NewMailboxArguments) {

@@ -6,17 +6,19 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:labels/model/label.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_loaded_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/add_label_to_email_modal.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/extensions/presentation_email_map_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/extensions/list_email_in_thread_detail_info_extension.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 
 extension HandleLabelForEmailExtension on SingleEmailController {
   bool get isLabelFeatureEnabled {
@@ -68,24 +70,12 @@ extension HandleLabelForEmailExtension on SingleEmailController {
       return;
     }
 
-    addALabelToAnEmailInteractor = getBinding<AddALabelToAnEmailInteractor>();
-    if (addALabelToAnEmailInteractor != null) {
-      consumeState(addALabelToAnEmailInteractor!.execute(
-        accountId,
-        emailId,
-        labelKeyword,
-        label.safeDisplayName,
-      ));
-    } else {
-      consumeState(
-        Stream.value(
-          Left(AddALabelToAnEmailFailure(
-            exception: LabelInteractorIsNull(),
-            labelDisplay: labelDisplay,
-          )),
-        ),
-      );
-    }
+    consumeState(addALabelToAnEmailInteractor.execute(
+      accountId,
+      emailId,
+      labelKeyword,
+      label.safeDisplayName,
+    ));
   }
 
   void handleAddLabelToEmailSuccess(AddALabelToAnEmailSuccess success) {
@@ -105,36 +95,43 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     required EmailId emailId,
     required KeyWordIdentifier labelKeyword,
   }) {
-    if (PlatformInfo.isMobile && !isThreadDetailEnabled) {
-      _updateLabelInEmailWithThreadDisabledOnMobile(
-        emailId: emailId,
-        labelKeyword: labelKeyword,
-      );
-    } else {
-      _updateLabelInEmailWithThreadEnabled(
-        emailId: emailId,
-        labelKeyword: labelKeyword,
-      );
-    }
+    _updateLabelInEmailOnMemory(
+      emailId: emailId,
+      labelKeyword: labelKeyword,
+      isMobileThreadDisabled: PlatformInfo.isMobile && !isThreadDetailEnabled,
+    );
   }
 
-  void _updateLabelInEmailWithThreadDisabledOnMobile({
+  void _updateLabelInEmailOnMemory({
     required EmailId emailId,
     required KeyWordIdentifier labelKeyword,
+    required bool isMobileThreadDisabled,
   }) {
-    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-    final selectedEmailId = selectedEmail?.id;
-    if (selectedEmail == null ||
-        selectedEmailId == null ||
-        selectedEmailId != emailId) {
-      return;
+    if (isMobileThreadDisabled) {
+      final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+      if (selectedEmail?.id == emailId) {
+        mailboxDashBoardController.selectedEmail.value?.keywords
+            ?.addKeyword(labelKeyword);
+      }
+    } else {
+      final controller = threadDetailController;
+      if (controller != null) {
+        controller.emailIdsPresentation.value =
+            controller.emailIdsPresentation.addEmailKeywordById(
+          emailId: emailId,
+          keyword: labelKeyword,
+        );
+
+        controller.emailsInThreadDetailInfo.value =
+            controller.emailsInThreadDetailInfo.addEmailKeywordById(
+          emailId: emailId,
+          keyword: labelKeyword,
+        );
+      }
     }
 
-    mailboxDashBoardController.selectedEmail.value =
-        selectedEmail.addKeyword(labelKeyword);
-
     final emailLoaded = currentEmailLoaded.value;
-    if (emailLoaded != null) {
+    if (emailLoaded != null && emailLoaded.emailCurrent?.id == emailId) {
       currentEmailLoaded.value = emailLoaded.addEmailKeyword(
         emailId: emailId,
         keyword: labelKeyword,
@@ -146,42 +143,26 @@ extension HandleLabelForEmailExtension on SingleEmailController {
       isLabelAdded: true,
       labelKeyword: labelKeyword,
     );
+
+    mailboxDashBoardController.labelController.isLabelSettingEnabled.refresh();
   }
 
-  void _updateLabelInEmailWithThreadEnabled({
-    required EmailId emailId,
-    required KeyWordIdentifier labelKeyword,
-  }) {
-    final controller = threadDetailController;
-    if (controller == null) return;
-
-    final currentEmailId = currentEmail?.id;
-    if (currentEmailId == null || currentEmailId != emailId) return;
-
-    controller.emailIdsPresentation.value =
-        controller.emailIdsPresentation.addEmailKeywordById(
-      emailId: emailId,
-      keyword: labelKeyword,
-    );
-
-    controller.emailsInThreadDetailInfo.value =
-        controller.emailsInThreadDetailInfo.addEmailKeywordById(
-      emailId: emailId,
-      keyword: labelKeyword,
-    );
-
-    final emailLoaded = controller.currentEmailLoaded.value;
-    if (emailLoaded != null) {
-      controller.currentEmailLoaded.value = emailLoaded.addEmailKeyword(
-        emailId: emailId,
-        keyword: labelKeyword,
-      );
+  Future<void> openAddLabelToEmailDialogModal(PresentationEmail email) async {
+    final labels = mailboxDashBoardController.labelController.labels;
+    final emailLabels = email.getLabelList(labels);
+    final emailId = email.id;
+    if (emailId == null || labels.isEmpty) {
+      return;
     }
 
-    mailboxDashBoardController.updateEmailFlagByEmailIds(
-      [emailId],
-      isLabelAdded: true,
-      labelKeyword: labelKeyword,
+    await DialogRouter().openDialogModal(
+      child: AddLabelToEmailModal(
+        labels: labels,
+        emailLabels: emailLabels,
+        emailId: emailId,
+        onAddLabelToEmailCallback: toggleLabelToEmail,
+      ),
+      dialogLabel: 'add-label-to-email-modal',
     );
   }
 }

@@ -5642,4 +5642,11 @@ class AppLocalizations {
       args: [labelName],
     );
   }
+
+  String get addLabel {
+    return Intl.message(
+      'Add label',
+      name: 'addLabel',
+    );
+  }
 }
