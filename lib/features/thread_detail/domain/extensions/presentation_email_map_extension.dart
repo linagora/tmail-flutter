@@ -1,110 +1,54 @@
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 
 extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
-  Map<EmailId, PresentationEmail?> starAll() {
+  Map<EmailId, PresentationEmail?> toggleEmailKeywords({
+    required KeyWordIdentifier keyword,
+    required bool isRemoved,
+  }) {
     return map((id, email) {
       if (email == null) {
         return MapEntry(id, email);
       }
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..[KeyWordIdentifier.emailFlagged] = true;
-
       return MapEntry(
         id,
-        email.copyWith(keywords: updatedKeywords),
+        email.toggleKeyword(keyword, isRemoved),
       );
     });
   }
 
-  Map<EmailId, PresentationEmail?> unstarAll() {
-    return map((id, email) {
-      if (email == null) {
-        return MapEntry(id, email);
-      }
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..remove(KeyWordIdentifier.emailFlagged);
-
-      return MapEntry(
-        id,
-        email.copyWith(keywords: updatedKeywords),
-      );
-    });
-  }
-
-  Map<EmailId, PresentationEmail?> starByIds(List<EmailId> ids) {
+  Map<EmailId, PresentationEmail?> toggleEmailKeywordByIds({
+    required List<EmailId> ids,
+    required KeyWordIdentifier keyword,
+    required bool isRemoved,
+  }) {
     final targetSet = ids.toSet();
 
     return map((id, email) {
       if (!targetSet.contains(id) || email == null) {
         return MapEntry(id, email);
       }
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..[KeyWordIdentifier.emailFlagged] = true;
-
       return MapEntry(
         id,
-        email.copyWith(keywords: updatedKeywords),
+        email.toggleKeyword(keyword, isRemoved),
       );
     });
   }
 
-  Map<EmailId, PresentationEmail?> unstarByIds(List<EmailId> ids) {
-    final targetSet = ids.toSet();
-
-    return map((id, email) {
-      if (!targetSet.contains(id) || email == null) {
-        return MapEntry(id, email);
-      }
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..remove(KeyWordIdentifier.emailFlagged);
-
-      return MapEntry(
-        id,
-        email.copyWith(keywords: updatedKeywords),
-      );
-    });
-  }
-
-  Map<EmailId, PresentationEmail?> starOne(EmailId emailId) {
+  Map<EmailId, PresentationEmail?> toggleEmailKeywordById({
+    required EmailId emailId,
+    required KeyWordIdentifier keyword,
+    required bool isRemoved,
+  }) {
     return map((id, email) {
       if (id != emailId || email == null) {
         return MapEntry(id, email);
       }
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..[KeyWordIdentifier.emailFlagged] = true;
-
       return MapEntry(
         id,
-        email.copyWith(keywords: updatedKeywords),
-      );
-    });
-  }
-
-  Map<EmailId, PresentationEmail?> unstarOne(EmailId emailId) {
-    return map((id, email) {
-      if (id != emailId || email == null) {
-        return MapEntry(id, email);
-      }
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..remove(KeyWordIdentifier.emailFlagged);
-
-      return MapEntry(
-        id,
-        email.copyWith(keywords: updatedKeywords),
+        email.toggleKeyword(keyword, isRemoved),
       );
     });
   }

@@ -1,11 +1,13 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/list_email_header_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/smime_signature_status.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/smime_signature_constant.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 
 extension EmailExtension on Email {
 
@@ -39,7 +41,7 @@ extension EmailExtension on Email {
 
   bool fromMe(String ownEmailAddress) {
     return from?.any(
-      (emailAdress) => emailAdress.email == ownEmailAddress
+      (emailAddress) => emailAddress.email == ownEmailAddress
     ) == true;
   }
 
@@ -50,7 +52,15 @@ extension EmailExtension on Email {
       ...bcc ?? {},
     };
     return recipients.any(
-      (emailAdress) => emailAdress.email == ownEmailAddress
+      (emailAddress) => emailAddress.email == ownEmailAddress
     ) == true;
+  }
+
+  Email toggleKeyword(KeyWordIdentifier keyword, bool isRemoved) {
+    return copyWith(
+      keywords: isRemoved
+          ? keywords.withoutKeyword(keyword)
+          : keywords.withKeyword(keyword),
+    );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:core/utils/platform_info.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
@@ -10,72 +12,70 @@ import 'package:tmail_ui_user/features/thread_detail/domain/extensions/presentat
 
 extension HandleEmailActionExtension on SingleEmailController {
   void markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
-    final isMark = success.markStarAction == MarkStarAction.markStar;
-
-    if (PlatformInfo.isMobile && !isThreadDetailEnabled) {
-      _handleStarInMailboxContext(isMark);
-    } else {
-      _handleStarInThreadDetailContext(isMark);
-    }
-
     toastManager.showMessageSuccess(success);
-  }
 
-  void _handleStarInMailboxContext(bool isMark) {
-    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-    if (selectedEmail == null) return;
-
-    final emailId = selectedEmail.id!;
-    final emailLoaded = currentEmailLoaded.value;
-
-    // Update selected email
-    mailboxDashBoardController.selectedEmail.value =
-        isMark ? selectedEmail.star() : selectedEmail.unstar();
-
-    // Update emailLoaded
-    if (emailLoaded != null) {
-      currentEmailLoaded.value = isMark
-          ? emailLoaded.starById(emailId)
-          : emailLoaded.unstarById(emailId);
-    }
-
-    // Update flag to list emails in dashboard
-    mailboxDashBoardController.updateEmailFlagByEmailIds(
-      [emailId],
-      markStarAction:
-          isMark ? MarkStarAction.markStar : MarkStarAction.unMarkStar,
+    _autoSyncStarToSelectedEmailOnMemory(
+      markStarAction: success.markStarAction,
+      emailId: success.emailId,
+      starKeyword: KeyWordIdentifier.emailFlagged,
     );
   }
 
-  void _handleStarInThreadDetailContext(bool isMark) {
-    if (threadDetailController == null) return;
-    final controller = threadDetailController!;
-    final currentEmailId = currentEmail?.id;
-    if (currentEmailId == null) return;
+  void _autoSyncStarToSelectedEmailOnMemory({
+    required MarkStarAction markStarAction,
+    required EmailId emailId,
+    required KeyWordIdentifier starKeyword,
+  }) {
+    _updateStarInEmailOnMemory(
+      emailId: emailId,
+      starKeyword: starKeyword,
+      markStarAction: markStarAction,
+      isMobileThreadDisabled: PlatformInfo.isMobile && !isThreadDetailEnabled,
+    );
+  }
 
-    // Update list of ids
-    controller.emailIdsPresentation.value = isMark
-        ? controller.emailIdsPresentation.starOne(currentEmailId)
-        : controller.emailIdsPresentation.unstarOne(currentEmailId);
+  void _updateStarInEmailOnMemory({
+    required MarkStarAction markStarAction,
+    required EmailId emailId,
+    required KeyWordIdentifier starKeyword,
+    required bool isMobileThreadDisabled,
+  }) {
+    final isRemoved = markStarAction == MarkStarAction.unMarkStar;
 
-    // Update thread detail email infos
-    controller.emailsInThreadDetailInfo.value = isMark
-        ? controller.emailsInThreadDetailInfo.starOne(currentEmailId)
-        : controller.emailsInThreadDetailInfo.unstarOne(currentEmailId);
+    if (isMobileThreadDisabled) {
+      final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+      if (selectedEmail?.id == emailId) {
+        mailboxDashBoardController.selectedEmail.value =
+            selectedEmail?.toggleKeyword(starKeyword, isRemoved);
+      }
+    } else {
+      final controller = threadDetailController;
+      if (controller != null) {
+        controller.emailIdsPresentation.value =
+            controller.emailIdsPresentation.toggleEmailKeywordById(
+          emailId: emailId,
+          keyword: starKeyword,
+          isRemoved: isRemoved,
+        );
 
-    // Update loaded email
-    final emailLoaded = controller.currentEmailLoaded.value;
-    if (emailLoaded != null) {
-      controller.currentEmailLoaded.value = isMark
-          ? emailLoaded.starById(currentEmailId)
-          : emailLoaded.unstarById(currentEmailId);
+        controller.emailsInThreadDetailInfo.value =
+            controller.emailsInThreadDetailInfo.toggleEmailKeywordById(
+                emailId: emailId, keyword: starKeyword, isRemoved: isRemoved);
+      }
     }
 
-    // Update flag to emails in dashboard
+    final emailLoaded = currentEmailLoaded.value;
+    if (emailLoaded != null && emailLoaded.emailCurrent?.id == emailId) {
+      currentEmailLoaded.value = emailLoaded.toggleEmailKeyword(
+        emailId: emailId,
+        keyword: starKeyword,
+        isRemoved: isRemoved,
+      );
+    }
+
     mailboxDashBoardController.updateEmailFlagByEmailIds(
-      [currentEmailId],
-      markStarAction:
-          isMark ? MarkStarAction.markStar : MarkStarAction.unMarkStar,
+      [emailId],
+      markStarAction: markStarAction,
     );
   }
 }

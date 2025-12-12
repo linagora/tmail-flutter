@@ -1,88 +1,46 @@
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/extensions/email_in_thread_detail_info_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 
 extension ListEmailInThreadDetailInfoExtension
     on List<EmailInThreadDetailInfo> {
   List<EmailId> emailIdsToDisplay(bool isSentMailbox) => isSentMailbox
-      ? map((email) => email.emailId).toList()
-      : where((email) => email.isValidToDisplay)
-          .map((email) => email.emailId)
+      ? map((emailInfo) => emailInfo.emailId).toList()
+      : where((emailInfo) => emailInfo.isValidToDisplay)
+          .map((emailInfo) => emailInfo.emailId)
           .toList();
 
-  List<EmailInThreadDetailInfo> starAll() {
-    return map((email) {
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..[KeyWordIdentifier.emailFlagged] = true;
-
-      return email.copyWith(keywords: updatedKeywords);
-    }).toList();
+  List<EmailInThreadDetailInfo> toggleEmailKeywords({
+    required KeyWordIdentifier keyword,
+    required bool isRemoved,
+  }) {
+    return map((emailInfo) => emailInfo.toggleKeyword(keyword, isRemoved))
+        .toList();
   }
 
-  List<EmailInThreadDetailInfo> unstarAll() {
-    return map((email) {
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..remove(KeyWordIdentifier.emailFlagged);
-
-      return email.copyWith(keywords: updatedKeywords);
-    }).toList();
-  }
-
-  List<EmailInThreadDetailInfo> starByEmailIds(List<EmailId> targetIds) {
+  List<EmailInThreadDetailInfo> toggleEmailKeywordByIds({
+    required List<EmailId> targetIds,
+    required KeyWordIdentifier keyword,
+    required bool isRemoved,
+  }) {
     final targetSet = targetIds.toSet();
-
-    return map((email) {
-      if (!targetSet.contains(email.emailId)) return email;
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..[KeyWordIdentifier.emailFlagged] = true;
-
-      return email.copyWith(keywords: updatedKeywords);
+    return map((emailInfo) {
+      if (!targetSet.contains(emailInfo.emailId)) return emailInfo;
+      return emailInfo.toggleKeyword(keyword, isRemoved);
     }).toList();
   }
 
-  List<EmailInThreadDetailInfo> unstarByEmailIds(List<EmailId> targetIds) {
-    final targetSet = targetIds.toSet();
-
-    return map((email) {
-      if (!targetSet.contains(email.emailId)) return email;
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..remove(KeyWordIdentifier.emailFlagged);
-
-      return email.copyWith(keywords: updatedKeywords);
-    }).toList();
-  }
-
-  List<EmailInThreadDetailInfo> starOne(EmailId emailId) {
-    return map((email) {
-      if (email.emailId != emailId) {
-        return email;
+  List<EmailInThreadDetailInfo> toggleEmailKeywordById({
+    required EmailId emailId,
+    required KeyWordIdentifier keyword,
+    required bool isRemoved,
+  }) {
+    return map((emailInfo) {
+      if (emailInfo.emailId != emailId) {
+        return emailInfo;
       }
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..[KeyWordIdentifier.emailFlagged] = true;
-
-      return email.copyWith(keywords: updatedKeywords);
-    }).toList();
-  }
-
-  List<EmailInThreadDetailInfo> unstarOne(EmailId emailId) {
-    return map((email) {
-      if (email.emailId != emailId) {
-        return email;
-      }
-
-      final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-        email.keywords ?? {},
-      )..remove(KeyWordIdentifier.emailFlagged);
-
-      return email.copyWith(keywords: updatedKeywords);
+      return emailInfo.toggleKeyword(keyword, isRemoved);
     }).toList();
   }
 }

@@ -4,6 +4,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 
 extension PresentationEmailExtension on PresentationEmail {
   ({
@@ -155,19 +156,11 @@ extension PresentationEmailExtension on PresentationEmail {
     );
   }
 
-  PresentationEmail star() {
-    final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-      keywords ?? {},
-    )..[KeyWordIdentifier.emailFlagged] = true;
-
-    return copyWith(keywords: updatedKeywords);
-  }
-
-  PresentationEmail unstar() {
-    final updatedKeywords = Map<KeyWordIdentifier, bool>.from(
-      keywords ?? {},
-    )..remove(KeyWordIdentifier.emailFlagged);
-
-    return copyWith(keywords: updatedKeywords);
+  PresentationEmail toggleKeyword(KeyWordIdentifier keyword, bool isRemoved) {
+    return copyWith(
+      keywords: isRemoved
+          ? keywords.withoutKeyword(keyword)
+          : keywords.withKeyword(keyword),
+    );
   }
 }
