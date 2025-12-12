@@ -705,7 +705,7 @@ class SearchEmailController extends BaseController
       mailboxIdSelected: mailbox?.id);
 
     final destinationMailbox = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+      ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
       : await push(AppRoutes.destinationPicker, arguments: arguments);
 
     if (destinationMailbox is! PresentationMailbox) return;

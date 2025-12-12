@@ -211,7 +211,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
       mailboxIdSelected: mailboxIdSelected,
     );
     final destinationMailbox = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(
+        ? await DialogRouter().pushGeneralDialog(
             routeName: AppRoutes.destinationPicker,
             arguments: arguments,
           )
