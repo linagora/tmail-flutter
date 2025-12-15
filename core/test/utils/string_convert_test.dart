@@ -831,5 +831,68 @@ void main() {
 
       expect(result, 'First paragraph\n\nSecond paragraph');
     });
+
+    test('should preserve list items for ul li', () {
+      const htmlContent = '<ul><li>First item</li><li>Second item</li><li>Third item</li></ul>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'First item\nSecond item\nThird item');
+    });
+
+    test('should preserve list items for ol li', () {
+      const htmlContent = '<ol><li>First item</li><li>Second item</li><li>Third item</li></ol>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'First item\nSecond item\nThird item');
+    });
+
+    test('should strip inline style about text alignment', () {
+      const htmlContent = '<p>First paragraph</p><p style="text-align: right; ">Aligned right text</p><p>Last paragraph</p>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'First paragraph\nAligned right text\nLast paragraph');
+    });
+
+    test('should strip inline style about indentation', () {
+      const htmlContent = '<p>First paragraph</p><p style="margin-left: 25px; ">Indented text</p><p>Last paragraph</p>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'First paragraph\nIndented text\nLast paragraph');
+    });
+
+    test('should decode HTML entities', () {
+      const htmlContent = '<p>Text with &nbsp; and &amp; and &lt; and &gt; and &quot;</p>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'Text with \u00A0 and & and < and > and "');
+    });
+
+    test('should preserve text with nested inline formatting', () {
+      const htmlContent = '<p>Text with <strong>bold</strong> and <em>italic</em> and <u>underline</u></p>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'Text with bold and italic and underline');
+    });
+
+    test('should handle empty content', () {
+      const htmlContent = '<p></p><div></div><p></p>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, '');
+    });
+
+    test('should preserve header text with line breaks', () {
+      const htmlContent = '<h1>Main Title</h1><p>Content paragraph</p>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'Main Title\nContent paragraph');
+    });
+
+    test('should preserve link text only', () {
+      const htmlContent = '<p>Click <a href="https://example.com">here</a> for more info</p>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'Click here for more info');
+    });
   });
 }
