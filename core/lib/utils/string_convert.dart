@@ -204,22 +204,11 @@ class StringConvert {
     // Each paragraph is surrounded by block tags so we add a /n for each block tag
     // Even <br> are surrounded by block tags so we can ignore <br> and treat them
     // as paragraph
-    const blockTags = [
-      'p',
-      'div',
-      'li',
-      'section',
-      'article',
-      'header',
-      'footer',
-      'h1','h2','h3','h4','h5','h6'
-    ];
+    const blockTags = 'p, div, li, section, blockquote, article, header, footer, h1, h2, h3, h4, h5, h6';
 
-    for (final tag in blockTags) {
-      document.querySelectorAll(tag).forEach((element) {
-        element.append(Text('\n'));
-      });
-    }
+    document.querySelectorAll(blockTags).forEach((element) {
+      element.append(Text('\n'));
+    });
 
     final String textContent = document.body?.text ?? '';
 
