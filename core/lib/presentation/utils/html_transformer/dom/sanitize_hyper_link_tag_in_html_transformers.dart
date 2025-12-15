@@ -16,7 +16,7 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
     Map<String, String>? mapUrlDownloadCID,
   }) async {
     try {
-      final elements = document.querySelectorAll('a');
+      final elements = document.querySelectorAll('a[href]');
 
       if (elements.isEmpty) return;
 
