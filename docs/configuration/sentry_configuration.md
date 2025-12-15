@@ -21,8 +21,18 @@ SENTRY_ENVIRONMENT=<environment_name>
 ### 2. Activate Sentry in environment file
 In [`env.file`](https://github.com/linagora/tmail-flutter/blob/master/env.file), ensure the following line is present:
 
+- If you want to use Sentry:
 ```bash
-SENTRY_ENABLED=true | false
+SENTRY_ENABLED=true
+```
+
+- If you don't want to use Sentry:
+```bash
+SENTRY_ENABLED=false
+```
+  or
+```bash
+SENTRY_ENABLED=
 ```
 
 ### 3. Verification
