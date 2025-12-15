@@ -23,8 +23,6 @@ mixin AIScribeInComposerMixin {
   AccountId? get accountId;
 
   bool get isAIScribeAvailable {
-    if (!AIConfig.isAiEnabled) return false;
-
     final currentSession = session;
     final currentAccountId = accountId;
 
