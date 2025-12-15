@@ -9,11 +9,11 @@ extension EmailLoadedExtension on EmailLoaded {
     required KeyWordIdentifier keyword,
     required bool remove,
   }) {
-    if (emailCurrent == null || emailCurrent?.id != emailId) {
+    if (emailCurrent == null || emailCurrent!.id != emailId) {
       return this;
     }
     return copyWith(
-      emailCurrent: emailCurrent?.toggleKeyword(
+      emailCurrent: emailCurrent!.toggleKeyword(
         keyword: keyword,
         remove: remove,
       ),

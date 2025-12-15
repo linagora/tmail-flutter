@@ -26,7 +26,10 @@ extension ListEmailInThreadDetailInfoExtension
     required KeyWordIdentifier keyword,
     required bool remove,
   }) {
-    if (targetIds.isEmpty) return this;
+    // Always return a new list to keep consistent semantics
+    if (targetIds.isEmpty) {
+      return toList();
+    }
 
     final targetSet = targetIds.toSet();
     return map((emailInfo) {
@@ -40,11 +43,19 @@ extension ListEmailInThreadDetailInfoExtension
     required KeyWordIdentifier keyword,
     required bool remove,
   }) {
-    return map((emailInfo) {
-      if (emailInfo.emailId != emailId) {
-        return emailInfo;
+    final result = toList(); // ensure new list instance
+
+    for (var i = 0; i < result.length; i++) {
+      final emailInfo = result[i];
+      if (emailInfo.emailId == emailId) {
+        result[i] = emailInfo.toggleKeyword(
+          keyword: keyword,
+          remove: remove,
+        );
+        break; // stop once found
       }
-      return emailInfo.toggleKeyword(keyword: keyword, remove: remove);
-    }).toList();
+    }
+
+    return result;
   }
 }
