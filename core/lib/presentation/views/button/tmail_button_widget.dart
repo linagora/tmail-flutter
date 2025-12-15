@@ -11,6 +11,7 @@ class TMailButtonWidget extends StatelessWidget {
 
   final OnTapActionCallback? onTapActionCallback;
   final OnTapActionAtPositionCallback? onTapActionAtPositionCallback;
+  final OnTapActionAtPositionCallback? onTapActionAtOriginCallback;
   final OnLongPressActionCallback? onLongPressActionCallback;
 
   final double borderRadius;
@@ -51,6 +52,7 @@ class TMailButtonWidget extends StatelessWidget {
     required this.text,
     this.onTapActionCallback,
     this.onTapActionAtPositionCallback,
+    this.onTapActionAtOriginCallback,
     this.onLongPressActionCallback,
     this.borderRadius = 20,
     this.width,
@@ -90,6 +92,7 @@ class TMailButtonWidget extends StatelessWidget {
     final Key? key,
     OnTapActionCallback? onTapActionCallback,
     OnTapActionAtPositionCallback? onTapActionAtPositionCallback,
+    OnTapActionAtPositionCallback? onTapActionAtOriginCallback,
     OnLongPressActionCallback? onLongPressActionCallback,
     double borderRadius = 20,
     double? width,
@@ -116,6 +119,7 @@ class TMailButtonWidget extends StatelessWidget {
       text: '',
       onTapActionCallback: onTapActionCallback,
       onTapActionAtPositionCallback: onTapActionAtPositionCallback,
+      onTapActionAtOriginCallback: onTapActionAtOriginCallback,
       onLongPressActionCallback: onLongPressActionCallback,
       borderRadius: borderRadius,
       width: width,
@@ -145,6 +149,7 @@ class TMailButtonWidget extends StatelessWidget {
     final Key? key,
     OnTapActionCallback? onTapActionCallback,
     OnTapActionAtPositionCallback? onTapActionAtPositionCallback,
+    OnTapActionAtPositionCallback? onTapActionAtOriginCallback,
     OnLongPressActionCallback? onLongPressActionCallback,
     double borderRadius = 20,
     double? width,
@@ -171,6 +176,7 @@ class TMailButtonWidget extends StatelessWidget {
       text: text,
       onTapActionCallback: onTapActionCallback,
       onTapActionAtPositionCallback: onTapActionAtPositionCallback,
+      onTapActionAtOriginCallback: onTapActionAtOriginCallback,
       onLongPressActionCallback: onLongPressActionCallback,
       borderRadius: borderRadius,
       width: width,
@@ -302,6 +308,7 @@ class TMailButtonWidget extends StatelessWidget {
     return TMailContainerWidget(
       onTapActionCallback: onTapActionCallback,
       onTapActionAtPositionCallback: onTapActionAtPositionCallback,
+      onTapActionAtOriginCallback: onTapActionAtOriginCallback,
       onLongPressActionCallback: onLongPressActionCallback,
       borderRadius: borderRadius,
       width: width,

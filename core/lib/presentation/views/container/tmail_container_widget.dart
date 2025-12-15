@@ -7,6 +7,7 @@ class TMailContainerWidget extends StatelessWidget {
 
   final OnTapActionCallback? onTapActionCallback;
   final OnTapActionAtPositionCallback? onTapActionAtPositionCallback;
+  final OnTapActionAtPositionCallback? onTapActionAtOriginCallback;
   final OnLongPressActionCallback? onLongPressActionCallback;
 
   final Widget child;
@@ -30,6 +31,7 @@ class TMailContainerWidget extends StatelessWidget {
     required this.child,
     this.onTapActionCallback,
     this.onTapActionAtPositionCallback,
+    this.onTapActionAtOriginCallback,
     this.onLongPressActionCallback,
     this.borderRadius = 20,
     this.width,
@@ -72,7 +74,7 @@ class TMailContainerWidget extends StatelessWidget {
       type: MaterialType.transparency,
       child: InkWell(
         onTap: onTapActionCallback,
-        onTapDown: onTapActionAtPositionCallback != null
+        onTapDown: onTapActionAtPositionCallback != null || onTapActionAtOriginCallback != null
           ? (detail) {
               if (onTapActionAtPositionCallback != null) {
                 final screenSize = MediaQuery.of(context).size;
@@ -84,6 +86,20 @@ class TMailContainerWidget extends StatelessWidget {
                   screenSize.height - offset.dy,
                 );
                 onTapActionAtPositionCallback!.call(position);
+              }
+              if (onTapActionAtOriginCallback != null) {
+                final renderBox = context.findRenderObject() as RenderBox;
+                final widgetOrigin = renderBox.localToGlobal(Offset.zero);
+                final widgetSize = renderBox.size;
+
+                final screenSize = MediaQuery.of(context).size;
+                final position = RelativeRect.fromLTRB(
+                  widgetOrigin.dx,
+                  widgetOrigin.dy,
+                  screenSize.width - widgetOrigin.dx - widgetSize.width,
+                  screenSize.height - widgetOrigin.dy - widgetSize.height,
+                );
+                onTapActionAtOriginCallback!.call(position);
               }
             }
           : null,
