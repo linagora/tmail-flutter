@@ -41,7 +41,7 @@ dependencies:
 
   flutter_svg: 2.1.0
 
-  dio: 5.0.0
+  dio: 5.2.0
 
   dartz: 0.10.1
 
@@ -100,6 +100,10 @@ dependencies:
   html_unescape: 2.0.0
 
   web: 1.1.1
+
+  flutter_dotenv: 5.0.2
+
+  sentry_flutter: 9.8.0
 
 dev_dependencies:
   flutter_test:

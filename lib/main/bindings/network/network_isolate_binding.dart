@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:sentry_dio/sentry_dio.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
@@ -51,20 +52,23 @@ class NetworkIsolateBindings extends Bindings {
   }
 
   void _bindingInterceptors() {
-    Get.put(AuthorizationInterceptors(
-      Get.find<Dio>(tag: BindingTag.isolateTag),
+    final dio = Get.find<Dio>(tag: BindingTag.isolateTag);
+    final authorizationInterceptors = AuthorizationInterceptors(
+      dio,
       Get.find<AuthenticationClientBase>(tag: BindingTag.isolateTag),
       Get.find<TokenOidcCacheManager>(tag: BindingTag.isolateTag),
       Get.find<AccountCacheManager>(tag: BindingTag.isolateTag),
       Get.find<IOSSharingManager>(tag: BindingTag.isolateTag),
-    ), tag: BindingTag.isolateTag);
-    Get.find<Dio>(tag: BindingTag.isolateTag).interceptors
-      .add(Get.find<DynamicUrlInterceptors>());
-    Get.find<Dio>(tag: BindingTag.isolateTag).interceptors
-      .add(Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag));
+    );
+    Get.put(authorizationInterceptors, tag: BindingTag.isolateTag);
+
+    dio.interceptors.add(Get.find<DynamicUrlInterceptors>());
+    dio.interceptors.add(authorizationInterceptors);
     if (BuildUtils.isDebugMode) {
-      Get.find<Dio>(tag: BindingTag.isolateTag).interceptors
-        .add(LogInterceptor(requestBody: true));
+      dio.interceptors.add(LogInterceptor(requestBody: true));
+    }
+    if (SentryManager.instance.isSentryAvailable) {
+      dio.addSentry();
     }
   }
 

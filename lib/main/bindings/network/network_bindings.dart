@@ -5,10 +5,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/core.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:sentry_dio/sentry_dio.dart';
 import 'package:tmail_ui_user/features/contact/data/network/contact_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/mdn_api.dart';
@@ -88,18 +88,22 @@ class NetworkBindings extends Bindings {
   }
 
   void _bindingInterceptors() {
+    final dio = Get.find<Dio>();
     Get.put(DynamicUrlInterceptors());
     Get.put(AuthorizationInterceptors(
-        Get.find<Dio>(),
+      dio,
         Get.find<AuthenticationClientBase>(),
         Get.find<TokenOidcCacheManager>(),
         Get.find<AccountCacheManager>(),
         Get.find<IOSSharingManager>(),
     ));
-    Get.find<Dio>().interceptors.add(Get.find<DynamicUrlInterceptors>());
-    Get.find<Dio>().interceptors.add(Get.find<AuthorizationInterceptors>());
-    if (kDebugMode) {
-      Get.find<Dio>().interceptors.add(LogInterceptor(requestBody: true));
+    dio.interceptors.add(Get.find<DynamicUrlInterceptors>());
+    dio.interceptors.add(Get.find<AuthorizationInterceptors>());
+    if (BuildUtils.isDebugMode) {
+      dio.interceptors.add(LogInterceptor(requestBody: true));
+    }
+    if (SentryManager.instance.isSentryAvailable) {
+      dio.addSentry();
     }
   }
 

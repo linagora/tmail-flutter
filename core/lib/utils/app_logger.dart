@@ -1,8 +1,7 @@
-import 'dart:async';
-import 'package:universal_html/html.dart' as html;
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/material.dart';
+import 'package:core/utils/sentry/sentry_manager.dart';
+import 'package:universal_html/html.dart' as html;
 
 /// ANSI escape colors (Web only)
 const ansiReset = '\x1B[0m';
@@ -73,6 +72,15 @@ void _internalLog(
     // ignore: avoid_print
     print('$appLogName $formattedMessage');
   }
+
+  if (_shouldReportToSentry(level)) {
+    SentryManager.instance.captureException(
+      exception ?? rawMessage,
+      stackTrace: stackTrace,
+      message: rawMessage,
+      extras: extras,
+    );
+  }
 }
 
 String _buildRawMessage(
@@ -112,6 +120,10 @@ void _printWebConsole(Level level, String value) {
       html.window.console.debug('$appLogName $value');
       break;
   }
+}
+
+bool _shouldReportToSentry(Level level) {
+  return level == Level.error || level == Level.critical;
 }
 
 void logError(
@@ -205,18 +217,4 @@ enum Level {
   info,
   debug,
   trace,
-}
-
-// Take from: https://flutter.dev/docs/testing/errors
-void initLogger(VoidCallback runApp) {
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    FlutterError.onError = (details) {
-      FlutterError.dumpErrorToConsole(details);
-      logWarning('AppLogger::initLogger::runZonedGuarded:FlutterError.onError: ${details.stack.toString()}');
-    };
-    runApp.call();
-  }, (error, stack) {
-    logWarning('AppLogger::initLogger::runZonedGuarded:onError: $error | stack: $stack');
-  });
 }

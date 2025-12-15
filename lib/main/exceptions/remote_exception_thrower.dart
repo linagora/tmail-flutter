@@ -32,7 +32,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
   }
 
   void handleDioError(dynamic error) {
-    if (error is DioError) {
+    if (error is DioException) {
       logWarning(
         'RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
       );
@@ -74,13 +74,13 @@ class RemoteExceptionThrower extends ExceptionThrower {
     throw error;
   }
 
-  void _handleDioErrorWithoutResponse(DioError error) {
+  void _handleDioErrorWithoutResponse(DioException error) {
     switch (error.type) {
-      case DioErrorType.connectionTimeout:
+      case DioExceptionType.connectionTimeout:
         throw ConnectionTimeout(message: error.message);
-      case DioErrorType.connectionError:
+      case DioExceptionType.connectionError:
         throw ConnectionError(message: error.message);
-      case DioErrorType.badResponse:
+      case DioExceptionType.badResponse:
         throw const BadCredentialsException();
       default:
         final underlyingError = error.error;

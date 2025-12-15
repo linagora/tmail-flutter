@@ -29,6 +29,7 @@ import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/transformers.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/mixin/ai_scribe_mixin.dart';
@@ -389,7 +390,7 @@ class MailboxDashBoardController extends ReloadableController
     _registerStreamListener();
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await applicationManager.initUserAgent();
+      await ApplicationManager().initUserAgent();
     });
     super.onInit();
   }
@@ -867,6 +868,15 @@ class MailboxDashBoardController extends ReloadableController
     sessionCurrent = session;
     accountId.value = currentAccountId;
     synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
+
+    SentryManager.instance.setUser(
+      SentryUser(
+        id: currentAccountId.asString,
+        name: session.getUserDisplayName(),
+        username: session.username.value,
+        email: session.getOwnEmailAddressOrEmpty(),
+      )
+    );
 
     _setUpMinInputLengthAutocomplete();
     injectAutoCompleteBindings(session, currentAccountId);
@@ -3403,7 +3413,7 @@ class MailboxDashBoardController extends ReloadableController
     _refreshActionEventController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();
-    applicationManager.releaseUserAgent();
+    ApplicationManager().releaseUserAgent();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     _identities = null;
     outboxMailbox = null;

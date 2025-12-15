@@ -1,15 +1,23 @@
-
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fk_user_agent/fk_user_agent.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class ApplicationManager {
+  static final ApplicationManager _instance = ApplicationManager._internal();
 
-  final DeviceInfoPlugin _deviceInfoPlugin;
+  factory ApplicationManager() => _instance;
 
-  ApplicationManager(this._deviceInfoPlugin);
+  ApplicationManager._internal();
+
+  // Allow overriding in unit tests
+  @visibleForTesting
+  static DeviceInfoPlugin? debugDeviceInfoOverride;
+
+  DeviceInfoPlugin get _deviceInfoPlugin =>
+      debugDeviceInfoOverride ?? DeviceInfoPlugin();
 
   Future<PackageInfo> getPackageInfo() async {
     final packageInfo = await PackageInfo.fromPlatform();
@@ -18,9 +26,13 @@ class ApplicationManager {
   }
 
   Future<String> getVersion() async {
-    final version = (await getPackageInfo()).version;
-    log('ApplicationManager::getVersion: $version');
-    return version;
+    try {
+      final version = (await getPackageInfo()).version;
+      log('ApplicationManager::getVersion: $version');
+      return version;
+    } catch (e) {
+      return '';
+    }
   }
 
   Future<String> getUserAgent() async {
