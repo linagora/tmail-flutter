@@ -1,6 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/ai_scribe_in_composer_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile/tablet_bottom_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -14,8 +15,7 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
   final VoidCallback sendMessageAction;
   final VoidCallback requestReadReceiptAction;
   final VoidCallback toggleMarkAsImportantAction;
-  final VoidCallback? onOpenAIScribe;
-  final GlobalKey? aiScribeButtonKey;
+  final OnOpenAIScribe? onOpenAIScribe;
 
   const TabletBottomBarComposerWidget({
     super.key,
@@ -28,7 +28,6 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
     required this.requestReadReceiptAction,
     required this.toggleMarkAsImportantAction,
     this.onOpenAIScribe,
-    this.aiScribeButtonKey,
   });
 
   @override
@@ -78,13 +77,15 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
           if (onOpenAIScribe != null) ...[
             const SizedBox(width: TabletBottomBarComposerWidgetStyle.space),
             TMailButtonWidget.fromIcon(
-              key: aiScribeButtonKey,
               icon: imagePaths.icSparkle,
               borderRadius: TabletBottomBarComposerWidgetStyle.iconRadius,
               padding: TabletBottomBarComposerWidgetStyle.iconPadding,
               iconSize: TabletBottomBarComposerWidgetStyle.iconSize,
               tooltipMessage: AppLocalizations.of(context).aiAssistant,
-              onTapActionCallback: onOpenAIScribe!,
+              onTapActionAtOriginCallback: (position) {
+                Offset buttonPosition = Offset(position.left, position.top - TabletBottomBarComposerWidgetStyle.iconSize);
+                onOpenAIScribe!(buttonPosition);
+              },
             ),
           ],
           const SizedBox(width: TabletBottomBarComposerWidgetStyle.space),

@@ -8,9 +8,10 @@ import 'package:tmail_ui_user/features/composer/presentation/controller/rich_tex
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mixins/text_selection_mixin.dart';
 
+typedef OnOpenAIScribe = void Function(Offset buttonPosition);
+
 mixin AIScribeInComposerMixin {
   final editorTextSelection = Rxn<EditorTextSelection>();
-  final GlobalKey aiScribeButtonKey = GlobalKey();
 
   RichTextWebController? get richTextWebController;
   RichTextMobileTabletController? get richTextMobileTabletController;
@@ -29,14 +30,8 @@ mixin AIScribeInComposerMixin {
     }
   }
 
-  void showAIScribeMenuForFullText(BuildContext context) async {
+  void showAIScribeMenuForFullText(BuildContext context, {Offset? buttonPosition}) async {
     final fullText = await getTextOnlyContentInEditor();
-
-    final RenderBox? renderBox = aiScribeButtonKey.currentContext?.findRenderObject() as RenderBox?;
-    Offset? buttonPosition;
-    if (renderBox != null) {
-      buttonPosition = renderBox.localToGlobal(Offset.zero);
-    }
 
     if (!context.mounted) return;
 

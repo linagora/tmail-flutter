@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/ai_scribe_in_composer_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -31,8 +32,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleMarkAsImportantAction;
   final VoidCallback saveAsTemplateAction;
   final VoidCallback onOpenInsertLink;
-  final VoidCallback? onOpenAIScribe;
-  final GlobalKey? aiScribeButtonKey;
+  final OnOpenAIScribe? onOpenAIScribe;
   final OnMenuChanged? onPopupMenuChanged;
 
   const BottomBarComposerWidget({
@@ -57,7 +57,6 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.saveAsTemplateAction,
     required this.onOpenInsertLink,
     this.onOpenAIScribe,
-    this.aiScribeButtonKey,
     this.onPopupMenuChanged,
   });
 
@@ -136,7 +135,6 @@ class BottomBarComposerWidget extends StatelessWidget {
             AbsorbPointer(
               absorbing: isCodeViewEnabled,
               child: TMailButtonWidget.fromIcon(
-                key: aiScribeButtonKey,
                 icon: imagePaths.icSparkle,
                 iconColor: isCodeViewEnabled
                     ? BottomBarComposerWidgetStyle.disabledIconColor
@@ -146,7 +144,10 @@ class BottomBarComposerWidget extends StatelessWidget {
                 padding: BottomBarComposerWidgetStyle.iconPadding,
                 iconSize: BottomBarComposerWidgetStyle.iconSize,
                 tooltipMessage: AppLocalizations.of(context).aiAssistant,
-                onTapActionCallback: onOpenAIScribe!,
+                onTapActionAtOriginCallback: (position) {
+                  Offset buttonPosition = Offset(position.left, position.top - BottomBarComposerWidgetStyle.iconSize);
+                  onOpenAIScribe!(buttonPosition);
+                },
               ),
             ),
           ],

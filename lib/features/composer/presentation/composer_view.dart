@@ -470,8 +470,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                 toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
-                onOpenAIScribe: AIConfig.isAiEnabled ? () => controller.showAIScribeMenuForFullText(context) : null,
-                aiScribeButtonKey: AIConfig.isAiEnabled ? controller.aiScribeButtonKey : null,
+                onOpenAIScribe: AIConfig.isAiEnabled ? (buttonPosition) => controller.showAIScribeMenuForFullText(context, buttonPosition: buttonPosition) : null,
               )),
             ]
           )
