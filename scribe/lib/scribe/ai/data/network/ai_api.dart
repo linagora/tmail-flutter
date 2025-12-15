@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:scribe/scribe/ai/data/model/ai_api_response.dart';
 import 'package:scribe/scribe/ai/data/model/ai_api_request.dart';
+import 'package:scribe/scribe/ai/data/network/ai_api_exception.dart';
 
 class AIApi {
   final Dio _dio;
@@ -18,7 +19,7 @@ class AIApi {
     final url = _endpoint;
 
     if (url == null) {
-      throw Exception('AI API is not available');
+      throw AIApiNotAvailableException();
     }
 
     final response = await _dio.post(
@@ -28,11 +29,14 @@ class AIApi {
 
     if (response.statusCode == 200) {
       if (response.data == null || response.data.isEmpty) {
-        throw Exception('AI API returned empty response');
+        throw AIApiEmptyResponseException();
       }
       return AIApiResponse.fromJson(response.data);
     } else {
-      throw Exception('AI API returned status code: ${response.statusCode}');
+      throw AIApiException(
+        'AI API returned status code: ${response.statusCode}',
+        statusCode: response.statusCode,
+      );
     }
   }
 }
