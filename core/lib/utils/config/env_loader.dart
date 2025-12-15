@@ -1,5 +1,4 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EnvLoader {
@@ -21,7 +20,7 @@ class EnvLoader {
 
   static Future<void> loadFcmConfigFileToEnv({
     Map<String, String>? currentMapEnvData,
-    VoidCallback? onCallBack,
+    Future<void> Function()? onCallBack,
   }) async {
     try {
       await dotenv.load(
@@ -30,7 +29,7 @@ class EnvLoader {
       );
     } catch (e) {
       logWarning('EnvLoader::loadFcmConfigFileToEnv: Exception = $e');
-      onCallBack?.call();
+      await onCallBack?.call();
     }
   }
 

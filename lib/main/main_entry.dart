@@ -30,5 +30,7 @@ Future<void> runTmailPreload() async {
   await CozyIntegration.integrateCozy();
   await HiveCacheConfig.instance.initializeEncryptionKey();
 
-  setPathUrlStrategy();
+  if (PlatformInfo.isWeb) {
+    setPathUrlStrategy();
+  }
 }

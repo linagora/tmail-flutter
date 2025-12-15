@@ -68,7 +68,7 @@ class SentryManager {
           Breadcrumb(
             message: message,
             data: extras,
-            level: SentryLevel.info,
+            level: level,
           ),
         );
       },

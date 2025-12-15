@@ -4,6 +4,14 @@ import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class SentryInitializer {
+  static const _blockedHeaderPatterns = [
+    'authorization',
+    'cookie',
+    'set-cookie',
+    'x-auth',
+    'x-token',
+  ];
+
   static Future<bool> init(FutureOr<void> Function() appRunner) async {
     final config = await SentryConfig.load();
 
@@ -36,10 +44,37 @@ class SentryInitializer {
     SentryEvent event,
     Hint? hint,
   ) async {
-    // Ignore AssertionError events
-    if (event.throwable is AssertionError) {
-      return null;
-    }
-    return event;
+    final req = event.request;
+    if (req == null) return event;
+
+    final sanitizedHeaders = Map<String, String>.from(req.headers)
+      ..removeWhere(
+        (k, _) => _blockedHeaderPatterns.any(
+          (p) => k.toLowerCase().contains(p),
+        ),
+      );
+
+    final sanitizedRequest = SentryRequest(
+      url: req.url,
+      method: req.method,
+      headers: sanitizedHeaders,
+      queryString: req.queryString,
+      cookies: null,
+      data: null,
+    );
+
+    return SentryEvent(
+      eventId: event.eventId,
+      contexts: event.contexts,
+      throwable: event.throwable,
+      timestamp: event.timestamp,
+      level: event.level,
+      logger: event.logger,
+      request: sanitizedRequest,
+      tags: event.tags,
+      breadcrumbs: event.breadcrumbs,
+      user: event.user,
+      fingerprint: event.fingerprint,
+    );
   }
 }
