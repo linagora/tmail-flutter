@@ -156,9 +156,12 @@ extension PresentationEmailExtension on PresentationEmail {
     );
   }
 
-  PresentationEmail toggleKeyword(KeyWordIdentifier keyword, bool isRemoved) {
+  PresentationEmail toggleKeyword({
+    required KeyWordIdentifier keyword,
+    required bool remove,
+  }) {
     return copyWith(
-      keywords: isRemoved
+      keywords: remove
           ? keywords.withoutKeyword(keyword)
           : keywords.withKeyword(keyword),
     );

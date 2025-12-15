@@ -46,7 +46,7 @@ extension HandleEmailActionExtension on SingleEmailController {
       final selectedEmail = mailboxDashBoardController.selectedEmail.value;
       if (selectedEmail?.id == emailId) {
         mailboxDashBoardController.selectedEmail.value =
-            selectedEmail?.toggleKeyword(starKeyword, remove);
+            selectedEmail?.toggleKeyword(keyword: starKeyword, remove: remove);
       }
     } else {
       final controller = threadDetailController;

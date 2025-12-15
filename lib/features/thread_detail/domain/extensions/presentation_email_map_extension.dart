@@ -14,7 +14,7 @@ extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
       }
       return MapEntry(
         id,
-        email.toggleKeyword(keyword, remove),
+        email.toggleKeyword(keyword: keyword, remove: remove),
       );
     });
   }
@@ -32,7 +32,7 @@ extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
       }
       return MapEntry(
         id,
-        email.toggleKeyword(keyword, remove),
+        email.toggleKeyword(keyword: keyword, remove: remove),
       );
     });
   }
@@ -48,7 +48,7 @@ extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
       }
       return MapEntry(
         id,
-        email.toggleKeyword(keyword, remove),
+        email.toggleKeyword(keyword: keyword, remove: remove),
       );
     });
   }

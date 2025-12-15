@@ -15,8 +15,10 @@ extension ListEmailInThreadDetailInfoExtension
     required KeyWordIdentifier keyword,
     required bool remove,
   }) {
-    return map((emailInfo) => emailInfo.toggleKeyword(keyword, remove))
-        .toList();
+    return map((emailInfo) => emailInfo.toggleKeyword(
+          keyword: keyword,
+          remove: remove,
+        )).toList();
   }
 
   List<EmailInThreadDetailInfo> toggleEmailKeywordByIds({
@@ -29,7 +31,7 @@ extension ListEmailInThreadDetailInfoExtension
     final targetSet = targetIds.toSet();
     return map((emailInfo) {
       if (!targetSet.contains(emailInfo.emailId)) return emailInfo;
-      return emailInfo.toggleKeyword(keyword, remove);
+      return emailInfo.toggleKeyword(keyword: keyword, remove: remove);
     }).toList();
   }
 
@@ -42,7 +44,7 @@ extension ListEmailInThreadDetailInfoExtension
       if (emailInfo.emailId != emailId) {
         return emailInfo;
       }
-      return emailInfo.toggleKeyword(keyword, remove);
+      return emailInfo.toggleKeyword(keyword: keyword, remove: remove);
     }).toList();
   }
 }

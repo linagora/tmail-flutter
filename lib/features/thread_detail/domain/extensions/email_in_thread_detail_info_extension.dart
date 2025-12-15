@@ -3,12 +3,12 @@ import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_exten
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 
 extension EmailInThreadDetailInfoExtension on EmailInThreadDetailInfo {
-  EmailInThreadDetailInfo toggleKeyword(
-    KeyWordIdentifier keyword,
-    bool isRemoved,
-  ) {
+  EmailInThreadDetailInfo toggleKeyword({
+    required KeyWordIdentifier keyword,
+    required bool remove,
+  }) {
     return copyWith(
-      keywords: isRemoved
+      keywords: remove
           ? keywords.withoutKeyword(keyword)
           : keywords.withKeyword(keyword),
     );

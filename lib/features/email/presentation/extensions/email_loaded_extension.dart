@@ -13,7 +13,10 @@ extension EmailLoadedExtension on EmailLoaded {
       return this;
     }
     return copyWith(
-      emailCurrent: emailCurrent?.toggleKeyword(keyword, remove),
+      emailCurrent: emailCurrent?.toggleKeyword(
+        keyword: keyword,
+        remove: remove,
+      ),
     );
   }
 }

@@ -56,9 +56,12 @@ extension EmailExtension on Email {
     ) == true;
   }
 
-  Email toggleKeyword(KeyWordIdentifier keyword, bool isRemoved) {
+  Email toggleKeyword({
+    required KeyWordIdentifier keyword,
+    required bool remove,
+  }) {
     return copyWith(
-      keywords: isRemoved
+      keywords: remove
           ? keywords.withoutKeyword(keyword)
           : keywords.withKeyword(keyword),
     );

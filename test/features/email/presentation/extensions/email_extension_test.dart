@@ -287,7 +287,7 @@ void main() {
       () {
         final email = Email(keywords: null);
 
-        final result = email.toggleKeyword(keyword, false);
+        final result = email.toggleKeyword(keyword: keyword, remove: false);
 
         expect(result.keywords, isNotNull);
         expect(result.keywords!.length, 1);
@@ -305,7 +305,7 @@ void main() {
           },
         );
 
-        final result = email.toggleKeyword(keyword, true);
+        final result = email.toggleKeyword(keyword: keyword, remove: true);
 
         expect(result.keywords, isNotNull);
         expect(result.keywords!.containsKey(keyword), false);
@@ -322,7 +322,7 @@ void main() {
           },
         );
 
-        final result = email.toggleKeyword(keyword, true);
+        final result = email.toggleKeyword(keyword: keyword, remove: true);
 
         expect(result.keywords!.length, 1);
         expect(
@@ -343,7 +343,7 @@ void main() {
           },
         );
 
-        final result = email.toggleKeyword(keyword, false);
+        final result = email.toggleKeyword(keyword: keyword, remove: false);
 
         expect(result.keywords!.length, 1);
         expect(result.keywords![keyword], true);
@@ -360,7 +360,7 @@ void main() {
           },
         );
 
-        final result = email.toggleKeyword(keyword, true);
+        final result = email.toggleKeyword(keyword: keyword, remove: true);
 
         expect(identical(email, result), false);
       },
