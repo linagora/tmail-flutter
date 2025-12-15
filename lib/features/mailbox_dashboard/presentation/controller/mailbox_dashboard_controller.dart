@@ -827,10 +827,14 @@ class MailboxDashBoardController extends ReloadableController
 
   void injectAIScribeBindings(Session? session, AccountId? accountId) {
     try {
+      if (!PlatformInfo.isWeb) return;
+
       if (session == null || accountId == null) return;
 
       final aiCapability = session.getAICapability(accountId);
       final scribeEndpoint = aiCapability?.scribeEndpoint;
+
+      if (scribeEndpoint == null || scribeEndpoint.isEmpty) return;
 
       // Delete existing AI bindings if they exist
       if (Get.isRegistered<AIDataSourceImpl>()) {
