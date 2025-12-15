@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/domain/exceptions/string_exception.dart';
 import 'package:core/utils/mail/named_address.dart';
+import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -198,15 +199,29 @@ class StringConvert {
   }
 
   static String convertHtmlContentToTextContent(String htmlContent) {
-    String textContent = htmlContent.replaceAll(RegExp(r'<[^>]*>'), '');
+    final document = parse(htmlContent);
 
-    textContent = textContent
-      .replaceAll('&nbsp;', ' ')
-      .replaceAll('&amp;', '&')
-      .replaceAll('&lt;', '<')
-      .replaceAll('&gt;', '>')
-      .replaceAll('&quot;', '"')
-      .replaceAll('&#39;', "'");
+    // Each paragraph is surrounded by block tags so we add a /n for each block tag
+    // Even <br> are surrounded by block tags so we can ignore <br> and treat them
+    // as paragraph
+    const blockTags = [
+      'p',
+      'div',
+      'li',
+      'section',
+      'article',
+      'header',
+      'footer',
+      'h1','h2','h3','h4','h5','h6'
+    ];
+
+    for (final tag in blockTags) {
+      document.querySelectorAll(tag).forEach((element) {
+        element.append(Text('\n'));
+      });
+    }
+
+    final String textContent = document.body?.text ?? '';
 
     return textContent.trim();
   }
