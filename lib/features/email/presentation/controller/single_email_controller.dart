@@ -1740,11 +1740,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     consumeState(_parseCalendarEventInteractor!.execute(
       accountId,
       blobIds,
-      TransformConfiguration.fromTextTransformers(const [
-        SanitizeAutolinkUnescapeHtmlTransformer(),
-        StandardizeHtmlSanitizingTransformers(),
-        NewLineTransformer(),
-      ])
+      TransformConfiguration.create(
+        customTextTransformers: const [
+          SanitizeAutolinkUnescapeHtmlTransformer(),
+          StandardizeHtmlSanitizingTransformers(),
+          NewLineTransformer(),
+        ],
+        customDomTransformers: [
+          SanitizeHyperLinkTagInHtmlTransformer(useTooltip: PlatformInfo.isWeb),
+        ]
+      )
     ));
   }
 
