@@ -816,4 +816,20 @@ void main() {
       );
     });
   });
+
+  group('StringConvert.convertHtmlContentToTextContent', () {
+    test('should preserve line breaks between paragraphs', () {
+      const htmlContent = '<p>First paragraph</p><p>Second paragraph</p><p>Third paragraph</p>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'First paragraph\nSecond paragraph\nThird paragraph');
+    });
+
+    test('should preserve line breaks for br', () {
+      const htmlContent = '<p>First paragraph</p><div><br></div><p>Second paragraph</p>';
+      final result = StringConvert.convertHtmlContentToTextContent(htmlContent);
+
+      expect(result, 'First paragraph\n\nSecond paragraph');
+    });
+  });
 }
