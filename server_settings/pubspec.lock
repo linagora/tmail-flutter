@@ -181,10 +181,10 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: "9fdbf71baeb250fc9da847f6cb2052196f62c19906a3657adfc18631a667d316"
+      sha256: e44ce32c01f02c54a101551def8586f15d6189b4f999d4420aad38995ac62e6d
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "5.2.0"
   equatable:
     dependency: "direct main"
     description:
@@ -288,7 +288,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "446efbbccdde981371b4d2a636762184adf6e926"
+      resolved-ref: "8e2bd9cb1bbd8236be895aa04bf0d0da8e2ff3b2"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.3.6"

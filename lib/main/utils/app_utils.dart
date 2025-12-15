@@ -2,35 +2,15 @@ import 'package:core/core.dart';
 import 'package:date_format/date_format.dart' as date_format;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
+import 'package:url_launcher/url_launcher.dart';
 
 class AppUtils {
   const AppUtils._();
-
-  static Future<void> loadEnvFile() async {
-    await dotenv.load(fileName: AppConfig.envFileName);
-    final mapEnvData = Map<String, String>.from(dotenv.env);
-   try {
-     await loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
-   } catch (e) {
-     logWarning('AppUtils::loadEnvFile:loadFcmConfigFileToEnv: Exception = $e');
-     await dotenv.load(fileName: AppConfig.envFileName);
-   }
-  }
-
-  static Future<void> loadFcmConfigFileToEnv({Map<String, String>? currentMapEnvData})  {
-    return dotenv.load(
-      fileName: AppConfig.appFCMConfigurationPath,
-      mergeWith: currentMapEnvData ?? {}
-    );
-  }
 
   static void launchLink(String url, {bool isNewTab = true}) {
     log('AppUtils::launchLink: url = $url');

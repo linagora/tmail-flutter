@@ -268,10 +268,10 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: "9fdbf71baeb250fc9da847f6cb2052196f62c19906a3657adfc18631a667d316"
+      sha256: e44ce32c01f02c54a101551def8586f15d6189b4f999d4420aad38995ac62e6d
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "5.2.0"
   equatable:
     dependency: transitive
     description:
@@ -381,6 +381,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  flutter_dotenv:
+    dependency: transitive
+    description:
+      name: flutter_dotenv
+      sha256: d9283d92059a22e9834bc0a31336658ffba77089fb6f3cc36751f1fc7c6661a3
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.2"
   flutter_image_compress:
     dependency: transitive
     description:
@@ -674,10 +682,18 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "446efbbccdde981371b4d2a636762184adf6e926"
+      resolved-ref: "8e2bd9cb1bbd8236be895aa04bf0d0da8e2ff3b2"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.3.6"
+  jni:
+    dependency: transitive
+    description:
+      name: jni
+      sha256: d2c361082d554d4593c3012e26f6b188f902acd291330f13d6427641a92b3da1
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.14.2"
   js:
     dependency: transitive
     description:
@@ -774,6 +790,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  objective_c:
+    dependency: transitive
+    description:
+      name: objective_c
+      sha256: "64e35e1e2e79da4e83f2ace3bf4e5437cef523f46c7db2eba9a1419c49573790"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.0.0"
   package_config:
     dependency: transitive
     description:
@@ -1007,6 +1031,22 @@ packages:
       url: "https://github.com/linagora/dart-neats.git"
     source: git
     version: "3.0.1"
+  sentry:
+    dependency: transitive
+    description:
+      name: sentry
+      sha256: "10a0bc25f5f21468e3beeae44e561825aaa02cdc6829438e73b9b64658ff88d9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.8.0"
+  sentry_flutter:
+    dependency: transitive
+    description:
+      name: sentry_flutter
+      sha256: aafbf41c63c98a30b17bdbf3313424d5102db62b08735c44bff810f277e786a5
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.8.0"
   shelf:
     dependency: transitive
     description:
@@ -1204,6 +1244,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.5"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      sha256: a11b666489b1954e01d992f3d601b1804a33937b5a8fe677bd26b8a9f96f96e8
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.2"
   vector_graphics:
     dependency: transitive
     description:

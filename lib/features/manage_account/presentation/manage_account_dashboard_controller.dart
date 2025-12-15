@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:scribe/scribe/ai/presentation/utils/ai_scribe_constants.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/mixin/ai_scribe_mixin.dart';
@@ -151,6 +152,18 @@ class ManageAccountDashBoardController extends ReloadableController
     sessionCurrent = session;
     accountId.value = session?.accountId;
     synchronizeOwnEmailAddress(session?.getOwnEmailAddressOrEmpty() ?? '');
+
+    if (session != null) {
+      SentryManager.instance.setUser(
+        SentryUser(
+          id: session.accountId.asString,
+          name: session.getUserDisplayName(),
+          username: session.username.value,
+          email: session.getOwnEmailAddressOrEmpty(),
+        ),
+      );
+    }
+
     _setUpMinInputLengthAutocomplete();
     _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
     _getVacationResponse();

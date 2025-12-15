@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:tmail_ui_user/main.dart' as app;
+import 'package:tmail_ui_user/main/main_entry.dart';
 
 import 'base_scenario.dart';
 
@@ -34,7 +34,7 @@ class TestBase {
   }
 
   Future<void> setupTest() async {
-    await app.runTmail();
+    await runTmail();
 
     final originalOnError = FlutterError.onError!;
     FlutterError.onError = (FlutterErrorDetails details) {

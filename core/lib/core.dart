@@ -60,6 +60,8 @@ export 'utils/preview_eml_file_utils.dart';
 export 'utils/logger/log_tracking.dart';
 export 'utils/html/html_utils.dart';
 export 'utils/web_link_generator.dart';
+export 'utils/sentry/sentry_manager.dart';
+export 'utils/config/env_loader.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
@@ -139,3 +141,6 @@ export 'data/model/query/query_parameter.dart';
 
 // Action
 export 'presentation/action/action_callback_define.dart';
+
+// Library
+export 'package:package_info_plus/package_info_plus.dart';

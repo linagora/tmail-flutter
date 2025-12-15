@@ -81,7 +81,6 @@ abstract class BaseController extends GetxController
   final ImagePaths imagePaths = Get.find<ImagePaths>();
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
   final Uuid uuid = Get.find<Uuid>();
-  final ApplicationManager applicationManager = Get.find<ApplicationManager>();
   final ToastManager toastManager = Get.find<ToastManager>();
   final TwakeAppManager twakeAppManager = Get.find<TwakeAppManager>();
 
@@ -554,6 +553,7 @@ abstract class BaseController extends GetxController
 
   Future<void> clearDataAndGoToLoginPage() async {
     log('$runtimeType::clearDataAndGoToLoginPage:');
+    SentryManager.instance.clearUser();
     await clearAllData();
     removeAllPageAndGoToLogin();
   }
