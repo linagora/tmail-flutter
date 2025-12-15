@@ -23,6 +23,8 @@ mixin AIScribeInComposerMixin {
   AccountId? get accountId;
 
   bool get isAIScribeAvailable {
+    if (!PlatformInfo.isWeb) return false;
+
     final currentSession = session;
     final currentAccountId = accountId;
 
