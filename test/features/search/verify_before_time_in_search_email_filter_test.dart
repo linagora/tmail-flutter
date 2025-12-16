@@ -54,7 +54,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/action_required_folder_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -141,7 +140,6 @@ const fallbackGenerators = {
   MockSpec<AppGridDashboardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<SpamReportController>(fallbackGenerators: fallbackGenerators),
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
-  MockSpec<ActionRequiredFolderController>(fallbackGenerators: fallbackGenerators),
   MockSpec<RemoveEmailDraftsInteractor>(),
   MockSpec<MoveToMailboxInteractor>(),
   MockSpec<MarkAsStarEmailInteractor>(),
@@ -209,7 +207,6 @@ void main() {
   final MockAppGridDashboardController appGridDashboardController = MockAppGridDashboardController();
   final MockSpamReportController spamReportController = MockSpamReportController();
   final MockNetworkConnectionController networkConnectionController = MockNetworkConnectionController();
-  final MockActionRequiredFolderController actionRequiredFolderController = MockActionRequiredFolderController();
   final composerManager = MockComposerManager();
 
   late MailboxDashBoardController mailboxDashboardController;
@@ -356,7 +353,6 @@ void main() {
     Get.put<AppGridDashboardController>(appGridDashboardController);
     Get.put<SpamReportController>(spamReportController);
     Get.put<NetworkConnectionController>(networkConnectionController);
-    Get.put<ActionRequiredFolderController>(actionRequiredFolderController);
     Get.put<GetSessionInteractor>(getSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
     Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);

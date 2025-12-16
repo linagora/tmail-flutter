@@ -5471,4 +5471,11 @@ class AppLocalizations {
       name: 'actionRequiredMailboxDisplayName',
     );
   }
+
+  String get youDoNotHaveAnyActionRequiredEmails {
+    return Intl.message(
+      'You don’t have any action required emails.',
+      name: 'youDoNotHaveAnyActionRequiredEmails',
+    );
+  }
 }

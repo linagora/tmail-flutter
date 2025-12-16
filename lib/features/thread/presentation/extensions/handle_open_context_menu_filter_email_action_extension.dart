@@ -15,7 +15,8 @@ extension HandleOpenContextMenuFilterEmailActionExtension on ThreadController {
   ) {
     final popupMenuItems = [
       FilterMessageOption.attachments,
-      FilterMessageOption.unread,
+      if (selectedMailbox?.isActionRequired != true)
+        FilterMessageOption.unread,
       if (selectedMailbox?.isFavorite != true)
         FilterMessageOption.starred,
     ].map((filterOption) {

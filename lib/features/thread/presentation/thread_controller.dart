@@ -33,7 +33,6 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
@@ -506,11 +505,13 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
+    log('ThreadController::_getAllEmailSuccess: GetAllForMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
     mailboxDashBoardController.updateRefreshAllEmailState(Right(RefreshAllEmailSuccess()));
+    final currentMailboxId = success.currentMailboxId;
+    final isVirtualFolder = selectedMailbox?.isVirtualFolder == true;
 
-    if (success.currentMailboxId != selectedMailboxId &&
-        selectedMailbox?.isVirtualFolder != true) {
-      log('ThreadController::_getAllEmailSuccess: GetAllForMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
+    if (currentMailboxId != null &&
+        (isVirtualFolder || currentMailboxId != selectedMailboxId)) {
       return;
     }
     mailboxDashBoardController.setCurrentEmailState(success.currentEmailState);
@@ -549,9 +550,12 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _refreshChangesAllEmailSuccess(RefreshChangesAllEmailSuccess success) {
-    if (success.currentMailboxId != selectedMailboxId &&
-        selectedMailbox?.isVirtualFolder != true) {
-      log('ThreadController::_refreshChangesAllEmailSuccess: RefreshedMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
+    log('ThreadController::_refreshChangesAllEmailSuccess: RefreshedMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
+    final currentMailboxId = success.currentMailboxId;
+    final isVirtualFolder = selectedMailbox?.isVirtualFolder == true;
+
+    if (currentMailboxId != null &&
+        (isVirtualFolder || currentMailboxId != selectedMailboxId)) {
       return;
     }
     mailboxDashBoardController.setCurrentEmailState(success.currentEmailState);
@@ -576,14 +580,6 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  bool get shouldBypassCache =>
-      selectedMailbox?.isVirtualFolder ?? false;
-
-  UnsignedInt? get limitEmailFetchedInFolder =>
-      selectedMailbox?.isActionRequired == true
-          ? null
-          : ThreadConstants.defaultLimit;
-
   void getAllEmailAction({
     bool getLatestChanges = true,
   }) {
@@ -592,7 +588,7 @@ class ThreadController extends BaseController with EmailActionController {
       consumeState(_getEmailsInMailboxInteractor.execute(
         _session!,
         _accountId!,
-        limit: limitEmailFetchedInFolder,
+        limit: ThreadConstants.defaultLimit,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
         emailFilter: getEmailFilterForLoadMailbox(),
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
@@ -601,7 +597,7 @@ class ThreadController extends BaseController with EmailActionController {
           _accountId!,
         ),
         getLatestChanges: getLatestChanges,
-        useCache: !shouldBypassCache,
+        useCache: selectedMailbox?.isVirtualFolder != true,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -789,7 +785,6 @@ class ThreadController extends BaseController with EmailActionController {
       } else {
         await _refreshChangeListEmail();
       }
-      mailboxDashBoardController.autoRefreshCountEmailsInActionRequiredFolder();
     } catch (e, stackTrace) {
       logWarning('ThreadController::_handleWebSocketMessage:Error processing state: $e');
       onError(e, stackTrace);
@@ -936,13 +931,13 @@ class ThreadController extends BaseController with EmailActionController {
         GetEmailRequest(
           _session!,
           _accountId!,
-          limit: limitEmailFetchedInFolder,
+          limit: ThreadConstants.defaultLimit,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
-          useCache: !shouldBypassCache,
+          useCache: selectedMailbox?.isVirtualFolder != true,
         )
       ));
     }
