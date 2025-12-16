@@ -544,7 +544,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     final popupMenuItems = [
       if (!controller.searchController.isSearchEmailRunning)
         FilterMessageOption.attachments,
-      FilterMessageOption.unread,
+      if (controller.selectedMailbox.value?.isActionRequired != true)
+        FilterMessageOption.unread,
       if (controller.selectedMailbox.value?.isFavorite != true)
         FilterMessageOption.starred,
     ].map((filterOption) {

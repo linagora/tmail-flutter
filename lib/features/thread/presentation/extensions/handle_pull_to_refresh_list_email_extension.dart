@@ -1,11 +1,9 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
-import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/clean_and_get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
@@ -40,7 +38,7 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
     consumeState(cleanAndGetEmailsInMailboxInteractor.execute(
       session,
       accountId,
-      limit: ThreadConstants.defaultLimit,
+      limit: limitEmailFetchedInFolder,
       sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
       emailFilter: getEmailFilterForLoadMailbox(),
       propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(session, accountId),
@@ -49,7 +47,7 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
         accountId,
       ),
       getLatestChanges: true,
-      useCache: selectedMailbox?.isFavorite != true,
+      useCache: !shouldBypassCache,
     ));
   }
 }

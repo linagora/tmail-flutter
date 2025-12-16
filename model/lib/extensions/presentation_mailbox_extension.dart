@@ -36,6 +36,10 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isFavorite => role == PresentationMailbox.roleFavorite;
 
+  bool get isActionRequired => role == PresentationMailbox.roleActionRequired;
+
+  bool get isVirtualFolder => isFavorite || isActionRequired;
+
   bool get isTrash => role == PresentationMailbox.roleTrash;
 
   bool get isDrafts => role == PresentationMailbox.roleDrafts;
