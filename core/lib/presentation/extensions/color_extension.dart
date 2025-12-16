@@ -291,6 +291,7 @@ extension AppColor on Color {
   static const lightGrayF6FAFF = Color(0xFFF6FAFF);
   static const lightGrayF7F6F9 = Color(0xFFF7F6F9);
   static const blue25AEFE = Color(0xFF25AEFE);
+  static const aiActionTag = Color(0xFF7E57E3);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

@@ -5457,4 +5457,11 @@ class AppLocalizations {
       name: 'startToAddFavoritesEmails',
     );
   }
+
+  String get actionRequired {
+    return Intl.message(
+      'Action Required',
+      name: 'actionRequired',
+    );
+  }
 }

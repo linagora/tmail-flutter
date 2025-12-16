@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
@@ -495,71 +496,75 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   Widget _buildEmailItemWhenDragging(BuildContext context, PresentationEmail presentationEmail) {
-    final isShowingEmailContent = controller.mailboxDashBoardController.selectedEmail.value?.id == presentationEmail.id;
-    final selectModeAll = controller.mailboxDashBoardController.currentSelectMode.value;
-    final isSenderImportantFlagEnabled =
-        controller.mailboxDashBoardController.isSenderImportantFlagEnabled.value;
+    final dashboardController = controller.mailboxDashBoardController;
 
-    return EmailTileBuilder(
-      key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
-      presentationEmail: presentationEmail,
-      selectAllMode: selectModeAll,
-      isShowingEmailContent: isShowingEmailContent,
-      searchQuery: controller.searchQuery,
-      mailboxContain: presentationEmail.mailboxContain,
-      isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
-      isDrag: true,
-      isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
-    );
+    return Obx(() {
+      final selectAllMode = dashboardController.currentSelectMode.value;
+
+      final isSenderImportantFlagEnabled =
+          dashboardController.isSenderImportantFlagEnabled.value;
+
+      final isShowingEmailContent =
+          dashboardController.selectedEmail.value?.id == presentationEmail.id;
+
+      final isSearchEmailRunning =
+          controller.searchController.isSearchEmailRunning;
+
+      final isAiCapabilitySupported =
+          dashboardController.isAiCapabilitySupported;
+
+      return EmailTileBuilder(
+        key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
+        presentationEmail: presentationEmail,
+        selectAllMode: selectAllMode,
+        isShowingEmailContent: isShowingEmailContent,
+        searchQuery: controller.searchQuery,
+        mailboxContain: presentationEmail.mailboxContain,
+        isSearchEmailRunning: isSearchEmailRunning,
+        isDrag: true,
+        isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
+        isAIEnabled: isAiCapabilitySupported,
+      );
+    });
   }
 
   Widget _buildEmailItemNotDraggable(BuildContext context, PresentationEmail presentationEmail) {
-    final isShowingEmailContent = controller.mailboxDashBoardController.selectedEmail.value?.id == presentationEmail.id;
-    final selectModeAll = controller.mailboxDashBoardController.currentSelectMode.value;
-    final isSenderImportantFlagEnabled =
-      controller.mailboxDashBoardController.isSenderImportantFlagEnabled.value;
-
-    return Dismissible(
-      key: ValueKey<EmailId?>(presentationEmail.id),
-      direction: controller.getSwipeDirection(
-        controller.responsiveUtils.isWebDesktop(context),
-        selectModeAll,
-        presentationEmail
-      ),
-      background: Container(
-        color: AppColor.colorItemRecipientSelected,
-        padding: const EdgeInsetsDirectional.only(start: 16),
-        alignment: AlignmentDirectional.centerStart,
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: AppColor.colorSpamReportBannerBackground,
-              radius: 24,
-              child: !presentationEmail.hasRead
-                  ? SvgPicture.asset(
-                      controller.imagePaths.icMarkAsRead,
-                      fit: BoxFit.fill,
-                    )
-                  : SvgPicture.asset(
-                      controller.imagePaths.icUnreadEmail,
-                      fit: BoxFit.fill,
-                      colorFilter: AppColor.primaryColor.asFilter(),
-                    ),
-            ),
-            const SizedBox(width: 11),
-            Text(
-              !presentationEmail.hasRead
+    final backgroundWidget = Container(
+      color: AppColor.colorItemRecipientSelected,
+      padding: const EdgeInsetsDirectional.only(start: 16),
+      alignment: AlignmentDirectional.centerStart,
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: AppColor.colorSpamReportBannerBackground,
+            radius: 24,
+            child: !presentationEmail.hasRead
+                ? SvgPicture.asset(
+                    controller.imagePaths.icMarkAsRead,
+                    fit: BoxFit.fill,
+                  )
+                : SvgPicture.asset(
+                    controller.imagePaths.icUnreadEmail,
+                    fit: BoxFit.fill,
+                    colorFilter: AppColor.primaryColor.asFilter(),
+                  ),
+          ),
+          const SizedBox(width: 11),
+          Text(
+            !presentationEmail.hasRead
                 ? AppLocalizations.of(context).mark_as_read
                 : AppLocalizations.of(context).mark_as_unread,
-              style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                fontSize: 15,
-                color: AppColor.primaryColor,
-              ),
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+              fontSize: 15,
+              color: AppColor.primaryColor,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      secondaryBackground: controller.isInArchiveMailbox(presentationEmail) == false
+    );
+
+    final isInArchiveMailbox = controller.isInArchiveMailbox(presentationEmail);
+    final secondaryBackgroundWidget = !isInArchiveMailbox
         ? Container(
             color: AppColor.colorItemRecipientSelected,
             padding: const EdgeInsetsDirectional.only(end: 16),
@@ -573,7 +578,7 @@ class ThreadView extends GetWidget<ThreadController>
                   child: SvgPicture.asset(
                     controller.imagePaths.icMailboxArchived,
                     fit: BoxFit.fill,
-                  )
+                  ),
                 ),
                 const SizedBox(width: 11),
                 Text(
@@ -586,24 +591,54 @@ class ThreadView extends GetWidget<ThreadController>
               ],
             ),
           )
-        : null,
-      confirmDismiss: (direction) => controller.swipeEmailAction(
-        presentationEmail,
-        direction,
-      ),
-      child: EmailTileBuilder(
-        key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
-        presentationEmail: presentationEmail,
-        selectAllMode: selectModeAll,
-        isShowingEmailContent: isShowingEmailContent,
-        isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
-        searchQuery: controller.searchQuery,
-        mailboxContain: presentationEmail.mailboxContain,
-        isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
-        emailActionClick: _handleEmailActionClicked,
-        onMoreActionClick: (email, position) => _handleEmailContextMenuAction(context, email, position),
-      ),
-    );
+        : null;
+
+    final dashboardController = controller.mailboxDashBoardController;
+
+    return Obx(() {
+      final selectModeAll = dashboardController.currentSelectMode.value;
+
+      final isSenderImportantFlagEnabled =
+          dashboardController.isSenderImportantFlagEnabled.value;
+
+      final isShowingEmailContent =
+          dashboardController.selectedEmail.value?.id == presentationEmail.id;
+
+      final isSearchEmailRunning =
+          controller.searchController.isSearchEmailRunning;
+
+      final isAiCapabilitySupported =
+          dashboardController.isAiCapabilitySupported;
+
+      return Dismissible(
+        key: ValueKey<EmailId?>(presentationEmail.id),
+        direction: controller.getSwipeDirection(
+            controller.responsiveUtils.isWebDesktop(context),
+            selectModeAll,
+            presentationEmail
+        ),
+        background: backgroundWidget,
+        secondaryBackground: secondaryBackgroundWidget,
+        confirmDismiss: (direction) => controller.swipeEmailAction(
+          presentationEmail,
+          direction,
+        ),
+        child: EmailTileBuilder(
+          key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
+          presentationEmail: presentationEmail,
+          selectAllMode: selectModeAll,
+          isShowingEmailContent: isShowingEmailContent,
+          isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
+          searchQuery: controller.searchQuery,
+          mailboxContain: presentationEmail.mailboxContain,
+          isSearchEmailRunning: isSearchEmailRunning,
+          isAIEnabled: isAiCapabilitySupported,
+          emailActionClick: _handleEmailActionClicked,
+          onMoreActionClick: (email, position) =>
+              _handleEmailContextMenuAction(context, email, position),
+        ),
+      );
+    });
   }
 
   void _handleEmailActionClicked(

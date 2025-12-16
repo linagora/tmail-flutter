@@ -138,6 +138,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
 
   bool get isSubscribed => keywords?.containsKey(KeyWordIdentifierExtension.unsubscribeMail) == true;
 
+  bool get hasNeedAction =>
+      keywords?.containsKey(KeyWordIdentifierExtension.needActionMail) == true;
+
   bool get isAnsweredAndForwarded => isAnswered && isForwarded;
 
   bool get withAttachments => hasAttachment == true;

@@ -9,6 +9,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/base/widget/labels/ai_action_tag_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/desktop_list_email_action_hover_widget.dart';
@@ -26,6 +27,7 @@ class EmailTileBuilder extends StatefulWidget {
   final bool isDrag;
   final bool isShowingEmailContent;
   final bool isSenderImportantFlagEnabled;
+  final bool isAIEnabled;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
@@ -40,6 +42,7 @@ class EmailTileBuilder extends StatefulWidget {
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
+    this.isAIEnabled = false,
     this.emailActionClick,
     this.onMoreActionClick,
   });
@@ -169,6 +172,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                           widget.searchQuery
                         )
                       ),
+                      if (_shouldShowAIAction) const AiActionTagWidget(),
                     ]),
                   ]),
                 )
@@ -185,6 +189,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
         isShowingEmailContent: widget.isShowingEmailContent,
         isDrag: widget.isDrag,
         isSenderImportantFlagEnabled: widget.isSenderImportantFlagEnabled,
+        shouldShowAIAction: _shouldShowAIAction,
         padding: widget.padding,
         searchQuery: widget.searchQuery,
         mailboxContain: widget.mailboxContain,
@@ -368,6 +373,8 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
           buildCalendarEventIcon(context: context, presentationEmail: widget.presentationEmail),
         if (widget.presentationEmail.isMarkAsImportant && widget.isSenderImportantFlagEnabled)
           buildMarkAsImportantIcon(context),
+        if (_shouldShowAIAction)
+          const AiActionTagWidget(margin: EdgeInsetsDirectional.only(end: 12)),
         if (widget.presentationEmail.getEmailTitle().isNotEmpty)
             Container(
               constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
@@ -414,6 +421,9 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
       );
     }
   }
+
+  bool get _shouldShowAIAction =>
+      widget.isAIEnabled && widget.presentationEmail.hasNeedAction;
 
   @override
   void dispose() {
