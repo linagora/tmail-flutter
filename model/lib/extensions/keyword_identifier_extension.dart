@@ -5,6 +5,7 @@ import 'package:model/email/read_actions.dart';
 
 extension KeyWordIdentifierExtension on KeyWordIdentifier {
   static final unsubscribeMail = KeyWordIdentifier('\$unsubscribe');
+  static final needActionMail = KeyWordIdentifier('\$need-action');
 
   String generatePath() {
     return '${PatchObject.keywordsProperty}/$value';

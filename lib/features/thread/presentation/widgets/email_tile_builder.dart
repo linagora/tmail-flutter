@@ -4,6 +4,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/base/widget/labels/ai_action_tag_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -19,6 +20,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
   final bool isDrag;
   final bool isShowingEmailContent;
   final bool isSenderImportantFlagEnabled;
+  final bool isAIEnabled;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
@@ -30,6 +32,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
     this.searchQuery,
     this.isSearchEmailRunning = false,
     this.isSenderImportantFlagEnabled = true,
+    this.isAIEnabled = true,
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
@@ -128,6 +131,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
                     presentationEmail,
                     isSearchEmailRunning,
                     searchQuery)),
+                  if (_shouldShowAIAction) const AiActionTagWidget(),
                 ])
             ),
           ],
@@ -135,4 +139,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
       ),
     );
   }
+
+  bool get _shouldShowAIAction =>
+      isAIEnabled && presentationEmail.hasNeedAction;
 }

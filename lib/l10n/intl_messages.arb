@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-12-15T14:32:52.563522",
+  "@@last_modified": "2025-12-16T11:52:06.406969",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5132,6 +5132,12 @@
   },
   "aiAssistant": "AI assistant",
   "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequired": "Action Required",
+  "@actionRequired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

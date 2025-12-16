@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wra
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -665,96 +666,96 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           }
           return false;
         },
-        child: PlatformInfo.isMobile
-          ? ListView.separated(
-              controller: controller.resultSearchScrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              key: const PageStorageKey('list_presentation_email_in_search_view'),
-              itemCount: listPresentationEmail.length,
-              itemBuilder: (context, index) {
-                final currentPresentationEmail = listPresentationEmail[index];
-                return Obx(() => EmailTileBuilder(
-                  presentationEmail: currentPresentationEmail,
-                  selectAllMode: controller.selectionMode.value,
-                  searchQuery: controller.searchQuery,
-                  isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
-                  isSenderImportantFlagEnabled: controller.mailboxDashBoardController.isSenderImportantFlagEnabled.value,
-                  isSearchEmailRunning: true,
-                  padding: SearchEmailViewStyle.getPaddingSearchResultList(context, controller.responsiveUtils),
-                  mailboxContain: currentPresentationEmail.mailboxContain,
-                  emailActionClick: (action, email) {
-                    controller.pressEmailAction(
-                      context,
-                      action,
-                      email,
-                      mailboxContain: currentPresentationEmail.mailboxContain
-                    );
-                  },
-                  onMoreActionClick: (email, position) =>
-                      controller.handleEmailMoreAction(
-                        context,
-                        email,
-                        position,
-                      ),
-                ));
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                if (index < listPresentationEmail.length - 1) {
-                  return Padding(
-                    padding: SearchEmailUtils.getPaddingItemListMobile(context, controller.responsiveUtils),
-                    child: const Divider());
-                } else {
-                  return const SizedBox.shrink();
-                }
-              },
-            )
-          : ListView.separated(
-              controller: controller.resultSearchScrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              key: const PageStorageKey('list_presentation_email_in_search_view'),
-              itemCount: listPresentationEmail.length,
-              itemBuilder: (context, index) {
-                final currentPresentationEmail = listPresentationEmail[index];
-                return Obx(() => EmailTileBuilder(
-                  presentationEmail: currentPresentationEmail,
-                  selectAllMode: controller.selectionMode.value,
-                  searchQuery: controller.searchQuery,
-                  isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
-                  isSenderImportantFlagEnabled: controller.mailboxDashBoardController.isSenderImportantFlagEnabled.value,
-                  isSearchEmailRunning: true,
-                  padding: SearchEmailViewStyle.getPaddingSearchResultList(
+        child: ListView.separated(
+          controller: controller.resultSearchScrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          key: const PageStorageKey('list_presentation_email_in_search_view'),
+          itemCount: listPresentationEmail.length,
+          itemBuilder: (context, index) => _buildEmailItem(
+            context,
+            listPresentationEmail[index],
+          ),
+          separatorBuilder: (context, index) {
+            final isMobile = PlatformInfo.isMobile;
+            final isLastItem = index == listPresentationEmail.length - 1;
+            final isInactive =
+                controller.selectionMode.value == SelectMode.INACTIVE;
+
+            final showDivider = !isLastItem;
+
+            final dividerColor = isMobile
+                ? null
+                : (showDivider && isInactive ? null : Colors.white);
+
+            final padding = isMobile
+                ? SearchEmailUtils.getPaddingItemListMobile(
                     context,
-                    controller.responsiveUtils
-                  ),
-                  mailboxContain: currentPresentationEmail.mailboxContain,
-                  emailActionClick: (action, email) {
-                    controller.pressEmailAction(
-                      context,
-                      action,
-                      email,
-                      mailboxContain: currentPresentationEmail.mailboxContain
-                    );
-                  },
-                  onMoreActionClick: (email, position) =>
-                      controller.handleEmailMoreAction(
-                        context,
-                        email,
-                        position,
-                      ),
-                ));
-              },
-              separatorBuilder: (context, index) {
-                return Padding(
-                  padding: ItemEmailTileStyles.getPaddingDividerWeb(context, controller.responsiveUtils),
-                  child: Divider(
-                    color: index < listPresentationEmail.length - 1 &&
-                      controller.selectionMode.value == SelectMode.INACTIVE
-                      ? null
-                      : Colors.white
+                    controller.responsiveUtils,
                   )
-                );
-              },
-            )
+                : ItemEmailTileStyles.getPaddingDividerWeb(
+                    context,
+                    controller.responsiveUtils,
+                  );
+
+            if (!showDivider) {
+              return const SizedBox.shrink();
+            }
+
+            return Padding(
+              padding: padding,
+              child: Divider(color: dividerColor),
+            );
+          },
+        )
+    );
+  }
+
+  Widget _buildEmailItem(
+    BuildContext context,
+    PresentationEmail presentationEmail,
+  ) {
+    final dashboardController = controller.mailboxDashBoardController;
+
+    return Obx(
+      () {
+        final isShowingEmailContent =
+            dashboardController.selectedEmail.value?.id == presentationEmail.id;
+
+        final isSenderImportantFlagEnabled =
+            dashboardController.isSenderImportantFlagEnabled.value;
+
+        final isAiCapabilitySupported =
+            dashboardController.isAiCapabilitySupported;
+
+        return EmailTileBuilder(
+          presentationEmail: presentationEmail,
+          selectAllMode: controller.selectionMode.value,
+          searchQuery: controller.searchQuery,
+          isShowingEmailContent: isShowingEmailContent,
+          isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
+          isSearchEmailRunning: true,
+          isAIEnabled: isAiCapabilitySupported,
+          padding: SearchEmailViewStyle.getPaddingSearchResultList(
+            context,
+            controller.responsiveUtils,
+          ),
+          mailboxContain: presentationEmail.mailboxContain,
+          emailActionClick: (action, email) {
+            controller.pressEmailAction(
+              context,
+              action,
+              email,
+              mailboxContain: presentationEmail.mailboxContain,
+            );
+          },
+          onMoreActionClick: (email, position) =>
+              controller.handleEmailMoreAction(
+            context,
+            email,
+            position,
+          ),
+        );
+      },
     );
   }
 

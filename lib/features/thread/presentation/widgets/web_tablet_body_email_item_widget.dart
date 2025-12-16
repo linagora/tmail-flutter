@@ -8,6 +8,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/base/widget/labels/ai_action_tag_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -22,6 +23,7 @@ class WebTabletBodyEmailItemWidget extends StatefulWidget {
   final bool isShowDateTimeView;
   final bool isDrag;
   final bool isSenderImportantFlagEnabled;
+  final bool shouldShowAIAction;
   final EdgeInsetsGeometry? padding;
   final SearchQuery? searchQuery;
   final PresentationMailbox? mailboxContain;
@@ -43,6 +45,7 @@ class WebTabletBodyEmailItemWidget extends StatefulWidget {
     required this.emailActionClick,
     required this.onMoreActionClick,
     this.isShowDateTimeView = false,
+    this.shouldShowAIAction = false,
   });
 
   @override
@@ -165,6 +168,8 @@ class _WebTabletBodyEmailItemWidgetState
                                 widget.searchQuery,
                               ),
                             ),
+                            if (widget.shouldShowAIAction)
+                              const AiActionTagWidget(),
                           ],
                         ),
                       ],
