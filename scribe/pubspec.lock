@@ -109,10 +109,10 @@ packages:
     dependency: transitive
     description:
       name: build_runner_core
-      sha256: f8126682b87a7282a339b871298cc12009cb67109cfa1614d6436fb0289193e0
+      sha256: "0671ad4162ed510b70d0eb4ad6354c249f8429cab4ae7a4cec86bbc2886eb76e"
       url: "https://pub.dev"
     source: hosted
-    version: "7.3.2"
+    version: "7.2.7+1"
   built_collection:
     dependency: transitive
     description:
@@ -669,6 +669,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  jmap_dart_client:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "446efbbccdde981371b4d2a636762184adf6e926"
+      url: "https://github.com/linagora/jmap-dart-client.git"
+    source: git
+    version: "0.3.6"
   js:
     dependency: transitive
     description:
@@ -678,13 +687,13 @@ packages:
     source: hosted
     version: "0.7.2"
   json_annotation:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: json_annotation
-      sha256: b10a7b2ff83d83c777edba3c6a0f97045ddadd56c944e1a23a3fdf43a1bf4467
+      sha256: c33da08e136c3df0190bd5bbe51ae1df4a7d96e7954d1d7249fea2968a72d317
       url: "https://pub.dev"
     source: hosted
-    version: "4.8.1"
+    version: "4.8.0"
   json_serializable:
     dependency: "direct dev"
     description:
@@ -981,6 +990,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      sha256: b1c1ac5ce6688d77f65f3375a9abb9319b3cb32486bdc7a1e0fdf004d7ba4e47
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.1"
   sanitize_html:
     dependency: transitive
     description:

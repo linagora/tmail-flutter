@@ -17,6 +17,12 @@ dependencies:
   core:
     path: ../core
 
+  ### Dependencies from git ###
+  jmap_dart_client:
+    git:
+      url: https://github.com/linagora/jmap-dart-client.git
+      ref: main
+
   ### Dependencies from pub.dev ###
   dartz: 0.10.1
 
@@ -27,6 +33,8 @@ dependencies:
   pointer_interceptor: 0.10.1+2
 
   intl: 0.20.2
+
+  json_annotation: 4.8.0
 
 dev_dependencies:
   flutter_test:
