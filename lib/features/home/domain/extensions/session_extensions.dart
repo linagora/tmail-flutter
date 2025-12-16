@@ -12,11 +12,11 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
-import 'package:model/ai/ai_capability.dart';
-import 'package:model/ai/capability_ai.dart';
 import 'package:model/download_all/download_all_capability.dart';
 import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
+import 'package:scribe/scribe/ai/presentation/model/ai_capability.dart';
+import 'package:scribe/scribe/ai/presentation/utils/ai_scribe_constants.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/home/domain/converter/session_account_converter.dart';
@@ -35,7 +35,7 @@ extension SessionExtensions on Session {
     linagoraDownloadAllCapability: DownloadAllCapability.deserialize,
     capabilityServerSettings: SettingsCapability.deserialize,
     linagoraSaaSCapability: SaaSAccountCapability.deserialize,
-    capabilityAI: AICapability.deserialize,
+    AiScribeConstants.aiCapability: AICapability.deserialize,
   };
 
   Map<String, dynamic> toJson() {
@@ -173,7 +173,7 @@ extension SessionExtensions on Session {
     try {
       final aiCapability = getCapabilityProperties<AICapability>(
         accountId,
-        capabilityAI,
+        AiScribeConstants.aiCapability,
       );
       log('SessionExtensions::getAICapability:aiCapability = $aiCapability');
       return aiCapability;
