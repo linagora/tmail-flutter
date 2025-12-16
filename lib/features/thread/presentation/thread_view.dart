@@ -796,6 +796,7 @@ class ThreadView extends GetWidget<ThreadController>
               isSearchActive: controller.isSearchActive,
               isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
               isFavoriteFolder: controller.selectedMailbox?.isFavorite == true,
+              isActionRequiredFolder: controller.selectedMailbox?.isActionRequired == true,
             ),
           );
         }
