@@ -16,4 +16,13 @@ extension HandleAiActionExtension on MailboxDashBoardController {
       currentAccountId,
     );
   }
+
+  void autoRefreshCountEmailsInActionRequiredFolder() {
+    if (isAiCapabilitySupported) {
+      actionRequiredFolderController.getCountEmails(
+        session: sessionCurrent,
+        accountId: accountId.value,
+      );
+    }
+  }
 }

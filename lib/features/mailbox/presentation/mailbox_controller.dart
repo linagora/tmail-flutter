@@ -611,6 +611,7 @@ class MailboxController extends BaseMailboxController
       syncAllMailboxWithDisplayName(currentContext!);
     }
     addFavoriteFolderToMailboxList();
+    setUpActionRequiredFolder(mailboxDashBoardController);
     _setMapMailbox();
     _setOutboxMailbox();
     _selectSelectedMailboxDefault();

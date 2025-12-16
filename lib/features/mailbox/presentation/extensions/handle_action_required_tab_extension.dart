@@ -33,7 +33,7 @@ extension HandleActionRequiredTabExtension on BaseMailboxController {
   void _addActionRequiredFolder(int count) {
     final folder = _buildActionRequiredFolder(count);
 
-    _addToDefaultMailboxTree(folder);
+    _addToDefaultMailboxTree(folder, count);
     _addToAllMailboxes(folder);
   }
 
@@ -43,20 +43,23 @@ extension HandleActionRequiredTabExtension on BaseMailboxController {
     return base.copyWith(
       displayName:
           currentContext != null ? base.getDisplayName(currentContext!) : null,
-      totalEmails: TotalEmails(UnsignedInt(count)),
       unreadEmails: UnreadEmails(UnsignedInt(count)),
     );
   }
 
-  void _addToDefaultMailboxTree(PresentationMailbox folder) {
+  void _addToDefaultMailboxTree(PresentationMailbox folder, int count) {
     final root = defaultMailboxTree.value.root;
     final children = List<MailboxNode>.from(root.childrenItems ?? []);
 
-    children.insertAfterStarredOrInbox(MailboxNode(folder));
+    final result = children.insertAfterStarredOrInbox(MailboxNode(folder));
 
-    defaultMailboxTree.value = MailboxTree(
-      root.copyWith(children: children),
-    );
+    if (result) {
+      defaultMailboxTree.value = MailboxTree(
+        root.copyWith(children: children),
+      );
+    } else {
+      defaultMailboxTree.value.updateMailboxUnreadCountById(folder.id, count);
+    }
   }
 
   void _addToAllMailboxes(PresentationMailbox folder) {

@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
@@ -788,6 +789,7 @@ class ThreadController extends BaseController with EmailActionController {
       } else {
         await _refreshChangeListEmail();
       }
+      mailboxDashBoardController.autoRefreshCountEmailsInActionRequiredFolder();
     } catch (e, stackTrace) {
       logError('ThreadController::_handleWebSocketMessage:Error processing state: $e');
       onError(e, stackTrace);

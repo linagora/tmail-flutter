@@ -15,8 +15,8 @@ extension ListMailboxNodeExtension on List<MailboxNode> {
 
   /// Insert [newNode] after Starred if present,
   /// otherwise after Inbox, otherwise at the beginning.
-  void insertAfterStarredOrInbox(MailboxNode newNode) {
-    insertAfterByPriority(
+  bool insertAfterStarredOrInbox(MailboxNode newNode) {
+    return insertAfterByPriority(
       newNode,
       [
         _isStarred,
@@ -27,21 +27,22 @@ extension ListMailboxNodeExtension on List<MailboxNode> {
 
   /// Insert [newNode] after the first mailbox matching [priorities].
   /// If none match, inserts at the beginning.
-  void insertAfterByPriority(
+  bool insertAfterByPriority(
     MailboxNode newNode,
     List<bool Function(MailboxNode)> priorities,
   ) {
-    if (_containsMailbox(newNode)) return;
+    if (_containsMailbox(newNode)) return false;
 
     for (final predicate in priorities) {
       final index = indexWhere(predicate);
       if (index != -1) {
         insert(index + 1, newNode);
-        return;
+        return true;
       }
     }
 
     insert(0, newNode);
+    return true;
   }
 
   bool _isInbox(MailboxNode node) {
