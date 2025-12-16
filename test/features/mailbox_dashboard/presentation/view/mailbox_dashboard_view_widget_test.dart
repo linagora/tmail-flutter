@@ -54,6 +54,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_in
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/action_required_folder_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
@@ -170,6 +171,7 @@ const fallbackGenerators = {
   MockSpec<SubaddressingInteractor>(),
   MockSpec<CreateDefaultMailboxInteractor>(),
   MockSpec<MoveFolderContentInteractor>(),
+  MockSpec<ActionRequiredFolderController>(fallbackGenerators: fallbackGenerators),
   MockSpec<TreeBuilder>(),
   MockSpec<VerifyNameInteractor>(),
   MockSpec<GetAllMailboxInteractor>(),
@@ -236,6 +238,7 @@ void main() {
   final appGridDashboardController = MockAppGridDashboardController();
   final spamReportController = MockSpamReportController();
   final networkConnectionController = MockNetworkConnectionController();
+  final actionRequiredFolderController = MockActionRequiredFolderController();
 
   final quickSearchEmailInteractor = MockQuickSearchEmailInteractor();
   final saveRecentSearchInteractor = MockSaveRecentSearchInteractor();
@@ -323,6 +326,7 @@ void main() {
       Get.put<AppGridDashboardController>(appGridDashboardController);
       Get.put<SpamReportController>(spamReportController);
       Get.put<NetworkConnectionController>(networkConnectionController);
+      Get.put<ActionRequiredFolderController>(actionRequiredFolderController);
       Get.put<CachingManager>(cachingManager);
       Get.put<LanguageCacheManager>(languageCacheManager);
       Get.put<AuthorizationInterceptors>(authorizationInterceptors);

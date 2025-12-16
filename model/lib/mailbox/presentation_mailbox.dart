@@ -19,12 +19,18 @@ class PresentationMailbox with EquatableMixin {
   static const String archiveRole = 'archive';
   static const String recoveredRole = 'restored messages';
   static const String favoriteRole = 'favorite';
+  static const String actionRequiredRole = 'need-action';
 
   static final PresentationMailbox unifiedMailbox = PresentationMailbox(MailboxId(Id('unified')));
   static final PresentationMailbox favoriteFolder = PresentationMailbox(
     MailboxId(Id(favoriteRole)),
     name: MailboxName('Starred'),
     role: roleFavorite,
+  );
+  static final PresentationMailbox actionRequiredFolder = PresentationMailbox(
+    MailboxId(Id(actionRequiredRole)),
+    name: MailboxName('Action required'),
+    role: roleActionRequired,
   );
 
   static final roleInbox = Role(inboxRole);
@@ -38,6 +44,7 @@ class PresentationMailbox with EquatableMixin {
   static final roleArchive = Role(archiveRole);
   static final roleRecovered = Role(recoveredRole);
   static final roleFavorite = Role(favoriteRole);
+  static final roleActionRequired = Role(actionRequiredRole);
 
   final MailboxId id;
   final MailboxName? name;

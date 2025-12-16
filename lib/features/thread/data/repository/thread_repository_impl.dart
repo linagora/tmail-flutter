@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -522,5 +523,23 @@ class ThreadRepositoryImpl extends ThreadRepository {
       properties: propertiesCreated,
     );
     yield emailResponse;
+  }
+
+  @override
+  Future<int> getCountUnreadEmailsInFolder({
+    required Session session,
+    required AccountId accountId,
+  }) async {
+    final networkDataSource = mapDataSource[DataSourceType.network]!;
+    final emailResponse = await networkDataSource.getAllEmail(
+      session,
+      accountId,
+      filter: EmailFilterCondition(
+        hasKeyword: KeyWordIdentifierExtension.needActionMail.value,
+        notKeyword: KeyWordIdentifier.emailSeen.value,
+      ),
+      properties: Properties({EmailProperty.id}),
+    );
+    return emailResponse.emailList?.length ?? 0;
   }
 }

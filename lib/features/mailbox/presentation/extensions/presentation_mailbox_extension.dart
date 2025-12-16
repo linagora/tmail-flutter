@@ -17,6 +17,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
           return AppLocalizations.of(context).inboxMailboxDisplayName;
         case PresentationMailbox.favoriteRole:
           return AppLocalizations.of(context).favoriteMailboxDisplayName;
+        case PresentationMailbox.actionRequiredRole:
+          return AppLocalizations.of(context).actionRequiredMailboxDisplayName;
         case PresentationMailbox.archiveRole:
           return AppLocalizations.of(context).archiveMailboxDisplayName;
         case PresentationMailbox.draftsRole:
@@ -44,6 +46,10 @@ extension PresentationMailboxExtension on PresentationMailbox {
       switch(role!.value.toLowerCase()) {
         case PresentationMailbox.inboxRole:
           return appLocalizations.inboxMailboxDisplayName;
+        case PresentationMailbox.favoriteRole:
+          return appLocalizations.favoriteMailboxDisplayName;
+        case PresentationMailbox.actionRequiredRole:
+          return appLocalizations.actionRequiredMailboxDisplayName;
         case PresentationMailbox.archiveRole:
           return appLocalizations.archiveMailboxDisplayName;
         case PresentationMailbox.draftsRole:
@@ -73,6 +79,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
           return imagePaths.icMailboxInbox;
         case PresentationMailbox.favoriteRole:
           return imagePaths.icMailboxFavorite;
+        case PresentationMailbox.actionRequiredRole:
+          return imagePaths.icMailboxActionRequired;
         case PresentationMailbox.draftsRole:
           return imagePaths.icMailboxDrafts;
         case PresentationMailbox.outboxRole:

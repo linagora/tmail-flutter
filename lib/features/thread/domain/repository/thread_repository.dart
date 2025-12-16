@@ -93,4 +93,9 @@ abstract class ThreadRepository {
   );
 
   Future<void> clearEmailCacheAndStateCache(AccountId accountId, Session session);
+
+  Future<int> getCountUnreadEmailsInFolder({
+    required Session session,
+    required AccountId accountId,
+  });
 }

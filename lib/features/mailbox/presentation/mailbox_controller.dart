@@ -69,6 +69,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_action_required_tab_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_favorite_tab_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
@@ -264,6 +265,7 @@ class MailboxController extends BaseMailboxController
       (failure) {
         if (failure is GetAllMailboxFailure) {
           addFavoriteFolderToMailboxList();
+          setUpActionRequiredFolder(mailboxDashBoardController);
           mailboxDashBoardController.updateRefreshAllMailboxState(Left(RefreshAllMailboxFailure()));
           showRetryToast(failure);
         }
@@ -271,6 +273,7 @@ class MailboxController extends BaseMailboxController
       (success) {
         if (success is GetAllMailboxSuccess) {
           addFavoriteFolderToMailboxList();
+          setUpActionRequiredFolder(mailboxDashBoardController);
           mailboxDashBoardController.updateRefreshAllMailboxState(Right(RefreshAllMailboxSuccess()));
           _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
           _handleDataFromNavigationRouter();
@@ -280,6 +283,7 @@ class MailboxController extends BaseMailboxController
           }
         } else if (success is CreateDefaultMailboxAllSuccess) {
           addFavoriteFolderToMailboxList();
+          setUpActionRequiredFolder(mailboxDashBoardController);
         }
       });
   }
@@ -434,6 +438,11 @@ class MailboxController extends BaseMailboxController
         );
       }
     });
+
+    ever(
+      mailboxDashBoardController.actionRequiredFolderController.actionRequiredFolderCount,
+      onActionRequiredFolderCountChanged,
+    );
   }
 
   void _handleMarkEmailsAsReadOrUnread({

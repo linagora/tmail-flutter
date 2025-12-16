@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-12-16T11:52:06.406969",
+  "@@last_modified": "2025-12-16T15:21:10.099014",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5138,6 +5138,12 @@
   },
   "actionRequired": "Action Required",
   "@actionRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequiredMailboxDisplayName": "Action required",
+  "@actionRequiredMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
