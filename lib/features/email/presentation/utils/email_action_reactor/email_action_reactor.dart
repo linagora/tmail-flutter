@@ -715,7 +715,7 @@ class EmailActionReactor {
   }) {
     if (selectedMailbox == null ||
         isSearchEmailRunning ||
-        selectedMailbox.isFavorite == true) {
+        selectedMailbox.isVirtualFolder == true) {
       return presentationEmail.findMailboxContain(mapMailbox);
     }
 

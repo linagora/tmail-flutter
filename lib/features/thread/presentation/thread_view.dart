@@ -780,7 +780,7 @@ class ThreadView extends GetWidget<ThreadController>
 
         if (success is GetAllEmailSuccess
             && success.currentMailboxId != controller.selectedMailboxId &&
-            controller.selectedMailbox?.isFavorite != true) {
+            controller.selectedMailbox?.isVirtualFolder != true) {
           return const SizedBox.shrink();
         } else {
           return PullToRefreshWidget(

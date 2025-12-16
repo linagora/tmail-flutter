@@ -13,7 +13,8 @@ extension HandleSelectMessageFilterExtension on ThreadController {
   ) {
     final contextMenuActions = [
       FilterMessageOption.attachments,
-      FilterMessageOption.unread,
+      if (selectedMailbox?.isActionRequired != true)
+        FilterMessageOption.unread,
       if (selectedMailbox?.isFavorite != true)
         FilterMessageOption.starred,
     ].map((filter) {

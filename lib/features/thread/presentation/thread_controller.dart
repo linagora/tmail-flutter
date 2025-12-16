@@ -10,9 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart' show Filter;
+import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
+import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
@@ -505,7 +508,7 @@ class ThreadController extends BaseController with EmailActionController {
     mailboxDashBoardController.updateRefreshAllEmailState(Right(RefreshAllEmailSuccess()));
 
     if (success.currentMailboxId != selectedMailboxId &&
-        selectedMailbox?.isFavorite != true) {
+        selectedMailbox?.isVirtualFolder != true) {
       log('ThreadController::_getAllEmailSuccess: GetAllForMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
       return;
     }
@@ -546,7 +549,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _refreshChangesAllEmailSuccess(RefreshChangesAllEmailSuccess success) {
     if (success.currentMailboxId != selectedMailboxId &&
-        selectedMailbox?.isFavorite != true) {
+        selectedMailbox?.isVirtualFolder != true) {
       log('ThreadController::_refreshChangesAllEmailSuccess: RefreshedMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
       return;
     }
@@ -572,6 +575,14 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
+  bool get shouldBypassCache =>
+      selectedMailbox?.isVirtualFolder ?? false;
+
+  UnsignedInt? get limitEmailFetchedInFolder =>
+      selectedMailbox?.isActionRequired == true
+          ? null
+          : ThreadConstants.defaultLimit;
+
   void getAllEmailAction({
     bool getLatestChanges = true,
   }) {
@@ -580,7 +591,7 @@ class ThreadController extends BaseController with EmailActionController {
       consumeState(_getEmailsInMailboxInteractor.execute(
         _session!,
         _accountId!,
-        limit: ThreadConstants.defaultLimit,
+        limit: limitEmailFetchedInFolder,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
         emailFilter: getEmailFilterForLoadMailbox(),
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
@@ -589,7 +600,7 @@ class ThreadController extends BaseController with EmailActionController {
           _accountId!,
         ),
         getLatestChanges: getLatestChanges,
-        useCache: selectedMailbox?.isFavorite != true,
+        useCache: !shouldBypassCache,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -597,7 +608,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   EmailFilter getEmailFilterForLoadMailbox({PresentationEmail? oldestEmail}) {
-    if (selectedMailbox?.isFavorite == true) {
+    if (selectedMailbox?.isVirtualFolder == true) {
       return EmailFilter(
         filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
       );
@@ -610,32 +621,95 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  Filter getFilterConditionForLoadMailbox({PresentationEmail? oldestEmail}) {
-    if (selectedMailbox?.isFavorite == true) {
-      switch (mailboxDashBoardController.filterMessageOption.value) {
-        case FilterMessageOption.unread:
-          return EmailFilterCondition(
-            notKeyword: KeyWordIdentifier.emailSeen.value,
-            hasKeyword: KeyWordIdentifier.emailFlagged.value,
-            before: oldestEmail?.receivedAt,
-          );
-        case FilterMessageOption.attachments:
-          return EmailFilterCondition(
-            hasAttachment: true,
-            hasKeyword: KeyWordIdentifier.emailFlagged.value,
-            before: oldestEmail?.receivedAt,
-          );
-        default:
-          return EmailFilterCondition(
-            hasKeyword: KeyWordIdentifier.emailFlagged.value,
-            before: oldestEmail?.receivedAt,
-          );
-      }
-    } else {
-      return getFilterCondition(
-        mailboxIdSelected: selectedMailboxId,
-        oldestEmail: oldestEmail,
+  Filter getFilterConditionForLoadMailbox({
+    PresentationEmail? oldestEmail,
+  }) {
+    final mailbox = selectedMailbox;
+    final filterOption =
+        mailboxDashBoardController.filterMessageOption.value;
+    final before = oldestEmail?.receivedAt;
+
+    if (mailbox?.isFavorite == true) {
+      return _buildFavoriteMailboxFilter(
+        filterOption: filterOption,
+        before: before,
       );
+    }
+
+    if (mailbox?.isActionRequired == true) {
+      return _buildActionRequiredMailboxFilter(
+        filterOption: filterOption,
+        before: before,
+      );
+    }
+
+    return getFilterCondition(
+      mailboxIdSelected: selectedMailboxId,
+      oldestEmail: oldestEmail,
+    );
+  }
+
+  Filter _buildFavoriteMailboxFilter({
+    required FilterMessageOption filterOption,
+    UTCDate? before,
+  }) {
+    switch (filterOption) {
+      case FilterMessageOption.unread:
+        return EmailFilterCondition(
+          notKeyword: KeyWordIdentifier.emailSeen.value,
+          hasKeyword: KeyWordIdentifier.emailFlagged.value,
+          before: before,
+        );
+
+      case FilterMessageOption.attachments:
+        return EmailFilterCondition(
+          hasAttachment: true,
+          hasKeyword: KeyWordIdentifier.emailFlagged.value,
+          before: before,
+        );
+
+      default:
+        return EmailFilterCondition(
+          hasKeyword: KeyWordIdentifier.emailFlagged.value,
+          before: before,
+        );
+    }
+  }
+
+  Filter _buildActionRequiredMailboxFilter({
+    required FilterMessageOption filterOption,
+    UTCDate? before,
+  }) {
+    switch (filterOption) {
+      case FilterMessageOption.starred:
+        return LogicFilterOperator(
+          Operator.AND,
+          {
+            EmailFilterCondition(
+              hasKeyword: KeyWordIdentifier.emailFlagged.value,
+            ),
+            EmailFilterCondition(
+              notKeyword: KeyWordIdentifier.emailSeen.value,
+              hasKeyword: KeyWordIdentifierExtension.needActionMail.value,
+              before: before,
+            ),
+          },
+        );
+
+      case FilterMessageOption.attachments:
+        return EmailFilterCondition(
+          hasAttachment: true,
+          notKeyword: KeyWordIdentifier.emailSeen.value,
+          hasKeyword: KeyWordIdentifierExtension.needActionMail.value,
+          before: before,
+        );
+
+      default:
+        return EmailFilterCondition(
+          notKeyword: KeyWordIdentifier.emailSeen.value,
+          hasKeyword: KeyWordIdentifierExtension.needActionMail.value,
+          before: before,
+        );
     }
   }
 
@@ -709,8 +783,8 @@ class ThreadController extends BaseController with EmailActionController {
     try {
       if (searchController.isSearchEmailRunning && PlatformInfo.isWeb) {
         await _refreshChangeSearchEmail();
-      } else if (selectedMailbox?.isFavorite == true) {
-        await _refreshChangeListEmailsInFavoriteFolder();
+      } else if (selectedMailbox?.isVirtualFolder == true) {
+        await _refreshChangeListEmailsInVirtualFolder();
       } else {
         await _refreshChangeListEmail();
       }
@@ -815,8 +889,8 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  Future<void> _refreshChangeListEmailsInFavoriteFolder() async {
-    log('ThreadController::_refreshChangeListEmailsInFavoriteFolder:');
+  Future<void> _refreshChangeListEmailsInVirtualFolder() async {
+    log('ThreadController::_refreshChangeListEmailsInVirtualFolder:');
 
     await _refreshChangeListEmailCache();
 
@@ -860,20 +934,20 @@ class ThreadController extends BaseController with EmailActionController {
         GetEmailRequest(
           _session!,
           _accountId!,
-          limit: ThreadConstants.defaultLimit,
+          limit: limitEmailFetchedInFolder,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
-          useCache: selectedMailbox?.isFavorite != true,
+          useCache: !shouldBypassCache,
         )
       ));
     }
   }
 
   bool _validatePresentationEmail(PresentationEmail email) {
-    return (_belongToCurrentMailboxId(email) || selectedMailbox?.isFavorite == true)
+    return (_belongToCurrentMailboxId(email) || selectedMailbox?.isVirtualFolder == true)
       && _notDuplicatedInCurrentList(email);
   }
 
