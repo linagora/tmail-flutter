@@ -5464,4 +5464,11 @@ class AppLocalizations {
       name: 'actionRequired',
     );
   }
+
+  String get actionRequiredMailboxDisplayName {
+    return Intl.message(
+      'Action required',
+      name: 'actionRequiredMailboxDisplayName',
+    );
+  }
 }

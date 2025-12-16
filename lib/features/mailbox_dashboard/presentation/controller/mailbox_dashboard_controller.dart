@@ -117,6 +117,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_te
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/action_required_folder_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
@@ -124,6 +125,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_clear_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
@@ -237,6 +239,8 @@ class MailboxDashBoardController extends ReloadableController
   final getStoredOidcConfigurationInteractor =
       Get.find<GetStoredOidcConfigurationInteractor>();
   final getTokenOIDCInteractor = Get.find<GetTokenOIDCInteractor>();
+  final actionRequiredFolderController =
+      Get.find<ActionRequiredFolderController>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -873,6 +877,9 @@ class MailboxDashBoardController extends ReloadableController
     injectAIScribeBindings(session, currentAccountId);
     if (PlatformInfo.isMobile) {
       injectFCMBindings(session, currentAccountId);
+    }
+    if (isAiCapabilitySupported) {
+      actionRequiredFolderController.injectBinding();
     }
 
     _getVacationResponse();
