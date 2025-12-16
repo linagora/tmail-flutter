@@ -90,10 +90,11 @@ dependencies:
       url: https://github.com/linagora/flutter-date-range-picker.git
       ref: main
 
+  ### TODO: Revert back to master when https://github.com/linagora/linagora-design-flutter/pull/67 is merged
   linagora_design_flutter:
     git:
       url: https://github.com/linagora/linagora-design-flutter.git
-      ref: master
+      ref: feature/web-link-generator
 
   ### Original dependency is abandoned, so we use fork
   ### https://github.com/linagora/intl_generator/pull/1

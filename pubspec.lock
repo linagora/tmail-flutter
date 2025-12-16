@@ -1419,8 +1419,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "66d09a271f20243badd92352a8bb5866b430020d"
+      ref: "feature/web-link-generator"
+      resolved-ref: "72323ff6411c5203808068adc2e5500fe010f581"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.0.1"
