@@ -4,7 +4,11 @@ export 'scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 export 'scribe/ai/domain/repository/ai_scribe_repository.dart';
 export 'scribe/ai/domain/model/ai_response.dart';
 export 'scribe/ai/domain/state/generate_ai_text_state.dart';
-export 'scribe/ai/presentation/model/ai_action.dart';
-export 'scribe/ai/presentation/model/ai_scribe_menu_action.dart';
+
 export 'scribe/ai/data/repository/ai_repository_impl.dart';
 export 'scribe/ai/data/datasource/ai_datasource.dart';
+
+export 'scribe/ai/presentation/model/ai_action.dart';
+export 'scribe/ai/presentation/model/ai_scribe_menu_action.dart';
+export 'scribe/ai/presentation/model/ai_capability.dart';
+export 'scribe/ai/presentation/utils/ai_scribe_constants.dart';
