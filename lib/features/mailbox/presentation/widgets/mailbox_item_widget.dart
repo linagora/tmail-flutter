@@ -77,59 +77,70 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
   @override
   Widget build(BuildContext context) {
     if (_responsiveUtils.isWebDesktop(context) && widget.mailboxDisplayed == MailboxDisplayed.mailbox) {
-      return DragTarget<List<PresentationEmail>>(
-        key: _key,
-        builder: (context, candidateEmails, rejectedEmails) {
-          return Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
-              onHover: (value) => setState(() => _isItemHovered = value),
+      final itemWidget = Material(
+        key: widget.mailboxNode.item.isActionRequired ? _key : null,
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: () =>
+              widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
+          onHover: (value) => setState(() => _isItemHovered = value),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(MailboxItemWidgetStyles.borderRadius),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(
                 Radius.circular(MailboxItemWidgetStyles.borderRadius),
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(MailboxItemWidgetStyles.borderRadius),
-                  ),
-                  color: backgroundColorItem,
-                ),
-                padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: MailboxItemWidgetStyles.itemPadding,
-                ),
-                height: widget.itemHeight ?? (widget.mailboxNode.item.isTeamMailboxes
+              color: backgroundColorItem,
+            ),
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: MailboxItemWidgetStyles.itemPadding,
+            ),
+            height: widget.itemHeight ??
+                (widget.mailboxNode.item.isTeamMailboxes
                     ? MailboxItemWidgetStyles.teamMailboxHeight
                     : MailboxItemWidgetStyles.height),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: widget.mailboxNode.item.isTeamMailboxes
-                    ? CrossAxisAlignment.start
-                    : CrossAxisAlignment.center,
-                  children: [
-                    if (_isIconDisplayed)
-                      MailboxIconWidget(
-                        icon: _iconMailbox,
-                        color: widget.iconColor,
-                      ),
-                    Expanded(
-                      child: LabelMailboxItemWidget(
-                        itemKey: _key,
-                        mailboxNode: widget.mailboxNode,
-                        isItemHovered: _isItemHovered,
-                        isSelected: _isSelected,
-                        isHighlighted: widget.isHighlighted,
-                        textStyle: widget.textStyle,
-                        onMenuActionClick: widget.onMenuActionClick,
-                        onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
-                        onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
-                      )
-                    ),
-                  ]
-                )
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: widget.mailboxNode.item.isTeamMailboxes
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.center,
+              children: [
+                if (_isIconDisplayed)
+                  MailboxIconWidget(
+                    icon: _iconMailbox,
+                    color: widget.iconColor,
+                  ),
+                Expanded(
+                  child: LabelMailboxItemWidget(
+                    itemKey: _key,
+                    mailboxNode: widget.mailboxNode,
+                    isItemHovered: _isItemHovered,
+                    isSelected: _isSelected,
+                    isHighlighted: widget.isHighlighted,
+                    textStyle: widget.textStyle,
+                    onMenuActionClick: widget.onMenuActionClick,
+                    onEmptyMailboxActionCallback:
+                        widget.onEmptyMailboxActionCallback,
+                    onClickExpandMailboxNodeAction:
+                        widget.onExpandFolderActionClick,
+                  ),
+                ),
+              ],
             ),
-          );
+          ),
+        ),
+      );
+
+      if (widget.mailboxNode.item.isActionRequired) {
+        return itemWidget;
+      }
+
+      return DragTarget<List<PresentationEmail>>(
+        key: _key,
+        builder: (context, candidateEmails, rejectedEmails) {
+          return itemWidget;
         },
         onAcceptWithDetails: (emails) => widget.onDragItemAccepted?.call(emails.data, widget.mailboxNode.item),
       );
