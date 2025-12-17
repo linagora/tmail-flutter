@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-12-16T18:07:47.039649",
+  "@@last_modified": "2025-12-18T02:49:48.638213",
   "categoryCorrectGrammar": "Correct grammar",
   "@categoryCorrectGrammar": {
     "type": "text",
@@ -110,6 +110,30 @@
   },
   "insertButton": "Insert",
   "@insertButton": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiAssistant": "AI assistant",
+  "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "generatingResponse": "Generating response",
+  "@generatingResponse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replace": "Replace",
+  "@replace": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insert": "Insert",
+  "@insert": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -255,10 +255,12 @@ extension AppColor on Color {
   static const iconFolder = Color(0xFF297EF2);
   static const folderDivider = Color(0xFFE4E8EC);
   static const gray424244 = Color(0xFF424244);
+  static const gray777778 = Color(0xFF777778);
   static const gray200 = Color(0xFFCCCCCC);
   static const lightGrayF4F4F4 = Color(0xFFF4F4F4);
   static const gray959DAD = Color(0xFF959DAD);
   static const gray9AA7B6 = Color(0xFF9AA7B6);
+  static const gray9B9B9B = Color(0xFF9B9B9B);
   static const redFF3347 = Color(0xFFFF3347);
   static const gray686E76 = Color(0xFF686E76);
   static const gray900 = Color(0xFF222222);
@@ -276,8 +278,10 @@ extension AppColor on Color {
   static const m3Primary = Color(0xFF0A84FF);
   static const m3Primary95 = Color(0xFFE3F1FF);
   static const gray49454F = Color(0xFF49454F);
+  static const blueFF00B7FF = Color(0xFF00B7FF);
   static const lightGrayF9FAFB = Color(0xFFF9FAFB);
   static const black4D4D4D = Color(0xFF4D4D4D);
+  static const black1A1A1A = Color(0xFF1A1A1A);
   static const green166534 = Color(0xFF166534);
   static const lightGreenF0FDF4 = Color(0xFFF0FDF4);
   static const lightGreenBBF7D0 = Color(0xFFBBF7D0);

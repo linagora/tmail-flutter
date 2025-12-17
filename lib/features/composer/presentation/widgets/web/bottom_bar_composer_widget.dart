@@ -4,6 +4,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
@@ -31,9 +32,8 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleMarkAsImportantAction;
   final VoidCallback saveAsTemplateAction;
   final VoidCallback onOpenInsertLink;
-  final VoidCallback? onOpenAIScribe;
-  final GlobalKey? aiScribeButtonKey;
   final OnMenuChanged? onPopupMenuChanged;
+  final OnOpenAiAssistantModal? onOpenAiAssistantModal;
 
   const BottomBarComposerWidget({
     super.key,
@@ -56,9 +56,8 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.toggleMarkAsImportantAction,
     required this.saveAsTemplateAction,
     required this.onOpenInsertLink,
-    this.onOpenAIScribe,
-    this.aiScribeButtonKey,
     this.onPopupMenuChanged,
+    this.onOpenAiAssistantModal,
   });
 
   @override
@@ -131,25 +130,20 @@ class BottomBarComposerWidget extends StatelessWidget {
               onTapActionCallback: onOpenInsertLink,
             ),
           ),
-          if (onOpenAIScribe != null) ...[
-            const SizedBox(width: BottomBarComposerWidgetStyle.space),
+          if (onOpenAiAssistantModal != null)
             AbsorbPointer(
               absorbing: isCodeViewEnabled,
-              child: TMailButtonWidget.fromIcon(
-                key: aiScribeButtonKey,
-                icon: imagePaths.icSparkle,
+              child: AiAssistantButton(
+                imagePaths: imagePaths,
                 iconColor: isCodeViewEnabled
                     ? BottomBarComposerWidgetStyle.disabledIconColor
-                    : BottomBarComposerWidgetStyle.iconColor,
-                borderRadius: BottomBarComposerWidgetStyle.iconRadius,
-                backgroundColor: Colors.transparent,
-                padding: BottomBarComposerWidgetStyle.iconPadding,
-                iconSize: BottomBarComposerWidgetStyle.iconSize,
-                tooltipMessage: AppLocalizations.of(context).aiAssistant,
-                onTapActionCallback: onOpenAIScribe!,
+                    : null,
+                margin: const EdgeInsetsDirectional.only(
+                  start: BottomBarComposerWidgetStyle.space,
+                ),
+                onOpenAiAssistantModal: onOpenAiAssistantModal!,
               ),
             ),
-          ],
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           PopupMenuOverlayWidget(
             controller: menuMoreOptionController,

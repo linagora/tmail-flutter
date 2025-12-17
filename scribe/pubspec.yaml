@@ -36,6 +36,8 @@ dependencies:
 
   json_annotation: 4.8.0
 
+  flutter_svg: 2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -6,16 +6,16 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe_button.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/ai_scribe/handle_ai_scribe_in_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_insert_link_composer_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/preview_upload_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/remove_draggable_email_address_between_recipient_fields_extension.dart';
@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/composer/presentation/view/web/desktop_re
 import 'package:tmail_ui_user/features/composer/presentation/view/web/mobile_responsive_container_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/tablet_responsive_container_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/web_editor_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/ai_scribe/composer_ai_scribe_selection_overlay.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_image_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/list_recipients_collapsed_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
@@ -333,7 +334,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               return const SizedBox.shrink();
                             }
                           }),
-                          _buildAIScribeSelectionButton(context),
+                          ComposerAiScribeSelectionOverlay(controller: controller),
                         ],
                       ),
                     ),
@@ -559,8 +560,9 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
-                              onOpenAIScribe: controller.isAIScribeAvailable ? () => controller.showAIScribeMenuForFullText(context) : null,
-                              aiScribeButtonKey: controller.isAIScribeAvailable ? controller.aiScribeButtonKey : null,
+                              onOpenAiAssistantModal: controller.isAIScribeAvailable
+                                  ? controller.openAIAssistantModal
+                                  : null,
                             )),
                           ],
                         ),
@@ -607,7 +609,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
-                        _buildAIScribeSelectionButton(context),
+                        ComposerAiScribeSelectionOverlay(controller: controller),
                       ],
                     ),
                   ),
@@ -835,8 +837,9 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
-                              onOpenAIScribe: controller.isAIScribeAvailable ? () => controller.showAIScribeMenuForFullText(context) : null,
-                              aiScribeButtonKey: controller.isAIScribeAvailable ? controller.aiScribeButtonKey : null,
+                              onOpenAiAssistantModal: controller.isAIScribeAvailable
+                                  ? controller.openAIAssistantModal
+                                  : null,
                             )),
                           ],
                         ),
@@ -882,7 +885,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             return const SizedBox.shrink();
                           }
                         }),
-                        _buildAIScribeSelectionButton(context),
+                        ComposerAiScribeSelectionOverlay(controller: controller),
                       ],
                     ),
                   )
@@ -954,47 +957,5 @@ class ComposerView extends GetWidget<ComposerController> {
       onDeleteEmailAddressTypeAction: controller.deleteEmailAddressType,
       onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputOnMobileAction,
     ));
-  }
-
-  Widget _buildAIScribeSelectionButton(BuildContext context) {
-    if (!controller.isAIScribeAvailable) {
-      return const SizedBox.shrink();
-    }
-
-    return Obx(() {
-      final textSelection = controller.editorTextSelection.value;
-      if (textSelection != null &&
-          textSelection.hasSelection &&
-          textSelection.coordinates != null) {
-        final coordinates = textSelection.coordinates!;
-        return PositionedDirectional(
-          start: coordinates.dx,
-          top: coordinates.dy,
-          child: PointerInterceptor(
-            child: Builder(
-              builder: (buttonContext) {
-                return AIScribeButton(
-                  imagePaths: controller.imagePaths,
-                  onTap: () {
-                    final RenderBox? renderBox = buttonContext.findRenderObject() as RenderBox?;
-                    if (renderBox != null) {
-                      final position = renderBox.localToGlobal(Offset.zero);
-                      controller.showAIScribeMenuForSelectedText(
-                        context,
-                        buttonPosition: position,
-                      );
-                    } else {
-                      controller.showAIScribeMenuForSelectedText(context);
-                    }
-                  },
-                );
-              },
-            ),
-          ),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
   }
 }
