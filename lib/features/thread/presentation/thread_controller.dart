@@ -687,7 +687,7 @@ class ThreadController extends BaseController with EmailActionController {
             ),
             EmailFilterCondition(
               notKeyword: KeyWordIdentifier.emailSeen.value,
-              hasKeyword: KeyWordIdentifierExtension.needActionMail.value,
+              hasKeyword: KeyWordIdentifierExtension.needsActionMail.value,
               before: before,
             ),
           },
@@ -697,14 +697,14 @@ class ThreadController extends BaseController with EmailActionController {
         return EmailFilterCondition(
           hasAttachment: true,
           notKeyword: KeyWordIdentifier.emailSeen.value,
-          hasKeyword: KeyWordIdentifierExtension.needActionMail.value,
+          hasKeyword: KeyWordIdentifierExtension.needsActionMail.value,
           before: before,
         );
 
       default:
         return EmailFilterCondition(
           notKeyword: KeyWordIdentifier.emailSeen.value,
-          hasKeyword: KeyWordIdentifierExtension.needActionMail.value,
+          hasKeyword: KeyWordIdentifierExtension.needsActionMail.value,
           before: before,
         );
     }
