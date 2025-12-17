@@ -3,6 +3,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe.dart';
+import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_suggestion_actions.dart';
 import 'package:scribe/scribe/ai/presentation/model/modal/modal_cross_axis_alignment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
@@ -19,7 +20,8 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     try {
       final htmlContent = await getContentInEditor();
       String textContent = StringConvert.convertHtmlContentToTextContent(
-        htmlContent,);
+        htmlContent,
+      );
       return textContent;
     } catch (e) {
       logError('$runtimeType::getTextOnlyContentInEditor:Exception = $e');
@@ -40,7 +42,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   Future<void> openAIAssistantModal(Offset? position, Size? size) async {
     final fullText = await _getTextOnlyContentInEditor();
 
-    final aiResult = await AiScribeModalManager.showAIScribeMenuModal(
+    await AiScribeModalManager.showAIScribeMenuModal(
       imagePaths: imagePaths,
       availableCategories: AIScribeMenuCategory.values,
       buttonPosition: position,
@@ -48,10 +50,20 @@ extension HandleAiScribeInComposerExtension on ComposerController {
       content: fullText,
       preferredPlacement: ModalPlacement.top,
       crossAxisAlignment: ModalCrossAxisAlignment.start,
+      onSelectAiScribeSuggestionAction: handleAiScribeSuggestionAction,
     );
+  }
 
-    if (aiResult != null) {
-      insertTextInEditor(aiResult);
+  void handleAiScribeSuggestionAction(
+    AiScribeSuggestionActions action,
+    String suggestionText,
+  ) {
+    switch(action) {
+      case AiScribeSuggestionActions.replace:
+        break;
+      case AiScribeSuggestionActions.insert:
+        insertTextInEditor(suggestionText);
+        break;
     }
   }
 
@@ -61,9 +73,9 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         selectedText: textSelectionData.selectedText,
         coordinates: textSelectionData.coordinates != null
             ? Offset(
-          textSelectionData.coordinates!.x,
-          textSelectionData.coordinates!.y,
-        )
+                textSelectionData.coordinates!.x,
+                textSelectionData.coordinates!.y,
+              )
             : null,
       );
     } else {

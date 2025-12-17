@@ -22,7 +22,8 @@ class ComposerAiScribeSelectionOverlay extends StatelessWidget {
       return AiSelectionOverlay(
         selection: controller.editorTextSelection.value,
         imagePaths: controller.imagePaths,
-        onAiScribeResultCallback: controller.insertTextInEditor,
+        onSelectAiScribeSuggestionAction:
+            controller.handleAiScribeSuggestionAction,
       );
     });
   }

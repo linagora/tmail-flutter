@@ -22,7 +22,7 @@ class AiScribeSuggestionLoading extends StatelessWidget {
         children: [
           _SparklePulseIcon(
             asset: imagePaths.icSparkle,
-            color: AppColor.blueFF00B7FF,
+            color: AppColor.blue00B7FF,
           ),
           Expanded(
             child: _AnimatedEllipsisText(

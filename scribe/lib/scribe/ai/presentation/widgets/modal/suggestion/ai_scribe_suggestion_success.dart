@@ -1,19 +1,18 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
-import 'package:scribe/scribe.dart';
 import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_success_list_actions.dart';
 
 class AiScribeSuggestionSuccess extends StatelessWidget {
   final ImagePaths imagePaths;
   final String suggestionText;
-  final AIAction aiAction;
+  final OnSelectAiScribeSuggestionAction onSelectAction;
 
   const AiScribeSuggestionSuccess({
     super.key,
     required this.imagePaths,
     required this.suggestionText,
-    required this.aiAction,
+    required this.onSelectAction,
   });
 
   @override
@@ -23,6 +22,7 @@ class AiScribeSuggestionSuccess extends StatelessWidget {
       child: Column(
         spacing: 8,
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(
             child: Text(
@@ -33,7 +33,7 @@ class AiScribeSuggestionSuccess extends StatelessWidget {
           AiScribeSuggestionSuccessListActions(
             imagePaths: imagePaths,
             suggestionText: suggestionText,
-            aiAction: aiAction,
+            onSelectAction: onSelectAction,
           ),
         ],
       ),

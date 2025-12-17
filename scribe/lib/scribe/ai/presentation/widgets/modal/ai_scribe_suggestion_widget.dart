@@ -18,8 +18,7 @@ import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe
 import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_header.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_loading.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_success.dart';
-
-typedef OnAiScribeResultCallback = void Function(String result);
+import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_success_list_actions.dart';
 
 class AiScribeSuggestionWidget extends StatefulWidget {
   final AIAction aiAction;
@@ -29,11 +28,13 @@ class AiScribeSuggestionWidget extends StatefulWidget {
   final Size? buttonSize;
   final ModalPlacement? preferredPlacement;
   final ModalCrossAxisAlignment crossAxisAlignment;
+  final OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction;
 
   const AiScribeSuggestionWidget({
     super.key,
     required this.aiAction,
     required this.imagePaths,
+    required this.onSelectAiScribeSuggestionAction,
     this.content,
     this.buttonPosition,
     this.buttonSize,
@@ -123,7 +124,7 @@ class _AiScribeSuggestionWidgetModalState
                   return AiScribeSuggestionSuccess(
                     imagePaths: widget.imagePaths,
                     suggestionText: value.response.result,
-                    aiAction: widget.aiAction,
+                    onSelectAction: widget.onSelectAiScribeSuggestionAction,
                   );
                 } else if (value is GenerateAITextFailure) {
                   return AiScribeSuggestionError(imagePaths: widget.imagePaths);
