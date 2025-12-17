@@ -263,8 +263,6 @@ class ComposerController extends BaseController
 
   TransformHtmlEmailContentInteractor get transformHtmlEmailContentInteractor => _transformHtmlEmailContentInteractor;
 
-  GenerateAITextInteractor get generateAITextInteractor => Get.find<GenerateAITextInteractor>();
-
   String get ownEmailAddress =>
       mailboxDashBoardController.ownEmailAddress.value;
 

@@ -1,18 +1,21 @@
-import 'package:dio/dio.dart';
+import 'package:core/core.dart';
 import 'package:get/get.dart';
 import 'package:scribe/scribe/ai/data/datasource/ai_datasource.dart';
 import 'package:scribe/scribe/ai/data/datasource_impl/ai_datasource_impl.dart';
+import 'package:scribe/scribe/ai/data/network/ai_api.dart';
 import 'package:scribe/scribe/ai/data/repository/ai_repository_impl.dart';
 import 'package:scribe/scribe/ai/domain/repository/ai_scribe_repository.dart';
 import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 
 class AIScribeBindings extends Bindings {
-  final String? scribeEndpoint;
 
-  AIScribeBindings({this.scribeEndpoint});
+  final String aiEndpoint;
+
+  AIScribeBindings(this.aiEndpoint);
 
   @override
   void dependencies() {
+    _bindingsAPI();
     _bindingsDataSourceImpl();
     _bindingsDataSource();
     _bindingsRepositoryImpl();
@@ -20,11 +23,12 @@ class AIScribeBindings extends Bindings {
     _bindingsInteractor();
   }
 
+  void _bindingsAPI() {
+    Get.lazyPut<AIApi>(() => AIApi(Get.find<DioClient>(), aiEndpoint));
+  }
+
   void _bindingsDataSourceImpl() {
-    Get.lazyPut<AIDataSourceImpl>(() => AIDataSourceImpl(
-      dio: Get.find<Dio>(),
-      endpoint: scribeEndpoint,
-    ));
+    Get.lazyPut<AIDataSourceImpl>(() => AIDataSourceImpl(Get.find<AIApi>()));
   }
 
   void _bindingsDataSource() {
@@ -32,9 +36,9 @@ class AIScribeBindings extends Bindings {
   }
 
   void _bindingsRepositoryImpl() {
-    Get.lazyPut<AIScribeRepositoryImpl>(() => AIScribeRepositoryImpl(
-      Get.find<AIDataSource>(),
-    ));
+    Get.lazyPut<AIScribeRepositoryImpl>(
+      () => AIScribeRepositoryImpl(Get.find<AIDataSource>()),
+    );
   }
 
   void _bindingsRepository() {
@@ -42,8 +46,8 @@ class AIScribeBindings extends Bindings {
   }
 
   void _bindingsInteractor() {
-    Get.lazyPut<GenerateAITextInteractor>(() => GenerateAITextInteractor(
-      Get.find<AIScribeRepository>(),
-    ));
+    Get.lazyPut<GenerateAITextInteractor>(
+      () => GenerateAITextInteractor(Get.find<AIScribeRepository>()),
+    );
   }
 }

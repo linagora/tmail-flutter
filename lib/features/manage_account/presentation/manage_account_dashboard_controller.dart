@@ -14,6 +14,7 @@ import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/base/mixin/ai_scribe_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/own_email_address_mixin.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
@@ -55,7 +56,7 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ManageAccountDashBoardController extends ReloadableController
-  with OwnEmailAddressMixin {
+  with OwnEmailAddressMixin, AiScribeMixin {
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -152,6 +153,7 @@ class ManageAccountDashBoardController extends ReloadableController
     _setUpMinInputLengthAutocomplete();
     _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
     _getVacationResponse();
+    injectAIScribeBindings(sessionCurrent, accountId.value);
     paywallController = PaywallController(
       ownEmailAddress: ownEmailAddress.value,
     );

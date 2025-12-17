@@ -10,10 +10,11 @@ import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selectio
 
 extension HandleAiScribeInComposerExtension on ComposerController {
   bool get isAIScribeAvailable {
-    return isAICapabilitySupported(
+    final aiCapability = getAICapability(
       session: mailboxDashBoardController.sessionCurrent,
       accountId: mailboxDashBoardController.accountId.value,
     );
+    return aiCapability?.isScribeEndpointAvailable == true;
   }
 
   Future<String> _getTextOnlyContentInEditor() async {

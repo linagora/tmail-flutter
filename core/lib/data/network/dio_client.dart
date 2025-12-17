@@ -40,9 +40,12 @@ class DioClient {
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
+    bool useJMAPHeader = true,
   }) async {
-    final newOptions = options?.appendHeaders({HttpHeaders.acceptHeader : jmapHeader})
-        ?? Options(headers: {HttpHeaders.acceptHeader : jmapHeader}) ;
+    Map<String, dynamic> defaultHeaders =
+        useJMAPHeader ? {HttpHeaders.acceptHeader: jmapHeader} : {};
+    final newOptions = options?.appendHeaders(defaultHeaders) ??
+        Options(headers: defaultHeaders);
 
     return await _dio.post(path,
         data: data,

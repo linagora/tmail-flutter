@@ -12,7 +12,13 @@ class AIMessage {
     required this.content,
   });
 
-  factory AIMessage.fromJson(Map<String, dynamic> json) => _$AIMessageFromJson(json);
+  factory AIMessage.fromJson(Map<String, dynamic> json) =>
+      _$AIMessageFromJson(json);
 
   Map<String, dynamic> toJson() => _$AIMessageToJson(this);
+
+  factory AIMessage.ofUser(String content) => AIMessage(
+        role: 'user',
+        content: content,
+      );
 }
