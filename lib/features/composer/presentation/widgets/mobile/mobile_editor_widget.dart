@@ -5,7 +5,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/mixins/text_selection_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
 
 typedef OnCreatedEditorAction = Function(BuildContext context, HtmlEditorApi editorApi, String content);
 typedef OnLoadCompletedEditorAction = Function(HtmlEditorApi editorApi, WebUri? url);

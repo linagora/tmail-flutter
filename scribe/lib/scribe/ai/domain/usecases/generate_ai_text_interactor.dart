@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:scribe/scribe/ai/domain/constants/ai_prompts.dart';
 import 'package:scribe/scribe/ai/domain/repository/ai_scribe_repository.dart';

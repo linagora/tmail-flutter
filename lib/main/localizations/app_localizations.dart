@@ -5436,11 +5436,4 @@ class AppLocalizations {
       name: 'startToAddFavoritesEmails',
     );
   }
-
-  String get aiAssistant {
-    return Intl.message(
-      'AI assistant',
-      name: 'aiAssistant',
-    );
-  }
 }

@@ -27,10 +27,12 @@ import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:scribe/scribe.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
+import 'package:tmail_ui_user/features/base/mixin/ai_scribe_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/auto_complete_result_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
@@ -77,7 +79,6 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_em
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/setup_selected_identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/mixin/ai_scribe_in_composer_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
@@ -90,7 +91,6 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_template_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
-import 'package:scribe/scribe.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/save_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart';
@@ -103,9 +103,9 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -131,9 +131,12 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ComposerController extends BaseController
-    with DragDropFileMixin, AutoCompleteResultMixin, EditorViewMixin, AIScribeInComposerMixin
+    with
+        DragDropFileMixin,
+        AutoCompleteResultMixin,
+        EditorViewMixin,
+        AiScribeMixin
     implements BeforeReconnectHandler {
-
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
   final _beforeReconnectManager = Get.find<BeforeReconnectManager>();
@@ -157,6 +160,7 @@ class ComposerController extends BaseController
   final isEmailChanged = Rx<bool>(false);
   final isMarkAsImportant = Rx<bool>(false);
   final isContentHeightExceeded = Rx<bool>(false);
+  final editorTextSelection = Rxn<TextSelectionModel>();
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final LocalImagePickerInteractor _localImagePickerInteractor;
@@ -221,11 +225,8 @@ class ComposerController extends BaseController
   StreamSubscription<html.Event>? _subscriptionOnBlur;
   StreamSubscription<String>? _composerCacheListener;
 
-  @override
   RichTextMobileTabletController? richTextMobileTabletController;
-  @override
   RichTextWebController? richTextWebController;
-  
   CustomPopupMenuController? menuMoreOptionController;
 
   final ScrollController scrollController = ScrollController();
@@ -262,17 +263,10 @@ class ComposerController extends BaseController
 
   TransformHtmlEmailContentInteractor get transformHtmlEmailContentInteractor => _transformHtmlEmailContentInteractor;
 
-  @override
   GenerateAITextInteractor get generateAITextInteractor => Get.find<GenerateAITextInteractor>();
 
   String get ownEmailAddress =>
       mailboxDashBoardController.ownEmailAddress.value;
-
-  @override
-  Session? get session => mailboxDashBoardController.sessionCurrent;
-
-  @override
-  AccountId? get accountId => mailboxDashBoardController.accountId.value;
 
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
@@ -869,20 +863,6 @@ class ComposerController extends BaseController
         : '';
     } catch (e) {
       logError('ComposerController::getContentInEditor:Exception = $e');
-      return '';
-    }
-  }
-
-  @override
-  Future<String> getTextOnlyContentInEditor() async {
-    try {
-      final htmlContent = await getContentInEditor();
-
-      String textContent = StringConvert.convertHtmlContentToTextContent(htmlContent);
-
-      return textContent;
-    } catch (e) {
-      logError('ComposerController::getTextOnlyContentInEditor:Exception = $e');
       return '';
     }
   }

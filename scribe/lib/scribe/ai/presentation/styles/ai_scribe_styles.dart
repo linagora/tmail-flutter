@@ -1,82 +1,181 @@
-import 'package:flutter/material.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:flutter/material.dart';
 
-class AIScribeColors {
-  static const textPrimary = AppColor.textPrimary;
-  static const background = Colors.white;
+abstract final class AIScribeColors {
+  // Backgrounds
+  static const Color background = Colors.white;
+  static const Color mainActionButtonBackground = Color(0xFFD2E9FF);
+  static const Color sendPromptBackground = AppColor.blue700;
+  static const Color sendPromptBackgroundDisabled = Color(0xFFD2E9FF);
+
+  // Icons
+  static const Color scribeIcon = AppColor.primaryMain;
+  static const Color aiAssistantIcon = AppColor.primaryMain;
+
+  // Overlays
+  static final Color dialogBarrier = Colors.black.withValues(alpha: 0.12);
 }
 
-class AIScribeShadows {
-  static List<BoxShadow> get elevation8 => [
+abstract final class AIScribeShadows {
+  static final List<BoxShadow> sparkleIcon = [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.16),
-      blurRadius: 12,
-      offset: const Offset(0, 2),
+      color: AppColor.gray424244.withValues(alpha: 0.08),
+      blurRadius: 3,
+      offset: const Offset(0, 1.5),
     ),
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.08),
-      blurRadius: 4,
-      offset: const Offset(0, 1),
+      color: Colors.black.withValues(alpha: 0.06),
+      blurRadius: 12,
+      offset: const Offset(0, 3),
+    ),
+  ];
+
+  static final List<BoxShadow> modal = [
+    BoxShadow(
+      color: AppColor.gray424244.withValues(alpha: 0.12),
+      spreadRadius: 0.5,
+    ),
+    BoxShadow(
+      color: AppColor.gray424244.withValues(alpha: 0.11),
+      spreadRadius: 2,
+      blurRadius: 26,
+      offset: const Offset(0, 6),
     ),
   ];
 }
 
-class AIScribeTextStyles {
-  static TextStyle menuItem = ThemeUtils.textStyleBodyBody3(color: AIScribeColors.textPrimary);
-  static TextStyle menuHint = ThemeUtils.textStyleBodyBody3(color: AIScribeColors.textPrimary.withValues(alpha: 0.6));
-  static TextStyle suggestionTitle = ThemeUtils.textStyleInter700();
-  static TextStyle suggestionContent = ThemeUtils.textStyleBodyBody3(color: AIScribeColors.textPrimary);
+abstract final class AIScribeTextStyles {
+  static final TextStyle menuItem = ThemeUtils.textStyleInter400.copyWith(
+    fontSize: 14,
+    height: 21.01 / 14,
+    letterSpacing: -0.15,
+    color: AppColor.gray424244.withValues(alpha: 0.9),
+  );
+
+  static final TextStyle searchBarHint =
+      ThemeUtils.textStyleInter500().copyWith(
+    fontSize: 14,
+    height: 22 / 14,
+    letterSpacing: 0.4,
+    color: AppColor.gray9B9B9B.withValues(alpha: 0.85),
+  );
+
+  static final TextStyle searchBar = ThemeUtils.textStyleInter400.copyWith(
+    fontSize: 14,
+    height: 24 / 14,
+    letterSpacing: 0.4,
+    color: Colors.black.withValues(alpha: 0.85),
+  );
+
+  static final TextStyle suggestionTitle = ThemeUtils.textStyleInter700().copyWith(
+    fontSize: 14,
+    height: 22 / 14,
+    letterSpacing: 0.4,
+    color: AppColor.black1A1A1A.withValues(alpha: 0.85),
+  );
+
+  static final TextStyle suggestionLoading = ThemeUtils.textStyleInter400.copyWith(
+    fontSize: 14,
+    height: 22 / 14,
+    letterSpacing: 0.4,
+    color: AppColor.black1A1A1A.withValues(alpha: 0.85),
+  );
+
+  static final TextStyle suggestionContent = ThemeUtils.textStyleInter400.copyWith(
+    fontSize: 14,
+    height: 22 / 14,
+    letterSpacing: 0.4,
+    color: Colors.black.withValues(alpha: 0.85),
+  );
+
+  static final TextStyle mainActionButton =
+      ThemeUtils.textStyleInter500().copyWith(
+    color: AppColor.blue700,
+  );
 }
 
-class AIScribeButtonStyles {
-  static TextStyle mainActionButtonText = ThemeUtils.textStyleInter500().copyWith(color: AppColor.blue700);
-  static const Color mainActionButtonBackgroundColor = Color(0xFFD2E9FF);
-  static const EdgeInsetsGeometry mainActionButtonPadding = EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 16);
-
-  static const Color sendCustomPromptBackgroundColor = AppColor.blue700;
-  static const Color sendCustomPromptBackgroundColorDisabled = Color(0xFFD2E9FF);
-}
-
-class AIScribeSizes {
+abstract final class AIScribeSizes {
   // Border radius
-  static const double menuBorderRadius = 12.0;
-  static const double menuItemBorderRadius = 6.0;
-  static const double scribeButtonBorderRadius = 100.0;
+  static const double menuRadius = 6;
+  static const double menuItemRadius = 6;
+  static const double searchBarRadius = 10;
+  static const double scribeButtonRadius = 100;
+  static const double aiAssistantIconRadius = 8;
 
-  // Dialog dimensions
-  static const double menuWidth = 200.0;
-  static const double barWidth = 440.0; 
-  static const double modalMaxHeight = 400.0;
-  static const double modalMaxWidthLargeScreen = 500.0;
-  static const double mobileWidthPercentage = 0.9;
-  static const double mobileBreakpoint = 600.0;
-  static const double infoHeight = 120.0;
+  // Width / height
+  static const double menuItemHeight = 40;
+  static const double searchBarMinHeight = 48;
+  static const double searchBarMaxHeight = 100;
+  static const double searchBarWidth = 405;
 
-  // Heights
-  static const double menuItemHeight = 40.0;
-  static const double barHeight = 48.0;
-  static const double submenuMaxHeight = 300.0;
+  static const double submenuWidth = 191;
+  static const double submenuMaxHeight = 352;
+  static const double contextMenuWidth = 191;
+  static const double contextMenuHeight = 352;
+
+  static const double modalMaxHeight = 256;
+  static const double modalMaxWidth = 405;
+  static const double suggestionModalMaxWidth = 482;
+  static const double suggestionModalMinHeight = 96;
+  static const double suggestionModalMaxHeight = 587;
+
+  static const double infoHeight = 120;
+
+  // Breakpoints
+  static const double mobileBreakpoint = 600;
+  static const double mobileFactor = 0.9;
 
   // Spacing
-  static const double screenEdgePadding = 16.0;
-  static const double submenuSpacing = 6.0;
-  static const double fieldSpacing = 8.0;
+  static const double screenEdgePadding = 16;
+  static const double fieldSpacing = 8;
+  static const double submenuSpacing = 6;
+  static const double modalSpacing = 26;
+  static const double modalWithoutContentSpacing = 12;
 
   // Elevation
-  static const double dialogElevation = 8.0;
+  static const double dialogElevation = 8;
 
   // Icon sizes
-  static const double iconSize = 18.0;
-  static const double sendIconSize = 16.0;
-  static const double scribeIconSize = 12.0;
+  static const double icon = 18;
+  static const double sendIcon = 16;
+  static const double scribeIcon = 12;
+  static const double aiAssistantIcon = 24;
 
-  // Padding (using EdgeInsets)
-  static const EdgeInsetsGeometry menuItemPadding = EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 10);
-  static const EdgeInsetsGeometry barPadding = EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 8);
-  static const EdgeInsetsGeometry suggestionContentPadding = EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 8);
-  static const EdgeInsetsGeometry suggestionInfoPadding = EdgeInsets.only(bottom: 16);
-  static const EdgeInsetsGeometry suggestionHeaderPadding = EdgeInsets.fromLTRB(16, 8, 8, 8);
-  static const EdgeInsetsGeometry suggestionFooterPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 16);
-  static const EdgeInsetsGeometry scribeButtonPadding = EdgeInsets.all(6);
+  // Padding
+  static const EdgeInsetsGeometry menuItemPadding =
+      EdgeInsetsDirectional.only(start: 16, end: 10);
+
+  static const EdgeInsetsGeometry menuCategoryItemPadding =
+      EdgeInsetsDirectional.symmetric(horizontal: 14);
+
+  static const EdgeInsetsGeometry searchBarPadding =
+      EdgeInsetsDirectional.symmetric(horizontal: 16);
+
+  static const EdgeInsetsGeometry suggestionContentPadding =
+      EdgeInsetsDirectional.all(16);
+
+  static const EdgeInsetsGeometry suggestionInfoPadding =
+      EdgeInsetsGeometry.only(bottom: 16);
+
+  static const EdgeInsetsGeometry suggestionHeaderPadding =
+      EdgeInsetsGeometry.fromLTRB(16, 8, 8, 8);
+
+  static const EdgeInsetsGeometry suggestionFooterPadding =
+      EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 16);
+
+  static const EdgeInsetsGeometry scribeButtonPadding =
+      EdgeInsetsGeometry.all(6);
+
+  static const EdgeInsetsGeometry mainActionButtonPadding =
+      EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 8);
+
+  static const EdgeInsetsGeometry contextMenuPadding =
+      EdgeInsetsDirectional.symmetric(vertical: 8);
+
+  static const EdgeInsetsGeometry aiAssistantIconPadding =
+      EdgeInsetsDirectional.all(5);
+
+  static const EdgeInsetsGeometry sendIconPadding =
+      EdgeInsetsDirectional.all(8);
 }

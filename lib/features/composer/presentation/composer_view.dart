@@ -8,8 +8,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/ai_scribe_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/ai_scribe/handle_ai_scribe_in_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_content_height_exceeded_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_open_context_menu_extension.dart';
@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_b
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_container_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/tablet_container_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/ai_scribe/composer_ai_scribe_selection_overlay.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/insert_image_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/list_recipients_collapsed_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
@@ -264,7 +265,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                   SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
                                 ],
                               ),
-                              _buildAIScribeSelectionButton(context),
+                              ComposerAiScribeSelectionOverlay(controller: controller),
                             ],
                           )
                         ],
@@ -453,7 +454,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
                             ],
                           ),
-                          _buildAIScribeSelectionButton(context),
+                          ComposerAiScribeSelectionOverlay(controller: controller),
                         ],
                       ),
                     ],
@@ -469,8 +470,9 @@ class ComposerView extends GetWidget<ComposerController> {
                 sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                 toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
-                onOpenAIScribe: controller.isAIScribeAvailable ? () => controller.showAIScribeMenuForFullText(context) : null,
-                aiScribeButtonKey: controller.isAIScribeAvailable ? controller.aiScribeButtonKey : null,
+                onOpenAiAssistantModal: controller.isAIScribeAvailable
+                    ? controller.openAIAssistantModal
+                    : null,
               )),
             ]
           )
@@ -552,47 +554,5 @@ class ComposerView extends GetWidget<ComposerController> {
       onDeleteEmailAddressTypeAction: controller.deleteEmailAddressType,
       onEnableAllRecipientsInputAction: controller.handleEnableRecipientsInputOnMobileAction,
     ));
-  }
-
-  Widget _buildAIScribeSelectionButton(BuildContext context) {
-    if (!controller.isAIScribeAvailable) {
-      return const SizedBox.shrink();
-    }
-
-    return Obx(() {
-      final textSelection = controller.editorTextSelection.value;
-      if (textSelection != null &&
-          textSelection.hasSelection &&
-          textSelection.coordinates != null) {
-        final coordinates = textSelection.coordinates!;
-        // Account for the horizontal padding around the editor
-        const editorHorizontalPadding = 12.0;
-        return PositionedDirectional(
-          start: coordinates.dx + editorHorizontalPadding,
-          top: coordinates.dy,
-          child: Builder(
-            builder: (buttonContext) {
-              return AIScribeButton(
-                imagePaths: controller.imagePaths,
-                onTap: () {
-                  final RenderBox? renderBox = buttonContext.findRenderObject() as RenderBox?;
-                  if (renderBox != null) {
-                    final position = renderBox.localToGlobal(Offset.zero);
-                    controller.showAIScribeMenuForSelectedText(
-                      context,
-                      buttonPosition: position,
-                    );
-                  } else {
-                    controller.showAIScribeMenuForSelectedText(context);
-                  }
-                },
-              );
-            },
-          ),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    });
   }
 }

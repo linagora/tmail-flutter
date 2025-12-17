@@ -6,7 +6,7 @@ import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/mixins/text_selection_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/signature_tooltip_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
