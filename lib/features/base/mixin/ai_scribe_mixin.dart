@@ -1,13 +1,35 @@
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:scribe/scribe.dart';
+import 'package:scribe/scribe/ai/presentation/bindings/ai_scribe_bindings.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 
 mixin AiScribeMixin {
-  bool isAICapabilitySupported({Session? session, AccountId? accountId}) {
+  AICapability? getAICapability({Session? session, AccountId? accountId}) {
+    if (PlatformInfo.isMobile) return null;
+
     if (accountId == null || session == null) {
-      return false;
+      return null;
     }
-    final aiCapability = session.getAICapability(accountId);
-    return aiCapability != null;
+
+    return session.getAICapability(accountId);
+  }
+
+  void injectAIScribeBindings(Session? session, AccountId? accountId) {
+    try {
+      final aiCapability = getAICapability(
+        session: session,
+        accountId: accountId,
+      );
+      final scribeEndpoint = aiCapability?.scribeEndpoint;
+
+      if (scribeEndpoint == null || scribeEndpoint.isEmpty) return;
+
+      AIScribeBindings(scribeEndpoint).dependencies();
+    } catch (e) {
+      logError('AiScribeMixin::injectAIScribeBindings(): $e');
+    }
   }
 }
