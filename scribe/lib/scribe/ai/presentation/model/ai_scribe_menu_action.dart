@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 
 enum AIScribeMenuAction {
@@ -15,8 +15,7 @@ enum AIScribeMenuAction {
   translateRussian,
   translateVietnamese;
 
-  String getLabel(BuildContext context) {
-    final localizations = ScribeLocalizations.of(context)!;
+  String getLabel(ScribeLocalizations localizations) {
     switch (this) {
       case AIScribeMenuAction.correctGrammar:
         return localizations.categoryCorrectGrammar;
@@ -66,24 +65,44 @@ enum AIScribeMenuAction {
     }
   }
 
-  String getFullLabel(BuildContext context) {
-    final categoryLabel = category.getLabel(context);
+  String getFullLabel(ScribeLocalizations localizations) {
+    final categoryLabel = category.getLabel(localizations);
     if (category.hasSubmenu) {
-      return '$categoryLabel > ${getLabel(context)}';
+      return '$categoryLabel > ${getLabel(localizations)}';
     } else {
-      return getLabel(context);
+      return getLabel(localizations);
+    }
+  }
+
+  String? getIcon(ImagePaths imagePaths) {
+    switch (this) {
+      case AIScribeMenuAction.improveMakeShorter:
+        return imagePaths.icAiShorter;
+      case AIScribeMenuAction.improveExpandContext:
+        return imagePaths.icAiMoreDetail;
+      case AIScribeMenuAction.improveEmojify:
+        return imagePaths.icAiEmojify;
+      case AIScribeMenuAction.improveTransformToBullets:
+        return imagePaths.icAiBullets;
+      case AIScribeMenuAction.changeToneProfessional:
+        return imagePaths.icAiMoreProfessional;
+      case AIScribeMenuAction.changeToneCasual:
+        return imagePaths.icAiMoreCasual;
+      case AIScribeMenuAction.changeTonePolite:
+        return imagePaths.icAiMorePolite;
+      default:
+        return null;
     }
   }
 }
 
 enum AIScribeMenuCategory {
   correctGrammar,
-  improve,
+  translate,
   changeTone,
-  translate;
+  improve;
 
-  String getLabel(BuildContext context) {
-    final localizations = ScribeLocalizations.of(context)!;
+  String getLabel(ScribeLocalizations localizations) {
     switch (this) {
       case AIScribeMenuCategory.correctGrammar:
         return localizations.categoryCorrectGrammar;
@@ -93,6 +112,19 @@ enum AIScribeMenuCategory {
         return localizations.categoryChangeTone;
       case AIScribeMenuCategory.translate:
         return localizations.categoryTranslate;
+    }
+  }
+
+  String getIcon(ImagePaths imagePaths) {
+    switch (this) {
+      case AIScribeMenuCategory.correctGrammar:
+        return imagePaths.icAiGrammar;
+      case AIScribeMenuCategory.improve:
+        return imagePaths.icAiImprove;
+      case AIScribeMenuCategory.changeTone:
+        return imagePaths.icAiChangeTons;
+      case AIScribeMenuCategory.translate:
+        return imagePaths.icAiTranslate;
     }
   }
 

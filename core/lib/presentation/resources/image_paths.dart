@@ -262,6 +262,18 @@ class ImagePaths {
   String get icText => _getImagePath('ic_text.svg');
   String get icUser => _getImagePath('ic_user.svg');
   String get icSparkle => _getImagePath('ic_sparkle.svg');
+  String get icGradientSparkle => _getImagePath('ic_gradient_sparkle.svg');
+  String get icAiChangeTons => _getImagePath('ic_ai_change_tons.svg');
+  String get icAiGrammar => _getImagePath('ic_ai_grammar.svg');
+  String get icAiImprove => _getImagePath('ic_ai_improve.svg');
+  String get icAiTranslate => _getImagePath('ic_ai_translate.svg');
+  String get icAiBullets => _getImagePath('ic_ai_bullets.svg');
+  String get icAiEmojify => _getImagePath('ic_ai_emojify.svg');
+  String get icAiShorter => _getImagePath('ic_ai_shorter.svg');
+  String get icAiMoreCasual => _getImagePath('ic_ai_more_casual.svg');
+  String get icAiMoreDetail => _getImagePath('ic_ai_more_detail.svg');
+  String get icAiMoreProfessional => _getImagePath('ic_ai_more_professional.svg');
+  String get icAiMorePolite => _getImagePath('ic_ai_more_polite.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
