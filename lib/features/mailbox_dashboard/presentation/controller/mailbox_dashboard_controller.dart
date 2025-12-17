@@ -31,6 +31,7 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/base/mixin/ai_scribe_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/own_email_address_mixin.dart';
@@ -78,15 +79,8 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
-import 'package:scribe/scribe/ai/data/datasource/ai_datasource.dart';
-import 'package:scribe/scribe/ai/data/datasource_impl/ai_datasource_impl.dart';
-import 'package:scribe/scribe/ai/data/repository/ai_repository_impl.dart';
-import 'package:scribe/scribe/ai/domain/repository/ai_scribe_repository.dart';
-import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
-import 'package:scribe/scribe/ai/presentation/bindings/ai_scribe_bindings.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
@@ -223,7 +217,8 @@ import 'package:uuid/uuid.dart';
 class MailboxDashBoardController extends ReloadableController
     with ContactSupportMixin,
         OwnEmailAddressMixin,
-        SaaSPremiumMixin {
+        SaaSPremiumMixin,
+        AiScribeMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -822,41 +817,6 @@ class MailboxDashBoardController extends ReloadableController
       _updateVacationInteractor = Get.find<UpdateVacationInteractor>();
     } catch (e) {
       logError('MailboxDashBoardController::injectVacationBindings(): $e');
-    }
-  }
-
-  void injectAIScribeBindings(Session? session, AccountId? accountId) {
-    try {
-      if (!PlatformInfo.isWeb) return;
-
-      if (session == null || accountId == null) return;
-
-      final aiCapability = session.getAICapability(accountId);
-      final scribeEndpoint = aiCapability?.scribeEndpoint;
-
-      if (scribeEndpoint == null || scribeEndpoint.isEmpty) return;
-
-      // Delete existing AI bindings if they exist
-      if (Get.isRegistered<AIDataSourceImpl>()) {
-        Get.delete<AIDataSourceImpl>(force: true);
-      }
-      if (Get.isRegistered<AIDataSource>()) {
-        Get.delete<AIDataSource>(force: true);
-      }
-      if (Get.isRegistered<AIScribeRepositoryImpl>()) {
-        Get.delete<AIScribeRepositoryImpl>(force: true);
-      }
-      if (Get.isRegistered<AIScribeRepository>()) {
-        Get.delete<AIScribeRepository>(force: true);
-      }
-      if (Get.isRegistered<GenerateAITextInteractor>()) {
-        Get.delete<GenerateAITextInteractor>(force: true);
-      }
-
-      // Reinitialize with the correct endpoint
-      AIScribeBindings(scribeEndpoint: scribeEndpoint).dependencies();
-    } catch (e) {
-      logError('MailboxDashBoardController::injectAIScribeBindings(): $e');
     }
   }
 

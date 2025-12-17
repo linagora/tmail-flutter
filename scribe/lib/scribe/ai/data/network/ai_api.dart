@@ -1,30 +1,22 @@
-import 'package:dio/dio.dart';
-import 'package:scribe/scribe/ai/data/model/ai_api_response.dart';
+import 'package:core/data/network/dio_client.dart';
 import 'package:scribe/scribe/ai/data/model/ai_api_request.dart';
+import 'package:scribe/scribe/ai/data/model/ai_api_response.dart';
+import 'package:scribe/scribe/ai/data/model/ai_message.dart';
 import 'package:scribe/scribe/ai/data/network/ai_api_exception.dart';
 
 class AIApi {
-  final Dio _dio;
-  final String? _endpoint;
+  final DioClient _dioClient;
+  final String aiEndpoint;
 
-  AIApi({
-    required Dio dio,
-    String? endpoint,
-  }) : _dio = dio,
-       _endpoint = endpoint;
+  AIApi(this._dioClient, this.aiEndpoint);
 
-  Future<AIApiResponse> chatCompletion(
-    AIAPIRequest request
-    ) async {
-    final url = _endpoint;
+  Future<AIApiResponse> generateMessage(String prompt) async {
+    final aiRequest = _generateRequest(prompt);
 
-    if (url == null) {
-      throw AIApiNotAvailableException();
-    }
-
-    final response = await _dio.post(
-      url,
-      data: request.toJson(),
+    final response = await _dioClient.post(
+      aiEndpoint,
+      data: aiRequest.toJson(),
+      useJMAPHeader: false,
     );
 
     if (response.statusCode == 200) {
@@ -38,5 +30,9 @@ class AIApi {
         statusCode: response.statusCode,
       );
     }
+  }
+
+  AIAPIRequest _generateRequest(String prompt) {
+    return AIAPIRequest(messages: [AIMessage.ofUser(prompt)]);
   }
 }

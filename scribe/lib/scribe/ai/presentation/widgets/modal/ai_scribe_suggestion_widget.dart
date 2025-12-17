@@ -66,7 +66,7 @@ class _AiScribeSuggestionWidgetModalState
     }
   }
 
-  void _getAiSuggestion(
+  Future<void> _getAiSuggestion(
     GenerateAITextInteractor interactor,
     AIAction action,
     String? content,
