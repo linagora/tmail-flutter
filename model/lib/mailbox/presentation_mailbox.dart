@@ -19,7 +19,7 @@ class PresentationMailbox with EquatableMixin {
   static const String archiveRole = 'archive';
   static const String recoveredRole = 'restored messages';
   static const String favoriteRole = 'favorite';
-  static const String actionRequiredRole = 'need-action';
+  static const String actionRequiredRole = 'needs-action';
 
   static final PresentationMailbox unifiedMailbox = PresentationMailbox(MailboxId(Id('unified')));
   static final PresentationMailbox favoriteFolder = PresentationMailbox(
