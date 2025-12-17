@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
 import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
 import 'package:scribe/scribe/ai/presentation/utils/modal/ai_scribe_modal_manager.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/ai_scribe_suggestion_widget.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_success_list_actions.dart';
 
 class InlineAiAssistButton extends StatelessWidget {
   final ImagePaths imagePaths;
   final String? selectedText;
-  final OnAiScribeResultCallback onAiScribeResultCallback;
+  final OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction;
 
   const InlineAiAssistButton({
     super.key,
     required this.imagePaths,
-    required this.onAiScribeResultCallback,
+    required this.onSelectAiScribeSuggestionAction,
     this.selectedText,
   });
 
@@ -39,20 +39,17 @@ class InlineAiAssistButton extends StatelessWidget {
     Size? size;
 
     if (renderBox != null && renderBox is RenderBox) {
-       position = renderBox.localToGlobal(Offset.zero);
-       size = renderBox.size;
+      position = renderBox.localToGlobal(Offset.zero);
+      size = renderBox.size;
     }
 
-    final aiResult = await AiScribeModalManager.showAIScribeMenuModal(
+    await AiScribeModalManager.showAIScribeMenuModal(
       imagePaths: imagePaths,
       availableCategories: AIScribeMenuCategory.values,
       buttonPosition: position,
       content: selectedText,
       buttonSize: size,
+      onSelectAiScribeSuggestionAction: onSelectAiScribeSuggestionAction,
     );
-
-    if (aiResult != null) {
-      onAiScribeResultCallback(aiResult);
-    }
   }
 }
