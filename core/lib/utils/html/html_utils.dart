@@ -48,7 +48,7 @@ class HtmlUtils {
       editor.parentNode.replaceChild(newEditor, editor);''',
     name: 'unregisterDropListener');
 
-  static const registerSelectionChangeListener = (
+  static ({String name, String script})registerSelectionChangeListener(String viewId) => (
     script: '''
       let lastSelectedText = '';
 
@@ -58,6 +58,7 @@ class HtmlUtils {
           window.parent.postMessage(
             JSON.stringify({
               ...data,
+              viewId: '$viewId',
               name: 'onSelectionChange',
             }),
             "*"
@@ -901,5 +902,11 @@ class HtmlUtils {
         _processNode(child, urlRegex);
       }
     }
+  }
+
+  static String getRandString(int len) {
+    var random = Random.secure();
+    var values = List<int>.generate(len, (i) => random.nextInt(255));
+    return base64UrlEncode(values);
   }
 }
