@@ -1,6 +1,5 @@
 import 'package:flutter/animation.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_cross_axis_alignment.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_placement.dart';
+import 'package:scribe/scribe.dart';
 
 class AnchoredModalLayoutInput {
   final Size screenSize;

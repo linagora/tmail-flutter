@@ -5,20 +5,7 @@ import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:scribe/scribe/ai/domain/state/generate_ai_text_state.dart';
-import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
-import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
-import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/anchored_modal_layout_input.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_cross_axis_alignment.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_placement.dart';
-import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
-import 'package:scribe/scribe/ai/presentation/utils/modal/anchored_modal_layout_calculator.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_error.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_header.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_loading.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_success.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_success_list_actions.dart';
+import 'package:scribe/scribe.dart';
 
 class AiScribeSuggestionWidget extends StatefulWidget {
   final AIAction aiAction;

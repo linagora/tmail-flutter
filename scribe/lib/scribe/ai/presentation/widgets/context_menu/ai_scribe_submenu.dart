@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_context_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/context_menu/ai_scribe_submenu_item.dart';
+import 'package:scribe/scribe.dart';
 
 class AiScribeSubmenu extends StatelessWidget {
   final List<AiScribeContextMenuAction> menuActions;

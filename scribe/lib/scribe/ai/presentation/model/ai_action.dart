@@ -1,5 +1,4 @@
-import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
-import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
+import 'package:scribe/scribe.dart';
 
 sealed class AIAction {
   const AIAction();

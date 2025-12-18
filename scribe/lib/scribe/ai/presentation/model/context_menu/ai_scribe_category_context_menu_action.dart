@@ -1,8 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
-import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_action_context_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_context_menu_action.dart';
+import 'package:scribe/scribe.dart';
 
 class AiScribeCategoryContextMenuAction
     extends AiScribeContextMenuAction<AIScribeMenuCategory> {
