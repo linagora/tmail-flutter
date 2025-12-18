@@ -86,7 +86,9 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
       AIScribeSizes.suggestionModalMaxHeight,
     );
 
-    final dialogContent = _buildDialogContent(context);
+    final hasContent = widget.content?.trim().isNotEmpty == true;
+
+    final dialogContent = _buildDialogContent(context, hasContent);
 
     if (!_hasAnchor) {
       return Center(
@@ -128,7 +130,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
     );
   }
 
-  Widget _buildDialogContent(BuildContext context) {
+  Widget _buildDialogContent(BuildContext context, bool hasContent) {
     final localizations = ScribeLocalizations.of(context);
 
     return Column(
@@ -153,6 +155,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
                     return AiScribeSuggestionSuccess(
                       imagePaths: widget.imagePaths,
                       suggestionText: value.response.result,
+                      hasContent: hasContent,
                       onSelectAction: widget.onSelectAiScribeSuggestionAction,
                     );
                   }

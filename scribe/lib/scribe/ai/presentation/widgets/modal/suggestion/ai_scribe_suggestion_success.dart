@@ -5,6 +5,7 @@ import 'package:scribe/scribe.dart';
 class AiScribeSuggestionSuccess extends StatelessWidget {
   final ImagePaths imagePaths;
   final String suggestionText;
+  final bool hasContent;
   final OnSelectAiScribeSuggestionAction onSelectAction;
 
   const AiScribeSuggestionSuccess({
@@ -12,6 +13,7 @@ class AiScribeSuggestionSuccess extends StatelessWidget {
     required this.imagePaths,
     required this.suggestionText,
     required this.onSelectAction,
+    this.hasContent = false,
   });
 
   @override
@@ -38,6 +40,7 @@ class AiScribeSuggestionSuccess extends StatelessWidget {
           AiScribeSuggestionSuccessListActions(
             imagePaths: imagePaths,
             suggestionText: suggestionText,
+            hasContent: hasContent,
             onSelectAction: onSelectAction,
           ),
         ],

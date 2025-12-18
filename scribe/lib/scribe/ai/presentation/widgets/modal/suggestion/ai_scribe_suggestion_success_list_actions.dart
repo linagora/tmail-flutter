@@ -12,6 +12,7 @@ typedef OnSelectAiScribeSuggestionAction = void Function(
 class AiScribeSuggestionSuccessListActions extends StatelessWidget {
   final ImagePaths imagePaths;
   final String suggestionText;
+  final bool hasContent;
   final OnSelectAiScribeSuggestionAction onSelectAction;
 
   const AiScribeSuggestionSuccessListActions({
@@ -19,6 +20,7 @@ class AiScribeSuggestionSuccessListActions extends StatelessWidget {
     required this.imagePaths,
     required this.suggestionText,
     required this.onSelectAction,
+    this.hasContent = false,
   });
 
   @override
@@ -29,23 +31,24 @@ class AiScribeSuggestionSuccessListActions extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       spacing: 8,
       children: [
-        Flexible(
-          child: Container(
-            constraints: const BoxConstraints(minWidth: 67),
-            height: 36,
-            child: ConfirmDialogButton(
-              label: AiScribeSuggestionActions.replace.getLabel(localizations),
-              textColor: AppColor.primaryMain,
-              onTapAction: () {
-                Navigator.of(context).pop();
-                onSelectAction(
-                  AiScribeSuggestionActions.replace,
-                  suggestionText,
-                );
-              },
+        if (hasContent)
+          Flexible(
+            child: Container(
+              constraints: const BoxConstraints(minWidth: 67),
+              height: 36,
+              child: ConfirmDialogButton(
+                label: AiScribeSuggestionActions.replace.getLabel(localizations),
+                textColor: AppColor.primaryMain,
+                onTapAction: () {
+                  Navigator.of(context).pop();
+                  onSelectAction(
+                    AiScribeSuggestionActions.replace,
+                    suggestionText,
+                  );
+                },
+              ),
             ),
           ),
-        ),
         Flexible(
           child: Container(
             constraints: const BoxConstraints(minWidth: 72),
