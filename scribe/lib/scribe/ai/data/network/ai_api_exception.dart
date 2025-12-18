@@ -20,3 +20,7 @@ class AIApiNotAvailableException extends AIApiException {
 class AIApiEmptyResponseException extends AIApiException {
   AIApiEmptyResponseException() : super('AI API returned empty response');
 }
+
+class GenerateAITextInteractorIsNotRegisteredException extends AIApiException {
+  GenerateAITextInteractorIsNotRegisteredException() : super('GenerateAITextInteractor is not registered');
+}

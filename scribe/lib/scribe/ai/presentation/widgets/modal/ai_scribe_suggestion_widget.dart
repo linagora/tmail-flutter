@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe.dart';
+import 'package:scribe/scribe/ai/data/network/ai_api_exception.dart';
 
 class AiScribeSuggestionWidget extends StatefulWidget {
   final AIAction aiAction;
@@ -49,6 +50,12 @@ class _AiScribeSuggestionWidgetModalState
         _generateAITextInteractor!,
         widget.aiAction,
         widget.content,
+      );
+    } else {
+      _valueNotifier.value = dartz.Left(
+        GenerateAITextFailure(
+          GenerateAITextInteractorIsNotRegisteredException(),
+        ),
       );
     }
   }
