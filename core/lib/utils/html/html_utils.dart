@@ -122,6 +122,17 @@ class HtmlUtils {
       })();''',
     name: 'collapseSelectionToEnd');
 
+  static const deleteSelectionContent = (
+    script: '''
+      (() => {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          range.deleteContents();
+        }
+      })();''',
+    name: 'deleteSelectionContent');
+
   static recalculateEditorHeight({double? maxHeight}) => (
     script: '''
       const editable = document.querySelector('.note-editable');
