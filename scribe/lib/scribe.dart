@@ -16,6 +16,7 @@ export 'scribe/ai/presentation/model/context_menu/ai_scribe_context_menu_action.
 export 'scribe/ai/presentation/model/context_menu/ai_scribe_suggestion_actions.dart';
 export 'scribe/ai/presentation/model/modal/anchored_modal_layout_input.dart';
 export 'scribe/ai/presentation/model/modal/anchored_modal_layout_result.dart';
+export 'scribe/ai/presentation/model/modal/anchored_suggestion_layout_result.dart';
 export 'scribe/ai/presentation/model/modal/modal_cross_axis_alignment.dart';
 export 'scribe/ai/presentation/model/modal/modal_placement.dart';
 export 'scribe/ai/presentation/model/text_selection_model.dart';
