@@ -214,4 +214,10 @@ class StringConvert {
 
     return textContent.trim();
   }
+
+  static String convertTextContentToHtmlContent(String textContent) {
+    final htmlContent = textContent.replaceAll('\n', '<br>');
+
+    return '<div>$htmlContent</div>';
+  }
 }

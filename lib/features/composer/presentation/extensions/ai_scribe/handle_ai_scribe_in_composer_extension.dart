@@ -29,10 +29,15 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
-  void insertTextInEditor(String text) {
-    final htmlContent = text.replaceAll('\n', '<br>');
+  void insertTextInEditor(String text) async {
+    final htmlContent = StringConvert.convertTextContentToHtmlContent(text);
 
     if (PlatformInfo.isWeb) {
+      await richTextWebController?.editorController.evaluateJavascriptWeb(
+        HtmlUtils.deleteSelectionContent.name,
+        hasReturnValue: false,
+      );
+
       richTextWebController?.editorController.insertHtml(htmlContent);
     } else {
       richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
