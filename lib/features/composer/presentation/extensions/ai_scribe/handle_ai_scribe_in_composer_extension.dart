@@ -33,7 +33,10 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     final htmlContent = text.replaceAll('\n', '<br>');
 
     if (PlatformInfo.isWeb) {
-      richTextWebController?.editorController.insertHtml(htmlContent);
+      richTextWebController?.editorController.execCommand(
+        'insertHTML',
+        argument: htmlContent,
+      );
     } else {
       richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
     }
