@@ -67,6 +67,7 @@ class AiScribeModalManager {
         crossAxisAlignment: crossAxisAlignment,
         onSelectAiScribeSuggestionAction: onSelectAiScribeSuggestionAction,
       ),
+      barrierDismissible: false,
       barrierColor: AIScribeColors.dialogBarrier,
     );
   }
