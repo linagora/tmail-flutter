@@ -30,7 +30,7 @@ class AiScribeSuggestionSuccess extends StatelessWidget {
               physics: const ClampingScrollPhysics(),
               child: Padding(
                 padding: const EdgeInsetsDirectional.only(end: 8),
-                child: Text(
+                child: SelectableText(
                   suggestionText,
                   style: AIScribeTextStyles.suggestionContent,
                 ),
