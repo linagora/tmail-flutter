@@ -1,10 +1,9 @@
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_suggestion_actions.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_cross_axis_alignment.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
 
@@ -40,6 +39,45 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
+  Future<void> collapseSelection() async {
+    if (PlatformInfo.isWeb) {
+      await richTextWebController?.editorController.evaluateJavascriptWeb(
+        HtmlUtils.collapseSelectionToEnd.name,
+        hasReturnValue: false,
+      );
+    } else {
+      await richTextMobileTabletController?.htmlEditorApi?.webViewController
+          .evaluateJavascript(
+        source: HtmlUtils.collapseSelectionToEnd.script,
+      );
+    }
+  }
+
+  void clearTextInEditor() {
+    if (PlatformInfo.isWeb) {
+      richTextWebController?.editorController.setText('');
+    } else {
+      richTextMobileTabletController?.htmlEditorApi?.setText('');
+    }
+  }
+
+  // Ensure we only insert at cursor position by collapsing selection before inserting
+  void onInsertTextCallback(String text) async {
+    await collapseSelection();
+
+    insertTextInEditor(text);
+  }
+
+  // If there is a selection, it will replace the selection, else it will replace everything
+  void onReplaceTextCallback(String text) async {
+    final selection = editorTextSelection.value?.selectedText;
+    if (selection == null || selection.isEmpty) {
+      clearTextInEditor();
+    }
+
+    insertTextInEditor(text);
+  }
+
   Future<void> openAIAssistantModal(Offset? position, Size? size) async {
     final fullText = await _getTextOnlyContentInEditor();
 
@@ -59,11 +97,12 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     AiScribeSuggestionActions action,
     String suggestionText,
   ) {
-    switch(action) {
+    switch (action) {
       case AiScribeSuggestionActions.replace:
+        onReplaceTextCallback(suggestionText);
         break;
       case AiScribeSuggestionActions.insert:
-        insertTextInEditor(suggestionText);
+        onInsertTextCallback(suggestionText);
         break;
     }
   }
