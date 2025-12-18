@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -32,147 +34,164 @@ class AiScribeSuggestionWidget extends StatefulWidget {
 
   @override
   State<AiScribeSuggestionWidget> createState() =>
-      _AiScribeSuggestionWidgetModalState();
+      _AiScribeSuggestionWidgetState();
 }
 
-class _AiScribeSuggestionWidgetModalState
-    extends State<AiScribeSuggestionWidget> {
-  GenerateAITextInteractor? _generateAITextInteractor;
-  final ValueNotifier<dynamic> _valueNotifier =
+class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
+  GenerateAITextInteractor? _interactor;
+
+  final ValueNotifier<dartz.Either<Failure, Success>> _state =
       ValueNotifier(dartz.Right(GenerateAITextLoading()));
 
   @override
   void initState() {
     super.initState();
-    if (Get.isRegistered<GenerateAITextInteractor>()) {
-      _generateAITextInteractor = Get.find<GenerateAITextInteractor>();
-      _getAiSuggestion(
-        _generateAITextInteractor!,
-        widget.aiAction,
-        widget.content,
-      );
-    } else {
-      _valueNotifier.value = dartz.Left(
+
+    if (!Get.isRegistered<GenerateAITextInteractor>()) {
+      _state.value = dartz.Left(
         GenerateAITextFailure(
           GenerateAITextInteractorIsNotRegisteredException(),
         ),
       );
+      return;
     }
+
+    _interactor = Get.find<GenerateAITextInteractor>();
+    _loadSuggestion();
   }
 
-  Future<void> _getAiSuggestion(
-    GenerateAITextInteractor interactor,
-    AIAction action,
-    String? content,
-  ) async {
-    final result = await interactor.execute(action, content);
+  Future<void> _loadSuggestion() async {
+    final result = await _interactor!.execute(
+      widget.aiAction,
+      widget.content,
+    );
 
-    result.fold((failure) {
-      _valueNotifier.value = failure;
-    }, (success) {
-      _valueNotifier.value = success;
-    });
+    result.fold(
+      (failure) => _state.value = dartz.Left(failure),
+      (success) => _state.value = dartz.Right(success),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final localizations = ScribeLocalizations.of(context);
     final screenSize = MediaQuery.sizeOf(context);
+
     final modalWidth = min(
       screenSize.width * AIScribeSizes.mobileFactor,
       AIScribeSizes.suggestionModalMaxWidth,
     );
-    final modalHeight = min(
+
+    final modalMaxHeight = min(
       screenSize.height * AIScribeSizes.mobileFactor,
       AIScribeSizes.suggestionModalMaxHeight,
     );
 
-    final dialogContent = Container(
-      width: modalWidth,
-      constraints: BoxConstraints(
-        minHeight: AIScribeSizes.suggestionModalMinHeight,
-        maxHeight: modalHeight,
-      ),
-      decoration: BoxDecoration(
-        color: AIScribeColors.background,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(AIScribeSizes.menuRadius),
-        ),
-        boxShadow: AIScribeShadows.modal,
-      ),
-      padding: AIScribeSizes.suggestionContentPadding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        spacing: 8,
-        children: [
-          AiScribeSuggestionHeader(
-            title: widget.aiAction.getLabel(localizations),
-            imagePaths: widget.imagePaths,
-          ),
-          Flexible(
-            child: ValueListenableBuilder(
-              valueListenable: _valueNotifier,
-              builder: (_, value, __) {
-                if (value is GenerateAITextSuccess) {
-                  return AiScribeSuggestionSuccess(
-                    imagePaths: widget.imagePaths,
-                    suggestionText: value.response.result,
-                    onSelectAction: widget.onSelectAiScribeSuggestionAction,
-                  );
-                } else if (value is GenerateAITextFailure) {
-                  return AiScribeSuggestionError(imagePaths: widget.imagePaths);
-                } else {
-                  return AiScribeSuggestionLoading(
-                    imagePaths: widget.imagePaths,
-                  );
-                }
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+    final dialogContent = _buildDialogContent(context);
 
-    if (widget.buttonPosition != null && widget.buttonSize != null) {
-      final layoutResult = AnchoredModalLayoutCalculator.calculate(
-        input: AnchoredModalLayoutInput(
-          screenSize: MediaQuery.of(context).size,
-          anchorPosition: widget.buttonPosition!,
-          anchorSize: widget.buttonSize!,
-          menuSize: Size(
-            modalWidth,
-            AIScribeSizes.suggestionModalMinHeight,
-          ),
-          preferredPlacement: widget.preferredPlacement,
-          crossAxisAlignment: widget.crossAxisAlignment,
-        ),
-        padding: AIScribeSizes.screenEdgePadding,
-      );
-
-      final position = layoutResult.position;
-
-      final top = widget.preferredPlacement == ModalPlacement.top
-          ? position.dy - AIScribeSizes.modalWithoutContentSpacing
-          : position.dy;
-
-      return PointerInterceptor(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: Navigator.of(context).pop,
-          child: Stack(
-            children: [
-              PositionedDirectional(
-                start: position.dx,
-                top: top,
-                child: dialogContent,
-              ),
-            ],
-          ),
+    if (!_hasAnchor) {
+      return Center(
+        child: _buildModalContainer(
+          width: modalWidth,
+          maxHeight: modalMaxHeight,
+          child: dialogContent,
         ),
       );
     }
 
-    return Center(child: dialogContent);
+    final layout = AnchoredModalLayoutCalculator.calculateAnchoredSuggestLayout(
+      screenSize: screenSize,
+      anchorPosition: widget.buttonPosition!,
+      anchorSize: widget.buttonSize!,
+      modalMaxHeight: modalMaxHeight,
+      preferredPlacement: widget.preferredPlacement,
+    );
+
+    return PointerInterceptor(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: Navigator.of(context).pop,
+        child: Stack(
+          children: [
+            PositionedDirectional(
+              start: layout.offset.dx,
+              top: layout.top,
+              bottom: layout.bottom,
+              child: _buildModalContainer(
+                width: modalWidth,
+                maxHeight: layout.availableHeight,
+                child: dialogContent,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
+
+  Widget _buildDialogContent(BuildContext context) {
+    final localizations = ScribeLocalizations.of(context);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        AiScribeSuggestionHeader(
+          title: widget.aiAction.getLabel(localizations),
+          imagePaths: widget.imagePaths,
+        ),
+        Flexible(
+          child: ValueListenableBuilder<dartz.Either<Failure, Success>>(
+            valueListenable: _state,
+            builder: (_, state, __) {
+              return state.fold(
+                (_) => AiScribeSuggestionError(
+                  imagePaths: widget.imagePaths,
+                ),
+                (value) {
+                  if (value is GenerateAITextSuccess) {
+                    return AiScribeSuggestionSuccess(
+                      imagePaths: widget.imagePaths,
+                      suggestionText: value.response.result,
+                      onSelectAction: widget.onSelectAiScribeSuggestionAction,
+                    );
+                  }
+
+                  return AiScribeSuggestionLoading(
+                    imagePaths: widget.imagePaths,
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModalContainer({
+    required double width,
+    required double maxHeight,
+    required Widget child,
+  }) {
+    return Container(
+      width: width,
+      constraints: BoxConstraints(
+        minHeight: AIScribeSizes.suggestionModalMinHeight,
+        maxHeight: maxHeight,
+      ),
+      padding: AIScribeSizes.suggestionContentPadding,
+      decoration: BoxDecoration(
+        color: AIScribeColors.background,
+        borderRadius: BorderRadius.circular(
+          AIScribeSizes.menuRadius,
+        ),
+        boxShadow: AIScribeShadows.modal,
+      ),
+      child: child,
+    );
+  }
+
+  bool get _hasAnchor =>
+      widget.buttonPosition != null && widget.buttonSize != null;
 }
