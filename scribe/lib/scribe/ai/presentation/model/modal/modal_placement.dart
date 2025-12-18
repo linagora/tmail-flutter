@@ -1,6 +1,1 @@
-enum ModalPlacement {
-  right,
-  bottom,
-  top,
-  left
-}
+enum ModalPlacement { right, bottom, top, left }

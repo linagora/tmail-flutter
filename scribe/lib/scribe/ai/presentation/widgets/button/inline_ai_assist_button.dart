@@ -1,10 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
-import 'package:scribe/scribe/ai/presentation/utils/modal/ai_scribe_modal_manager.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_success_list_actions.dart';
+import 'package:scribe/scribe.dart';
 
 class InlineAiAssistButton extends StatelessWidget {
   final ImagePaths imagePaths;

@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:scribe/scribe/ai/domain/model/ai_response.dart';
 
 class GenerateAITextLoading extends LoadingState {}

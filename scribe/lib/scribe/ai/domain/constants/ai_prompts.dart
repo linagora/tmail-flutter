@@ -6,8 +6,10 @@ import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
 class AIPrompts {
   static String buildPrompt(AIAction action, String? text) {
     return switch (action) {
-      PredefinedAction(action: final menuAction) => buildPredefinedPrompt(menuAction, text ?? ''),
-      CustomPromptAction(prompt: final customPrompt) => buildCustomPrompt(customPrompt, text),
+      PredefinedAction(action: final menuAction) =>
+        buildPredefinedPrompt(menuAction, text ?? ''),
+      CustomPromptAction(prompt: final customPrompt) =>
+        buildCustomPrompt(customPrompt, text),
     };
   }
 

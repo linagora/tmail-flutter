@@ -6,11 +6,10 @@ part 'ai_api_response.g.dart';
 class AIApiResponse {
   final List<Choice> choices;
 
-  const AIApiResponse({
-    required this.choices
-  });
+  const AIApiResponse({required this.choices});
 
-  factory AIApiResponse.fromJson(Map<String, dynamic> json) => _$AIApiResponseFromJson(json);
+  factory AIApiResponse.fromJson(Map<String, dynamic> json) =>
+      _$AIApiResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$AIApiResponseToJson(this);
 
@@ -21,9 +20,7 @@ class AIApiResponse {
 class Choice {
   final Message message;
 
-  const Choice({
-    required this.message
-  });
+  const Choice({required this.message});
 
   factory Choice.fromJson(Map<String, dynamic> json) => _$ChoiceFromJson(json);
 
@@ -34,11 +31,10 @@ class Choice {
 class Message {
   final String content;
 
-  const Message({
-    required this.content
-  });
+  const Message({required this.content});
 
-  factory Message.fromJson(Map<String, dynamic> json) => _$MessageFromJson(json);
+  factory Message.fromJson(Map<String, dynamic> json) =>
+      _$MessageFromJson(json);
 
   Map<String, dynamic> toJson() => _$MessageToJson(this);
 }

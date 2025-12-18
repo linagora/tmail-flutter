@@ -3,20 +3,7 @@ import 'dart:math';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
-import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_action_context_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_category_context_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_context_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/anchored_modal_layout_input.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_cross_axis_alignment.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_placement.dart';
-import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
-import 'package:scribe/scribe/ai/presentation/utils/context_menu/popup_submenu_controller.dart';
-import 'package:scribe/scribe/ai/presentation/utils/modal/anchored_modal_layout_calculator.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/context_menu/ai_scribe_context_menu.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/search/ai_scribe_bar.dart';
+import 'package:scribe/scribe.dart';
 
 class AiScribeModalWidget extends StatelessWidget {
   final ImagePaths imagePaths;
