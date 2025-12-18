@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/animation.dart';
 import 'package:scribe/scribe.dart';
 
@@ -137,5 +139,43 @@ class AnchoredModalLayoutCalculator {
       case ModalCrossAxisAlignment.end:
         return anchorStart + anchorSize - menuSize;
     }
+  }
+
+  static AnchoredSuggestionLayoutResult calculateAnchoredSuggestLayout({
+    required Size screenSize,
+    required Offset anchorPosition,
+    required Size anchorSize,
+    required double modalMaxHeight,
+    ModalPlacement? preferredPlacement,
+    double gap = 8,
+    double padding = AIScribeSizes.screenEdgePadding,
+  }) {
+    final isTop = preferredPlacement == ModalPlacement.top;
+
+    if (isTop) {
+      final availableHeight = anchorPosition.dy - padding - gap;
+      final positionBottom = screenSize.height - anchorPosition.dy + gap;
+
+      return AnchoredSuggestionLayoutResult(
+        offset: Offset(
+          anchorPosition.dx,
+          positionBottom,
+        ),
+        availableHeight: availableHeight,
+        bottom: positionBottom,
+      );
+    }
+
+    final spaceBelow = screenSize.height - anchorPosition.dy - padding - gap;
+    final positionTop = anchorPosition.dx + anchorSize.width + gap;
+
+    return AnchoredSuggestionLayoutResult(
+      offset: Offset(
+        positionTop,
+        anchorPosition.dy,
+      ),
+      availableHeight: min(spaceBelow, modalMaxHeight),
+      top: anchorPosition.dy,
+    );
   }
 }
