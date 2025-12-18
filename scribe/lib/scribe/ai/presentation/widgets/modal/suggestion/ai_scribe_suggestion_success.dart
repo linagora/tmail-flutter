@@ -24,9 +24,15 @@ class AiScribeSuggestionSuccess extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(
-            child: Text(
-              suggestionText,
-              style: AIScribeTextStyles.suggestionContent,
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.only(end: 8),
+                child: Text(
+                  suggestionText,
+                  style: AIScribeTextStyles.suggestionContent,
+                ),
+              ),
             ),
           ),
           AiScribeSuggestionSuccessListActions(
