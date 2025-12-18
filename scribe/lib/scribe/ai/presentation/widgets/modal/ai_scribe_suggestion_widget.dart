@@ -109,7 +109,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
     return PointerInterceptor(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: Navigator.of(context).pop,
+        onTap: _handleClickOutside,
         child: Stack(
           children: [
             PositionedDirectional(
@@ -194,4 +194,11 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
 
   bool get _hasAnchor =>
       widget.buttonPosition != null && widget.buttonSize != null;
+
+  void _handleClickOutside() {
+    final result = _state.value.getOrElse(() => UIState.idle);
+    if (result is GenerateAITextSuccess || result is GenerateAITextFailure) {
+      Navigator.of(context).pop();
+    }
+  }
 }
