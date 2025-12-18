@@ -1,10 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_context_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
-import 'package:scribe/scribe/ai/presentation/utils/context_menu/popup_submenu_controller.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/context_menu/ai_scribe_context_menu_item.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/context_menu/ai_scribe_submenu.dart';
+import 'package:scribe/scribe.dart';
 
 class AiScribeContextMenu extends StatefulWidget {
   final ImagePaths imagePaths;

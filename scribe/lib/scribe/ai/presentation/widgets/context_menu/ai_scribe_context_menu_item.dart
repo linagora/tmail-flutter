@@ -2,9 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_context_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
-import 'package:scribe/scribe/ai/presentation/utils/context_menu/hover_submenu_controller.dart';
+import 'package:scribe/scribe.dart';
 
 class AiScribeContextMenuItem extends StatefulWidget {
   final AiScribeContextMenuAction menuAction;

@@ -1,14 +1,10 @@
-import 'package:core/core.dart';
+import 'package:core/data/network/dio_client.dart';
 import 'package:get/get.dart';
-import 'package:scribe/scribe/ai/data/datasource/ai_datasource.dart';
+import 'package:scribe/scribe.dart';
 import 'package:scribe/scribe/ai/data/datasource_impl/ai_datasource_impl.dart';
 import 'package:scribe/scribe/ai/data/network/ai_api.dart';
-import 'package:scribe/scribe/ai/data/repository/ai_repository_impl.dart';
-import 'package:scribe/scribe/ai/domain/repository/ai_scribe_repository.dart';
-import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 
 class AIScribeBindings extends Bindings {
-
   final String aiEndpoint;
 
   AIScribeBindings(this.aiEndpoint);

@@ -1,8 +1,8 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
-import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
-import 'package:scribe/scribe/ai/presentation/model/context_menu/ai_scribe_suggestion_actions.dart';
+import 'package:scribe/scribe.dart';
 
 typedef OnSelectAiScribeSuggestionAction = void Function(
   AiScribeSuggestionActions action,

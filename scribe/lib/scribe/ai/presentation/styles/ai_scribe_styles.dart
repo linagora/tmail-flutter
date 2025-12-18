@@ -68,21 +68,24 @@ abstract final class AIScribeTextStyles {
     color: Colors.black.withValues(alpha: 0.85),
   );
 
-  static final TextStyle suggestionTitle = ThemeUtils.textStyleInter700().copyWith(
+  static final TextStyle suggestionTitle =
+      ThemeUtils.textStyleInter700().copyWith(
     fontSize: 14,
     height: 22 / 14,
     letterSpacing: 0.4,
     color: AppColor.black1A1A1A.withValues(alpha: 0.85),
   );
 
-  static final TextStyle suggestionLoading = ThemeUtils.textStyleInter400.copyWith(
+  static final TextStyle suggestionLoading =
+      ThemeUtils.textStyleInter400.copyWith(
     fontSize: 14,
     height: 22 / 14,
     letterSpacing: 0.4,
     color: AppColor.black1A1A1A.withValues(alpha: 0.85),
   );
 
-  static final TextStyle suggestionContent = ThemeUtils.textStyleInter400.copyWith(
+  static final TextStyle suggestionContent =
+      ThemeUtils.textStyleInter400.copyWith(
     fontSize: 14,
     height: 22 / 14,
     letterSpacing: 0.4,

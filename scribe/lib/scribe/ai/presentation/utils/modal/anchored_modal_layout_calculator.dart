@@ -1,8 +1,5 @@
 import 'package:flutter/animation.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/anchored_modal_layout_input.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/anchored_modal_layout_result.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_cross_axis_alignment.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_placement.dart';
+import 'package:scribe/scribe.dart';
 
 class AnchoredModalLayoutCalculator {
   static AnchoredModalLayoutResult calculate({

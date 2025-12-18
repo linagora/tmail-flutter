@@ -9,13 +9,16 @@ class AICapability extends CapabilityProperties {
 
   final String? scribeEndpoint;
 
-  factory AICapability.fromJson(Map<String, dynamic> json) => _$AICapabilityFromJson(json);
+  factory AICapability.fromJson(Map<String, dynamic> json) =>
+      _$AICapabilityFromJson(json);
 
   Map<String, dynamic> toJson() => _$AICapabilityToJson(this);
 
-  factory AICapability.deserialize(Map<String, dynamic> json) => _$AICapabilityFromJson(json);
+  factory AICapability.deserialize(Map<String, dynamic> json) =>
+      _$AICapabilityFromJson(json);
 
-  bool get isScribeEndpointAvailable => scribeEndpoint?.trim().isNotEmpty == true;
+  bool get isScribeEndpointAvailable =>
+      scribeEndpoint?.trim().isNotEmpty == true;
 
   @override
   List<Object?> get props => [scribeEndpoint];

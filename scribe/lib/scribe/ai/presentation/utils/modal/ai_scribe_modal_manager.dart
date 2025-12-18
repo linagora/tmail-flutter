@@ -1,15 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_cross_axis_alignment.dart';
-import 'package:scribe/scribe/ai/presentation/model/modal/modal_placement.dart';
-import 'package:scribe/scribe/ai/presentation/styles/ai_scribe_styles.dart';
-import 'package:scribe/scribe/ai/presentation/utils/context_menu/popup_submenu_controller.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/ai_scribe_modal_widget.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/ai_scribe_suggestion_widget.dart';
-import 'package:scribe/scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_success_list_actions.dart';
+import 'package:scribe/scribe.dart';
 
 class AiScribeModalManager {
   AiScribeModalManager._();
