@@ -14,9 +14,6 @@ class AICapability extends CapabilityProperties {
 
   Map<String, dynamic> toJson() => _$AICapabilityToJson(this);
 
-  factory AICapability.deserialize(Map<String, dynamic> json) =>
-      _$AICapabilityFromJson(json);
-
   bool get isScribeEndpointAvailable =>
       scribeEndpoint?.trim().isNotEmpty == true;
 

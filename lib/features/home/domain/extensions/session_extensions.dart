@@ -35,7 +35,7 @@ extension SessionExtensions on Session {
     linagoraDownloadAllCapability: DownloadAllCapability.deserialize,
     capabilityServerSettings: SettingsCapability.deserialize,
     linagoraSaaSCapability: SaaSAccountCapability.deserialize,
-    AiScribeConstants.aiCapability: AICapability.deserialize,
+    AiScribeConstants.aiCapability: AICapability.fromJson,
   };
 
   Map<String, dynamic> toJson() {

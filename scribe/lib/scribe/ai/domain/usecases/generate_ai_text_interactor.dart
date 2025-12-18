@@ -1,6 +1,5 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:scribe/scribe/ai/domain/constants/ai_prompts.dart';
 import 'package:scribe/scribe/ai/domain/repository/ai_scribe_repository.dart';
@@ -18,7 +17,6 @@ class GenerateAITextInteractor {
   ) async {
     try {
       final prompt = AIPrompts.buildPrompt(action, selectedText);
-      log('$runtimeType::execute():prompt: $prompt');
       final response = await _repository.generateMessage(prompt);
       return Right(GenerateAITextSuccess(response));
     } catch (e) {

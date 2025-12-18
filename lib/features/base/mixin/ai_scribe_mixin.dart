@@ -27,6 +27,13 @@ mixin AiScribeMixin {
 
       if (scribeEndpoint == null || scribeEndpoint.isEmpty) return;
 
+      // Validate endpoint format
+      if (Uri.tryParse(scribeEndpoint)?.hasAbsolutePath != true) {
+        logError(
+            'AiScribeMixin::injectAIScribeBindings(): Invalid endpoint format: $scribeEndpoint');
+        return;
+      }
+
       AIScribeBindings(scribeEndpoint).dependencies();
     } catch (e) {
       logError('AiScribeMixin::injectAIScribeBindings(): $e');
