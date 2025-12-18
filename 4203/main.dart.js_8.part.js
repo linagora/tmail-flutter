@@ -37,37 +37,37 @@ _.Q=!1
 _.as=null
 _.ei$=d
 _.c=_.a=null},
-cUf:function cUf(d,e){this.a=d
+cUg:function cUg(d,e){this.a=d
 this.b=e},
-cUg:function cUg(d){this.a=d},
-cUh:function cUh(d,e){this.a=d
+cUh:function cUh(d){this.a=d},
+cUi:function cUi(d,e){this.a=d
 this.b=e},
-cUi:function cUi(d){this.a=d},
+cUj:function cUj(d){this.a=d},
+cUf:function cUf(d){this.a=d},
 cUe:function cUe(d){this.a=d},
-cUd:function cUd(d){this.a=d},
-avE:function avE(){},
+avF:function avF(){},
 Yv:function Yv(d,e,f){this.a=d
 this.b=e
 this.c=f},
-b9s:function b9s(){},
-bVD(d){return new C.bVC(d)},
-bVC:function bVC(d){this.e=d},
-aJE:function aJE(d){this.a=null
+b9t:function b9t(){},
+bVE(d){return new C.bVD(d)},
+bVD:function bVD(d){this.e=d},
+aJF:function aJF(d){this.a=null
 this.b=d},
-bVF:function bVF(d,e,f,g){var _=this
+bVG:function bVG(d,e,f,g){var _=this
 _.a=d
 _.b=e
 _.c=f
 _.d=g},
-bVG:function bVG(d,e,f,g,h,i){var _=this
+bVH:function bVH(d,e,f,g,h,i){var _=this
 _.a=d
 _.b=e
 _.c=f
 _.d=g
 _.e=h
 _.f=i},
-bVE:function bVE(d){this.a=d},
-dS5(d){var x,w,v,u,t,s,r,q,p="text/html"
+bVF:function bVF(d){this.a=d},
+dS7(d){var x,w,v,u,t,s,r,q,p="text/html"
 if(!(B.d.t(d,A.bo("<[a-zA-Z][^>]*>",!0,!1,!1,!1))&&B.d.t(d,A.bo("</[a-zA-Z][^>]*>",!0,!1,!1,!1))))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
@@ -82,12 +82,12 @@ q=new DOMParser().parseFromString('      <button class="quote-toggle-button coll
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.dKa(v)
+v=v==null?null:J.dKc(v)
 return v==null?d:v},
-aRG(){if(!B.d.t(window.navigator.userAgent.toLowerCase(),"iphone"))var x=B.d.t(window.navigator.userAgent.toLowerCase(),"android")&&B.d.t(window.navigator.userAgent.toLowerCase(),"mobile")
+aRH(){if(!B.d.t(window.navigator.userAgent.toLowerCase(),"iphone"))var x=B.d.t(window.navigator.userAgent.toLowerCase(),"android")&&B.d.t(window.navigator.userAgent.toLowerCase(),"mobile")
 else x=!0
 return x},
-aRH(){if(!B.d.t(window.navigator.userAgent.toLowerCase(),"ipad"))var x=B.d.t(window.navigator.userAgent.toLowerCase(),"android")&&!B.d.t(window.navigator.userAgent.toLowerCase(),"mobile")
+aRI(){if(!B.d.t(window.navigator.userAgent.toLowerCase(),"ipad"))var x=B.d.t(window.navigator.userAgent.toLowerCase(),"android")&&!B.d.t(window.navigator.userAgent.toLowerCase(),"mobile")
 else x=!0
 return x}},D
 J=c[1]
@@ -104,14 +104,14 @@ x=w.a
 w.e=x.e
 w.f=x.d
 w.y=x.cy
-if(!C.aRG()&&!C.aRH()){x=w.a.fy
-w.as=new C.aJE(x)}w.as4()
+if(!C.aRH()&&!C.aRI()){x=w.a.fy
+w.as=new C.aJF(x)}w.as4()
 x=window
 x.toString
-x=A.jp(x,"message",w.gbcw(),!1,y._)
+x=A.jp(x,"message",w.gbcv(),!1,y._)
 w.z!==$&&A.cI()
 w.z=x},
-bcx(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
+bcw(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
 try{x=B.aB.hi(0,new A.Ru([],[]).NF(d.data,!0))
 w=J.ah(x,"view")
 t=n.d
@@ -122,13 +122,13 @@ if(n.gasJ()){t=v
 t=(t==null?m:B.d.t(t,"toDart: onScrollChanged"))===!0}else t=!1
 if(t){t=n.a.ay
 t.toString
-n.bc2(x,t)
+n.bc1(x,t)
 return}else{if(n.gasJ()){t=v
 t=(t==null?m:B.d.t(t,"toDart: onScrollEnd"))===!0}else t=!1
 if(t){t=n.a.ay
 t.toString
 s=J.ah(x,"velocity")
-r=J.dma(s==null?0:s,800)
+r=J.dmb(s==null?0:s,800)
 q=t.f
 p=B.c.gbl(q).at
 p.toString
@@ -137,23 +137,23 @@ return}else{t=v
 q=n.a
 if(q.Q!=null)t=(t==null?m:B.d.t(t,"toDart: iframeKeydown"))===!0
 else t=!1
-if(t){n.bdc(x)
+if(t){n.bdb(x)
 return}else{t=v
 if(q.fx)t=(t==null?m:B.d.t(t,"toDart: iframeClick"))===!0
 else t=!1
-if(t){n.bdb(x)
+if(t){n.bda(x)
 return}else{t=v
-if((t==null?m:B.d.t(t,"toDart: iframeLinkHover"))===!0){n.bdd(x)
+if((t==null?m:B.d.t(t,"toDart: iframeLinkHover"))===!0){n.bdc(x)
 return}else{t=v
-if((t==null?m:B.d.t(t,"toDart: iframeLinkOut"))===!0){n.bde(x)
+if((t==null?m:B.d.t(t,"toDart: iframeLinkOut"))===!0){n.bdd(x)
 return}}}}}}if(J.t(J.ah(x,"message"),"iframeHasBeenLoaded"))n.Q=!0
 if(!n.Q)return
 t=v
-if((t==null?m:B.d.t(t,"toDart: htmlHeight"))===!0)n.baf(J.ah(x,"height"))
+if((t==null?m:B.d.t(t,"toDart: htmlHeight"))===!0)n.bae(J.ah(x,"height"))
 else{t=v
 t=(t==null?m:B.d.t(t,"toDart: htmlWidth"))===!0
 if(t)n.a.toString
-if(t)n.bag(J.ah(x,"width"))
+if(t)n.baf(J.ah(x,"width"))
 else{t=v
 if((t==null?m:B.d.t(t,"toDart: OpenLink"))===!0){t=J.ah(x,"url")
 if(t!=null&&n.c!=null&&typeof t=="string"&&B.d.bh(t,"mailto:")){q=n.a.y
@@ -166,50 +166,50 @@ gasJ(){var x=this.a.ay
 if(x!=null)x=x.f.length!==0===!0
 else x=!1
 return x},
-bc2(d,e){var x,w,v,u,t,s,r,q
+bc1(d,e){var x,w,v,u,t,s,r,q
 try{t=J.ah(d,"deltaY")
 x=t==null?0:t
 s=e.f
 r=B.c.gbl(s).at
 r.toString
 w=r+x
-r=C.aRG()||C.aRH()
+r=C.aRH()||C.aRI()
 if(r){v=J.bn9(w,B.c.gbl(s).geM(),B.c.gbl(s).ge8())
 e.iN(v,B.af,B.oh)}else if(w<B.c.gbl(s).geM())e.ih(B.c.gbl(s).geM())
 else if(w>B.c.gbl(s).ge8())e.ih(B.c.gbl(s).ge8())
 else e.ih(w)}catch(q){u=A.O(q)
 A.x(A.E(this).l(0)+"::_handleIframeOnScrollChangedListener:Exception = "+A.e(u),B.w)}},
-baf(d){var x,w,v,u,t,s,r=this
+bae(d){var x,w,v,u,t,s,r=this
 if(d==null){x=r.e
 x===$&&A.d()
 w=x}else w=d
 x=r.c
-if(x!=null){v=J.axl(w,r.a.dx)
+if(x!=null){v=J.axm(w,r.a.dx)
 A.x(A.E(r).l(0)+"::_handleContentHeightEvent: ScrollHeightWithBuffer = "+A.e(v),B.f)
 x=r.a.fr
 u=J.a64(v)
 t=r.y
 if(x){t===$&&A.d()
 s=u.pF(v,t)}else{t===$&&A.d()
-s=u.ni(v,t)}if(s)r.T(new C.cUf(r,v))}if(r.c!=null&&r.x)r.T(new C.cUg(r))},
-bag(d){var x,w,v=this
+s=u.ni(v,t)}if(s)r.T(new C.cUg(r,v))}if(r.c!=null&&r.x)r.T(new C.cUh(r))},
+baf(d){var x,w,v=this
 if(d==null){x=v.f
 x===$&&A.d()
 w=x}else w=d
-if(v.c!=null&&J.dm9(w,v.a.db)&&v.a.at)v.T(new C.cUh(v,w))},
-bdc(d){var x,w,v,u
+if(v.c!=null&&J.dma(w,v.a.db)&&v.a.at)v.T(new C.cUi(v,w))},
+bdb(d){var x,w,v,u
 try{v=J.am(d)
 x=new C.Yv(A.aJ(v.j(d,"key")),A.aJ(v.j(d,"code")),J.t(v.j(d,"shift"),!0))
 A.x(A.E(this).l(0)+"::_handleOnIFrameKeyboardEvent:\ud83d\udce5 Shortcut pressed: "+A.e(x),B.f)
 v=this.a.Q
 if(v!=null)v.$1(x)}catch(u){w=A.O(u)
 A.x(A.E(this).l(0)+"::_handleOnIFrameKeyboardEvent: Exception = "+A.e(w),B.w)}},
-bdb(d){var x,w,v
+bda(d){var x,w,v
 try{A.x(A.E(this).l(0)+"::_handleOnIFrameClickEvent: "+A.e(d),B.f)
 w=this.a.as
 if(w!=null)w.$0()}catch(v){x=A.O(v)
 A.x(A.E(this).l(0)+"::_handleOnIFrameClickEvent: Exception = "+A.e(x),B.w)}},
-bdd(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
+bdc(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
 try{A.x(A.E(n).l(0)+"::_handleOnIFrameLinkHoverEvent: "+A.e(d),B.f)
 t=J.am(d)
 s=t.j(d,"url")
@@ -232,7 +232,7 @@ t=n.c
 if(t!=null){r=n.as
 if(r!=null)r.ajP(0,t,x,v)}}}catch(o){u=A.O(o)
 A.x(A.E(n).l(0)+"::_handleOnIFrameLinkHoverEvent: Exception = "+A.e(u),B.w)}},
-bde(d){var x,w,v
+bdd(d){var x,w,v
 try{A.x(A.E(this).l(0)+"::_handleOnIFrameLinkOutEvent: "+A.e(d),B.f)
 w=this.as
 if(w!=null)w.f4()}catch(v){x=A.O(v)
@@ -248,14 +248,11 @@ w=x.e
 if(w!==d.e)v.e=w
 x=x.d
 if(x!==d.d)v.f=x},
-b8L(d){var x,w=$.bmO(),v=J.rj(d,y.S)
-for(x=0;x<d;++x)v[x]=w.u_(255)
-return B.qq.ghG().bJ(v)},
-as4(){var x,w,v,u=this,t="\n          \n          ",s=u.d=u.b8L(10),r=u.a,q=r.c,p=!r.fr,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
+as4(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.dqA(10),r=u.a,q=r.c,p=!r.fr,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 l=l?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 n=n?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ch)q=C.dS5(q)
+if(r.ch)q=C.dS7(q)
 r=y.s
 x=A.c([],r)
 if(u.a.ch)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -263,11 +260,11 @@ if(u.a.CW)x.push("    html, body {\n      overflow: hidden;\n      overscroll-be
 w=B.c.iG(x)
 s=A.c(["      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('pagehide', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n          window.removeEventListener('load', handleOnLoad);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\""+s+'")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n\n        '+o+"\n        \n        "+m+"\n        \n        \n        \n        "+k+'\n        \n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "'+s+'", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toIframe: getWidth"}), "*");\n          \n          '+l+t+n+t+p+"\n        }\n      </script>\n    ","    <script type=\"text/javascript\">\n      document.addEventListener('wheel', function(e) {\n        e.ctrlKey && e.preventDefault();\n      }, {\n        passive: false,\n      });\n      window.addEventListener('keydown', disableZoomControl);\n      \n      window.addEventListener('pagehide', (event) => {\n        window.removeEventListener('keydown', disableZoomControl);\n      });\n      \n      function disableZoomControl(event) {\n        if (event.metaKey || event.ctrlKey) {\n          switch (event.key) {\n            case '=':\n            case '-':\n              event.preventDefault();\n              break;\n          }\n        }\n      }\n    </script>\n  ","    <script type=\"text/javascript\">\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ",'      <script type="text/javascript">\n        const displayWidth = '+A.e(u.a.d)+";\n    \n        const sizeUnits = ['px', 'in', 'cm', 'mm', 'pt', 'pc'];\n    \n        function convertToPx(value, unit) {\n          switch (unit.toLowerCase()) {\n            case 'px': return value;\n            case 'in': return value * 96;\n            case 'cm': return value * 37.8;\n            case 'mm': return value * 3.78;\n            case 'pt': return value * (96 / 72);\n            case 'pc': return value * (96 / 6);\n            default: return value;\n          }\n        }\n    \n        function removeWidthHeightFromStyle(style) {\n          // Remove width and height properties from style string\n          style = style.replace(/width\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');\n          style = style.replace(/height\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');\n          style = style.trim();\n          if (style.length && !style.endsWith(';')) {\n            style += ';';\n          }\n          return style;\n        }\n    \n        function extractWidthHeightFromStyle(style) {\n          // Extract width and height values with units from style string\n          const result = {};\n          const widthMatch = style.match(/width\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);\n          const heightMatch = style.match(/height\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);\n    \n          if (widthMatch) {\n            const value = parseFloat(widthMatch[1]);\n            const unit = widthMatch[2];\n            if (!isNaN(value) && unit) {\n              result['width'] = { value, unit };\n            }\n          }\n    \n          if (heightMatch) {\n            const value = parseFloat(heightMatch[1]);\n            const unit = heightMatch[2];\n            if (!isNaN(value) && unit) {\n              result['height'] = { value, unit };\n            }\n          }\n    \n          return result;\n        }\n    \n        function normalizeStyleAttribute(attrs) {\n          // Normalize style attribute to ensure proper responsive behavior\n          let style = attrs['style'];\n          \n          if (!style) {\n            attrs['style'] = 'max-width:100%;height:auto;display:inline;';\n            return;\n          }\n    \n          style = style.trim();\n          const dimensions = extractWidthHeightFromStyle(style);\n          const hasWidth = dimensions.hasOwnProperty('width');\n    \n          if (hasWidth) {\n            const widthData = dimensions['width'];\n            const widthPx = convertToPx(widthData.value, widthData.unit);\n    \n            if (displayWidth !== undefined &&\n                widthPx > displayWidth &&\n                sizeUnits.includes(widthData.unit)) {\n              style = removeWidthHeightFromStyle(style).trim();\n            }\n          }\n    \n          // Ensure proper style string formatting\n          if (style.length && !style.endsWith(';')) {\n            style += ';';\n          }\n    \n          // Add responsive defaults if missing\n          if (!style.includes('max-width')) {\n            style += 'max-width:100%;';\n          }\n    \n          if (!style.includes('height')) {\n            style += 'height:auto;';\n          }\n    \n          if (!style.includes('display')) {\n            style += 'display:inline;';\n          }\n    \n          attrs['style'] = style;\n        }\n    \n        function normalizeWidthHeightAttribute(attrs) {\n          // Normalize width/height attributes and remove if necessary\n          const widthStr = attrs['width'];\n          const heightStr = attrs['height'];\n    \n          // Remove attribute if value is null or undefined\n          if (widthStr === null || widthStr === undefined) {\n            delete attrs['width'];\n          } else if (displayWidth !== undefined) {\n            const widthValue = parseFloat(widthStr);\n            if (!isNaN(widthValue)) {\n              if (widthValue > displayWidth) {\n                delete attrs['width'];\n                delete attrs['height'];\n              }\n            }\n          }\n    \n          // Remove height attribute if value is null or undefined\n          if (heightStr === null || heightStr === undefined) {\n            delete attrs['height'];\n          }\n        }\n    \n        function normalizeImageSize(attrs) {\n          // Apply both style and attribute normalization\n          normalizeWidthHeightAttribute(attrs);\n          normalizeStyleAttribute(attrs);\n        }\n    \n        function applyImageNormalization() {\n          // Process all images on the page\n          document.querySelectorAll('img').forEach(img => {\n            const attrs = {\n              style: img.getAttribute('style'),\n              width: img.getAttribute('width'),\n              height: img.getAttribute('height')\n            };\n    \n            normalizeImageSize(attrs);\n    \n            // Handle style attribute\n            if (attrs.style !== null && attrs.style !== undefined) {\n              img.setAttribute('style', attrs.style);\n            } else {\n              img.removeAttribute('style');\n            }\n    \n            // Handle width attribute\n            if ('width' in attrs && attrs.width !== null && attrs.width !== undefined) {\n              img.setAttribute('width', attrs.width);\n            } else {\n              img.removeAttribute('width');\n            }\n    \n            // Handle height attribute\n            if ('height' in attrs && attrs.height !== null && attrs.height !== undefined) {\n              img.setAttribute('height', attrs.height);\n            } else {\n              img.removeAttribute('height');\n            }\n          });\n        }\n        \n        function safeApplyImageNormalization() {\n          // Error-safe wrapper for the normalization function\n          try {\n            applyImageNormalization();\n          } catch (e) {\n            console.error('Image normalization failed:', e);\n          }\n        }\n        \n        // Run normalization when page loads\n        window.onload = safeApplyImageNormalization;\n      </script>\n    "],r)
 if(u.a.ch)s.push("    <script>\n      document.addEventListener('DOMContentLoaded', function() {\n        const buttons = document.querySelectorAll('.quote-toggle-button');\n        buttons.forEach(button => {\n          button.onclick = function() {\n            const blockquote = this.nextElementSibling;\n            if (blockquote && blockquote.tagName === 'BLOCKQUOTE') {\n              this.classList.toggle('collapsed');\n              if (this.classList.contains('collapsed')) {\n                this.title = 'Show trimmed content';\n              } else {\n                this.title = 'Hide expanded content';\n              }\n            }\n          };\n        });\n      });\n    </script>")
-if(u.a.ay!=null){r=C.aRG()||C.aRH()
+if(u.a.ay!=null){r=C.aRH()||C.aRI()
 p=u.d
 s.push(r?'    <script type="text/javascript">\n      let lastY = 0;\n      let lastTime = 0;\n      let velocity = 0;\n    \n      function onTouchStart(e) { \n        lastY = e.touches[0].clientY;\n        lastTime = performance.now();\n        velocity = 0;\n      }\n    \n      function onTouchMove(e) { \n        const now = performance.now();\n        const y = e.touches[0].clientY;\n        const dy = lastY - y;\n        const dt = now - lastTime;\n    \n        if (dt > 0) {\n          velocity = dy / dt; // px per ms\n          velocity = Math.max(Math.min(velocity, 2), -2); // clamp velocity\n        }\n    \n        lastY = y;\n        lastTime = now;\n    \n        window.parent.postMessage(JSON.stringify({\n          view: "'+p+'",\n          type: "toDart: onScrollChanged",\n          deltaY: dy,\n        }), \'*\');\n      }\n    \n      function onTouchEnd(e) { \n        window.parent.postMessage(JSON.stringify({\n          view: "'+p+"\",\n          type: \"toDart: onScrollEnd\",\n          velocity: velocity,\n        }), '*');\n      }\n    \n      window.addEventListener('touchstart', onTouchStart, { passive: true });\n      window.addEventListener('touchmove', onTouchMove, { passive: true });\n      window.addEventListener('touchend', onTouchEnd, { passive: true });\n    \n      window.addEventListener('pagehide', () => {\n        window.removeEventListener('touchstart', onTouchStart);\n        window.removeEventListener('touchmove', onTouchMove);\n        window.removeEventListener('touchend', onTouchEnd);\n      });\n    </script>\n\n  ":'    <script type="text/javascript">\n      function onWheel(e) { \n        const deltaY = event.deltaY;\n        window.parent.postMessage(JSON.stringify({\n          "view": "'+p+'",\n          "type": "toDart: onScrollChanged",\n          "deltaY": deltaY\n        }), "*");\n      }\n      \n      window.addEventListener(\'wheel\', onWheel, { passive: true });\n      \n      window.addEventListener(\'pagehide\', (event) => {\n        window.removeEventListener(\'wheel\', onWheel);\n      });\n    </script>\n  ')}if(u.a.Q!=null)s.push("    <script type=\"text/javascript\">\n      window.addEventListener('keydown', handleIframeKeydown);\n      \n      window.addEventListener('pagehide', (event) => {\n        window.removeEventListener('keydown', handleIframeKeydown);\n      });\n      \n      function handleIframeKeydown(event) {\n        const payload = {\n          view: '"+u.d+"',\n          type: 'toDart: iframeKeydown',\n          key: event.key,\n          code: event.code,\n          shift: event.shiftKey\n        };\n        window.parent.postMessage(JSON.stringify(payload), \"*\");\n      }\n    </script>\n  ")
 if(u.a.fx)s.push("    <script type=\"text/javascript\">\n      document.addEventListener('click', function (e) {\n        try {\n          const payload = {\n            view: '"+u.d+"',\n            type: 'toDart: iframeClick',\n          };\n          window.parent.postMessage(JSON.stringify(payload), \"*\");\n        } catch (_) {}\n      });\n    </script>\n  ")
-if(!C.aRG()&&!C.aRH()){r=u.d
+if(!C.aRH()&&!C.aRI()){r=u.d
 s.push('    <script type="text/javascript">\n      document.addEventListener("mouseover", function (e) {\n        const target = e.target;\n        if (target.tagName.toLowerCase() === "a") {\n          const rect = target.getBoundingClientRect();\n          \n          const payload = {\n            view: \''+r+'\',\n            type: \'toDart: iframeLinkHover\',\n            url: target.href,\n            rect: {\n              x: rect.x,\n              y: rect.y,\n              width: rect.width,\n              height: rect.height\n            }\n          };\n          window.parent.postMessage(JSON.stringify(payload), "*");\n        }\n      });\n    \n      document.addEventListener("mouseout", function (e) {\n        const target = e.target;\n        if (target.tagName.toLowerCase() === "a") {\n          const payload = {\n            view: \''+r+"',\n            type: 'toDart: iframeLinkOut'\n          };\n          window.parent.postMessage(JSON.stringify(payload), \"*\");\n        }\n      });\n    </script>\n  ")}v=B.c.iG(s)
 s=u.y
 s===$&&A.d()
@@ -285,13 +282,13 @@ u.r=A.bF(!0,y.y)},
 u(d){var x=this
 x.w1(d)
 if(x.a.fr)return x.amR()
-else return A.f5(new C.cUi(x))},
+else return A.f5(new C.cUj(x))},
 amR(){var x,w=this,v=null,u=A.E(w).l(0),t=w.e
 t===$&&A.d()
 A.x(u+"::_buildHtmlElementView: ActualHeight: "+A.e(t),B.f)
 t=A.c([],y.p)
 u=w.w
-if((u==null?v:B.d.aD(u).length!==0)===!0)t.push(A.WN(new C.cUe(w),w.r,y.y))
+if((u==null?v:B.d.aD(u).length!==0)===!0)t.push(A.WN(new C.cUf(w),w.r,y.y))
 if(w.x)t.push(D.a3S)
 x=new A.cx(B.aa,v,B.a2,B.G,t,v)
 w.a.toString
@@ -303,11 +300,11 @@ w.w=null
 x=w.z
 x===$&&A.d()
 x.aj(0)
-if(!C.aRG()&&!C.aRH()){x=w.as
+if(!C.aRH()&&!C.aRI()){x=w.as
 if(x!=null)x.f4()
 w.as=null}w.aw()},
 grI(){return this.a.cx}}
-C.avE.prototype={
+C.avF.prototype={
 ao(){this.aF()
 if(this.a.cx)this.uJ()},
 iF(){var x=this.ei$
@@ -318,12 +315,12 @@ C.Yv.prototype={
 aGL(d,e,f){return this.a.toLowerCase()===e.toLowerCase()&&this.c===f},
 zL(d,e){return this.aGL(0,e,!1)},
 gB(){return[this.a,this.b,this.c]}}
-C.b9s.prototype={}
-C.bVC.prototype={}
-C.aJE.prototype={
+C.b9t.prototype={}
+C.bVD.prototype={}
+C.aJF.prototype={
 ajP(d,e,f,g){var x,w,v,u,t,s,r,q,p,o,n=this,m={}
 if(n.a!=null){n.f4()
-A.acx(new C.bVF(n,e,f,g),y.P)
+A.acx(new C.bVG(n,e,f,g),y.P)
 return}x=A.oW(e,y.u)
 if(x==null)return
 w=e.gak()
@@ -337,34 +334,34 @@ q=r+28+4>u.a.b
 p=q?v.b-28-4:r+4
 o=m.a=v.a
 if((o+s>t?m.a=t-s-12:o)<12)m.a=12
-m=A.lS(new C.bVG(m,n,q,p,s,f),!1,!1,!1)
+m=A.lS(new C.bVH(m,n,q,p,s,f),!1,!1,!1)
 n.a=m
 x.nQ(0,m)},
 f4(){var x=this.a
 if(x!=null)x.ep(0)
 this.a=null}}
 var z=a.updateTypes(["~(vJ)","~()"])
-C.cUf.prototype={
+C.cUg.prototype={
 $0(){var x=this.a
 x.e=this.b
 x.x=!1},
 $S:0}
-C.cUg.prototype={
+C.cUh.prototype={
 $0(){this.a.x=!1},
 $S:0}
-C.cUh.prototype={
+C.cUi.prototype={
 $0(){return this.a.f=this.b},
 $S:0}
-C.cUi.prototype={
+C.cUj.prototype={
 $2(d,e){var x=this.a,w=x.y
 w===$&&A.d()
 x.y=Math.min(e.d,w)
 return x.amR()},
 $S:194}
-C.cUe.prototype={
+C.cUf.prototype={
 $2(d,e){var x,w,v,u,t=null
 if(e.b!=null){x=this.a
-w=A.dqv(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.cUd(x),"iframe")
+w=A.dqw(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.cUe(x),"iframe")
 v=x.a.dy
 u=x.e
 x=x.f
@@ -374,7 +371,7 @@ return A.a8(t,w,B.k,t,new A.aq(0,1/0,0,v),t,t,u,t,t,t,t,t,x)}else{u===$&&A.d()
 x===$&&A.d()
 return new A.aZ(x,u,w,t)}}else return B.y},
 $S:183}
-C.cUd.prototype={
+C.cUe.prototype={
 $1(d){var x,w
 y.v.a(d)
 x=this.a
@@ -395,38 +392,38 @@ x.width="100%"
 x=d.style
 x.height="100%"},
 $S:719}
-C.bVF.prototype={
+C.bVG.prototype={
 $0(){var x=this,w=x.b
 if(w.e!=null)x.a.ajP(0,w,x.c,x.d)},
 $S:9}
-C.bVG.prototype={
+C.bVH.prototype={
 $1(d){var x=this,w=null,v=x.b,u=A.jk(0,A.cS(B.c8,w,B.M,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,v.gxi(),w,w,w,w,w,w,w,w,!1,B.a3),w),t=x.a.a,s=A.c([new A.c0(0,B.X,B.n.az(0.15),B.r,20)],y.V)
 v=v.b.e
 if(v==null)v=D.aXr
-return A.dhP(new C.bVE(x.c),new A.cx(B.aa,w,B.a2,B.G,A.c([u,A.kl(w,A.cU(A.cj(B.C,!0,B.lt,A.a8(w,A.ae(x.f,w,1,B.D,w,w,v,w,w,w),B.k,w,new A.aq(0,x.e,28,1/0),new A.b8(B.n,w,w,B.lt,s,w,w,B.B),w,w,w,w,B.m6,w,w,w),B.k,w,0,w,w,w,w,w,B.ax)),w,t,x.d,w)],y.p),w),B.hD,B.y3,new A.bD(0,1,y.t),y.i)},
+return A.dhQ(new C.bVF(x.c),new A.cx(B.aa,w,B.a2,B.G,A.c([u,A.kl(w,A.cU(A.cj(B.C,!0,B.lt,A.a8(w,A.ae(x.f,w,1,B.D,w,w,v,w,w,w),B.k,w,new A.aq(0,x.e,28,1/0),new A.b8(B.n,w,w,B.lt,s,w,w,B.B),w,w,w,w,B.m6,w,w,w),B.k,w,0,w,w,w,w,w,B.ax)),w,t,x.d,w)],y.p),w),B.hD,B.y3,new A.bD(0,1,y.t),y.i)},
 $S:345}
-C.bVE.prototype={
+C.bVF.prototype={
 $3(d,e,f){var x=this.a?-1:1
-return A.mx(A.aZD(f,new A.G(0,x*(1-e)*8)),null,e)},
-$S:348};(function aliases(){var x=C.avE.prototype
+return A.mx(A.aZE(f,new A.G(0,x*(1-e)*8)),null,e)},
+$S:348};(function aliases(){var x=C.avF.prototype
 x.aXF=x.ao})();(function installTearOffs(){var x=a._instance_1u,w=a._instance_0u
-x(C.aqW.prototype,"gbcw","bcx",0)
-w(C.aJE.prototype,"gxi","f4",1)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
+x(C.aqW.prototype,"gbcv","bcw",0)
+w(C.aJF.prototype,"gxi","f4",1)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
 v(C.MJ,A.af)
-v(C.avE,A.ac)
-v(C.aqW,C.avE)
-u(A.v5,[C.cUf,C.cUg,C.cUh,C.bVF])
-u(A.v6,[C.cUi,C.cUe])
-u(A.oH,[C.cUd,C.bVG,C.bVE])
-u(A.a5,[C.b9s,C.bVC,C.aJE])
-v(C.Yv,C.b9s)
-x(C.avE,A.qP)
-w(C.b9s,A.j)})()
+v(C.avF,A.ac)
+v(C.aqW,C.avF)
+u(A.v5,[C.cUg,C.cUh,C.cUi,C.bVG])
+u(A.v6,[C.cUj,C.cUf])
+u(A.oH,[C.cUe,C.bVH,C.bVF])
+u(A.a5,[C.b9t,C.bVD,C.aJF])
+v(C.Yv,C.b9t)
+x(C.avF,A.qP)
+w(C.b9t,A.j)})()
 A.DO(b.typeUniverse,JSON.parse('{"MJ":{"af":[],"i":[]},"aqW":{"ac":["MJ"]},"Yv":{"j":[]}}'))
 var y=(function rtii(){var x=A.as
-return{v:x("Fq"),V:x("N<c0>"),s:x("N<f>"),p:x("N<i>"),w:x("nl"),_:x("vJ"),P:x("b3"),u:x("Go"),t:x("bD<ar>"),O:x("b6<f>"),N:x("a4a<l9>"),y:x("B"),i:x("ar"),S:x("F")}})();(function constants(){D.aSL=new A.aZ(30,30,B.rs,null)
+return{v:x("Fq"),V:x("N<c0>"),s:x("N<f>"),p:x("N<i>"),w:x("nl"),_:x("vJ"),P:x("b3"),u:x("Go"),t:x("bD<ar>"),O:x("b6<f>"),N:x("a4a<l9>"),y:x("B"),i:x("ar")}})();(function constants(){D.aSL=new A.aZ(30,30,B.rs,null)
 D.aKK=new A.X(B.ck,D.aSL,null)
 D.a3S=new A.dG(B.da,null,null,D.aKK,null)
 D.aXr=new A.ai(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"hsbmJ48+RCvBWlVaTW5SRU1nN9Q=");
+a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"SfTBT52pEcONqRqfwHRs54ugybU=");
