@@ -1,6 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:scribe/scribe.dart';
 
 typedef OnCustomPromptCallback = void Function(String customPrompt);
@@ -22,6 +23,7 @@ class AIScribeBar extends StatefulWidget {
 class _AIScribeBarState extends State<AIScribeBar> {
   final TextEditingController _controller = TextEditingController();
   final ValueNotifier<bool> _isButtonEnabled = ValueNotifier(false);
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _AIScribeBarState extends State<AIScribeBar> {
     _controller.removeListener(_onTextChanged);
     _controller.dispose();
     _isButtonEnabled.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -68,20 +71,23 @@ class _AIScribeBarState extends State<AIScribeBar> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: ScribeLocalizations.of(context).inputPlaceholder,
-                hintStyle: AIScribeTextStyles.searchBarHint,
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                isDense: true,
+            child: KeyboardListener(
+              focusNode: _focusNode,
+              onKeyEvent: _handleKeyboardEvent,
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: ScribeLocalizations.of(context).inputPlaceholder,
+                  hintStyle: AIScribeTextStyles.searchBarHint,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  isDense: true,
+                ),
+                style: AIScribeTextStyles.searchBar,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                cursorHeight: 16,
               ),
-              style: AIScribeTextStyles.searchBar,
-              maxLines: null,
-              keyboardType: TextInputType.multiline,
-              cursorHeight: 16,
-              onSubmitted: (_) => _onSendPressed(),
             ),
           ),
           const SizedBox(width: AIScribeSizes.fieldSpacing),
@@ -103,5 +109,17 @@ class _AIScribeBarState extends State<AIScribeBar> {
         ],
       ),
     );
+  }
+
+  void _handleKeyboardEvent(KeyEvent event) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+      final keys = HardwareKeyboard.instance.logicalKeysPressed;
+      final isShiftPressed = keys.contains(LogicalKeyboardKey.shiftLeft) ||
+          keys.contains(LogicalKeyboardKey.shiftRight);
+
+      if (!isShiftPressed) {
+        _onSendPressed();
+      }
+    }
   }
 }
