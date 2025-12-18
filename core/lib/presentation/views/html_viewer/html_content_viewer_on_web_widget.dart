@@ -385,11 +385,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     }
   }
 
-  String _getRandString(int len) {
-    var random = math.Random.secure();
-    var values = List<int>.generate(len, (i) => random.nextInt(255));
-    return base64UrlEncode(values);
-  }
+
 
   String _generateHtmlDocument(String content) {
     final webViewActionScripts = '''
@@ -531,7 +527,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
   }
 
   void _setUpWeb() {
-    _createdViewId = _getRandString(10);
+    _createdViewId = HtmlUtils.getRandString(10);
     _htmlData = _generateHtmlDocument(widget.contentHtml);
 
     _webInit = Future.value(true);

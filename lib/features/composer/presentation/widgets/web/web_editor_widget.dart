@@ -91,14 +91,20 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
   double _signatureTooltipLeft = 0;
   bool _signatureTooltipReady = false;
 
+  late String _createdViewId;
+
   @override
   void Function(TextSelectionData?)? get onSelectionChanged => widget.onTextSelectionChanged;
 
   @override
   void initState() {
     super.initState();
+    _createdViewId = HtmlUtils.getRandString(10);
     _editorController = widget.editorController;
-  
+
+    final registerSelectionChange =
+    HtmlUtils.registerSelectionChangeListener(_createdViewId);
+
     _editorListener = (event) {
       try {
         if (event is MessageEvent) {
@@ -106,7 +112,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
 
           if (data['name'] == HtmlUtils.registerDropListener.name) {
             _editorController.evaluateJavascriptWeb(HtmlUtils.removeLineHeight1px.name);
-          } else if (data['name'] == HtmlUtils.registerSelectionChangeListener.name) {
+          } else if (data['name'] == registerSelectionChange.name
+              && data['viewId'] == _createdViewId) {
             handleSelectionChange(data);
           }
         }
@@ -182,8 +189,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
             script: HtmlUtils.unregisterDropListener.script,
           ),
           WebScript(
-            name: HtmlUtils.registerSelectionChangeListener.name,
-            script: HtmlUtils.registerSelectionChangeListener.script,
+            name: HtmlUtils.registerSelectionChangeListener(_createdViewId).name,
+            script: HtmlUtils.registerSelectionChangeListener(_createdViewId).script,
           ),
           WebScript(
             name: HtmlUtils.collapseSelectionToEnd.name,
@@ -209,7 +216,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
             _editorController.evaluateJavascriptWeb(
               HtmlUtils.registerDropListener.name);
             _editorController.evaluateJavascriptWeb(
-              HtmlUtils.registerSelectionChangeListener.name);
+              HtmlUtils.registerSelectionChangeListener(_createdViewId).name);
             _editorListenerRegistered = true;
           }
         },

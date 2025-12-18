@@ -37,6 +37,13 @@ class MobileEditorWidget extends StatefulWidget {
 class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMixin {
 
   HtmlEditorApi? _editorApi;
+  late String _createdViewId;
+
+  @override
+  void initState() {
+    super.initState();
+    _createdViewId = HtmlUtils.getRandString(10);
+  }
 
   @override
   void Function(TextSelectionData?)? get onSelectionChanged => widget.onTextSelectionChanged;
@@ -45,8 +52,11 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
     final webViewController = _editorApi?.webViewController;
     if (webViewController == null) return;
 
+    final registerSelectionChange =
+        HtmlUtils.registerSelectionChangeListener(_createdViewId);
+
     webViewController.addJavaScriptHandler(
-      handlerName: HtmlUtils.registerSelectionChangeListener.name,
+      handlerName: registerSelectionChange.name,
       callback: (args) {
         if (!mounted) return;
 
@@ -58,7 +68,7 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
     );
 
     await webViewController.evaluateJavascript(
-      source: HtmlUtils.registerSelectionChangeListener.script,
+      source: registerSelectionChange.script,
     );
   }
 
