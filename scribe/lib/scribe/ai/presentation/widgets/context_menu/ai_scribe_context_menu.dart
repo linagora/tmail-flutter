@@ -107,10 +107,4 @@ class _AiScribeContextMenuContentState extends State<AiScribeContextMenu> {
       ),
     );
   }
-
-  @override
-  void dispose() {
-    widget.submenuController?.dispose();
-    super.dispose();
-  }
 }

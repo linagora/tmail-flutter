@@ -159,16 +159,16 @@ abstract final class AIScribeSizes {
       EdgeInsetsDirectional.all(16);
 
   static const EdgeInsetsGeometry suggestionInfoPadding =
-      EdgeInsetsGeometry.only(bottom: 16);
+      EdgeInsetsDirectional.only(bottom: 16);
 
   static const EdgeInsetsGeometry suggestionHeaderPadding =
-      EdgeInsetsGeometry.fromLTRB(16, 8, 8, 8);
+      EdgeInsetsDirectional.only(start: 16, top: 8, end: 8, bottom: 8);
 
   static const EdgeInsetsGeometry suggestionFooterPadding =
-      EdgeInsetsGeometry.symmetric(horizontal: 16, vertical: 16);
+      EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 16);
 
   static const EdgeInsetsGeometry scribeButtonPadding =
-      EdgeInsetsGeometry.all(6);
+      EdgeInsetsDirectional.all(6);
 
   static const EdgeInsetsGeometry mainActionButtonPadding =
       EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 8);

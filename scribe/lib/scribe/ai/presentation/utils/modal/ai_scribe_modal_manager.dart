@@ -30,7 +30,7 @@ class AiScribeModalManager {
         submenuController: submenuController,
       ),
       barrierColor: AIScribeColors.dialogBarrier,
-    ).whenComplete(submenuController.hide);
+    ).whenComplete(submenuController.dispose);
 
     if (aiAction != null) {
       await showAIScribeSuggestionModal(
