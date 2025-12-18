@@ -20,30 +20,26 @@ class AIScribeBindings extends Bindings {
   }
 
   void _bindingsAPI() {
-    Get.lazyPut<AIApi>(() => AIApi(Get.find<DioClient>(), aiEndpoint));
+    Get.put(AIApi(Get.find<DioClient>(), aiEndpoint));
   }
 
   void _bindingsDataSourceImpl() {
-    Get.lazyPut<AIDataSourceImpl>(() => AIDataSourceImpl(Get.find<AIApi>()));
+    Get.put(AIDataSourceImpl(Get.find<AIApi>()));
   }
 
   void _bindingsDataSource() {
-    Get.lazyPut<AIDataSource>(() => Get.find<AIDataSourceImpl>());
+    Get.put<AIDataSource>(Get.find<AIDataSourceImpl>());
   }
 
   void _bindingsRepositoryImpl() {
-    Get.lazyPut<AIScribeRepositoryImpl>(
-      () => AIScribeRepositoryImpl(Get.find<AIDataSource>()),
-    );
+    Get.put(AIScribeRepositoryImpl(Get.find<AIDataSource>()));
   }
 
   void _bindingsRepository() {
-    Get.lazyPut<AIScribeRepository>(() => Get.find<AIScribeRepositoryImpl>());
+    Get.put<AIScribeRepository>(Get.find<AIScribeRepositoryImpl>());
   }
 
   void _bindingsInteractor() {
-    Get.lazyPut<GenerateAITextInteractor>(
-      () => GenerateAITextInteractor(Get.find<AIScribeRepository>()),
-    );
+    Get.put(GenerateAITextInteractor(Get.find<AIScribeRepository>()));
   }
 }
