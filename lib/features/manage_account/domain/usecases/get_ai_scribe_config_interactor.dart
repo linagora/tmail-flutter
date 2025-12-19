@@ -12,8 +12,9 @@ class GetAIScribeConfigInteractor {
   Stream<Either<Failure, Success>> execute() async* {
     try {
       yield Right(GettingAIScribeConfigState());
-      final preferencesSetting = await _manageAccountRepository.getLocalSettings();
-      yield Right(GetAIScribeConfigSuccess(preferencesSetting.aiScribeConfig));
+      final aiScribeConfig =
+          await _manageAccountRepository.getAiScribeConfigLocalSettings();
+      yield Right(GetAIScribeConfigSuccess(aiScribeConfig));
     } catch (e) {
       yield Left(GetAIScribeConfigFailure(exception: e));
     }

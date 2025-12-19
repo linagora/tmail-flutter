@@ -107,10 +107,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/validate_premium_storage_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/state/get_ai_scribe_config_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_ai_scribe_config_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
@@ -164,7 +161,6 @@ class ComposerController extends BaseController
   final isMarkAsImportant = Rx<bool>(false);
   final isContentHeightExceeded = Rx<bool>(false);
   final editorTextSelection = Rxn<TextSelectionModel>();
-  final _cachedAIScribeConfig = Rx<AIScribeConfig>(AIScribeConfig.initial());
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final LocalImagePickerInteractor _localImagePickerInteractor;
@@ -183,7 +179,6 @@ class ComposerController extends BaseController
   final String? composerId;
   final ComposerArguments? composerArgs;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
-  final GetAIScribeConfigInteractor _getAIScribeConfigInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -271,8 +266,6 @@ class ComposerController extends BaseController
   String get ownEmailAddress =>
       mailboxDashBoardController.ownEmailAddress.value;
 
-  AIScribeConfig get aiScribeConfig => _cachedAIScribeConfig.value;
-
   late Worker uploadInlineImageWorker;
   late bool _isEmailBodyLoaded;
 
@@ -292,7 +285,6 @@ class ComposerController extends BaseController
     this.printEmailInteractor,
     this._composerRepository,
     this._saveTemplateEmailInteractor,
-    this._getAIScribeConfigInteractor,
     {
       this.composerId,
       this.composerArgs,
@@ -316,11 +308,6 @@ class ComposerController extends BaseController
     _beforeReconnectManager.addListener(onBeforeReconnect);
     _injectBinding();
     onKeyboardShortcutInit();
-    _loadAIScribeConfig();
-  }
-
-  void _loadAIScribeConfig() {
-    consumeState(_getAIScribeConfigInteractor.execute());
   }
 
   @override
@@ -421,8 +408,6 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.insertImage(inlineImage);
       }
       maxWithEditor = null;
-    } else if (success is GetAIScribeConfigSuccess) {
-      _cachedAIScribeConfig.value = success.aiScribeConfig;
     } else {
       super.handleSuccessViewState(success);
     }
