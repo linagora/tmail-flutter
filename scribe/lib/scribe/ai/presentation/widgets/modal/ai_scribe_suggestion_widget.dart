@@ -66,6 +66,8 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
       widget.content,
     );
 
+    if (!mounted) return;
+
     result.fold(
       (failure) => _state.value = dartz.Left(failure),
       (success) => _state.value = dartz.Right(success),
@@ -203,9 +205,18 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
       widget.buttonPosition != null && widget.buttonSize != null;
 
   void _handleClickOutside() {
-    final result = _state.value.getOrElse(() => UIState.idle);
-    if (result is GenerateAITextSuccess || result is GenerateAITextFailure) {
+    final shouldDismiss = _state.value.fold(
+      (failure) => failure is GenerateAITextFailure,
+      (success) => success is GenerateAITextSuccess,
+    );
+    if (shouldDismiss) {
       Navigator.of(context).pop();
     }
+  }
+
+  @override
+  void dispose() {
+    _state.dispose();
+    super.dispose();
   }
 }

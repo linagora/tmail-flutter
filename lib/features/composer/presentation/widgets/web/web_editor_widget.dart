@@ -92,6 +92,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
   bool _signatureTooltipReady = false;
 
   late String _createdViewId;
+  late WebScript _selectionChangeScript;
 
   @override
   void Function(TextSelectionData?)? get onSelectionChanged => widget.onTextSelectionChanged;
@@ -103,7 +104,11 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     _editorController = widget.editorController;
 
     final registerSelectionChange =
-    HtmlUtils.registerSelectionChangeListener(_createdViewId);
+      HtmlUtils.registerSelectionChangeListener(_createdViewId);
+    _selectionChangeScript = WebScript(
+      name: registerSelectionChange.name,
+      script: registerSelectionChange.script,
+    );
 
     _editorListener = (event) {
       try {
@@ -112,7 +117,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
 
           if (data['name'] == HtmlUtils.registerDropListener.name) {
             _editorController.evaluateJavascriptWeb(HtmlUtils.removeLineHeight1px.name);
-          } else if (data['name'] == registerSelectionChange.name
+          } else if (data['name'] == _selectionChangeScript.name
               && data['viewId'] == _createdViewId) {
             handleSelectionChange(data);
           }
@@ -123,9 +128,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
         );
       }
     };
-    if (_editorListener != null) {
-      window.addEventListener("message", _editorListener!);
-    }
+
+    window.addEventListener("message", _editorListener!);
   }
 
   @override
@@ -189,8 +193,8 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
             script: HtmlUtils.unregisterDropListener.script,
           ),
           WebScript(
-            name: HtmlUtils.registerSelectionChangeListener(_createdViewId).name,
-            script: HtmlUtils.registerSelectionChangeListener(_createdViewId).script,
+            name: _selectionChangeScript.name,
+            script: _selectionChangeScript.script,
           ),
           WebScript(
             name: HtmlUtils.collapseSelectionToEnd.name,

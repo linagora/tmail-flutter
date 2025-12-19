@@ -25,7 +25,6 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
-import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
@@ -147,7 +146,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   RxBool get isPopupMenuOpened => false.obs;
 
   @override
-  Rx<AIScribeConfig> get cachedAIScribeConfig => Rx<AIScribeConfig>(AIScribeConfig.initial());
+  Rx<AIScribeConfig> get cachedAIScribeConfig => AIScribeConfig.initial().obs;
 }
 
 @GenerateNiceMocks([
@@ -183,7 +182,6 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<PrintEmailInteractor>(),
   MockSpec<ComposerRepository>(),
   MockSpec<SaveTemplateEmailInteractor>(),
-  MockSpec<GenerateAITextInteractor>(),
 
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),

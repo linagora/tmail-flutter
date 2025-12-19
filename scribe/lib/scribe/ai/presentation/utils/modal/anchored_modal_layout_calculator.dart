@@ -1,4 +1,4 @@
-import 'package:flutter/animation.dart';
+import 'dart:ui';
 import 'package:scribe/scribe.dart';
 
 class AnchoredModalLayoutCalculator {
@@ -201,21 +201,22 @@ class AnchoredModalLayoutCalculator {
     switch (placement) {
       case ModalPlacement.right:
         left = anchorPosition.dx + anchorSize.width + gap;
-        bottom = anchorPosition.dy + verticalOffset;
+        bottom = screenSize.height - (anchorPosition.dy + verticalOffset);
         break;
 
       case ModalPlacement.bottom:
         left = anchorPosition.dx;
-        bottom = anchorPosition.dy + anchorSize.height + gap + verticalOffset;
+        bottom = screenSize.height - (anchorPosition.dy + anchorSize.height + gap + verticalOffset);
         break;
 
       case ModalPlacement.top:
         left = anchorPosition.dx;
-        bottom = anchorPosition.dy - menuSize.height - gap + verticalOffset;
+        bottom = screenSize.height - (anchorPosition.dy - menuSize.height - gap + verticalOffset);
         break;
+
       case ModalPlacement.left:
         left = anchorPosition.dx - menuSize.width - gap;
-        bottom = anchorPosition.dy + verticalOffset;
+        bottom = screenSize.height - (anchorPosition.dy + verticalOffset);
         break;
     }
 

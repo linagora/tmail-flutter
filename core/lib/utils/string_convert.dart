@@ -199,20 +199,25 @@ class StringConvert {
   }
 
   static String convertHtmlContentToTextContent(String htmlContent) {
-    final document = parse(htmlContent);
+    try {
+      final document = parse(htmlContent);
 
-    // Each paragraph is surrounded by block tags so we add a /n for each block tag
-    // Even <br> are surrounded by block tags so we can ignore <br> and treat them
-    // as paragraph
-    const blockTags = 'p, div, li, section, blockquote, article, header, footer, h1, h2, h3, h4, h5, h6';
+      // Each paragraph is surrounded by block tags so we add a /n for each block tag
+      // Even <br> are surrounded by block tags so we can ignore <br> and treat them
+      // as paragraph
+      const blockTags = 'p, div, li, section, blockquote, article, header, footer, h1, h2, h3, h4, h5, h6';
 
-    document.querySelectorAll(blockTags).forEach((element) {
-      element.append(Text('\n'));
-    });
+      document.querySelectorAll(blockTags).forEach((element) {
+        element.append(Text('\n'));
+      });
 
-    final String textContent = document.body?.text ?? '';
+      final String textContent = document.body?.text ?? '';
 
-    return textContent.trim();
+      return textContent.trim();
+    } catch (e) {
+      logError('StringConvert::convertHtmlContentToTextContent:Exception = $e');
+      return htmlContent.trim();
+    }
   }
 
   static String convertTextContentToHtmlContent(String textContent) {

@@ -1,17 +1,19 @@
 import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
 
-const PERFORM_TASK = "Perform only the following task:";
-const PRESERVE_LANGUAGE_PROMPT = "Do not translate. Strictly keep the original language of the input text. For example, if it's French, keep French. If it's English, keep English.";
-const DO_NOT_ADD_INFO_PROMPT = "Do not add any extra information or interpret anything beyond the explicit task.";
-
-// TODO
-// In a near future, prompts will be loaded from a remote source
 class AIPrompts {
+  static const _performTask = "Perform only the following task:";
+  static const _preserveLanguagePrompt =
+      "Do not translate. Strictly keep the original language of the input text. For example, if it's French, keep French. If it's English, keep English.";
+  static const _doNotAddInfoPrompt =
+      "Do not add any extra information or interpret anything beyond the explicit task.";
+
   static String buildPrompt(AIAction action, String? text) {
     return switch (action) {
       PredefinedAction(action: final menuAction) =>
-        buildPredefinedPrompt(menuAction, text ?? ''),
+      text?.trim().isNotEmpty == true
+          ? buildPredefinedPrompt(menuAction, text!)
+          :  throw ArgumentError('Text cannot be empty for predefined actions'),
       CustomPromptAction(prompt: final customPrompt) =>
         buildCustomPrompt(customPrompt, text),
     };
@@ -47,31 +49,31 @@ class AIPrompts {
   }
 
   static String improveMakeShorter(String text) {
-    return '$PERFORM_TASK make the text shorter but preserve the meaning. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
+    return '$_performTask make the text shorter but preserve the meaning. $_preserveLanguagePrompt $_doNotAddInfoPrompt Text:\n\n$text';
   }
 
   static String improveExpandContext(String text) {
-    return '$PERFORM_TASK expand the context of the text to make it more detailed and comprehensive. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
+    return '$_performTask expand the context of the text to make it more detailed and comprehensive. $_preserveLanguagePrompt $_doNotAddInfoPrompt Text:\n\n$text';
   }
 
   static String improveEmojify(String text) {
-    return '$PERFORM_TASK add emojis to the important parts of the text. Do not try to rephrase or replace text. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
+    return '$_performTask add emojis to the important parts of the text. Do not try to rephrase or replace text. $_preserveLanguagePrompt $_doNotAddInfoPrompt Text:\n\n$text';
   }
 
   static String improveTransformToBullets(String text) {
-    return '$PERFORM_TASK transform the text in a bullet list. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
+    return '$_performTask transform the text into a bullet list. $_preserveLanguagePrompt $_doNotAddInfoPrompt Text:\n\n$text';
   }
 
   static String correctGrammar(String text) {
-    return '$PERFORM_TASK correct grammar and spelling. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
+    return '$_performTask correct grammar and spelling. $_preserveLanguagePrompt $_doNotAddInfoPrompt Text:\n\n$text';
   }
 
   static String changeToneTo(String text, String tone) {
-    return '$PERFORM_TASK change the tone to be $tone. $PRESERVE_LANGUAGE_PROMPT $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
+    return '$_performTask change the tone to be $tone. $_preserveLanguagePrompt $_doNotAddInfoPrompt Text:\n\n$text';
   }
 
   static String translateTo(String text, String language) {
-    return '$PERFORM_TASK translate. Translate the text to the specified language: $language. $DO_NOT_ADD_INFO_PROMPT Text:\n\n$text';
+    return '$_performTask translate. Translate the text to the specified language: $language. $_doNotAddInfoPrompt Text:\n\n$text';
   }
 
   static String buildCustomPrompt(String customPrompt, String? text) {

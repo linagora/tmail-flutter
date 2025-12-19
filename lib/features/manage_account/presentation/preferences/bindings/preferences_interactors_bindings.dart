@@ -6,7 +6,6 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/repository/manage_account_repository_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_ai_scribe_config_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_language_interactor.dart';
 import 'package:tmail_ui_user/features/server_settings/data/datasource/server_settings_data_source.dart';
 import 'package:tmail_ui_user/features/server_settings/data/datasource_impl/remote_server_settings_data_source_impl.dart';
@@ -102,6 +101,5 @@ class PreferencesInteractorsBindings extends InteractorsBindings {
     Get.delete<ManageAccountRepositoryImpl>(tag: composerId);
     Get.delete<ManageAccountRepository>(tag: composerId);
     Get.delete<SaveLanguageInteractor>(tag: composerId);
-    Get.delete<GetAIScribeConfigInteractor>(tag: composerId);
   }
 }

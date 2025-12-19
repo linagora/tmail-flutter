@@ -58,12 +58,21 @@ class TextSelectionCoordinates {
   });
 
   factory TextSelectionCoordinates.fromMap(Map<dynamic, dynamic> data) {
-    return TextSelectionCoordinates(
-      x: (data['x'] as num?)?.toDouble() ?? 0.0,
-      y: (data['y'] as num?)?.toDouble() ?? 0.0,
-      width: (data['width'] as num?)?.toDouble() ?? 0.0,
-      height: (data['height'] as num?)?.toDouble() ?? 0.0,
-    );
+    try {
+      return TextSelectionCoordinates(
+        x: (data['x'] as num?)?.toDouble() ?? 0.0,
+        y: (data['y'] as num?)?.toDouble() ?? 0.0,
+        width: (data['width'] as num?)?.toDouble() ?? 0.0,
+        height: (data['height'] as num?)?.toDouble() ?? 0.0,
+      );
+    } catch (e) {
+      return const TextSelectionCoordinates(
+        x: 0.0,
+        y: 0.0,
+        width: 0.0,
+        height: 0.0,
+      );
+    }
   }
 
   Offset get position => Offset(x, y);

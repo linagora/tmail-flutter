@@ -114,7 +114,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replaceButton": "заменить",
+  "replaceButton": "Заменить",
   "@replaceButton": {
     "type": "text",
     "placeholders_order": [],

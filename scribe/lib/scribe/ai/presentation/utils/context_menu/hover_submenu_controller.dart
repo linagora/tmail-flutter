@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 
 typedef OnHoverShowSubmenu = void Function(GlobalKey key);
 

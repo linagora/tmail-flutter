@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/constants/constants_ui.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -36,7 +37,6 @@ class MobileEditorWidget extends StatefulWidget {
 
 class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMixin {
 
-  HtmlEditorApi? _editorApi;
   late String _createdViewId;
 
   @override
@@ -48,9 +48,8 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
   @override
   void Function(TextSelectionData?)? get onSelectionChanged => widget.onTextSelectionChanged;
 
-  void _setupSelectionListener() async {
-    final webViewController = _editorApi?.webViewController;
-    if (webViewController == null) return;
+  Future<void> _setupSelectionListener(HtmlEditorApi editorApi) async {
+    final webViewController = editorApi.webViewController;
 
     final registerSelectionChange =
         HtmlUtils.registerSelectionChangeListener(_createdViewId);
@@ -61,8 +60,10 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
         if (!mounted) return;
 
         if (args.isNotEmpty) {
-          final data = args[0] as Map<dynamic, dynamic>;
-          handleSelectionChange(data);
+          final rawData = args[0];
+          if (rawData is Map<dynamic, dynamic>) {
+            handleSelectionChange(rawData);
+          }
         }
       },
     );
@@ -72,10 +73,13 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
     );
   }
 
-  @override
-  void dispose() {
-    _editorApi = null;
-    super.dispose();
+  Future<void> _onWebViewCreated(HtmlEditorApi editorApi) async {
+    widget.onCreatedEditorAction.call(context, editorApi, widget.content);
+    try {
+      await _setupSelectionListener(editorApi);
+    } catch (e) {
+      logError('Error onWebViewCreated: $e');
+    }
   }
 
   @override
@@ -90,11 +94,7 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
         direction: widget.direction,
         useDefaultFontStyle: true,
       ),
-      onCreated: (editorApi) {
-        _editorApi = editorApi;
-        widget.onCreatedEditorAction.call(context, editorApi, widget.content);
-        _setupSelectionListener();
-      },
+      onCreated: _onWebViewCreated,
       onCompleted: widget.onLoadCompletedEditorAction,
       onContentHeightChanged: PlatformInfo.isIOS ? widget.onEditorContentHeightChanged : null,
     );
