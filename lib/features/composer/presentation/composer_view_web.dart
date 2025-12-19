@@ -560,7 +560,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                               saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                               onOpenInsertLink: controller.openInsertLink,
-                              onOpenAiAssistantModal: controller.isAIScribeAvailable && controller.aiScribeConfig.isEnabled
+                              onOpenAiAssistantModal: controller.isAIScribeAvailable
                                   ? controller.openAIAssistantModal
                                   : null,
                             )),

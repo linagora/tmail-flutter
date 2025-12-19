@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -14,8 +15,28 @@ class AICapability extends CapabilityProperties {
 
   Map<String, dynamic> toJson() => _$AICapabilityToJson(this);
 
-  bool get isScribeEndpointAvailable =>
-      scribeEndpoint?.trim().isNotEmpty == true;
+  bool get isScribeEndpointAvailable {
+    try {
+      final urlEndpoint = scribeEndpoint?.trim() ?? '';
+
+      if (urlEndpoint.isEmpty) return false;
+
+      // Validate endpoint format - must be an absolute URI
+      if (Uri.tryParse(urlEndpoint)?.isAbsolute != true) {
+        logError(
+          'AICapability::isScribeEndpointAvailable(): Invalid endpoint format: $urlEndpoint',
+        );
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      logError(
+        'AICapability::isScribeEndpointAvailable(): Exception: $e',
+      );
+      return false;
+    }
+  }
 
   @override
   List<Object?> get props => [scribeEndpoint];

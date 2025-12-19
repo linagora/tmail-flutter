@@ -13,7 +13,13 @@ extension HandleAiScribeInComposerExtension on ComposerController {
       session: mailboxDashBoardController.sessionCurrent,
       accountId: mailboxDashBoardController.accountId.value,
     );
-    return aiCapability?.isScribeEndpointAvailable == true;
+    final isScribeEndpointAvailable =
+        aiCapability?.isScribeEndpointAvailable == true;
+
+    final isAIScribeConfigEnabled =
+        mailboxDashBoardController.cachedAIScribeConfig.value.isEnabled;
+
+    return isAIScribeConfigEnabled && isScribeEndpointAvailable;
   }
 
   Future<String> _getTextOnlyContentInEditor() async {

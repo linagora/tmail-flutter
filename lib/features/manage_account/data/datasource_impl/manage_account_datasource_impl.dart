@@ -64,4 +64,11 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
       return await _preferencesSettingManager.loadPreferences();
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<AIScribeConfig> getAiScribeConfigLocalSettings() {
+    return Future.sync(() async {
+      return await _preferencesSettingManager.getAIScribeConfig();
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

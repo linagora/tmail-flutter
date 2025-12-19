@@ -25,6 +25,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
@@ -54,7 +55,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_ai_scribe_config_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
@@ -69,7 +70,6 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
-import 'package:scribe/scribe/ai/domain/usecases/generate_ai_text_interactor.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/session_fixtures.dart';
@@ -145,6 +145,9 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   RxBool get isPopupMenuOpened => false.obs;
+
+  @override
+  Rx<AIScribeConfig> get cachedAIScribeConfig => Rx<AIScribeConfig>(AIScribeConfig.initial());
 }
 
 @GenerateNiceMocks([
@@ -181,7 +184,6 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<ComposerRepository>(),
   MockSpec<SaveTemplateEmailInteractor>(),
   MockSpec<GenerateAITextInteractor>(),
-  MockSpec<GetAIScribeConfigInteractor>(),
 
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
@@ -227,7 +229,6 @@ void main() {
   late MockPrintEmailInteractor mockPrintEmailInteractor;
   late MockComposerRepository mockComposerRepository;
   late MockSaveTemplateEmailInteractor mockSaveTemplateEmailInteractor;
-  late MockGetAIScribeConfigInteractor mockGetAIScribeConfigInteractor;
 
   // Declaration Getx dependencies
   final mockMailboxDashBoardController = MockMailboxDashBoardController();
@@ -299,7 +300,6 @@ void main() {
     mockPrintEmailInteractor = MockPrintEmailInteractor();
     mockComposerRepository = MockComposerRepository();
     mockSaveTemplateEmailInteractor = MockSaveTemplateEmailInteractor();
-    mockGetAIScribeConfigInteractor = MockGetAIScribeConfigInteractor();
 
     composerController = ComposerController(
       mockLocalFilePickerInteractor,
@@ -317,7 +317,6 @@ void main() {
       mockPrintEmailInteractor,
       mockComposerRepository,
       mockSaveTemplateEmailInteractor,
-      mockGetAIScribeConfigInteractor,
     );
 
     mockHtmlEditorApi = MockHtmlEditorApi();
