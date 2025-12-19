@@ -216,7 +216,15 @@ class StringConvert {
   }
 
   static String convertTextContentToHtmlContent(String textContent) {
-    final htmlContent = textContent.replaceAll('\n', '<br>');
+    // Escape HTML entities first to prevent interpretation as HTML
+    final escapedContent = textContent
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+
+    final htmlContent = escapedContent.replaceAll('\n', '<br>');
 
     return '<div>$htmlContent</div>';
   }
