@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/manage_account_datasource.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -43,6 +44,10 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
       } else if (preferencesConfig is TextFormattingMenuConfig) {
         await _preferencesSettingManager.updateTextFormattingMenu(
           isDisplayed: preferencesConfig.isDisplayed,
+        );
+      } else if (preferencesConfig is AIScribeConfig) {
+        await _preferencesSettingManager.updateAIScribe(
+          preferencesConfig.isEnabled,
         );
       } else {
         await _preferencesSettingManager.savePreferences(
