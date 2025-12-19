@@ -54,6 +54,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_ai_scribe_config_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
@@ -180,6 +181,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<ComposerRepository>(),
   MockSpec<SaveTemplateEmailInteractor>(),
   MockSpec<GenerateAITextInteractor>(),
+  MockSpec<GetAIScribeConfigInteractor>(),
 
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
@@ -225,6 +227,7 @@ void main() {
   late MockPrintEmailInteractor mockPrintEmailInteractor;
   late MockComposerRepository mockComposerRepository;
   late MockSaveTemplateEmailInteractor mockSaveTemplateEmailInteractor;
+  late MockGetAIScribeConfigInteractor mockGetAIScribeConfigInteractor;
 
   // Declaration Getx dependencies
   final mockMailboxDashBoardController = MockMailboxDashBoardController();
@@ -296,6 +299,7 @@ void main() {
     mockPrintEmailInteractor = MockPrintEmailInteractor();
     mockComposerRepository = MockComposerRepository();
     mockSaveTemplateEmailInteractor = MockSaveTemplateEmailInteractor();
+    mockGetAIScribeConfigInteractor = MockGetAIScribeConfigInteractor();
 
     composerController = ComposerController(
       mockLocalFilePickerInteractor,
@@ -313,6 +317,7 @@ void main() {
       mockPrintEmailInteractor,
       mockComposerRepository,
       mockSaveTemplateEmailInteractor,
+      mockGetAIScribeConfigInteractor,
     );
 
     mockHtmlEditorApi = MockHtmlEditorApi();
