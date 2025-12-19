@@ -234,7 +234,7 @@ t=A.aC(A.c([new A.X(D.ym,t,u),new A.X(D.ym,A.ae(A.r("Sign In",u,"signIn",u,u),u,
 w=$.a9()
 A.v(v)
 A.q(v).h("R.S").a(w.a.get(v)).toString
-return new A.cx(C.aa,u,C.a2,C.G,A.c([new A.fe(D.a60,t,u),A.jk(24,new A.dG(C.dp,u,u,A.bd("assets/images/power_by_linagora.svg",C.t,u,C.O,44,u,u,97),u),u)],x),u)},
+return new A.cx(C.aa,u,C.a2,C.G,A.c([new A.fe(D.a60,t,u),A.iK(24,new A.dG(C.dp,u,u,A.bd("assets/images/power_by_linagora.svg",C.t,u,C.O,44,u,u,97),u),u)],x),u)},
 b1x(d){var x,w,v,u,t,s,r,q,p=this,o=null,n=y.J
 A.y(d,C.e,n).toString
 x=A.ae(A.r("JMAP-based\ncollaborative team mail solution",o,"jmapBasedMailSolution",o,o),o,o,o,o,o,$.aN().b4(C.n,36,C.oN),o,o,o)
@@ -277,7 +277,7 @@ t=A.r("Privacy policy",u,"privacyPolicy",u,u)
 w=$.aN().ev(C.H,14)
 v=A.uj(u,18,u)
 v.J=new B.chh(this)
-return A.aC(A.c([x,A.Hf(u,u,u,C.bT,u,u,!0,u,A.c3(u,u,u,v,w,t),C.a9,u,u,C.W,C.aE)],y.p),C.o,C.l,C.z,0,C.v)}}
+return A.aC(A.c([x,A.Hf(u,u,u,C.bU,u,u,!0,u,A.c3(u,u,u,v,w,t),C.a9,u,u,C.W,C.aE)],y.p),C.o,C.l,C.z,0,C.v)}}
 B.aLF.prototype={
 cC(){var x,w,v,u,t,s,r,q=this,p=null,o=q.w
 if(o==null)o=D.VX
@@ -522,7 +522,7 @@ D.afC=new A.C(0.23921568627450981,0.7372549019607844,0.7372549019607844,0.737254
 D.a7c=new A.c0(2,C.X,D.afC,C.hh,40)
 D.atr=A.c(x([D.a7c]),A.as("N<c0>"))
 D.aPe=new A.dZ(C.jS,C.J)
-D.aR8=new A.j3(C.m,null,null,D.atr,D.aPe)
+D.aR8=new A.j4(C.m,null,null,D.atr,D.aPe)
 D.b27=new A.b6("login_loading_icon",y.O)
 D.aSR=new A.aZ(40,40,C.EY,D.b27)
 D.aSX=new A.aZ(null,40,null,null)
@@ -531,4 +531,4 @@ D.b26=new A.b6("loginSubmitForm",y.O)
 D.b28=new A.b6("login_password_input",y.O)
 D.b29=new A.b6("login_username_input",y.O)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"prh9aXs7q+qEmZTB8bHBTYkn3mY=");
+a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"q1YSkWd+n0LrOq8TwVEI47wrzrU=");
