@@ -63,10 +63,6 @@ class PreferencesInteractorsBindings extends InteractorsBindings {
       () => SaveLanguageInteractor(Get.find<ManageAccountRepository>(tag: composerId)),
       tag: composerId,
     );
-    Get.lazyPut(
-      () => GetAIScribeConfigInteractor(Get.find<ManageAccountRepository>(tag: composerId)),
-      tag: composerId,
-    );
   }
 
   @override

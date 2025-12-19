@@ -166,6 +166,4 @@ class PreferencesSettingManager {
     final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
     await savePreferences(updatedConfig);
   }
-
-
 }
