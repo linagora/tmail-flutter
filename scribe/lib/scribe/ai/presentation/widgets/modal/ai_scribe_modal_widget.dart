@@ -39,34 +39,36 @@ class AiScribeModalWidget extends StatelessWidget {
             ))
         .toList();
 
-    final dialogContent = Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AIScribeSizes.fieldSpacing,
-      children: [
-        if (hasContent)
-          Flexible(
-            child: AiScribeContextMenu(
-              imagePaths: imagePaths,
-              menuActions: menuActions,
-              submenuController: submenuController,
-              onActionSelected: (menuAction) => _onActionSelected(
-                context,
-                menuAction,
+    final dialogContent = PointerInterceptor(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: AIScribeSizes.fieldSpacing,
+        children: [
+          if (hasContent)
+            Flexible(
+              child: AiScribeContextMenu(
+                imagePaths: imagePaths,
+                menuActions: menuActions,
+                submenuController: submenuController,
+                onActionSelected: (menuAction) => _onActionSelected(
+                  context,
+                  menuAction,
+                ),
               ),
             ),
+          MouseRegion(
+            onEnter: (_) => submenuController?.hide(),
+            child: AIScribeBar(
+              imagePaths: imagePaths,
+              onCustomPrompt: (customPrompt) {
+                Navigator.of(context).pop(CustomPromptAction(customPrompt));
+                submenuController?.hide();
+              },
+            ),
           ),
-        MouseRegion(
-          onEnter: (_) => submenuController?.hide(),
-          child: AIScribeBar(
-            imagePaths: imagePaths,
-            onCustomPrompt: (customPrompt) {
-              Navigator.of(context).pop(CustomPromptAction(customPrompt));
-              submenuController?.hide();
-            },
-          ),
-        ),
-      ],
+        ],
+      ),
     );
 
     if (buttonPosition != null && buttonSize != null) {
@@ -102,18 +104,20 @@ class AiScribeModalWidget extends StatelessWidget {
           : position.dy;
 
       return PointerInterceptor(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: Navigator.of(context).pop,
-          child: Stack(
-            children: [
-              PositionedDirectional(
-                start: position.dx,
-                top: top,
-                child: dialogContent,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: Navigator.of(context).pop,
               ),
-            ],
-          ),
+            ),
+            PositionedDirectional(
+              start: position.dx,
+              top: top,
+              child: dialogContent,
+            ),
+          ],
         ),
       );
     }
