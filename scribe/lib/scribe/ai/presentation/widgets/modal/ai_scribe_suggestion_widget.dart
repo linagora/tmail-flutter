@@ -109,23 +109,25 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
     );
 
     return PointerInterceptor(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: _handleClickOutside,
-        child: Stack(
-          children: [
-            PositionedDirectional(
-              start: layout.offset.dx,
-              top: layout.top,
-              bottom: layout.bottom,
-              child: _buildModalContainer(
-                width: modalWidth,
-                maxHeight: layout.availableHeight,
-                child: dialogContent,
-              ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _handleClickOutside,
             ),
-          ],
-        ),
+          ),
+          PositionedDirectional(
+            start: layout.offset.dx,
+            top: layout.top,
+            bottom: layout.bottom,
+            child: _buildModalContainer(
+              width: modalWidth,
+              maxHeight: layout.availableHeight,
+              child: dialogContent,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -177,21 +179,23 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
     required double maxHeight,
     required Widget child,
   }) {
-    return Container(
-      width: width,
-      constraints: BoxConstraints(
-        minHeight: AIScribeSizes.suggestionModalMinHeight,
-        maxHeight: maxHeight,
-      ),
-      padding: AIScribeSizes.suggestionContentPadding,
-      decoration: BoxDecoration(
-        color: AIScribeColors.background,
-        borderRadius: BorderRadius.circular(
-          AIScribeSizes.menuRadius,
+    return PointerInterceptor(
+      child: Container(
+        width: width,
+        constraints: BoxConstraints(
+          minHeight: AIScribeSizes.suggestionModalMinHeight,
+          maxHeight: maxHeight,
         ),
-        boxShadow: AIScribeShadows.modal,
+        padding: AIScribeSizes.suggestionContentPadding,
+        decoration: BoxDecoration(
+          color: AIScribeColors.background,
+          borderRadius: BorderRadius.circular(
+            AIScribeSizes.menuRadius,
+          ),
+          boxShadow: AIScribeShadows.modal,
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 
