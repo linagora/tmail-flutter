@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
@@ -17,6 +18,8 @@ class PreferencesSettingManager {
       '${_preferencesSettingKey}_SPAM_REPORT';
   static const String _preferencesSettingTextFormattingMenuKey =
       '${_preferencesSettingKey}_TEXT_FORMATTING_MENU';
+  static const String _preferencesSettingAIScribeKey =
+      '${_preferencesSettingKey}_AI_SCRIBE';
 
   const PreferencesSettingManager(this._sharedPreferences);
 
@@ -41,6 +44,8 @@ class PreferencesSettingManager {
             return SpamReportConfig.fromJson(jsonDecoded);
           case _preferencesSettingTextFormattingMenuKey:
             return TextFormattingMenuConfig.fromJson(jsonDecoded);
+          case _preferencesSettingAIScribeKey:
+            return AIScribeConfig.fromJson(jsonDecoded);
           default:
             return DefaultPreferencesConfig.fromJson(jsonDecoded);
         }
@@ -69,6 +74,11 @@ class PreferencesSettingManager {
     } else if (config is TextFormattingMenuConfig) {
       await _sharedPreferences.setString(
         _preferencesSettingTextFormattingMenuKey,
+        jsonEncode(config.toJson()),
+      );
+    } else if (config is AIScribeConfig) {
+      await _sharedPreferences.setString(
+        _preferencesSettingAIScribeKey,
         jsonEncode(config.toJson()),
       );
     } else {
@@ -138,4 +148,24 @@ class PreferencesSettingManager {
     final updatedConfig = currentConfig.copyWith(isDisplayed: isDisplayed);
     await savePreferences(updatedConfig);
   }
+
+  Future<AIScribeConfig> getAIScribeConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingAIScribeKey,
+    );
+
+    return jsonString == null
+        ? AIScribeConfig.initial()
+        : AIScribeConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updateAIScribe(bool isEnabled) async {
+    final currentConfig = await getAIScribeConfig();
+    final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
+    await savePreferences(updatedConfig);
+  }
+
+
 }
