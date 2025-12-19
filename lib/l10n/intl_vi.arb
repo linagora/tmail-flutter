@@ -5212,6 +5212,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "aiScribe": "AI Scribe",
+  "@aiScribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeSettingExplanation": "Sử dụng AI để giúp soạn thảo và cải thiện email của bạn",
+  "@aiScribeSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeToggleDescription": "Bật AI Scribe",
+  "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "showMoreAttachmentButton": "Hiển thị +{count}",
   "@showMoreAttachmentButton": {
     "type": "text",

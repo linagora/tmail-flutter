@@ -5206,6 +5206,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "aiScribe": "AI Scribe",
+  "@aiScribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeSettingExplanation": "Utiliser l'IA pour vous aider à rédiger et améliorer vos e-mails",
+  "@aiScribeSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeToggleDescription": "Activer AI Scribe",
+  "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "showMoreAttachmentButton": "Afficher les {count} autres pièces jointes",
   "@showMoreAttachmentButton": {
     "type": "text",
