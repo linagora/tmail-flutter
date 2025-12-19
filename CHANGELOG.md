@@ -1,3 +1,8 @@
+## [0.23.0] - 2025-12-19
+### Added
+- Persist company info when user login to company's server
+- AI Scribe: Translate, Correct Grammar, Custom prompt, Improve, Change tone 
+
 ## [0.22.1] - 2025-11-21
 ### Added
 - Translation: vi, ru, fr, uk, cn
