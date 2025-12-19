@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
@@ -110,20 +112,17 @@ class _AnimatedEllipsisText extends StatefulWidget {
 class _AnimatedEllipsisTextState extends State<_AnimatedEllipsisText> {
   static const _dotStates = ['', '.', '..', '...'];
   int _index = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _tick();
-  }
-
-  void _tick() {
-    Future.delayed(const Duration(milliseconds: 500), () {
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (_) {
       if (!mounted) return;
       setState(() => _index = (_index + 1) % _dotStates.length);
-      _tick();
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -131,5 +130,11 @@ class _AnimatedEllipsisTextState extends State<_AnimatedEllipsisText> {
       '${widget.text}${_dotStates[_index]}',
       style: widget.style,
     );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 }

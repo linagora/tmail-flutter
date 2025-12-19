@@ -4,6 +4,8 @@ part 'ai_message.g.dart';
 
 @JsonSerializable()
 class AIMessage {
+  static const String aiUserRole = 'user';
+
   final String role;
   final String content;
 
@@ -18,7 +20,7 @@ class AIMessage {
   Map<String, dynamic> toJson() => _$AIMessageToJson(this);
 
   factory AIMessage.ofUser(String content) => AIMessage(
-        role: 'user',
+        role: aiUserRole,
         content: content,
       );
 }

@@ -309,7 +309,7 @@ class MailboxDashBoardController extends ReloadableController
   final isPopupMenuOpened = RxBool(false);
   final octetsQuota = Rxn<Quota>();
   final isTextFormattingMenuOpened = RxBool(false);
-  final cachedAIScribeConfig = Rx<AIScribeConfig>(AIScribeConfig.initial());
+  final cachedAIScribeConfig = AIScribeConfig.initial().obs;
 
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
   Map<MailboxId, PresentationMailbox> mapMailboxById = {};

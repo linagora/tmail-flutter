@@ -48,7 +48,7 @@ class HtmlUtils {
       editor.parentNode.replaceChild(newEditor, editor);''',
     name: 'unregisterDropListener');
 
-  static ({String name, String script})registerSelectionChangeListener(String viewId) => (
+  static registerSelectionChangeListener(String viewId) => (
     script: '''
       let lastSelectedText = '';
 

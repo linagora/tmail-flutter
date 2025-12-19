@@ -35,7 +35,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
-  void insertTextInEditor(String text) async {
+  Future<void> insertTextInEditor(String text) async {
     try {
       final htmlContent = StringConvert.convertTextContentToHtmlContent(text);
 
@@ -87,18 +87,17 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   // Ensure we only insert at cursor position by collapsing selection before inserting
   Future<void> onInsertTextCallback(String text) async {
     await collapseSelection();
-
-    insertTextInEditor(text);
+    await insertTextInEditor(text);
   }
 
   // If there is a selection, it will replace the selection, else it will replace everything
-  void onReplaceTextCallback(String text) {
+  Future<void> onReplaceTextCallback(String text) async {
     final selection = editorTextSelection.value?.selectedText;
     if (selection == null || selection.isEmpty) {
       clearTextInEditor();
     }
 
-    insertTextInEditor(text);
+    await insertTextInEditor(text);
   }
 
   Future<void> openAIAssistantModal(Offset? position, Size? size) async {
@@ -116,16 +115,16 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     );
   }
 
-  void handleAiScribeSuggestionAction(
+  Future<void> handleAiScribeSuggestionAction(
     AiScribeSuggestionActions action,
     String suggestionText,
-  ) {
+  ) async {
     switch (action) {
       case AiScribeSuggestionActions.replace:
-        onReplaceTextCallback(suggestionText);
+        await onReplaceTextCallback(suggestionText);
         break;
       case AiScribeSuggestionActions.insert:
-        onInsertTextCallback(suggestionText);
+        await onInsertTextCallback(suggestionText);
         break;
     }
   }
