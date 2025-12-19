@@ -99,7 +99,8 @@ class HtmlUtils {
                 }
               })
             }
-          } catch {
+          } catch (error) {
+            console.error('Selection change error:', error);
             sendSelectionChangeMessage({
               hasSelection: false
             })
