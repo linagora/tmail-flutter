@@ -30,51 +30,63 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   }
 
   void insertTextInEditor(String text) async {
-    final htmlContent = StringConvert.convertTextContentToHtmlContent(text);
+    try {
+      final htmlContent = StringConvert.convertTextContentToHtmlContent(text);
 
-    if (PlatformInfo.isWeb) {
-      await richTextWebController?.editorController.evaluateJavascriptWeb(
-        HtmlUtils.deleteSelectionContent.name,
-        hasReturnValue: false,
-      );
+      if (PlatformInfo.isWeb) {
+        await richTextWebController?.editorController.evaluateJavascriptWeb(
+          HtmlUtils.deleteSelectionContent.name,
+          hasReturnValue: false,
+        );
 
-      richTextWebController?.editorController.insertHtml(htmlContent);
-    } else {
-      richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
+        richTextWebController?.editorController.insertHtml(htmlContent);
+      } else {
+        richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
+      }
+    } catch (e) {
+      logError('$runtimeType::insertTextInEditor:Exception = $e');
     }
   }
 
   Future<void> collapseSelection() async {
-    if (PlatformInfo.isWeb) {
-      await richTextWebController?.editorController.evaluateJavascriptWeb(
-        HtmlUtils.collapseSelectionToEnd.name,
-        hasReturnValue: false,
-      );
-    } else {
-      await richTextMobileTabletController?.htmlEditorApi?.webViewController
-          .evaluateJavascript(
-        source: HtmlUtils.collapseSelectionToEnd.script,
-      );
+    try {
+      if (PlatformInfo.isWeb) {
+        await richTextWebController?.editorController.evaluateJavascriptWeb(
+          HtmlUtils.collapseSelectionToEnd.name,
+          hasReturnValue: false,
+        );
+      } else {
+        await richTextMobileTabletController?.htmlEditorApi?.webViewController
+            .evaluateJavascript(
+          source: HtmlUtils.collapseSelectionToEnd.script,
+        );
+      }
+    } catch (e) {
+      logError('$runtimeType::collapseSelection:Exception = $e');
     }
   }
 
   void clearTextInEditor() {
-    if (PlatformInfo.isWeb) {
-      richTextWebController?.editorController.setText('');
-    } else {
-      richTextMobileTabletController?.htmlEditorApi?.setText('');
+    try {
+      if (PlatformInfo.isWeb) {
+        richTextWebController?.editorController.setText('');
+      } else {
+        richTextMobileTabletController?.htmlEditorApi?.setText('');
+      }
+    } catch (e) {
+      logError('$runtimeType::clearTextInEditor:Exception = $e');
     }
   }
 
   // Ensure we only insert at cursor position by collapsing selection before inserting
-  void onInsertTextCallback(String text) async {
+  Future<void> onInsertTextCallback(String text) async {
     await collapseSelection();
 
     insertTextInEditor(text);
   }
 
   // If there is a selection, it will replace the selection, else it will replace everything
-  void onReplaceTextCallback(String text) async {
+  void onReplaceTextCallback(String text) {
     final selection = editorTextSelection.value?.selectedText;
     if (selection == null || selection.isEmpty) {
       clearTextInEditor();
