@@ -104,8 +104,9 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
       screenSize: screenSize,
       anchorPosition: widget.buttonPosition!,
       anchorSize: widget.buttonSize!,
-      modalMaxHeight: modalMaxHeight,
+      menuSize: Size(modalWidth, modalMaxHeight),
       preferredPlacement: widget.preferredPlacement,
+      padding: AIScribeSizes.screenEdgePadding,
     );
 
     return PointerInterceptor(
@@ -118,8 +119,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
             ),
           ),
           PositionedDirectional(
-            start: layout.offset.dx,
-            top: layout.top,
+            start: layout.left,
             bottom: layout.bottom,
             child: _buildModalContainer(
               width: modalWidth,
