@@ -7,6 +7,7 @@ import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -48,6 +49,10 @@ class PreferencesController extends BaseController {
     (success) => success is GettingServerSetting || success is UpdatingServerSetting);
 
   final _manageAccountDashBoardController = Get.find<ManageAccountDashBoardController>();
+
+  bool get isAIScribeAvailable {
+    return _manageAccountDashBoardController.isAICapabilitySupported;
+  }
 
   @override
   void onInit() {
@@ -149,6 +154,9 @@ class PreferencesController extends BaseController {
         break;
       case PreferencesOptionType.spamReport:
         config = SpamReportConfig(isEnabled: !isEnabled);
+        break;
+      case PreferencesOptionType.aiScribe:
+        config = AIScribeConfig(isEnabled: !isEnabled);
         break;
       default:
         break;

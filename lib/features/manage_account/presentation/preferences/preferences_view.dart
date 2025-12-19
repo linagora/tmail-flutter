@@ -72,7 +72,12 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                       if (localSettingOption.configs.isNotEmpty)
                         ...PreferencesOptionType.values.where(
                           (optionType) => optionType.isLocal,
-                        ),
+                        ).where((optionType) {
+                          if (optionType == PreferencesOptionType.aiScribe) {
+                            return controller.isAIScribeAvailable;
+                          }
+                          return true;
+                        }),
                     ];
 
                     return Expanded(

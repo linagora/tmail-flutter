@@ -12,6 +12,7 @@ import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
+import 'package:scribe/scribe/ai/presentation/utils/ai_scribe_constants.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/mixin/ai_scribe_mixin.dart';
@@ -327,6 +328,14 @@ class ManageAccountDashBoardController extends ReloadableController
   bool get isForwardCapabilitySupported {
     if (accountId.value != null && sessionCurrent != null) {
       return capabilityForward.isSupported(sessionCurrent!, accountId.value!);
+    } else {
+      return false;
+    }
+  }
+
+  bool get isAICapabilitySupported {
+    if (accountId.value != null && sessionCurrent != null) {
+      return AiScribeConstants.aiCapability.isSupported(sessionCurrent!, accountId.value!);
     } else {
       return false;
     }
