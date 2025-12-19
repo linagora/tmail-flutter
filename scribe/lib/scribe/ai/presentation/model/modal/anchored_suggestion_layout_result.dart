@@ -1,15 +1,11 @@
-import 'package:flutter/cupertino.dart';
-
 class AnchoredSuggestionLayoutResult {
-  final Offset offset;
   final double availableHeight;
-  final double? top;
-  final double? bottom;
+  final double left;
+  final double bottom;
 
   const AnchoredSuggestionLayoutResult({
-    required this.offset,
+    required this.left,
+    required this.bottom,
     required this.availableHeight,
-    this.top,
-    this.bottom,
   });
 }

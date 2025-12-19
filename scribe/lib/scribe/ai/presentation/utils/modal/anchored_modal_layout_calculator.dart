@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/animation.dart';
 import 'package:scribe/scribe.dart';
 
@@ -145,10 +143,11 @@ class AnchoredModalLayoutCalculator {
     required Size screenSize,
     required Offset anchorPosition,
     required Size anchorSize,
-    required double modalMaxHeight,
+    required Size menuSize,
     ModalPlacement? preferredPlacement,
     double gap = 8,
-    double padding = AIScribeSizes.screenEdgePadding,
+    double verticalOffset = 6,
+    double padding = 8,
   }) {
     final isTop = preferredPlacement == ModalPlacement.top;
 
@@ -157,25 +156,79 @@ class AnchoredModalLayoutCalculator {
       final positionBottom = screenSize.height - anchorPosition.dy + gap;
 
       return AnchoredSuggestionLayoutResult(
-        offset: Offset(
-          anchorPosition.dx,
-          positionBottom,
-        ),
         availableHeight: availableHeight,
+        left: anchorPosition.dx,
         bottom: positionBottom,
       );
     }
 
-    final spaceBelow = screenSize.height - anchorPosition.dy - padding - gap;
-    final positionTop = anchorPosition.dx + anchorSize.width + gap;
+    late ModalPlacement placement;
+
+    if (preferredPlacement != null &&
+        _canPlace(
+          placement: preferredPlacement,
+          screen: screenSize,
+          anchor: anchorPosition,
+          anchorSize: anchorSize,
+          menu: menuSize,
+          gap: gap,
+        )) {
+      placement = preferredPlacement;
+    } else {
+      final fallbackOrder = [
+        ModalPlacement.right,
+        ModalPlacement.bottom,
+        ModalPlacement.top,
+        ModalPlacement.left,
+      ];
+
+      placement = fallbackOrder.firstWhere(
+        (p) => _canPlace(
+          placement: p,
+          screen: screenSize,
+          anchor: anchorPosition,
+          anchorSize: anchorSize,
+          menu: menuSize,
+          gap: gap,
+        ),
+        orElse: () => ModalPlacement.right,
+      );
+    }
+
+    late double left;
+    late double bottom;
+
+    switch (placement) {
+      case ModalPlacement.right:
+        left = anchorPosition.dx + anchorSize.width + gap;
+        bottom = anchorPosition.dy + verticalOffset;
+        break;
+
+      case ModalPlacement.bottom:
+        left = anchorPosition.dx;
+        bottom = anchorPosition.dy + anchorSize.height + gap + verticalOffset;
+        break;
+
+      case ModalPlacement.top:
+        left = anchorPosition.dx;
+        bottom = anchorPosition.dy - menuSize.height - gap + verticalOffset;
+        break;
+      case ModalPlacement.left:
+        left = anchorPosition.dx - menuSize.width - gap;
+        bottom = anchorPosition.dy + verticalOffset;
+        break;
+    }
+
+    left = left.clamp(padding, screenSize.width - menuSize.width - padding);
+    bottom = bottom.clamp(
+      padding,
+      screenSize.height - menuSize.height - padding,
+    );
 
     return AnchoredSuggestionLayoutResult(
-      offset: Offset(
-        positionTop,
-        anchorPosition.dy,
-      ),
-      availableHeight: min(spaceBelow, modalMaxHeight),
-      top: anchorPosition.dy,
+      availableHeight: menuSize.height,
+      left: left,
+      bottom: bottom,
     );
   }
 }
