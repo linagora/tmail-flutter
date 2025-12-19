@@ -54,6 +54,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/se
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_ai_scribe_config_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_interactors_bindings.dart';
@@ -338,6 +339,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<PrintEmailInteractor>(tag: composerId),
       Get.find<ComposerRepository>(tag: composerId),
       Get.find<SaveTemplateEmailInteractor>(tag: composerId),
+      Get.find<GetAIScribeConfigInteractor>(tag: composerId),
       composerId: composerId,
       composerArgs: composerArguments,
     ), tag: composerId);

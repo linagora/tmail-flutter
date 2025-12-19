@@ -5139,6 +5139,27 @@ class AppLocalizations {
     );
   }
 
+  String get aiScribe {
+    return Intl.message(
+      'AI Scribe',
+      name: 'aiScribe',
+    );
+  }
+
+  String get aiScribeSettingExplanation {
+    return Intl.message(
+      'Use AI to help write and improve your emails',
+      name: 'aiScribeSettingExplanation',
+    );
+  }
+
+  String get aiScribeToggleDescription {
+    return Intl.message(
+      'Enable AI Scribe',
+      name: 'aiScribeToggleDescription',
+    );
+  }
+
   String showMoreAttachmentButton(int count) {
     return Intl.message(
       'Show +$count more',
