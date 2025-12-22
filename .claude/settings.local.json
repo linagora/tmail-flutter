@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(planning)",
+      "Bash(mkdir:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(done)",
+      "Bash(ls:*)"
+    ]
+  }
+}
