@@ -11,7 +11,7 @@ extension MoveEmailsToMailboxExtension on MailboxDashBoardController {
     required MailboxId destinationMailboxId,
   }) {
     if (destinationMailboxId == selectedMailbox.value?.id ||
-        selectedMailbox.value?.isFavorite == true) {
+        selectedMailbox.value?.isVirtualFolder == true) {
       return;
     }
 

@@ -1377,7 +1377,7 @@ class MailboxDashBoardController extends ReloadableController
       _handleDragSelectedMultipleEmailToFavoriteFolder(listEmails);
     } else {
       if (searchController.isSearchEmailRunning ||
-          selectedMailbox.value?.isFavorite == true) {
+          selectedMailbox.value?.isVirtualFolder == true) {
         final Map<MailboxId,List<EmailId>> mapListEmailSelectedByMailBoxId = {};
         for (var element in listEmails) {
           final mailbox = element.findMailboxContain(mapMailboxById);
