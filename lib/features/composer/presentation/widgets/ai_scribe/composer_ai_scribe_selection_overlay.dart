@@ -24,7 +24,13 @@ class ComposerAiScribeSelectionOverlay extends StatelessWidget {
         imagePaths: controller.imagePaths,
         onSelectAiScribeSuggestionAction:
             controller.handleAiScribeSuggestionAction,
+        onTapFallback: _clearComposerInputFocus,
       );
     });
+  }
+
+  void _clearComposerInputFocus() {
+    controller.clearFocusRecipients();
+    controller.clearFocusSubject();
   }
 }

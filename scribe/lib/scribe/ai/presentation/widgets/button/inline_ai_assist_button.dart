@@ -7,12 +7,14 @@ class InlineAiAssistButton extends StatelessWidget {
   final ImagePaths imagePaths;
   final String? selectedText;
   final OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction;
+  final VoidCallback? onTapFallback;
 
   const InlineAiAssistButton({
     super.key,
     required this.imagePaths,
     required this.onSelectAiScribeSuggestionAction,
     this.selectedText,
+    this.onTapFallback,
   });
 
   @override
@@ -39,6 +41,8 @@ class InlineAiAssistButton extends StatelessWidget {
       position = renderBox.localToGlobal(Offset.zero);
       size = renderBox.size;
     }
+
+    onTapFallback?.call();
 
     await AiScribeModalManager.showAIScribeMenuModal(
       imagePaths: imagePaths,

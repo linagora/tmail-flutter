@@ -9,11 +9,13 @@ class AiSelectionOverlay extends StatelessWidget {
     required this.selection,
     required this.imagePaths,
     required this.onSelectAiScribeSuggestionAction,
+    this.onTapFallback,
   });
 
   final TextSelectionModel? selection;
   final ImagePaths imagePaths;
   final OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction;
+  final VoidCallback? onTapFallback;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class AiSelectionOverlay extends StatelessWidget {
           imagePaths: imagePaths,
           selectedText: selectedText,
           onSelectAiScribeSuggestionAction: onSelectAiScribeSuggestionAction,
+          onTapFallback: onTapFallback,
         ),
       ),
     );

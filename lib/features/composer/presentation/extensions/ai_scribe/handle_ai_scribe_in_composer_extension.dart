@@ -101,6 +101,9 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   }
 
   Future<void> openAIAssistantModal(Offset? position, Size? size) async {
+    clearFocusRecipients();
+    clearFocusSubject();
+
     final fullText = await _getTextOnlyContentInEditor();
 
     await AiScribeModalManager.showAIScribeMenuModal(
