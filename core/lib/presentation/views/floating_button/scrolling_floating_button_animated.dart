@@ -72,6 +72,7 @@ class _ScrollingFloatingButtonAnimatedState
 
   @override
   void initState() {
+    super.initState();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 250),
@@ -80,22 +81,19 @@ class _ScrollingFloatingButtonAnimatedState
       lowerBound: 0,
       upperBound: 120,
     );
-    super.initState();
-    _handleScroll();
+    widget.scrollController?.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
-    widget.scrollController!.removeListener(() {});
+    widget.scrollController?.removeListener(_scrollListener);
     _animationController.dispose();
     super.dispose();
   }
 
-  /// Function to add listener for scroll
-  void _handleScroll() {
+  void _scrollListener() {
     ScrollController scrollController = widget.scrollController!;
-    scrollController.addListener(() {
-      if (scrollController.position.pixels > widget.limitIndicator! &&
+    if (scrollController.position.pixels > widget.limitIndicator! &&
           scrollController.position.userScrollDirection ==
               ScrollDirection.reverse) {
         if (widget.animateIcon!) _animationController.forward();
@@ -114,7 +112,6 @@ class _ScrollingFloatingButtonAnimatedState
           });
         }
       }
-    });
   }
 
   @override

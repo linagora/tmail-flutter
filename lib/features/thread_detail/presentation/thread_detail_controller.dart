@@ -227,6 +227,7 @@ class ThreadDetailController extends BaseController {
 
   void reset() {
     emailIdsPresentation.clear();
+    emailsInThreadDetailInfo.clear();
     scrollController?.dispose();
     scrollController = null;
     currentExpandedEmailId.value = null;
