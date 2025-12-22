@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-12-17T00:04:15.124514",
+  "@@last_modified": "2025-12-22T16:54:22.593873",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4862,6 +4862,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "aiScribe": "AI Scribe",
+  "@aiScribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeSettingExplanation": "Use AI to help write and improve your emails",
+  "@aiScribeSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeToggleDescription": "Enable AI Scribe",
+  "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "showMoreAttachmentButton": "Show +{count} more",
   "@showMoreAttachmentButton": {
     "type": "text",
@@ -5130,12 +5148,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiAssistant": "AI assistant",
-  "@aiAssistant": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "actionRequired": "Action Required",
   "@actionRequired": {
     "type": "text",
@@ -5150,6 +5162,24 @@
   },
   "youDoNotHaveAnyActionRequiredEmails": "You don’t have any action required emails.",
   "@youDoNotHaveAnyActionRequiredEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsAction": "AI needs-action",
+  "@aiNeedsAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionToggleDescription": "Enable AI needs-action",
+  "@aiNeedsActionToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionSettingExplanation": "Detect emails that need your attention using AI. When turned off, AI will not process any emails.",
+  "@aiNeedsActionSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

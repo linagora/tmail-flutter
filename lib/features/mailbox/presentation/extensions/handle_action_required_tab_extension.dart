@@ -42,4 +42,24 @@ extension HandleActionRequiredTabExtension on BaseMailboxController {
   bool _allMailboxesContains(MailboxId id) {
     return allMailboxes.any((mailbox) => mailbox.id == id);
   }
+
+  void removeActionRequiredFolder() {
+    final folder = PresentationMailbox.actionRequiredFolder;
+    _removeFromDefaultMailboxTree(folder.id);
+    _removeFromAllMailboxes(folder.id);
+  }
+
+  void _removeFromDefaultMailboxTree(MailboxId folderId) {
+    final root = defaultMailboxTree.value.root;
+    final children = List<MailboxNode>.from(root.childrenItems ?? [])
+      ..removeWhere((node) => node.item.id == folderId);
+
+    defaultMailboxTree.value = MailboxTree(
+      root.copyWith(children: children),
+    );
+  }
+
+  void _removeFromAllMailboxes(MailboxId folderId) {
+    allMailboxes.removeWhere((mailbox) => mailbox.id == folderId);
+  }
 }

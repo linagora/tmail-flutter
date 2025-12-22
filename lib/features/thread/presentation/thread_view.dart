@@ -510,8 +510,7 @@ class ThreadView extends GetWidget<ThreadController>
       final isSearchEmailRunning =
           controller.searchController.isSearchEmailRunning;
 
-      final isAiCapabilitySupported =
-          dashboardController.isAiCapabilitySupported;
+      final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
       return EmailTileBuilder(
         key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
@@ -523,7 +522,7 @@ class ThreadView extends GetWidget<ThreadController>
         isSearchEmailRunning: isSearchEmailRunning,
         isDrag: true,
         isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
-        isAIEnabled: isAiCapabilitySupported,
+        isAINeedsActionEnabled: isAINeedsActionEnabled,
       );
     });
   }
@@ -607,8 +606,7 @@ class ThreadView extends GetWidget<ThreadController>
       final isSearchEmailRunning =
           controller.searchController.isSearchEmailRunning;
 
-      final isAiCapabilitySupported =
-          dashboardController.isAiCapabilitySupported;
+      final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
       return Dismissible(
         key: ValueKey<EmailId?>(presentationEmail.id),
@@ -632,7 +630,7 @@ class ThreadView extends GetWidget<ThreadController>
           searchQuery: controller.searchQuery,
           mailboxContain: presentationEmail.mailboxContain,
           isSearchEmailRunning: isSearchEmailRunning,
-          isAIEnabled: isAiCapabilitySupported,
+          isAINeedsActionEnabled: isAINeedsActionEnabled,
           emailActionClick: _handleEmailActionClicked,
           onMoreActionClick: (email, position) =>
               _handleEmailContextMenuAction(context, email, position),

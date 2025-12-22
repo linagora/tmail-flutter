@@ -68,17 +68,20 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                     final availableSettingOptions = [
                       if (settingOption != null)
                         ...PreferencesOptionType.values.where(
-                          (optionType) => !optionType.isLocal,
+                          (type) =>
+                              !type.isLocal &&
+                              type != PreferencesOptionType.aiNeedsAction,
                         ),
                       if (localSettingOption.configs.isNotEmpty)
                         ...PreferencesOptionType.values.where(
-                          (optionType) => optionType.isLocal,
-                        ).where((optionType) {
-                          if (optionType == PreferencesOptionType.aiScribe) {
-                            return controller.isAIScribeAvailable && !PlatformInfo.isMobile;
-                          }
-                          return true;
-                        }),
+                          (type) =>
+                              type.isLocal &&
+                              (type != PreferencesOptionType.aiScribe ||
+                                  controller.isAICapabilitySupported),
+                        ),
+                      if (settingOption != null &&
+                          controller.isAICapabilitySupported)
+                        PreferencesOptionType.aiNeedsAction,
                     ];
 
                     return Expanded(

@@ -27,7 +27,7 @@ class EmailTileBuilder extends StatefulWidget {
   final bool isDrag;
   final bool isShowingEmailContent;
   final bool isSenderImportantFlagEnabled;
-  final bool isAIEnabled;
+  final bool isAINeedsActionEnabled;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
@@ -42,7 +42,7 @@ class EmailTileBuilder extends StatefulWidget {
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
-    this.isAIEnabled = false,
+    this.isAINeedsActionEnabled = false,
     this.emailActionClick,
     this.onMoreActionClick,
   });
@@ -423,7 +423,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
   }
 
   bool get _shouldShowAIAction =>
-      widget.isAIEnabled && widget.presentationEmail.hasNeedAction;
+      widget.isAINeedsActionEnabled && widget.presentationEmail.hasNeedAction;
 
   @override
   void dispose() {

@@ -120,6 +120,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dow
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_ai_needs_action_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_cached_ai_scribe_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
@@ -303,6 +304,7 @@ class MailboxDashBoardController extends ReloadableController
   final isRecoveringDeletedMessage = RxBool(false);
   final localFileDraggableAppState = Rxn<DraggableAppState>();
   final isSenderImportantFlagEnabled = RxBool(true);
+  final isAINeedsActionSettingEnabled = RxBool(false);
   final isAppGridDialogDisplayed = RxBool(false);
   final isDrawerOpened = RxBool(false);
   final isContextMenuOpened = RxBool(false);
@@ -512,6 +514,7 @@ class MailboxDashBoardController extends ReloadableController
       );
     } else if (success is GetServerSettingSuccess) {
       isSenderImportantFlagEnabled.value = success.settingOption.isDisplaySenderPriority;
+      setupAINeedsActionSetting(options: success.settingOption);
       initializeAppLanguage(success);
     } else if (success is ClearMailboxSuccess) {
       clearMailboxSuccess(success);
@@ -568,6 +571,7 @@ class MailboxDashBoardController extends ReloadableController
       _handleIdentityCache();
     } else if (failure is GetServerSettingFailure) {
       isSenderImportantFlagEnabled.value = true;
+      setupAINeedsActionSetting();
     } else if (failure is GetAllIdentitiesFailure) {
       _handleGetAllIdentitiesFailure();
     } else if (failure is ClearMailboxFailure) {

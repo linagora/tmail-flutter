@@ -40,10 +40,14 @@ class TMailServerSettingOptions with EquatableMixin {
   @JsonKey(name: 'language')
   final String? language;
 
+  @JsonKey(name: 'ai.needs-action.enabled')
+  final bool? aiNeedsActionEnabled;
+
   TMailServerSettingOptions({
     this.alwaysReadReceipts,
     this.displaySenderPriority,
     this.language,
+    this.aiNeedsActionEnabled,
   });
 
   factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) =>
@@ -55,11 +59,13 @@ class TMailServerSettingOptions with EquatableMixin {
     bool? alwaysReadReceipts,
     bool? displaySenderPriority,
     String? language,
+    bool? aiNeedsActionEnabled,
   }) {
     return TMailServerSettingOptions(
       alwaysReadReceipts: alwaysReadReceipts ?? this.alwaysReadReceipts,
       displaySenderPriority: displaySenderPriority ?? this.displaySenderPriority,
       language: language ?? this.language,
+      aiNeedsActionEnabled: aiNeedsActionEnabled ?? this.aiNeedsActionEnabled,
     );
   }
 
@@ -68,5 +74,6 @@ class TMailServerSettingOptions with EquatableMixin {
     alwaysReadReceipts,
     displaySenderPriority,
     language,
+    aiNeedsActionEnabled,
   ];
 }
