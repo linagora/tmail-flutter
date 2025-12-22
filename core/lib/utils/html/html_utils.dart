@@ -61,56 +61,94 @@ class HtmlUtils {
               viewId: '$viewId',
               name: 'onSelectionChange',
             }),
-            "*"
-          )
+            '*'
+          );
         }
 
         // When WebView
         if (window.flutter_inappwebview) {
           window.flutter_inappwebview.callHandler('onSelectionChange', data);
         }
+      };
+      
+      function getEditableFromSelection(selection) {
+        const node = selection?.focusNode || selection?.anchorNode;
+        const el = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+        return (
+          el?.closest('.note-editor .note-editable') ||
+          document.querySelector('.note-editor .note-editable')
+        );
+      }
+      
+      function clamp(v, min, max) {
+        return Math.max(min, Math.min(max, v));
       }
 
       document.addEventListener('selectionchange', function() {
         const selection = window.getSelection();
         const selectedText = selection ? selection.toString().trim() : '';
-
-        if (selectedText === lastSelectedText) {
+      
+        if (selectedText === lastSelectedText) return;
+        lastSelectedText = selectedText;
+      
+        if (!selectedText || !selection || selection.rangeCount === 0) {
+          sendSelectionChangeMessage({ hasSelection: false });
           return;
         }
-        lastSelectedText = selectedText;
-
-        if (selectedText.length > 0 && selection.rangeCount > 0) {
-          try {
-            const range = selection.getRangeAt(0);
-            const rects = range.getClientRects();
-
-            if (rects.length > 0) {
-              const rect = rects[rects.length - 1];
-
-              sendSelectionChangeMessage({
-                hasSelection: true,
-                selectedText: selectedText,
-                coordinates: {
-                  x: rect.right,
-                  y: rect.bottom,
-                  width: rect.width,
-                  height: rect.height
-                }
-              })
-            }
-          } catch (error) {
-            console.error('Selection change error:', error);
-            sendSelectionChangeMessage({
-              hasSelection: false
-            })
+      
+        try {
+          const editable = getEditableFromSelection(selection);
+          if (!editable) {
+            sendSelectionChangeMessage({ hasSelection: false });
+            return;
           }
-        } else {
+      
+          const editableRect = editable.getBoundingClientRect();
+          const padding = 8;
+          const safeHeight = Math.max(editableRect.height, padding * 2);
+      
+          const range = selection.getRangeAt(0);
+          const rects = range.getClientRects();
+          if (!rects || rects.length === 0) {
+            sendSelectionChangeMessage({ hasSelection: false });
+            return;
+          }
+      
+          const lastRect = rects[rects.length - 1];
+      
+          let x = lastRect.right - editableRect.left;
+          let y = lastRect.bottom - editableRect.top;
+      
+          const isInside =
+            lastRect.bottom >= editableRect.top &&
+            lastRect.top <= editableRect.bottom &&
+            lastRect.right >= editableRect.left &&
+            lastRect.left <= editableRect.right;
+      
+          if (!isInside) {
+            x = padding;
+            y = safeHeight / 2;
+          }
+      
+          x = clamp(x, padding, editableRect.width - padding);
+          y = clamp(y, padding, safeHeight - padding);
+      
           sendSelectionChangeMessage({
-            hasSelection: false
-          })
+            hasSelection: true,
+            selectedText,
+            coordinates: {
+              x,
+              y,
+              width: lastRect.width,
+              height: lastRect.height,
+            },
+          });
+        } catch (error) {
+          console.error('Selection change error:', error);
+          sendSelectionChangeMessage({ hasSelection: false });
         }
-      });''',
+      });
+    ''',
     name: 'onSelectionChange');
 
   static const collapseSelectionToEnd = (
