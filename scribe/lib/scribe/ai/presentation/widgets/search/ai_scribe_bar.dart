@@ -71,22 +71,26 @@ class _AIScribeBarState extends State<AIScribeBar> {
       child: Row(
         children: [
           Expanded(
-            child: KeyboardListener(
-              focusNode: _focusNode,
-              onKeyEvent: _handleKeyboardEvent,
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: ScribeLocalizations.of(context).inputPlaceholder,
-                  hintStyle: AIScribeTextStyles.searchBarHint,
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                  isDense: true,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _focusNode.requestFocus,
+              child: KeyboardListener(
+                focusNode: _focusNode,
+                onKeyEvent: _handleKeyboardEvent,
+                child: TextField(
+                  controller: _controller,
+                  decoration: InputDecoration(
+                    hintText: ScribeLocalizations.of(context).inputPlaceholder,
+                    hintStyle: AIScribeTextStyles.searchBarHint,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    isDense: true,
+                  ),
+                  style: AIScribeTextStyles.searchBar,
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  cursorHeight: 16,
                 ),
-                style: AIScribeTextStyles.searchBar,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                cursorHeight: 16,
               ),
             ),
           ),
