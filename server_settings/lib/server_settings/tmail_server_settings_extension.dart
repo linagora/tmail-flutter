@@ -5,4 +5,6 @@ extension TmailServerSettingsExtension on TMailServerSettingOptions {
   bool get isDisplaySenderPriority => displaySenderPriority ?? true;
 
   bool get isAlwaysReadReceipts => alwaysReadReceipts ?? false;
+
+  bool get isAINeedsActionEnabled => aiNeedsActionEnabled ?? false;
 }

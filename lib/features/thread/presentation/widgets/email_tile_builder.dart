@@ -20,7 +20,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
   final bool isDrag;
   final bool isShowingEmailContent;
   final bool isSenderImportantFlagEnabled;
-  final bool isAIEnabled;
+  final bool isAINeedsActionEnabled;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
@@ -32,7 +32,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
     this.searchQuery,
     this.isSearchEmailRunning = false,
     this.isSenderImportantFlagEnabled = true,
-    this.isAIEnabled = true,
+    this.isAINeedsActionEnabled = true,
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
@@ -141,5 +141,5 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
   }
 
   bool get _shouldShowAIAction =>
-      isAIEnabled && presentationEmail.hasNeedAction;
+      isAINeedsActionEnabled && presentationEmail.hasNeedAction;
 }

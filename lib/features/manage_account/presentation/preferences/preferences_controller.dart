@@ -50,7 +50,7 @@ class PreferencesController extends BaseController {
 
   final _manageAccountDashBoardController = Get.find<ManageAccountDashBoardController>();
 
-  bool get isAIScribeAvailable {
+  bool get isAICapabilitySupported {
     return _manageAccountDashBoardController.isAICapabilitySupported;
   }
 
@@ -181,6 +181,11 @@ class PreferencesController extends BaseController {
       case PreferencesOptionType.senderPriority:
         newSettingOption = settingOption.value?.copyWith(
           displaySenderPriority: !isEnabled,
+        );
+        break;
+      case PreferencesOptionType.aiNeedsAction:
+        newSettingOption = settingOption.value?.copyWith(
+          aiNeedsActionEnabled: !isEnabled,
         );
         break;
       default:

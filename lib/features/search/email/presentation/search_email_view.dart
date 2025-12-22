@@ -724,8 +724,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         final isSenderImportantFlagEnabled =
             dashboardController.isSenderImportantFlagEnabled.value;
 
-        final isAiCapabilitySupported =
-            dashboardController.isAiCapabilitySupported;
+        final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
         return EmailTileBuilder(
           presentationEmail: presentationEmail,
@@ -734,7 +733,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           isShowingEmailContent: isShowingEmailContent,
           isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
           isSearchEmailRunning: true,
-          isAIEnabled: isAiCapabilitySupported,
+          isAINeedsActionEnabled: isAINeedsActionEnabled,
           padding: SearchEmailViewStyle.getPaddingSearchResultList(
             context,
             controller.responsiveUtils,

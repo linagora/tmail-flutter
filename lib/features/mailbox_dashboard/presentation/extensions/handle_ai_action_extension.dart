@@ -16,4 +16,7 @@ extension HandleAiActionExtension on MailboxDashBoardController {
       currentAccountId,
     );
   }
+
+  bool get isAINeedsActionEnabled =>
+      isAINeedsActionSettingEnabled.value && isAiCapabilitySupported;
 }

@@ -319,6 +319,15 @@ class MailboxController extends BaseMailboxController
       } else if (action is RefreshAllMailboxAction) {
         refreshAllMailbox();
         mailboxDashBoardController.clearMailboxUIAction();
+      } else if (action is AutoCreateActionRequiredFolderMailboxAction) {
+        addActionRequiredFolder();
+        mailboxDashBoardController.clearMailboxUIAction();
+      } else if (action is AutoRemoveActionRequiredFolderMailboxAction) {
+        removeActionRequiredFolder();
+        mailboxDashBoardController.clearMailboxUIAction();
+        if (selectedMailbox?.isActionRequired == true) {
+          _switchBackToMailboxDefault();
+        }
       }
     });
 
@@ -1564,7 +1573,7 @@ class MailboxController extends BaseMailboxController
 
   void autoCreateVirtualFolder() {
     addFavoriteFolderToMailboxList();
-    if (mailboxDashBoardController.isAiCapabilitySupported) {
+    if (mailboxDashBoardController.isAINeedsActionEnabled) {
       addActionRequiredFolder();
     }
   }

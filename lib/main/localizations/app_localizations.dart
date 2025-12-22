@@ -5478,4 +5478,25 @@ class AppLocalizations {
       name: 'youDoNotHaveAnyActionRequiredEmails',
     );
   }
+
+  String get aiNeedsAction {
+    return Intl.message(
+      'AI needs-action',
+      name: 'aiNeedsAction',
+    );
+  }
+
+  String get aiNeedsActionToggleDescription {
+    return Intl.message(
+      'Enable AI needs-action',
+      name: 'aiNeedsActionToggleDescription',
+    );
+  }
+
+  String get aiNeedsActionSettingExplanation {
+    return Intl.message(
+      'Detect emails that need your attention using AI. When turned off, AI will not process any emails.',
+      name: 'aiNeedsActionSettingExplanation',
+    );
+  }
 }

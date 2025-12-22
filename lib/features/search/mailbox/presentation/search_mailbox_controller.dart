@@ -902,7 +902,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void autoCreateVirtualFolder() {
     addFavoriteFolderToMailboxList();
-    if (dashboardController.isAiCapabilitySupported) {
+    if (dashboardController.isAINeedsActionEnabled) {
       addActionRequiredFolder();
     }
   }
