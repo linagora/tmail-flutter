@@ -50,7 +50,7 @@ extension HandleActionTypeForEmailSelection on MailboxDashBoardController {
     final mapEmailIdsByMailboxId = <MailboxId, List<EmailId>>{};
 
     if (searchController.isSearchEmailRunning ||
-        selectedMailbox.value?.isFavorite == true) {
+        selectedMailbox.value?.isVirtualFolder == true) {
       for (final email in emails) {
         final mailboxId = email.firstMailboxIdAvailable;
         final emailId = email.id;
