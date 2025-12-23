@@ -684,6 +684,7 @@ class ThreadController extends BaseController with EmailActionController {
           {
             EmailFilterCondition(
               hasKeyword: KeyWordIdentifier.emailFlagged.value,
+              before: before,
             ),
             EmailFilterCondition(
               notKeyword: KeyWordIdentifier.emailSeen.value,
