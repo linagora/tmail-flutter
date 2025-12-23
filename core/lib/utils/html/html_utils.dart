@@ -48,8 +48,11 @@ class HtmlUtils {
       editor.parentNode.replaceChild(newEditor, editor);''',
     name: 'unregisterDropListener');
 
-  static registerSelectionChangeListener(String viewId) => (
-    script: '''
+  static ({String name, String script}) registerSelectionChangeListener(
+    String viewId,
+  ) =>
+      (
+        script: '''
       let lastSelectedText = '';
 
       const sendSelectionChangeMessage = (data) => {
@@ -149,7 +152,8 @@ class HtmlUtils {
         }
       });
     ''',
-    name: 'onSelectionChange');
+        name: 'onSelectionChange',
+      );
 
   static const collapseSelectionToEnd = (
     script: '''
