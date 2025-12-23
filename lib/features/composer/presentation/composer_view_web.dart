@@ -268,9 +268,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         ),
                                       onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                       onKeyDownEditorAction: controller.onKeyDownEditorAction,
-                                      onTextSelectionChanged: controller.isAIScribeAvailable
-                                          ? controller.handleTextSelection
-                                          : null,
+                                      onTextSelectionChanged: controller.textSelectionHandler,
                                     ));
                                   }
                                 ),
@@ -514,9 +512,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                                 ),
                                               onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                               onKeyDownEditorAction: controller.onKeyDownEditorAction,
-                                              onTextSelectionChanged: controller.isAIScribeAvailable
-                                                  ? controller.handleTextSelection
-                                                  : null,
+                                              onTextSelectionChanged: controller.textSelectionHandler,
                                             );
                                           });
                                         }
@@ -794,9 +790,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                               ),
                                             onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
                                             onKeyDownEditorAction: controller.onKeyDownEditorAction,
-                                            onTextSelectionChanged: controller.isAIScribeAvailable
-                                                ? controller.handleTextSelection
-                                                : null,
+                                            onTextSelectionChanged: controller.textSelectionHandler,
                                           ));
                                         }
                                       ),
