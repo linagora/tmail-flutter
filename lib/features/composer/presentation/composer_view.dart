@@ -248,7 +248,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                       onCreatedEditorAction: controller.onCreatedMobileEditorAction,
                                       onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                                       onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
-                                      onTextSelectionChanged: controller.handleTextSelection,
+                                      onTextSelectionChanged: controller.isAIScribeAvailable
+                                          ? controller.handleTextSelection
+                                          : null,
                                     ),
                                   )),
                                   Obx(() {
@@ -437,7 +439,9 @@ class ComposerView extends GetWidget<ComposerController> {
                                   onCreatedEditorAction: controller.onCreatedMobileEditorAction,
                                   onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
                                   onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
-                                  onTextSelectionChanged: controller.handleTextSelection,
+                                  onTextSelectionChanged: controller.isAIScribeAvailable
+                                      ? controller.handleTextSelection
+                                      : null,
                                 ),
                               )),
                               Obx(() {
