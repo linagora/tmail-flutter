@@ -144,4 +144,8 @@ extension HandleAiScribeInComposerExtension on ComposerController {
       editorTextSelection.value = null;
     }
   }
+
+  void Function(TextSelectionData? textSelectionData)?
+      get textSelectionHandler =>
+          isAIScribeAvailable ? handleTextSelection : null;
 }
