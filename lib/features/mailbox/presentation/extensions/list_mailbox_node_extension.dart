@@ -59,6 +59,6 @@ extension ListMailboxNodeExtension on List<MailboxNode> {
   }
 
   bool _equalsIgnoreCase(String? value, String expected) {
-    return value != null && value.toLowerCase() == expected;
+    return value != null && value.toLowerCase() == expected.toLowerCase();
   }
 }

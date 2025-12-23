@@ -6,17 +6,17 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mail
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 
 void main() {
+  MailboxNode buildNode(String id, {String? name, String? role}) {
+    final mailbox = PresentationMailbox(
+      MailboxId(Id(id)),
+      name: name != null ? MailboxName(name) : null,
+      role: role != null ? Role(role) : null,
+    );
+    return MailboxNode(mailbox);
+  }
+
   group('ListMailboxNodeExtension::insertAfterInbox', () {
     late List<MailboxNode> nodes;
-
-    MailboxNode buildNode(String id, {String? name, String? role}) {
-      final mailbox = PresentationMailbox(
-        MailboxId(Id(id)),
-        name: name != null ? MailboxName(name) : null,
-        role: role != null ? Role(role) : null,
-      );
-      return MailboxNode(mailbox);
-    }
 
     setUp(() {
       nodes = [
@@ -98,15 +98,6 @@ void main() {
   group('ListMailboxNodeExtension::insertAfterStarredOrInbox', () {
     late List<MailboxNode> nodes;
 
-    MailboxNode buildNode(String id, {String? name, String? role}) {
-      final mailbox = PresentationMailbox(
-        MailboxId(Id(id)),
-        name: name != null ? MailboxName(name) : null,
-        role: role != null ? Role(role) : null,
-      );
-      return MailboxNode(mailbox);
-    }
-
     test('should insert after Starred when Starred exists (by role)', () {
       nodes = [
         buildNode('1', name: 'Inbox', role: 'inbox'),
@@ -177,19 +168,19 @@ void main() {
       final ids = nodes.mailboxIds.map((id) => id.id.value).toList();
       expect(ids, ['1', '2']);
     });
+
+    test('should insert into empty list as first element', () {
+      nodes = [];
+      final newNode = buildNode('1', name: 'Starred', role: 'favorite');
+      nodes.insertAfterStarredOrInbox(newNode);
+
+      final ids = nodes.mailboxIds.map((id) => id.id.value).toList();
+      expect(ids, ['1']);
+    });
   });
 
   group('ListMailboxNodeExtension::insertAfterByPriority', () {
     late List<MailboxNode> nodes;
-
-    MailboxNode buildNode(String id, {String? name, String? role}) {
-      final mailbox = PresentationMailbox(
-        MailboxId(Id(id)),
-        name: name != null ? MailboxName(name) : null,
-        role: role != null ? Role(role) : null,
-      );
-      return MailboxNode(mailbox);
-    }
 
     bool isInbox(MailboxNode node) =>
         node.item.role?.value == PresentationMailbox.inboxRole ||
