@@ -696,8 +696,8 @@ class HtmlUtils {
   }
 
   static String addQuoteToggle(String htmlString) {
-    final likelyHtml = htmlString.contains(RegExp(r'<[a-zA-Z][^>]*>')) && // Contains a start tag
-      htmlString.contains(RegExp(r'</[a-zA-Z][^>]*>')); // Contains an end tag
+    final likelyHtml = htmlString.contains(RegExp(r'<[a-zA-Z][^>\s]*[^>]*>')) && // Contains a start tag
+      htmlString.contains(RegExp(r'</[a-zA-Z][^>]{0,128}>')); // Contains an end tag
 
     if (!likelyHtml) {
       return htmlString; // Not likely HTML, return original
@@ -846,8 +846,9 @@ class HtmlUtils {
     } while (decoded != cleaned && iterations < maxIterations);
 
     // Delete all remaining HTML tags → replace tag with space to avoid text sticking
+    final String tagsPipe = validTags.map(RegExp.escape).join('|');
     final tagRegex = RegExp(
-      '</?(${validTags.join('|')})(\\s+[^>]*)?>',
+      '</?(?:$tagsPipe)(?:\\s+[^>]*)?>',
       caseSensitive: false,
     );
     cleaned = cleaned.replaceAll(tagRegex, ' ');
@@ -866,10 +867,9 @@ class HtmlUtils {
       if (container == null) return htmlString;
 
       final urlRegex = RegExp(
-        r'''(?:(?:https?:\/\/)|(?:ftp:\/\/)|(?:mailto:)|(?:file:\/\/)|(?:www\.))(?!\.)(?!.*\.\.)([^\s<]+[^<.,:;\"\'\)\]\s!?])''',
+        r'''(?:https?://|ftp://|mailto:|file://|www\.)[^\s<.]+(?:\.[^\s<.]+)*(?<![.,:;!?"')\]])''',
         caseSensitive: false,
         multiLine: true,
-        dotAll: true,
       );
 
       _processNode(container, urlRegex);
@@ -895,6 +895,9 @@ class HtmlUtils {
   };
 
   static void _processNode(dom.Node node, RegExp urlRegex) {
+    // 1. Anchored with ^ to fail instantly if the start doesn't match
+    // 2. Grouped for clarity
+    final protocolRegex = RegExp(r'^(?:https?|ftp|mailto|file)');
     for (var child in node.nodes.toList()) {
       // Skip if node or parent node is in tag to skip
       final parentTag = child.parent?.localName;
@@ -925,7 +928,7 @@ class HtmlUtils {
             nodes.add(dom.Text(url));
           } else {
             // Normalize href
-            final href = url.startsWith(RegExp(r'https?|ftp|mailto|file'))
+            final href = url.startsWith(protocolRegex)
                 ? url
                 : 'https://$url';
 

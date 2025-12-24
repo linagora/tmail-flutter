@@ -54,7 +54,7 @@ class AppUtils {
   static bool isEmailLocalhost(String email) {
     final normalized = email.trim();
     return RegExp(
-        r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@localhost$'
+        r'^(?:"[^"\r\n]+"|[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*)@localhost$'
     ).hasMatch(normalized);
   }
 
