@@ -12,6 +12,15 @@ class StringConvert {
   // Change the pattern to include newlines directly to avoid the .replaceAll() step
   static const String emailSeparatorPattern = r'[ ,;\n\r\t]+';
 
+  // ReDoS-safe regex patterns as static final
+  static final _base64ValidationRegex = RegExp(r'^[A-Za-z0-9+/=]+$');
+  static final _mdSeparatorRegex = RegExp(
+    r'^\|?(?:[ \t]*:?-+:?[ \t]*\|)+[ \t]*:?-+:?[ \t]*\|?$',
+    multiLine: false,
+  );
+  static final _asciiArtRegex = RegExp(r'[+\-|/\\=]');
+  static final _namedAddressRegex = RegExp(r'''(?:(?:"([^"]+)"|'([^']+)')\s*)?<([^>]+)>''');
+
   static String? writeEmptyToNull(String text) {
     if (text.isEmpty) return null;
     return text;
@@ -40,7 +49,7 @@ class StringConvert {
       // 2. Base64 Check - Using a non-regex check first is faster
       if (input.length % 4 == 0 && !input.contains(' ')) {
         // Only run regex if basic length/whitespace checks pass
-        if (RegExp(r'^[A-Za-z0-9+/=]+$').hasMatch(input)) {
+        if (_base64ValidationRegex.hasMatch(input)) {
           try {
             input = utf8.decode(base64.decode(input));
           } catch (_) {
@@ -132,25 +141,14 @@ class StringConvert {
         text.split('\n').where((line) => line.trim().isNotEmpty).toList();
     if (lines.length < 2) return false;
 
-    // 1. Hardened Markdown Separator Regex
-    // We use [ \t]* instead of \s to be specific and avoid newline issues
-    // We ensure the dash sequence is clearly delimited
-    final mdSeparatorRegex = RegExp(
-        r'^\|?(?:[ \t]*:?-+:?[ \t]*\|)+[ \t]*:?-+:?[ \t]*\|?$',
-        multiLine: false);
-
-    // 2. Optimized ASCII Check
-    // We use hasMatch instead of split().length for better performance
-    final asciiArtRegex = RegExp(r'[+\-|/\\=]');
-
     bool isMarkdown = false;
     bool allLinesHaveAscii = true;
 
     for (final line in lines) {
-      if (!isMarkdown && mdSeparatorRegex.hasMatch(line)) {
+      if (!isMarkdown && _mdSeparatorRegex.hasMatch(line)) {
         isMarkdown = true;
       }
-      if (allLinesHaveAscii && !asciiArtRegex.hasMatch(line)) {
+      if (allLinesHaveAscii && !_asciiArtRegex.hasMatch(line)) {
         allLinesHaveAscii = false;
       }
       // Early exit if we found a table but also know it's not ASCII art
@@ -166,8 +164,7 @@ class StringConvert {
         input = Uri.decodeComponent(input);
       }
 
-      if (input.length % 4 == 0 &&
-          input.contains(RegExp(r'^[A-Za-z0-9+/=]+$'))) {
+      if (input.length % 4 == 0 && _base64ValidationRegex.hasMatch(input)) {
         try {
           input = utf8.decode(base64.decode(input));
         } catch (_) {}
@@ -176,11 +173,9 @@ class StringConvert {
       input = input.replaceAll('\n', ' ');
       final results = <NamedAddress>[];
 
-      final pattern = RegExp(r'''(?:(?:"([^"]+)"|'([^']+)')\s*)?<([^>]+)>''');
-
       int currentIndex = 0;
       // Use a for-in loop directly on the iterable to save memory
-      for (final match in pattern.allMatches(input)) {
+      for (final match in _namedAddressRegex.allMatches(input)) {
         if (match.start > currentIndex) {
           final between = input.substring(currentIndex, match.start);
           results.addAll(_splitPlainAddresses(between, emailSeparatorPattern));

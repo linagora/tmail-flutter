@@ -9,6 +9,8 @@ abstract class DomTransformer {
 
   const DomTransformer();
 
+  static final _backgroundImageRegex = RegExp(r'''\bbackground-image\s*:\s*url\(\s*['"]?([^' ")]+)['"]?\s*\)''');
+
   /// Uses the `DOM` [document] to transform the `document`.
   ///
   /// All changes will be visible to subsequent transformers.
@@ -27,8 +29,7 @@ abstract class DomTransformer {
 
   Tuple2<String, String>? findImageUrlFromStyleTag(String style) {
     try {
-      final regExp = RegExp(r'''\bbackground-image\s*:\s*url\(\s*['"]?([^' ")]+)['"]?\s*\)''');
-      final match = regExp.firstMatch(style);
+      final match = _backgroundImageRegex.firstMatch(style);
       if (match == null) {
         return null;
       }

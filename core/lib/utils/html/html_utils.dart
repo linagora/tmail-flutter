@@ -24,6 +24,17 @@ class HtmlUtils {
   static final random = Random();
   static final htmlUnescape = HtmlUnescape();
 
+  // ReDoS-safe regex patterns as const
+  static final _htmlStartTagRegex = RegExp(r'<[a-zA-Z][^>\s]*[^>]*>');
+  static final _htmlEndTagRegex = RegExp(r'</[a-zA-Z][^>]{0,128}>');
+  static final _whitespaceNormalizationRegex = RegExp(r'\s+');
+  static final _urlRegex = RegExp(
+    r'''(?:https?://|ftp://|mailto:|file://|www\.)[^\s<.]+(?:\.[^\s<.]+)*(?<![.,:;!?"')\]])''',
+    caseSensitive: false,
+    multiLine: true,
+  );
+  static final _protocolRegex = RegExp(r'^(?:https?|ftp|mailto|file)');
+
   static const removeLineHeight1px = (
     script: '''
       document.querySelectorAll('[style*="line-height"]').forEach(el => {
@@ -700,8 +711,8 @@ class HtmlUtils {
   }
 
   static String addQuoteToggle(String htmlString) {
-    final likelyHtml = htmlString.contains(RegExp(r'<[a-zA-Z][^>\s]*[^>]*>')) && // Contains a start tag
-      htmlString.contains(RegExp(r'</[a-zA-Z][^>]{0,128}>')); // Contains an end tag
+    final likelyHtml = htmlString.contains(_htmlStartTagRegex) && // Contains a start tag
+      htmlString.contains(_htmlEndTagRegex); // Contains an end tag
 
     if (!likelyHtml) {
       return htmlString; // Not likely HTML, return original
@@ -858,7 +869,7 @@ class HtmlUtils {
     cleaned = cleaned.replaceAll(tagRegex, ' ');
 
     // Normalize whitespace
-    cleaned = cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
+    cleaned = cleaned.replaceAll(_whitespaceNormalizationRegex, ' ').trim();
 
     return cleaned;
   }
@@ -870,13 +881,7 @@ class HtmlUtils {
 
       if (container == null) return htmlString;
 
-      final urlRegex = RegExp(
-        r'''(?:https?://|ftp://|mailto:|file://|www\.)[^\s<.]+(?:\.[^\s<.]+)*(?<![.,:;!?"')\]])''',
-        caseSensitive: false,
-        multiLine: true,
-      );
-
-      _processNode(container, urlRegex);
+      _processNode(container, _urlRegex);
 
       return container.innerHtml;
     } catch (e) {
@@ -899,9 +904,6 @@ class HtmlUtils {
   };
 
   static void _processNode(dom.Node node, RegExp urlRegex) {
-    // 1. Anchored with ^ to fail instantly if the start doesn't match
-    // 2. Grouped for clarity
-    final protocolRegex = RegExp(r'^(?:https?|ftp|mailto|file)');
     for (var child in node.nodes.toList()) {
       // Skip if node or parent node is in tag to skip
       final parentTag = child.parent?.localName;
@@ -932,7 +934,7 @@ class HtmlUtils {
             nodes.add(dom.Text(url));
           } else {
             // Normalize href
-            final href = url.startsWith(protocolRegex)
+            final href = url.startsWith(_protocolRegex)
                 ? url
                 : 'https://$url';
 

@@ -7,6 +7,7 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
   const NormalizeLineHeightInStyleTransformer();
 
   static const _removableLineHeights = ['1px', '100%'];
+  static final _multipleSpacesRegex = RegExp(r' {2,}');
 
   @override
   Future<void> process({
@@ -30,7 +31,7 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
         var updatedStyle = originalStyle.replaceAll(pattern, '').trim();
 
         // Remove extra spaces (>=2 spaces → 1 space)
-        updatedStyle = updatedStyle.replaceAll(RegExp(r' {2,}'), ' ');
+        updatedStyle = updatedStyle.replaceAll(_multipleSpacesRegex, ' ');
 
         if (updatedStyle != originalStyle) {
           if (updatedStyle.isEmpty) {
