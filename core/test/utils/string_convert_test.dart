@@ -815,6 +815,32 @@ void main() {
         ]),
       );
     });
+    test('Does not corrupt plain text that looks like base64', () {
+       // "useruser" is 8 chars (multiple of 4) and fits the base64 regex.
+      // base64.decode("useruser") produces random bytes.
+      const input = 'useruser';
+      final result = StringConvert.extractNamedAddresses(input);
+      expect(result.first.address, equals('useruser'));
+    });
+    test('Handles brackets with no name', () {
+      const input = '<only-email@example.com>';
+      final result = StringConvert.extractNamedAddresses(input);
+      expect(result.first.name, isEmpty);
+      expect(result.first.address, equals('only-email@example.com'));
+    });
+    test('Handles names containing commas', () {
+      const input =
+          '"Doe, John" <john@example.com>, "Smith, Jane" <jane@example.com>';
+      final result = StringConvert.extractNamedAddresses(input);
+      expect(result[0].name, equals('Doe, John'));
+      expect(result[1].name, equals('Smith, Jane'));
+    });
+    test('Handles malformed input gracefully', () {
+      const input = '"Unclosed Quote <email@example.com>';
+      final result = StringConvert.extractNamedAddresses(input);
+      // Ensure it doesn't crash and returns at least the email
+      expect(result, isNotEmpty);
+    });
   });
 
   group('StringConvert.convertHtmlContentToTextContent', () {

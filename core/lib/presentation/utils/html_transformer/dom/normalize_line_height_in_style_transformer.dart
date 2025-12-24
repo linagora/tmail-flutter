@@ -8,6 +8,12 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
 
   static const _removableLineHeights = ['1px', '100%'];
   static final _multipleSpacesRegex = RegExp(r' {2,}');
+  static final _lineHeightPattern = RegExp(
+    r'line-height\s*:\s*(?:' +
+        _removableLineHeights.map(RegExp.escape).join('|') +
+        r')\s*;?',
+    caseSensitive: false,
+  );
 
   @override
   Future<void> process({
@@ -16,11 +22,7 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
     Map<String, String>? mapUrlDownloadCID,
   }) async {
     try {
-      final alternation = _removableLineHeights.map(RegExp.escape).join('|');
-      final pattern = RegExp(
-        r'line-height\s*:\s*(?:' + alternation + r')\s*;?',
-        caseSensitive: false,
-      );
+      
 
       final elements = document.querySelectorAll('[style*="line-height"]');
 
@@ -28,7 +30,7 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
         final originalStyle = element.attributes['style'];
         if (originalStyle == null) continue;
 
-        var updatedStyle = originalStyle.replaceAll(pattern, '').trim();
+        var updatedStyle = originalStyle.replaceAll(_lineHeightPattern, '').trim();
 
         // Remove extra spaces (>=2 spaces → 1 space)
         updatedStyle = updatedStyle.replaceAll(_multipleSpacesRegex, ' ');

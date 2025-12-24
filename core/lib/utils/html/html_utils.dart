@@ -34,6 +34,10 @@ class HtmlUtils {
     multiLine: true,
   );
   static final _protocolRegex = RegExp(r'^(?:https?|ftp|mailto|file)');
+  static final _tagRemovalRegex = RegExp(
+    '</?(?:${validTags.map(RegExp.escape).join('|')})(?:\\s+[^>]*)?>',
+    caseSensitive: false,
+  );
 
   static const removeLineHeight1px = (
     script: '''
@@ -857,12 +861,7 @@ class HtmlUtils {
     } while (decoded != cleaned && iterations < maxIterations);
 
     // Delete all remaining HTML tags → replace tag with space to avoid text sticking
-    final String tagsPipe = validTags.map(RegExp.escape).join('|');
-    final tagRegex = RegExp(
-      '</?(?:$tagsPipe)(?:\\s+[^>]*)?>',
-      caseSensitive: false,
-    );
-    cleaned = cleaned.replaceAll(tagRegex, ' ');
+    cleaned = cleaned.replaceAll(_tagRemovalRegex, ' ');
 
     // Normalize whitespace
     cleaned = cleaned.replaceAll(_whitespaceNormalizationRegex, ' ').trim();
