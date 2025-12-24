@@ -9,7 +9,8 @@ import 'package:html/parser.dart';
 import 'package:http_parser/http_parser.dart';
 
 class StringConvert {
-  static const String emailSeparatorPattern = r'[ ,;]+';
+  // Change the pattern to include newlines directly to avoid the .replaceAll() step
+  static const String emailSeparatorPattern = r'[ ,;\n\r\t]+';
 
   static String? writeEmptyToNull(String text) {
     if (text.isEmpty) return null;
@@ -31,25 +32,28 @@ class StringConvert {
 
   static List<String> extractStrings(String input, String separatorPattern) {
     try {
-      // Check if the input is URL encoded
+      // 1. URL Decoding
       if (input.contains('%')) {
-        input = Uri.decodeComponent(input); // Decode URL encoding
+        input = Uri.decodeComponent(input);
       }
 
-      // Efficient Base64 validation: Check length and minimal regex match
-      if (input.length % 4 == 0 && input.contains(RegExp(r'^[A-Za-z0-9+/=]+$'))) {
-        try {
-          input = utf8.decode(base64.decode(input)); // Decode Base64 encoding
-        } catch (_) {
-          // Ignore if decoding fails
+      // 2. Base64 Check - Using a non-regex check first is faster
+      if (input.length % 4 == 0 && !input.contains(' ')) {
+        // Only run regex if basic length/whitespace checks pass
+        if (RegExp(r'^[A-Za-z0-9+/=]+$').hasMatch(input)) {
+          try {
+            input = utf8.decode(base64.decode(input));
+          } catch (_) {
+            // Ignore if decoding fails
+          }
         }
       }
 
+      // 3. Optimized Split
+      // We use the pattern directly and skip the redundant .replaceAll() and .trim()
       final RegExp separator = RegExp(separatorPattern);
       final listStrings = input
-          .replaceAll('\n', ' ')
           .split(separator)
-          .map((value) => value.trim())
           .where((value) => value.isNotEmpty)
           .toList();
       log('StringConvert::extractStrings:listStrings = $listStrings');
@@ -128,16 +132,32 @@ class StringConvert {
         text.split('\n').where((line) => line.trim().isNotEmpty).toList();
     if (lines.length < 2) return false;
 
-    // Check for Markdown table
-    final mdSeparatorRegex = RegExp(r'^\|?(\s*:?-+:?\s*\|)+(\s*:?-+:?\s*)\|?$');
-    final isMarkdown = lines.any((line) => mdSeparatorRegex.hasMatch(line));
+    // 1. Hardened Markdown Separator Regex
+    // We use [ \t]* instead of \s to be specific and avoid newline issues
+    // We ensure the dash sequence is clearly delimited
+    final mdSeparatorRegex = RegExp(
+        r'^\|?(?:[ \t]*:?-+:?[ \t]*\|)+[ \t]*:?-+:?[ \t]*\|?$',
+        multiLine: false);
 
-    // Check for ASCII art table (with borders made of +, -, |, /, \, =)
-    final asciiArtRegex = RegExp(r'[\+\-\|/\\=]');
-    final isAsciiArt = lines.every((line) =>
-        line.contains(asciiArtRegex) && line.split(asciiArtRegex).length > 1);
-    log('StringConvert::isTextTable:isMarkdown = $isMarkdown | isAscii = $isAsciiArt');
-    return isMarkdown || isAsciiArt;
+    // 2. Optimized ASCII Check
+    // We use hasMatch instead of split().length for better performance
+    final asciiArtRegex = RegExp(r'[+\-|/\\=]');
+
+    bool isMarkdown = false;
+    bool allLinesHaveAscii = true;
+
+    for (final line in lines) {
+      if (!isMarkdown && mdSeparatorRegex.hasMatch(line)) {
+        isMarkdown = true;
+      }
+      if (allLinesHaveAscii && !asciiArtRegex.hasMatch(line)) {
+        allLinesHaveAscii = false;
+      }
+      // Early exit if we found a table but also know it's not ASCII art
+      if (isMarkdown && !allLinesHaveAscii) break;
+    }
+
+    return isMarkdown || (allLinesHaveAscii && lines.length >= 2);
   }
 
   static List<NamedAddress> extractNamedAddresses(String input) {
@@ -156,12 +176,11 @@ class StringConvert {
       input = input.replaceAll('\n', ' ');
       final results = <NamedAddress>[];
 
-      final pattern = RegExp(r'''(?:"([^"]+)"|'([^']+)'|)\s*<([^>]+)>''');
+      final pattern = RegExp(r'''(?:(?:"([^"]+)"|'([^']+)')\s*)?<([^>]+)>''');
 
       int currentIndex = 0;
-      final matches = pattern.allMatches(input).toList();
-
-      for (final match in matches) {
+      // Use a for-in loop directly on the iterable to save memory
+      for (final match in pattern.allMatches(input)) {
         if (match.start > currentIndex) {
           final between = input.substring(currentIndex, match.start);
           results.addAll(_splitPlainAddresses(between, emailSeparatorPattern));

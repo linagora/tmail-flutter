@@ -27,7 +27,7 @@ abstract class DomTransformer {
 
   Tuple2<String, String>? findImageUrlFromStyleTag(String style) {
     try {
-      final regExp = RegExp(r'background-image:\s*url\(([^)]+)\).*?');
+      final regExp = RegExp(r'''\bbackground-image\s*:\s*url\(\s*['"]?([^' ")]+)['"]?\s*\)''');
       final match = regExp.firstMatch(style);
       if (match == null) {
         return null;

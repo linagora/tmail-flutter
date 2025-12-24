@@ -15,8 +15,9 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
     Map<String, String>? mapUrlDownloadCID,
   }) async {
     try {
+      final alternation = _removableLineHeights.map(RegExp.escape).join('|');
       final pattern = RegExp(
-        r'line-height\s*:\s*(?:' + _removableLineHeights.join('|') + r')\s*;?',
+        r'line-height\s*:\s*(?:' + alternation + r')\s*;?',
         caseSensitive: false,
       );
 
@@ -29,7 +30,7 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
         var updatedStyle = originalStyle.replaceAll(pattern, '').trim();
 
         // Remove extra spaces (>=2 spaces → 1 space)
-        updatedStyle = updatedStyle.replaceAll(RegExp(r'\s{2,}'), ' ');
+        updatedStyle = updatedStyle.replaceAll(RegExp(r' {2,}'), ' ');
 
         if (updatedStyle != originalStyle) {
           if (updatedStyle.isEmpty) {
