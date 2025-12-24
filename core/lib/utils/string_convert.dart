@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/domain/exceptions/string_exception.dart';
 import 'package:core/utils/mail/named_address.dart';
+import 'package:flutter/widgets.dart' show visibleForTesting;
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:http_parser/http_parser.dart';
@@ -20,6 +21,9 @@ class StringConvert {
   );
   static final _asciiArtRegex = RegExp(r'[+\-|/\\=]');
   static final _namedAddressRegex = RegExp(r'''(?:(?:"([^"]+)"|'([^']+)')\s*)?<([^>]+)>''');
+
+  @visibleForTesting
+  static RegExp get base64ValidationRegex => _base64ValidationRegex;
 
   static String? writeEmptyToNull(String text) {
     if (text.isEmpty) return null;
