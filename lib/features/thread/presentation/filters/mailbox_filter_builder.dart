@@ -9,6 +9,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
@@ -46,6 +47,13 @@ class MailboxFilterBuilder {
 
     if (selectedMailbox?.isActionRequired == true) {
       return _buildActionRequiredMailboxFilter(before: before);
+    }
+
+    if (selectedMailbox?.isLabelMailbox == true) {
+      return _buildKeywordBasedFilter(
+        selectedMailbox?.filterKeyword,
+        before: before,
+      );
     }
 
     return buildDefaultMailboxFilter(before: before);
@@ -110,6 +118,33 @@ class MailboxFilterBuilder {
     }
   }
 
+  Filter _buildKeywordBasedFilter({
+    required String keyword,
+    UTCDate? before,
+  }) {
+    switch (filterMessageOption) {
+      case FilterMessageOption.unread:
+        return EmailFilterCondition(
+          notKeyword: KeyWordIdentifier.emailSeen.value,
+          hasKeyword: keyword,
+          before: before,
+        );
+
+      case FilterMessageOption.attachments:
+        return EmailFilterCondition(
+          hasAttachment: true,
+          hasKeyword: keyword,
+          before: before,
+        );
+
+      default:
+        return EmailFilterCondition(
+          hasKeyword: keyword,
+          before: before,
+        );
+    }
+  }
+
   EmailFilterCondition buildDefaultMailboxFilter({UTCDate? before}) {
     switch (filterMessageOption) {
       case FilterMessageOption.all:
@@ -117,6 +152,7 @@ class MailboxFilterBuilder {
 
       case FilterMessageOption.unread:
         return EmailFilterCondition(
+          inMailbox: mailboxId,
           notKeyword: KeyWordIdentifier.emailSeen.value,
           before: before,
           inMailbox: _mailboxId,
@@ -124,6 +160,7 @@ class MailboxFilterBuilder {
 
       case FilterMessageOption.attachments:
         return EmailFilterCondition(
+          inMailbox: mailboxId,
           hasAttachment: true,
           before: before,
           inMailbox: _mailboxId,
@@ -131,6 +168,7 @@ class MailboxFilterBuilder {
 
       case FilterMessageOption.starred:
         return EmailFilterCondition(
+          inMailbox: mailboxId,
           hasKeyword: KeyWordIdentifier.emailFlagged.value,
           before: before,
           inMailbox: _mailboxId,

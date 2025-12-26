@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:labels/extensions/label_extension.dart';
@@ -12,6 +13,7 @@ class LabelListItem extends StatelessWidget {
   final Label label;
   final ImagePaths imagePaths;
   final bool isDesktop;
+  final bool isSelected;
   final OnOpenLabelCallback onOpenLabelCallback;
 
   const LabelListItem({
@@ -20,6 +22,7 @@ class LabelListItem extends StatelessWidget {
     required this.imagePaths,
     required this.onOpenLabelCallback,
     this.isDesktop = false,
+    this.isSelected = false,
   });
 
   @override
@@ -38,7 +41,10 @@ class LabelListItem extends StatelessWidget {
         borderRadius: borderRadius,
         onTap: () => onOpenLabelCallback(label),
         child: Container(
-          decoration: BoxDecoration(borderRadius: borderRadius),
+          decoration: BoxDecoration(
+            borderRadius: borderRadius,
+            color: _backgroundColorItem,
+          ),
           padding: EdgeInsetsDirectional.symmetric(
             horizontal: isDesktop
                 ? MailboxItemWidgetStyles.itemPadding
@@ -70,4 +76,7 @@ class LabelListItem extends StatelessWidget {
       ),
     );
   }
+
+  Color get _backgroundColorItem =>
+      isSelected ? AppColor.blue100 : Colors.transparent;
 }

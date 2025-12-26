@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_item.dart';
 
@@ -7,6 +8,7 @@ class LabelListView extends StatelessWidget {
   final List<Label> labels;
   final ImagePaths imagePaths;
   final bool isDesktop;
+  final Id? labelIdSelected;
   final OnOpenLabelCallback onOpenLabelCallback;
 
   const LabelListView({
@@ -15,6 +17,7 @@ class LabelListView extends StatelessWidget {
     required this.imagePaths,
     required this.onOpenLabelCallback,
     this.isDesktop = false,
+    this.labelIdSelected,
   });
 
   @override
@@ -26,9 +29,11 @@ class LabelListView extends StatelessWidget {
       padding: EdgeInsets.zero,
       itemCount: labels.length,
       itemBuilder: (context, index) {
+        final label = labels[index];
         return LabelListItem(
-          label: labels[index],
+          label: label,
           imagePaths: imagePaths,
+          isSelected: label.id == labelIdSelected,
           isDesktop: isDesktop,
           onOpenLabelCallback: onOpenLabelCallback,
         );
