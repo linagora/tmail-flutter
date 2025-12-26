@@ -206,7 +206,7 @@ void main() {
       expect(parsed.notFound, isEmpty);
     });
 
-    test('should throw DioException when server returns 500', () async {
+    test('should throw DioError when server returns 500', () async {
       // Arrange
       final dio = createDio();
       final adapter = DioAdapter(dio: dio);

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 enum SubmenuDirection { left, right, auto }
@@ -18,7 +20,12 @@ class PopupSubmenuController {
   }) {
     hide();
 
-    final screenWidth = MediaQuery.of(context).size.width;
+    final overlayState = Overlay.maybeOf(context, rootOverlay: true);
+    if (overlayState == null) return;
+
+    final mediaSize = MediaQuery.sizeOf(context);
+    final screenWidth = mediaSize.width;
+    final screenHeight = mediaSize.height;
 
     final rightPosition = anchor.right + offset;
     final leftPosition = anchor.left - submenuWidth - offset;
@@ -42,10 +49,16 @@ class PopupSubmenuController {
       }
     }
 
+    final clampedLeft = finalLeft
+        .clamp(0.0, math.max(0.0, screenWidth - submenuWidth))
+        .toDouble();
+    final availableHeight = math.max(0.0, screenHeight - anchor.top);
+    final finalHeight = math.min(submenuMaxHeight, availableHeight);
+
     _submenuEntry = OverlayEntry(
       builder: (_) {
         return PositionedDirectional(
-          start: finalLeft,
+          start: clampedLeft,
           top: anchor.top,
           child: MouseRegion(
             onExit: (_) => hide(),
@@ -57,7 +70,7 @@ class PopupSubmenuController {
               ),
               child: SizedBox(
                 width: submenuWidth,
-                height: submenuMaxHeight,
+                height: finalHeight,
                 child: submenu,
               ),
             ),
@@ -66,7 +79,7 @@ class PopupSubmenuController {
       },
     );
 
-    Overlay.maybeOf(context)?.insert(_submenuEntry!);
+    overlayState.insert(_submenuEntry!);
   }
 
   void hide() {

@@ -170,15 +170,13 @@ extension PresentationEmailExtension on PresentationEmail {
         .toList();
   }
 
-  PresentationEmail addKeyword(KeyWordIdentifier keyword) {
+  PresentationEmail toggleKeyword(KeyWordIdentifier keyword, bool remove) {
     return copyWith(
-      keywords: keywords.withKeyword(keyword),
-    );
-  }
-
-  PresentationEmail removeKeyword(KeyWordIdentifier keyword) {
-    return copyWith(
-      keywords: keywords.withoutKeyword(keyword),
-    );
+      keywords: remove
+          ? keywords.withoutKeyword(keyword)
+          : keywords.withKeyword(keyword),
+    )
+      ..searchSnippetSubject = searchSnippetSubject
+      ..searchSnippetPreview = searchSnippetPreview;
   }
 }

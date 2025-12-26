@@ -71,6 +71,13 @@ class LabelController extends BaseController {
   }
 
   Future<void> openCreateNewLabelModal(AccountId? accountId) async {
+    if (accountId == null) {
+      consumeState(
+        Stream.value(Left(CreateNewLabelFailure(NotFoundAccountIdException()))),
+      );
+      return;
+    }
+
     await DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
         labels: labels,
@@ -80,13 +87,9 @@ class LabelController extends BaseController {
     );
   }
 
-  void _createNewLabel(AccountId? accountId, Label label) {
+  void _createNewLabel(AccountId accountId, Label label) {
     log('LabelController::_createNewLabel:Label: $label');
-    if (accountId == null) {
-      consumeState(
-        Stream.value(Left(CreateNewLabelFailure(NotFoundAccountIdException()))),
-      );
-    } else if (_createNewLabelInteractor == null) {
+    if (_createNewLabelInteractor == null) {
       consumeState(
         Stream.value(Left(CreateNewLabelFailure(InteractorNotInitialized()))),
       );
