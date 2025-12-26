@@ -6,15 +6,19 @@ import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_icon_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_name_widget.dart';
 
+typedef OnOpenLabelCallback = void Function(Label label);
+
 class LabelListItem extends StatelessWidget {
   final Label label;
   final ImagePaths imagePaths;
   final bool isDesktop;
+  final OnOpenLabelCallback onOpenLabelCallback;
 
   const LabelListItem({
     super.key,
     required this.label,
     required this.imagePaths,
+    required this.onOpenLabelCallback,
     this.isDesktop = false,
   });
 
@@ -32,6 +36,7 @@ class LabelListItem extends StatelessWidget {
       type: MaterialType.transparency,
       child: InkWell(
         borderRadius: borderRadius,
+        onTap: () => onOpenLabelCallback(label),
         child: Container(
           decoration: BoxDecoration(borderRadius: borderRadius),
           padding: EdgeInsetsDirectional.symmetric(
