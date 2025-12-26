@@ -483,11 +483,13 @@ class EmailRepositoryImpl extends EmailRepository {
 
   @override
   Future<void> addLabelToEmail(
+    Session session,
     AccountId accountId,
     EmailId emailId,
     KeyWordIdentifier labelKeyword,
   ) {
     return emailDataSource[DataSourceType.network]!.addLabelToEmail(
+      session,
       accountId,
       emailId,
       labelKeyword,

@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_co
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-typedef OnAddLabelToEmailCallback = Function(
+typedef OnAddLabelToEmailCallback = void Function(
   EmailId emailId,
   Label label,
   bool isSelected,

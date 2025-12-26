@@ -577,7 +577,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> addLabelToEmail(AccountId accountId, EmailId emailId, KeyWordIdentifier labelKeyword) {
+  Future<void> addLabelToEmail(Session session, AccountId accountId, EmailId emailId, KeyWordIdentifier labelKeyword) {
     throw UnimplementedError();
   }
 }

@@ -15,13 +15,11 @@ extension KeyWordIdentifierExtension on KeyWordIdentifier {
   }
 
   PatchObject generateReadActionPath(ReadActions action) {
-    final isRead = action == ReadActions.markAsRead;
-    return _boolPatch(isRead ? true : null);
+    return _boolPatch(action == ReadActions.markAsRead ? true : null);
   }
 
   PatchObject generateMarkStarActionPath(MarkStarAction action) {
-    final isStar = action == MarkStarAction.markStar;
-    return _boolPatch(isStar ? true : null);
+    return _boolPatch(action == MarkStarAction.markStar ? true : null);
   }
 
   PatchObject generateAnsweredActionPath() => _boolPatch(true);

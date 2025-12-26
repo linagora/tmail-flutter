@@ -86,7 +86,7 @@ void main() {
 
       // Assert
       expect(parsed, isNotNull);
-      expect(parsed!.created![Id('4f29')]!.keyword, equals('important'));
+      expect(parsed!.created![Id('4f29')]!.keyword?.value, equals('important'));
     });
 
     test('should process multiple created labels', () async {
@@ -143,8 +143,8 @@ void main() {
       // Assert
       expect(parsed, isNotNull);
       expect(parsed!.created!.length, equals(2));
-      expect(parsed.created![Id('A')]!.keyword, equals('tagA'));
-      expect(parsed.created![Id('B')]!.keyword, equals('tagB'));
+      expect(parsed.created![Id('A')]!.keyword?.value, equals('tagA'));
+      expect(parsed.created![Id('B')]!.keyword?.value, equals('tagB'));
     });
 
     test('should throw DioException when backend returns 500', () async {

@@ -163,6 +163,7 @@ abstract class EmailRepository {
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest);
 
   Future<void> addLabelToEmail(
+    Session session,
     AccountId accountId,
     EmailId emailId,
     KeyWordIdentifier labelKeyword,
