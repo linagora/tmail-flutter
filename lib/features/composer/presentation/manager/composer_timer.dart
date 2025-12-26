@@ -20,8 +20,8 @@ class ComposerTimer {
     _timer = Timer.periodic(interval, (timer) {
       try {
         onTick();
-      } catch (e) {
-        logError('ComposerTimer::start:Exception: $e');
+      } catch (e, s) {
+        logError('ComposerTimer::start:Exception: $e, StackTrace: $s');
       }
     });
   }

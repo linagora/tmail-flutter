@@ -19,7 +19,7 @@ typedef OnSaveAsDraftLocalEmailDraftAction = void Function(
 
 class LocalEmailDraftItemWidget extends StatelessWidget {
   final PresentationLocalEmailDraft draftLocal;
-  final bool isOldest;
+  final bool isLastItem;
   final ImagePaths imagePaths;
   final OnSelectLocalEmailDraftAction? onSelectLocalEmailDraftAction;
   final OnEditLocalEmailDraftAction? onEditLocalEmailDraftAction;
@@ -30,7 +30,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
     super.key,
     required this.draftLocal,
     required this.imagePaths,
-    required this.isOldest,
+    required this.isLastItem,
     this.onSelectLocalEmailDraftAction,
     this.onEditLocalEmailDraftAction,
     this.onSaveAsDraftLocalEmailDraftAction,
@@ -48,7 +48,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
             start: 12,
             end: 12,
             top: 12,
-            bottom: isOldest ? 12 : 0,
+            bottom: isLastItem ? 12 : 0,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +72,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
-                              ?.copyWith(color: Colors.black),
+                              ?.copyWith(color: AppColor.primaryLightThemeTextColor),
                         ),
                       ),
                       if (draftLocal.isMarkAsImportant == true)
@@ -157,7 +157,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                             textStyle: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(color: Colors.black, fontSize: 12),
+                                ?.copyWith(color: AppColor.primaryLightThemeTextColor, fontSize: 12),
                             maxLines: 1,
                             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
                             margin: const EdgeInsetsDirectional.only(end: 8),
@@ -178,7 +178,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (!isOldest)
+                    if (!isLastItem)
                       const Padding(
                         padding: EdgeInsets.only(top: 12),
                         child: Divider(color: AppColor.colorDivider, height: 0.5,)),

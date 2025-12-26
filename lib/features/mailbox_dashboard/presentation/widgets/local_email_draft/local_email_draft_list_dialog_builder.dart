@@ -156,7 +156,7 @@ class _LocalEmailDraftListDialogBuilderState
                         final draftLocal = localDrafts[index];
                         return LocalEmailDraftItemWidget(
                             draftLocal: draftLocal,
-                            isOldest: index == localDrafts.length - 1,
+                            isLastItem: index == localDrafts.length - 1,
                             imagePaths: _imagePaths,
                             onSelectLocalEmailDraftAction: widget.onEditLocalEmailDraftAction,
                             onEditLocalEmailDraftAction: widget.onEditLocalEmailDraftAction,
