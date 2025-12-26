@@ -64,13 +64,17 @@ extension HandleLocalEmailDraftExtension on ComposerController {
     if (username == null ||
         accountId == null ||
         saveLocalEmailDraftInteractor == null) {
+      logError('HandleLocalEmailDraftExtension::saveLocalEmailDraftAction: SESSION or ACCOUNT_ID or INTERACTOR is NULL');
       return;
     }
 
     autoCreateEmailTag();
 
     final createEmailRequest = await generateCreateEmailRequest();
-    if (createEmailRequest == null) return;
+    if (createEmailRequest == null) {
+      logError('HandleLocalEmailDraftExtension::saveLocalEmailDraftAction: CREATE_EMAIL_REQUEST is NULL');
+      return;
+    }
 
     await saveLocalEmailDraftInteractor!.execute(
       createEmailRequest,

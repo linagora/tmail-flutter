@@ -242,7 +242,8 @@ class HiveCacheConfig {
     );
     registerCacheAdapter<LocalEmailDraft>(
       LocalEmailDraftAdapter(),
-      CachingConstants.LOCAL_EMAIL_DRAFT_CACHE_ID
+      CachingConstants.LOCAL_EMAIL_DRAFT_CACHE_ID,
+      isolated: isolated,
     );
   }
 

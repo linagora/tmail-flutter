@@ -1,4 +1,5 @@
 
+import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_builder/dialog_builder_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -29,6 +30,11 @@ extension RestoreLocalEmailDraftExtension on MailboxDashBoardController {
   }
 
   void handlerGetAllLocalEmailDraft(List<LocalEmailDraft> localEmailDrafts) {
+    if (localEmailDrafts.isEmpty) {
+      log('RestoreLocalEmailDraftExtension::handlerGetAllLocalEmailDraft: localEmailDrafts is empty');
+      return;
+    }
+
     final listPresentationLocalEmailDraft = localEmailDrafts
       .map((localEmailDraft) => localEmailDraft.toPresentation())
       .toList();
@@ -60,8 +66,7 @@ extension RestoreLocalEmailDraftExtension on MailboxDashBoardController {
   void _restoreAllLocalEmailDrafts(List<PresentationLocalEmailDraft> localDrafts) {
     popBack();
 
-
-    final listLocalEmailDraftSortByIndex = localDrafts
+    final listLocalEmailDraftSortByIndex = [...localDrafts]
       ..sort((a, b) => (a.composerIndex ?? 0).compareTo(b.composerIndex ?? 0));
 
     final listComposerArguments = listLocalEmailDraftSortByIndex

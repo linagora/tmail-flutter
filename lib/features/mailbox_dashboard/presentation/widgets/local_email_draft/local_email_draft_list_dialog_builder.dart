@@ -277,7 +277,9 @@ class _LocalEmailDraftListDialogBuilderState
     _listLocalEmailDraftsNotifier.value = List.from(_listLocalEmailDraftsNotifier.value)
       ..removeWhere((draftLocal) => draftLocal.id == draftLocalId);
 
-    await _removeLocalEmailDraftInteractor?.execute(draftLocalId);
+    if (_removeLocalEmailDraftInteractor != null) {
+      await _removeLocalEmailDraftInteractor!.execute(draftLocalId);
+    }
 
     if (showToast && context.mounted) {
       _appToast.showToastSuccessMessage(
@@ -367,7 +369,7 @@ class _LocalEmailDraftListDialogBuilderState
   }
 
   void _handleCancelSavingMessageToDrafts({CancelToken? cancelToken}) {
-    cancelToken?.cancel([SavingEmailToDraftsCanceledException()]);
+    cancelToken?.cancel(SavingEmailToDraftsCanceledException());
   }
 
   void _handleDiscardAllLocalEmailDraftAction(BuildContext context) {

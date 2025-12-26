@@ -263,7 +263,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<LocalEmailDraftDatasource>(() => Get.find<LocalEmailDraftDataSourceImpl>());
-    Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<MailboxCacheDataSourceImpl>(() => Get.find<MailboxCacheDataSourceImpl>());
     Get.lazyPut<ServerSettingsDataSource>(
       () => Get.find<RemoteServerSettingsDataSourceImpl>());
@@ -462,7 +461,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<LocalEmailDraftRepository>(() => Get.find<LocalEmailDraftRepositoryImpl>());
     Get.lazyPut<SpamReportRepository>(() => Get.find<SpamReportRepositoryImpl>());
-    Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<ServerSettingsRepository>(() => Get.find<ServerSettingsRepositoryImpl>());
     Get.lazyPut<IdentityCreatorRepository>(() => Get.find<IdentityCreatorRepositoryImpl>());
     Get.lazyPut<AppGridRepository>(() => Get.find<AppGridRepositoryImpl>());
@@ -503,13 +501,6 @@ class MailboxDashBoardBindings extends BaseBindings {
         DataSourceType.local: Get.find<LocalSpamReportDataSourceImpl>(),
         DataSourceType.hiveCache: Get.find<HiveSpamReportDataSourceImpl>()
       },
-    ));
-    Get.lazyPut(() => MailboxRepositoryImpl(
-      {
-        DataSourceType.network: Get.find<MailboxDataSource>(),
-        DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
-      },
-      Get.find<StateDataSource>(),
     ));
     Get.lazyPut(() => ServerSettingsRepositoryImpl(Get.find<ServerSettingsDataSource>()));
     Get.lazyPut(() => IdentityCreatorRepositoryImpl(

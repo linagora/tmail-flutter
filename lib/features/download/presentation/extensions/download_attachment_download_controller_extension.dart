@@ -164,9 +164,9 @@ extension DownloadAttachmentDownloadControllerExtension on DownloadController {
                   ..content(appLocalizations.downloading_file(attachmentName))
                   ..actionText(appLocalizations.cancel)
                   ..addCancelDownloadActionClick(() {
-                    cancelToken.cancel([
+                    cancelToken.cancel(
                       appLocalizations.user_cancel_download_file,
-                    ]);
+                    );
                     popBack();
                   }))
                 .build();

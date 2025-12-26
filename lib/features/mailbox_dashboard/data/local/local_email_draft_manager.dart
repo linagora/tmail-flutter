@@ -5,7 +5,6 @@ import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/local_email_draft_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/local_email_draft_exception.dart';
 
 class LocalEmailDraftManager {
 
@@ -15,13 +14,7 @@ class LocalEmailDraftManager {
 
   Future<List<LocalEmailDraft>> getAllLocalEmailDraft(AccountId accountId, UserName userName) async {
     final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
-    final listLocalEmailDraft = await _localEmailDraftClient.getListByNestedKey(nestedKey);
-
-    if (listLocalEmailDraft.isEmpty) {
-      throw NotFoundLocalEmailDraftException();
-    }
-
-    return listLocalEmailDraft;
+    return await _localEmailDraftClient.getListByNestedKey(nestedKey);
   }
 
   Future<void> saveLocalEmailDraft(LocalEmailDraft localEmailDraft) async {

@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
@@ -15,7 +16,7 @@ extension LocalEmailDraftExtension on LocalEmailDraft {
       id: id,
       composerId: composerId,
       savedTime: savedTime,
-      email: email != null ? Email.fromJson(jsonDecode(email!)) : null,
+      email: _parseEmail(email),
       hasRequestReadReceipt: hasRequestReadReceipt,
       isMarkAsImportant: isMarkAsImportant,
       displayMode: ScreenDisplayMode.values.firstWhereOrNull(
@@ -28,5 +29,15 @@ extension LocalEmailDraftExtension on LocalEmailDraft {
       ),
       draftEmailId: draftEmailId != null ? EmailId(Id(draftEmailId!)) : null,
     );
+  }
+
+  Email? _parseEmail(String? emailJson) {
+    if (emailJson == null) return null;
+    try {
+      return Email.fromJson(jsonDecode(emailJson));
+    } catch (e) {
+      logError('LocalEmailDraftExtension::_parseEmail:Exception: $e');
+      return null;
+    }
   }
 }

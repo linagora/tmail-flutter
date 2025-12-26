@@ -1,1 +1,0 @@
-class NotFoundLocalEmailDraftException implements Exception {}

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:core/utils/app_logger.dart';
+
 class ComposerTimer {
   static const int _delaySecondTime = 15;
 
@@ -16,7 +18,11 @@ class ComposerTimer {
   void start() {
     stop();
     _timer = Timer.periodic(interval, (timer) {
-      onTick();
+      try {
+        onTick();
+      } catch (e) {
+        logError('ComposerTimer::start:Exception: $e');
+      }
     });
   }
 

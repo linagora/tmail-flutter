@@ -173,7 +173,6 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                                 ?.copyWith(color: AppColor.colorActionDeleteConfirmDialog, fontSize: 12),
                             maxLines: 1,
                             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
-                            margin: const EdgeInsetsDirectional.only(end: 8),
                             onTapActionCallback: () => onDiscardLocalEmailDraftAction?.call(draftLocal),
                           ),
                         ),

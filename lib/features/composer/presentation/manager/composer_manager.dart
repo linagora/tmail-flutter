@@ -337,8 +337,12 @@ class ComposerManager extends GetxController {
     if (!hasComposer) return;
 
     for (var id in composerIdsQueue) {
-      final controller = getComposerView(id).controller;
-      controller.saveLocalEmailDraftAction();
+      try {
+        final controller = getComposerView(id).controller;
+        controller.saveLocalEmailDraftAction();
+      } catch (e, stackTrace) {
+        logError('ComposerManager::_handleOnTick: Failed to save local draft for composer $id. Error: $e, StackTrace: $stackTrace');
+      }
     }
   }
 

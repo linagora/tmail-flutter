@@ -938,7 +938,7 @@ class ComposerController extends BaseController
   }
 
   void _handleCancelSendingMessage({CancelToken? cancelToken}) {
-    cancelToken?.cancel([SendingEmailCanceledException()]);
+    cancelToken?.cancel(SendingEmailCanceledException());
   }
 
   Future<void> _showConfirmDialogWhenSendMessageFailure({
@@ -2168,7 +2168,7 @@ class ComposerController extends BaseController
   }
 
   void _handleCancelSavingMessageToDrafts({CancelToken? cancelToken}) {
-    cancelToken?.cancel([SavingEmailToDraftsCanceledException()]);
+    cancelToken?.cancel(SavingEmailToDraftsCanceledException());
   }
 
   Future<void> _showConfirmDialogWhenSaveMessageToDraftsFailure({
