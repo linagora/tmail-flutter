@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/toggle_ex
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
@@ -403,6 +404,10 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
                   labels: labels,
                   imagePaths: controller.imagePaths,
                   isDesktop: isDesktop,
+                  onOpenLabelCallback: (label) => controller.openMailbox(
+                    context,
+                    PresentationLabelMailbox.initial(label),
+                  ),
                 )
               : const Offstage(),
         );

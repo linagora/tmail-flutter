@@ -7,11 +7,13 @@ class LabelListView extends StatelessWidget {
   final List<Label> labels;
   final ImagePaths imagePaths;
   final bool isDesktop;
+  final OnOpenLabelCallback onOpenLabelCallback;
 
   const LabelListView({
     super.key,
     required this.labels,
     required this.imagePaths,
+    required this.onOpenLabelCallback,
     this.isDesktop = false,
   });
 
@@ -28,6 +30,7 @@ class LabelListView extends StatelessWidget {
           label: labels[index],
           imagePaths: imagePaths,
           isDesktop: isDesktop,
+          onOpenLabelCallback: onOpenLabelCallback,
         );
       },
     );
