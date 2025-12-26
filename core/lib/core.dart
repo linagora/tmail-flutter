@@ -18,6 +18,7 @@ export 'presentation/extensions/map_extensions.dart';
 export 'presentation/extensions/either_view_state_extension.dart';
 export 'presentation/extensions/media_type_extension.dart';
 export 'presentation/extensions/scroll_controller_extension.dart';
+export 'presentation/extensions/app_text_colors_extension.dart';
 
 // Exceptions
 export 'domain/exceptions/download_file_exception.dart';

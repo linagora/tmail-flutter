@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/app_text_colors_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
@@ -72,7 +73,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
-                              ?.copyWith(color: AppColor.primaryLightThemeTextColor),
+                              ?.copyWith(color: context.primaryTextColor),
                         ),
                       ),
                       if (draftLocal.isMarkAsImportant == true)
@@ -157,7 +158,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                             textStyle: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
-                                ?.copyWith(color: AppColor.primaryLightThemeTextColor, fontSize: 12),
+                                ?.copyWith(color: context.primaryTextColor, fontSize: 12),
                             maxLines: 1,
                             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
                             margin: const EdgeInsetsDirectional.only(end: 8),
