@@ -5359,5 +5359,11 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "youDoNotHaveAnyEmailTaggedWithThis": "You don't have any emails tagged with this.",
+  "@youDoNotHaveAnyEmailTaggedWithThis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
