@@ -938,6 +938,7 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
   }
 
   Future<void> addLabelToEmail(
+    Session session,
     AccountId accountId,
     EmailId emailId,
     KeyWordIdentifier labelKeyword,
@@ -948,8 +949,9 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     final builder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final invocation = builder.invocation(method);
 
-    final result =
-        await (builder..usings(method.requiredCapabilities)).build().execute();
+    final capabilities = method.requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
+    final result = await (builder..usings(capabilities)).build().execute();
 
     final response = result.parse<SetEmailResponse>(
       invocation.methodCallId,

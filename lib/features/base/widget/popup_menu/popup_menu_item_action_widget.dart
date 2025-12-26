@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/model/popup_menu_item_action.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/hover_submenu_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 
 class PopupMenuItemActionWidget extends StatefulWidget {
@@ -28,14 +29,15 @@ class PopupMenuItemActionWidget extends StatefulWidget {
 
 class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
   GlobalKey? _itemKey;
-  ValueNotifier<bool>? _hoverItemNotifier;
+  HoverSubmenuController? _hoverController;
 
   @override
   void initState() {
     super.initState();
-    if (widget.menuAction is PopupMenuItemEmailAction) {
+    if (widget.menuAction is PopupMenuItemEmailAction &&
+        widget.menuAction.action == EmailActionType.labelAs) {
       _itemKey = GlobalKey();
-      _hoverItemNotifier = ValueNotifier(false);
+      _hoverController = HoverSubmenuController();
     }
   }
 
@@ -133,9 +135,8 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
       return PointerInterceptor(
         child: MouseRegion(
           onEnter: (_) {
-            if (_hoverItemNotifier != null) {
-              _hoverItemNotifier?.value = true;
-            }
+            _hoverController?.enter();
+
             if (_itemKey != null) {
               widget.onHoverShowSubmenu?.call(_itemKey!);
             } else {
@@ -143,9 +144,7 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
             }
           },
           onExit: (_) {
-            if (_hoverItemNotifier != null) {
-              _hoverItemNotifier?.value = false;
-            }
+            _hoverController?.exit();
           },
           child: Material(
             type: MaterialType.transparency,
@@ -172,26 +171,23 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
                     ),
                     if (isSelected && selectedIconWidget != null)
                       selectedIconWidget,
-                    if (_hoverItemNotifier != null)
+                    if (_hoverController != null)
                       ValueListenableBuilder(
-                        valueListenable: _hoverItemNotifier!,
-                        builder: (_, value, __) {
-                          if (value) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsetsDirectional.only(start: 16),
-                              child: SvgPicture.asset(
-                                specificMenuAction.hoverIcon,
-                                width: specificMenuAction.hoverIconSize,
-                                height: specificMenuAction.hoverIconSize,
-                                colorFilter: specificMenuAction.hoverIconColor
-                                    .asFilter(),
-                                fit: BoxFit.fill,
-                              ),
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
+                        valueListenable: _hoverController!.isHovering,
+                        builder: (_, isHovering, __) {
+                          if (!isHovering) return const SizedBox.shrink();
+                          return Padding(
+                            padding:
+                                const EdgeInsetsDirectional.only(start: 16),
+                            child: SvgPicture.asset(
+                              specificMenuAction.hoverIcon,
+                              width: specificMenuAction.hoverIconSize,
+                              height: specificMenuAction.hoverIconSize,
+                              colorFilter: specificMenuAction.hoverIconColor
+                                  .asFilter(),
+                              fit: BoxFit.fill,
+                            ),
+                          );
                         },
                       )
                   ],
@@ -210,9 +206,7 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
           onTap: () => widget.menuAction.onClick(widget.menuActionClick),
           hoverColor: AppColor.popupMenuItemHovered,
           onHover: (_) {
-            if (_hoverItemNotifier != null) {
-              _hoverItemNotifier?.value = false;
-            }
+            _hoverController?.exit();
             widget.onHoverOtherItem?.call();
           },
           child: Container(
@@ -245,9 +239,9 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
 
   @override
   void dispose() {
-    if (_hoverItemNotifier != null) {
-      _hoverItemNotifier?.dispose();
-      _hoverItemNotifier = null;
+    if (_hoverController != null) {
+      _hoverController?.dispose();
+      _hoverController = null;
     }
     super.dispose();
   }

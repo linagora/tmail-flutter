@@ -221,7 +221,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void handleSuccessViewState(Success success) {
-    log('SingleEmailController::handleSuccessViewState(): $success');
     if (success is GetEmailContentSuccess) {
       _getEmailContentSuccess(success);
     } else if (success is GetEmailContentFromCacheSuccess) {
@@ -255,7 +254,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void handleFailureViewState(Failure failure) {
-    logError('SingleEmailController::handleFailureViewState(): $failure');
     if (failure is MarkAsEmailReadFailure) {
       _handleMarkAsEmailReadFailure(failure);
     } else if (failure is ParseCalendarEventFailure) {
@@ -899,6 +897,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         pressEmailAction(actionType, presentationEmail);
         break;
       case EmailActionType.labelAs:
+        if (!isLabelFeatureEnabled) return;
         openAddLabelToEmailDialogModal(presentationEmail);
         break;
       default:

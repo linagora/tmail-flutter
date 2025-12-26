@@ -29,9 +29,10 @@ class SignatureBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     if (PlatformInfo.isWeb) {
       final iframeOverlay = Obx(() {
+        final dialogRouter = DialogRouter();
         if (MessageDialogActionManager().isDialogOpened ||
-            DialogRouter().isDialogOpened ||
-            DialogRouter().isRuleFilterDialogOpened.isTrue) {
+            dialogRouter.isDialogOpened ||
+            dialogRouter.isRuleFilterDialogOpened.isTrue) {
           return Positioned.fill(
             child: PointerInterceptor(
               child: const SizedBox.expand(),

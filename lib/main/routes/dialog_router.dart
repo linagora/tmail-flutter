@@ -60,7 +60,9 @@ class DialogRouter {
         MailboxCreatorBindings().dependencies();
         break;
       case AppRoutes.rulesFilterCreator:
-        isRuleFilterDialogOpened.value = true;
+        if (PlatformInfo.isWeb) {
+         isRuleFilterDialogOpened.value = true;
+        }
         RulesFilterCreatorBindings().dependencies();
         break;
       case AppRoutes.identityCreator:
@@ -107,7 +109,7 @@ class DialogRouter {
 
     await Get.generalDialog(
       barrierDismissible: true,
-      barrierLabel: dialogLabel,
+      barrierLabel: dialogLabel ?? 'dialog-modal',
       pageBuilder: (_, __, ___) => child,
     ).whenComplete(() {
       if (PlatformInfo.isWeb) {
