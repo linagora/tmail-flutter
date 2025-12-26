@@ -4,6 +4,7 @@ import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -393,6 +394,13 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           .isLabelSettingEnabled
           .isTrue;
 
+      final selectedMailbox = controller.mailboxDashBoardController
+          .selectedMailbox.value;
+      Id? labelIdSelected;
+      if (selectedMailbox is PresentationLabelMailbox) {
+        labelIdSelected = selectedMailbox.id.id;
+      }
+
       if (isLabelCapabilitySupported && isLabelSettingEnabled) {
         final labelListExpandMode = labelController.labelListExpandMode.value;
         final labels = labelController.labels;
@@ -404,6 +412,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
                   labels: labels,
                   imagePaths: controller.imagePaths,
                   isDesktop: isDesktop,
+                  labelIdSelected: labelIdSelected,
                   onOpenLabelCallback: (label) => controller.openMailbox(
                     context,
                     PresentationLabelMailbox.initial(label),

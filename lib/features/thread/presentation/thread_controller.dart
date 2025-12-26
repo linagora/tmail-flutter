@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
@@ -65,6 +66,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/refresh_thread_detail_extension.dart';
+import 'package:tmail_ui_user/features/thread/presentation/filters/mailbox_filter_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
@@ -589,7 +591,7 @@ class ThreadController extends BaseController with EmailActionController {
           _accountId!,
         ),
         getLatestChanges: getLatestChanges,
-        useCache: selectedMailbox?.isFavorite != true,
+        useCache: selectedMailbox?.isCacheable ?? false,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -597,74 +599,30 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   EmailFilter getEmailFilterForLoadMailbox({PresentationEmail? oldestEmail}) {
-    if (selectedMailbox?.isFavorite == true) {
-      return EmailFilter(
-        filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
-      );
-    } else {
-      return EmailFilter(
-        filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
-        filterOption: mailboxDashBoardController.filterMessageOption.value,
-        mailboxId: selectedMailboxId,
-      );
-    }
+    return MailboxFilterBuilder(
+      mailbox: selectedMailbox,
+      filterOption: mailboxDashBoardController.filterMessageOption.value,
+    ).build(oldestEmail: oldestEmail);
   }
 
   Filter getFilterConditionForLoadMailbox({PresentationEmail? oldestEmail}) {
-    if (selectedMailbox?.isFavorite == true) {
-      switch (mailboxDashBoardController.filterMessageOption.value) {
-        case FilterMessageOption.unread:
-          return EmailFilterCondition(
-            notKeyword: KeyWordIdentifier.emailSeen.value,
-            hasKeyword: KeyWordIdentifier.emailFlagged.value,
-            before: oldestEmail?.receivedAt,
-          );
-        case FilterMessageOption.attachments:
-          return EmailFilterCondition(
-            hasAttachment: true,
-            hasKeyword: KeyWordIdentifier.emailFlagged.value,
-            before: oldestEmail?.receivedAt,
-          );
-        default:
-          return EmailFilterCondition(
-            hasKeyword: KeyWordIdentifier.emailFlagged.value,
-            before: oldestEmail?.receivedAt,
-          );
-      }
-    } else {
-      return getFilterCondition(
-        mailboxIdSelected: selectedMailboxId,
-        oldestEmail: oldestEmail,
-      );
-    }
+    return MailboxFilterBuilder(
+      mailbox: selectedMailbox,
+      filterOption: mailboxDashBoardController.filterMessageOption.value,
+    ).buildFilterCondition(oldestEmail: oldestEmail);
   }
 
-  EmailFilterCondition getFilterCondition({PresentationEmail? oldestEmail, MailboxId? mailboxIdSelected}) {
-    switch(mailboxDashBoardController.filterMessageOption.value) {
-      case FilterMessageOption.all:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          before: oldestEmail?.receivedAt
-        );
-      case FilterMessageOption.unread:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          notKeyword: KeyWordIdentifier.emailSeen.value,
-          before: oldestEmail?.receivedAt
-        );
-      case FilterMessageOption.attachments:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          hasAttachment: true,
-          before: oldestEmail?.receivedAt
-        );
-      case FilterMessageOption.starred:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: oldestEmail?.receivedAt
-        );
-    }
+  EmailFilterCondition getFilterCondition({
+    PresentationEmail? oldestEmail,
+    MailboxId? mailboxIdSelected,
+  }) {
+    return MailboxFilterBuilder(
+      mailbox: selectedMailbox,
+      filterOption: mailboxDashBoardController.filterMessageOption.value,
+    ).buildMailboxBasedFilter(
+      mailboxId: mailboxIdSelected,
+      oldestEmail: oldestEmail,
+    );
   }
 
   void refreshAllEmail() {

@@ -1,8 +1,10 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -127,4 +129,18 @@ extension PresentationMailboxExtension on PresentationMailbox {
     AppRoutes.dashboard,
     router: NavigationRouter(mailboxId: id)
   );
+
+  bool get isCacheable => !isFavorite && this is! PresentationLabelMailbox;
+
+  bool get isLabelMailbox => this is PresentationLabelMailbox;
+
+  String? get filterKeyword {
+    if (isFavorite) {
+      return KeyWordIdentifier.emailFlagged.value;
+    }
+    if (this is PresentationLabelMailbox) {
+      return (this as PresentationLabelMailbox).label.keyword;
+    }
+    return null;
+  }
 }
