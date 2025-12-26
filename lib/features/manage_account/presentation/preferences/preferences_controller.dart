@@ -52,7 +52,7 @@ class PreferencesController extends BaseController {
   final accountDashboardController = Get.find<ManageAccountDashBoardController>();
 
   bool get isAIScribeAvailable {
-    return _manageAccountDashBoardController.isAICapabilitySupported;
+    return accountDashboardController.isAICapabilitySupported;
   }
 
   @override
