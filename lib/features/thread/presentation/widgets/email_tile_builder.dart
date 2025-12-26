@@ -131,7 +131,10 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
                     presentationEmail,
                     isSearchEmailRunning,
                     searchQuery)),
-                  if (_shouldShowAIAction) const AiActionTagWidget(),
+                  if (_shouldShowAIAction)
+                    const AiActionTagWidget(
+                      margin: EdgeInsetsDirectional.only(start: 8),
+                    ),
                 ])
             ),
           ],
