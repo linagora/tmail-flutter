@@ -123,10 +123,6 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
       composerManager.refocusKeyboardShortcutFocusFirstComposer();
     }
 
-    if (composerId != null) {
-      await removeComposerCacheByIdOnWeb(composerId);
-    }
-
     saveTextFormattingMenuState();
   }
 

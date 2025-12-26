@@ -75,7 +75,8 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
         crossAxisAlignment: crossAxisAlignment,
         children: [
           EmailAvatarBuilder(
-            emailSelected: emailSelected,
+            avatarText: emailSelected.getAvatarText(),
+            avatarColors: emailSelected.avatarColors,
             onTapAvatarActionClick: () {
               if (emailSelected.from?.isNotEmpty == true) {
                 openEmailAddressDetailAction?.call(

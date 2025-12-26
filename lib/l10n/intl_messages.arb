@@ -5135,5 +5135,59 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "localDraftList": "Local Draft List",
+  "@localDraftList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreAll": "Restore all",
+  "@restoreAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discardAll": "Discard all",
+  "@discardAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogDiscardLocalDraft": "Are you sure you want to delete this local draft? You will not be able to restore it.",
+  "@messageWarningDialogDiscardLocalDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteLocalDraftSuccessfully": "Delete local draft successfully",
+  "@deleteLocalDraftSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogDiscardAllLocalDrafts": "Are you sure you want to delete all local drafts? They cannot be restored.",
+  "@messageWarningDialogDiscardAllLocalDrafts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deletingLocalDraft": "Deleting local draft...",
+  "@deletingLocalDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllLocalDraftsSuccessfully": "Delete all local drafts successfully",
+  "@deleteAllLocalDraftsSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreAllLocalDraftsSuccessfully": "Restore all local drafts successfully",
+  "@restoreAllLocalDraftsSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

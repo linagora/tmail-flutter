@@ -5,6 +5,8 @@ extension AppColor on Color {
   static const primaryDarkColor = Color(0xFF1C1C1C);
   static const primaryLightColor = Color(0xFFFFFFFF);
   static const primarySelectedColor = Color(0xFFDFEEFF);
+  static const primaryLightThemeTextColor = Colors.black;
+  static const primaryDarkThemeTextColor = Colors.white;
   static const baseTextColor = Color(0xFF7E869B);
   static const textFieldTextColor = Color(0xFF7E869B);
   static const textFieldLabelColor = Color(0xFF7E869B);

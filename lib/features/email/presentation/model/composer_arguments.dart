@@ -4,9 +4,8 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/presentation_local_email_draft.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
@@ -124,23 +123,26 @@ class ComposerArguments extends RouterArguments {
     savedEmailTemplateId: savedEmailTemplateId,
   );
 
-  factory ComposerArguments.fromSessionStorageBrowser(ComposerCache composerCache) =>
-    ComposerArguments(
-      emailActionType: EmailActionType.reopenComposerBrowser,
-      presentationEmail: composerCache.email?.toPresentationEmail(),
-      emailContents: composerCache.email?.emailContentList.asHtmlString,
-      attachments: composerCache.email?.allAttachments.getListAttachmentsDisplayedOutside(composerCache.email?.htmlBodyAttachments ?? []),
-      selectedIdentityId: composerCache.email?.identityIdFromHeader,
-      inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
-      hasRequestReadReceipt: composerCache.hasRequestReadReceipt,
-      displayMode: composerCache.displayMode,
-      isMarkAsImportant: composerCache.isMarkAsImportant,
-      composerId: composerCache.composerId,
-      savedDraftHash: composerCache.draftHash,
-      savedActionType: composerCache.actionType,
-      savedEmailDraftId: composerCache.draftEmailId,
-      savedEmailTemplateId: composerCache.templateEmailId,
+  factory ComposerArguments.fromLocalEmailDraft(PresentationLocalEmailDraft localDraft) {
+    final email = localDraft.email;
+    final allAttachments = email?.allAttachments;
+
+    return ComposerArguments(
+      emailActionType: EmailActionType.composeFromLocalEmailDraft,
+      presentationEmail: email?.toPresentationEmail(),
+      emailContents: email?.emailContentList.asHtmlString,
+      attachments: allAttachments?.getListAttachmentsDisplayedOutside(email?.htmlBodyAttachments ?? []),
+      selectedIdentityId: email?.identityIdFromHeader,
+      inlineImages: email?.allAttachments.listAttachmentsDisplayedInContent,
+      hasRequestReadReceipt: localDraft.hasRequestReadReceipt,
+      displayMode: localDraft.displayMode,
+      isMarkAsImportant: localDraft.isMarkAsImportant,
+      composerId: localDraft.composerId,
+      savedDraftHash: localDraft.draftHash,
+      savedActionType: localDraft.actionType,
+      savedEmailDraftId: localDraft.draftEmailId,
     );
+  }
 
   factory ComposerArguments.replyEmail({
     required PresentationEmail presentationEmail,

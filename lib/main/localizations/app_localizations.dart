@@ -5457,4 +5457,67 @@ class AppLocalizations {
       name: 'startToAddFavoritesEmails',
     );
   }
+
+  String get localDraftList {
+    return Intl.message(
+      'Local Draft List',
+      name: 'localDraftList',
+    );
+  }
+
+  String get restoreAll {
+    return Intl.message(
+      'Restore all',
+      name: 'restoreAll',
+    );
+  }
+
+  String get discardAll {
+    return Intl.message(
+      'Discard all',
+      name: 'discardAll',
+    );
+  }
+
+  String get messageWarningDialogDiscardLocalDraft {
+    return Intl.message(
+      'Are you sure you want to delete this local draft? You will not be able to restore it.',
+      name: 'messageWarningDialogDiscardLocalDraft',
+    );
+  }
+
+  String get deleteLocalDraftSuccessfully {
+    return Intl.message(
+      'Delete local draft successfully',
+      name: 'deleteLocalDraftSuccessfully',
+    );
+  }
+
+  String get messageWarningDialogDiscardAllLocalDrafts {
+    return Intl.message(
+      'Are you sure you want to delete all local drafts? They cannot be restored.',
+      name: 'messageWarningDialogDiscardAllLocalDrafts',
+    );
+  }
+
+  String get deletingLocalDraft {
+    return Intl.message(
+      'Deleting local draft...',
+      name: 'deletingLocalDraft',
+    );
+  }
+
+  String get deleteAllLocalDraftsSuccessfully {
+    return Intl.message(
+      'Delete all local drafts successfully',
+      name: 'deleteAllLocalDraftsSuccessfully',
+    );
+  }
+
+  String get restoreAllLocalDraftsSuccessfully {
+    return Intl.message(
+      'Restore all local drafts successfully',
+      name: 'restoreAllLocalDraftsSuccessfully',
+    );
+  }
 }

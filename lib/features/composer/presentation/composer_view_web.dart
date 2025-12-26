@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/dialog_builder/dialog_builder_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -59,6 +60,7 @@ class ComposerView extends GetWidget<ComposerController> {
           MessageDialogActionManager().isDialogOpened ||
           EmailActionReactor.isDialogOpened ||
           ColorDialogPicker().isOpened.isTrue ||
+          DialogBuilderManager().isOpened.isTrue ||
           DialogRouter.isRuleFilterDialogOpened.isTrue ||
           DialogRouter.isDialogOpened;
 

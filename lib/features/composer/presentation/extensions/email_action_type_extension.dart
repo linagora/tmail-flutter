@@ -32,7 +32,7 @@ extension EmailActionTypeExtension on EmailActionType {
         }
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
-      case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromLocalEmailDraft:
       case EmailActionType.editAsNewEmail:
       case EmailActionType.composeFromMailtoUri:
       case EmailActionType.composeFromUnsubscribeMailtoLink:
