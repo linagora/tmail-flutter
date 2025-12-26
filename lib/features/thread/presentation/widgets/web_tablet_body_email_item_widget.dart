@@ -169,7 +169,9 @@ class _WebTabletBodyEmailItemWidgetState
                               ),
                             ),
                             if (widget.shouldShowAIAction)
-                              const AiActionTagWidget(),
+                              const AiActionTagWidget(
+                                margin: EdgeInsetsDirectional.only(start: 8),
+                              ),
                           ],
                         ),
                       ],

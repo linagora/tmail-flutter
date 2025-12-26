@@ -172,7 +172,10 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                           widget.searchQuery
                         )
                       ),
-                      if (_shouldShowAIAction) const AiActionTagWidget(),
+                      if (_shouldShowAIAction)
+                        const AiActionTagWidget(
+                          margin: EdgeInsetsDirectional.only(start: 8),
+                        ),
                     ]),
                   ]),
                 )
