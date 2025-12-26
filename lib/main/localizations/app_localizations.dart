@@ -5624,4 +5624,11 @@ class AppLocalizations {
     );
   }
 
+
+  String get youDoNotHaveAnyEmailTaggedWithThis {
+    return Intl.message(
+      'You don\'t have any emails tagged with this.',
+      name: 'youDoNotHaveAnyEmailTaggedWithThis',
+    );
+  }
 }

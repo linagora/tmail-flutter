@@ -14,6 +14,7 @@ class EmptyEmailsWidget extends StatelessWidget {
   final bool isFilterMessageActive;
   final bool isNetworkConnectionAvailable;
   final bool isFavoriteFolder;
+  final bool isLabelMailbox;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
@@ -24,6 +25,7 @@ class EmptyEmailsWidget extends StatelessWidget {
     this.isFilterMessageActive = false,
     this.isNetworkConnectionAvailable = true,
     this.isFavoriteFolder = false,
+    this.isLabelMailbox = false,
   }) : super(key: key);
 
   @override
@@ -98,6 +100,8 @@ class EmptyEmailsWidget extends StatelessWidget {
       return appLocalizations.noEmailMatchYourCurrentFilter;
     } else if (isFavoriteFolder) {
       return appLocalizations.youDoNotHaveAnyFavoritesEmails;
+    } else if (isLabelMailbox) {
+      return appLocalizations.youDoNotHaveAnyEmailTaggedWithThis;
     } else {
       return appLocalizations.youDoNotHaveAnyEmailInYourCurrentFolder;
     }
