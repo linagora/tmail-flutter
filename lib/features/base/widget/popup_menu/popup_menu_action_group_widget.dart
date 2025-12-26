@@ -37,6 +37,7 @@ class PopupMenuActionGroupWidget with PopupContextMenuActionMixin {
                 child: PopupMenuItemActionWidget(
                   menuAction: menuAction,
                   menuActionClick: (menuAction) {
+                    submenuController?.hide();
                     Navigator.pop(context);
                     onActionSelected(menuAction);
                   },
@@ -60,7 +61,11 @@ class PopupMenuActionGroupWidget with PopupContextMenuActionMixin {
       ],
     ];
 
-    return openPopupMenuAction(context, position, popupMenuItems);
+    try {
+      await openPopupMenuAction(context, position, popupMenuItems);
+    } finally {
+      submenuController?.hide();
+    }
   }
 
   void _showPopupSubmenu({
@@ -69,8 +74,9 @@ class PopupMenuActionGroupWidget with PopupContextMenuActionMixin {
     required PopupSubmenuController submenuController,
     required Widget submenu,
 }) {
-    final renderBox = itemKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
+    final renderObject = itemKey.currentContext?.findRenderObject();
+    if (renderObject is! RenderBox) return;
+    final renderBox = renderObject;
 
     final offset = renderBox.localToGlobal(Offset.zero);
     final rect = offset & renderBox.size;

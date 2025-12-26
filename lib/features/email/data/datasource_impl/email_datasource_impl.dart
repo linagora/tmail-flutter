@@ -556,12 +556,18 @@ class EmailDataSourceImpl extends EmailDataSource {
 
   @override
   Future<void> addLabelToEmail(
+    Session session,
     AccountId accountId,
     EmailId emailId,
     KeyWordIdentifier labelKeyword,
   ) {
     return Future.sync(() async {
-      return await emailAPI.addLabelToEmail(accountId, emailId, labelKeyword);
+      return await emailAPI.addLabelToEmail(
+        session,
+        accountId,
+        emailId,
+        labelKeyword,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 }

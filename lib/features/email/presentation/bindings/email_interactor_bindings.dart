@@ -118,7 +118,7 @@ class EmailInteractorBindings extends InteractorsBindings {
         Get.find<EmailRepository>(),
       ));
     }
-    Get.lazyPut(
+    Get.lazyPut<AddALabelToAnEmailInteractor>(
       () => AddALabelToAnEmailInteractor(Get.find<EmailRepository>()),
     );
   }

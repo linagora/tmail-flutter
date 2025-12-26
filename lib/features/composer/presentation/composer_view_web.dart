@@ -55,12 +55,14 @@ class ComposerView extends GetWidget<ComposerController> {
   @override
   Widget build(BuildContext context) {
     final iframeOverlay = Obx(() {
+      final dialogRouter = DialogRouter();
+
       bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
           MessageDialogActionManager().isDialogOpened ||
           EmailActionReactor.isDialogOpened ||
           ColorDialogPicker().isOpened.isTrue ||
-          DialogRouter().isRuleFilterDialogOpened.isTrue ||
-          DialogRouter().isDialogOpened;
+          dialogRouter.isRuleFilterDialogOpened.isTrue ||
+          dialogRouter.isDialogOpened;
 
       if (isOverlayEnabled) {
         return Positioned.fill(
