@@ -330,6 +330,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
     }
 
     // Dragging action-required mailboxes must not show highlight
+    // because they're virtual folders that don't accept email drops
     if (widget.isDraggingMailbox && widget.mailboxNode.item.isActionRequired) {
       return AppColor.colorBgDesktop;
     }

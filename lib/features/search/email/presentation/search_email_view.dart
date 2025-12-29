@@ -676,28 +676,29 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             listPresentationEmail[index],
           ),
           separatorBuilder: (context, index) {
-            final isMobile = PlatformInfo.isMobile;
-            final isInactive =
-                controller.selectionMode.value == SelectMode.INACTIVE;
+            return Obx(() {
+              final isMobile = PlatformInfo.isMobile;
+              final isInactive =
+                  controller.selectionMode.value == SelectMode.INACTIVE;
 
-            final dividerColor = isMobile
-                ? null
-                : (isInactive ? null : Colors.white);
+              final dividerColor =
+                  isMobile ? null : (isInactive ? null : Colors.white);
 
-            final padding = isMobile
-                ? SearchEmailUtils.getPaddingItemListMobile(
-                    context,
-                    controller.responsiveUtils,
-                  )
-                : ItemEmailTileStyles.getPaddingDividerWeb(
-                    context,
-                    controller.responsiveUtils,
-                  );
+              final padding = isMobile
+                  ? SearchEmailUtils.getPaddingItemListMobile(
+                      context,
+                      controller.responsiveUtils,
+                    )
+                  : ItemEmailTileStyles.getPaddingDividerWeb(
+                      context,
+                      controller.responsiveUtils,
+                    );
 
-            return Padding(
-              padding: padding,
-              child: Divider(color: dividerColor),
-            );
+              return Padding(
+                padding: padding,
+                child: Divider(color: dividerColor),
+              );
+            });
           },
         )
     );
