@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -135,4 +136,11 @@ extension PresentationMailboxExtension on PresentationMailbox {
     AppRoutes.dashboard,
     router: NavigationRouter(mailboxId: id)
   );
+
+  String? get filterKeyword {
+    if (isFavorite) {
+      return KeyWordIdentifier.emailFlagged.value;
+    }
+    return null;
+  }
 }

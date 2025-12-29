@@ -12,6 +12,18 @@ class EmailFilter with EquatableMixin {
 
   EmailFilter({this.filter, this.filterOption, this.mailboxId});
 
+  EmailFilter copyWith({
+    Filter? filter,
+    FilterMessageOption? filterOption,
+    MailboxId? mailboxId,
+  }) {
+    return EmailFilter(
+      filter: filter ?? this.filter,
+      filterOption: filterOption ?? this.filterOption,
+      mailboxId: mailboxId ?? this.mailboxId,
+    );
+  }
+
   @override
   List<Object?> get props => [filter, filterOption, mailboxId];
 }
