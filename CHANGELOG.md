@@ -1,3 +1,9 @@
+## [0.23.1] - 2025-12-29
+### Fixed
+- Memory leak in Mobile editor
+- Position of Scribe button for long content in composer
+- Safari input keyboard for scribe
+
 ## [0.23.0] - 2025-12-19
 ### Added
 - Persist company info when user login to company's server
