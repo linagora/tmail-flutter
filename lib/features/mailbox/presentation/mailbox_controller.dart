@@ -70,7 +70,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_action_required_tab_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_favorite_tab_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -86,7 +85,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_ma
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_action_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -265,14 +264,18 @@ class MailboxController extends BaseMailboxController
     viewState.value.fold(
       (failure) {
         if (failure is GetAllMailboxFailure) {
-          autoCreateVirtualFolder();
+          autoCreateVirtualFolder(
+            mailboxDashBoardController.isAINeedsActionEnabled,
+          );
           mailboxDashBoardController.updateRefreshAllMailboxState(Left(RefreshAllMailboxFailure()));
           showRetryToast(failure);
         }
       },
       (success) {
         if (success is GetAllMailboxSuccess) {
-          autoCreateVirtualFolder();
+          autoCreateVirtualFolder(
+            mailboxDashBoardController.isAINeedsActionEnabled,
+          );
           mailboxDashBoardController.updateRefreshAllMailboxState(Right(RefreshAllMailboxSuccess()));
           _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
           _handleDataFromNavigationRouter();
@@ -281,7 +284,9 @@ class MailboxController extends BaseMailboxController
             _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
           }
         } else if (success is CreateDefaultMailboxAllSuccess) {
-          autoCreateVirtualFolder();
+          autoCreateVirtualFolder(
+            mailboxDashBoardController.isAINeedsActionEnabled,
+          );
         }
       });
   }
@@ -612,7 +617,9 @@ class MailboxController extends BaseMailboxController
     if (currentContext != null) {
       syncAllMailboxWithDisplayName(currentContext!);
     }
-    autoCreateVirtualFolder();
+    autoCreateVirtualFolder(
+      mailboxDashBoardController.isAINeedsActionEnabled,
+    );
     _setMapMailbox();
     _setOutboxMailbox();
     _selectSelectedMailboxDefault();
@@ -1568,13 +1575,6 @@ class MailboxController extends BaseMailboxController
         spamFolderId: presentationMailbox.id,
         totalEmails: presentationMailbox.countTotalEmails
       );
-    }
-  }
-
-  void autoCreateVirtualFolder() {
-    addFavoriteFolderToMailboxList();
-    if (mailboxDashBoardController.isAINeedsActionEnabled) {
-      addActionRequiredFolder();
     }
   }
 }

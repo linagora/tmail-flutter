@@ -77,7 +77,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                           (type) =>
                               type.isLocal &&
                               (type != PreferencesOptionType.aiScribe ||
-                                  controller.isAICapabilitySupported),
+                                  controller.isAIScribeCapabilityAvailable),
                         ),
                       if (settingOption != null &&
                           controller.isAICapabilitySupported)

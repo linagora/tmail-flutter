@@ -8,8 +8,6 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 
 mixin AiScribeMixin {
   AICapability? getAICapability({Session? session, AccountId? accountId}) {
-    if (PlatformInfo.isMobile) return null;
-
     if (accountId == null || session == null) {
       return null;
     }
@@ -17,8 +15,18 @@ mixin AiScribeMixin {
     return session.getAICapability(accountId);
   }
 
+  bool isAIScribeEndpointAvailable({Session? session, AccountId? accountId}) {
+    final aiCapability = getAICapability(
+      session: session,
+      accountId: accountId,
+    );
+    return aiCapability?.isScribeEndpointAvailable == true;
+  }
+
   void injectAIScribeBindings(Session? session, AccountId? accountId) {
     try {
+      if (PlatformInfo.isMobile) return;
+
       final aiCapability = getAICapability(
         session: session,
         accountId: accountId,

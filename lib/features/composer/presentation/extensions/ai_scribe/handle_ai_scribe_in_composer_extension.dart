@@ -9,17 +9,18 @@ import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selectio
 
 extension HandleAiScribeInComposerExtension on ComposerController {
   bool get isAIScribeAvailable {
-    final aiCapability = getAICapability(
+    final isAIScribeEndpointAvailable =
+        mailboxDashBoardController.isAIScribeEndpointAvailable(
       session: mailboxDashBoardController.sessionCurrent,
       accountId: mailboxDashBoardController.accountId.value,
     );
-    final isScribeEndpointAvailable =
-        aiCapability?.isScribeEndpointAvailable == true;
 
     final isAIScribeConfigEnabled =
         mailboxDashBoardController.cachedAIScribeConfig.value.isEnabled;
 
-    return isAIScribeConfigEnabled && isScribeEndpointAvailable;
+    return isAIScribeConfigEnabled &&
+        isAIScribeEndpointAvailable &&
+        !PlatformInfo.isMobile;
   }
 
   Future<String> _getTextOnlyContentInEditor() async {

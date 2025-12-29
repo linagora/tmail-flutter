@@ -197,6 +197,9 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           .mailboxDashBoardController
           .selectedMailbox
           .value,
+        isDraggingMailbox: controller
+            .mailboxDashBoardController
+            .isDraggingMailbox,
         isHighlighted: isFolderHighlighted(mailboxNode),
         onOpenMailboxFolderClick: (mailboxNode) =>
             mailboxNode != null

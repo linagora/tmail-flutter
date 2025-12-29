@@ -114,19 +114,19 @@ void main() {
 
     test(
         'should insert after Starred when role missing but name matches (case-insensitive)',
-            () {
-          nodes = [
-            buildNode('1', name: 'Inbox'),
-            buildNode('2', name: 'STARRED'), // no role
-            buildNode('3', name: 'Trash'),
-          ];
+        () {
+      nodes = [
+        buildNode('1', name: 'Inbox'),
+        buildNode('2', name: 'STARRED'), // no role
+        buildNode('3', name: 'Trash'),
+      ];
 
-          final newNode = buildNode('4', name: 'Draft');
-          nodes.insertAfterStarredOrInbox(newNode);
+      final newNode = buildNode('4', name: 'Draft');
+      nodes.insertAfterStarredOrInbox(newNode);
 
-          final ids = nodes.mailboxIds.map((id) => id.id.value).toList();
-          expect(ids, ['1', '2', '4', '3']);
-        });
+      final ids = nodes.mailboxIds.map((id) => id.id.value).toList();
+      expect(ids, ['1', '2', '4', '3']);
+    });
 
     test('should insert after Inbox when Starred not found', () {
       nodes = [
@@ -162,7 +162,7 @@ void main() {
       ];
 
       final newNode =
-      buildNode('2', name: 'Starred', role: 'favorite'); // duplicate id
+          buildNode('2', name: 'Starred', role: 'favorite'); // duplicate id
       nodes.insertAfterStarredOrInbox(newNode);
 
       final ids = nodes.mailboxIds.map((id) => id.id.value).toList();
@@ -184,15 +184,15 @@ void main() {
 
     bool isInbox(MailboxNode node) =>
         node.item.role?.value == PresentationMailbox.inboxRole ||
-            node.item.name?.name.toLowerCase() == 'inbox';
+        node.item.name?.name.toLowerCase() == 'inbox';
 
     bool isStarred(MailboxNode node) =>
         node.item.role?.value == PresentationMailbox.favoriteRole ||
-            node.item.name?.name.toLowerCase() == 'starred';
+        node.item.name?.name.toLowerCase() == 'starred';
 
     bool isSent(MailboxNode node) =>
         node.item.role?.value == PresentationMailbox.sentRole ||
-            node.item.name?.name.toLowerCase() == 'sent';
+        node.item.name?.name.toLowerCase() == 'sent';
 
     test('should insert after first matched priority', () {
       nodes = [
