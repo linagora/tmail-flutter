@@ -15,6 +15,10 @@ mixin AiScribeMixin {
     return session.getAICapability(accountId);
   }
 
+  /// Returns whether the AI Scribe endpoint is available for the given session and account.
+  ///
+  /// Returns `true` if the account has AI capability with an available Scribe endpoint,
+  /// `false` otherwise (including when session or accountId are null).
   bool isAIScribeEndpointAvailable({Session? session, AccountId? accountId}) {
     final aiCapability = getAICapability(
       session: session,

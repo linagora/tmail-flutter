@@ -26,7 +26,7 @@ extension ListMailboxNodeExtension on List<MailboxNode> {
   }
 
   /// Insert [newNode] after the first mailbox matching [priorities].
-  /// If none match, inserts at the beginning.
+  /// If no priorities match (or [priorities] is empty), inserts at the beginning.
   void insertAfterByPriority(
     MailboxNode newNode,
     List<bool Function(MailboxNode)> priorities,
