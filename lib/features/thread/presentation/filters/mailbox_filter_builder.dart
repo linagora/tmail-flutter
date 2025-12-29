@@ -2,6 +2,8 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
+import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
+import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -135,6 +137,21 @@ class MailboxFilterBuilder {
           hasAttachment: true,
           hasKeyword: keyword,
           before: before,
+        );
+
+      case FilterMessageOption.starred:
+        return LogicFilterOperator(
+          Operator.AND,
+          {
+            EmailFilterCondition(
+              hasKeyword: KeyWordIdentifier.emailFlagged.value,
+
+            ),
+            EmailFilterCondition(
+              hasKeyword: keyword,
+              before: oldestEmail?.receivedAt,
+            ),
+          },
         );
 
       default:
