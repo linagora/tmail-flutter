@@ -54,6 +54,10 @@ class PreferencesController extends BaseController {
     return _manageAccountDashBoardController.isAICapabilitySupported;
   }
 
+  bool get isAIScribeCapabilityAvailable {
+    return _manageAccountDashBoardController.isAIScribeCapabilityAvailable;
+  }
+
   @override
   void onInit() {
     super.onInit();

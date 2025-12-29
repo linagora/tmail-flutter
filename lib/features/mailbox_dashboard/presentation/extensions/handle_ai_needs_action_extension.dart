@@ -1,8 +1,8 @@
-import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:scribe/scribe/ai/presentation/utils/ai_scribe_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
-extension HandleAiActionExtension on MailboxDashBoardController {
+extension HandleAiNeedsActionExtension on MailboxDashBoardController {
   bool get isAiCapabilitySupported {
     final currentAccountId = accountId.value;
     final currentSession = sessionCurrent;
@@ -11,7 +11,7 @@ extension HandleAiActionExtension on MailboxDashBoardController {
       return false;
     }
 
-    return SessionExtensions.linagoraAICapability.isSupported(
+    return AiScribeConstants.aiCapability.isSupported(
       currentSession,
       currentAccountId,
     );

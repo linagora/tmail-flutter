@@ -58,8 +58,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_action_required_tab_extension.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_favorite_tab_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -69,7 +67,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_action_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_create_new_rule_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_reactive_obx_variable_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -215,11 +213,15 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     super.onDone();
     viewState.value.fold((failure) {
       if (failure is GetAllMailboxFailure) {
-        autoCreateVirtualFolder();
+        autoCreateVirtualFolder(
+          dashboardController.isAINeedsActionEnabled,
+        );
       }
     }, (success) {
       if (success is GetAllMailboxSuccess) {
-        autoCreateVirtualFolder();
+        autoCreateVirtualFolder(
+          dashboardController.isAINeedsActionEnabled,
+        );
       }
     });
   }
@@ -898,13 +900,6 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void clearSearchInputFocus() {
     FocusManager.instance.primaryFocus?.unfocus();
-  }
-
-  void autoCreateVirtualFolder() {
-    addFavoriteFolderToMailboxList();
-    if (dashboardController.isAINeedsActionEnabled) {
-      addActionRequiredFolder();
-    }
   }
 
   @override

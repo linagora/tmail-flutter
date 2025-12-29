@@ -147,6 +147,11 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   Rx<AIScribeConfig> get cachedAIScribeConfig => AIScribeConfig.initial().obs;
+
+  @override
+  bool isAIScribeEndpointAvailable({Session? session, AccountId? accountId}) {
+    return false;
+  }
 }
 
 @GenerateNiceMocks([

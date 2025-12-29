@@ -20,7 +20,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_action_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';

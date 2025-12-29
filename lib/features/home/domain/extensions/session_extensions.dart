@@ -28,7 +28,6 @@ extension SessionExtensions on Session {
   static final CapabilityIdentifier linagoraContactSupportCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:jmap:contact:support'));
   static final CapabilityIdentifier linagoraDownloadAllCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:downloadAll'));
   static final CapabilityIdentifier linagoraSaaSCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:saas'));
-  static final CapabilityIdentifier linagoraAICapability = CapabilityIdentifier(Uri.parse('com:linagora:params:jmap:aibot'));
 
   static final Map<CapabilityIdentifier, CapabilityProperties Function(Map<String, dynamic>)> customMapCapabilitiesConverter = {
     linagoraContactSupportCapability: ContactSupportCapability.deserialize,
@@ -172,6 +171,10 @@ extension SessionExtensions on Session {
 
   AICapability? getAICapability(AccountId accountId) {
     try {
+      if (!AiScribeConstants.aiCapability.isSupported(this, accountId)) {
+        return null;
+      }
+
       final aiCapability = getCapabilityProperties<AICapability>(
         accountId,
         AiScribeConstants.aiCapability,

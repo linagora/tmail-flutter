@@ -31,6 +31,7 @@ class MailboxItemWidget extends StatefulWidget {
   final double? itemHeight;
   final String? iconSelected;
   final bool isHighlighted;
+  final bool isDraggingMailbox;
 
   final OnClickExpandMailboxNodeAction? onExpandFolderActionClick;
   final OnClickOpenMailboxNodeAction? onOpenMailboxFolderClick;
@@ -45,6 +46,7 @@ class MailboxItemWidget extends StatefulWidget {
     required this.mailboxNode,
     this.mailboxDisplayed = MailboxDisplayed.mailbox,
     this.isHighlighted = false,
+    this.isDraggingMailbox = false,
     this.mailboxNodeSelected,
     this.mailboxActions,
     this.mailboxIdAlreadySelected,
@@ -322,12 +324,19 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
       widget.mailboxNodeSelected?.id == widget.mailboxNode.item.id;
 
   Color get backgroundColorItem {
-    if (widget.mailboxDisplayed == MailboxDisplayed.mailbox) {
-      return _isSelected || widget.isHighlighted
-          ? AppColor.blue100
-          : Colors.transparent;
+    // Non-mailbox views are always white
+    if (widget.mailboxDisplayed != MailboxDisplayed.mailbox) {
+      return Colors.white;
     }
-    return Colors.white;
+
+    // Dragging action-required mailboxes must not show highlight
+    if (widget.isDraggingMailbox && widget.mailboxNode.item.isActionRequired) {
+      return AppColor.colorBgDesktop;
+    }
+
+    return (_isSelected || widget.isHighlighted)
+        ? AppColor.blue100
+        : Colors.transparent;
   }
 
   bool get isFolderModalActive =>

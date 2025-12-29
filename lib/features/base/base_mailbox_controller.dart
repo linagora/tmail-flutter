@@ -30,6 +30,8 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.da
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_action_required_tab_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_favorite_tab_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -670,6 +672,13 @@ abstract class BaseMailboxController extends BaseController
         destinationMailbox,
         destinationMailbox.getDisplayNameWithoutContext(appLocalizations),
       );
+    }
+  }
+
+  void autoCreateVirtualFolder(bool isAINeedsActionEnabled) {
+    addFavoriteFolderToMailboxList();
+    if (isAINeedsActionEnabled) {
+      addActionRequiredFolder();
     }
   }
 }

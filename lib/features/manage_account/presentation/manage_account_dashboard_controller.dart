@@ -341,6 +341,17 @@ class ManageAccountDashBoardController extends ReloadableController
     }
   }
 
+  bool get isAIScribeCapabilityAvailable {
+    if (accountId.value != null && sessionCurrent != null) {
+      return isAIScribeEndpointAvailable(
+        session: sessionCurrent!,
+        accountId: accountId.value!,
+      );
+    } else {
+      return false;
+    }
+  }
+
   void disableVacationResponder(
     VacationResponse vacation, {
     bool isAuto = false,
