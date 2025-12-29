@@ -9,15 +9,10 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/filter/filter.dart' show Filter;
-import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
-import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
-import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
@@ -45,7 +40,6 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
-import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -65,6 +59,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/refresh_thread_detail_extension.dart';
@@ -601,141 +596,6 @@ class ThreadController extends BaseController with EmailActionController {
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
-    }
-  }
-
-  EmailFilter getEmailFilterForLoadMailbox({PresentationEmail? oldestEmail}) {
-    if (selectedMailbox?.isVirtualFolder == true) {
-      return EmailFilter(
-        filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
-      );
-    } else {
-      return EmailFilter(
-        filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
-        filterOption: mailboxDashBoardController.filterMessageOption.value,
-        mailboxId: selectedMailboxId,
-      );
-    }
-  }
-
-  Filter getFilterConditionForLoadMailbox({
-    PresentationEmail? oldestEmail,
-  }) {
-    final mailbox = selectedMailbox;
-    final filterOption =
-        mailboxDashBoardController.filterMessageOption.value;
-    final before = oldestEmail?.receivedAt;
-
-    if (mailbox?.isFavorite == true) {
-      return _buildFavoriteMailboxFilter(
-        filterOption: filterOption,
-        before: before,
-      );
-    }
-
-    if (mailbox?.isActionRequired == true) {
-      return _buildActionRequiredMailboxFilter(
-        filterOption: filterOption,
-        before: before,
-      );
-    }
-
-    return getFilterCondition(
-      mailboxIdSelected: selectedMailboxId,
-      oldestEmail: oldestEmail,
-    );
-  }
-
-  Filter _buildFavoriteMailboxFilter({
-    required FilterMessageOption filterOption,
-    UTCDate? before,
-  }) {
-    switch (filterOption) {
-      case FilterMessageOption.unread:
-        return EmailFilterCondition(
-          notKeyword: KeyWordIdentifier.emailSeen.value,
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: before,
-        );
-
-      case FilterMessageOption.attachments:
-        return EmailFilterCondition(
-          hasAttachment: true,
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: before,
-        );
-
-      default:
-        return EmailFilterCondition(
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: before,
-        );
-    }
-  }
-
-  Filter _buildActionRequiredMailboxFilter({
-    required FilterMessageOption filterOption,
-    UTCDate? before,
-  }) {
-    switch (filterOption) {
-      case FilterMessageOption.starred:
-        return LogicFilterOperator(
-          Operator.AND,
-          {
-            EmailFilterCondition(
-              hasKeyword: KeyWordIdentifier.emailFlagged.value,
-              before: before,
-            ),
-            EmailFilterCondition(
-              notKeyword: KeyWordIdentifier.emailSeen.value,
-              hasKeyword: KeyWordIdentifierExtension.needsActionMail.value,
-              before: before,
-            ),
-          },
-        );
-
-      case FilterMessageOption.attachments:
-        return EmailFilterCondition(
-          hasAttachment: true,
-          notKeyword: KeyWordIdentifier.emailSeen.value,
-          hasKeyword: KeyWordIdentifierExtension.needsActionMail.value,
-          before: before,
-        );
-
-      default:
-        return EmailFilterCondition(
-          notKeyword: KeyWordIdentifier.emailSeen.value,
-          hasKeyword: KeyWordIdentifierExtension.needsActionMail.value,
-          before: before,
-        );
-    }
-  }
-
-  EmailFilterCondition getFilterCondition({PresentationEmail? oldestEmail, MailboxId? mailboxIdSelected}) {
-    switch(mailboxDashBoardController.filterMessageOption.value) {
-      case FilterMessageOption.all:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          before: oldestEmail?.receivedAt
-        );
-      case FilterMessageOption.unread:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          notKeyword: KeyWordIdentifier.emailSeen.value,
-          before: oldestEmail?.receivedAt
-        );
-      case FilterMessageOption.attachments:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          hasAttachment: true,
-          before: oldestEmail?.receivedAt
-        );
-      case FilterMessageOption.starred:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: oldestEmail?.receivedAt
-        );
     }
   }
 

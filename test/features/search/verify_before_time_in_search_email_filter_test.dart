@@ -21,6 +21,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
+import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
@@ -55,7 +56,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_re
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
@@ -70,7 +70,6 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sen
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
-import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -86,6 +85,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_email_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -95,7 +95,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../fixtures/account_fixtures.dart';
 import '../../fixtures/session_fixtures.dart';
-
 import 'verify_before_time_in_search_email_filter_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
@@ -858,11 +857,7 @@ void main() {
           AccountFixtures.aliceAccountId,
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        emailFilter: EmailFilter(
-          filter: threadController.getFilterCondition(mailboxIdSelected: threadController.selectedMailboxId),
-          filterOption: mailboxDashboardController.filterMessageOption.value,
-          mailboxId: threadController.selectedMailboxId,
-        ),
+        emailFilter: threadController.getEmailFilterForLoadMailbox(),
       )).called(1);
 
       verify(mockSearchEmailInteractor.execute(
@@ -1026,11 +1021,7 @@ void main() {
           AccountFixtures.aliceAccountId,
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        emailFilter: EmailFilter(
-          filter: threadController.getFilterCondition(mailboxIdSelected: threadController.selectedMailboxId),
-          filterOption: mailboxDashboardController.filterMessageOption.value,
-          mailboxId: threadController.selectedMailboxId,
-        ),
+        emailFilter: threadController.getEmailFilterForLoadMailbox(),
       )).called(1);
 
       verify(mockSearchEmailInteractor.execute(
@@ -1139,11 +1130,7 @@ void main() {
           AccountFixtures.aliceAccountId,
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        emailFilter: EmailFilter(
-          filter: threadController.getFilterCondition(mailboxIdSelected: threadController.selectedMailboxId),
-          filterOption: mailboxDashboardController.filterMessageOption.value,
-          mailboxId: threadController.selectedMailboxId,
-        ),
+        emailFilter: threadController.getEmailFilterForLoadMailbox(),
       )).called(1);
 
       verify(mockSearchEmailInteractor.execute(
