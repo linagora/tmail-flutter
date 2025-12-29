@@ -95,6 +95,10 @@ extension SessionExtensions on Session {
 
   ContactSupportCapability? getContactSupportCapability(AccountId accountId) {
     try {
+      if (!linagoraContactSupportCapability.isSupported(this, accountId)) {
+        return null;
+      }
+
       final contactSupportCapability = getCapabilityProperties<ContactSupportCapability>(
         accountId,
         linagoraContactSupportCapability,
@@ -118,6 +122,11 @@ extension SessionExtensions on Session {
 
   DownloadAllCapability? getDownloadAllCapability(AccountId? accountId) {
     if (accountId == null) return null;
+
+    if (!linagoraDownloadAllCapability.isSupported(this, accountId)) {
+      return null;
+    }
+
     return getCapabilityProperties<DownloadAllCapability>(
       accountId,
       linagoraDownloadAllCapability,
@@ -157,6 +166,10 @@ extension SessionExtensions on Session {
 
   SaaSAccountCapability? getSaaSAccountCapability(AccountId accountId) {
     try {
+      if (!linagoraSaaSCapability.isSupported(this, accountId)) {
+        return null;
+      }
+
       final saaSAccountCapability = getCapabilityProperties<SaaSAccountCapability>(
         accountId,
         linagoraSaaSCapability,

@@ -677,15 +677,12 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           ),
           separatorBuilder: (context, index) {
             final isMobile = PlatformInfo.isMobile;
-            final isLastItem = index == listPresentationEmail.length - 1;
             final isInactive =
                 controller.selectionMode.value == SelectMode.INACTIVE;
 
-            final showDivider = !isLastItem;
-
             final dividerColor = isMobile
                 ? null
-                : (showDivider && isInactive ? null : Colors.white);
+                : (isInactive ? null : Colors.white);
 
             final padding = isMobile
                 ? SearchEmailUtils.getPaddingItemListMobile(
@@ -696,10 +693,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     context,
                     controller.responsiveUtils,
                   );
-
-            if (!showDivider) {
-              return const SizedBox.shrink();
-            }
 
             return Padding(
               padding: padding,
