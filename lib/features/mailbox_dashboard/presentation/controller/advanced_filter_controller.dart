@@ -131,6 +131,7 @@ class AdvancedFilterController extends BaseController {
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
+    Option<Label>? labelOption,
   }) {
     _memorySearchFilter = _memorySearchFilter.copyWith(
       fromOption: fromOption,
@@ -147,7 +148,9 @@ class AdvancedFilterController extends BaseController {
       startDateOption: startDateOption,
       endDateOption: endDateOption,
       positionOption: positionOption,
-      sortOrderTypeOption: sortOrderTypeOption);
+      sortOrderTypeOption: sortOrderTypeOption,
+      labelOption: labelOption,
+    );
   }
 
   void _synchronizeSearchFilter() {
@@ -190,6 +193,8 @@ class AdvancedFilterController extends BaseController {
       {KeyWordIdentifier.emailFlagged.value},
     );
 
+    final labelOption = optionOf(selectedLabel.value);
+
     _updateMemorySearchFilter(
       textOption: textOption,
       notKeywordOption: notKeywordsOption,
@@ -203,7 +208,8 @@ class AdvancedFilterController extends BaseController {
       unreadOption: unreadOption,
       hasKeywordOption: hasKeywordOption,
       startDateOption: startDateOption,
-      endDateOption: endDateOption
+      endDateOption: endDateOption,
+      labelOption: labelOption,
     );
 
     searchController.synchronizeSearchFilter(_memorySearchFilter);
@@ -314,6 +320,8 @@ class AdvancedFilterController extends BaseController {
         : StringConvert.writeNullToEmpty(
             _memorySearchFilter.mailbox?.getDisplayName(context));
     }
+
+    selectedLabel.value = _memorySearchFilter.label;
   }
 
   void selectDateRange(BuildContext context) {
@@ -482,6 +490,7 @@ class AdvancedFilterController extends BaseController {
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
     _destinationMailboxSelected = null;
+    selectedLabel.value = null;
   }
 
   void _clearAllTextFieldInput() {
