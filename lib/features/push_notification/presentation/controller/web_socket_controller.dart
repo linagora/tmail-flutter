@@ -50,7 +50,7 @@ class WebSocketController extends PushBaseController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    logError('WebSocketController::handleFailureViewState():Failure $failure');
+    logWarning('WebSocketController::handleFailureViewState():Failure $failure');
     if (failure is WebSocketConnectionFailed) {
       _handleWebSocketConnectionRetry();
     }
@@ -128,11 +128,11 @@ class WebSocketController extends PushBaseController {
       log('WebSocketController::_isWebSocketConnected:webSocketChannel ready');
       return true;
     } on SocketException catch (e) {
-      logError('WebSocketController::_isWebSocketConnected:SocketException = $e');
+      logWarning('WebSocketController::_isWebSocketConnected:SocketException = $e');
     } on WebSocketChannelException catch (e) {
-      logError('WebSocketController::_isWebSocketConnected:WebSocketChannelException = $e');
+      logWarning('WebSocketController::_isWebSocketConnected:WebSocketChannelException = $e');
     } catch (e) {
-      logError('WebSocketController::_isWebSocketConnected:Exception = $e');
+      logWarning('WebSocketController::_isWebSocketConnected:Exception = $e');
     }
     return false;
   }
@@ -140,7 +140,7 @@ class WebSocketController extends PushBaseController {
   void _connectWebSocket() {
     _connectWebSocketInteractor = getBinding<ConnectWebSocketInteractor>();
     if (_connectWebSocketInteractor == null || accountId == null || session == null) {
-      logError('WebSocketController::_connectWebSocket: Skipping');
+      logWarning('WebSocketController::_connectWebSocket: Skipping');
       return;
     }
     if (_isConnecting) return;
@@ -211,12 +211,12 @@ class WebSocketController extends PushBaseController {
           final stateChange = StateChange.fromJson(data);
           _stateChangeDebouncer?.value = stateChange;
         } catch (e) {
-          logError('WebSocketController::_listenToWebSocket(): Data is not StateChange');
+          logWarning('WebSocketController::_listenToWebSocket(): Data is not StateChange');
         }
       },
       cancelOnError: true,
       onError: (error) {
-        logError('WebSocketController::_listenToWebSocket():Error: $error');
+        logWarning('WebSocketController::_listenToWebSocket():Error: $error');
         handleFailureViewState(WebSocketConnectionFailed(exception: error));
       },
       onDone: () {
@@ -251,7 +251,7 @@ class WebSocketController extends PushBaseController {
         session: session,
       );
     } catch (e) {
-      logError('WebSocketController::_handleStateChange:Exception = $e');
+      logWarning('WebSocketController::_handleStateChange:Exception = $e');
     }
   }
 

@@ -87,7 +87,7 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
 
       return htmlContentTransformed;
     } catch (e) {
-      logError('PrintFileDataSourceImpl::_transformHtmlEmailContent: Exception: $e');
+      logWarning('PrintFileDataSourceImpl::_transformHtmlEmailContent: Exception: $e');
       return '';
     }
   }

@@ -210,7 +210,7 @@ class ManageAccountDashBoardController extends ReloadableController
       _getAllVacationInteractor = Get.find<GetAllVacationInteractor>();
       _updateVacationInteractor = Get.find<UpdateVacationInteractor>();
     } catch (e) {
-      logError('ManageAccountDashBoardController::injectVacationBindings(): $e');
+      logWarning('ManageAccountDashBoardController::injectVacationBindings(): $e');
     }
   }
 

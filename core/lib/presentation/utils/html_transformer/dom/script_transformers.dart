@@ -23,7 +23,7 @@ class RemoveScriptTransformer extends DomTransformer {
         scriptElement.remove();
       }));
     } catch (e) {
-      logError('$runtimeType::process:Exception = $e');
+      logWarning('$runtimeType::process:Exception = $e');
     }
   }
 }

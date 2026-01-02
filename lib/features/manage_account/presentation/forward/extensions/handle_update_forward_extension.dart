@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/forward/forwa
 
 extension HandleUpdateForwardExtension on ForwardController {
   void handleErrorWhenUpdateForwardFail(Failure failure) {
-    logError(
+    logWarning(
       '$runtimeType::handleErrorWhenUpdateForwardFail: $failure',
     );
     if (failure is AddRecipientsInForwardingFailure) {

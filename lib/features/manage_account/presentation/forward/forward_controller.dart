@@ -70,7 +70,7 @@ class ForwardController extends BaseController {
       _addRecipientsInForwardingInteractor = Get.find<AddRecipientsInForwardingInteractor>();
       _editLocalCopyInForwardingInteractor = Get.find<EditLocalCopyInForwardingInteractor>();
     } catch (e) {
-      logError('ForwardController::onInit(): ${e.toString()}');
+      logWarning('ForwardController::onInit(): ${e.toString()}');
     }
   }
 

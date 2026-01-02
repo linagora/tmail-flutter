@@ -39,7 +39,7 @@ class StoreOpenedEmailInteractor {
       await _emailRepository.getStoredOpenedEmail(session, accountId, detailedEmail.emailId);
       return true;
     } catch (err) {
-      logError('StoreOpenedEmailInteractor::isOpenedEmailAlreadyStored():EXCEPTION: $err');
+      logWarning('StoreOpenedEmailInteractor::isOpenedEmailAlreadyStored():EXCEPTION: $err');
       return false;
     }
   }

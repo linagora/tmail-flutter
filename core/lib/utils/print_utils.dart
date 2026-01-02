@@ -35,7 +35,7 @@ class PrintUtils {
       </table>
     ''');
     } catch (e) {
-      logError('PrintUtils::_createUserInformationElement: Exception = $e');
+      logWarning('PrintUtils::_createUserInformationElement: Exception = $e');
       return null;
     }
   }
@@ -44,7 +44,7 @@ class PrintUtils {
     try {
       return Element.html('<hr />');
     } catch (e) {
-      logError('PrintUtils::dividerElement: Exception = $e');
+      logWarning('PrintUtils::dividerElement: Exception = $e');
       return null;
     }
   }
@@ -63,7 +63,7 @@ class PrintUtils {
       </table>
     ''');
     } catch (e) {
-      logError('PrintUtils::_createSubjectElement: Exception = $e');
+      logWarning('PrintUtils::_createSubjectElement: Exception = $e');
       return null;
     }
   }
@@ -88,7 +88,7 @@ class PrintUtils {
       </table>
     ''');
     } catch (e) {
-      logError('PrintUtils::_createSenderElement: Exception = $e');
+      logWarning('PrintUtils::_createSenderElement: Exception = $e');
       return null;
     }
   }
@@ -99,7 +99,7 @@ class PrintUtils {
       element.text = '$prefix: $emailAddress';
       return element.outerHtml;
     } catch (e) {
-      logError('PrintUtils::_createRecipientHtmlTag: Exception = $e');
+      logWarning('PrintUtils::_createRecipientHtmlTag: Exception = $e');
       return '';
     }
   }
@@ -126,7 +126,7 @@ class PrintUtils {
       </tr>
     ''');
     } catch (e) {
-      logError('PrintUtils::_createRecipientsElement: Exception = $e');
+      logWarning('PrintUtils::_createRecipientsElement: Exception = $e');
       return null;
     }
   }
@@ -147,7 +147,7 @@ class PrintUtils {
       </tr>
     ''');
     } catch (e) {
-      logError('PrintUtils::_createEmailContentElement: Exception = $e');
+      logWarning('PrintUtils::_createEmailContentElement: Exception = $e');
       return null;
     }
   }
@@ -198,7 +198,7 @@ class PrintUtils {
       </table>
     ''');
     } catch (e) {
-      logError('PrintUtils::_createAttachmentsElement: Exception = $e');
+      logWarning('PrintUtils::_createAttachmentsElement: Exception = $e');
       return null;
     }
   }

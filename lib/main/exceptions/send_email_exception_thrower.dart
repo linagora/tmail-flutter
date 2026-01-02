@@ -10,11 +10,15 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class SendEmailExceptionThrower extends RemoteExceptionThrower {
   @override
   FutureOr<void> throwException(error, stackTrace) async {
-    log('SendEmailExceptionThrower::throwException(): $error | stackTrace: $stackTrace');
+    logError(
+      'SendEmailExceptionThrower::throwException():error: $error | stackTrace: $stackTrace',
+      exception: error,
+      stackTrace: stackTrace,
+    );
     final networkConnectionController = getBinding<NetworkConnectionController>();
     final realtimeNetworkConnectionStatus = await networkConnectionController?.hasInternetConnection();
     if (realtimeNetworkConnectionStatus == false) {
-      logError('SendEmailExceptionThrower::throwException(): No realtime network connection');
+      logWarning('SendEmailExceptionThrower::throwException(): No realtime network connection');
       throw const NoNetworkError();
     } else {
       handleDioError(error);

@@ -89,7 +89,7 @@ class AuthenticationClientWeb with AuthenticationClientInteractionMixin
         throw AccessTokenInvalidException();
       }
     } catch (e) {
-      logError('$runtimeType::refreshingTokensOIDC(): $e');
+      logWarning('$runtimeType::refreshingTokensOIDC(): $e');
       throw handleException(e);
     }
   }

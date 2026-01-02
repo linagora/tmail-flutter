@@ -148,7 +148,7 @@ class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
           getSearchSnippetMethodCallId,
           SearchSnippetGetResponse.fromJson)?.list;
     } catch (e) {
-      logError('ThreadAPI::searchEmails:getSearchSnippetsFromResponse: Exception = $e');
+      logWarning('ThreadAPI::searchEmails:getSearchSnippetsFromResponse: Exception = $e');
       return null;
     }
   }

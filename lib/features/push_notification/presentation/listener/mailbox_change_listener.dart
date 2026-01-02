@@ -16,7 +16,7 @@ class MailboxChangeListener extends ChangeListener {
     try {
       _dashBoardController = getBinding<MailboxDashBoardController>();
     } catch (e) {
-      logError(
+      logWarning(
           'MailboxChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
   }

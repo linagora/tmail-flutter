@@ -100,7 +100,7 @@ class MailAddress with EquatableMixin {
         throw AddressException('No domain found at position ${pos + 1} in "$address"');
       }
     } catch (e) {
-      logError('MailAddress::validate: Exception = $e');
+      logWarning('MailAddress::validate: Exception = $e');
       if (e is AddressException) {
         rethrow;
       } else {

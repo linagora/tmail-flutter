@@ -23,7 +23,7 @@ class SignatureTransformer extends DomTransformer {
         element.attributes['class'] = 'tmail-signature-blocked';
       }));
     } catch (e) {
-      logError('$runtimeType::process:Exception = $e');
+      logWarning('$runtimeType::process:Exception = $e');
     }
   }
 }

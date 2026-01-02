@@ -97,7 +97,7 @@ class FileUtils {
       log('FileUtils::getFolder(): $folderPath');
       return Directory(folderPath);
     } catch (e) {
-      logError('FileUtils::getFolder():EXCEPTION: $e');
+      logWarning('FileUtils::getFolder():EXCEPTION: $e');
       return null;
     }
   }
@@ -113,7 +113,7 @@ class FileUtils {
         log('FileUtils::removeFolder: Remove ${dir.path} success');
       }
     } catch (e) {
-      logError('FileUtils::removeFolder():EXCEPTION: $e');
+      logWarning('FileUtils::removeFolder():EXCEPTION: $e');
     }
   }
 
@@ -134,7 +134,7 @@ class FileUtils {
         await file.delete();
       }
     } catch (e) {
-      logError('$runtimeType::deleteCompressedFileOnMobile: error: $e');
+      logWarning('$runtimeType::deleteCompressedFileOnMobile: error: $e');
     }
   }
 
@@ -144,7 +144,7 @@ class FileUtils {
       log('FileUtils::getCharsetFromBytes: FILE_CHARSET = ${decodedResult.charset}');
       return decodedResult.charset;
     } catch (e) {
-      logError('FileUtils::getCharsetFromBytes: Exception: $e');
+      logWarning('FileUtils::getCharsetFromBytes: Exception: $e');
       return DEFAULT_CHARSET;
     }
   }

@@ -366,7 +366,7 @@ class SearchEmailController extends BaseController
         _handleRefreshChangesSearchEmailsSuccess(searchState);
       }
     } catch (e, stackTrace) {
-      logError('SearchEmailController::_handleWebSocketMessage:Error processing state: $e');
+      logWarning('SearchEmailController::_handleWebSocketMessage:Error processing state: $e');
       onError(e, stackTrace);
     } finally {
       if (mailboxDashBoardController.currentEmailState != null) {
@@ -404,7 +404,7 @@ class SearchEmailController extends BaseController
     final userName = mailboxDashBoardController.sessionCurrent?.username;
 
     if (accountId == null || userName == null) {
-      logError('SearchEmailController::getAllRecentSearchAction: accountId or userName is null');
+      logWarning('SearchEmailController::getAllRecentSearchAction: accountId or userName is null');
       return <RecentSearch>[];
     }
 
@@ -441,7 +441,7 @@ class SearchEmailController extends BaseController
     final userName = mailboxDashBoardController.sessionCurrent?.username;
 
     if (accountId == null || userName == null) {
-      logError('SearchEmailController::_saveRecentSearch: accountId or userName is null');
+      logWarning('SearchEmailController::_saveRecentSearch: accountId or userName is null');
       return;
     }
 

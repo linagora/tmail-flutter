@@ -48,7 +48,7 @@ class ForwardRecipientController {
       requireCapability(session!, accountId!, [tmailContactCapabilityIdentifier]);
       TMailAutoCompleteBindings().dependencies();
     } catch (e) {
-      logError('ForwardRecipientController::injectAutoCompleteBindings(): exception: $e');
+      logWarning('ForwardRecipientController::injectAutoCompleteBindings(): exception: $e');
     }
   }
 

@@ -61,7 +61,7 @@ class AccountCacheManager extends CacheManagerInteraction {
       await _accountCacheClient.insertMultipleItem(legacyMapItems);
       log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_accountCacheClient.tableName}" → IsolatedHive DONE');
     } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_accountCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_accountCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 }

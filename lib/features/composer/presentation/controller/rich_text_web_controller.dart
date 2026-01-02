@@ -300,7 +300,7 @@ class RichTextWebController extends GetxController {
         '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" data-filename="${platformFile.name}" alt="Image in my signature" style="max-width:${maxWidth != null ? '${maxWidth}px' : '100%'};" data-mimetype="$mimeType"/>'
       );
     } else {
-      logError("RichTextWebController::insertImageAsBase64: bytes is null");
+      logWarning("RichTextWebController::insertImageAsBase64: bytes is null");
     }
   }
 

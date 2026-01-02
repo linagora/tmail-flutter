@@ -202,7 +202,7 @@ class HomeController extends ReloadableController {
         ),
       );
     } catch (e) {
-      logError('HomeController::_getSessionActionToLogOut:Exception = $e');
+      logWarning('HomeController::_getSessionActionToLogOut:Exception = $e');
       _handleGetSessionFailureToLogOut(authenticationViewStateSuccess);
     }
   }

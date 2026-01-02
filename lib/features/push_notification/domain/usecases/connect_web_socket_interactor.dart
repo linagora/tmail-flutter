@@ -23,7 +23,7 @@ class ConnectWebSocketInteractor {
         accountId);
       yield Right(WebSocketConnectionSuccess(webSocketChannel));
     } catch (e) {
-      logError('ConnectWebSocketInteractor::execute: $e');
+      logWarning('ConnectWebSocketInteractor::execute: $e');
       yield Left(WebSocketConnectionFailed(exception: e));
     }
   }

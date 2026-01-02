@@ -61,7 +61,7 @@ class ExportAllAttachmentsInteractor {
 
       yield Right(ExportAllAttachmentsSuccess(result));
     } catch (e) {
-      logError('ExportAllAttachmentsInteractor::execute():EXCEPTION: $e');
+      logWarning('ExportAllAttachmentsInteractor::execute():EXCEPTION: $e');
       yield Left(ExportAllAttachmentsFailure(exception: e));
     }
   }

@@ -13,7 +13,7 @@ extension CleanupRecentSearchExtension on MailboxDashBoardController {
     final username = sessionCurrent?.username;
 
     if (accountId == null || username == null || cleanupRecentSearchCacheInteractor == null) {
-      logError('CleanupRecentSearchExtension::cleanupRecentSearch: accountId == null || username == null || cleanupRecentSearchCacheInteractor == null');
+      logWarning('CleanupRecentSearchExtension::cleanupRecentSearch: accountId == null || username == null || cleanupRecentSearchCacheInteractor == null');
       return;
     }
 

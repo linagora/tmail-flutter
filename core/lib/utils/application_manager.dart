@@ -35,7 +35,7 @@ class ApplicationManager {
       log('ApplicationManager::getUserAgent: $userAgent');
       return userAgent;
     } catch(e) {
-      logError('ApplicationManager::getUserAgent: Exception: $e');
+      logWarning('ApplicationManager::getUserAgent: Exception: $e');
       return '';
     }
   }

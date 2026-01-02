@@ -45,7 +45,7 @@ class UpdateAccountCacheInteractor {
     try {
       return session.getQualifiedApiUrl(baseUrl: baseUrl);
     } catch (e) {
-      logError('UpdateAccountCacheInteractor::_getQualifiedApiUrl:Exception = $e');
+      logWarning('UpdateAccountCacheInteractor::_getQualifiedApiUrl:Exception = $e');
       return '';
     }
   }

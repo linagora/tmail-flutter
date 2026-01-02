@@ -30,7 +30,7 @@ class TransformListSignatureInteractor {
     try {
       return await _identityRepository.transformHtmlSignature(identitySignature);
     } catch (e) {
-      logError('TransformListSignatureInteractor::_transformHtmlSignature:Exception = $e');
+      logWarning('TransformListSignatureInteractor::_transformHtmlSignature:Exception = $e');
       return identitySignature;
     }
   }

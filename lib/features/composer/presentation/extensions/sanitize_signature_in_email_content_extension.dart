@@ -1,6 +1,5 @@
-
+import 'package:core/utils/app_logger.dart';
 import 'package:html/parser.dart';
-import 'package:rich_text_composer/views/commons/logger.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 
 extension SanitizeSignatureInEmailContentExtension on ComposerController {
@@ -19,7 +18,7 @@ extension SanitizeSignatureInEmailContentExtension on ComposerController {
       restoringSignatureButton = true;
       await applySignature(signature.innerHtml);
     } catch (e) {
-      logError('SanitizeSignatureInEmailContentExtension::restoreCollapsibleSignatureButton:Exception = $e');
+      logWarning('SanitizeSignatureInEmailContentExtension::restoreCollapsibleSignatureButton:Exception = $e');
     }
   }
 
@@ -33,7 +32,7 @@ extension SanitizeSignatureInEmailContentExtension on ComposerController {
       synchronizeInitDraftHash = true;
       initEmailDraftHash();
     } catch (e) {
-      logError('SanitizeSignatureInEmailContentExtension::synchronizeInitEmailDraftHash:Exception = $e');
+      logWarning('SanitizeSignatureInEmailContentExtension::synchronizeInitEmailDraftHash:Exception = $e');
     }
   }
 }

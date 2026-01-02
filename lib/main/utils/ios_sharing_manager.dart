@@ -50,7 +50,7 @@ class IOSSharingManager {
       final keychainSharingStored = await getKeychainSharingSession(accountId);
       return keychainSharingStored?.emailDeliveryState;
     } catch (e) {
-      logError('IOSSharingManager::_getEmailDeliveryStateFromKeychain: Exception: $e');
+      logWarning('IOSSharingManager::getEmailDeliveryStateFromKeychain: Exception: $e');
       return null;
     }
   }
@@ -59,8 +59,8 @@ class IOSSharingManager {
     log('IOSSharingManager::saveKeyChainSharingSession: START');
     try {
       if (!_validateToSaveKeychain(personalAccount)) {
-        logError('IOSSharingManager::saveKeyChainSharingSession: AccountId | Username | ApiUrl is NULL');
-        return Future.value(null);
+        logWarning('IOSSharingManager::saveKeyChainSharingSession: AccountId | Username | ApiUrl is NULL');
+        return;
       }
 
       TokenOIDC? tokenOIDC;
@@ -107,7 +107,7 @@ class IOSSharingManager {
 
       log('IOSSharingManager::_saveKeyChainSharingSession: COMPLETED');
     } catch (e) {
-      logError('IOSSharingManager::_saveKeyChainSharingSession: Exception: $e');
+      logWarning('IOSSharingManager::_saveKeyChainSharingSession: Exception: $e');
     }
   }
 
@@ -119,7 +119,7 @@ class IOSSharingManager {
       }
       return null;
     } catch (e) {
-      logError('IOSSharingManager::getKeychainSharingSession: Exception: $e');
+      logWarning('IOSSharingManager::getKeychainSharingSession: Exception: $e');
       return null;
     }
   }
@@ -128,7 +128,7 @@ class IOSSharingManager {
     try {
       return await _tokenOidcCacheManager.getTokenOidc(tokeHashId);
     } catch (e) {
-      logError('IOSSharingManager::_getTokenOidc:Exception: $e');
+      logWarning('IOSSharingManager::_getTokenOidc:Exception: $e');
       return null;
     }
   }
@@ -138,7 +138,7 @@ class IOSSharingManager {
       final credentialInfo = await _authenticationInfoCacheManager.getAuthenticationInfoStored();
       return base64Encode(utf8.encode('${credentialInfo.username}:${credentialInfo.password}'));
     } catch (e) {
-      logError('IOSSharingManager::_getCredentialAuthentication:Exception: $e');
+      logWarning('IOSSharingManager::_getCredentialAuthentication:Exception: $e');
       return null;
     }
   }
@@ -150,7 +150,7 @@ class IOSSharingManager {
     try {
       return await getEmailDeliveryStateFromKeychain(accountId);
     } catch (e) {
-      logError('IOSSharingManager::_getEmailDeliveryState:Exception: $e');
+      logWarning('IOSSharingManager::_getEmailDeliveryState:Exception: $e');
       return null;
     }
   }
@@ -168,7 +168,7 @@ class IOSSharingManager {
       log('IOSSharingManager::_getEmailState:emailState: $emailState');
       return emailState?.value;
     } catch (e) {
-      logError('IOSSharingManager::_getEmailState:Exception: $e');
+      logWarning('IOSSharingManager::_getEmailState:Exception: $e');
       return null;
     }
   }
@@ -183,7 +183,7 @@ class IOSSharingManager {
         isTWP: oidcConfig.isTWP,
       );
     } catch (e) {
-      logError('IOSSharingManager::_getTokenEndpointAndScopes:Exception: $e');
+      logWarning('IOSSharingManager::_getTokenEndpointScopesAndIsTWP:Exception: $e');
       return null;
     }
   }
@@ -202,7 +202,7 @@ class IOSSharingManager {
       final keychainSharingStored = await getKeychainSharingSession(accountId);
       return keychainSharingStored?.mailboxIdsBlockNotification?.isNotEmpty == true;
     } catch (e) {
-      logError('IOSSharingManager::getMailboxIdsBlockNotificationInKeyChain:Exception = $e');
+      logWarning('IOSSharingManager::isExistMailboxIdsBlockNotificationInKeyChain:Exception = $e');
       return false;
     }
   }
@@ -219,7 +219,7 @@ class IOSSharingManager {
       final newKeychain = keychainSharingStored.updating(mailboxIdsBlockNotification: mailboxIds);
       await _keychainSharingManager.save(newKeychain);
     } catch (e) {
-      logError('IOSSharingManager::updateMailboxIdsBlockNotificationInKeyChain: Exception = $e');
+      logWarning('IOSSharingManager::updateMailboxIdsBlockNotificationInKeyChain: Exception = $e');
     }
   }
 
@@ -236,7 +236,7 @@ class IOSSharingManager {
       log('IOSSharingManager::_getMailboxIdsBlockNotification(): CACHE_MAILBOX_LIST = $listMailboxIdBlockNotification');
       return listMailboxIdBlockNotification;
     } catch (e) {
-      logError('IOSSharingManager::_getMailboxIdsBlockNotification:Exception: $e');
+      logWarning('IOSSharingManager::_getMailboxIdsBlockNotification:Exception: $e');
       return null;
     }
   }

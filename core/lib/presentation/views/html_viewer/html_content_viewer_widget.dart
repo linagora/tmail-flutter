@@ -411,7 +411,7 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
       try {
         _webViewController.dispose();
       } catch (e) {
-        logError('_HtmlContentViewState:dispose:_webViewController.dispose: $e');
+        logWarning('_HtmlContentViewState:dispose:_webViewController.dispose: $e');
       }
     } else {
       _webViewController.dispose();

@@ -44,10 +44,10 @@ class RichTextMobileTabletController extends GetxController {
           maxWidth: maxWidth
         );
       } else {
-        logError('RichTextMobileTabletController::insertImageData: path is null');
+        logWarning('RichTextMobileTabletController::insertImageData: path is null');
       }
     } catch (e) {
-      logError('RichTextMobileTabletController::insertImageData:Exception: $e');
+      logWarning('RichTextMobileTabletController::insertImageData:Exception: $e');
     }
   }
 

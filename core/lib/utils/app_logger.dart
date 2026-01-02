@@ -16,7 +16,7 @@ const appLogName = '[TwakeMail]';
 
 String _applyWebColor(Level level, String text) {
   switch (level) {
-    case Level.wtf:
+    case Level.critical:
       return '$ansiRed$ansiBold!!!CRITICAL!!! $text$ansiReset';
     case Level.error:
       return '$ansiRed$text$ansiReset';
@@ -26,14 +26,14 @@ String _applyWebColor(Level level, String text) {
       return '$ansiGreen$text$ansiReset';
     case Level.debug:
       return '$ansiBlue$text$ansiReset';
-    case Level.verbose:
+    case Level.trace:
       return text;
   }
 }
 
 String _applyMobileFormat(Level level, String text) {
   switch (level) {
-    case Level.wtf:
+    case Level.critical:
       return '🔥 CRITICAL: $text';
     case Level.error:
       return '❌ ERROR: $text';
@@ -43,7 +43,7 @@ String _applyMobileFormat(Level level, String text) {
       return 'ℹ️ INFO: $text';
     case Level.debug:
       return '🐛 DEBUG: $text';
-    case Level.verbose:
+    case Level.trace:
       return '🔍 VERBOSE: $text';
   }
 }
@@ -56,13 +56,22 @@ void _internalLog(
   Map<String, dynamic>? extras,
   bool webConsoleEnabled = false,
 }) {
+  final shouldPrint = webConsoleEnabled
+      ? PlatformInfo.isWeb
+      : BuildUtils.isDebugMode;
+
+  if (!shouldPrint) {
+    return;
+  }
+
   final rawMessage = _buildRawMessage(message, exception, extras, stackTrace);
   final formattedMessage = _formatMessage(level, rawMessage);
 
   if (webConsoleEnabled && PlatformInfo.isWeb) {
     _printWebConsole(level, formattedMessage);
   } else {
-    _debugPrint(formattedMessage);
+    // ignore: avoid_print
+    print('$appLogName $formattedMessage');
   }
 }
 
@@ -80,24 +89,16 @@ String _buildRawMessage(
   return parts.join(' | ');
 }
 
-
 String _formatMessage(Level level, String raw) {
   return PlatformInfo.isWeb
       ? _applyWebColor(level, raw)
       : _applyMobileFormat(level, raw);
 }
 
-void _debugPrint(String formatted) {
-  if (!BuildUtils.isDebugMode) return;
-
-  // ignore: avoid_print
-  print('$appLogName $formatted');
-}
-
 void _printWebConsole(Level level, String value) {
   switch (level) {
     case Level.error:
-    case Level.wtf:
+    case Level.critical:
       html.window.console.error('$appLogName $value');
       break;
     case Level.warning:
@@ -107,7 +108,7 @@ void _printWebConsole(Level level, String value) {
       html.window.console.info('$appLogName $value');
       break;
     case Level.debug:
-    case Level.verbose:
+    case Level.trace:
       html.window.console.debug('$appLogName $value');
       break;
   }
@@ -130,7 +131,7 @@ void logError(
   );
 }
 
-void logWTF(
+void logCritical(
   String? message, {
   Object? exception,
   StackTrace? stackTrace,
@@ -139,7 +140,7 @@ void logWTF(
 }) {
   _internalLog(
     message,
-    level: Level.wtf,
+    level: Level.critical,
     exception: exception,
     stackTrace: stackTrace,
     extras: extras,
@@ -177,13 +178,13 @@ void logDebug(
   );
 }
 
-void logVerbose(
+void logTrace(
   String? message, {
   bool webConsoleEnabled = false,
 }) {
   _internalLog(
     message,
-    level: Level.verbose,
+    level: Level.trace,
     webConsoleEnabled: webConsoleEnabled,
   );
 }
@@ -198,12 +199,12 @@ void log(
     );
 
 enum Level {
-  wtf,
+  critical,
   error,
   warning,
   info,
   debug,
-  verbose,
+  trace,
 }
 
 // Take from: https://flutter.dev/docs/testing/errors
