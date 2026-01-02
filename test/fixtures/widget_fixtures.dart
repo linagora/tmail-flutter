@@ -21,6 +21,16 @@ class WidgetFixtures {
     );
   }
 
+  /// Sets up responsive testing with the specified [logicalSize] and optional [platform].
+  ///
+  /// Note: This method modifies global state via [debugDefaultTargetPlatformOverride].
+  /// Always call [resetResponsive] in your test's tearDown to clean up:
+  ///
+  /// ```dart
+  /// tearDown(() {
+  ///   WidgetFixtures.resetResponsive(tester);
+  /// });
+  /// ```
   static Future<void> setupResponsive(
     WidgetTester tester, {
     required Size logicalSize,
@@ -42,6 +52,18 @@ class WidgetFixtures {
     tester.view.reset();
   }
 
+  /// Pumps a widget with responsive setup for the specified [logicalSize] and optional [platform].
+  ///
+  /// Note: This method does not wrap the widget with [makeTestableWidget].
+  /// If your widget requires localization or GetX context, wrap it first:
+  ///
+  /// ```dart
+  /// await WidgetFixtures.pumpResponsiveWidget(
+  ///   tester,
+  ///   WidgetFixtures.makeTestableWidget(child: YourWidget()),
+  ///   logicalSize: Size(800, 600),
+  /// );
+  /// ```
   static Future<void> pumpResponsiveWidget(
     WidgetTester tester,
     Widget widget, {
