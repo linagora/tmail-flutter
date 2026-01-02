@@ -1,7 +1,9 @@
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 
 class MailboxFixtures {
   static final inboxMailbox = Mailbox(
@@ -100,4 +102,9 @@ class MailboxFixtures {
   static final mailboxB = Mailbox(id: MailboxId(Id('B')));
   static final mailboxC = Mailbox(id: MailboxId(Id('C')));
   static final mailboxD = Mailbox(id: MailboxId(Id('D')));
+
+  static final actionRequiredPresentationMailbox =
+      PresentationMailbox.actionRequiredFolder;
+
+  static final currentState = State('2c9f1b12-b35a-43e6-9af2-0106fb53a943');
 }
