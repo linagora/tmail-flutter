@@ -3,7 +3,6 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/application_manager.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -82,7 +81,6 @@ import 'login_controller_test.mocks.dart';
   MockSpec<GetOidcUserInfoInteractor>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
-  MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
 ])
@@ -117,7 +115,6 @@ void main() {
   late MockImagePaths mockImagePaths;
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
-  late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
   late MockTwakeAppManager mockTwakeAppManager;
 
@@ -158,7 +155,6 @@ void main() {
     mockImagePaths = MockImagePaths();
     mockResponsiveUtils = MockResponsiveUtils();
     mockUuid = MockUuid();
-    mockApplicationManager = MockApplicationManager();
     mockToastManager = MockToastManager();
     mockTwakeAppManager = MockTwakeAppManager();
 
@@ -181,7 +177,6 @@ void main() {
     Get.put<ImagePaths>(mockImagePaths);
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(mockUuid);
-    Get.put<ApplicationManager>(mockApplicationManager);
     Get.put<ToastManager>(mockToastManager);
     Get.put<TwakeAppManager>(mockTwakeAppManager);
     Get.testMode = true;

@@ -13,7 +13,7 @@ class AIDataSourceImpl implements AIDataSource {
     try {
       final apiResponse = await _aiApi.generateMessage(prompt);
       return AIResponse(result: apiResponse.content);
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw Exception('Failed to generate AI text: ${e.message}');
     } catch (e) {
       throw Exception('Failed to generate AI text: $e');

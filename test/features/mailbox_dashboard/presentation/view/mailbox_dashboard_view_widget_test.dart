@@ -2,7 +2,6 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide SearchController, State;
@@ -200,7 +199,6 @@ const fallbackGenerators = {
   MockSpec<LanguageCacheManager>(),
   MockSpec<RemoveAllComposerCacheOnWebInteractor>(),
   MockSpec<RemoveComposerCacheByIdOnWebInteractor>(),
-  MockSpec<ApplicationManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<GetQuotasInteractor>(),
   MockSpec<ToastManager>(),
@@ -265,7 +263,6 @@ void main() {
   final imagePaths = ImagePaths();
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
-  final applicationManager = MockApplicationManager();
 
   final getSessionInteractor = MockGetSessionInteractor();
   final getAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
@@ -349,7 +346,6 @@ void main() {
       Get.put<ImagePaths>(imagePaths);
       Get.put<ResponsiveUtils>(responsiveUtils);
       Get.put<Uuid>(uuid);
-      Get.put<ApplicationManager>(applicationManager);
       Get.put<GetSessionInteractor>(getSessionInteractor);
       Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
       Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);

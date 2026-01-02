@@ -22,6 +22,7 @@ void main() {
     ApplicationManager.debugDeviceInfoOverride = mockDeviceInfoPlugin;
 
     applicationManager = ApplicationManager();
+    applicationManager.clearCache();
   });
 
   tearDown(() {
@@ -38,97 +39,170 @@ void main() {
     FkUserAgent.release();
   });
 
-  group('ApplicationManager::getUserAgent test', () {
+  group('ApplicationManager::getUserAgent', () {
     test(
-        'WHEN platform is Web THEN getUserAgent should return user agent for web',
-        () async {
-      const webUserAgent = 'User-Agent-Twake-Mail-Web';
+      'WHEN platform is Web THEN return web userAgent AND cache it',
+      () async {
+        const webUserAgent = 'User-Agent-Twake-Mail-Web';
 
-      PlatformInfo.isTestingForWeb = true;
+        PlatformInfo.isTestingForWeb = true;
 
-      when(mockDeviceInfoPlugin.webBrowserInfo).thenAnswer(
-        (_) async => WebBrowserInfo(
-          userAgent: webUserAgent,
-          appCodeName: '',
-          appName: '',
-          appVersion: '',
-          deviceMemory: null,
-          language: '',
-          languages: [],
-          platform: '',
-          product: '',
-          productSub: '',
-          vendor: '',
-          vendorSub: '',
-          maxTouchPoints: null,
-          hardwareConcurrency: null,
-        ),
-      );
+        when(mockDeviceInfoPlugin.webBrowserInfo).thenAnswer(
+          (_) async => WebBrowserInfo(
+            userAgent: webUserAgent,
+            appCodeName: '',
+            appName: '',
+            appVersion: '',
+            deviceMemory: null,
+            language: '',
+            languages: const [],
+            platform: '',
+            product: '',
+            productSub: '',
+            vendor: '',
+            vendorSub: '',
+            maxTouchPoints: null,
+            hardwareConcurrency: null,
+          ),
+        );
 
-      final userAgent = await applicationManager.getUserAgent();
+        final firstCall = await applicationManager.getUserAgent();
+        final secondCall = await applicationManager.getUserAgent();
 
-      expect(userAgent, webUserAgent);
-    });
+        expect(firstCall, webUserAgent);
+        expect(secondCall, webUserAgent);
 
-    test(
-        'WHEN platform is Android THEN getUserAgent should return user agent for Android',
-        () async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
-
-      const androidUserAgent = 'User-Agent-Twake-Mail-Android';
-
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(
-        const MethodChannel('fk_user_agent'),
-        (message) async {
-          if (message.method == 'getProperties') {
-            return {'userAgent': androidUserAgent};
-          }
-          return null;
-        },
-      );
-
-      await FkUserAgent.init();
-
-      final userAgent = await applicationManager.getUserAgent();
-
-      expect(userAgent, androidUserAgent);
-    });
+        // platform channel must be called only once (cached)
+        verify(mockDeviceInfoPlugin.webBrowserInfo).called(1);
+      },
+    );
 
     test(
-        'WHEN platform is Web AND mockDeviceInfoPlugin.webBrowserInfo throws exception THEN return empty string',
-        () async {
-      PlatformInfo.isTestingForWeb = true;
+      'WHEN platform is Android THEN return mobile userAgent AND cache it',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
 
-      when(mockDeviceInfoPlugin.webBrowserInfo)
-          .thenThrow(Exception('Failed to get web browser info'));
+        const androidUserAgent = 'User-Agent-Twake-Mail-Android';
 
-      final userAgent = await applicationManager.getUserAgent();
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(
+          const MethodChannel('fk_user_agent'),
+          (message) async {
+            if (message.method == 'getProperties') {
+              return {'userAgent': androidUserAgent};
+            }
+            return null;
+          },
+        );
 
-      expect(userAgent, '');
-    });
+        await applicationManager.initUserAgent();
+
+        final firstCall = await applicationManager.getUserAgent();
+        final secondCall = await applicationManager.getUserAgent();
+
+        expect(firstCall, androidUserAgent);
+        expect(secondCall, androidUserAgent);
+      },
+    );
 
     test(
-        'WHEN platform is Android AND FkUserAgent.userAgent empty THEN return empty string',
-        () async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      'WHEN platform is Web AND webBrowserInfo throws exception THEN return empty string',
+      () async {
+        PlatformInfo.isTestingForWeb = true;
 
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(
-        const MethodChannel('fk_user_agent'),
-        (message) async {
-          if (message.method == 'getProperties') {
-            return {};
-          }
-          return null;
-        },
-      );
+        when(mockDeviceInfoPlugin.webBrowserInfo).thenAnswer(
+          (_) => Future<WebBrowserInfo>.error(
+            Exception('Failed to get web browser info'),
+          ),
+        );
 
-      await FkUserAgent.init();
+        final userAgent = await applicationManager.getUserAgent();
 
-      final userAgent = await applicationManager.getUserAgent();
+        expect(userAgent, '');
+      },
+    );
 
-      expect(userAgent, '');
-    });
+    test(
+      'WHEN platform is Android AND FkUserAgent returns empty THEN return empty string',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(
+          const MethodChannel('fk_user_agent'),
+          (message) async {
+            if (message.method == 'getProperties') {
+              return {};
+            }
+            return null;
+          },
+        );
+
+        await applicationManager.initUserAgent();
+
+        final userAgent = await applicationManager.getUserAgent();
+
+        expect(userAgent, '');
+      },
+    );
+
+    test(
+      'WHEN mobile userAgent is released THEN getUserAgent returns empty string',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+        const androidUserAgent = 'User-Agent-Twake-Mail-Android';
+
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(
+          const MethodChannel('fk_user_agent'),
+          (message) async {
+            if (message.method == 'getProperties') {
+              return {'userAgent': androidUserAgent};
+            }
+            return null;
+          },
+        );
+
+        await applicationManager.initUserAgent();
+
+        final firstCall = await applicationManager.getUserAgent();
+        await applicationManager.releaseUserAgent();
+        final secondCall = await applicationManager.getUserAgent();
+
+        expect(firstCall, androidUserAgent);
+        expect(secondCall, '');
+      },
+    );
+
+    test(
+      'WHEN mobile userAgent is released AND re-initialized THEN cache rebuilt',
+      () async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+        const androidUserAgent = 'User-Agent-Twake-Mail-Android';
+
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(
+          const MethodChannel('fk_user_agent'),
+          (message) async {
+            if (message.method == 'getProperties') {
+              return {'userAgent': androidUserAgent};
+            }
+            return null;
+          },
+        );
+
+        await applicationManager.initUserAgent();
+        final firstCall = await applicationManager.getUserAgent();
+
+        await applicationManager.releaseUserAgent();
+        await applicationManager.initUserAgent();
+        final secondCall = await applicationManager.getUserAgent();
+
+        expect(firstCall, androidUserAgent);
+        expect(secondCall, androidUserAgent);
+      },
+    );
   });
 }

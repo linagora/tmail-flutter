@@ -2,7 +2,6 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/application_manager.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -190,7 +189,6 @@ const fallbackGenerators = {
   MockSpec<LanguageCacheManager>(),
   MockSpec<RemoveAllComposerCacheOnWebInteractor>(),
   MockSpec<RemoveComposerCacheByIdOnWebInteractor>(),
-  MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
@@ -265,7 +263,6 @@ void main() {
   final imagePaths = MockImagePaths();
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
-  final applicationManager = MockApplicationManager();
   final mockToastManager = MockToastManager();
   final mockTwakeAppManager = MockTwakeAppManager();
 
@@ -341,7 +338,6 @@ void main() {
     Get.put<ImagePaths>(imagePaths);
     Get.put<ResponsiveUtils>(responsiveUtils);
     Get.put<Uuid>(uuid);
-    Get.put<ApplicationManager>(applicationManager);
     Get.put<ToastManager>(mockToastManager);
     Get.put<TwakeAppManager>(mockTwakeAppManager);
     Get.put<GetSessionInteractor>(getSessionInteractor);

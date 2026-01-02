@@ -2,7 +2,6 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/application_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -12,6 +11,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -24,7 +24,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_e
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
-import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -57,7 +56,6 @@ const fallbackGenerators = {
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
-  MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
   // Advanced filter controller mock specs
@@ -96,7 +94,6 @@ void main() {
   late MockImagePaths mockImagePaths;
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
-  late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
   late MockTwakeAppManager mockTwakeAppManager;
 
@@ -114,7 +111,6 @@ void main() {
     mockImagePaths = MockImagePaths();
     mockResponsiveUtils = MockResponsiveUtils();
     mockUuid = MockUuid();
-    mockApplicationManager = MockApplicationManager();
     mockToastManager = MockToastManager();
     mockTwakeAppManager = MockTwakeAppManager();
 
@@ -133,7 +129,6 @@ void main() {
     Get.put<ImagePaths>(mockImagePaths);
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(mockUuid);
-    Get.put<ApplicationManager>(mockApplicationManager);
     Get.put<ToastManager>(mockToastManager);
     Get.put<TwakeAppManager>(mockTwakeAppManager);
 

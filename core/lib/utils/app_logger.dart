@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
@@ -59,26 +61,33 @@ void _internalLog(
       ? PlatformInfo.isWeb
       : BuildUtils.isDebugMode;
 
-  if (!shouldPrint) {
+  final shouldSentry = _shouldReportToSentry(level);
+
+  if (!shouldPrint && !shouldSentry) {
     return;
   }
 
   final rawMessage = _buildRawMessage(message, exception, extras, stackTrace);
-  final formattedMessage = _formatMessage(level, rawMessage);
 
-  if (webConsoleEnabled && PlatformInfo.isWeb) {
-    _printWebConsole(level, formattedMessage);
-  } else {
-    // ignore: avoid_print
-    print('$appLogName $formattedMessage');
+  if (shouldPrint) {
+    final formattedMessage = _formatMessage(level, rawMessage);
+
+    if (webConsoleEnabled && PlatformInfo.isWeb) {
+      _printWebConsole(level, formattedMessage);
+    } else {
+      // ignore: avoid_print
+      print('$appLogName $formattedMessage');
+    }
   }
 
-  if (_shouldReportToSentry(level)) {
-    SentryManager.instance.captureException(
-      exception ?? rawMessage,
-      stackTrace: stackTrace,
-      message: rawMessage,
-      extras: extras,
+  if (shouldSentry) {
+    unawaited(
+      SentryManager.instance.captureException(
+        exception ?? rawMessage,
+        stackTrace: stackTrace,
+        message: rawMessage,
+        extras: extras,
+      ),
     );
   }
 }

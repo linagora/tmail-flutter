@@ -4,7 +4,6 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -167,7 +166,6 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
-  MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
 
@@ -211,7 +209,6 @@ void main() {
   late MockDeleteAuthorityOidcInteractor mockDeleteAuthorityOidcInteractor;
   late MockAppToast mockAppToast;
   late MockUuid mockUuid;
-  late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
   late MockTwakeAppManager mockTwakeAppManager;
 
@@ -257,7 +254,6 @@ void main() {
     mockDeleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
     mockAppToast = MockAppToast();
     mockUuid = MockUuid();
-    mockApplicationManager = MockApplicationManager();
     mockToastManager = MockToastManager();
     mockTwakeAppManager = MockTwakeAppManager();
 
@@ -276,7 +272,6 @@ void main() {
     Get.put<ImagePaths>(ImagePaths());
     Get.put<ResponsiveUtils>(ResponsiveUtils());
     Get.put<Uuid>(mockUuid);
-    Get.put<ApplicationManager>(mockApplicationManager);
     Get.put<ToastManager>(mockToastManager);
     Get.put<TwakeAppManager>(mockTwakeAppManager);
 

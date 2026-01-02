@@ -62,7 +62,7 @@ class SentryConfig {
       throw Exception('Sentry configuration is missing');
     }
 
-    final appVersion = await ApplicationManager().getVersion();
+    final appVersion = await ApplicationManager().getAppVersion();
 
     return SentryConfig(
       dsn: sentryDSN,
