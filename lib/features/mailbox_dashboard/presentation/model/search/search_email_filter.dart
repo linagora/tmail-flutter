@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -35,6 +36,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final UTCDate? endDate;
   final int? position;
   final EmailSortOrderType sortOrderType;
+  final Label? label;
 
   factory SearchEmailFilter.initial() => SearchEmailFilter();
 
@@ -49,6 +51,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     this.startDate,
     this.endDate,
     this.position,
+    this.label,
     Set<String>? from,
     Set<String>? to,
     EmailReceiveTimeType? emailReceiveTimeType,
@@ -83,6 +86,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
+    Option<Label>? labelOption,
   }) {
     return SearchEmailFilter(
       from: getOptionParam(fromOption, from),
@@ -100,6 +104,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       endDate: getOptionParam(endDateOption, endDate),
       position: getOptionParam(positionOption, position),
       sortOrderType: getOptionParam(sortOrderTypeOption, sortOrderType),
+      label: getOptionParam(labelOption, label),
     );
   }
 
@@ -146,6 +151,8 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
           Operator.AND,
           hasKeyword.map((e) => EmailFilterCondition(hasKeyword: e)).toSet(),
         ),
+      if (label != null)
+        EmailFilterCondition(hasKeyword: label!.keyword),
       if (moreFilterCondition != null && moreFilterCondition.hasCondition)
         moreFilterCondition
     };
@@ -203,6 +210,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     emailReceiveTimeType != EmailReceiveTimeType.allTime ||
     sortOrderType != SearchEmailFilter.defaultSortOrder ||
     (mailbox != null && mailbox?.id != PresentationMailbox.unifiedMailbox.id) ||
+    label != null ||
     hasAttachment ||
     unread;
 
@@ -217,6 +225,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     emailReceiveTimeType == EmailReceiveTimeType.allTime &&
     sortOrderType == SearchEmailFilter.defaultSortOrder &&
     (mailbox == null || mailbox?.id == PresentationMailbox.unifiedMailbox.id) &&
+    label == null &&
     !hasAttachment &&
     !unread;
 
@@ -236,6 +245,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     startDate,
     endDate,
     position,
-    sortOrderType
+    sortOrderType,
+    label,
   ];
 }
