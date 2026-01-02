@@ -24,7 +24,7 @@ class SanitizeUrl {
       }
       return originalUrl;
     } catch (e) {
-      logError('SanitizeUrl::process:Exception = $e');
+      logWarning('SanitizeUrl::process:Exception = $e');
       return inputText;
     }
   }

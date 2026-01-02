@@ -177,7 +177,7 @@ class FcmMessageController extends PushBaseController {
           session: success.session);
       }
     } catch (e) {
-      logError('FcmMessageController::_handleGetSessionSuccess: Exception $e');
+      logWarning('FcmMessageController::_handleGetSessionSuccess: Exception $e');
     }
   }
 

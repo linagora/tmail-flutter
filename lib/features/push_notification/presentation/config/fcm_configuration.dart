@@ -8,7 +8,7 @@ class FcmConfiguration {
     try {
       await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     } catch (e) {
-      logError('FcmConfiguration::initialize: Exception = $e');
+      logWarning('FcmConfiguration::initialize: Exception = $e');
     }
   }
 }

@@ -148,12 +148,12 @@ class FileUploader {
           fileName: argsUpload.fileInfo.fileName);
       }
     } on DioError catch (exception) {
-      logError('FileUploader::_handleUploadAttachmentAction():DioError: $exception');
+      logWarning('FileUploader::_handleUploadAttachmentAction():DioError: $exception');
 
       throw exception.copyWith(
         requestOptions: exception.requestOptions.copyWith(data: ''));
     } catch (exception) {
-      logError('FileUploader::_handleUploadAttachmentAction():OtherException: $exception');
+      logWarning('FileUploader::_handleUploadAttachmentAction():OtherException: $exception');
 
       rethrow;
     }
@@ -225,7 +225,7 @@ class FileUploader {
         nameFile: fileName,
         charset: fileCharset);
     } else {
-      logError('FileUploader::_parsingResponse(): DataResponseIsNullException');
+      logWarning('FileUploader::_parsingResponse(): DataResponseIsNullException');
       throw DataResponseIsNullException();
     }
   }

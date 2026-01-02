@@ -42,7 +42,7 @@ class GetEmailByIdInteractor {
         );
       }
     } catch (e) {
-      logError('GetEmailByIdInteractor::execute():EXCEPTION: $e');
+      logWarning('GetEmailByIdInteractor::execute():EXCEPTION: $e');
       yield Left<Failure, Success>(GetEmailByIdFailure(e));
     }
   }
@@ -62,7 +62,7 @@ class GetEmailByIdInteractor {
         GetEmailByIdSuccess(email, mailboxContain: mailboxContain)
       );
     } catch (e) {
-      logError('GetEmailByIdInteractor::_getEmailByIdFromServer():EXCEPTION: $e');
+      logWarning('GetEmailByIdInteractor::_getEmailByIdFromServer():EXCEPTION: $e');
       yield Left<Failure, Success>(GetEmailByIdFailure(e));
     }
 
@@ -80,7 +80,7 @@ class GetEmailByIdInteractor {
       final email = await _emailRepository.getStoredEmail(session, accountId, emailId);
       yield Right<Failure, Success>(GetEmailByIdSuccess(email.toPresentationEmail()));
     } catch (e) {
-      logError('GetEmailByIdInteractor::_tryToGetEmailFromCache():EXCEPTION: $e');
+      logWarning('GetEmailByIdInteractor::_tryToGetEmailFromCache():EXCEPTION: $e');
       yield* _getEmailByIdFromServer(session, accountId, emailId, properties: properties);
     }
   }

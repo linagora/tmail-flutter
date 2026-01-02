@@ -83,7 +83,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
+    logWarning('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
     try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
@@ -151,8 +151,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         return super.onError(err, handler);
       }
-    } catch (e) {
-      logError('AuthorizationInterceptors::onError:Exception: $e');
+    } catch (e, stackTrace) {
+      logError(
+        'AuthorizationInterceptors::onError:Exception: $e',
+        exception: e,
+        stackTrace: stackTrace,
+      );
       if (e is ServerError || e is TemporarilyUnavailable) {
         return super.onError(
           DioError(requestOptions: err.requestOptions, error: e),
@@ -166,14 +170,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   Stream<List<int>>? _getDataUploadRequest(dynamic mapUploadExtra) {
     try {
-      String? filePath = mapUploadExtra[FileUploader.filePathExtraKey];
+      if (mapUploadExtra is! Map) return null;
+      final filePath = mapUploadExtra[FileUploader.filePathExtraKey] as String?;
       if (filePath?.isNotEmpty == true) {
         return File(filePath!).openRead();
       } else {
-        return mapUploadExtra[FileUploader.streamDataExtraKey];
+        return mapUploadExtra[FileUploader.streamDataExtraKey] as Stream<List<int>>?;
       }
     } catch(e) {
-      log('AuthorizationInterceptors::_getDataUploadRequest: Exception = $e');
+      logWarning(
+        'AuthorizationInterceptors::_getDataUploadRequest: Exception = $e',
+      );
       return null;
     }
   }

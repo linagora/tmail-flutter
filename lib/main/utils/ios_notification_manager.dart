@@ -38,7 +38,7 @@ class IOSNotificationManager {
         }
       });
     } catch (e) {
-      logError('IOSNotificationManager::listenClickNotification:Exception = $e');
+      logWarning('IOSNotificationManager::listenClickNotification:Exception = $e');
     }
   }
 
@@ -53,7 +53,7 @@ class IOSNotificationManager {
         return null;
       }
     } catch (e) {
-      logError('IOSNotificationManager::getCurrentEmailIdInNotificationClick:Exception = $e');
+      logWarning('IOSNotificationManager::getCurrentEmailIdInNotificationClick:Exception = $e');
       return null;
     }
   }

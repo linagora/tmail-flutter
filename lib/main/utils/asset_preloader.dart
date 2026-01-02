@@ -17,7 +17,7 @@ class AssetPreloader {
         HtmlEditorUtils.loadAsset(HtmlEditorConstants.summernoteFontTTFAssetPath),
       ]);
     } catch (e) {
-      logError('AssetPreloader::preloadHtmlEditorAssets:Exception = $e');
+      logWarning('AssetPreloader::preloadHtmlEditorAssets:Exception = $e');
     }
   }
 }

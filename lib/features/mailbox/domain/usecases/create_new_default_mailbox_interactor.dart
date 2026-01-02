@@ -60,7 +60,7 @@ class CreateDefaultMailboxInteractor {
       );
       return mailboxUpdatedRecord.$1;
     } catch (e) {
-      logError('CreateDefaultMailboxInteractor::_updateRoleToListMailbox:Exception = $e');
+      logWarning('CreateDefaultMailboxInteractor::_updateRoleToListMailbox:Exception = $e');
       return mailboxes;
     }
   }

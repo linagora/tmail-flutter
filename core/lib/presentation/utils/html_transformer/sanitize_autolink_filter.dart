@@ -56,7 +56,7 @@ class SanitizeAutolinkFilter {
       log('SanitizeAutolinkFilter::process:htmlTextBuffer = $textSanitized');
       return textSanitized;
     } catch (e) {
-      logError('$runtimeType::process:Exception = $e');
+      logWarning('$runtimeType::process:Exception = $e');
       return inputText;
     }
   }

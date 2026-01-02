@@ -37,7 +37,7 @@ extension StringExtension on String {
         }
       }
     } catch (e) {
-      logError('StringExtension::firstLetterToUpperCase(): $e');
+      logWarning('StringExtension::firstLetterToUpperCase(): $e');
       return '';
     }
   }
@@ -94,7 +94,7 @@ extension StringExtension on String {
         return 0;
       }
     } catch (e) {
-      logError('StringExtension::_generateGradientColorIndex(): $e');
+      logWarning('StringExtension::_generateGradientColorIndex(): $e');
       return 0;
     }
   }

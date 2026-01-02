@@ -16,7 +16,7 @@ class GetThreadDetailStatusInteractor {
       final result = await _threadDetailRepository.getThreadDetailStatus();
       yield Right(GetThreadDetailStatusSuccess(result));
     } catch (e) {
-      logError('GetThreadDetailStatusInteractor::execute(): Exception: $e');
+      logWarning('GetThreadDetailStatusInteractor::execute(): Exception: $e');
       yield Left(GetThreadDetailStatusFailure(exception: e));
     }
   }

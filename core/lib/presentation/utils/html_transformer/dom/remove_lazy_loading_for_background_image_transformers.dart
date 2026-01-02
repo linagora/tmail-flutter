@@ -31,7 +31,7 @@ class RemoveLazyLoadingForBackgroundImageTransformer extends DomTransformer {
         element.attributes.remove('lazy');
       }));
     } catch (e) {
-      logError('$runtimeType::process:Exception = $e');
+      logWarning('$runtimeType::process:Exception = $e');
     }
   }
 }

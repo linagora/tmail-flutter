@@ -20,7 +20,7 @@ class AppUtils {
    try {
      await loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
    } catch (e) {
-     logError('AppUtils::loadEnvFile:loadFcmConfigFileToEnv: Exception = $e');
+     logWarning('AppUtils::loadEnvFile:loadFcmConfigFileToEnv: Exception = $e');
      await dotenv.load(fileName: AppConfig.envFileName);
    }
   }

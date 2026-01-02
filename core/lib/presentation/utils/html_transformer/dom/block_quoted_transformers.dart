@@ -29,7 +29,7 @@ class BlockQuotedTransformer extends DomTransformer {
         ''';
       }));
     } catch (e) {
-      logError('$runtimeType::process:Exception = $e');
+      logWarning('$runtimeType::process:Exception = $e');
     }
   }
 }

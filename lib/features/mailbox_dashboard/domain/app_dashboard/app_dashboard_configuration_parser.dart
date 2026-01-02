@@ -12,7 +12,7 @@ class AppDashboardConfigurationParser extends AppConfigParser<LinagoraApplicatio
       final jsonObject = jsonDecode(value);
       return LinagoraApplications.fromJson(jsonObject);
     } catch (e) {
-      logError('AppDashboardConfigurationParser::parse(): $e');
+      logWarning('AppDashboardConfigurationParser::parse(): $e');
       rethrow;
     }
   }

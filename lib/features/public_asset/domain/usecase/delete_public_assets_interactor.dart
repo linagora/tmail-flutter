@@ -26,7 +26,7 @@ class DeletePublicAssetsInteractor {
         publicAssetIds: publicAssetIds);
       yield Right(DeletePublicAssetsSuccessState());
     } catch (exception) {
-      logError('DeletePublicAssetsInteractor::execute():error: $exception');
+      logWarning('DeletePublicAssetsInteractor::execute():error: $exception');
       yield Left(DeletePublicAssetsFailureState(exception: exception));
     }
   }

@@ -81,7 +81,7 @@ class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
   }
 
   void _handleErrorStream(Object error, StackTrace stackTrace) {
-    logError('_SavingMessageDialogViewState::_handleErrorStream: Exception = $error');
+    logWarning('_SavingMessageDialogViewState::_handleErrorStream: Exception = $error');
     if (error is UnknownError && error.message is List<SavingEmailToDraftsCanceledException>) {
       popBack(result: SaveEmailAsDraftsFailure(SavingEmailToDraftsCanceledException()));
     } else {

@@ -23,7 +23,7 @@ extension AttachmentDetectionExtension on ComposerController {
         return keywords;
       }
     } catch (e) {
-      logError('$runtimeType::validateAttachmentReminder:Error $e');
+      logWarning('$runtimeType::validateAttachmentReminder:Error $e');
       return [];
     }
   }

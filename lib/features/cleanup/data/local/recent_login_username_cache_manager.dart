@@ -89,7 +89,7 @@ class RecentLoginUsernameCacheManager extends CacheManagerInteraction {
       await _recentLoginUsernameCacheClient.insertMultipleItem(legacyMapItems);
       log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_recentLoginUsernameCacheClient.tableName}" → IsolatedHive DONE');
     } catch (e) {
-      logError('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_recentLoginUsernameCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_recentLoginUsernameCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
     }
   }
 }

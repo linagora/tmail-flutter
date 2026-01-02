@@ -17,7 +17,7 @@ class RemoveIdentityCacheOnWebInteractor {
 
       yield Right(RemoveIdentityCacheOnWebSuccess());
     } catch (exception) {
-      logError("$runtimeType::execute: $exception");
+      logWarning("$runtimeType::execute: $exception");
       yield Left(RemoveIdentityCacheOnWebFailure(exception: exception));
     }
   }

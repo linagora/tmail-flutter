@@ -74,7 +74,7 @@ extension SessionExtensions on Session {
     try {
       return getOwnEmailAddressOrEmpty().split('@').last;
     } catch (e) {
-      logError('SessionExtensions::internalDomain: Exception: $e');
+      logWarning('SessionExtensions::internalDomain: Exception: $e');
       return '';
     }
   }
@@ -88,7 +88,7 @@ extension SessionExtensions on Session {
       log('SessionExtensions::getMinInputLengthAutocomplete:minInputLength = $minInputLength');
       return minInputLength;
     } catch (e) {
-      logError('SessionExtensions::getMinInputLengthAutocomplete():[Exception] $e');
+      logWarning('SessionExtensions::getMinInputLengthAutocomplete():[Exception] $e');
       return null;
     }
   }
@@ -102,7 +102,7 @@ extension SessionExtensions on Session {
       log('SessionExtensions::getContactSupportCapability:contactSupportCapability = $contactSupportCapability');
       return contactSupportCapability;
     } catch (e) {
-      logError('SessionExtensions::getContactSupportCapability():[Exception] $e');
+      logWarning('SessionExtensions::getContactSupportCapability():[Exception] $e');
       return null;
     }
   }
@@ -142,7 +142,7 @@ extension SessionExtensions on Session {
       final props = capability?.props[0] as Map<String, dynamic>?;
       return props?[subaddressingSupported] ?? false;
     } catch (e) {
-      logError('SessionExtensions::isSubAddressingSupported:Exception = $e');
+      logWarning('SessionExtensions::isSubAddressingSupported:Exception = $e');
       return false;
     }
   }
@@ -164,7 +164,7 @@ extension SessionExtensions on Session {
       log('SessionExtensions::getSaaSAccountCapability:saaSAccountCapability = $saaSAccountCapability');
       return saaSAccountCapability;
     } catch (e) {
-      logError('SessionExtensions::getSaaSAccountCapability():[Exception] $e');
+      logWarning('SessionExtensions::getSaaSAccountCapability():[Exception] $e');
       return null;
     }
   }

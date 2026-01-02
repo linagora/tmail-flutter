@@ -104,7 +104,7 @@ class HtmlAnalyzer {
         return listEventAction;
       }
     } catch(e) {
-      logError('HtmlAnalyzer::getListEventAction:Exception: $e');
+      logWarning('HtmlAnalyzer::getListEventAction:Exception: $e');
       return [];
     }
   }
@@ -205,7 +205,7 @@ class HtmlAnalyzer {
       }));
       return document.body?.innerHtml ?? emailContent;
     } catch (e) {
-      logError('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect:Exception = $e');
+      logWarning('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect:Exception = $e');
       return emailContent;
     }
   }
@@ -233,7 +233,7 @@ class HtmlAnalyzer {
       log('HtmlAnalyzer::_retrieveAttachmentFromUpload:Attachment = $attachment | taskId = $taskId');
       return (attachment, taskId);
     } catch (e) {
-      logError('HtmlAnalyzer::_retrieveAttachmentFromUpload:Exception = $e');
+      logWarning('HtmlAnalyzer::_retrieveAttachmentFromUpload:Exception = $e');
       return null;
     }
   }
@@ -259,7 +259,7 @@ class HtmlAnalyzer {
       }));
       return document.body?.innerHtml ?? emailContent;
     } catch (e) {
-      logError('HtmlAnalyzer::removeStyleLazyLoadDisplayInlineImages:Exception = $e');
+      logWarning('HtmlAnalyzer::removeStyleLazyLoadDisplayInlineImages:Exception = $e');
       return emailContent;
     }
   }

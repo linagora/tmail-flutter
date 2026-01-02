@@ -24,7 +24,7 @@ class StringConvert {
     try {
       return utf8.decode(base64Decode(text));
     } catch (e) {
-      logError('StringConvert::decodeBase64ToString:Exception = $e');
+      logWarning('StringConvert::decodeBase64ToString:Exception = $e');
       return text;
     }
   }
@@ -106,7 +106,7 @@ class StringConvert {
       log('StringConvert::getMediaTypeFromBase64ImageTag:mimeType = $mimeType');
       return MediaType.parse(mimeType);
     } catch (e) {
-      logError('StringConvert::getMimeTypeFromBase64ImageTag:Exception = $e');
+      logWarning('StringConvert::getMimeTypeFromBase64ImageTag:Exception = $e');
       return null;
     }
   }
@@ -117,7 +117,7 @@ class StringConvert {
       final contentOriginal = emailDocument.body?.innerHtml ?? content;
       return contentOriginal;
     } catch (e) {
-      logError('StringConvert::getContentOriginal:Exception = $e');
+      logWarning('StringConvert::getContentOriginal:Exception = $e');
       return content;
     }
   }

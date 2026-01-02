@@ -111,7 +111,7 @@ class QuickSearchSuggestionListState<T, P, R>
     try {
       return await widget.fetchRecentActionCallback?.call(queryString);
     } catch (e) {
-      logError('SuggestionsListState::_getRecent:Exception = $e');
+      logWarning('SuggestionsListState::_getRecent:Exception = $e');
       return null;
     }
   }
@@ -120,7 +120,7 @@ class QuickSearchSuggestionListState<T, P, R>
     try {
       return await widget.contactSuggestionCallback?.call(queryString);
     } catch (e) {
-      logError('SuggestionsListState::_getListContact:Exception = $e');
+      logWarning('SuggestionsListState::_getListContact:Exception = $e');
       return null;
     }
   }
@@ -129,7 +129,7 @@ class QuickSearchSuggestionListState<T, P, R>
     try {
       return await widget.suggestionsCallback?.call(queryString);
     } catch (e) {
-      logError('SuggestionsListState::_getListSuggestion:Exception = $e');
+      logWarning('SuggestionsListState::_getListSuggestion:Exception = $e');
       return null;
     }
   }

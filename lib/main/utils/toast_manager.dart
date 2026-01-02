@@ -143,7 +143,7 @@ class ToastManager {
     final context = currentContext;
     final overlayContext = currentOverlayContext;
     if (context == null || overlayContext == null) {
-      logError('ToastManager::showMessageFailure: Context or OverlayContext is null');
+      logWarning('ToastManager::showMessageFailure: Context or OverlayContext is null');
       return;
     }
 
@@ -231,7 +231,7 @@ class ToastManager {
     final context = currentContext;
     final overlayContext = currentOverlayContext;
     if (context == null || overlayContext == null) {
-      logError('ToastManager::showMessageSuccess: Context or OverlayContext is null');
+      logWarning('ToastManager::showMessageSuccess: Context or OverlayContext is null');
       return;
     }
 
@@ -273,7 +273,7 @@ class ToastManager {
     final context = currentContext;
     final overlayContext = currentOverlayContext;
     if (context == null || overlayContext == null) {
-      logError('$runtimeType::showMessageSuccessWithAction: Context or OverlayContext is null');
+      logWarning('$runtimeType::showMessageSuccessWithAction: Context or OverlayContext is null');
       return;
     }
 

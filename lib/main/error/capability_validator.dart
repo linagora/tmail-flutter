@@ -33,7 +33,7 @@ extension ListCapabilityIdentifierExtension on List<CapabilityIdentifier> {
       requireCapability(session, accountId, this);
       return true;
     } catch (error) {
-      logError('ListCapabilityIdentifierExtension::isSupported(): $error');
+      logWarning('ListCapabilityIdentifierExtension::isSupported(): $error');
       return false;
     }
   }
@@ -49,7 +49,7 @@ extension CapabilityIdentifierExtension on CapabilityIdentifier {
       requireCapability(session, accountId, [this]);
       return true;
     } catch (error) {
-      logError('CapabilityIdentifierExtension::isSupported(): $error');
+      logWarning('CapabilityIdentifierExtension::isSupported(): $error');
       return false;
     }
   }
@@ -63,7 +63,7 @@ extension CapabilityIdentifierSetExtension on Set<CapabilityIdentifier> {
       add(CapabilityIdentifier.jmapTeamMailboxes);
       return this;
     } catch (error) {
-      logError('CapabilityIdentifierExtension::toCapabilitiesSupportTeamMailboxes(): $error');
+      logWarning('CapabilityIdentifierSetExtension::toCapabilitiesSupportTeamMailboxes(): $error');
       return this;
     }
   }

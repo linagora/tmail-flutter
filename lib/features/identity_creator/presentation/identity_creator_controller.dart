@@ -701,7 +701,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
         );
       }
     } else {
-      logError("IdentityCreatorController::pickImage: context is unmounted");
+      logWarning("IdentityCreatorController::pickImage: context is unmounted");
     }
   }
   
@@ -732,7 +732,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
           )
         );
       } else {
-        logError("IdentityCreatorController::_insertInlineImage: context is unmounted");
+        logWarning("IdentityCreatorController::_insertInlineImage: context is unmounted");
       }
     } else if (publicAssetController != null) {
       publicAssetController!.uploadFileToBlob(file);
@@ -747,7 +747,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
             pathContains: IdentityCreatorConstants.prefixCompressedInlineImageTemp);
         }
       } else {
-        logError("IdentityCreatorController::_insertInlineImage: Platform not supported");
+        logWarning("IdentityCreatorController::_insertInlineImage: Platform not supported");
       }
     }
   }
@@ -765,7 +765,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       isCompressingInlineImage.value = false;
       return compressedFile;
     } catch (e) {
-      logError("$runtimeType::_compressFileAction: compress image error: $e");
+      logWarning("$runtimeType::_compressFileAction: compress image error: $e");
       isCompressingInlineImage.value = false;
       if (context.mounted) {
         appToast.showToastErrorMessage(
@@ -888,7 +888,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     {String? base64,
     required UploadError uploadError}
   ) {
-    logError('$runtimeType::onPasteImageFailure: $uploadError');
+    logWarning('$runtimeType::onPasteImageFailure: $uploadError');
     appToast.showToastErrorMessage(
       context,
       AppLocalizations.of(context).thisImageCannotBePastedIntoTheEditor);
@@ -941,7 +941,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
             )
           );
         } else {
-          logError("IdentityCreatorController::_uploadMultipleFilesToPublicAsset: context is unmounted");
+          logWarning("IdentityCreatorController::_uploadMultipleFilesToPublicAsset: context is unmounted");
         }
         return;
       }
@@ -959,7 +959,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
         }
       );
     } catch (e) {
-      logError("IdentityCreatorController::_uploadMultipleFilesToPublicAsset: error: $e");
+      logWarning("IdentityCreatorController::_uploadMultipleFilesToPublicAsset: error: $e");
     }
   }
 

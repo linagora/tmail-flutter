@@ -26,7 +26,7 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
         _addNoReferrerForRelProperty(element);
       }));
     } catch (e) {
-      logError('$runtimeType::process:Exception = $e');
+      logWarning('$runtimeType::process:Exception = $e');
     }
   }
 

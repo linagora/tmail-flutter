@@ -35,7 +35,7 @@ class SaveLanguageToServerSettingsInteractor {
       );
       yield Right(SaveLanguageToServerSettingsSuccess(locale));
     } catch (e) {
-      logError('SaveLanguageToServerSettingsInteractor::execute(): $e');
+      logWarning('SaveLanguageToServerSettingsInteractor::execute(): $e');
       yield Left(SaveLanguageToServerSettingsFailure(exception: e));
     }
   }

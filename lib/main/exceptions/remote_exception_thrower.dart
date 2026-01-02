@@ -17,10 +17,14 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
   @override
   throwException(dynamic error, dynamic stackTrace) {
-    logError('RemoteExceptionThrower::throwException():error: $error | stackTrace: $stackTrace');
+    logError(
+      'RemoteExceptionThrower::throwException():error: $error | stackTrace: $stackTrace',
+      exception: error,
+      stackTrace: stackTrace,
+    );
     final networkConnectionController = getBinding<NetworkConnectionController>();
     if (networkConnectionController?.isNetworkConnectionAvailable() == false) {
-      logError('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
+      logWarning('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
       throw const NoNetworkError();
     } else {
       handleDioError(error);
@@ -29,7 +33,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
   void handleDioError(dynamic error) {
     if (error is DioError) {
-      logError(
+      logWarning(
         'RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
       );
 

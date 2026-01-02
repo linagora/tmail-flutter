@@ -78,7 +78,7 @@ class EmailChangeListener extends ChangeListener {
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
       _storeListNewEmailInteractor = getBinding<StoreListNewEmailInteractor>();
     } catch (e) {
-      logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
+      logWarning('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
   }
 
@@ -331,7 +331,7 @@ class EmailChangeListener extends ChangeListener {
             baseDownloadUrl
         ));
       } catch (e) {
-        logError('EmailChangeListener::_getListDetailedEmailByIdAction(): $e');
+        logWarning('EmailChangeListener::_getListDetailedEmailByIdAction(): $e');
         consumeState(Stream.value(Left(GetDetailedEmailByIdFailure(e))));
       }
     }

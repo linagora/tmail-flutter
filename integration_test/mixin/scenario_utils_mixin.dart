@@ -207,7 +207,7 @@ mixin ScenarioUtilsMixin {
           attachments.add(attachment);
         }
       } catch (e) {
-        logError('ScenarioUtilsMixin::uploadAttachments(): $e');
+        logWarning('ScenarioUtilsMixin::uploadAttachments(): $e');
         return attachments;
       }
     }

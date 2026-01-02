@@ -504,7 +504,7 @@ class ComposerController extends BaseController
     try {
       return session.getUploadUri(accountId, jmapUrl: dynamicUrlInterceptors.jmapUrl);
     } catch (e) {
-      logError('ComposerController::_getUploadUriFromSession:Exception = $e');
+      logWarning('ComposerController::_getUploadUriFromSession:Exception = $e');
       return null;
     }
   }
@@ -860,7 +860,7 @@ class ComposerController extends BaseController
         ? htmlTextEditor!.removeEditorStartTag()
         : '';
     } catch (e) {
-      logError('ComposerController::getContentInEditor:Exception = $e');
+      logWarning('ComposerController::getContentInEditor:Exception = $e');
       return '';
     }
   }
@@ -1105,12 +1105,12 @@ class ComposerController extends BaseController
               resultState: value,
               queryString: queryString,
               onFailureCallback: (failure) {
-                logError('ComposerController::getAutoCompleteSuggestion:onFailureCallback: $failure');
+                logWarning('ComposerController::getAutoCompleteSuggestion:onFailureCallback: $failure');
                 consumeState(Stream.value(Left(failure)));
               },
             ),
             onError: (error) {
-              logError('ComposerController::getAutoCompleteSuggestion:onError: $error');
+              logWarning('ComposerController::getAutoCompleteSuggestion:onError: $error');
               consumeState(Stream.value(Left(error)));
             },
         );
@@ -1133,12 +1133,12 @@ class ComposerController extends BaseController
             resultState: value,
             queryString: queryString,
             onFailureCallback: (failure) {
-              logError('ComposerController::getAutoCompleteSuggestion:onFailureCallback: $failure');
+              logWarning('ComposerController::getAutoCompleteSuggestion:onFailureCallback: $failure');
               consumeState(Stream.value(Left(failure)));
             },
           ),
           onError: (error) {
-            logError('ComposerController::getAutoCompleteSuggestion:onError: $error');
+            logWarning('ComposerController::getAutoCompleteSuggestion:onError: $error');
             consumeState(Stream.value(Left(error)));
           },
         ) ?? <EmailAddress>[];
@@ -1205,11 +1205,11 @@ class ComposerController extends BaseController
           uploadUri: uploadUri,
         );
       } catch (e) {
-        logError('ComposerController::uploadAttachmentsAction: $e');
+        logWarning('ComposerController::uploadAttachmentsAction: $e');
         uploadController.consumeState(Stream.value(Left(UploadAttachmentFailure(e, pickedFiles[0]))));
       }
     } else {
-      logError('ComposerController::uploadAttachmentsAction: SESSION OR ACCOUNT_ID is NULL');
+      logWarning('ComposerController::uploadAttachmentsAction: SESSION OR ACCOUNT_ID is NULL');
     }
   }
 
@@ -1690,7 +1690,7 @@ class ComposerController extends BaseController
     try {
       baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
     } catch (e) {
-      logError('ComposerController::_handleUploadInlineSuccess(): $e');
+      logWarning('ComposerController::_handleUploadInlineSuccess(): $e');
     }
     final accountId = mailboxDashBoardController.accountId.value;
 
@@ -2350,7 +2350,7 @@ class ComposerController extends BaseController
     String? base64,
     required UploadError uploadError
   }) {
-    logError('ComposerController::handleOnPasteImageFailureAction: $uploadError');
+    logWarning('ComposerController::handleOnPasteImageFailureAction: $uploadError');
     if (!context.mounted) return;
 
     appToast.showToastErrorMessage(

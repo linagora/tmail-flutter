@@ -12,8 +12,8 @@ abstract class ChangeListener {
     newStateStream.listen(
       _handleStateStream,
       onError: (error, stackTrace) {
-        logError('ChangeListener::consumeState():onError:error: $error');
-        logError('ChangeListener::consumeState():onError:stackTrace: $stackTrace');
+        logWarning('ChangeListener::consumeState():onError:error: $error');
+        logWarning('ChangeListener::consumeState():onError:stackTrace: $stackTrace');
       }
     );
   }

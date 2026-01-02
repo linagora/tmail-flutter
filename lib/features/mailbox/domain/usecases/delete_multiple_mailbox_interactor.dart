@@ -49,7 +49,7 @@ class DeleteMultipleMailboxInteractor {
             currentMailboxState: currentMailboxState));
       }
     } catch (e) {
-      logError('DeleteMultipleMailboxInteractor::execute(): exception: $e');
+      logWarning('DeleteMultipleMailboxInteractor::execute(): exception: $e');
       yield Left<Failure, Success>(DeleteMultipleMailboxFailure(e));
     }
   }

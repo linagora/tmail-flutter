@@ -90,7 +90,7 @@ class QuotasController extends BaseController {
   @override
   void handleFailureViewState(Failure failure) {
     if (failure is GetQuotasFailure) {
-      logError('$runtimeType::handleFailureViewState');
+      logWarning('$runtimeType::handleFailureViewState');
       mailboxDashBoardController.octetsQuota.value = null;
       isBannerEnabled.value = true;
     } else {

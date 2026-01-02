@@ -428,7 +428,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapPublicAsset]);
       CleanUpPublicAssetsInteractorBindings().dependencies();
     } catch(e) {
-      logError('$runtimeType::injectCleanUpPublicAssetsInteractorBindings(): exception: $e');
+      logWarning('$runtimeType::injectCleanUpPublicAssetsInteractorBindings(): exception: $e');
     }
   }
 

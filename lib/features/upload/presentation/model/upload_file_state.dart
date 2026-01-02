@@ -76,7 +76,7 @@ class UploadFileState with EquatableMixin {
       }
       return mediaType?.getIcon(imagePaths, fileName: fileName) ?? imagePaths.icFileDefault;
     } catch (e) {
-      logError('UploadFileState::getIcon: Exception: $e');
+      logWarning('UploadFileState::getIcon: Exception: $e');
       return imagePaths.icFileDefault;
     }
   }

@@ -143,7 +143,7 @@ abstract class BaseController extends GetxController
   }
 
   void onError(dynamic error, StackTrace stackTrace) {
-    logError('$runtimeType::onError():Error: $error | StackTrace: $stackTrace');
+    logWarning('$runtimeType::onError():Error: $error | StackTrace: $stackTrace');
     final isUrgentException = validateUrgentException(error);
     if (isUrgentException) {
       handleUrgentException(exception: error);
@@ -173,7 +173,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
-    logError('$runtimeType::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception');
+    logWarning('$runtimeType::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception');
     if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
@@ -182,7 +182,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
-    logError('$runtimeType::handleUrgentExceptionOnWeb():Failure: $failure | Exception: $exception');
+    logWarning('$runtimeType::handleUrgentExceptionOnWeb():Failure: $failure | Exception: $exception');
     if (exception is NoNetworkError) {
       _handleNotNetworkErrorException();
     } else if (exception is ConnectionError) {
@@ -258,7 +258,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleFailureViewState(Failure failure) async {
-    logError('$runtimeType::handleFailureViewState():Failure = $failure');
+    logWarning('$runtimeType::handleFailureViewState():Failure = $failure');
     if (failure is LogoutOidcFailure) {
       if (_isFcmEnabled) {
         _getStoredFirebaseRegistrationFromCache();
@@ -313,7 +313,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [tmailContactCapabilityIdentifier]);
       TMailAutoCompleteBindings().dependencies();
     } catch (e) {
-      logError('$runtimeType::injectAutoCompleteBindings(): exception: $e');
+      logWarning('$runtimeType::injectAutoCompleteBindings(): exception: $e');
     }
   }
 
@@ -322,7 +322,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapMdn]);
       MdnInteractorBindings().dependencies();
     } catch(e) {
-      logError('$runtimeType::injectMdnBindings(): exception: $e');
+      logWarning('$runtimeType::injectMdnBindings(): exception: $e');
     }
   }
 
@@ -331,7 +331,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [capabilityForward]);
       ForwardingInteractorsBindings().dependencies();
     } catch(e) {
-      logError('$runtimeType::injectForwardBindings(): exception: $e');
+      logWarning('$runtimeType::injectForwardBindings(): exception: $e');
     }
   }
 
@@ -340,7 +340,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [capabilityRuleFilter]);
       EmailRulesInteractorBindings().dependencies();
     } catch(e) {
-      logError('$runtimeType::injectRuleFilterBindings(): exception: $e');
+      logWarning('$runtimeType::injectRuleFilterBindings(): exception: $e');
     }
   }
 
@@ -362,7 +362,7 @@ abstract class BaseController extends GetxController
         throw NotSupportFCMException();
       }
     } catch(e) {
-      logError('$runtimeType::injectFCMBindings(): exception: $e');
+      logWarning('$runtimeType::injectFCMBindings(): exception: $e');
     }
   }
 
@@ -386,7 +386,7 @@ abstract class BaseController extends GetxController
       WebSocketInteractorBindings().dependencies();
       WebSocketController.instance.initialize(accountId: accountId, session: session);
     } catch(e) {
-      logError('$runtimeType::injectWebSocket(): exception: $e');
+      logWarning('$runtimeType::injectWebSocket(): exception: $e');
     }
   }
 
@@ -491,7 +491,7 @@ abstract class BaseController extends GetxController
         onSuccessCallback();
       }
     } catch (e) {
-      logError('BaseController::logoutToSignInNewAccount:Exception = $e');
+      logWarning('BaseController::logoutToSignInNewAccount:Exception = $e');
       onFailureCallback();
     }
   }
@@ -510,8 +510,11 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> _handleDeleteFCMRegistration() async {
+    _getStoredFirebaseRegistrationInteractor =
+        getBinding<GetStoredFirebaseRegistrationInteractor>();
+    if (_getStoredFirebaseRegistrationInteractor == null) return;
+
     try {
-      _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
       final fcmRegistration = await _getStoredFirebaseRegistrationInteractor?.execute().last;
 
       fcmRegistration?.foldSuccess<GetStoredFirebaseRegistrationSuccess>(
@@ -522,7 +525,7 @@ abstract class BaseController extends GetxController
         onFailure: (failure) {},
       );
     } catch (e) {
-      logError('BaseController::_handleDeleteFCMRegistration:Exception = $e');
+      logWarning('BaseController::_handleDeleteFCMRegistration:Exception = $e');
     }
   }
 
@@ -563,7 +566,7 @@ abstract class BaseController extends GetxController
         await _clearBasicAuthData();
       }
     } catch (e) {
-      logError('BaseController::clearAllData:Exception = $e');
+      logWarning('BaseController::clearAllData:Exception = $e');
     }
   }
 

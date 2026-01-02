@@ -32,7 +32,7 @@ class CreatePublicAssetInteractor {
         identityId: identityId);
       yield Right<Failure, Success>(CreatePublicAssetSuccessState(publicAsset));
     } catch (exception) {
-      logError('CreatePublicAssetInteractor::execute():error: $exception');
+      logWarning('CreatePublicAssetInteractor::execute():error: $exception');
 
       if (exception is PublicAssetQuotaExceededException) {
         yield Left<Failure, Success>(PublicAssetOverQuotaFailureState(

@@ -61,7 +61,7 @@ class UploadAttachment with EquatableMixin {
 
       _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment, fileInfo)));
     } catch (error, stackTrace) {
-      logError('UploadAttachment::upload():ERROR: $error');
+      logWarning('UploadAttachment::upload():ERROR: $error');
       if (error is DioError && error.type == DioErrorType.cancel) {
         _updateEvent(Left(CancelAttachmentUploadState(uploadTaskId)));
       } else {

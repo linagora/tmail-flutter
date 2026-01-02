@@ -24,7 +24,7 @@ class AuthenticateOidcOnBrowserInteractor {
           config.scopes);
       yield Right<Failure, Success>(AuthenticateOidcOnBrowserSuccess());
     } catch (e) {
-      logError('AuthenticateOidcOnBrowserInteractor::execute(): $e');
+      logWarning('AuthenticateOidcOnBrowserInteractor::execute(): $e');
       yield Left<Failure, Success>(AuthenticateOidcOnBrowserFailure(e));
     }
   }
