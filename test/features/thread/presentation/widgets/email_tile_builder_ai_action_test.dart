@@ -145,7 +145,8 @@ void main() {
       testWidgets(
         'does not show AI Action tag',
         (tester) async {
-          await tester.pumpWidget(
+          await WidgetFixtures.pumpResponsiveWidget(
+            tester,
             WidgetFixtures.makeTestableWidget(
               child: EmailTileBuilder(
                 presentationEmail: emailWithNeedsAction,
@@ -154,9 +155,12 @@ void main() {
                 isAINeedsActionEnabled: false,
               ),
             ),
+            logicalSize: const Size(375, 812),
           );
 
           expect(find.byType(AiActionTagWidget), findsNothing);
+
+          WidgetFixtures.resetResponsive(tester);
         },
       );
     });

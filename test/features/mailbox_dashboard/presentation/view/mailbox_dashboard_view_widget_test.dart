@@ -17,10 +17,12 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/mailbox_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
+import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
@@ -41,6 +43,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/create_default_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_default_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
@@ -55,7 +59,11 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
@@ -69,7 +77,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_re
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
@@ -103,6 +110,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -114,6 +122,7 @@ import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
 import '../../../../fixtures/mailbox_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
+import '../../../../fixtures/widget_fixtures.dart';
 import 'mailbox_dashboard_view_widget_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
@@ -313,7 +322,7 @@ void main() {
     );
   }
 
-  group('MailboxDashboardView::WidgetTest::OnWeb', () {
+  group('MailboxDashboardView', () {
     setUp(() {
       Get.testMode = true;
 
@@ -413,7 +422,8 @@ void main() {
         getAllMailboxInteractor,
         refreshAllMailboxInteractor
       );
-      mailboxController.onReady();
+      Get.put(mailboxController);
+      // mailboxController.onReady();
 
       threadController = ThreadController(
         getEmailsInMailboxInteractor,
@@ -434,7 +444,7 @@ void main() {
       mailboxDashboardController.accountId.value = AccountFixtures.aliceAccountId;
     });
 
-    group('ThreadView::test', () {
+    group('ThreadView', () {
       testWidgets(
         'WHEN switch from old mailbox to new mailbox\n'
         'AND old mailbox and new mailbox both have emails\n'
@@ -733,6 +743,292 @@ void main() {
         debugDefaultTargetPlatformOverride = null;
         tester.view.reset();
       });
+    });
+
+    group('MailboxView', () {
+      testWidgets(
+        'GIVEN AI Needs Action is enabled and session supports AI '
+        'WHEN mailboxes are loaded '
+        'THEN Action Required folder is displayed',
+        (tester) async {
+          final currentMailboxList = <PresentationMailbox>[
+            MailboxFixtures.inboxMailbox.toPresentationMailbox(),
+            MailboxFixtures.sentMailbox.toPresentationMailbox(),
+            MailboxFixtures.folder1.toPresentationMailbox(),
+            MailboxFixtures.mailboxA.toPresentationMailbox(),
+            MailboxFixtures.mailboxB.toPresentationMailbox(),
+            MailboxFixtures.mailboxC.toPresentationMailbox(),
+            MailboxFixtures.mailboxD.toPresentationMailbox(),
+          ];
+
+          final defaultTree = MailboxTree(
+            MailboxNode(
+              MailboxNode.rootItem(),
+              childrenItems: [
+                MailboxNode(
+                    MailboxFixtures.inboxMailbox.toPresentationMailbox()),
+                MailboxNode(
+                    MailboxFixtures.sentMailbox.toPresentationMailbox()),
+              ],
+            ),
+          );
+
+          final personalTree = MailboxTree(
+            MailboxNode(
+              MailboxNode.rootItem(),
+              childrenItems: [
+                MailboxNode(MailboxFixtures.folder1.toPresentationMailbox()),
+                MailboxNode(MailboxFixtures.mailboxA.toPresentationMailbox()),
+                MailboxNode(MailboxFixtures.mailboxB.toPresentationMailbox()),
+                MailboxNode(MailboxFixtures.mailboxC.toPresentationMailbox()),
+                MailboxNode(MailboxFixtures.mailboxD.toPresentationMailbox()),
+              ],
+            ),
+          );
+
+          final teamTree = MailboxTree(MailboxNode.root());
+          final currentSession = SessionFixtures.aliceSessionWithAICapability;
+
+          // Arrange
+          when(
+            mailboxDashboardController
+                .appGridDashboardController.listLinagoraApp,
+          ).thenReturn(RxList([]));
+
+          when(
+            createDefaultMailboxInteractor.execute(any, any, any),
+          ).thenAnswer(
+            (_) => Stream.value(Right(CreateDefaultMailboxAllSuccess([]))),
+          );
+
+          when(
+            treeBuilder.generateMailboxTreeInUI(
+              allMailboxes: anyNamed('allMailboxes'),
+              currentDefaultTree: anyNamed('currentDefaultTree'),
+              currentPersonalTree: anyNamed('currentPersonalTree'),
+              currentTeamMailboxTree: anyNamed('currentTeamMailboxTree'),
+              mailboxIdSelected: anyNamed('mailboxIdSelected'),
+              mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+            ),
+          ).thenAnswer(
+            (_) async => (
+              allMailboxes: currentMailboxList,
+              defaultTree: defaultTree,
+              personalTree: personalTree,
+              teamMailboxTree: teamTree,
+            ),
+          );
+
+          when(uuid.v1()).thenReturn('dab123456789');
+
+          mailboxDashboardController.isAINeedsActionSettingEnabled.value = true;
+          mailboxDashboardController.sessionCurrent = currentSession;
+
+          // Act
+          await WidgetFixtures.pumpResponsiveWidget(
+            tester,
+            WidgetFixtures.makeTestableWidget(
+              child: MailboxView(),
+            ),
+            logicalSize: const Size(1920, 1080),
+            platform: TargetPlatform.macOS,
+          );
+
+          mailboxController.consumeState(
+            Stream.value(
+              Right(
+                GetAllMailboxSuccess(
+                  mailboxList: currentMailboxList,
+                  currentMailboxState: MailboxFixtures.currentState,
+                ),
+              ),
+            ),
+          );
+
+          await tester.pump();
+          mailboxController.defaultMailboxTree.refresh();
+          await tester.pump();
+
+          // Assert
+          verify(
+            treeBuilder.generateMailboxTreeInUI(
+              allMailboxes: anyNamed('allMailboxes'),
+              currentDefaultTree: anyNamed('currentDefaultTree'),
+              currentPersonalTree: anyNamed('currentPersonalTree'),
+              currentTeamMailboxTree: anyNamed('currentTeamMailboxTree'),
+              mailboxIdSelected: anyNamed('mailboxIdSelected'),
+              mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+            ),
+          ).called(1);
+
+          verify(
+            createDefaultMailboxInteractor.execute(any, any, any),
+          ).called(1);
+
+          expect(find.byType(MailboxView), findsOneWidget);
+          expect(find.byType(MailboxItemWidget), findsAtLeastNWidgets(1));
+
+          expect(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is MailboxItemWidget &&
+                  widget.mailboxNode.item.id ==
+                      PresentationMailbox.actionRequiredFolder.id,
+            ),
+            findsOneWidget,
+          );
+
+          expect(
+            find.text(AppLocalizations().actionRequiredMailboxDisplayName),
+            findsOneWidget,
+          );
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
+
+      testWidgets(
+        'GIVEN AI Needs Action is disabled or session not supports AI '
+        'WHEN mailboxes are loaded '
+        'THEN Action Required folder is not displayed',
+        (tester) async {
+          final currentMailboxList = <PresentationMailbox>[
+            MailboxFixtures.inboxMailbox.toPresentationMailbox(),
+            MailboxFixtures.sentMailbox.toPresentationMailbox(),
+            MailboxFixtures.folder1.toPresentationMailbox(),
+            MailboxFixtures.mailboxA.toPresentationMailbox(),
+            MailboxFixtures.mailboxB.toPresentationMailbox(),
+            MailboxFixtures.mailboxC.toPresentationMailbox(),
+            MailboxFixtures.mailboxD.toPresentationMailbox(),
+          ];
+
+          final defaultTree = MailboxTree(
+            MailboxNode(
+              MailboxNode.rootItem(),
+              childrenItems: [
+                MailboxNode(
+                    MailboxFixtures.inboxMailbox.toPresentationMailbox()),
+                MailboxNode(
+                    MailboxFixtures.sentMailbox.toPresentationMailbox()),
+              ],
+            ),
+          );
+
+          final personalTree = MailboxTree(
+            MailboxNode(
+              MailboxNode.rootItem(),
+              childrenItems: [
+                MailboxNode(MailboxFixtures.folder1.toPresentationMailbox()),
+                MailboxNode(MailboxFixtures.mailboxA.toPresentationMailbox()),
+                MailboxNode(MailboxFixtures.mailboxB.toPresentationMailbox()),
+                MailboxNode(MailboxFixtures.mailboxC.toPresentationMailbox()),
+                MailboxNode(MailboxFixtures.mailboxD.toPresentationMailbox()),
+              ],
+            ),
+          );
+
+          final teamTree = MailboxTree(MailboxNode.root());
+          final currentSession =
+              SessionFixtures.aliceSessionWithoutAICapability;
+
+          // Arrange
+          when(
+            mailboxDashboardController
+                .appGridDashboardController.listLinagoraApp,
+          ).thenReturn(RxList([]));
+
+          when(
+            createDefaultMailboxInteractor.execute(any, any, any),
+          ).thenAnswer(
+            (_) => Stream.value(Right(CreateDefaultMailboxAllSuccess([]))),
+          );
+
+          when(
+            treeBuilder.generateMailboxTreeInUI(
+              allMailboxes: anyNamed('allMailboxes'),
+              currentDefaultTree: anyNamed('currentDefaultTree'),
+              currentPersonalTree: anyNamed('currentPersonalTree'),
+              currentTeamMailboxTree: anyNamed('currentTeamMailboxTree'),
+              mailboxIdSelected: anyNamed('mailboxIdSelected'),
+              mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+            ),
+          ).thenAnswer(
+            (_) async => (
+              allMailboxes: currentMailboxList,
+              defaultTree: defaultTree,
+              personalTree: personalTree,
+              teamMailboxTree: teamTree,
+            ),
+          );
+
+          when(uuid.v1()).thenReturn('dab123456789');
+
+          mailboxDashboardController.isAINeedsActionSettingEnabled.value =
+              false;
+          mailboxDashboardController.sessionCurrent = currentSession;
+
+          // Act
+          await WidgetFixtures.pumpResponsiveWidget(
+            tester,
+            WidgetFixtures.makeTestableWidget(
+              child: MailboxView(),
+            ),
+            logicalSize: const Size(1920, 1080),
+            platform: TargetPlatform.macOS,
+          );
+
+          mailboxController.consumeState(
+            Stream.value(
+              Right(
+                GetAllMailboxSuccess(
+                  mailboxList: currentMailboxList,
+                  currentMailboxState: MailboxFixtures.currentState,
+                ),
+              ),
+            ),
+          );
+
+          await tester.pump();
+          mailboxController.defaultMailboxTree.refresh();
+          await tester.pump();
+
+          // Assert
+          verify(
+            treeBuilder.generateMailboxTreeInUI(
+              allMailboxes: anyNamed('allMailboxes'),
+              currentDefaultTree: anyNamed('currentDefaultTree'),
+              currentPersonalTree: anyNamed('currentPersonalTree'),
+              currentTeamMailboxTree: anyNamed('currentTeamMailboxTree'),
+              mailboxIdSelected: anyNamed('mailboxIdSelected'),
+              mailboxIdExpanded: anyNamed('mailboxIdExpanded'),
+            ),
+          ).called(1);
+
+          verify(
+            createDefaultMailboxInteractor.execute(any, any, any),
+          ).called(1);
+
+          expect(find.byType(MailboxView), findsOneWidget);
+          expect(find.byType(MailboxItemWidget), findsAtLeastNWidgets(1));
+
+          expect(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is MailboxItemWidget &&
+                  widget.mailboxNode.item.id ==
+                      PresentationMailbox.actionRequiredFolder.id,
+            ),
+            findsNothing,
+          );
+
+          expect(
+            find.text(AppLocalizations().actionRequiredMailboxDisplayName),
+            findsNothing,
+          );
+
+          WidgetFixtures.resetResponsive(tester);
+        },
+      );
     });
 
     tearDown(Get.deleteAll);
