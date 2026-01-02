@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/application_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class ApplicationVersionWidget extends StatefulWidget {
 
@@ -22,13 +21,12 @@ class ApplicationVersionWidget extends StatefulWidget {
 
 class _ApplicationVersionWidgetState extends State<ApplicationVersionWidget> {
 
-  final ApplicationManager _applicationManager = Get.find<ApplicationManager>();
   Future<String>? _versionStream;
 
   @override
   void initState() {
     super.initState();
-    _versionStream = _applicationManager.getVersion();
+    _versionStream = ApplicationManager().getAppVersion();
   }
 
   @override

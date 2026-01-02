@@ -1,5 +1,4 @@
 import 'package:core/data/network/download/download_client.dart';
-import 'package:core/utils/application_manager.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
@@ -11,12 +10,12 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachmen
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
-import 'package:tmail_ui_user/features/public_asset/domain/usecase/create_public_asset_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/data/datasource/public_asset_datasource.dart';
 import 'package:tmail_ui_user/features/public_asset/data/datasource_impl/remote_public_asset_datasource_impl.dart';
 import 'package:tmail_ui_user/features/public_asset/data/network/public_asset_api.dart';
 import 'package:tmail_ui_user/features/public_asset/data/repository/public_asset_repository_impl.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/repository/public_asset_repository.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/usecase/create_public_asset_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public_assets_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
@@ -124,7 +123,6 @@ class PublicAssetBindings extends BaseBindings {
         Get.find<AttachmentUploadDataSource>(tag: BindingTag.publicAssetBindingsTag),
         Get.find<ComposerDataSource>(tag: BindingTag.publicAssetBindingsTag),
         Get.find<HtmlDataSource>(tag: BindingTag.publicAssetBindingsTag),
-        Get.find<ApplicationManager>(),
         Get.find<Uuid>()),
       tag: BindingTag.publicAssetBindingsTag);
     Get.lazyPut(

@@ -92,7 +92,6 @@ const fallbackGenerators = {
   MockSpec<MaybeCalendarEventInteractor>(),
   MockSpec<RejectCalendarEventInteractor>(),
   MockSpec<PrintUtils>(),
-  MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<CalendarEventDataSource>(),
   MockSpec<DioClient>(),
@@ -123,7 +122,6 @@ void main() {
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
   final printUtils = MockPrintUtils();
-  final applicationManager = MockApplicationManager();
   final mockToastManager = MockToastManager();
   final mockTwakeAppManager = MockTwakeAppManager();
 
@@ -159,7 +157,6 @@ void main() {
     Get.put<ResponsiveUtils>(responsiveUtils);
     Get.put<Uuid>(uuid);
     Get.put<PrintUtils>(printUtils);
-    Get.put<ApplicationManager>(applicationManager);
     Get.put<ToastManager>(mockToastManager);
     Get.put<TwakeAppManager>(mockTwakeAppManager);
 

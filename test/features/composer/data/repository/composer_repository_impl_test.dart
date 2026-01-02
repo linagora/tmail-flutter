@@ -1,4 +1,3 @@
-import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_parser/http_parser.dart';
@@ -8,9 +7,9 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
-import 'package:model/email/attachment.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/composer_repository_impl.dart';
@@ -25,7 +24,6 @@ import 'composer_repository_impl_test.mocks.dart';
   AttachmentUploadDataSource,
   ComposerDataSource,
   HtmlDataSource,
-  ApplicationManager,
   Uuid,
   CreateEmailRequest,
   Session,
@@ -37,7 +35,6 @@ void main() {
     late MockAttachmentUploadDataSource mockAttachmentUploadDataSource;
     late MockComposerDataSource mockComposerDataSource;
     late MockHtmlDataSource mockHtmlDataSource;
-    late MockApplicationManager mockApplicationManager;
     late MockUuid mockUuid;
     late MockCreateEmailRequest mockCreateEmailRequest;
     late MockSession mockSession;
@@ -47,7 +44,6 @@ void main() {
       mockAttachmentUploadDataSource = MockAttachmentUploadDataSource();
       mockComposerDataSource = MockComposerDataSource();
       mockHtmlDataSource = MockHtmlDataSource();
-      mockApplicationManager = MockApplicationManager();
       mockUuid = MockUuid();
       mockCreateEmailRequest = MockCreateEmailRequest();
       mockSession = MockSession();
@@ -67,7 +63,6 @@ void main() {
         mockAttachmentUploadDataSource,
         mockComposerDataSource,
         mockHtmlDataSource,
-        mockApplicationManager,
         mockUuid,
       );
     });
@@ -81,7 +76,6 @@ void main() {
           'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==';
       const emailContentWithBase64 = '<p>Hello <img src="$base64Image" alt="test image"></p>';
       const emailContentWithCid = '<p>Hello <img src="cid:unique-cid" alt="test image"></p>';
-      const userAgent = 'TestUserAgent';
       const partIdValue = 'part-id-123';
       final inlineAttachments = {
         'unique-cid': Attachment(name: 'test.png'),
@@ -115,9 +109,6 @@ void main() {
       when(mockHtmlDataSource.removeCollapsedExpandedSignatureEffect(emailContent: emailContentWithCid))
           .thenAnswer((_) async => emailContentWithCid);
 
-      when(mockApplicationManager.generateApplicationUserAgent())
-          .thenAnswer((_) async => userAgent);
-
       when(mockUuid.v1()).thenReturn(partIdValue);
 
       // Act
@@ -142,7 +133,6 @@ void main() {
     () async {
       // Arrange
       const emailContentWithBase64 = '<p>Hello <img src="data:image/png;base64,abc123" alt="test"></p>';
-      const userAgent = 'TestUserAgent';
       const partIdValue = 'part-id-123';
       final inlineAttachments = {
         'cid-1': Attachment(name: 'test.png'),
@@ -173,9 +163,6 @@ void main() {
       when(mockHtmlDataSource.removeCollapsedExpandedSignatureEffect(emailContent: emailContentWithBase64))
           .thenAnswer((_) async => emailContentWithBase64);
 
-      when(mockApplicationManager.generateApplicationUserAgent())
-          .thenAnswer((_) async => userAgent);
-
       when(mockUuid.v1()).thenReturn(partIdValue);
 
       // Act
@@ -197,7 +184,6 @@ void main() {
       'generateEmail should process it correctly and return a valid email',
     () async {
       const plainEmailContent = '<p>Hello, this is a simple email</p>';
-      const userAgent = 'TestUserAgent';
       const partIdValue = 'part-id-123';
       final attachments = [Attachment(name: 'test.png')];
       final emailBodyParts = {
@@ -227,9 +213,6 @@ void main() {
 
       when(mockHtmlDataSource.removeCollapsedExpandedSignatureEffect(emailContent: plainEmailContent))
           .thenAnswer((_) async => plainEmailContent);
-
-      when(mockApplicationManager.generateApplicationUserAgent())
-          .thenAnswer((_) async => userAgent);
 
       when(mockUuid.v1()).thenReturn(partIdValue);
 

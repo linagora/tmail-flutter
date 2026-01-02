@@ -2,7 +2,6 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide State;
@@ -66,7 +65,6 @@ import 'rule_filter_creator_controller_test.mocks.dart';
   MockSpec<AppToast>(),
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
-  MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
   // Rule filter creator controller mock specs
@@ -95,7 +93,6 @@ void main() {
   late ImagePaths imagePaths;
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
-  late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
   late MockTwakeAppManager mockTwakeAppManager;
 
@@ -114,7 +111,6 @@ void main() {
     imagePaths = ImagePaths();
     mockResponsiveUtils = MockResponsiveUtils();
     mockUuid = MockUuid();
-    mockApplicationManager = MockApplicationManager();
     mockToastManager = MockToastManager();
     mockTwakeAppManager = MockTwakeAppManager();
 
@@ -133,7 +129,6 @@ void main() {
     Get.put<ImagePaths>(imagePaths);
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(mockUuid);
-    Get.put<ApplicationManager>(mockApplicationManager);
     Get.put<ToastManager>(mockToastManager);
     Get.put<TwakeAppManager>(mockTwakeAppManager);
 

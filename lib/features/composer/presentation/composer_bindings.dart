@@ -196,7 +196,6 @@ class ComposerBindings extends BaseBindings {
       Get.find<AttachmentUploadDataSource>(tag: composerId),
       Get.find<ComposerDataSource>(tag: composerId),
       Get.find<HtmlDataSource>(tag: composerId),
-      Get.find<ApplicationManager>(),
       Get.find<Uuid>(),
     ), tag: composerId);
     Get.lazyPut(

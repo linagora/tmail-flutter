@@ -24,14 +24,12 @@ class ComposerRepositoryImpl extends ComposerRepository {
   final AttachmentUploadDataSource _attachmentUploadDataSource;
   final ComposerDataSource _composerDataSource;
   final HtmlDataSource _htmlDataSource;
-  final ApplicationManager _applicationManager;
   final Uuid _uuid;
 
   ComposerRepositoryImpl(
     this._attachmentUploadDataSource,
     this._composerDataSource,
     this._htmlDataSource,
-    this._applicationManager,
     this._uuid,
   );
 
@@ -74,7 +72,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
 
     emailContent = HtmlUtils.wrapPlainTextLinks(emailContent);
 
-    final userAgent = await _applicationManager.generateApplicationUserAgent();
+    final userAgent = await ApplicationManager().generateApplicationUserAgent();
     final emailBodyPartId = PartId(_uuid.v1());
 
     final emailObject = createEmailRequest.generateEmail(
