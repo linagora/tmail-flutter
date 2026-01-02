@@ -161,4 +161,9 @@ void main() {
       );
     });
   });
+
+  tearDownAll(() {
+    Get.delete<ResponsiveUtils>();
+    Get.delete<ImagePaths>();
+  });
 }
