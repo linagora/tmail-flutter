@@ -14,10 +14,6 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 class AppUtils {
   const AppUtils._();
 
-  static final _emailLocalhostRegex = RegExp(
-    r'^(?:"[^"\r\n]+"|[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*)@localhost$',
-  );
-
   static Future<void> loadEnvFile() async {
     await dotenv.load(fileName: AppConfig.envFileName);
     final mapEnvData = Map<String, String>.from(dotenv.env);
@@ -56,8 +52,7 @@ class AppUtils {
   static TextDirection getCurrentDirection(BuildContext context) => Directionality.maybeOf(context) ?? TextDirection.ltr;
 
   static bool isEmailLocalhost(String email) {
-    final normalized = email.trim();
-    return _emailLocalhostRegex.hasMatch(normalized);
+    return StringConvert.isEmailLocalhost(email);
   }
 
   static void copyEmailAddressToClipboard(BuildContext context, String emailAddress) {

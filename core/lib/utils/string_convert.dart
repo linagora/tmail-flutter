@@ -21,9 +21,22 @@ class StringConvert {
   );
   static final _asciiArtRegex = RegExp(r'[+\-|/\\=]');
   static final _namedAddressRegex = RegExp(r'''(?:(?:"([^"]+)"|'([^']+)')\s*)?<([^>]+)>''');
+  static final _emailLocalhostRegex = RegExp(
+    r'^(?:"[^"\r\n]+"|[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*)@localhost$',
+  );
 
   @visibleForTesting
   static RegExp get base64ValidationRegex => _base64ValidationRegex;
+
+  @visibleForTesting
+  static RegExp get emailLocalhostRegex => _emailLocalhostRegex;
+
+  /// Checks if the given email address is a localhost email
+  /// Returns true if the email ends with @localhost
+  static bool isEmailLocalhost(String email) {
+    final normalized = email.trim();
+    return _emailLocalhostRegex.hasMatch(normalized);
+  }
 
   static String? writeEmptyToNull(String text) {
     if (text.isEmpty) return null;
