@@ -10,6 +10,9 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_mailbox_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/open_app_grid_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/toggle_expand_folders_extension.dart';
@@ -263,6 +266,9 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
   Widget buildListMailbox(BuildContext context) {
     final isDesktop = controller.responsiveUtils.isDesktop(context);
+    final isMobileResponsive = controller
+        .responsiveUtils
+        .isScreenWithShortestSide(context);
 
     return SingleChildScrollView(
       controller: controller.mailboxListScrollController,
@@ -342,7 +348,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
               : const Offstage(),
         )),
         buildLabelsBar(context, isDesktop),
-        buildLabelsList(context, isDesktop),
+        buildLabelsList(context, isDesktop, isMobileResponsive),
       ]),
     );
   }
@@ -373,7 +379,10 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           countLabels: countLabels,
           onToggleLabelListState: labelController.toggleLabelListState,
           onAddNewLabel: () =>
-              labelController.openCreateNewLabelModal(accountId),
+              labelController.handleLabelActionType(
+                actionType: LabelActionType.create,
+                accountId: accountId,
+              ),
         );
       } else {
         return const SizedBox.shrink();
@@ -381,17 +390,19 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     });
   }
 
-  Widget buildLabelsList(BuildContext context, bool isDesktop) {
+  Widget buildLabelsList(
+    BuildContext context,
+    bool isDesktop,
+    bool isMobileResponsive,
+  ) {
     return Obx(() {
-      final isLabelAvailable = controller
-          .mailboxDashBoardController
-          .isLabelAvailable;
+      final dashboardController = controller.mailboxDashBoardController;
 
-      final labelController =
-          controller.mailboxDashBoardController.labelController;
+      final isLabelAvailable = dashboardController.isLabelAvailable;
 
-      final selectedMailbox = controller.mailboxDashBoardController
-          .selectedMailbox.value;
+      final labelController = dashboardController.labelController;
+
+      final selectedMailbox = dashboardController.selectedMailbox.value;
       Id? labelIdSelected;
       if (selectedMailbox is PresentationLabelMailbox) {
         labelIdSelected = selectedMailbox.id.id;
@@ -409,10 +420,18 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
                   imagePaths: controller.imagePaths,
                   isDesktop: isDesktop,
                   labelIdSelected: labelIdSelected,
+                  isMobileResponsive: isMobileResponsive,
                   onOpenLabelCallback: (label) => controller.openMailbox(
                     context,
                     PresentationLabelMailbox.initial(label),
                   ),
+                  onOpenContextMenu: (label, position) =>
+                    dashboardController.openLabelContextMenuAction(
+                      context,
+                      controller.imagePaths,
+                      label,
+                      position,
+                    ),
                 )
               : const Offstage(),
         );

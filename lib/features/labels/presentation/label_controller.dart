@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.d
 import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/label_context_menu_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_setting_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
@@ -24,7 +25,7 @@ import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class LabelController extends BaseController {
+class LabelController extends BaseController with LabelContextMenuMixin {
   final labels = <Label>[].obs;
   final labelListExpandMode = Rx(ExpandMode.EXPAND);
   final isLabelSettingEnabled = RxBool(false);

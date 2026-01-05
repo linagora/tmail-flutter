@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-01-19T17:48:08.806042",
+  "@@last_modified": "2026-01-20T09:45:15.272706",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5350,6 +5350,18 @@
   },
   "allLabels": "All labels",
   "@allLabels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLabel": "Edit label",
+  "@editLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateTheLabelName": "Update the label name",
+  "@updateTheLabelName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
