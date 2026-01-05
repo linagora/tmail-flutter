@@ -39,6 +39,15 @@ class HtmlUtils {
     caseSensitive: false,
   );
 
+  @visibleForTesting
+  static RegExp get htmlStartTagRegex => _htmlStartTagRegex;
+
+  @visibleForTesting
+  static RegExp get htmlEndTagRegex => _htmlEndTagRegex;
+
+  @visibleForTesting
+  static RegExp get urlRegex => _urlRegex;
+
   static const removeLineHeight1px = (
     script: '''
       document.querySelectorAll('[style*="line-height"]').forEach(el => {

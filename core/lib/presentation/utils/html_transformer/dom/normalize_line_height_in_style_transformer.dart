@@ -1,6 +1,7 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/widgets.dart' show visibleForTesting;
 import 'package:html/dom.dart';
 
 class NormalizeLineHeightInStyleTransformer extends DomTransformer {
@@ -14,6 +15,9 @@ class NormalizeLineHeightInStyleTransformer extends DomTransformer {
         r')\s*;?',
     caseSensitive: false,
   );
+
+  @visibleForTesting
+  static RegExp get lineHeightPattern => _lineHeightPattern;
 
   @override
   Future<void> process({
