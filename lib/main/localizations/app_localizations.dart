@@ -5680,4 +5680,18 @@ class AppLocalizations {
       name: 'allLabels',
     );
   }
+
+  String get editLabel {
+    return Intl.message(
+      'Edit label',
+      name: 'editLabel',
+    );
+  }
+
+  String get updateTheLabelName {
+    return Intl.message(
+      'Update the label name',
+      name: 'updateTheLabelName',
+    );
+  }
 }

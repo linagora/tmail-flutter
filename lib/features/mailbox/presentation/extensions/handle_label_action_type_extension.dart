@@ -1,0 +1,41 @@
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/material.dart';
+import 'package:labels/model/label.dart';
+import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+
+extension HandleLabelActionTypeExtension on MailboxDashBoardController {
+  Future<void> openLabelContextMenuAction(
+    BuildContext context,
+    ImagePaths imagePaths,
+    Label label,
+    RelativeRect position,
+  ) async {
+    if (PlatformInfo.isWeb) {
+      isPopupMenuOpened.value = true;
+    }
+    return labelController
+      .openLabelContextMenuAction(
+        context,
+        imagePaths,
+        label,
+        position,
+        _onPerformLabelActionType,
+      )
+      .whenComplete(() {
+        if (PlatformInfo.isWeb) {
+          isPopupMenuOpened.value = false;
+        }
+      });
+  }
+
+  void _onPerformLabelActionType(Label label, LabelActionType actionType) {
+    labelController.handleLabelActionType(
+      actionType: actionType,
+      accountId: accountId.value,
+      label: label,
+    );
+  }
+}
