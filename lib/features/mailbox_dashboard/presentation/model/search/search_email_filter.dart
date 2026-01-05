@@ -152,7 +152,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
           hasKeyword.map((e) => EmailFilterCondition(hasKeyword: e)).toSet(),
         ),
       if (label != null)
-        EmailFilterCondition(hasKeyword: label!.keyword),
+        EmailFilterCondition(hasKeyword: label!.keyword?.value),
       if (moreFilterCondition != null && moreFilterCondition.hasCondition)
         moreFilterCondition
     };

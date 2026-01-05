@@ -46,6 +46,7 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
     Widget? iconWidget;
     Widget? selectedIconWidget;
     bool isSelected = false;
+    bool isArrangeRTL = true;
 
     if (widget.menuAction is PopupMenuItemActionRequiredIcon) {
       final specificMenuAction =
@@ -75,6 +76,7 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
       );
       isSelected =
           specificMenuAction.selectedAction == widget.menuAction.action;
+      isArrangeRTL = specificMenuAction.isArrangeRTL;
     } else if (widget.menuAction is PopupMenuItemActionRequiredFull) {
       final specificMenuAction =
           widget.menuAction as PopupMenuItemActionRequiredFull;
@@ -100,6 +102,7 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
       );
       isSelected =
           specificMenuAction.selectedAction == widget.menuAction.action;
+      isArrangeRTL = specificMenuAction.isArrangeRTL;
     } else if (widget.menuAction
         is PopupMenuItemActionRequiredIconWithMultipleSelected) {
       final specificMenuAction = widget.menuAction
@@ -126,6 +129,7 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
       );
       isSelected =
           specificMenuAction.selectedActions.contains(widget.menuAction.action);
+      isArrangeRTL = specificMenuAction.isArrangeRTL;
     }
 
     if (widget.menuAction is PopupMenuItemEmailAction &&
@@ -217,6 +221,11 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
             child: Row(
               children: [
                 if (iconWidget != null) iconWidget,
+                if (!isArrangeRTL && selectedIconWidget != null)
+                  Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 16),
+                    child: selectedIconWidget,
+                  ),
                 Expanded(
                   child: Text(
                     widget.menuAction.actionName,
@@ -227,7 +236,7 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (isSelected && selectedIconWidget != null)
+                if (isArrangeRTL && isSelected && selectedIconWidget != null)
                   selectedIconWidget,
               ],
             ),

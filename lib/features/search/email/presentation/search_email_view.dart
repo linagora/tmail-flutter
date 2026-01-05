@@ -267,35 +267,43 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 scrollbars: false
               ),
               scrollController: controller.listSearchFilterScrollController,
-              child: ListView(
-                key: const Key('search_filter_list_view'),
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                controller: controller.listSearchFilterScrollController,
-                padding: SearchEmailViewStyle.getListSearchFilterButtonPadding(
-                  context,
-                  controller.responsiveUtils
-                ),
-                children: [
-                  _buildSearchFilterButton(context, QuickSearchFilter.folder),
-                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                  _buildSearchFilterButton(context, QuickSearchFilter.labels),
-                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                  _buildSearchFilterButton(context, QuickSearchFilter.from),
-                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                  _buildSearchFilterButton(context, QuickSearchFilter.to),
-                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                  _buildSearchFilterButton(context, QuickSearchFilter.hasAttachment),
-                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                  _buildSearchFilterButton(context, QuickSearchFilter.dateTime),
-                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                  _buildSearchFilterButton(context, QuickSearchFilter.starred),
-                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                  _buildSearchFilterButton(context, QuickSearchFilter.unread),
-                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                  _buildSearchFilterButton(context, QuickSearchFilter.sortBy),
-                ],
-              ),
+              child: Obx(() {
+                final isLabelAvailable =
+                    controller.mailboxDashBoardController.isLabelAvailable;
+
+                return ListView(
+                  key: const Key('search_filter_list_view'),
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  controller: controller.listSearchFilterScrollController,
+                  padding: SearchEmailViewStyle.getListSearchFilterButtonPadding(
+                      context,
+                      controller.responsiveUtils
+                  ),
+                  children: [
+                    _buildSearchFilterButton(context, QuickSearchFilter.folder),
+                    SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                    if (isLabelAvailable)
+                     ...[
+                       _buildSearchFilterButton(context, QuickSearchFilter.labels),
+                       SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                     ],
+                    _buildSearchFilterButton(context, QuickSearchFilter.from),
+                    SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                    _buildSearchFilterButton(context, QuickSearchFilter.to),
+                    SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                    _buildSearchFilterButton(context, QuickSearchFilter.hasAttachment),
+                    SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                    _buildSearchFilterButton(context, QuickSearchFilter.dateTime),
+                    SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                    _buildSearchFilterButton(context, QuickSearchFilter.starred),
+                    SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                    _buildSearchFilterButton(context, QuickSearchFilter.unread),
+                    SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                    _buildSearchFilterButton(context, QuickSearchFilter.sortBy),
+                  ],
+                );
+              }),
             ),
           ),
         ),

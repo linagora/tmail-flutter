@@ -62,7 +62,7 @@ mixin SearchLabelFilterModalMixin on PopupContextMenuActionMixin {
       );
     }).toList();
 
-    openPopupMenuAction(context, position, popupMenuItems);
+    openPopupMenuAction(context, position, popupMenuItems, maxHeight: 400);
   }
 
   void openContextMenuLabelsFilter({
@@ -87,6 +87,7 @@ mixin SearchLabelFilterModalMixin on PopupContextMenuActionMixin {
         popBack();
         onSelectLabelsActions(menuAction.action);
       },
+      maxHeight: 400,
     );
   }
 }
