@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/se
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_email_more_action_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_press_email_selection_action.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/extension/update_search_filter_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_receive_time_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_sort_order_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_date_filter_action.dart';
@@ -278,6 +279,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 children: [
                   _buildSearchFilterButton(context, QuickSearchFilter.folder),
                   SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                  _buildSearchFilterButton(context, QuickSearchFilter.labels),
+                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
                   _buildSearchFilterButton(context, QuickSearchFilter.from),
                   SearchEmailViewStyle.searchFilterSizeBoxMargin,
                   _buildSearchFilterButton(context, QuickSearchFilter.to),
@@ -308,7 +311,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 fontSize: 13,
                 fontWeight: FontWeight.w500
               ),
-              onTapActionCallback: () => controller.clearAllSearchFilterApplied(context)
+              onTapActionCallback: controller.clearAllSearchFilterApplied
             );
           } else {
             return const SizedBox.shrink();
@@ -331,6 +334,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       final endDate = controller.endDateFiltered;
       final receiveTimeType = controller.receiveTimeFiltered;
       final mailbox = controller.mailboxFiltered;
+      final label = controller.labelFiltered;
       final listAddressOfTo = controller.listAddressOfToFiltered;
 
       final isSelected = searchFilter.isSelected(
@@ -352,6 +356,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         listAddressOfFrom: listAddressOfFrom,
         listAddressOfTo: listAddressOfTo,
         mailbox: mailbox,
+        label: label,
         backgroundColor: searchFilter.getMobileBackgroundColor(isSelected: isSelected),
         onSelectSearchFilterAction: _onSelectSearchFilterAction,
         onDeleteSearchFilterAction: (searchFilter) =>
@@ -386,7 +391,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           PrefixEmailAddress.from);
         break;
       case QuickSearchFilter.hasAttachment:
-        controller.selectHasAttachmentSearchFilter(context);
+        controller.selectHasAttachmentSearchFilter();
         break;
       case QuickSearchFilter.to:
         controller.selectContactForSearchFilter(
@@ -394,15 +399,26 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           PrefixEmailAddress.to);
         break;
       case QuickSearchFilter.folder:
-        controller.selectMailboxForSearchFilter(
-          context,
-          controller.mailboxFiltered);
+        controller.selectMailboxForSearchFilter(controller.mailboxFiltered);
         break;
       case QuickSearchFilter.starred:
-        controller.selectStarredSearchFilter(context);
+        controller.selectStarredSearchFilter();
         break;
       case QuickSearchFilter.unread:
-        controller.selectUnreadSearchFilter(context);
+        controller.selectUnreadSearchFilter();
+        break;
+      case QuickSearchFilter.labels:
+        final listLabels = controller.mailboxDashBoardController.labelController.labels;
+        final selectedLabel = controller.labelFiltered;
+
+        controller.openLabelsFilterModal(
+          context: context,
+          position: buttonPosition,
+          labels: listLabels,
+          selectedLabel: selectedLabel,
+          imagePaths: controller.imagePaths,
+          onSelectLabelsActions: controller.onSelectLabelFilter,
+        );
         break;
       default:
         break;
@@ -471,10 +487,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           ),
           menuActionClick: (menuAction) {
             popBack();
-            controller.selectSortOrderQuickSearchFilter(
-              context,
-              menuAction.action,
-            );
+            controller.selectSortOrderQuickSearchFilter(menuAction.action);
           },
         ),
       );
@@ -499,10 +512,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       itemActions: contextMenuActions,
       onContextMenuActionClick: (menuAction) {
         popBack();
-        controller.selectSortOrderQuickSearchFilter(
-          context,
-          menuAction.action,
-        );
+        controller.selectSortOrderQuickSearchFilter(menuAction.action);
       },
     );
   }
@@ -648,7 +658,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           child: InkWell(
             child: ContactQuickSearchItem(emailAddress: emailAddress),
             onTap: () => controller.searchEmailByEmailAddressAction(
-              context,
               emailAddress
             ),
           ),

@@ -45,6 +45,8 @@ mixin OptionalPopupSelectedIcon<T> {
   Color get selectedIconColor => AppColor.primaryMain;
 
   double get selectedIconSize => 16.0;
+
+  bool get isArrangeRTL => true;
 }
 
 mixin OptionalPopupHoverIcon {

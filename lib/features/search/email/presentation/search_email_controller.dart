@@ -17,6 +17,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/prefix_email_address.dart';
@@ -61,6 +62,8 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_keyboard_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/extension/update_search_filter_extension.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/mixin/search_label_filter_modal_mixin.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -83,7 +86,8 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class SearchEmailController extends BaseController
     with EmailActionController,
-        DateRangePickerMixin {
+        DateRangePickerMixin,
+        SearchLabelFilterModalMixin {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -140,6 +144,8 @@ class SearchEmailController extends BaseController
   DateTime? get endDateFiltered => searchEmailFilter.value.endDate?.value.toLocal();
 
   PresentationMailbox? get mailboxFiltered => searchEmailFilter.value.mailbox;
+
+  Label? get labelFiltered => searchEmailFilter.value.label;
 
   Set<String> get listAddressOfToFiltered => searchEmailFilter.value.to;
 
@@ -452,7 +458,9 @@ class SearchEmailController extends BaseController
     ));
   }
 
-  void _searchEmailAction(BuildContext context) {
+  void searchEmailAction() => _searchEmailAction();
+
+  void _searchEmailAction() {
     textInputSearchFocus.unfocus();
 
     if (session == null || accountId == null) {
@@ -592,16 +600,13 @@ class SearchEmailController extends BaseController
       queryString: recentSearch.value);
   }
 
-  void searchEmailByEmailAddressAction(
-    BuildContext context,
-    EmailAddress emailAddress
-  ) {
+  void searchEmailByEmailAddressAction(EmailAddress emailAddress) {
     textInputSearchController.clear();
     currentSearchText.value = '';
     _updateSimpleSearchFilter(
       textOption: const None(),
       fromOption: Some({emailAddress.emailAddress}));
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
   void _searchEmailByQueryString({
@@ -618,30 +623,30 @@ class SearchEmailController extends BaseController
     searchIsRunning.value = false;
     final isMailAddress = EmailUtils.isEmailAddressValid(queryString);
     if (isMailAddress) {
-      searchEmailByEmailAddressAction(context, EmailAddress(null, queryString));
+      searchEmailByEmailAddressAction(EmailAddress(null, queryString));
     } else {
       _updateSimpleSearchFilter(textOption: Some(SearchQuery(queryString)));
-      _searchEmailAction(context);
+      _searchEmailAction();
     }
   }
 
-  void selectHasAttachmentSearchFilter(BuildContext context) {
+  void selectHasAttachmentSearchFilter() {
     _updateSimpleSearchFilter(hasAttachmentOption: const Some(true));
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void selectStarredSearchFilter(BuildContext context) {
+  void selectStarredSearchFilter() {
     final listKeyword = listHasKeywordFiltered;
     if (!listKeyword.contains(KeyWordIdentifier.emailFlagged.value)) {
       listKeyword.add(KeyWordIdentifier.emailFlagged.value);
     }
     _updateSimpleSearchFilter(hasKeywordOption: Some(listKeyword));
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void selectUnreadSearchFilter(BuildContext context) {
+  void selectUnreadSearchFilter() {
     _updateSimpleSearchFilter(unreadOption: const Some(true));
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
   bool checkQuickSearchFilterSelected(QuickSearchFilter filter) {
@@ -675,7 +680,7 @@ class SearchEmailController extends BaseController
           );
 
           _setEmailReceiveTimeType(emailReceiveTimeType);
-          _searchEmailAction(context);
+          _searchEmailAction();
         }
       );
     } else {
@@ -686,18 +691,18 @@ class SearchEmailController extends BaseController
       );
 
       _setEmailReceiveTimeType(emailReceiveTimeType);
-      _searchEmailAction(context);
+      _searchEmailAction();
     }
   }
 
-  void selectSortOrderQuickSearchFilter(BuildContext context, EmailSortOrderType sortOrderType) {
+  void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrderType) {
     emailSortOrderType.value = sortOrderType;
     _updateSimpleSearchFilter(sortOrderTypeOption: Some(sortOrderType));
     mailboxDashBoardController.storeEmailSortOrder(sortOrderType);
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void selectMailboxForSearchFilter(BuildContext context, PresentationMailbox? mailbox) async {
+  void selectMailboxForSearchFilter(PresentationMailbox? mailbox) async {
     final arguments = DestinationPickerArguments(
       mailboxDashBoardController.accountId.value!,
       MailboxActions.select,
@@ -716,9 +721,7 @@ class SearchEmailController extends BaseController
         : Some(destinationMailbox)
     );
 
-    if (context.mounted) {
-      _searchEmailAction(context);
-    }
+    _searchEmailAction();
   }
 
   Future<void> selectContactForSearchFilter(
@@ -776,8 +779,40 @@ class SearchEmailController extends BaseController
         break;
     }
 
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
+
+  void updateSimpleSearchFilter({
+    Option<Set<String>>? fromOption,
+    Option<Set<String>>? toOption,
+    Option<SearchQuery>? textOption,
+    Option<PresentationMailbox>? mailboxOption,
+    Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
+    Option<bool>? hasAttachmentOption,
+    Option<bool>? unreadOption,
+    Option<UTCDate>? beforeOption,
+    Option<UTCDate>? startDateOption,
+    Option<UTCDate>? endDateOption,
+    Option<int>? positionOption,
+    Option<Set<String>>? hasKeywordOption,
+    Option<EmailSortOrderType>? sortOrderTypeOption,
+    Option<Label>? labelOption,
+  }) => _updateSimpleSearchFilter(
+    fromOption: fromOption,
+    toOption: toOption,
+    textOption: textOption,
+    mailboxOption: mailboxOption,
+    emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
+    hasAttachmentOption: hasAttachmentOption,
+    unreadOption: unreadOption,
+    beforeOption: beforeOption,
+    startDateOption: startDateOption,
+    endDateOption: endDateOption,
+    positionOption: positionOption,
+    hasKeywordOption: hasKeywordOption,
+    sortOrderTypeOption: sortOrderTypeOption,
+    labelOption: labelOption,
+  );
 
   void _updateSimpleSearchFilter({
     Option<Set<String>>? fromOption,
@@ -793,6 +828,7 @@ class SearchEmailController extends BaseController
     Option<int>? positionOption,
     Option<Set<String>>? hasKeywordOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
+    Option<Label>? labelOption,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
@@ -808,6 +844,7 @@ class SearchEmailController extends BaseController
       positionOption: positionOption,
       hasKeywordOption: hasKeywordOption,
       sortOrderTypeOption: sortOrderTypeOption,
+      labelOption: labelOption,
     );
     searchEmailFilter.refresh();
   }
@@ -1017,45 +1054,48 @@ class SearchEmailController extends BaseController
   ) {
     switch(searchFilter) {
       case QuickSearchFilter.dateTime:
-        _deleteDateTimeSearchFilter(context);
+        _deleteDateTimeSearchFilter();
         break;
       case QuickSearchFilter.sortBy:
-        _deleteSortOrderSearchFilter(context);
+        _deleteSortOrderSearchFilter();
         break;
       case QuickSearchFilter.from:
-        _deleteFromSearchFilter(context);
+        _deleteFromSearchFilter();
         break;
       case QuickSearchFilter.hasAttachment:
-        _deleteHasAttachmentSearchFilter(context);
+        _deleteHasAttachmentSearchFilter();
         break;
       case QuickSearchFilter.to:
-        _deleteToSearchFilter(context);
+        _deleteToSearchFilter();
         break;
       case QuickSearchFilter.folder:
-        _deleteFolderSearchFilter(context);
+        _deleteFolderSearchFilter();
         break;
       case QuickSearchFilter.starred:
-        _deleteStarredSearchFilter(context);
+        _deleteStarredSearchFilter();
         break;
       case QuickSearchFilter.unread:
-        _deleteUnreadSearchFilter(context);
+        _deleteUnreadSearchFilter();
+        break;
+      case QuickSearchFilter.labels:
+        deleteQuickSearchFilter(filter: QuickSearchFilter.labels);
         break;
       default:
         break;
     }
   }
 
-  void _deleteDateTimeSearchFilter(BuildContext context) {
+  void _deleteDateTimeSearchFilter() {
     _updateSimpleSearchFilter(
       emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
       startDateOption: const None(),
       endDateOption: const None(),
     );
     _setEmailReceiveTimeType(EmailReceiveTimeType.allTime);
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void _deleteSortOrderSearchFilter(BuildContext context) {
+  void _deleteSortOrderSearchFilter() {
     emailSortOrderType.value = SearchEmailFilter.defaultSortOrder;
     _updateSimpleSearchFilter(
       sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder),
@@ -1063,40 +1103,40 @@ class SearchEmailController extends BaseController
     mailboxDashBoardController.storeEmailSortOrder(
       SearchEmailFilter.defaultSortOrder,
     );
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void _deleteFromSearchFilter(BuildContext context) {
+  void _deleteFromSearchFilter() {
     _updateSimpleSearchFilter(fromOption: const None());
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void _deleteToSearchFilter(BuildContext context) {
+  void _deleteToSearchFilter() {
     _updateSimpleSearchFilter(toOption: const None());
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void _deleteHasAttachmentSearchFilter(BuildContext context) {
+  void _deleteHasAttachmentSearchFilter() {
     _updateSimpleSearchFilter(hasAttachmentOption: const None());
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void _deleteFolderSearchFilter(BuildContext context) {
+  void _deleteFolderSearchFilter() {
     _updateSimpleSearchFilter(mailboxOption: const None());
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void _deleteStarredSearchFilter(BuildContext context) {
+  void _deleteStarredSearchFilter() {
     _updateSimpleSearchFilter(hasKeywordOption: const None());
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void _deleteUnreadSearchFilter(BuildContext context) {
+  void _deleteUnreadSearchFilter() {
     _updateSimpleSearchFilter(unreadOption: const None());
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
-  void clearAllSearchFilterApplied(BuildContext context) {
+  void clearAllSearchFilterApplied() {
     textInputSearchController.clear();
     currentSearchText.value = '';
     listRecentSearch.clear();
@@ -1109,7 +1149,7 @@ class SearchEmailController extends BaseController
     searchEmailFilter.value = SearchEmailFilter.withSortOrder(
       emailSortOrderType.value,
     );
-    _searchEmailAction(context);
+    _searchEmailAction();
   }
 
   @override
