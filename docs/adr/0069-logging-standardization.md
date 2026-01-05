@@ -24,7 +24,7 @@ As part of PR #4205, the logging system was refactored to normalize log severity
 
 | Level | Function | Intended usage |
 |------|---------|----------------|
-| critical | logWTF | System-level, unrecoverable failures (extremely rare) |
+| critical | logCritical | System-level, unrecoverable failures (extremely rare) |
 | error | logError | Critical, actionable failures that must be monitored |
 | warning | logWarning | Recoverable issues or degraded behavior |
 | info | logInfo / log | Normal application lifecycle events |

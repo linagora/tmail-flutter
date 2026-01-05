@@ -18,7 +18,7 @@ class SendEmailExceptionThrower extends RemoteExceptionThrower {
     final networkConnectionController = getBinding<NetworkConnectionController>();
     final realtimeNetworkConnectionStatus = await networkConnectionController?.hasInternetConnection();
     if (realtimeNetworkConnectionStatus == false) {
-      logWarning('SendEmailExceptionThrower::throwException(): No realtime network connection');
+      logError('SendEmailExceptionThrower::throwException(): No realtime network connection');
       throw const NoNetworkError();
     } else {
       handleDioError(error);
