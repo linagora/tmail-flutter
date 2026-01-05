@@ -181,7 +181,7 @@ class StringConvert {
         input = Uri.decodeComponent(input);
       }
 
-      if (input.length % 4 == 0 && _base64ValidationRegex.hasMatch(input)) {
+      if (input.length % 4 == 0 && !input.contains(' ') && _base64ValidationRegex.hasMatch(input)) {
         try {
           input = utf8.decode(base64.decode(input));
         } catch (_) {}
