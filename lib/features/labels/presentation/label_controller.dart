@@ -12,9 +12,12 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_context_menu_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
@@ -33,6 +36,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   GetAllLabelInteractor? _getAllLabelInteractor;
   CreateNewLabelInteractor? _createNewLabelInteractor;
   GetLabelSettingStateInteractor? _getLabelSettingStateInteractor;
+  EditLabelInteractor? _editLabelInteractor;
 
   bool isLabelCapabilitySupported(Session session, AccountId accountId) {
     return LabelsConstants.labelsCapability.isSupported(session, accountId);
@@ -57,7 +61,10 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     LabelInteractorBindings().dependencies();
     _getAllLabelInteractor = getBinding<GetAllLabelInteractor>();
     _createNewLabelInteractor = getBinding<CreateNewLabelInteractor>();
+    _editLabelInteractor = getBinding<EditLabelInteractor>();
   }
+
+  EditLabelInteractor? get editLabelInteractor => _editLabelInteractor;
 
   void getAllLabels(AccountId accountId) {
     if (_getAllLabelInteractor == null) return;
@@ -130,6 +137,8 @@ class LabelController extends BaseController with LabelContextMenuMixin {
       _handleCreateNewLabelSuccess(success);
     } else if (success is GetLabelSettingStateSuccess) {
       _handleGetLabelSettingStateSuccess(success.isEnabled, success.accountId);
+    } else if (success is EditLabelSuccess) {
+      handleEditLabelSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -144,6 +153,8 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     } else if (failure is GetLabelSettingStateFailure) {
       isLabelSettingEnabled.value = false;
       _clearLabelData();
+    } else if (failure is EditLabelFailure) {
+      handleEditLabelFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -153,6 +164,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void onClose() {
     _getAllLabelInteractor = null;
     _createNewLabelInteractor = null;
+    _editLabelInteractor = null;
     _getLabelSettingStateInteractor = null;
     super.onClose();
   }

@@ -5365,5 +5365,21 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "editLabelSuccessfullyMessage": "You successfully edited the {labelName} label",
+  "@editLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "editLabelFailure": "Edit label failure",
+  "@editLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

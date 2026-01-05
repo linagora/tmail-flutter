@@ -21,7 +21,25 @@ enum LabelActionType {
       case LabelActionType.create:
         return appLocalizations.createANewLabel;
       case LabelActionType.edit:
+        return appLocalizations.editLabel;
+    }
+  }
+
+  String getModalSubtitle(AppLocalizations appLocalizations) {
+    switch (this) {
+      case LabelActionType.create:
+        return appLocalizations.organizeYourInboxWithACustomCategory;
+      case LabelActionType.edit:
         return appLocalizations.updateTheLabelName;
+    }
+  }
+
+  String getModalPositiveAction(AppLocalizations appLocalizations) {
+    switch (this) {
+      case LabelActionType.create:
+        return appLocalizations.createLabel;
+      case LabelActionType.edit:
+        return appLocalizations.save;
     }
   }
 
