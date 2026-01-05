@@ -106,4 +106,69 @@ void main() {
       expect(map.containsKey(keyword), true); // original not mutated
     });
   });
+
+  group('MapKeywordsExtension - addKeyword()', () {
+    test('adds keyword to empty map', () {
+      final map = <KeyWordIdentifier, bool>{};
+      final keyword = KeyWordIdentifier('\$seen');
+
+      map.addKeyword(keyword);
+
+      expect(map.length, 1);
+      expect(map[keyword], true);
+    });
+
+    test('adds keyword to non-empty map', () {
+      final map = {
+        KeyWordIdentifier('\$flagged'): true,
+      };
+      final keyword = KeyWordIdentifier('\$seen');
+
+      map.addKeyword(keyword);
+
+      expect(map.length, 2);
+      expect(map[keyword], true);
+    });
+
+    test('overwrites existing keyword value to true', () {
+      final keyword = KeyWordIdentifier('\$seen');
+
+      final map = {
+        keyword: false,
+      };
+
+      map.addKeyword(keyword);
+
+      expect(map.length, 1);
+      expect(map[keyword], true);
+    });
+
+    test('does not throw when map is null', () {
+      Map<KeyWordIdentifier, bool>? map;
+      final keyword = KeyWordIdentifier('\$seen');
+
+      expect(() => map.addKeyword(keyword), returnsNormally);
+    });
+
+    test('calling addKeyword on null map has no side effects', () {
+      Map<KeyWordIdentifier, bool>? map;
+      final keyword = KeyWordIdentifier('\$seen');
+
+      map.addKeyword(keyword);
+
+      expect(map, isNull);
+    });
+
+    test('mutates the same map instance', () {
+      final map = <KeyWordIdentifier, bool>{};
+      final keyword = KeyWordIdentifier('\$seen');
+
+      final originalIdentity = identityHashCode(map);
+
+      map.addKeyword(keyword);
+
+      expect(identityHashCode(map), originalIdentity);
+      expect(map[keyword], true);
+    });
+  });
 }
