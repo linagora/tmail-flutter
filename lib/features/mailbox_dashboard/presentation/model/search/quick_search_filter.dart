@@ -172,7 +172,9 @@ enum QuickSearchFilter {
     if (responsiveUtils.isMobile(context)) {
       return false;
     } else {
-      return this == QuickSearchFilter.dateTime || this == QuickSearchFilter.sortBy;
+      return this == QuickSearchFilter.dateTime ||
+          this == QuickSearchFilter.sortBy ||
+          this == QuickSearchFilter.labels;
     }
   }
 
