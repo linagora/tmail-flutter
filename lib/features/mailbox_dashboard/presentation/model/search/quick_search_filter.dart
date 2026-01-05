@@ -5,6 +5,8 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:labels/extensions/label_extension.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -22,7 +24,8 @@ enum QuickSearchFilter {
   dateTime,
   from,
   to,
-  folder;
+  folder,
+  labels;
 
   String getTitle(
     BuildContext context, {
@@ -33,7 +36,8 @@ enum QuickSearchFilter {
     Set<String>? listAddressOfFrom,
     UserName? userName,
     Set<String>? listAddressOfTo,
-    PresentationMailbox? mailbox
+    PresentationMailbox? mailbox,
+    Label? label,
   }) {
     switch(this) {
       case QuickSearchFilter.hasAttachment:
@@ -61,6 +65,8 @@ enum QuickSearchFilter {
         return AppLocalizations.of(context).starred;
       case QuickSearchFilter.unread:
         return AppLocalizations.of(context).unread;
+      case QuickSearchFilter.labels:
+        return label?.safeDisplayName ?? AppLocalizations.of(context).allLabels;
     }
   }
 
@@ -86,6 +92,8 @@ enum QuickSearchFilter {
         return isSelected ? imagePaths.icSelectedSB : imagePaths.icUnStar;
       case QuickSearchFilter.unread:
         return isSelected ? imagePaths.icSelectedSB : imagePaths.icUnread;
+      case QuickSearchFilter.labels:
+        return imagePaths.icTag;
     }
   }
 
@@ -152,6 +160,8 @@ enum QuickSearchFilter {
         return searchFilter.hasKeyword.contains(KeyWordIdentifier.emailFlagged.value) == true;
       case QuickSearchFilter.unread:
         return searchFilter.unread;
+      case QuickSearchFilter.labels:
+        return searchFilter.label != null;
     }
   }
 
@@ -171,5 +181,6 @@ enum QuickSearchFilter {
     this == QuickSearchFilter.from ||
     this == QuickSearchFilter.to ||
     this == QuickSearchFilter.folder ||
-    this == QuickSearchFilter.sortBy;
+    this == QuickSearchFilter.sortBy ||
+    this == QuickSearchFilter.labels;
 }
