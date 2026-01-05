@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/hex_color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
@@ -27,12 +29,16 @@ typedef OnCreateNewLabelCallback = Function(Label label);
 
 class CreateNewLabelModal extends StatefulWidget {
   final List<Label> labels;
+  final LabelActionType actionType;
   final OnCreateNewLabelCallback onCreateNewLabelCallback;
+  final Label? selectedLabel;
 
   const CreateNewLabelModal({
     super.key,
     required this.labels,
     required this.onCreateNewLabelCallback,
+    this.actionType = LabelActionType.create,
+    this.selectedLabel,
   });
 
   @override
@@ -56,7 +62,23 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   @override
   void initState() {
     super.initState();
-    _labelDisplayNameList = widget.labels.displayNameNotNullList;
+    final selectedLabel = widget.selectedLabel;
+    final labels = widget.labels;
+    if (selectedLabel != null) {
+      _selectedColor = selectedLabel.color?.value.toColor();
+      _labelDisplayNameList = labels
+          .getDisplayNameListWithoutSelectedLabel(selectedLabel);
+    } else {
+      _labelDisplayNameList = labels.displayNameNotNullList;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (selectedLabel != null) {
+        _nameInputController.text = selectedLabel.safeDisplayName;
+        _nameInputFocusNode.requestFocus();
+        _labelSelectedColorNotifier.value = _selectedColor;
+        _createLabelStateNotifier.value = true;
+      }
+    });
   }
 
   @override
@@ -97,42 +119,8 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 64,
-                  alignment: Alignment.center,
-                  padding: EdgeInsetsDirectional.only(
-                    start: 32,
-                    end: 32,
-                    top: 16,
-                    bottom: isMobile ? 0 : 16,
-                  ),
-                  child: Text(
-                    appLocalizations.createANewLabel,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: AppColor.m3SurfaceBackground,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.only(
-                      start: 32,
-                      end: 32,
-                      bottom: 24,
-                    ),
-                    child: Text(
-                      appLocalizations.organizeYourInboxWithACustomCategory,
-                      style: ThemeUtils.textStyleInter400.copyWith(
-                        color: AppColor.steelGrayA540,
-                        fontSize: 13,
-                        height: 20 / 13,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
+                _buildTitle(appLocalizations, isMobile, theme),
+                _buildSubTitle(appLocalizations),
                 Flexible(
                   child: SingleChildScrollView(
                     physics: const ClampingScrollPhysics(),
@@ -146,34 +134,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ValueListenableBuilder(
-                            valueListenable: _labelNameErrorTextNotifier,
-                            builder: (_, errorText, __) {
-                              return LabelInputFieldBuilder(
-                                label: appLocalizations.labelName,
-                                hintText: appLocalizations
-                                    .pleaseEnterNameYourNewLabel,
-                                textEditingController: _nameInputController,
-                                focusNode: _nameInputFocusNode,
-                                errorText: errorText,
-                                arrangeHorizontally: false,
-                                isLabelHasColon: false,
-                                labelStyle:
-                                    ThemeUtils.textStyleInter600().copyWith(
-                                  fontSize: 14,
-                                  height: 18 / 14,
-                                  color: Colors.black,
-                                ),
-                                runSpacing: 16,
-                                inputFieldMaxWidth: double.infinity,
-                                onTextChange: (value) =>
-                                    _onLabelNameInputChanged(
-                                  appLocalizations,
-                                  value,
-                                ),
-                              );
-                            },
-                          ),
+                          _buildLabelNameInputField(appLocalizations),
                           Padding(
                             padding: const EdgeInsets.only(top: 26, bottom: 16),
                             child: Text(
@@ -213,7 +174,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                             valueListenable: _createLabelStateNotifier,
                             builder: (_, value, __) {
                               return ModalListActionButtonWidget(
-                                positiveLabel: appLocalizations.createLabel,
+                                positiveLabel: widget.actionType.getModalPositiveAction(appLocalizations),
                                 negativeLabel: appLocalizations.cancel,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 25,
@@ -256,6 +217,83 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
 
       return bodyWidget;
     });
+  }
+
+  Widget _buildTitle(
+    AppLocalizations appLocalizations,
+    bool isMobile,
+    ThemeData theme,
+  ) {
+    return Container(
+      height: 64,
+      alignment: Alignment.center,
+      padding: EdgeInsetsDirectional.only(
+        start: 32,
+        end: 32,
+        top: 16,
+        bottom: isMobile ? 0 : 16,
+      ),
+      child: Text(
+        widget.actionType.getModalTitle(appLocalizations),
+        style: theme.textTheme.headlineSmall?.copyWith(
+          color: AppColor.m3SurfaceBackground,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget _buildSubTitle(AppLocalizations appLocalizations) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.only(
+          start: 32,
+          end: 32,
+          bottom: 24,
+        ),
+        child: Text(
+          widget.actionType.getModalSubtitle(appLocalizations),
+          style: ThemeUtils.textStyleInter400.copyWith(
+            color: AppColor.steelGrayA540,
+            fontSize: 13,
+            height: 20 / 13,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabelNameInputField(AppLocalizations appLocalizations) {
+    return ValueListenableBuilder(
+      valueListenable: _labelNameErrorTextNotifier,
+      builder: (_, errorText, __) {
+        return LabelInputFieldBuilder(
+          label: appLocalizations.labelName,
+          hintText: appLocalizations
+              .pleaseEnterNameYourNewLabel,
+          textEditingController: _nameInputController,
+          focusNode: _nameInputFocusNode,
+          errorText: errorText,
+          arrangeHorizontally: false,
+          isLabelHasColon: false,
+          labelStyle:
+          ThemeUtils.textStyleInter600().copyWith(
+            fontSize: 14,
+            height: 18 / 14,
+            color: Colors.black,
+          ),
+          runSpacing: 16,
+          inputFieldMaxWidth: double.infinity,
+          onTextChange: (value) =>
+              _onLabelNameInputChanged(
+                appLocalizations,
+                value,
+              ),
+        );
+      },
+    );
   }
 
   void _onLabelNameInputChanged(

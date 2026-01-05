@@ -17,4 +17,11 @@ extension ListLabelExtension on List<Label> {
 
   List<KeyWordIdentifier> get keywords =>
       map((label) => label.keyword).nonNulls.toList();
+
+  List<String> getDisplayNameListWithoutSelectedLabel(Label selectedLabel) {
+    return map((label) => label.safeDisplayName)
+        .where((name) =>
+            name.trim().isNotEmpty && name != selectedLabel.safeDisplayName)
+        .toList();
+  }
 }
