@@ -593,7 +593,7 @@ class EmailActionReactor {
         actions: popupMenuItemEmailActions,
         submenuController: submenuController,
         onActionSelected: (action) {
-          if (action.action != EmailActionType.labelAs) {
+          if (_shouldHandleAction(action.action)) {
             handleEmailAction(presentationEmail, action.action);
           }
         },
@@ -605,6 +605,14 @@ class EmailActionReactor {
         popupMenuWidget,
       ).whenComplete(submenuController.hide);
     }
+  }
+
+  bool _shouldHandleAction(EmailActionType action) {
+    if (action != EmailActionType.labelAs) {
+      return true;
+    }
+
+    return PlatformInfo.isWebTouchDevice || PlatformInfo.isMobile;
   }
 
   Widget? _getEmailActionSubmenu({
