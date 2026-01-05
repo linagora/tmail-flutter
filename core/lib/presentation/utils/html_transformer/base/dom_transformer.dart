@@ -2,6 +2,7 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/widgets.dart' show visibleForTesting;
 import 'package:html/dom.dart';
 
 /// Transforms the HTML DOM.
@@ -10,6 +11,9 @@ abstract class DomTransformer {
   const DomTransformer();
 
   static final _backgroundImageRegex = RegExp(r'''\bbackground-image\s*:\s*url\(\s*['"]?([^' ")]+)['"]?\s*\)''');
+
+  @visibleForTesting
+  static RegExp get backgroundImageRegex => _backgroundImageRegex;
 
   /// Uses the `DOM` [document] to transform the `document`.
   ///
