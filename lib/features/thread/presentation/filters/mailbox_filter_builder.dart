@@ -113,21 +113,27 @@ class MailboxFilterBuilder {
   EmailFilterCondition buildDefaultMailboxFilter({UTCDate? before}) {
     switch (filterMessageOption) {
       case FilterMessageOption.all:
-        return EmailFilterCondition(before: before);
+        return EmailFilterCondition(before: before, inMailbox: _mailboxId);
 
       case FilterMessageOption.unread:
         return EmailFilterCondition(
           notKeyword: KeyWordIdentifier.emailSeen.value,
           before: before,
+          inMailbox: _mailboxId,
         );
 
       case FilterMessageOption.attachments:
-        return EmailFilterCondition(hasAttachment: true, before: before);
+        return EmailFilterCondition(
+          hasAttachment: true,
+          before: before,
+          inMailbox: _mailboxId,
+        );
 
       case FilterMessageOption.starred:
         return EmailFilterCondition(
           hasKeyword: KeyWordIdentifier.emailFlagged.value,
           before: before,
+          inMailbox: _mailboxId,
         );
     }
   }
