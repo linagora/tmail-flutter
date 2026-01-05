@@ -426,11 +426,17 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
                     PresentationLabelMailbox.initial(label),
                   ),
                   onOpenContextMenu: (label, position) =>
-                    dashboardController.openLabelContextMenuAction(
+                    dashboardController.openLabelPopupMenuAction(
                       context,
                       controller.imagePaths,
                       label,
                       position,
+                    ),
+                  onLongPressLabelItemAction: (label) =>
+                    dashboardController.openLabelContextMenuAction(
+                      context,
+                      controller.imagePaths,
+                      label,
                     ),
                 )
               : const Offstage(),
