@@ -75,7 +75,6 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       if (selectedLabel != null) {
         _nameInputController.text = selectedLabel.safeDisplayName;
         _nameInputFocusNode.requestFocus();
-        _labelSelectedColorNotifier.value = _selectedColor;
         _createLabelStateNotifier.value = true;
       }
     });

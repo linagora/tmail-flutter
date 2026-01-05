@@ -13,6 +13,7 @@ class LabelListView extends StatelessWidget {
   final OnOpenLabelCallback onOpenLabelCallback;
   final bool isMobileResponsive;
   final OnOpenLabelContextMenuAction? onOpenContextMenu;
+  final OnLongPressLabelItemAction? onLongPressLabelItemAction;
 
   const LabelListView({
     super.key,
@@ -23,6 +24,7 @@ class LabelListView extends StatelessWidget {
     this.labelIdSelected,
     this.isMobileResponsive = false,
     this.onOpenContextMenu,
+    this.onLongPressLabelItemAction,
   });
 
   @override
@@ -43,6 +45,7 @@ class LabelListView extends StatelessWidget {
           onOpenLabelCallback: onOpenLabelCallback,
           isMobileResponsive: isMobileResponsive,
           onOpenContextMenu: onOpenContextMenu,
+          onLongPressLabelItemAction: onLongPressLabelItemAction,
         );
       },
     );

@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/labels/presentation/models/label_action_t
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 
 extension HandleLabelActionTypeExtension on MailboxDashBoardController {
-  Future<void> openLabelContextMenuAction(
+  Future<void> openLabelPopupMenuAction(
     BuildContext context,
     ImagePaths imagePaths,
     Label label,
@@ -17,11 +17,11 @@ extension HandleLabelActionTypeExtension on MailboxDashBoardController {
       isPopupMenuOpened.value = true;
     }
     return labelController
-      .openLabelContextMenuAction(
+      .openLabelMenuAction(
         context,
         imagePaths,
         label,
-        position,
+        position: position,
         _onPerformLabelActionType,
       )
       .whenComplete(() {
@@ -36,6 +36,19 @@ extension HandleLabelActionTypeExtension on MailboxDashBoardController {
       actionType: actionType,
       accountId: accountId.value,
       label: label,
+    );
+  }
+
+  Future<void> openLabelContextMenuAction(
+    BuildContext context,
+    ImagePaths imagePaths,
+    Label label,
+  ) async {
+    return labelController.openLabelMenuAction(
+      context,
+      imagePaths,
+      label,
+      _onPerformLabelActionType,
     );
   }
 }

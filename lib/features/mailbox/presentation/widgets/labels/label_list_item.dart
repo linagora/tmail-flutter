@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:labels/model/label.dart';
@@ -10,8 +11,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/utils/labels/label_m
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_icon_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_name_widget.dart';
 
-typedef OnOpenLabelCallback = void Function(Label label);
-
 class LabelListItem extends StatefulWidget {
   final Label label;
   final ImagePaths imagePaths;
@@ -20,6 +19,7 @@ class LabelListItem extends StatefulWidget {
   final bool isMobileResponsive;
   final OnOpenLabelCallback onOpenLabelCallback;
   final OnOpenLabelContextMenuAction? onOpenContextMenu;
+  final OnLongPressLabelItemAction? onLongPressLabelItemAction;
 
   const LabelListItem({
     super.key,
@@ -30,6 +30,7 @@ class LabelListItem extends StatefulWidget {
     this.isSelected = false,
     this.isMobileResponsive = false,
     this.onOpenContextMenu,
+    this.onLongPressLabelItemAction,
   });
 
   @override
@@ -84,6 +85,9 @@ class _LabelListItemState extends State<LabelListItem> {
         borderRadius: _borderRadius,
         onHover: _handleHoverChanged,
         onTap: () => widget.onOpenLabelCallback(widget.label),
+        onLongPress: PlatformInfo.isWebTouchDevice || PlatformInfo.isMobile
+          ? () => widget.onLongPressLabelItemAction?.call(widget.label)
+          : null,
         child: Container(
           height: _itemHeight,
           padding: _itemPadding,
