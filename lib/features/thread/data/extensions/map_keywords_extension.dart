@@ -9,6 +9,13 @@ extension MapKeywordsExtension on Map<KeyWordIdentifier, bool>? {
   List<KeyWordIdentifier> get enabledKeywords =>
       this?.entries.where((e) => e.value).map((e) => e.key).toList() ?? [];
 
+  Set<KeyWordIdentifier> get enabledKeywordSet => this == null
+      ? const {}
+      : {
+          for (final entry in this!.entries)
+            if (entry.value) entry.key
+        };
+
   Map<KeyWordIdentifier, bool> withKeyword(KeyWordIdentifier keyword) {
     return Map<KeyWordIdentifier, bool>.from(this ?? {})..[keyword] = true;
   }

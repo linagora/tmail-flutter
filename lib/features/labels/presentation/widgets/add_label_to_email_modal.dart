@@ -12,8 +12,8 @@ import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_co
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-typedef OnAddLabelToEmailCallback = void Function(
-  EmailId emailId,
+typedef OnAddLabelToEmailsCallback = void Function(
+  List<EmailId> emailIds,
   Label label,
   bool isSelected,
 );
@@ -21,15 +21,15 @@ typedef OnAddLabelToEmailCallback = void Function(
 class AddLabelToEmailModal extends StatefulWidget {
   final List<Label> labels;
   final List<Label> emailLabels;
-  final EmailId emailId;
-  final OnAddLabelToEmailCallback onAddLabelToEmailCallback;
+  final List<EmailId> emailIds;
+  final OnAddLabelToEmailsCallback onAddLabelToEmailsCallback;
 
   const AddLabelToEmailModal({
     super.key,
     required this.labels,
     required this.emailLabels,
-    required this.emailId,
-    required this.onAddLabelToEmailCallback,
+    required this.emailIds,
+    required this.onAddLabelToEmailsCallback,
   });
 
   @override
@@ -146,7 +146,7 @@ class _AddLabelToEmailModalState extends State<AddLabelToEmailModal> {
   }
 
   void _onSelectLabel(Label label, bool isSelected) {
-    widget.onAddLabelToEmailCallback(widget.emailId, label, isSelected);
+    widget.onAddLabelToEmailsCallback(widget.emailIds, label, isSelected);
     popBack();
   }
 

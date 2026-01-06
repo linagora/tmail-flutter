@@ -5649,4 +5649,21 @@ class AppLocalizations {
       name: 'addLabel',
     );
   }
+
+  String addLabelToThreadSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'All emails in thread added to the "$labelName" label',
+      name: 'addLabelToThreadSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String addLabelToThreadFailureMessage(String labelName) {
+    return Intl.message(
+      'Cannot add all emails in thread to the "$labelName" label',
+      name: 'addLabelToThreadFailureMessage',
+      args: [labelName],
+    );
+  }
+
 }

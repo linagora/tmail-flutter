@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 enum SubmenuDirection { left, right, auto }
 
-class PopupSubmenuController {
+class ContextSubmenuController {
   OverlayEntry? _submenuEntry;
 
   bool get isShowing => _submenuEntry != null;

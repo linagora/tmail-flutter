@@ -50,4 +50,13 @@ extension ListEmailIdExtension on List<EmailId> {
         emailId.id: KeyWordIdentifier.emailForwarded.generateForwardedActionPath()
     };
   }
+
+  Map<Id, PatchObject> generateMapUpdateObjectLabel(
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return {
+      for (var emailId in this)
+        emailId.id: labelKeyword.generateLabelActionPath()
+    };
+  }
 }

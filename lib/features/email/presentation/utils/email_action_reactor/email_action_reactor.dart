@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
@@ -588,7 +589,6 @@ class EmailActionReactor {
         );
       }).toList();
 
-
       final popupMenuWidget = PopupMenuActionGroupWidget(
         actions: popupMenuItemEmailActions,
         submenuController: submenuController,
@@ -623,9 +623,12 @@ class EmailActionReactor {
     OnSelectLabelAction? onSelectLabelAction,
   }) {
     if (actionType == EmailActionType.labelAs && labels?.isNotEmpty == true) {
+      final listLabels = labels ?? [];
+      final emailLabels = presentationEmail.getLabelList(listLabels);
+
       return LabelListContextMenu(
-        labelList: labels ?? [],
-        presentationEmail: presentationEmail,
+        labelList: listLabels,
+        emailLabels: emailLabels,
         imagePaths: imagePaths,
         onSelectLabelAction: (label, isSelected) =>
             onSelectLabelAction?.call(label, isSelected),

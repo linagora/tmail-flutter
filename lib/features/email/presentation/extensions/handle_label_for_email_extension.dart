@@ -1,6 +1,5 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -15,6 +14,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/presentatio
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/add_label_to_email_modal.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/check_label_available_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/extensions/presentation_email_map_extension.dart';
@@ -23,8 +23,7 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 
 extension HandleLabelForEmailExtension on SingleEmailController {
   bool get isLabelFeatureEnabled {
-    return mailboxDashBoardController.isLabelCapabilitySupported &&
-        mailboxDashBoardController.labelController.isLabelSettingEnabled.isTrue;
+    return mailboxDashBoardController.isLabelFeatureEnabled;
   }
 
   void toggleLabelToEmail(EmailId emailId, Label label, bool isSelected) {
@@ -180,8 +179,12 @@ extension HandleLabelForEmailExtension on SingleEmailController {
       child: AddLabelToEmailModal(
         labels: labels,
         emailLabels: emailLabels,
-        emailId: emailId,
-        onAddLabelToEmailCallback: toggleLabelToEmail,
+        emailIds: [emailId],
+        onAddLabelToEmailsCallback: (emailIds, label, isSelected) {
+          if (emailIds.length == 1) {
+            toggleLabelToEmail(emailIds.first, label, isSelected);
+          }
+        },
       ),
       dialogLabel: 'add-label-to-email-modal',
     );
