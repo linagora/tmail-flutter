@@ -270,4 +270,9 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
   Future<void> addLabelToEmail(Session session, AccountId accountId, EmailId emailId, KeyWordIdentifier labelKeyword) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> addLabelToThread(Session session, AccountId accountId, List<EmailId> emailIds, KeyWordIdentifier labelKeyword) {
+    throw UnimplementedError();
+  }
 }

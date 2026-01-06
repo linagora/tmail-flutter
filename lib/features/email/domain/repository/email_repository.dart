@@ -168,4 +168,11 @@ abstract class EmailRepository {
     EmailId emailId,
     KeyWordIdentifier labelKeyword,
   );
+
+  Future<void> addLabelToThread(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    KeyWordIdentifier labelKeyword,
+  );
 }
