@@ -13,7 +13,7 @@ class AiScribeModalWidget extends StatelessWidget {
   final Size? buttonSize;
   final ModalPlacement? preferredPlacement;
   final ModalCrossAxisAlignment crossAxisAlignment;
-  final PopupSubmenuController? submenuController;
+  final ContextSubmenuController? submenuController;
 
   const AiScribeModalWidget({
     super.key,

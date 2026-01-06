@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_a_thread_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/download_all_attachments_for_web_interactor.dart';
@@ -370,6 +371,7 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<EmailRepository>(),
     ));
     Get.lazyPut(() => MarkAsStarMultipleEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => AddALabelToAThreadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveMultipleEmailToMailboxInteractor(
         Get.find<EmailRepository>(),
     ));

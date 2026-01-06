@@ -16,4 +16,21 @@ extension PresentationEmailMapExtension on Map<EmailId, PresentationEmail?> {
     }
     return newMap;
   }
+
+  Map<EmailId, PresentationEmail?> toggleListEmailsKeywordByIds({
+    required List<EmailId> emailIds,
+    required KeyWordIdentifier keyword,
+    required bool remove,
+  }) {
+    final updatedMap = Map<EmailId, PresentationEmail?>.from(this);
+
+    for (final emailId in emailIds) {
+      final email = updatedMap[emailId];
+      if (email == null) continue;
+
+      updatedMap[emailId] = email.toggleKeyword(keyword, remove);
+    }
+
+    return updatedMap;
+  }
 }

@@ -495,4 +495,19 @@ class EmailRepositoryImpl extends EmailRepository {
       labelKeyword,
     );
   }
+
+  @override
+  Future<void> addLabelToThread(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return emailDataSource[DataSourceType.network]!.addLabelToThread(
+      session,
+      accountId,
+      emailIds,
+      labelKeyword,
+    );
+  }
 }
