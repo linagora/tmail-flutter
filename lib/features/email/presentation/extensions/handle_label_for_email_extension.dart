@@ -123,40 +123,86 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     required KeyWordIdentifier labelKeyword,
     required bool isMobileThreadDisabled,
   }) {
-    if (isMobileThreadDisabled) {
-      final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-      if (selectedEmail?.id == emailId) {
-        mailboxDashBoardController.selectedEmail.value?.keywords
-            ?.addKeyword(labelKeyword);
-      }
-    } else {
-      final controller = threadDetailController;
-      if (controller != null) {
-        controller.emailIdsPresentation.value =
-            controller.emailIdsPresentation.toggleEmailKeywordById(
-          emailId: emailId,
-          keyword: labelKeyword,
-          remove: false,
-        );
+    _updateLabelOnSelectedEmailIfNeeded(
+      emailId: emailId,
+      labelKeyword: labelKeyword,
+      isMobileThreadDisabled: isMobileThreadDisabled,
+    );
 
-        controller.emailsInThreadDetailInfo.value =
-            controller.emailsInThreadDetailInfo.toggleEmailKeywordById(
-          emailId: emailId,
-          keyword: labelKeyword,
-          remove: false,
-        );
-      }
-    }
+    _updateLabelOnThreadIfNeeded(
+      emailId: emailId,
+      labelKeyword: labelKeyword,
+      isMobileThreadDisabled: isMobileThreadDisabled,
+    );
 
+    _updateLabelOnCurrentEmailLoaded(
+      emailId: emailId,
+      labelKeyword: labelKeyword,
+    );
+
+    _notifyLabelUpdated(
+      emailId: emailId,
+      labelKeyword: labelKeyword,
+    );
+  }
+
+  void _updateLabelOnSelectedEmailIfNeeded({
+    required EmailId emailId,
+    required KeyWordIdentifier labelKeyword,
+    required bool isMobileThreadDisabled,
+  }) {
+    if (!isMobileThreadDisabled) return;
+
+    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+    if (selectedEmail?.id != emailId) return;
+
+    selectedEmail?.keywords?.addKeyword(labelKeyword);
+  }
+
+  void _updateLabelOnThreadIfNeeded({
+    required EmailId emailId,
+    required KeyWordIdentifier labelKeyword,
+    required bool isMobileThreadDisabled,
+  }) {
+    if (isMobileThreadDisabled) return;
+
+    final controller = threadDetailController;
+    if (controller == null) return;
+
+    controller.emailIdsPresentation.value =
+        controller.emailIdsPresentation.toggleEmailKeywordById(
+      emailId: emailId,
+      keyword: labelKeyword,
+      remove: false,
+    );
+
+    controller.emailsInThreadDetailInfo.value =
+        controller.emailsInThreadDetailInfo.toggleEmailKeywordById(
+      emailId: emailId,
+      keyword: labelKeyword,
+      remove: false,
+    );
+  }
+
+  void _updateLabelOnCurrentEmailLoaded({
+    required EmailId emailId,
+    required KeyWordIdentifier labelKeyword,
+  }) {
     final emailLoaded = currentEmailLoaded.value;
-    if (emailLoaded != null && emailLoaded.emailCurrent?.id == emailId) {
-      currentEmailLoaded.value = emailLoaded.toggleEmailKeyword(
-        emailId: emailId,
-        keyword: labelKeyword,
-        remove: false,
-      );
-    }
+    if (emailLoaded == null) return;
+    if (emailLoaded.emailCurrent?.id != emailId) return;
 
+    currentEmailLoaded.value = emailLoaded.toggleEmailKeyword(
+      emailId: emailId,
+      keyword: labelKeyword,
+      remove: false,
+    );
+  }
+
+  void _notifyLabelUpdated({
+    required EmailId emailId,
+    required KeyWordIdentifier labelKeyword,
+  }) {
     mailboxDashBoardController.updateEmailFlagByEmailIds(
       [emailId],
       isLabelAdded: true,
