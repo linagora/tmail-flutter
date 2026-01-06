@@ -163,7 +163,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       return KeyWordIdentifier.emailFlagged.value;
     }
     if (this is PresentationLabelMailbox) {
-      return (this as PresentationLabelMailbox).label.keyword;
+      return (this as PresentationLabelMailbox).label.keyword?.value;
     }
     return null;
   }
