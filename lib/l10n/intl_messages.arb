@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-12-15T14:32:52.563522",
+  "@@last_modified": "2026-01-06T11:04:49.560483",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4862,6 +4862,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "aiScribe": "AI Scribe",
+  "@aiScribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeSettingExplanation": "Use AI to help write and improve your emails",
+  "@aiScribeSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeToggleDescription": "Enable AI Scribe",
+  "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "showMoreAttachmentButton": "Show +{count} more",
   "@showMoreAttachmentButton": {
     "type": "text",
@@ -5130,12 +5148,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiAssistant": "AI assistant",
-  "@aiAssistant": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "labels": "Labels",
   "@labels": {
     "type": "text",
@@ -5273,5 +5285,25 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "addLabelToThreadSuccessfullyMessage": "All emails in thread added to the \"{labelName}\" label",
+  "@addLabelToThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToThreadFailureMessage": "Cannot add all emails in thread to the \"{labelName}\" label",
+  "@addLabelToThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
   }
 }

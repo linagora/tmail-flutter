@@ -964,4 +964,36 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
       throw parseErrorForSetResponse(response, emailId.id);
     }
   }
+
+  Future<void> addLabelToThread(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    KeyWordIdentifier labelKeyword,
+  ) async {
+    final method = SetEmailMethod(accountId)
+      ..addUpdates(emailIds.generateMapUpdateObjectLabel(labelKeyword));
+
+    final builder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final invocation = builder.invocation(method);
+
+    final capabilities = method.requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
+    final result = await (builder..usings(capabilities)).build().execute();
+
+    final response = result.parse<SetEmailResponse>(
+      invocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
+
+    final emailIdsUpdated = response?.updated?.keys ?? <Id>[];
+    final ids = emailIds.map((emailId) => emailId.id);
+    final isUpdated = emailIdsUpdated.every(ids.contains);
+
+    if (emailIdsUpdated.isEmpty || !isUpdated) {
+      for (var id in emailIds) {
+        throw parseErrorForSetResponse(response, id.id);
+      }
+    }
+  }
 }

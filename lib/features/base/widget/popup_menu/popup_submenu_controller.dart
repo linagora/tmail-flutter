@@ -68,9 +68,9 @@ class PopupSubmenuController {
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(6)),
               ),
-              child: SizedBox(
+              child: Container(
                 width: submenuWidth,
-                height: finalHeight,
+                constraints: BoxConstraints(maxHeight: finalHeight),
                 child: submenu,
               ),
             ),

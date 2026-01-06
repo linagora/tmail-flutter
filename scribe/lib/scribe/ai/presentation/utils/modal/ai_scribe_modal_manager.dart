@@ -16,7 +16,7 @@ class AiScribeModalManager {
     ModalPlacement? preferredPlacement,
     ModalCrossAxisAlignment crossAxisAlignment = ModalCrossAxisAlignment.center,
   }) async {
-    final PopupSubmenuController submenuController = PopupSubmenuController();
+    final ContextSubmenuController submenuController = ContextSubmenuController();
 
     final aiAction = await Get.dialog<AIAction>(
       AiScribeModalWidget(

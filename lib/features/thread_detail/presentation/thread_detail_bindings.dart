@@ -2,6 +2,7 @@ import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_a_thread_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
@@ -45,6 +46,7 @@ class ThreadDetailBindings extends BaseBindings {
       Get.find<GetEmailContentInteractor>(),
       Get.find<MarkAsStarMultipleEmailInteractor>(),
       Get.find<MarkAsMultipleEmailReadInteractor>(),
+      Get.find<AddALabelToAThreadInteractor>(),
     ));
   }
 
