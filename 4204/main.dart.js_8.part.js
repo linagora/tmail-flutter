@@ -28,7 +28,7 @@ _.fr=x
 _.fx=a0
 _.fy=a1
 _.a=a2},
-arK:function arK(d){var _=this
+arM:function arM(d){var _=this
 _.f=_.e=_.d=$
 _.w=_.r=null
 _.x=!0
@@ -45,14 +45,14 @@ this.b=e},
 cX6:function cX6(d){this.a=d},
 cX2:function cX2(d){this.a=d},
 cX1:function cX1(d){this.a=d},
-awx:function awx(){},
+awz:function awz(){},
 YY:function YY(d,e,f){this.a=d
 this.b=e
 this.c=f},
 baW:function baW(){},
 bXo(d){return new C.bXn(d)},
 bXn:function bXn(d){this.e=d},
-aKN:function aKN(d){this.a=null
+aKP:function aKP(d){this.a=null
 this.b=d},
 bXq:function bXq(d,e,f,g){var _=this
 _.a=d
@@ -83,29 +83,23 @@ v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
 v=v==null?null:J.dNs(v)
-return v==null?d:v},
-aT_(){if(!B.d.t(window.navigator.userAgent.toLowerCase(),"iphone"))var x=B.d.t(window.navigator.userAgent.toLowerCase(),"android")&&B.d.t(window.navigator.userAgent.toLowerCase(),"mobile")
-else x=!0
-return x},
-aT0(){if(!B.d.t(window.navigator.userAgent.toLowerCase(),"ipad"))var x=B.d.t(window.navigator.userAgent.toLowerCase(),"android")&&!B.d.t(window.navigator.userAgent.toLowerCase(),"mobile")
-else x=!0
-return x}},D
+return v==null?d:v}},D
 J=c[1]
 A=c[0]
 B=c[2]
 C=a.updateHolder(c[12],C)
 D=c[22]
 C.MX.prototype={
-X(){return new C.arK(null)}}
-C.arK.prototype={
+X(){return new C.arM(null)}}
+C.arM.prototype={
 an(){var x,w=this
 w.aYj()
 x=w.a
 w.e=x.e
 w.f=x.d
 w.y=x.cy
-if(!C.aT_()&&!C.aT0()){x=w.a.fy
-w.as=new C.aKN(x)}w.asB()
+if(!A.aiy()&&!A.aiz()){x=w.a.fy
+w.as=new C.aKP(x)}w.asB()
 x=window
 x.toString
 x=A.ju(x,"message",w.gbdu(),!1,y._)
@@ -173,7 +167,7 @@ s=e.f
 r=B.c.gbo(s).at
 r.toString
 w=r+x
-r=C.aT_()||C.aT0()
+r=A.aiy()||A.aiz()
 if(r){v=J.a6Z(w,B.c.gbo(s).geR(),B.c.gbo(s).geb())
 e.iO(v,B.af,B.oo)}else if(w<B.c.gbo(s).geR())e.ig(B.c.gbo(s).geR())
 else if(w>B.c.gbo(s).geb())e.ig(B.c.gbo(s).geb())
@@ -184,7 +178,7 @@ if(d==null){x=r.e
 x===$&&A.d()
 w=x}else w=d
 x=r.c
-if(x!=null){v=J.aye(w,r.a.dx)
+if(x!=null){v=J.ayg(w,r.a.dx)
 A.x(A.E(r).l(0)+"::_handleContentHeightEvent: ScrollHeightWithBuffer = "+A.e(v),B.f)
 x=r.a.fr
 u=J.a6E(v)
@@ -260,11 +254,11 @@ if(u.a.CW)x.push("    html, body {\n      overflow: hidden;\n      overscroll-be
 w=B.c.iG(x)
 s=A.c(["      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('pagehide', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n          window.removeEventListener('load', handleOnLoad);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\""+s+'")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n\n        '+o+"\n        \n        "+m+"\n        \n        \n        \n        "+k+'\n        \n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "'+s+'", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toIframe: getWidth"}), "*");\n          \n          '+l+t+n+t+p+"\n        }\n      </script>\n    ","    <script type=\"text/javascript\">\n      document.addEventListener('wheel', function(e) {\n        e.ctrlKey && e.preventDefault();\n      }, {\n        passive: false,\n      });\n      window.addEventListener('keydown', disableZoomControl);\n      \n      window.addEventListener('pagehide', (event) => {\n        window.removeEventListener('keydown', disableZoomControl);\n      });\n      \n      function disableZoomControl(event) {\n        if (event.metaKey || event.ctrlKey) {\n          switch (event.key) {\n            case '=':\n            case '-':\n              event.preventDefault();\n              break;\n          }\n        }\n      }\n    </script>\n  ","    <script type=\"text/javascript\">\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ",'      <script type="text/javascript">\n        const displayWidth = '+A.e(u.a.d)+";\n    \n        const sizeUnits = ['px', 'in', 'cm', 'mm', 'pt', 'pc'];\n    \n        function convertToPx(value, unit) {\n          switch (unit.toLowerCase()) {\n            case 'px': return value;\n            case 'in': return value * 96;\n            case 'cm': return value * 37.8;\n            case 'mm': return value * 3.78;\n            case 'pt': return value * (96 / 72);\n            case 'pc': return value * (96 / 6);\n            default: return value;\n          }\n        }\n    \n        function removeWidthHeightFromStyle(style) {\n          // Remove width and height properties from style string\n          style = style.replace(/width\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');\n          style = style.replace(/height\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');\n          style = style.trim();\n          if (style.length && !style.endsWith(';')) {\n            style += ';';\n          }\n          return style;\n        }\n    \n        function extractWidthHeightFromStyle(style) {\n          // Extract width and height values with units from style string\n          const result = {};\n          const widthMatch = style.match(/width\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);\n          const heightMatch = style.match(/height\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);\n    \n          if (widthMatch) {\n            const value = parseFloat(widthMatch[1]);\n            const unit = widthMatch[2];\n            if (!isNaN(value) && unit) {\n              result['width'] = { value, unit };\n            }\n          }\n    \n          if (heightMatch) {\n            const value = parseFloat(heightMatch[1]);\n            const unit = heightMatch[2];\n            if (!isNaN(value) && unit) {\n              result['height'] = { value, unit };\n            }\n          }\n    \n          return result;\n        }\n    \n        function normalizeStyleAttribute(attrs) {\n          // Normalize style attribute to ensure proper responsive behavior\n          let style = attrs['style'];\n          \n          if (!style) {\n            attrs['style'] = 'max-width:100%;height:auto;display:inline;';\n            return;\n          }\n    \n          style = style.trim();\n          const dimensions = extractWidthHeightFromStyle(style);\n          const hasWidth = dimensions.hasOwnProperty('width');\n    \n          if (hasWidth) {\n            const widthData = dimensions['width'];\n            const widthPx = convertToPx(widthData.value, widthData.unit);\n    \n            if (displayWidth !== undefined &&\n                widthPx > displayWidth &&\n                sizeUnits.includes(widthData.unit)) {\n              style = removeWidthHeightFromStyle(style).trim();\n            }\n          }\n    \n          // Ensure proper style string formatting\n          if (style.length && !style.endsWith(';')) {\n            style += ';';\n          }\n    \n          // Add responsive defaults if missing\n          if (!style.includes('max-width')) {\n            style += 'max-width:100%;';\n          }\n    \n          if (!style.includes('height')) {\n            style += 'height:auto;';\n          }\n    \n          if (!style.includes('display')) {\n            style += 'display:inline;';\n          }\n    \n          attrs['style'] = style;\n        }\n    \n        function normalizeWidthHeightAttribute(attrs) {\n          // Normalize width/height attributes and remove if necessary\n          const widthStr = attrs['width'];\n          const heightStr = attrs['height'];\n    \n          // Remove attribute if value is null or undefined\n          if (widthStr === null || widthStr === undefined) {\n            delete attrs['width'];\n          } else if (displayWidth !== undefined) {\n            const widthValue = parseFloat(widthStr);\n            if (!isNaN(widthValue)) {\n              if (widthValue > displayWidth) {\n                delete attrs['width'];\n                delete attrs['height'];\n              }\n            }\n          }\n    \n          // Remove height attribute if value is null or undefined\n          if (heightStr === null || heightStr === undefined) {\n            delete attrs['height'];\n          }\n        }\n    \n        function normalizeImageSize(attrs) {\n          // Apply both style and attribute normalization\n          normalizeWidthHeightAttribute(attrs);\n          normalizeStyleAttribute(attrs);\n        }\n    \n        function applyImageNormalization() {\n          // Process all images on the page\n          document.querySelectorAll('img').forEach(img => {\n            const attrs = {\n              style: img.getAttribute('style'),\n              width: img.getAttribute('width'),\n              height: img.getAttribute('height')\n            };\n    \n            normalizeImageSize(attrs);\n    \n            // Handle style attribute\n            if (attrs.style !== null && attrs.style !== undefined) {\n              img.setAttribute('style', attrs.style);\n            } else {\n              img.removeAttribute('style');\n            }\n    \n            // Handle width attribute\n            if ('width' in attrs && attrs.width !== null && attrs.width !== undefined) {\n              img.setAttribute('width', attrs.width);\n            } else {\n              img.removeAttribute('width');\n            }\n    \n            // Handle height attribute\n            if ('height' in attrs && attrs.height !== null && attrs.height !== undefined) {\n              img.setAttribute('height', attrs.height);\n            } else {\n              img.removeAttribute('height');\n            }\n          });\n        }\n        \n        function safeApplyImageNormalization() {\n          // Error-safe wrapper for the normalization function\n          try {\n            applyImageNormalization();\n          } catch (e) {\n            console.error('Image normalization failed:', e);\n          }\n        }\n        \n        // Run normalization when page loads\n        window.onload = safeApplyImageNormalization;\n      </script>\n    "],r)
 if(u.a.ch)s.push("    <script>\n      document.addEventListener('DOMContentLoaded', function() {\n        const buttons = document.querySelectorAll('.quote-toggle-button');\n        buttons.forEach(button => {\n          button.onclick = function() {\n            const blockquote = this.nextElementSibling;\n            if (blockquote && blockquote.tagName === 'BLOCKQUOTE') {\n              this.classList.toggle('collapsed');\n              if (this.classList.contains('collapsed')) {\n                this.title = 'Show trimmed content';\n              } else {\n                this.title = 'Hide expanded content';\n              }\n            }\n          };\n        });\n      });\n    </script>")
-if(u.a.ay!=null){r=C.aT_()||C.aT0()
+if(u.a.ay!=null){r=A.aiy()||A.aiz()
 p=u.d
 s.push(r?'    <script type="text/javascript">\n      let lastY = 0;\n      let lastTime = 0;\n      let velocity = 0;\n    \n      function onTouchStart(e) { \n        lastY = e.touches[0].clientY;\n        lastTime = performance.now();\n        velocity = 0;\n      }\n    \n      function onTouchMove(e) { \n        const now = performance.now();\n        const y = e.touches[0].clientY;\n        const dy = lastY - y;\n        const dt = now - lastTime;\n    \n        if (dt > 0) {\n          velocity = dy / dt; // px per ms\n          velocity = Math.max(Math.min(velocity, 2), -2); // clamp velocity\n        }\n    \n        lastY = y;\n        lastTime = now;\n    \n        window.parent.postMessage(JSON.stringify({\n          view: "'+p+'",\n          type: "toDart: onScrollChanged",\n          deltaY: dy,\n        }), \'*\');\n      }\n    \n      function onTouchEnd(e) { \n        window.parent.postMessage(JSON.stringify({\n          view: "'+p+"\",\n          type: \"toDart: onScrollEnd\",\n          velocity: velocity,\n        }), '*');\n      }\n    \n      window.addEventListener('touchstart', onTouchStart, { passive: true });\n      window.addEventListener('touchmove', onTouchMove, { passive: true });\n      window.addEventListener('touchend', onTouchEnd, { passive: true });\n    \n      window.addEventListener('pagehide', () => {\n        window.removeEventListener('touchstart', onTouchStart);\n        window.removeEventListener('touchmove', onTouchMove);\n        window.removeEventListener('touchend', onTouchEnd);\n      });\n    </script>\n\n  ":'    <script type="text/javascript">\n      function onWheel(e) { \n        const deltaY = event.deltaY;\n        window.parent.postMessage(JSON.stringify({\n          "view": "'+p+'",\n          "type": "toDart: onScrollChanged",\n          "deltaY": deltaY\n        }), "*");\n      }\n      \n      window.addEventListener(\'wheel\', onWheel, { passive: true });\n      \n      window.addEventListener(\'pagehide\', (event) => {\n        window.removeEventListener(\'wheel\', onWheel);\n      });\n    </script>\n  ')}if(u.a.Q!=null)s.push("    <script type=\"text/javascript\">\n      window.addEventListener('keydown', handleIframeKeydown);\n      \n      window.addEventListener('pagehide', (event) => {\n        window.removeEventListener('keydown', handleIframeKeydown);\n      });\n      \n      function handleIframeKeydown(event) {\n        const payload = {\n          view: '"+u.d+"',\n          type: 'toDart: iframeKeydown',\n          key: event.key,\n          code: event.code,\n          shift: event.shiftKey\n        };\n        window.parent.postMessage(JSON.stringify(payload), \"*\");\n      }\n    </script>\n  ")
 if(u.a.fx)s.push("    <script type=\"text/javascript\">\n      document.addEventListener('click', function (e) {\n        try {\n          const payload = {\n            view: '"+u.d+"',\n            type: 'toDart: iframeClick',\n          };\n          window.parent.postMessage(JSON.stringify(payload), \"*\");\n        } catch (_) {}\n      });\n    </script>\n  ")
-if(!C.aT_()&&!C.aT0()){r=u.d
+if(!A.aiy()&&!A.aiz()){r=u.d
 s.push('    <script type="text/javascript">\n      document.addEventListener("mouseover", function (e) {\n        const target = e.target;\n        if (target.tagName.toLowerCase() === "a") {\n          const rect = target.getBoundingClientRect();\n          \n          const payload = {\n            view: \''+r+'\',\n            type: \'toDart: iframeLinkHover\',\n            url: target.href,\n            rect: {\n              x: rect.x,\n              y: rect.y,\n              width: rect.width,\n              height: rect.height\n            }\n          };\n          window.parent.postMessage(JSON.stringify(payload), "*");\n        }\n      });\n    \n      document.addEventListener("mouseout", function (e) {\n        const target = e.target;\n        if (target.tagName.toLowerCase() === "a") {\n          const payload = {\n            view: \''+r+"',\n            type: 'toDart: iframeLinkOut'\n          };\n          window.parent.postMessage(JSON.stringify(payload), \"*\");\n        }\n      });\n    </script>\n  ")}v=B.c.iG(s)
 s=u.y
 s===$&&A.d()
@@ -300,11 +294,11 @@ w.w=null
 x=w.z
 x===$&&A.d()
 x.aj(0)
-if(!C.aT_()&&!C.aT0()){x=w.as
+if(!A.aiy()&&!A.aiz()){x=w.as
 if(x!=null)x.eA()
 w.as=null}w.av()},
 grI(){return this.a.cx}}
-C.awx.prototype={
+C.awz.prototype={
 an(){this.aE()
 if(this.a.cx)this.uI()},
 iE(){var x=this.ed$
@@ -317,7 +311,7 @@ zO(d,e){return this.aHi(0,e,!1)},
 gv(){return[this.a,this.b,this.c]}}
 C.baW.prototype={}
 C.bXn.prototype={}
-C.aKN.prototype={
+C.aKP.prototype={
 aki(d,e,f,g){var x,w,v,u,t,s,r,q,p,o,n=this,m={}
 if(n.a!=null){n.eA()
 A.ad6(new C.bXq(n,e,f,g),y.P)
@@ -405,25 +399,25 @@ $S:313}
 C.bXp.prototype={
 $3(d,e,f){var x=this.a?-1:1
 return A.mB(A.b05(f,new A.H(0,x*(1-e)*8)),null,e)},
-$S:314};(function aliases(){var x=C.awx.prototype
+$S:314};(function aliases(){var x=C.awz.prototype
 x.aYj=x.an})();(function installTearOffs(){var x=a._instance_1u,w=a._instance_0u
-x(C.arK.prototype,"gbdu","bdv",0)
-w(C.aKN.prototype,"grm","eA",1)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
+x(C.arM.prototype,"gbdu","bdv",0)
+w(C.aKP.prototype,"grm","eA",1)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
 v(C.MX,A.ae)
-v(C.awx,A.ab)
-v(C.arK,C.awx)
+v(C.awz,A.ab)
+v(C.arM,C.awz)
 u(A.vd,[C.cX3,C.cX4,C.cX5,C.bXq])
 u(A.ve,[C.cX6,C.cX2])
 u(A.oP,[C.cX1,C.bXr,C.bXp])
-u(A.a6,[C.baW,C.bXn,C.aKN])
+u(A.a6,[C.baW,C.bXn,C.aKP])
 v(C.YY,C.baW)
-x(C.awx,A.r0)
+x(C.awz,A.r0)
 w(C.baW,A.j)})()
-A.DY(b.typeUniverse,JSON.parse('{"MX":{"ae":[],"i":[]},"arK":{"ab":["MX"]},"YY":{"j":[]}}'))
+A.DY(b.typeUniverse,JSON.parse('{"MX":{"ae":[],"i":[]},"arM":{"ab":["MX"]},"YY":{"j":[]}}'))
 var y=(function rtii(){var x=A.as
 return{v:x("FB"),V:x("O<bW>"),s:x("O<h>"),p:x("O<i>"),w:x("no"),_:x("vR"),P:x("b4"),u:x("GB"),t:x("bD<ar>"),O:x("b8<h>"),N:x("a4K<le>"),y:x("C"),i:x("ar")}})();(function constants(){D.aTn=new A.b_(30,30,B.ry,null)
 D.aLm=new A.X(B.ck,D.aTn,null)
 D.a41=new A.dH(B.cS,null,null,D.aLm,null)
 D.aY4=new A.ai(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"Liu4ndH21IkQvA/mhehpo0pun3Q=");
+a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"j9V5akasnlbDV7SyuFb1dT4J5Dc=");
