@@ -4,7 +4,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
@@ -426,11 +425,9 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<ManageAccountRepository>(),
       ),
     );
-    if (!PlatformInfo.isMobile) {
-      Get.lazyPut(
-        () => GetAIScribeConfigInteractor(Get.find<ManageAccountRepository>()),
-      );
-    }
+    Get.lazyPut(
+      () => GetAIScribeConfigInteractor(Get.find<ManageAccountRepository>()),
+    );
   }
 
   @override
