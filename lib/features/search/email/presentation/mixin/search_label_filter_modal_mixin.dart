@@ -81,6 +81,7 @@ mixin SearchLabelFilterModalMixin on PopupContextMenuActionMixin {
     }).toList();
 
     openBottomSheetContextMenuAction(
+      key: const Key('label_list_bottom_sheet_context_menu'),
       context: context,
       itemActions: contextMenuActions,
       onContextMenuActionClick: (menuAction) {
