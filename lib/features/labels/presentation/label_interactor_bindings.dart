@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/labels/data/network/label_api.dart';
 import 'package:tmail_ui_user/features/labels/data/repository/label_repository_impl.dart';
 import 'package:tmail_ui_user/features/labels/domain/repository/label_repository.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
@@ -33,6 +34,7 @@ class LabelInteractorBindings extends InteractorsBindings {
   void bindingsInteractor() {
     Get.lazyPut(() => GetAllLabelInteractor(Get.find<LabelRepository>()));
     Get.lazyPut(() => CreateNewLabelInteractor(Get.find<LabelRepository>()));
+    Get.lazyPut(() => EditLabelInteractor(Get.find<LabelRepository>()));
     Get.lazyPut(() => VerifyNameInteractor());
   }
 

@@ -13,4 +13,11 @@ extension ListLabelExtension on List<Label> {
   List<String> get displayNameNotNullList => map((label) => label.safeDisplayName)
       .where((name) => name.trim().isNotEmpty)
       .toList();
+
+  List<String> getDisplayNameListWithoutSelectedLabel(Label selectedLabel) {
+    return map((label) => label.safeDisplayName)
+        .where((name) =>
+            name.trim().isNotEmpty && name != selectedLabel.safeDisplayName)
+        .toList();
+  }
 }

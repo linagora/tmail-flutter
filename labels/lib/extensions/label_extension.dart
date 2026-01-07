@@ -15,7 +15,7 @@ extension LabelExtension on Label {
     if (id?.value == moreLabelId) {
       return AppColor.grayBackgroundColor;
     } else {
-      return color?.value.toColor();
+      return color?.value.toColor() ?? AppColor.primaryMain;
     }
   }
 

@@ -5624,4 +5624,33 @@ class AppLocalizations {
     );
   }
 
+
+  String get editLabel {
+    return Intl.message(
+      'Edit label',
+      name: 'editLabel',
+    );
+  }
+
+  String get updateTheLabelName {
+    return Intl.message(
+      'Update the label name',
+      name: 'updateTheLabelName',
+    );
+  }
+
+  String editLabelSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'You successfully edited the $labelName label',
+      name: 'editLabelSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String get editLabelFailure {
+    return Intl.message(
+      'Edit label failure',
+      name: 'editLabelFailure',
+    );
+  }
 }
