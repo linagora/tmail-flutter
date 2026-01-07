@@ -25,6 +25,7 @@ export 'scribe/ai/presentation/utils/ai_scribe_constants.dart';
 export 'scribe/ai/presentation/utils/context_menu/hover_submenu_controller.dart';
 export 'scribe/ai/presentation/utils/context_menu/popup_submenu_controller.dart';
 export 'scribe/ai/presentation/utils/modal/ai_scribe_modal_manager.dart';
+export 'scribe/ai/presentation/utils/modal/ai_scribe_suggestion_state_mixin.dart';
 export 'scribe/ai/presentation/utils/modal/anchored_modal_layout_calculator.dart';
 export 'scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 export 'scribe/ai/presentation/widgets/button/inline_ai_assist_button.dart';

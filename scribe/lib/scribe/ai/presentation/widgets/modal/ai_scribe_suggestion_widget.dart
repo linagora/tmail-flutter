@@ -1,14 +1,9 @@
 import 'dart:math';
 
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
-import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe.dart';
-import 'package:scribe/scribe/ai/data/network/ai_api_exception.dart';
 
 class AiScribeSuggestionWidget extends StatefulWidget {
   final AIAction aiAction;
@@ -37,42 +32,20 @@ class AiScribeSuggestionWidget extends StatefulWidget {
       _AiScribeSuggestionWidgetState();
 }
 
-class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
-  GenerateAITextInteractor? _interactor;
-
-  final ValueNotifier<dartz.Either<Failure, Success>> _state =
-      ValueNotifier(dartz.Right(GenerateAITextLoading()));
+class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
+    with AiScribeSuggestionStateMixin {
+  @override
+  AIAction get aiAction => widget.aiAction;
 
   @override
-  void initState() {
-    super.initState();
+  String? get content => widget.content;
 
-    if (!Get.isRegistered<GenerateAITextInteractor>()) {
-      _state.value = dartz.Left(
-        GenerateAITextFailure(
-          GenerateAITextInteractorIsNotRegisteredException(),
-        ),
-      );
-      return;
-    }
+  @override
+  ImagePaths get imagePaths => widget.imagePaths;
 
-    _interactor = Get.find<GenerateAITextInteractor>();
-    _loadSuggestion();
-  }
-
-  Future<void> _loadSuggestion() async {
-    final result = await _interactor!.execute(
-      widget.aiAction,
-      widget.content,
-    );
-
-    if (!mounted) return;
-
-    result.fold(
-      (failure) => _state.value = dartz.Left(failure),
-      (success) => _state.value = dartz.Right(success),
-    );
-  }
+  @override
+  OnSelectAiScribeSuggestionAction get onSelectAction =>
+      widget.onSelectAiScribeSuggestionAction;
 
   @override
   Widget build(BuildContext context) {
@@ -147,30 +120,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
           imagePaths: widget.imagePaths,
         ),
         Flexible(
-          child: ValueListenableBuilder<dartz.Either<Failure, Success>>(
-            valueListenable: _state,
-            builder: (_, state, __) {
-              return state.fold(
-                (_) => AiScribeSuggestionError(
-                  imagePaths: widget.imagePaths,
-                ),
-                (value) {
-                  if (value is GenerateAITextSuccess) {
-                    return AiScribeSuggestionSuccess(
-                      imagePaths: widget.imagePaths,
-                      suggestionText: value.response.result,
-                      hasContent: hasContent,
-                      onSelectAction: widget.onSelectAiScribeSuggestionAction,
-                    );
-                  }
-
-                  return AiScribeSuggestionLoading(
-                    imagePaths: widget.imagePaths,
-                  );
-                },
-              );
-            },
-          ),
+          child: buildStateContent(context, localizations),
         ),
       ],
     );
@@ -205,18 +155,12 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
       widget.buttonPosition != null && widget.buttonSize != null;
 
   void _handleClickOutside() {
-    final shouldDismiss = _state.value.fold(
+    final shouldDismiss = suggestionState.value.fold(
       (failure) => failure is GenerateAITextFailure,
       (success) => success is GenerateAITextSuccess,
     );
     if (shouldDismiss) {
       Navigator.of(context).pop();
     }
-  }
-
-  @override
-  void dispose() {
-    _state.dispose();
-    super.dispose();
   }
 }
