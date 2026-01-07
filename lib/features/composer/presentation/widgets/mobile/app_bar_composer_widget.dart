@@ -1,6 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -17,6 +18,7 @@ class AppBarComposerWidget extends StatelessWidget {
   final VoidCallback? insertImageAction;
   final VoidCallback openRichToolbarAction;
   final OnOpenContextMenuAction openContextMenuAction;
+  final OnOpenAiAssistantModal? onOpenAiAssistantModal;
 
   const AppBarComposerWidget({
     super.key,
@@ -29,6 +31,7 @@ class AppBarComposerWidget extends StatelessWidget {
     this.isNetworkConnectionAvailable = false,
     this.attachFileAction,
     this.insertImageAction,
+    this.onOpenAiAssistantModal,
   });
 
   @override
@@ -48,6 +51,15 @@ class AppBarComposerWidget extends StatelessWidget {
             onTapActionCallback: onCloseViewAction
           ),
           const Spacer(),
+          if (onOpenAiAssistantModal != null)
+            AiAssistantButton(
+              imagePaths: imagePaths,
+              margin: const EdgeInsetsDirectional.only(
+                start: MobileAppBarComposerWidgetStyle.space,
+                end: MobileAppBarComposerWidgetStyle.space,
+              ),
+              onOpenAiAssistantModal: onOpenAiAssistantModal!,
+            ),
           TMailButtonWidget.fromIcon(
             icon: imagePaths.icRichToolbar,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
