@@ -33,6 +33,13 @@ extension HandleLabelActionTypeExtension on LabelController {
     required AccountId? accountId,
     required Label label,
   }) async {
+    if (accountId == null) {
+      consumeState(
+        Stream.value(Left(EditLabelFailure(NotFoundAccountIdException()))),
+      );
+      return;
+    }
+
     await DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
         labels: labels,
