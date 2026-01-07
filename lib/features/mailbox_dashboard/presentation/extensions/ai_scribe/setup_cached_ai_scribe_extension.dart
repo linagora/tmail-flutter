@@ -1,4 +1,3 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_ai_scribe_config_interactor.dart';
@@ -6,11 +5,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension SetupCachedAiScribeExtension on MailboxDashBoardController {
   void loadAIScribeConfig() {
-    if (PlatformInfo.isMobile) {
-      cachedAIScribeConfig.value = AIScribeConfig(isEnabled: false);
-      return;
-    }
-
     getAIScribeConfigInteractor = getBinding<GetAIScribeConfigInteractor>();
 
     if (getAIScribeConfigInteractor != null) {
