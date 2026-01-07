@@ -753,14 +753,12 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
         final isLabelAvailable = dashboardController.isLabelAvailable;
 
-        final labelController = dashboardController.labelController;
+        final listLabels = dashboardController.labelController.labels;
 
         List<Label>? emailLabels;
 
         if (isLabelAvailable) {
-          emailLabels = presentationEmail.getLabelList(
-            labelController.labels,
-          );
+          emailLabels = presentationEmail.getLabelList(listLabels);
         }
 
         return EmailTileBuilder(
