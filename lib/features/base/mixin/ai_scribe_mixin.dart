@@ -1,5 +1,4 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:scribe/scribe.dart';
@@ -29,8 +28,6 @@ mixin AiScribeMixin {
 
   void injectAIScribeBindings(Session? session, AccountId? accountId) {
     try {
-      if (PlatformInfo.isMobile) return;
-
       final aiCapability = getAICapability(
         session: session,
         accountId: accountId,
