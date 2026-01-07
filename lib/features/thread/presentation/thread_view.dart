@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
@@ -272,22 +273,29 @@ class ThreadView extends GetWidget<ThreadController>
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Container(
-            padding: const EdgeInsetsDirectional.only(end: 4.0),
-            child: ScrollToTopButtonWidget(
-              scrollController: controller.listEmailController,
-              onTap: controller.scrollToTop,
-              responsiveUtils: controller.responsiveUtils,
-              icon: SvgPicture.asset(
-                controller.imagePaths.icArrowUpOutline,
-                width: ScrollToTopButtonWidgetStyles.iconWidth,
-                height: ScrollToTopButtonWidgetStyles.iconHeight,
-                fit: BoxFit.fill,
-                colorFilter: Colors.white.asFilter(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
+          Obx(() {
+            final emailList =
+                controller.mailboxDashBoardController.emailsInCurrentMailbox;
+            if (emailList.isNotEmpty) {
+              return Padding(
+                padding: const EdgeInsetsDirectional.only(end: 4.0, bottom: 24),
+                child: ScrollToTopButtonWidget(
+                  scrollController: controller.listEmailController,
+                  onTap: controller.scrollToTop,
+                  responsiveUtils: controller.responsiveUtils,
+                  icon: SvgPicture.asset(
+                    controller.imagePaths.icArrowUpOutline,
+                    width: ScrollToTopButtonWidgetStyles.iconWidth,
+                    height: ScrollToTopButtonWidgetStyles.iconHeight,
+                    fit: BoxFit.fill,
+                    colorFilter: Colors.white.asFilter(),
+                  ),
+                ),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
           _buildFloatingButtonCompose(context),
         ],
       ),
@@ -784,7 +792,9 @@ class ThreadView extends GetWidget<ThreadController>
               isSearchActive: controller.isSearchActive,
               isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
               isFavoriteFolder: controller.selectedMailbox?.isFavorite == true,
-            ),
+              isLabelMailbox:
+                    controller.selectedMailbox is PresentationLabelMailbox,
+              ),
           );
         }
       }
