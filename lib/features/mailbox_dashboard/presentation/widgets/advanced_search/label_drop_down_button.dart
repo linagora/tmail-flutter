@@ -93,27 +93,63 @@ class _LabelDropdownMenuItem extends StatelessWidget {
       child: Row(
         spacing: 16,
         children: [
-          SvgPicture.asset(
-            isSelected
-                ? imagePaths.icCheckboxSelected
-                : imagePaths.icCheckboxUnselected,
-            width: LabelDropDownStyle.checkedIconSize,
-            height: LabelDropDownStyle.checkedIconSize,
-            colorFilter: (isSelected
-                    ? LabelDropDownStyle.checkedIconColor
-                    : LabelDropDownStyle.unCheckedIconColor)
-                .asFilter(),
-            fit: BoxFit.fill,
+          _CheckboxIcon(
+            isSelected: isSelected,
+            imagePaths: imagePaths,
           ),
-          Expanded(
-            child: Text(
-              label.safeDisplayName,
-              style: LabelDropDownStyle.menuItemStyle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          _LabelName(text: label.safeDisplayName),
         ],
+      ),
+    );
+  }
+}
+
+class _CheckboxIcon extends StatelessWidget {
+  final bool isSelected;
+  final ImagePaths imagePaths;
+
+  const _CheckboxIcon({
+    required this.isSelected,
+    required this.imagePaths,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      _iconPath,
+      width: LabelDropDownStyle.checkedIconSize,
+      height: LabelDropDownStyle.checkedIconSize,
+      colorFilter: _iconColor.asFilter(),
+      fit: BoxFit.fill,
+    );
+  }
+
+  String get _iconPath {
+    return isSelected
+        ? imagePaths.icCheckboxSelected
+        : imagePaths.icCheckboxUnselected;
+  }
+
+  Color get _iconColor {
+    return isSelected
+        ? LabelDropDownStyle.checkedIconColor
+        : LabelDropDownStyle.unCheckedIconColor;
+  }
+}
+
+class _LabelName extends StatelessWidget {
+  final String text;
+
+  const _LabelName({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Text(
+        text,
+        style: LabelDropDownStyle.menuItemStyle,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
