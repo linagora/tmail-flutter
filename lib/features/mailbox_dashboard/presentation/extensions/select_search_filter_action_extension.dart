@@ -39,6 +39,12 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
       case QuickSearchFilter.labels:
         searchController.updateFilterEmail(labelOption: const None());
         break;
+      case QuickSearchFilter.starred:
+        deleteStarredSearchFilter();
+        break;
+      case QuickSearchFilter.unread:
+        deleteUnreadSearchFilter();
+        break;
       default:
         break;
     }

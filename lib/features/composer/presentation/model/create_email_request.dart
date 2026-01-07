@@ -114,7 +114,7 @@ class CreateEmailRequest with EquatableMixin {
     templateEmailId,
     answerForwardEmailId,
     unsubscribeEmailId,
-    references,
+    messageId,
     references,
     emailSendingQueue,
     displayMode,

@@ -262,15 +262,13 @@ class EmailView extends GetWidget<SingleEmailController> {
             final isLabelAvailable = controller
                 .mailboxDashBoardController.isLabelAvailable;
 
-            final labelController =
-                controller.mailboxDashBoardController.labelController;
+            final listLabels =
+                controller.mailboxDashBoardController.labelController.labels;
 
             List<Label>? emailLabels;
 
             if (isLabelAvailable) {
-              emailLabels = presentationEmail.getLabelList(
-                labelController.labels,
-              );
+              emailLabels = presentationEmail.getLabelList(listLabels);
             }
 
             return EmailSubjectWidget(
