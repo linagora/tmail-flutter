@@ -66,7 +66,7 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
     _editorController = editorApi.webViewController;
 
     registerSelectionChange =
-        HtmlUtils.registerSelectionChangeListener(_createdViewId);
+        HtmlUtils.registerSelectionChangeListener(_createdViewId, isWebPlatform: PlatformInfo.isWeb);
 
     _editorController?.addJavaScriptHandler(
       handlerName: registerSelectionChange!.name,
