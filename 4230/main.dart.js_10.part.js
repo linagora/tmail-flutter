@@ -1328,7 +1328,7 @@ C.b8M.prototype={}
 C.a7l.prototype={
 u(d){var w=null
 A.y(d,B.e,x.J).toString
-return A.kX(w,B.aD,w,100,w,!0,48,w,"assets/images/ic_add_identity.svg",B.y,B.m,16,8,!1,w,B.z,this.e,1/0,1,300,this.f,w,w,this.d,B.iu,A.r("Add a rule",w,"addARule",w,w),w,B.A,A.a34(B.m),w,w,w,w,!1,w)}}
+return A.kX(w,B.aC,w,100,w,!0,48,w,"assets/images/ic_add_identity.svg",B.y,B.m,16,8,!1,w,B.z,this.e,1/0,1,300,this.f,w,w,this.d,B.iu,A.r("Add a rule",w,"addARule",w,w),w,B.A,A.a34(B.m),w,w,w,w,!1,w)}}
 C.V8.prototype={
 u(d){var w,v,u=null
 A.y(d,B.e,x.J).toString
@@ -1360,7 +1360,7 @@ t=A.aa(A.r("No Rules Configured",r,"noRulesConfigured",r,r),r,r,r,r,r,A.hB(),B.a
 s=A.aa(A.r("Start by creating your first rule to automate\n email management.",r,"messageExplanationNoRulesConfigured",r,r),r,r,r,r,r,$.f0().e8(B.au.ar(0.64),16,1.313125,-0.15),B.ae,r,r)
 w=w.a.a>=1200?0:16
 A.y(d,B.e,q).toString
-return A.az(A.a7(B.cU,A.f3(A.aC(A.c([u,B.c6,t,B.fi,s,B.fi,A.a7(r,A.hI(B.m,B.aD,"assets/images/ic_add_identity.svg",r,r,r,A.r("Create My First Rule",r,"createMyFirstRule",r,r),this.e,r,r,B.aD,r),B.k,r,D.a6n,r,r,48,r,r,new A.aD(w,0,w,0),r,r,r)],x.p),B.o,B.l,B.z,0,B.u),r,r,r,B.cu,r,B.N),B.k,r,r,r,r,r,r,r,new A.aD(0,v,0,0),r,r,r),1)}}
+return A.az(A.a7(B.cU,A.f3(A.aC(A.c([u,B.c6,t,B.fi,s,B.fi,A.a7(r,A.hI(B.m,B.aC,"assets/images/ic_add_identity.svg",r,r,r,A.r("Create My First Rule",r,"createMyFirstRule",r,r),this.e,r,r,B.aC,r),B.k,r,D.a6n,r,r,48,r,r,new A.aD(w,0,w,0),r,r,r)],x.p),B.o,B.l,B.z,0,B.u),r,r,r,B.cu,r,B.N),B.k,r,r,r,r,r,r,r,new A.aD(0,v,0,0),r,r,r),1)}}
 C.ad9.prototype={
 u(d){var w,v,u,t,s,r,q,p,o=this,n=null,m=$.a9()
 A.v(o)
@@ -1431,7 +1431,7 @@ w=s.a.d
 v=A.ds(B.n)
 A.y(d,B.e,x.J).toString
 u=A.r("Enter name or email address",r,"hintInputAutocompleteContact",r,r)
-t=A.dl8(!1,!1,!1,B.m,10,r,w,B.aD,B.ep,!0,B.c8,new C.cOU(s),r,s.r,B.aD,A.ih(r,B.cJ,r,r,r,r,r,r,!0,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,A.ds(B.a_),u,r,r,r,r,r,r,r,r,r,!0,!0,r,r,r,r,r,r,r,r,r,r,r,r,r),!0,!1,s.f,B.qa,q,s.gb06(),20,new C.cOV(s),new C.cOW(s),r,r,new C.cOX(s,d),new C.cOY(s,d),new C.cOZ(),r,B.br,!1,r,new C.cP_(s),60,B.yx,B.kh,B.m,r,350,16,new C.cP0(s),12,B.dq,v,!0,x.Q)
+t=A.dl8(!1,!1,!1,B.m,10,r,w,B.aC,B.ep,!0,B.c8,new C.cOU(s),r,s.r,B.aC,A.ih(r,B.cJ,r,r,r,r,r,r,!0,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,A.ds(B.a_),u,r,r,r,r,r,r,r,r,r,!0,!0,r,r,r,r,r,r,r,r,r,r,r,r,r),!0,!1,s.f,B.qa,q,s.gb06(),20,new C.cOV(s),new C.cOW(s),r,r,new C.cOX(s,d),new C.cOY(s,d),new C.cOZ(),r,B.br,!1,r,new C.cP_(s),60,B.yx,B.kh,B.m,r,350,16,new C.cP0(s),12,B.dq,v,!0,x.Q)
 s.a.toString
 return A.M(d,B.v,x.w).w.a.gbl()<600?A.aC(A.c([t,B.l7,s.anf(d)],x.p),B.E,B.l,B.z,0,B.u):A.eJ(new C.cP1(s,t))},
 b08(d){var w
@@ -1480,7 +1480,7 @@ anf(d){var w,v,u=null
 A.y(d,B.e,x.J).toString
 w=A.r("Add recipient",u,"addRecipientButton",u,u)
 v=A.M(d,B.v,x.w).w.a.gbl()<600?1/0:u
-return A.kX(u,B.aD,u,100,u,!1,48,u,"assets/images/ic_add_identity.svg",B.y,B.m,18,8,!1,u,B.p,u,1/0,u,1/0,183,u,u,new C.cOF(this,d),B.hR,w,u,u,A.a34(B.m),u,u,u,u,!1,v)},
+return A.kX(u,B.aC,u,100,u,!1,48,u,"assets/images/ic_add_identity.svg",B.y,B.m,18,8,!1,u,B.p,u,1/0,u,1/0,183,u,u,new C.cOF(this,d),B.hR,w,u,u,A.a34(B.m),u,u,u,u,!1,v)},
 baC(d){var w,v,u,t,s=this
 A.eI(d).by()
 w=s.a.d.a.a
@@ -1638,7 +1638,7 @@ return C.HN(A.a7(m,A.aC(p,B.E,B.l,B.p,0,B.u),B.k,t,m,s,m,m,m,m,r,m,m,1/0),m,u)}}
 C.aa1.prototype={
 u(d){var w=null
 A.y(d,B.e,x.J).toString
-return A.kX(w,B.aD,w,100,w,!0,48,w,"assets/images/ic_add_identity.svg",B.y,B.m,16,8,!1,D.b2e,B.z,this.e,1/0,1,300,0,w,w,this.d,B.iu,A.r("Create new identity",w,"createNewIdentity",w,w),w,B.A,A.a34(B.m),w,w,w,w,!1,w)}}
+return A.kX(w,B.aC,w,100,w,!0,48,w,"assets/images/ic_add_identity.svg",B.y,B.m,16,8,!1,D.b2e,B.z,this.e,1/0,1,300,0,w,w,this.d,B.iu,A.r("Create new identity",w,"createNewIdentity",w,w),w,B.A,A.a34(B.m),w,w,w,w,!1,w)}}
 C.YF.prototype={
 u(d){var w,v,u,t,s,r,q,p=this,o=null,n=p.r?"assets/images/ic_radio_selected.svg":"assets/images/ic_radio.svg",m=A.n5(p.y,A.bK(B.q,o,100,o,o,o,n,o,18,o,o,1/0,o,new C.bXp(p),B.cM,o,o),o)
 n=p.d
@@ -1758,7 +1758,7 @@ s=A.aa(C.edn(u.c,s),v,v,v,v,v,A.ds(B.au.ar(0.64)),v,v,v)
 u=u.d
 w=A.a0(u).h("F<1,QD>")
 u=A.z(new A.F(u,new C.cxK(),w),w.h("a1.E"))
-return new A.X(D.alw,A.jc(B.aC,A.c([t,s,A.ao(u,B.o,v,B.l,B.z,0,v)],x.p),B.hv,B.Z,B.aC,8,27,v,B.u),v)}}
+return new A.X(D.alw,A.jc(B.aD,A.c([t,s,A.ao(u,B.o,v,B.l,B.z,0,v)],x.p),B.hv,B.Z,B.aD,8,27,v,B.u),v)}}
 C.a22.prototype={
 u(d){var w=null
 return new C.anJ(this.c,new C.bxj(B.au,B.au,w,new C.cxL(this,A.aa(this.d,w,2,B.A,w,w,$.f0().e8(B.au,14,1.4285714285714286,0.25),B.ae,w,w))),w)}}
@@ -2153,7 +2153,7 @@ v=A.c([],w)
 u=s.f
 if(u)v.push(A.ao(A.c([A.bc("assets/images/ic_warning.svg",B.t,r,B.O,16,r,r,16),D.aTt,A.az(A.aa(A.r("The storage is almost full. You can free up space by deleting unnecessary files or subscribe to get extra space.",r,"storageIsAlmostFullMessage",r,r),r,r,r,r,r,A.hB().e8(D.ad0,12,1.3333333333333333,0.4),r,r,r),1)],w),B.E,r,B.l,B.p,0,r))
 if(s.e){w=u?B.is:r
-v.push(A.a7(r,A.hI(B.aD,r,r,r,r,r,A.r("Upgrade storage",r,"upgradeStorage",r,r),s.r,r,r,B.m,r),B.k,r,D.a6g,r,r,48,r,w,r,r,r,r))}w=v.length
+v.push(A.a7(r,A.hI(B.aC,r,r,r,r,r,A.r("Upgrade storage",r,"upgradeStorage",r,r),s.r,r,r,B.m,r),B.k,r,D.a6g,r,r,48,r,w,r,r,r,r))}w=v.length
 if(w===0)return B.x
 t=w===1?B.c.ga3(v):A.aC(v,B.E,B.l,B.z,0,B.u)
 if(u)w=new A.b_(s.d?1/0:439,r,t,r)
@@ -2265,7 +2265,7 @@ else return B.iu}}
 C.b11.prototype={
 u(d){var w=null
 A.y(d,B.e,x.J).toString
-return A.ao(A.c([new A.c7(1,B.Q,A.a7(w,A.hI(w,w,w,w,w,w,A.r("Cancel",w,"cancel",w,w),this.d,w,w,w,w),B.k,w,B.iX,w,w,48,w,w,w,w,w,w),w),B.a6,new A.c7(1,B.Q,A.a7(w,A.hI(B.aD,w,w,w,w,w,A.r("Save changes",w,"saveChanges",w,w),this.c,w,w,B.m,w),B.k,w,D.a67,w,w,48,w,w,w,w,w,w),w)],x.p),B.o,w,B.cR,B.p,0,w)}}
+return A.ao(A.c([new A.c7(1,B.Q,A.a7(w,A.hI(w,w,w,w,w,w,A.r("Cancel",w,"cancel",w,w),this.d,w,w,w,w),B.k,w,B.iX,w,w,48,w,w,w,w,w,w),w),B.a6,new A.c7(1,B.Q,A.a7(w,A.hI(B.aC,w,w,w,w,w,A.r("Save changes",w,"saveChanges",w,w),this.c,w,w,B.m,w),B.k,w,D.a67,w,w,48,w,w,w,w,w,w),w)],x.p),B.o,w,B.cR,B.p,0,w)}}
 C.wn.prototype={
 u(d){var w,v=null,u=A.y(d,B.e,x.J)
 u.toString
@@ -3977,4 +3977,4 @@ D.b3f=new A.b8("setting_profiles",x.O)
 D.b3g=new A.b8("settings_close_button",x.O)})();(function lazyInitializers(){var w=a.lazyFinal
 w($,"eQ1","boU",()=>A.eL(0,0,0,300,0,0))})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_10",e:"endPart",h:b})})($__dart_deferred_initializers__,"ZI2tMC42G3e26IrBRpl2y//BsMY=");
+a.eventLog.push({p:"main.dart.js_10",e:"endPart",h:b})})($__dart_deferred_initializers__,"TEfIXgGtk+V1hSNAK9s1jNvCdcc=");
