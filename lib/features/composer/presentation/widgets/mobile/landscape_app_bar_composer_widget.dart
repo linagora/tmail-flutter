@@ -1,6 +1,8 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -16,6 +18,7 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
   final VoidCallback? insertImageAction;
   final VoidCallback openRichToolbarAction;
   final OnOpenContextMenuAction openContextMenuAction;
+  final OnOpenAiAssistantModal? onOpenAiAssistantModal;
 
   const LandscapeAppBarComposerWidget({
     super.key,
@@ -28,6 +31,7 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
     this.isNetworkConnectionAvailable = false,
     this.attachFileAction,
     this.insertImageAction,
+    this.onOpenAiAssistantModal,
   });
 
   @override
@@ -50,6 +54,18 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
               onTapActionCallback: onCloseViewAction
             ),
             const Spacer(),
+            if (onOpenAiAssistantModal != null)
+              ...[
+                const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
+                TMailButtonWidget.fromIcon(
+                  icon: imagePaths.icGradientSparkle,
+                  iconColor: MobileAppBarComposerWidgetStyle.iconColor,
+                  backgroundColor: Colors.transparent,
+                  iconSize: MobileAppBarComposerWidgetStyle.iconSize,
+                  tooltipMessage: ScribeLocalizations.of(context).aiAssistant,
+                  onTapActionCallback: () => onOpenAiAssistantModal!(null, null),
+                ),
+              ],
             TMailButtonWidget.fromIcon(
               icon: imagePaths.icRichToolbar,
               iconColor: MobileAppBarComposerWidgetStyle.iconColor,
