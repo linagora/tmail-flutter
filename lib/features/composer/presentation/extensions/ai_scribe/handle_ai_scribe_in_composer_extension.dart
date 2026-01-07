@@ -18,9 +18,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     final isAIScribeConfigEnabled =
         mailboxDashBoardController.cachedAIScribeConfig.value.isEnabled;
 
-    return isAIScribeConfigEnabled &&
-        isAIScribeEndpointAvailable &&
-        !PlatformInfo.isMobile;
+    return isAIScribeConfigEnabled && isAIScribeEndpointAvailable;
   }
 
   Future<String> _getTextOnlyContentInEditor() async {
