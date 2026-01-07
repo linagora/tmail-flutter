@@ -60,18 +60,30 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
   Set<EmailBodyPart> createAttachments() => attachments?.toEmailBodyPart() ?? {};
 
   Map<KeyWordIdentifier, bool>? createKeywords() {
-    if (draftsMailboxId != null) {
-      return {
-        KeyWordIdentifier.emailDraft: true,
-        KeyWordIdentifier.emailSeen: true,
-      };
-    } else if (templateMailboxId != null) {
-      return {
-        KeyWordIdentifier.emailSeen: true,
-      };
-    } else {
+    if (draftsMailboxId == null &&
+        templateMailboxId == null &&
+        keywords == null) {
       return null;
     }
+
+    final result = <KeyWordIdentifier, bool>{};
+
+    if (draftsMailboxId != null) {
+      result.addAll({
+        KeyWordIdentifier.emailDraft: true,
+        KeyWordIdentifier.emailSeen: true,
+      });
+    } else if (templateMailboxId != null) {
+      result[KeyWordIdentifier.emailSeen] = true;
+    }
+
+    if (keywords != null) {
+      for (final keyword in keywords!) {
+        result[keyword] = true;
+      }
+    }
+
+    return result;
   }
 
   Map<MailboxId, bool>? createMailboxIds() {
