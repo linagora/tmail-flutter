@@ -66,6 +66,9 @@ class ComposerView extends GetWidget<ComposerController> {
                       controller.handleOpenContextMenu(context, position);
                     },
                     isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
+                    onOpenAiAssistantModal: controller.isAIScribeAvailable
+                      ? controller.openAIAssistantModal
+                      : null,
                     attachFileAction: () => controller.openPickAttachmentMenu(
                       context,
                       _pickAttachmentsActionTiles(context)
@@ -87,6 +90,9 @@ class ComposerView extends GetWidget<ComposerController> {
                       controller.handleOpenContextMenu(context, position);
                     },
                     isNetworkConnectionAvailable: controller.isNetworkConnectionAvailable,
+                    onOpenAiAssistantModal: controller.isAIScribeAvailable
+                      ? controller.openAIAssistantModal
+                      : null,
                     attachFileAction: () => controller.openPickAttachmentMenu(
                       context,
                       _pickAttachmentsActionTiles(context)
