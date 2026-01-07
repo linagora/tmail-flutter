@@ -9,11 +9,13 @@ typedef OnCustomPromptCallback = void Function(String customPrompt);
 class AIScribeBar extends StatefulWidget {
   final OnCustomPromptCallback onCustomPrompt;
   final ImagePaths imagePaths;
+  final List<BoxShadow>? boxShadow;
 
   const AIScribeBar({
     super.key,
     required this.onCustomPrompt,
     required this.imagePaths,
+    this.boxShadow,
   });
 
   @override
@@ -62,7 +64,7 @@ class _AIScribeBarState extends State<AIScribeBar> {
           Radius.circular(AIScribeSizes.searchBarRadius),
         ),
         color: AIScribeColors.background,
-        boxShadow: AIScribeShadows.modal,
+        boxShadow: widget.boxShadow ?? AIScribeShadows.modal,
       ),
       constraints: const BoxConstraints(
         maxHeight: AIScribeSizes.searchBarMaxHeight,
