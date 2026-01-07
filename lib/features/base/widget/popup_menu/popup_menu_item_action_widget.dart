@@ -221,7 +221,7 @@ class _PopupMenuItemActionWidgetState extends State<PopupMenuItemActionWidget> {
             child: Row(
               children: [
                 if (iconWidget != null) iconWidget,
-                if (!isArrangeRTL && selectedIconWidget != null)
+                if (!isArrangeRTL && isSelected && selectedIconWidget != null)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(end: 16),
                     child: selectedIconWidget,

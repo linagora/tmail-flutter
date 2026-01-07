@@ -76,6 +76,7 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     required String tagDisplayName,
     required int emailCount,
   }) async {
+    // Emails provisioned by buildEmailsForLabel include the tag name in the subject
     final listEmailTileWithTag = $.tester.widgetList<EmailTileBuilder>(
       $(EmailTileBuilder).which<EmailTileBuilder>((widget) =>
           widget.presentationEmail.subject?.contains(tagDisplayName) == true),
