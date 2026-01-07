@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/extensions/list_label_extension.dart';
 import 'package:model/model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
@@ -81,6 +82,7 @@ mixin ScenarioUtilsMixin {
               identity: identity,
               attachments: attachments,
               hasRequestReadReceipt: requestReadReceipt,
+              keywords: provisioningEmail.labels.keywords,
             ),
           )
           .last;

@@ -147,7 +147,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
     if (isFavorite) {
       return KeyWordIdentifier.emailFlagged.value;
     }
-    if (this is PresentationLabelMailbox) {
+    if (isLabelMailbox) {
       return (this as PresentationLabelMailbox).label.keyword?.value;
     }
     return null;
