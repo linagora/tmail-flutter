@@ -824,7 +824,7 @@ class ThreadController extends BaseController with EmailActionController {
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
-          useCache: selectedMailbox?.isFavorite != true,
+          useCache: selectedMailbox?.isCacheable ?? false,
         )
       ));
     }
@@ -846,13 +846,13 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
-    canLoadMore = success.emailList.isNotEmpty;
     loadingMoreStatus.value = LoadingMoreStatus.completed;
     final appendableList = validateListEmailsLoadMore(success.emailList);
     log('ThreadController::_loadMoreEmailsSuccess: emailList = ${success.emailList.length} | appendableList = ${appendableList.length}');
     if (appendableList.isNotEmpty) {
       mailboxDashBoardController.emailsInCurrentMailbox.addAll(appendableList);
     }
+    canLoadMore = success.emailList.isNotEmpty && appendableList.isNotEmpty;
     if (PlatformInfo.isWeb) {
       _validateBrowserHeight();
     }
