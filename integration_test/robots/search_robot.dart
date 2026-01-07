@@ -95,4 +95,8 @@ class SearchRobot extends CoreRobot {
     );
     await $(#mobile_hasAttachment_search_filter_button).tap();
   }
+
+  Future<void> openLabelListModal() async {
+    await $(#mobile_labels_search_filter_button).tap();
+  }
 }

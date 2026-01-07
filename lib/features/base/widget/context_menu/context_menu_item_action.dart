@@ -31,6 +31,8 @@ mixin OptionalSelectedIcon<T> {
   String get selectedIcon;
 
   Color get selectedIconColor => AppColor.primaryMain;
+
+  bool get isArrangeRTL => true;
 }
 
 abstract class ContextMenuItemActionRequiredIcon<T>

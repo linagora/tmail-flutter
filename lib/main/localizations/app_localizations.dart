@@ -5624,4 +5624,11 @@ class AppLocalizations {
     );
   }
 
+
+  String get allLabels {
+    return Intl.message(
+      'All labels',
+      name: 'allLabels',
+    );
+  }
 }

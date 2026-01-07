@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:labels/labels.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -40,6 +41,7 @@ class AdvancedFilterController extends BaseController {
   final endDate = Rxn<DateTime>();
   final sortOrderType = SearchEmailFilter.defaultSortOrder.obs;
   final selectedFolderName = Rxn<String>();
+  final selectedLabel = Rxn<Label>();
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
@@ -129,6 +131,7 @@ class AdvancedFilterController extends BaseController {
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
+    Option<Label>? labelOption,
   }) {
     _memorySearchFilter = _memorySearchFilter.copyWith(
       fromOption: fromOption,
@@ -145,7 +148,9 @@ class AdvancedFilterController extends BaseController {
       startDateOption: startDateOption,
       endDateOption: endDateOption,
       positionOption: positionOption,
-      sortOrderTypeOption: sortOrderTypeOption);
+      sortOrderTypeOption: sortOrderTypeOption,
+      labelOption: labelOption,
+    );
   }
 
   void _synchronizeSearchFilter() {
@@ -188,6 +193,8 @@ class AdvancedFilterController extends BaseController {
       {KeyWordIdentifier.emailFlagged.value},
     );
 
+    final labelOption = optionOf(selectedLabel.value);
+
     _updateMemorySearchFilter(
       textOption: textOption,
       notKeywordOption: notKeywordsOption,
@@ -201,7 +208,8 @@ class AdvancedFilterController extends BaseController {
       unreadOption: unreadOption,
       hasKeywordOption: hasKeywordOption,
       startDateOption: startDateOption,
-      endDateOption: endDateOption
+      endDateOption: endDateOption,
+      labelOption: labelOption,
     );
 
     searchController.synchronizeSearchFilter(_memorySearchFilter);
@@ -312,6 +320,8 @@ class AdvancedFilterController extends BaseController {
         : StringConvert.writeNullToEmpty(
             _memorySearchFilter.mailbox?.getDisplayName(context));
     }
+
+    selectedLabel.value = _memorySearchFilter.label;
   }
 
   void selectDateRange(BuildContext context) {
@@ -480,6 +490,7 @@ class AdvancedFilterController extends BaseController {
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
     _destinationMailboxSelected = null;
+    selectedLabel.value = null;
   }
 
   void _clearAllTextFieldInput() {

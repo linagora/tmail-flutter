@@ -18,7 +18,7 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 
 extension AddLabelToThreadExtension on ThreadDetailController {
   Future<void> openAddLabelToEmailDialogModal() async {
-    if (!mailboxDashBoardController.isLabelFeatureEnabled) return;
+    if (!mailboxDashBoardController.isLabelAvailable) return;
 
     final labels = mailboxDashBoardController.labelController.labels;
     if (emailsInThreadDetailInfo.isEmpty || labels.isEmpty) {

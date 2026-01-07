@@ -13,6 +13,7 @@ enum FilterField {
   mailBox,
   date,
   sortBy,
+  labels,
   hasAttachment,
   deletionDate,
   receptionDate,
@@ -49,6 +50,8 @@ enum FilterField {
         return appLocalizations.headerRecipients;
       case FilterField.sender:
         return appLocalizations.sender;
+      case FilterField.labels:
+        return appLocalizations.labels;
       default:
         return '';
     }
@@ -77,6 +80,8 @@ enum FilterField {
       case FilterField.recipients:
       case FilterField.sender:
         return appLocalizations.addAnEmailAddress;
+      case FilterField.labels:
+        return appLocalizations.allLabels;
       default:
         return '';
     }

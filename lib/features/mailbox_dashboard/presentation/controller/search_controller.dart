@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -209,6 +210,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
+    Option<Label>? labelOption,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
@@ -226,6 +228,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       endDateOption: endDateOption,
       positionOption: positionOption,
       sortOrderTypeOption: sortOrderTypeOption,
+      labelOption: labelOption,
     );
     searchEmailFilter.refresh();
   }
@@ -237,6 +240,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
   DateTime? get endDateFiltered => searchEmailFilter.value.endDate?.value.toLocal();
 
   PresentationMailbox? get mailboxFiltered => searchEmailFilter.value.mailbox;
+
+  Label? get labelFiltered => searchEmailFilter.value.label;
 
   Set<String> get listAddressOfToFiltered => searchEmailFilter.value.to;
 

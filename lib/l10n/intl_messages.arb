@@ -5305,5 +5305,11 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "allLabels": "All labels",
+  "@allLabels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

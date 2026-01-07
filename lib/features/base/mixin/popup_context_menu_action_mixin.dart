@@ -28,6 +28,7 @@ mixin PopupContextMenuActionMixin {
     required OnContextMenuActionClick onContextMenuActionClick,
     Key? key,
     bool useGroupedActions = false,
+    double? maxHeight,
   }) async {
     return await showModalBottomSheet(
       context: context,
@@ -42,6 +43,9 @@ mixin PopupContextMenuActionMixin {
       ),
       backgroundColor: Colors.white,
       barrierColor: Colors.black.withValues(alpha: 0.2),
+      constraints: BoxConstraints(
+        maxHeight: maxHeight ?? double.infinity,
+      ),
       builder: (_) {
         return PointerInterceptor(
           child: Container(
@@ -63,6 +67,7 @@ mixin PopupContextMenuActionMixin {
     BuildContext context,
     RelativeRect position,
     List<PopupMenuEntry> popupMenuItems,
+    {double? maxHeight}
   ) async {
     return await showMenu(
       context: context,
@@ -74,7 +79,11 @@ mixin PopupContextMenuActionMixin {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
-      constraints: const BoxConstraints(maxWidth: 300, minWidth: 178),
+      constraints: BoxConstraints(
+        maxWidth: 300,
+        minWidth: 178,
+        maxHeight: maxHeight ?? double.infinity,
+      ),
       items: popupMenuItems,
     );
   }

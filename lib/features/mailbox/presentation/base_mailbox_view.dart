@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_cate
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/check_label_available_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 
 abstract class BaseMailboxView extends GetWidget<MailboxController>
@@ -343,18 +344,14 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
   Widget buildLabelsBar(BuildContext context, bool isDesktop) {
     return Obx(() {
-      final isLabelCapabilitySupported = controller
+      final isLabelAvailable = controller
           .mailboxDashBoardController
-          .isLabelCapabilitySupported;
+          .isLabelAvailable;
 
       final labelController =
           controller.mailboxDashBoardController.labelController;
 
-      final isLabelSettingEnabled = labelController
-          .isLabelSettingEnabled
-          .isTrue;
-
-      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+      if (isLabelAvailable) {
         final accountId = controller.accountId;
         final labelListExpandMode = labelController.labelListExpandMode.value;
         final countLabels = labelController.labels.length;
@@ -381,18 +378,14 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
   Widget buildLabelsList(BuildContext context, bool isDesktop) {
     return Obx(() {
-      final isLabelCapabilitySupported = controller
+      final isLabelAvailable = controller
           .mailboxDashBoardController
-          .isLabelCapabilitySupported;
+          .isLabelAvailable;
 
       final labelController =
           controller.mailboxDashBoardController.labelController;
 
-      final isLabelSettingEnabled = labelController
-          .isLabelSettingEnabled
-          .isTrue;
-
-      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+      if (isLabelAvailable) {
         final labelListExpandMode = labelController.labelListExpandMode.value;
         final labels = labelController.labels;
 
