@@ -79,6 +79,8 @@ class HtmlUtils {
         script: '''
       let lastSelectedText = '';
 
+      const isDesktopEditor = () => !window.flutter_inappwebview
+
       const sendSelectionChangeMessage = (data) => {
         // When iframe
         if (window.parent) {
@@ -101,10 +103,17 @@ class HtmlUtils {
       function getEditableFromSelection(selection) {
         const node = selection?.focusNode || selection?.anchorNode;
         const el = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
-        return (
-          el?.closest('.note-editor .note-editable') ||
-          document.querySelector('.note-editor .note-editable')
-        );
+
+        if (isDesktopEditor()) {
+          return (
+            el?.closest('.note-editor .note-editable') ||
+            document.querySelector('.note-editor .note-editable')
+          );
+        } else {
+          return (
+            el?.closest('#editor')
+          );
+        }
       }
       
       function clamp(v, min, max) {
@@ -142,9 +151,13 @@ class HtmlUtils {
           }
       
           const lastRect = rects[rects.length - 1];
-      
-          let x = lastRect.right - editableRect.left;
-          let y = lastRect.bottom - editableRect.top;
+
+          // Avoid native selection marks in mobile
+          // Offset has been arbitrary determined to avoid selection marks on Android and iOS
+          const buttonOffset = isDesktopEditor() ? { x: 0, y: 0 } : { x: 22, y: -20 };
+
+          let x = lastRect.right - editableRect.left + buttonOffset.x;
+          let y = lastRect.bottom - editableRect.top + buttonOffset.y;
       
           const isInside =
             lastRect.bottom >= editableRect.top &&
