@@ -100,6 +100,7 @@ mixin LabelContextMenuMixin on PopupContextMenuActionMixin {
         .toList();
 
     return openBottomSheetContextMenuAction(
+      key: const Key('label_action_type_context_menu'),
       context: context,
       itemActions: contextMenuActions,
       onContextMenuActionClick: (menuAction) {

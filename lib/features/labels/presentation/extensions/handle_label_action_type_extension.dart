@@ -1,5 +1,6 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/extensions/list_label_extension.dart';
 import 'package:labels/model/label.dart';
@@ -42,6 +43,7 @@ extension HandleLabelActionTypeExtension on LabelController {
 
     await DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
+        key: const Key('edit_label_modal'),
         labels: labels,
         selectedLabel: label,
         actionType: LabelActionType.edit,
