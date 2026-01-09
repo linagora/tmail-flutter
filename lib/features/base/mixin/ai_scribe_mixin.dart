@@ -39,7 +39,7 @@ mixin AiScribeMixin {
         AIScribeBindings(aiCapability!.scribeEndpoint!).dependencies();
       }
     } catch (e) {
-      logError('AiScribeMixin::injectAIScribeBindings(): $e');
+      logWarning('AiScribeMixin::injectAIScribeBindings(): $e');
     }
   }
 }

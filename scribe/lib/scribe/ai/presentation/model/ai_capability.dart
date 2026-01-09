@@ -23,7 +23,7 @@ class AICapability extends CapabilityProperties {
 
       // Validate endpoint format - must be an absolute URI
       if (Uri.tryParse(urlEndpoint)?.isAbsolute != true) {
-        logError(
+        logWarning(
           'AICapability::isScribeEndpointAvailable(): Invalid endpoint format: $urlEndpoint',
         );
         return false;
@@ -31,7 +31,7 @@ class AICapability extends CapabilityProperties {
 
       return true;
     } catch (e) {
-      logError(
+      logWarning(
         'AICapability::isScribeEndpointAvailable(): Exception: $e',
       );
       return false;

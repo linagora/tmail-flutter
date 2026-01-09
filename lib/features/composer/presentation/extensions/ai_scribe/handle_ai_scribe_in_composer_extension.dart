@@ -31,7 +31,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
       );
       return textContent;
     } catch (e) {
-      logError('$runtimeType::getTextOnlyContentInEditor:Exception = $e');
+      logWarning('$runtimeType::getTextOnlyContentInEditor:Exception = $e');
       return '';
     }
   }
@@ -51,7 +51,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
       }
     } catch (e) {
-      logError('$runtimeType::insertTextInEditor:Exception = $e');
+      logWarning('$runtimeType::insertTextInEditor:Exception = $e');
     }
   }
 
@@ -69,7 +69,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         );
       }
     } catch (e) {
-      logError('$runtimeType::collapseSelection:Exception = $e');
+      logWarning('$runtimeType::collapseSelection:Exception = $e');
     }
   }
 
@@ -81,7 +81,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         richTextMobileTabletController?.htmlEditorApi?.setText('');
       }
     } catch (e) {
-      logError('$runtimeType::clearTextInEditor:Exception = $e');
+      logWarning('$runtimeType::clearTextInEditor:Exception = $e');
     }
   }
 

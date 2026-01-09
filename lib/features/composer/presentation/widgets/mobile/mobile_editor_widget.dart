@@ -92,7 +92,7 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
     try {
       await _setupSelectionListener(editorApi);
     } catch (e) {
-      logError('Error onWebViewCreated: $e');
+      logWarning('Error onWebViewCreated: $e');
     }
   }
 

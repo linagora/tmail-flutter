@@ -195,7 +195,7 @@ extension SessionExtensions on Session {
       log('SessionExtensions::getAICapability:aiCapability = $aiCapability');
       return aiCapability;
     } catch (e) {
-      logError('SessionExtensions::getAICapability():[Exception] $e');
+      logWarning('SessionExtensions::getAICapability():[Exception] $e');
       return null;
     }
   }
