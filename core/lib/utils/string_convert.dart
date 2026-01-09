@@ -246,7 +246,7 @@ class StringConvert {
 
       return textContent.trim();
     } catch (e) {
-      logError('StringConvert::convertHtmlContentToTextContent:Exception = $e');
+      logWarning('StringConvert::convertHtmlContentToTextContent:Exception = $e');
       return htmlContent.trim();
     }
   }

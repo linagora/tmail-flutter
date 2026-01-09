@@ -123,7 +123,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
           }
         }
       } catch (e) {
-        logError(
+        logWarning(
           '_WebEditorState::_editorListener: Unable to parse message data = $e',
         );
       }
