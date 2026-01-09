@@ -996,4 +996,34 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
       }
     }
   }
+
+  Future<void> removeLabelFromEmail(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  ) async {
+    final method = SetEmailMethod(accountId)
+      ..addUpdates({
+        emailId.id: labelKeyword.generateLabelActionPath(remove: true),
+      });
+
+    final builder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final invocation = builder.invocation(method);
+
+    final capabilities = method.requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
+    final result = await (builder..usings(capabilities)).build().execute();
+
+    final response = result.parse<SetEmailResponse>(
+      invocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
+
+    final emailIdsUpdated = response?.updated?.keys ?? <Id>[];
+
+    if (emailIdsUpdated.isEmpty || !emailIdsUpdated.contains(emailId.id)) {
+      throw parseErrorForSetResponse(response, emailId.id);
+    }
+  }
 }

@@ -175,4 +175,11 @@ abstract class EmailRepository {
     List<EmailId> emailIds,
     KeyWordIdentifier labelKeyword,
   );
+
+  Future<void> removeLabelFromEmail(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  );
 }
