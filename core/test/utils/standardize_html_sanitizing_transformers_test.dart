@@ -77,6 +77,22 @@ void main() {
       'touchmove',
       'touchend',
       'touchcancel',
+      'wheel',
+      'animationstart',
+      'animationend',
+      'animationiteration',
+      'transitionstart',
+      'transitionend',
+      'transitionrun',
+      'transitioncancel',
+      'pointerdown',
+      'pointerup',
+      'pointermove',
+      'pointerenter',
+      'pointerleave',
+      'pointerover',
+      'pointerout',
+      'pointercancel',
     ];
 
     String sanitize(String input) =>
@@ -161,9 +177,9 @@ void main() {
         expect(sanitize('<footer href="javascript:1"></footer>'), equals('<footer></footer>'));
       });
 
-      test('SHOULD unwrap <supress_time_adjustment> AND keep children', () {
+      test('SHOULD unwrap <suppress_time_adjustment> AND keep children', () {
         const html =
-            '<supress_time_adjustment href="javascript:1"><div><p>Hello</p></div></supress_time_adjustment>';
+            '<suppress_time_adjustment href="javascript:1"><div><p>Hello</p></div></suppress_time_adjustment>';
         expect(sanitize(html), equals('<div><p>Hello</p></div>'));
       });
 
@@ -334,19 +350,19 @@ void main() {
 
     group('FORM safe attributes – safely unwrapped', () {
       test('SHOULD unwrap FORM with safe style', () {
-        expect(sanitize('<form style="color: red;"></form>'), contains(''));
+        expect(sanitize('<form style="color: red;"></form>'), equals(''));
       });
 
       test('SHOULD unwrap FORM with safe class', () {
-        expect(sanitize('<form class="email-form"></form>'), contains(''));
+        expect(sanitize('<form class="email-form"></form>'), equals(''));
       });
 
       test('SHOULD unwrap FORM with safe id', () {
-        expect(sanitize('<form id="my-form"></form>'), contains(''));
+        expect(sanitize('<form id="my-form"></form>'), equals(''));
       });
 
       test('SHOULD unwrap FORM with safe bgcolor', () {
-        expect(sanitize('<form bgcolor="#fff"></form>'), contains(''));
+        expect(sanitize('<form bgcolor="#fff"></form>'), equals(''));
       });
 
       test('SHOULD remove dangerous attributes even when safe attributes exist', () {
