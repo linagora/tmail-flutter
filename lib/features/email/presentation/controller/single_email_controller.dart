@@ -357,6 +357,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           actionType: action.actionType,
           email: action.email,
         );
+      } else if (action is RemoveLabelFromEmailAction) {
+        mailboxDashBoardController.clearEmailUIAction();
+        if (_currentEmailId == null ||
+            action.emailId != _currentEmailId) {
+          return;
+        }
+        toggleLabelToEmail(action.emailId, action.label, false);
       }
     }));
 

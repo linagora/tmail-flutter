@@ -9,6 +9,8 @@ class LabelWidget extends StatelessWidget {
   final double horizontalPadding;
   final double? maxWidth;
   final bool isTruncateLabel;
+  final Widget? actionWidget;
+  final EdgeInsetsGeometry? padding;
 
   const LabelWidget({
     super.key,
@@ -16,9 +18,20 @@ class LabelWidget extends StatelessWidget {
     this.horizontalPadding = 4,
     this.maxWidth,
     this.isTruncateLabel = false,
+    this.actionWidget,
+    this.padding,
   });
 
-  factory LabelWidget.create(Label label) => LabelWidget(label: label);
+  factory LabelWidget.create({
+    required Label label,
+    required Widget removeLabelAction,
+    EdgeInsetsGeometry? padding,
+  }) =>
+      LabelWidget(
+        label: label,
+        actionWidget: removeLabelAction,
+        padding: padding,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +46,8 @@ class LabelWidget extends StatelessWidget {
       maxWidth: maxWidth,
       isTruncateText: isTruncateLabel,
       showTooltip: showTooltip,
+      actionWidget: actionWidget,
+      padding: padding,
     );
   }
 }

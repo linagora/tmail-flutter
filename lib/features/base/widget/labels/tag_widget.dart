@@ -11,6 +11,8 @@ class TagWidget extends StatelessWidget {
   final bool isTruncateText;
   final bool showTooltip;
   final EdgeInsetsGeometry? margin;
+  final Widget? actionWidget;
+  final EdgeInsetsGeometry? padding;
 
   const TagWidget({
     super.key,
@@ -22,6 +24,8 @@ class TagWidget extends StatelessWidget {
     this.textColor,
     this.maxWidth,
     this.margin,
+    this.actionWidget,
+    this.padding,
   });
 
   @override
@@ -42,16 +46,32 @@ class TagWidget extends StatelessWidget {
       );
     }
 
-    return Container(
+    if (actionWidget != null) {
+      labelText = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(child: labelText),
+          actionWidget!,
+        ],
+      );
+    }
+
+    labelText = Container(
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: const BorderRadius.all(Radius.circular(4)),
       ),
       constraints:
           maxWidth != null ? BoxConstraints(maxWidth: maxWidth!) : null,
-      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      padding: padding ?? EdgeInsets.symmetric(horizontal: horizontalPadding),
       margin: margin,
       child: labelText,
     );
+
+    if (actionWidget != null) {
+      labelText = GestureDetector(onTap: () {}, child: labelText);
+    }
+
+    return labelText;
   }
 }
