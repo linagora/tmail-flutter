@@ -64,7 +64,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
           children: [
             if (showSubject)
               EmailSubjectWidget(
-                presentationEmail: presentationEmail,
+                emailSubject: presentationEmail.getEmailTitle(),
                 imagePaths: imagePaths,
                 isMobileResponsive: isMobileResponsive,
                 labels: labels,

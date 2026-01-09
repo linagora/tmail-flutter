@@ -270,11 +270,8 @@ class EmailView extends GetWidget<SingleEmailController> {
             if (isLabelAvailable) {
               emailLabels = presentationEmail.getLabelList(listLabels);
             }
-
             return EmailSubjectWidget(
-              presentationEmail: presentationEmail.copyWith(
-                subject: threadSubject,
-              ),
+              emailSubject: threadSubject ?? presentationEmail.getEmailTitle(),
               imagePaths: controller.imagePaths,
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,

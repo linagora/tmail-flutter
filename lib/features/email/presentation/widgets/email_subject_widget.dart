@@ -2,14 +2,13 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:labels/model/label.dart';
-import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_subject_styles.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_widget.dart';
 
 typedef OnDeleteLabelAction = void Function(Label label);
 
 class EmailSubjectWidget extends StatefulWidget {
-  final PresentationEmail presentationEmail;
+  final String emailSubject;
   final ImagePaths imagePaths;
   final bool isMobileResponsive;
   final List<Label>? labels;
@@ -17,7 +16,7 @@ class EmailSubjectWidget extends StatefulWidget {
 
   const EmailSubjectWidget({
     super.key,
-    required this.presentationEmail,
+    required this.emailSubject,
     required this.imagePaths,
     this.isMobileResponsive = false,
     this.labels,
@@ -29,7 +28,7 @@ class EmailSubjectWidget extends StatefulWidget {
 }
 
 class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
-  String get _title => widget.presentationEmail.getEmailTitle();
+  String get _title => widget.emailSubject;
 
   bool get _hasLabels => _currentLabels?.isNotEmpty == true;
 
@@ -38,6 +37,12 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   @override
   void initState() {
     super.initState();
+    _currentLabels = widget.labels;
+  }
+
+  @override
+  void didUpdateWidget(covariant EmailSubjectWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
     _currentLabels = widget.labels;
   }
 
