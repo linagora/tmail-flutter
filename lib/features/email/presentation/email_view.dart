@@ -275,8 +275,14 @@ class EmailView extends GetWidget<SingleEmailController> {
               presentationEmail: presentationEmail.copyWith(
                 subject: threadSubject,
               ),
+              imagePaths: controller.imagePaths,
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,
+              onDeleteLabelAction: (label) => controller.toggleLabelToEmail(
+                presentationEmail.id!,
+                label,
+                false,
+              ),
             );
           }),
         Obx(() => InformationSenderAndReceiverBuilder(

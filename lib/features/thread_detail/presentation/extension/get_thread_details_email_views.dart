@@ -2,10 +2,12 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_in_thread_status.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/labels/remove_label_from_email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load_more_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_load_more_segments.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
@@ -46,7 +48,10 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       final isFirstEmailInThreadDetail = indexOfEmailId == 0;
 
       if (presentationEmail.emailInThreadStatus == EmailInThreadStatus.collapsed) {
+        final lastEmail = emailIdsPresentation.values.last;
+
         final emailLabels = _getLabelsForFirstEmail(
+          lastEmail: lastEmail,
           isFirstEmailInThreadDetail: isFirstEmailInThreadDetail,
           availableLabels: labels,
         );
@@ -54,7 +59,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         return ThreadDetailCollapsedEmail(
           presentationEmail: presentationEmail.copyWith(
             subject: isFirstEmailInThreadDetail
-              ? emailIdsPresentation.values.last?.subject
+              ? lastEmail?.subject
               : null
           ),
           showSubject: isFirstEmailInThreadDetail,
@@ -72,6 +77,10 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           onToggleThreadDetailCollapseExpand: () {
             toggleThreadDetailCollapseExpand(presentationEmail);
           },
+          onDeleteLabelAction: (label) => removeLabelFromEmail(
+            lastEmail!.id!,
+            label,
+          ),
         );
       }
 
@@ -112,6 +121,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
   }
 
   List<Label>? _getLabelsForFirstEmail({
+    required PresentationEmail? lastEmail,
     required bool isFirstEmailInThreadDetail,
     required List<Label>? availableLabels,
   }) {
@@ -121,7 +131,6 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       return null;
     }
 
-    final lastEmail = emailIdsPresentation.values.last;
     return lastEmail?.getLabelList(availableLabels);
   }
 }
