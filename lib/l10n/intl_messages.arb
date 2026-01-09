@@ -5401,5 +5401,25 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "removeLabelFromThreadSuccessfullyMessage": "All emails in thread removed from the \"{labelName}\" label",
+  "@removeLabelFromThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadFailureMessage": "Cannot remove all emails from thread to the \"{labelName}\" label",
+  "@removeLabelFromThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
   }
 }

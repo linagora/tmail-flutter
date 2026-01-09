@@ -604,4 +604,21 @@ class EmailDataSourceImpl extends EmailDataSource {
       );
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<void> removeLabelFromThread(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return Future.sync(() async {
+      return await emailAPI.removeLabelFromThread(
+        session,
+        accountId,
+        emailIds,
+        labelKeyword,
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

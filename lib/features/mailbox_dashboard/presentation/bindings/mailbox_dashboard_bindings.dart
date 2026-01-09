@@ -41,6 +41,7 @@ import 'package:tmail_ui_user/features/download/domain/usecase/download_attachme
 import 'package:tmail_ui_user/features/download/domain/usecase/download_and_get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/get_html_content_from_upload_file_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/labels/remove_a_label_from_a_thread_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
@@ -372,6 +373,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     ));
     Get.lazyPut(() => MarkAsStarMultipleEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => AddALabelToAThreadInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => RemoveALabelFromAThreadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveMultipleEmailToMailboxInteractor(
         Get.find<EmailRepository>(),
     ));

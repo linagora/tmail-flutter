@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_an_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/parse_email_by_blob_id_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/preview_email_from_eml_file_state.dart';
@@ -218,6 +219,11 @@ class ToastManager {
           appLocalizations.removeLabelFromEmailFailureMessage(
             failure.labelDisplay,
           );
+    } else if (failure is RemoveALabelFromAThreadFailure) {
+      message = message ??
+          appLocalizations.removeLabelFromThreadFailureMessage(
+            failure.labelDisplay,
+          );
     }
     log('ToastManager::showMessageFailure: Message: $message');
     if (message?.trim().isNotEmpty == true) {
@@ -299,6 +305,10 @@ class ToastManager {
       );
     } else if (success is RemoveALabelFromAnEmailSuccess) {
       message = appLocalizations.removeLabelFromEmailSuccessfullyMessage(
+        success.labelDisplay,
+      );
+    } else if (success is RemoveALabelFromAThreadSuccess) {
+      message = appLocalizations.removeLabelFromThreadSuccessfullyMessage(
         success.labelDisplay,
       );
     }
