@@ -171,4 +171,190 @@ void main() {
       expect(map[keyword], true);
     });
   });
+
+  group('MapKeywordsExtension - removeKeyword()', () {
+    test('removes existing keyword from map', () {
+      final keyword = KeyWordIdentifier('\$seen');
+      final map = {
+        keyword: true,
+        KeyWordIdentifier('\$flagged'): true,
+      };
+
+      map.removeKeyword(keyword);
+
+      expect(map.length, 1);
+      expect(map.containsKey(keyword), false);
+    });
+
+    test('removes keyword even if its value is false', () {
+      final keyword = KeyWordIdentifier('\$seen');
+      final map = {
+        keyword: false,
+      };
+
+      map.removeKeyword(keyword);
+
+      expect(map.isEmpty, true);
+    });
+
+    test('does nothing when keyword does not exist', () {
+      final map = {
+        KeyWordIdentifier('\$flagged'): true,
+      };
+      final keyword = KeyWordIdentifier('\$seen');
+
+      map.removeKeyword(keyword);
+
+      expect(map.length, 1);
+      expect(map.values.first, true);
+    });
+
+    test('does not throw when map is empty', () {
+      final map = <KeyWordIdentifier, bool>{};
+      final keyword = KeyWordIdentifier('\$seen');
+
+      expect(() => map.removeKeyword(keyword), returnsNormally);
+      expect(map.isEmpty, true);
+    });
+
+    test('does not throw when map is null', () {
+      Map<KeyWordIdentifier, bool>? map;
+      final keyword = KeyWordIdentifier('\$seen');
+
+      expect(() => map.removeKeyword(keyword), returnsNormally);
+    });
+
+    test('calling removeKeyword on null map has no side effects', () {
+      Map<KeyWordIdentifier, bool>? map;
+      final keyword = KeyWordIdentifier('\$seen');
+
+      map.removeKeyword(keyword);
+
+      expect(map, isNull);
+    });
+
+    test('mutates the same map instance', () {
+      final keyword = KeyWordIdentifier('\$seen');
+      final map = {
+        keyword: true,
+      };
+
+      final originalIdentity = identityHashCode(map);
+
+      map.removeKeyword(keyword);
+
+      expect(identityHashCode(map), originalIdentity);
+      expect(map.isEmpty, true);
+    });
+  });
+
+  group('MapKeywordsExtension - toggleKeyword()', () {
+    test('adds keyword when remove is false on empty map', () {
+      final keyword = KeyWordIdentifier('\$seen');
+      final map = <KeyWordIdentifier, bool>{};
+
+      map.toggleKeyword(keyword, false);
+
+      expect(map.length, 1);
+      expect(map[keyword], true);
+    });
+
+    test('adds keyword when remove is false on non-empty map', () {
+      final keyword = KeyWordIdentifier('\$seen');
+      final map = {
+        KeyWordIdentifier('\$flagged'): true,
+      };
+
+      map.toggleKeyword(keyword, false);
+
+      expect(map.length, 2);
+      expect(map[keyword], true);
+    });
+
+    test('overwrites existing keyword value to true when remove is false', () {
+      final keyword = KeyWordIdentifier('\$seen');
+      final map = {
+        keyword: false,
+      };
+
+      map.toggleKeyword(keyword, false);
+
+      expect(map.length, 1);
+      expect(map[keyword], true);
+    });
+
+    test('removes keyword when remove is true', () {
+      final keyword = KeyWordIdentifier('\$seen');
+      final map = {
+        keyword: true,
+        KeyWordIdentifier('\$flagged'): true,
+      };
+
+      map.toggleKeyword(keyword, true);
+
+      expect(map.length, 1);
+      expect(map.containsKey(keyword), false);
+    });
+
+    test('does nothing when remove is true and keyword does not exist', () {
+      final map = {
+        KeyWordIdentifier('\$flagged'): true,
+      };
+      final keyword = KeyWordIdentifier('\$seen');
+
+      map.toggleKeyword(keyword, true);
+
+      expect(map.length, 1);
+      expect(map.values.first, true);
+    });
+
+    test('does not throw when map is empty and remove is true', () {
+      final map = <KeyWordIdentifier, bool>{};
+      final keyword = KeyWordIdentifier('\$seen');
+
+      expect(() => map.toggleKeyword(keyword, true), returnsNormally);
+      expect(map.isEmpty, true);
+    });
+
+    test('adds keyword when map is empty and remove is false', () {
+      final map = <KeyWordIdentifier, bool>{};
+      final keyword = KeyWordIdentifier('\$seen');
+
+      expect(() => map.toggleKeyword(keyword, false), returnsNormally);
+      expect(map.length, 1);
+      expect(map[keyword], true);
+    });
+
+    test('does not throw when map is null', () {
+      Map<KeyWordIdentifier, bool>? map;
+      final keyword = KeyWordIdentifier('\$seen');
+
+      expect(() => map.toggleKeyword(keyword, true), returnsNormally);
+      expect(() => map.toggleKeyword(keyword, false), returnsNormally);
+    });
+
+    test('calling toggleKeyword on null map has no side effects', () {
+      Map<KeyWordIdentifier, bool>? map;
+      final keyword = KeyWordIdentifier('\$seen');
+
+      map.toggleKeyword(keyword, false);
+      map.toggleKeyword(keyword, true);
+
+      expect(map, isNull);
+    });
+
+    test('mutates the same map instance', () {
+      final keyword = KeyWordIdentifier('\$seen');
+      final map = {
+        keyword: true,
+      };
+
+      final originalIdentity = identityHashCode(map);
+
+      map.toggleKeyword(keyword, true);
+
+      expect(identityHashCode(map), originalIdentity);
+      expect(map.isEmpty, true);
+    });
+  });
 }

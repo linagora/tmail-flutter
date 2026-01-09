@@ -1,5 +1,4 @@
 import 'package:core/utils/platform_info.dart';
-import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -8,6 +7,7 @@ import 'package:labels/extensions/label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/remove_a_label_from_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_loaded_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
@@ -27,11 +27,18 @@ extension HandleLabelForEmailExtension on SingleEmailController {
   }
 
   void toggleLabelToEmail(EmailId emailId, Label label, bool isSelected) {
-    if (isSelected) {
-      final accountId = mailboxDashBoardController.accountId.value;
-      final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
 
+    if (isSelected) {
       _addALabelToAnEmail(
+        session: session,
+        accountId: accountId,
+        emailId: emailId,
+        label: label,
+      );
+    } else {
+      _removeALabelFromAnEmail(
         session: session,
         accountId: accountId,
         emailId: emailId,
@@ -49,24 +56,22 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     final labelDisplay = label.safeDisplayName;
 
     if (session == null) {
-      consumeState(
-        Stream.value(
-          Left(AddALabelToAnEmailFailure(
-            exception: NotFoundSessionException(),
-            labelDisplay: labelDisplay,
-          )),
+      emitFailure(
+        controller: this,
+        failure: AddALabelToAnEmailFailure(
+          exception: NotFoundSessionException(),
+          labelDisplay: labelDisplay,
         ),
       );
       return;
     }
 
     if (accountId == null) {
-      consumeState(
-        Stream.value(
-          Left(AddALabelToAnEmailFailure(
-            exception: NotFoundAccountIdException(),
-            labelDisplay: labelDisplay,
-          )),
+      emitFailure(
+        controller: this,
+        failure: AddALabelToAnEmailFailure(
+          exception: NotFoundAccountIdException(),
+          labelDisplay: labelDisplay,
         ),
       );
       return;
@@ -74,13 +79,12 @@ extension HandleLabelForEmailExtension on SingleEmailController {
 
     final labelKeyword = label.keyword;
     if (labelKeyword == null) {
-      consumeState(
-        Stream.value(Left(
-          AddALabelToAnEmailFailure(
-            exception: LabelKeywordIsNull(),
-            labelDisplay: labelDisplay,
-          ),
-        )),
+      emitFailure(
+        controller: this,
+        failure: AddALabelToAnEmailFailure(
+          exception: LabelKeywordIsNull(),
+          labelDisplay: labelDisplay,
+        ),
       );
       return;
     }
@@ -100,6 +104,7 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     _autoSyncLabelToSelectedEmailOnMemory(
       emailId: success.emailId,
       labelKeyword: success.labelKeyword,
+      remove: false,
     );
   }
 
@@ -110,11 +115,13 @@ extension HandleLabelForEmailExtension on SingleEmailController {
   void _autoSyncLabelToSelectedEmailOnMemory({
     required EmailId emailId,
     required KeyWordIdentifier labelKeyword,
+    required bool remove,
   }) {
     _updateLabelInEmailOnMemory(
       emailId: emailId,
       labelKeyword: labelKeyword,
       isMobileThreadDisabled: PlatformInfo.isMobile && !isThreadDetailEnabled,
+      remove: remove,
     );
   }
 
@@ -122,27 +129,32 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     required EmailId emailId,
     required KeyWordIdentifier labelKeyword,
     required bool isMobileThreadDisabled,
+    required bool remove,
   }) {
     _updateLabelOnSelectedEmailIfNeeded(
       emailId: emailId,
       labelKeyword: labelKeyword,
       isMobileThreadDisabled: isMobileThreadDisabled,
+      remove: remove,
     );
 
     _updateLabelOnThreadIfNeeded(
       emailId: emailId,
       labelKeyword: labelKeyword,
       isMobileThreadDisabled: isMobileThreadDisabled,
+      remove: remove,
     );
 
     _updateLabelOnCurrentEmailLoaded(
       emailId: emailId,
       labelKeyword: labelKeyword,
+      remove: remove,
     );
 
     _notifyLabelUpdated(
       emailId: emailId,
       labelKeyword: labelKeyword,
+      remove: remove,
     );
   }
 
@@ -150,19 +162,21 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     required EmailId emailId,
     required KeyWordIdentifier labelKeyword,
     required bool isMobileThreadDisabled,
+    required bool remove,
   }) {
     if (!isMobileThreadDisabled) return;
 
     final selectedEmail = mailboxDashBoardController.selectedEmail.value;
     if (selectedEmail?.id != emailId) return;
 
-    selectedEmail?.keywords?.addKeyword(labelKeyword);
+    selectedEmail?.keywords?.toggleKeyword(labelKeyword, remove);
   }
 
   void _updateLabelOnThreadIfNeeded({
     required EmailId emailId,
     required KeyWordIdentifier labelKeyword,
     required bool isMobileThreadDisabled,
+    required bool remove,
   }) {
     if (isMobileThreadDisabled) return;
 
@@ -173,20 +187,21 @@ extension HandleLabelForEmailExtension on SingleEmailController {
         controller.emailIdsPresentation.toggleEmailKeywordById(
       emailId: emailId,
       keyword: labelKeyword,
-      remove: false,
+      remove: remove,
     );
 
     controller.emailsInThreadDetailInfo.value =
         controller.emailsInThreadDetailInfo.toggleEmailKeywordById(
       emailId: emailId,
       keyword: labelKeyword,
-      remove: false,
+      remove: remove,
     );
   }
 
   void _updateLabelOnCurrentEmailLoaded({
     required EmailId emailId,
     required KeyWordIdentifier labelKeyword,
+    required bool remove,
   }) {
     final emailLoaded = currentEmailLoaded.value;
     if (emailLoaded == null) return;
@@ -195,17 +210,18 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     currentEmailLoaded.value = emailLoaded.toggleEmailKeyword(
       emailId: emailId,
       keyword: labelKeyword,
-      remove: false,
+      remove: remove,
     );
   }
 
   void _notifyLabelUpdated({
     required EmailId emailId,
     required KeyWordIdentifier labelKeyword,
+    required bool remove,
   }) {
     mailboxDashBoardController.updateEmailFlagByEmailIds(
       [emailId],
-      isLabelAdded: true,
+      isLabelAdded: !remove,
       labelKeyword: labelKeyword,
     );
 
@@ -234,5 +250,74 @@ extension HandleLabelForEmailExtension on SingleEmailController {
       ),
       dialogLabel: 'add-label-to-email-modal',
     );
+  }
+
+  void _removeALabelFromAnEmail({
+    required Session? session,
+    required AccountId? accountId,
+    required Label label,
+    required EmailId emailId,
+  }) {
+    final labelDisplay = label.safeDisplayName;
+
+    if (session == null) {
+      emitFailure(
+        controller: this,
+        failure: RemoveALabelFromAnEmailFailure(
+          exception: NotFoundSessionException(),
+          labelDisplay: labelDisplay,
+        ),
+      );
+      return;
+    }
+
+    if (accountId == null) {
+      emitFailure(
+        controller: this,
+        failure: RemoveALabelFromAnEmailFailure(
+          exception: NotFoundAccountIdException(),
+          labelDisplay: labelDisplay,
+        ),
+      );
+      return;
+    }
+
+    final labelKeyword = label.keyword;
+    if (labelKeyword == null) {
+      emitFailure(
+        controller: this,
+        failure: RemoveALabelFromAnEmailFailure(
+          exception: LabelKeywordIsNull(),
+          labelDisplay: labelDisplay,
+        ),
+      );
+      return;
+    }
+
+    consumeState(removeALabelFromAnEmailInteractor.execute(
+      session,
+      accountId,
+      emailId,
+      labelKeyword,
+      label.safeDisplayName,
+    ));
+  }
+
+  void handleRemoveLabelFromEmailSuccess(
+    RemoveALabelFromAnEmailSuccess success,
+  ) {
+    toastManager.showMessageSuccess(success);
+
+    _autoSyncLabelToSelectedEmailOnMemory(
+      emailId: success.emailId,
+      labelKeyword: success.labelKeyword,
+      remove: true,
+    );
+  }
+
+  void handleRemoveLabelFromEmailFailure(
+    RemoveALabelFromAnEmailFailure failure,
+  ) {
+    toastManager.showMessageFailure(failure);
   }
 }

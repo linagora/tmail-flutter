@@ -5381,5 +5381,25 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "removeLabelFromEmailSuccessfullyMessage": "Email removed from the \"{labelName}\" label",
+  "@removeLabelFromEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromEmailFailureMessage": "Cannot remove email from the \"{labelName}\" label",
+  "@removeLabelFromEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
   }
 }
