@@ -25,6 +25,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
     this.labels,
     this.onEmailActionClick,
     this.onToggleThreadDetailCollapseExpand,
+    this.onDeleteLabelAction,
   });
 
   final PresentationEmail presentationEmail;
@@ -37,13 +38,14 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
   final OnEmailActionClick? onEmailActionClick;
   final List<Label>? labels;
   final VoidCallback? onToggleThreadDetailCollapseExpand;
+  final OnDeleteLabelAction? onDeleteLabelAction;
 
   String get preview => presentationEmail.getPartialContent();
 
   @override
   Widget build(BuildContext context) {
     final isMobileResponsive = responsiveUtils.isMobile(context);
-
+    print('>> dab >> ThreadDetailCollapsedEmail: showSubject = $showSubject, labels = $labels');
     return DecoratedBox(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -62,9 +64,11 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
           children: [
             if (showSubject)
               EmailSubjectWidget(
-                presentationEmail: presentationEmail,
+                emailSubject: presentationEmail.getEmailTitle(),
+                imagePaths: imagePaths,
                 isMobileResponsive: isMobileResponsive,
                 labels: labels,
+                onDeleteLabelAction: onDeleteLabelAction,
               ),
             InformationSenderAndReceiverBuilder(
               emailSelected: presentationEmail,

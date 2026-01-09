@@ -27,5 +27,6 @@ extension KeyWordIdentifierExtension on KeyWordIdentifier {
 
   PatchObject generateUnsubscribeActionPath() => _boolPatch(true);
 
-  PatchObject generateLabelActionPath() => _boolPatch(true);
+  PatchObject generateLabelActionPath({bool remove = false}) =>
+      _boolPatch(remove ? null : true);
 }

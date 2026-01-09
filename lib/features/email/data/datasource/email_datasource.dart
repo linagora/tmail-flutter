@@ -218,4 +218,18 @@ abstract class EmailDataSource {
     List<EmailId> emailIds,
     KeyWordIdentifier labelKeyword,
   );
+
+  Future<void> removeLabelFromEmail(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  );
+
+  Future<void> removeLabelFromThread(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    KeyWordIdentifier labelKeyword,
+  );
 }

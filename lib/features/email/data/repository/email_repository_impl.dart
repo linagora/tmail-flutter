@@ -510,4 +510,34 @@ class EmailRepositoryImpl extends EmailRepository {
       labelKeyword,
     );
   }
+
+  @override
+  Future<void> removeLabelFromEmail(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return emailDataSource[DataSourceType.network]!.removeLabelFromEmail(
+      session,
+      accountId,
+      emailId,
+      labelKeyword,
+    );
+  }
+
+  @override
+  Future<void> removeLabelFromThread(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return emailDataSource[DataSourceType.network]!.removeLabelFromThread(
+      session,
+      accountId,
+      emailIds,
+      labelKeyword,
+    );
+  }
 }

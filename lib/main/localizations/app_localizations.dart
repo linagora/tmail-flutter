@@ -5624,4 +5624,35 @@ class AppLocalizations {
     );
   }
 
+  String removeLabelFromEmailSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'Email removed from the "$labelName" label',
+      name: 'removeLabelFromEmailSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String removeLabelFromEmailFailureMessage(String labelName) {
+    return Intl.message(
+      'Cannot remove email from the "$labelName" label',
+      name: 'removeLabelFromEmailFailureMessage',
+      args: [labelName],
+    );
+  }
+
+  String removeLabelFromThreadSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'All emails in thread removed from the "$labelName" label',
+      name: 'removeLabelFromThreadSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String removeLabelFromThreadFailureMessage(String labelName) {
+    return Intl.message(
+      'Cannot remove all emails from thread to the "$labelName" label',
+      name: 'removeLabelFromThreadFailureMessage',
+      args: [labelName],
+    );
+  }
 }

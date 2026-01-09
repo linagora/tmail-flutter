@@ -274,13 +274,17 @@ class EmailView extends GetWidget<SingleEmailController> {
                 labelController.labels,
               );
             }
-
+            print('>> dab >> email view emailLabels: $emailLabels');
             return EmailSubjectWidget(
-              presentationEmail: presentationEmail.copyWith(
-                subject: threadSubject,
-              ),
+              emailSubject: threadSubject ?? presentationEmail.getEmailTitle(),
+              imagePaths: controller.imagePaths,
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,
+              onDeleteLabelAction: (label) => controller.toggleLabelToEmail(
+                presentationEmail.id!,
+                label,
+                false,
+              ),
             );
           }),
         Obx(() => InformationSenderAndReceiverBuilder(

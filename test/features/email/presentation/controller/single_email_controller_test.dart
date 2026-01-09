@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/remove_a_label_from_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
@@ -75,6 +76,7 @@ const fallbackGenerators = {
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<StoreOpenedEmailInteractor>(),
   MockSpec<AddALabelToAnEmailInteractor>(),
+  MockSpec<RemoveALabelFromAnEmailInteractor>(),
   MockSpec<MailboxDashBoardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<DownloadController>(fallbackGenerators: fallbackGenerators),
   MockSpec<DownloadManager>(fallbackGenerators: fallbackGenerators),
@@ -110,6 +112,7 @@ void main() {
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
   final storeOpenedEmailInteractor = MockStoreOpenedEmailInteractor();
   final addALabelToAnEmailInteractor = MockAddALabelToAnEmailInteractor();
+  final removeALabelFromAnEmailInteractor = MockRemoveALabelFromAnEmailInteractor();
   final mailboxDashboardController = MockMailboxDashBoardController();
   final downloadController = MockDownloadController();
   final downloadManager = MockDownloadManager();
@@ -178,6 +181,7 @@ void main() {
       getAllIdentitiesInteractor,
       storeOpenedEmailInteractor,
       addALabelToAnEmailInteractor,
+      removeALabelFromAnEmailInteractor,
       printEmailInteractor,
     );
   });

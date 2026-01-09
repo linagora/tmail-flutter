@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-01-06T11:04:49.560483",
+  "@@last_modified": "2026-01-09T18:14:08.656956",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5298,6 +5298,46 @@
   },
   "addLabelToThreadFailureMessage": "Cannot add all emails in thread to the \"{labelName}\" label",
   "@addLabelToThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromEmailSuccessfullyMessage": "Email removed from the \"{labelName}\" label",
+  "@removeLabelFromEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromEmailFailureMessage": "Cannot remove email from the \"{labelName}\" label",
+  "@removeLabelFromEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadSuccessfullyMessage": "All emails in thread removed from the \"{labelName}\" label",
+  "@removeLabelFromThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadFailureMessage": "Cannot remove all emails from thread to the \"{labelName}\" label",
+  "@removeLabelFromThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [
       "labelName"

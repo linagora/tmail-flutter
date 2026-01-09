@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/labels/presentation/utils/label_utils.dart';
@@ -10,6 +11,8 @@ class TagWidget extends StatelessWidget {
   final double? maxWidth;
   final bool isTruncateText;
   final bool showTooltip;
+  final Widget? actionWidget;
+  final EdgeInsetsGeometry? padding;
 
   const TagWidget({
     super.key,
@@ -20,6 +23,8 @@ class TagWidget extends StatelessWidget {
     this.maxWidth,
     this.isTruncateText = false,
     this.showTooltip = false,
+    this.actionWidget,
+    this.padding,
   });
 
   @override
@@ -40,15 +45,31 @@ class TagWidget extends StatelessWidget {
       );
     }
 
-    return Container(
+    if (actionWidget != null) {
+      labelText = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(child: labelText),
+          actionWidget!,
+        ],
+      );
+    }
+
+    labelText = Container(
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: const BorderRadius.all(Radius.circular(4)),
       ),
       constraints:
           maxWidth != null ? BoxConstraints(maxWidth: maxWidth!) : null,
-      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      padding: padding ?? EdgeInsets.symmetric(horizontal: horizontalPadding),
       child: labelText,
     );
+
+    if (actionWidget != null) {
+      labelText = GestureDetector(onTap: () {}, child: labelText);
+    }
+
+    return labelText;
   }
 }

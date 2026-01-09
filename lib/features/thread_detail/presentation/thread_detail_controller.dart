@@ -17,10 +17,12 @@ import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_thread_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_an_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_a_thread_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/labels/remove_a_label_from_a_thread_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
@@ -52,6 +54,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_refresh_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/labels/add_label_to_thread_extension.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/labels/remove_label_from_thread_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/quick_create_rule_from_collapsed_email_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_selected_email_updated.dart';
@@ -70,6 +73,7 @@ class ThreadDetailController extends BaseController {
   final MarkAsStarMultipleEmailInteractor markAsStarMultipleEmailInteractor;
   final MarkAsMultipleEmailReadInteractor markAsMultipleEmailReadInteractor;
   final AddALabelToAThreadInteractor addALabelToAThreadInteractor;
+  final RemoveALabelFromAThreadInteractor removeALabelFromAThreadInteractor;
 
   ThreadDetailController(
     this._getEmailIdsByThreadIdInteractor,
@@ -81,6 +85,7 @@ class ThreadDetailController extends BaseController {
     this.markAsStarMultipleEmailInteractor,
     this.markAsMultipleEmailReadInteractor,
     this.addALabelToAThreadInteractor,
+    this.removeALabelFromAThreadInteractor,
   );
 
   final emailIdsPresentation = <EmailId, PresentationEmail?>{}.obs;
@@ -266,6 +271,8 @@ class ThreadDetailController extends BaseController {
       quickCreateRuleFromCollapsedEmailSuccess(success);
     } else if (success is AddALabelToAThreadSuccess) {
       handleAddLabelToThreadSuccess(success);
+    } else if (success is RemoveALabelFromAThreadSuccess) {
+      handleRemoveLabelFromThreadSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -290,6 +297,8 @@ class ThreadDetailController extends BaseController {
       toastManager.showMessageFailure(failure as FeatureFailure);
     } else if (failure is AddALabelToAThreadFailure) {
       handleAddLabelToThreadFailure(failure);
+    } else if (failure is RemoveALabelFromAThreadFailure) {
+      handleRemoveLabelFromThreadFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }

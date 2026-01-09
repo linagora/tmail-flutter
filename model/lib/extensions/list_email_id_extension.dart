@@ -53,10 +53,11 @@ extension ListEmailIdExtension on List<EmailId> {
 
   Map<Id, PatchObject> generateMapUpdateObjectLabel(
     KeyWordIdentifier labelKeyword,
+    {bool remove = false}
   ) {
     return {
       for (var emailId in this)
-        emailId.id: labelKeyword.generateLabelActionPath()
+        emailId.id: labelKeyword.generateLabelActionPath(remove: remove)
     };
   }
 }

@@ -27,4 +27,16 @@ extension MapKeywordsExtension on Map<KeyWordIdentifier, bool>? {
   void addKeyword(KeyWordIdentifier keyword) {
     this?[keyword] = true;
   }
+
+  void removeKeyword(KeyWordIdentifier keyword) {
+    this?.remove(keyword);
+  }
+
+  void toggleKeyword(KeyWordIdentifier keyword, bool remove) {
+    if (remove) {
+      this?.remove(keyword);
+    } else {
+      this?[keyword] = true;
+    }
+  }
 }
