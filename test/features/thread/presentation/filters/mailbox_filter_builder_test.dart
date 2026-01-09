@@ -367,4 +367,77 @@ void main() {
       },
     );
   });
+
+  group('inMailbox parameter - regression test', () {
+    test(
+      'Default mailbox with All filter → includes inMailbox',
+      () {
+        final testMailbox = mailbox(); // inbox with id 'inbox'
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: testMailbox,
+          filterMessageOption: FilterMessageOption.all,
+        );
+
+        final emailFilter = builder.buildEmailFilterForLoadMailbox();
+        final filter = emailFilter.filter as EmailFilterCondition;
+
+        // Verify inMailbox is present
+        expect(filter.inMailbox, equals(testMailbox.id));
+      },
+    );
+
+    test(
+      'Default mailbox with Unread filter → includes inMailbox',
+      () {
+        final testMailbox = mailbox();
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: testMailbox,
+          filterMessageOption: FilterMessageOption.unread,
+        );
+
+        final emailFilter = builder.buildEmailFilterForLoadMailbox();
+        final filter = emailFilter.filter as EmailFilterCondition;
+
+        expect(filter.inMailbox, equals(testMailbox.id));
+        expect(filter.notKeyword, KeyWordIdentifier.emailSeen.value);
+      },
+    );
+
+    test(
+      'Default mailbox with Attachments filter → includes inMailbox',
+      () {
+        final testMailbox = mailbox();
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: testMailbox,
+          filterMessageOption: FilterMessageOption.attachments,
+        );
+
+        final emailFilter = builder.buildEmailFilterForLoadMailbox();
+        final filter = emailFilter.filter as EmailFilterCondition;
+
+        expect(filter.inMailbox, equals(testMailbox.id));
+        expect(filter.hasAttachment, true);
+      },
+    );
+
+    test(
+      'Virtual folder Action Required → does NOT include inMailbox',
+      () {
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: mailbox(actionRequired: true),
+          filterMessageOption: FilterMessageOption.all,
+        );
+
+        final emailFilter = builder.buildEmailFilterForLoadMailbox();
+        final filter = emailFilter.filter as EmailFilterCondition;
+
+        // Virtual folders should NOT have inMailbox - they aggregate across all
+        expect(filter.inMailbox, isNull);
+        expect(
+          filter.hasKeyword,
+          KeyWordIdentifierExtension.needsActionMail.value,
+        );
+      },
+    );
+  });
 }
