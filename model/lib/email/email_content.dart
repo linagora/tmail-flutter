@@ -1,4 +1,3 @@
-import 'package:core/utils/string_convert.dart';
 import 'package:equatable/equatable.dart';
 import 'package:model/email/email_content_type.dart';
 
@@ -21,6 +20,6 @@ extension EmailContentExtension on EmailContent {
           .replaceAll('\n', '<br/>')
           .replaceAll('\n\n', '<br/>');
     }
-    return StringConvert.getContentOriginal(content);
+    return content;
   }
 }
