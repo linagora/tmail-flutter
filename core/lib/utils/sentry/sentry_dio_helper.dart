@@ -5,11 +5,6 @@ import 'package:sentry_dio/sentry_dio.dart';
 class SentryDioHelper {
   static void addIfAvailable(Dio dio) {
     if (!SentryManager.instance.isSentryAvailable) return;
-
-    final alreadyHasSentry = dio.interceptors.any(
-        (i) => i.runtimeType.toString().contains('FailedRequestInterceptor'));
-    if (!alreadyHasSentry) {
-      dio.addSentry();
-    }
+    dio.addSentry();
   }
 }
