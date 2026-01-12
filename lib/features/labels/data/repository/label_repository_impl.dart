@@ -17,4 +17,9 @@ class LabelRepositoryImpl extends LabelRepository {
   Future<Label> createNewLabel(AccountId accountId, Label labelData) {
     return _labelDatasource.createNewLabel(accountId, labelData);
   }
+
+  @override
+  Future<void> deleteLabel(AccountId accountId, Label label) {
+    return _labelDatasource.deleteLabel(accountId, label);
+  }
 }

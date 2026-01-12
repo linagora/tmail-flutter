@@ -125,7 +125,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
         _moveToMailbox(mailboxId, threadDetailActionType);
         break;
       case EmailActionType.labelAs:
-        if (!mailboxDashBoardController.isLabelFeatureEnabled) return;
+        if (!mailboxDashBoardController.isLabelAvailable) return;
         openAddLabelToEmailDialogModal();
         break;
       default:
@@ -137,7 +137,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     if (currentContext == null) return;
 
     final moreActions = [
-      if (mailboxDashBoardController.isLabelFeatureEnabled)
+      if (mailboxDashBoardController.isLabelAvailable)
         EmailActionType.labelAs,
       threadDetailIsRead
           ? EmailActionType.markAsUnread

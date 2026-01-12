@@ -5,4 +5,6 @@ abstract class LabelDatasource {
   Future<List<Label>> getAllLabels(AccountId accountId);
 
   Future<Label> createNewLabel(AccountId accountId, Label labelData);
+
+  Future<void> deleteLabel(AccountId accountId, Label label);
 }

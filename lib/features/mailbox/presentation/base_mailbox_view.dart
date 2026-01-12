@@ -9,6 +9,7 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_mailbox_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/open_app_grid_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/toggle_expand_folders_extension.dart';
@@ -24,6 +25,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_cate
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/check_label_available_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 
 abstract class BaseMailboxView extends GetWidget<MailboxController>
@@ -257,6 +259,9 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
   Widget buildListMailbox(BuildContext context) {
     final isDesktop = controller.responsiveUtils.isDesktop(context);
+    final isMobileResponsive = controller
+        .responsiveUtils
+        .isScreenWithShortestSide(context);
 
     return SingleChildScrollView(
       controller: controller.mailboxListScrollController,
@@ -336,7 +341,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
               : const Offstage(),
         )),
         buildLabelsBar(context, isDesktop),
-        buildLabelsList(context, isDesktop),
+        buildLabelsList(context, isDesktop, isMobileResponsive),
       ]),
     );
   }
@@ -379,20 +384,17 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
     });
   }
 
-  Widget buildLabelsList(BuildContext context, bool isDesktop) {
+  Widget buildLabelsList(
+    BuildContext context,
+    bool isDesktop,
+    bool isMobileResponsive,
+  ) {
     return Obx(() {
-      final isLabelCapabilitySupported = controller
-          .mailboxDashBoardController
-          .isLabelCapabilitySupported;
+      final dashboardController = controller.mailboxDashBoardController;
+      final isLabelAvailable = dashboardController.isLabelAvailable;
 
-      final labelController =
-          controller.mailboxDashBoardController.labelController;
-
-      final isLabelSettingEnabled = labelController
-          .isLabelSettingEnabled
-          .isTrue;
-
-      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+      if (isLabelAvailable) {
+        final labelController = dashboardController.labelController;
         final labelListExpandMode = labelController.labelListExpandMode.value;
         final labels = labelController.labels;
 
@@ -403,6 +405,20 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
                   labels: labels,
                   imagePaths: controller.imagePaths,
                   isDesktop: isDesktop,
+                  isMobileResponsive: isMobileResponsive,
+                  onOpenContextMenu: (label, position) =>
+                    dashboardController.openLabelPopupMenuAction(
+                      context,
+                      controller.imagePaths,
+                      label,
+                      position,
+                    ),
+                  onLongPressLabelItemAction: (label) =>
+                    dashboardController.openLabelContextMenuAction(
+                      context,
+                      controller.imagePaths,
+                      label,
+                    ),
                 )
               : const Offstage(),
         );

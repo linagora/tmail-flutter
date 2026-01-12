@@ -5624,4 +5624,33 @@ class AppLocalizations {
     );
   }
 
+  String get deleteLabel {
+    return Intl.message(
+      'Delete label',
+      name: 'deleteLabel',
+    );
+  }
+
+  String areYouSureYouWantToDeleteTheLabel(String labelName) {
+    return Intl.message(
+      'Are you sure you want to delete the label "$labelName"?',
+      name: 'areYouSureYouWantToDeleteTheLabel',
+      args: [labelName],
+    );
+  }
+
+  String deleteLabelSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'You successfully deleted the $labelName label',
+      name: 'deleteLabelSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String get deleteALabelFailure {
+    return Intl.message(
+      'Delete a label failure',
+      name: 'deleteALabelFailure',
+    );
+  }
 }

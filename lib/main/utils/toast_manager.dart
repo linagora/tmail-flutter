@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/download/domain/state/preview_email_from_
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
@@ -209,6 +210,8 @@ class ToastManager {
     } else if (failure is AddALabelToAThreadFailure) {
       message = message ??
           appLocalizations.addLabelToThreadFailureMessage(failure.labelDisplay);
+    } else if (failure is DeleteALabelFailure) {
+      message = message ?? appLocalizations.deleteALabelFailure;
     }
     log('ToastManager::showMessageFailure: Message: $message');
     if (message?.trim().isNotEmpty == true) {
@@ -283,6 +286,10 @@ class ToastManager {
     } else if (success is AddALabelToAThreadSuccess) {
       message = appLocalizations.addLabelToThreadSuccessfullyMessage(
         success.labelDisplay,
+      );
+    } else if (success is DeleteALabelSuccess) {
+      message = appLocalizations.deleteLabelSuccessfullyMessage(
+        success.deletedLabel.safeDisplayName,
       );
     }
     log('ToastManager::showMessageSuccess: Message: $message');
