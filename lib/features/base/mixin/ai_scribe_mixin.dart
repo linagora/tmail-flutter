@@ -38,8 +38,8 @@ mixin AiScribeMixin {
       if (aiCapability?.isScribeEndpointAvailable == true) {
         AIScribeBindings(aiCapability!.scribeEndpoint!).dependencies();
       }
-    } catch (e) {
-      logWarning('AiScribeMixin::injectAIScribeBindings(): $e');
+    } catch (e, st) {
+      logWarning('AiScribeMixin::injectAIScribeBindings(): $e\n$st');
     }
   }
 }

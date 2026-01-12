@@ -56,7 +56,7 @@ class ApplicationManager {
       log('ApplicationManager:getAppVersion -> cached: $version');
       return version;
     } catch (e) {
-      logWarning('ApplicationManager:getAppVersion failedd, Exception = $e');
+      logWarning('ApplicationManager:getAppVersion failed, Exception = $e');
       return '';
     }
   }

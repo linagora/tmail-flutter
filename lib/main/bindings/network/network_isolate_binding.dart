@@ -68,7 +68,12 @@ class NetworkIsolateBindings extends Bindings {
       dio.interceptors.add(LogInterceptor(requestBody: true));
     }
     if (SentryManager.instance.isSentryAvailable) {
-      dio.addSentry();
+      // Guard against duplicate Sentry interceptor registration
+      final alreadyHasSentry = dio.interceptors
+          .any((i) => i.runtimeType.toString().contains('Sentry'));
+      if (!alreadyHasSentry) {
+        dio.addSentry();
+      }
     }
   }
 
