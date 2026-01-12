@@ -76,6 +76,8 @@ enum AIScribeMenuAction {
 
   String? getIcon(ImagePaths imagePaths) {
     switch (this) {
+      case AIScribeMenuAction.correctGrammar:
+        return imagePaths.icAiGrammar;
       case AIScribeMenuAction.improveMakeShorter:
         return imagePaths.icAiShorter;
       case AIScribeMenuAction.improveExpandContext:
