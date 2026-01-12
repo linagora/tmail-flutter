@@ -27,6 +27,10 @@ class SentryManager {
       }
       _isSentryAvailable = await SentryInitializer.init(appRunner);
       log('[SentryManager] Sentry initialized: $_isSentryAvailable');
+
+      if (!_isSentryAvailable) {
+        await fallBackRunner();
+      }
     } catch (e, st) {
       logError('[SentryManager] Init failed', exception: e, stackTrace: st);
       await fallBackRunner();
