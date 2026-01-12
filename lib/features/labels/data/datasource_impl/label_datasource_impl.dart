@@ -31,4 +31,11 @@ class LabelDatasourceImpl extends LabelDatasource {
       return await _labelApi.editLabel(accountId, labelRequest);
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<void> deleteLabel(AccountId accountId, Label label) {
+    return Future.sync(() async {
+      return await _labelApi.deleteLabel(accountId, label);
+    }).catchError(_exceptionThrower.throwException);
+  }
 }
