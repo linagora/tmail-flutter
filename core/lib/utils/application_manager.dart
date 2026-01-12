@@ -30,6 +30,7 @@ class ApplicationManager {
     _versionCache = null;
     _cachedWebUserAgent = null;
     _cachedMobileUserAgent = null;
+    _isMobileUserAgentInitialized = false;
   }
 
   Future<PackageInfo> getPackageInfo() async {

@@ -105,6 +105,8 @@ dependencies:
 
   sentry_flutter: 9.8.0
 
+  sentry_dio: 9.8.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

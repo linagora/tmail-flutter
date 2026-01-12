@@ -22,6 +22,7 @@ class SentryManager {
     try {
       if (_isSentryAvailable) {
         log('[SentryManager] Already initialized, skipping');
+        await appRunner();
         return;
       }
       _isSentryAvailable = await SentryInitializer.init(appRunner);

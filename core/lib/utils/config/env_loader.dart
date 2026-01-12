@@ -29,6 +29,7 @@ class EnvLoader {
       );
     } catch (e) {
       logWarning('EnvLoader::loadFcmConfigFileToEnv: Exception = $e');
+      // FCM config is optional; reload base config to restore dotenv.env state
       await onCallBack?.call();
     }
   }

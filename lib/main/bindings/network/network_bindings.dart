@@ -8,7 +8,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
-import 'package:sentry_dio/sentry_dio.dart';
 import 'package:tmail_ui_user/features/contact/data/network/contact_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/mdn_api.dart';
@@ -102,14 +101,7 @@ class NetworkBindings extends Bindings {
     if (BuildUtils.isDebugMode) {
       dio.interceptors.add(LogInterceptor(requestBody: true));
     }
-    if (SentryManager.instance.isSentryAvailable) {
-      // Guard against duplicate Sentry interceptor registration
-      final alreadyHasSentry = dio.interceptors
-          .any((i) => i.runtimeType.toString().contains('Sentry'));
-      if (!alreadyHasSentry) {
-        dio.addSentry();
-      }
-    }
+    SentryDioHelper.addIfAvailable(dio);
   }
 
   void _bindingApi() {

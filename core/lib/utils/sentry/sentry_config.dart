@@ -45,7 +45,7 @@ class SentryConfig {
   });
 
   /// Load configuration from an env file.
-  static Future<SentryConfig> load() async {
+  static Future<SentryConfig?> load() async {
     await EnvLoader.loadConfigFromEnv();
 
     final sentryAvailable = dotenv.get('SENTRY_ENABLED', fallback: 'false');
@@ -54,12 +54,10 @@ class SentryConfig {
     final sentryDSN = dotenv.get('SENTRY_DSN', fallback: '');
     final sentryEnvironment = dotenv.get('SENTRY_ENVIRONMENT', fallback: '');
 
-    if (!isAvailable) {
-      throw Exception('Sentry is not available');
-    }
-
-    if (sentryDSN.trim().isEmpty || sentryEnvironment.trim().isEmpty) {
-      throw Exception('Sentry configuration is missing');
+    if (!isAvailable ||
+        sentryDSN.trim().isEmpty ||
+        sentryEnvironment.trim().isEmpty) {
+      return null;
     }
 
     final appVersion = await ApplicationManager().getAppVersion();

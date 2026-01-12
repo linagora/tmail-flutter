@@ -1056,6 +1056,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.8.0"
+  sentry_dio:
+    dependency: transitive
+    description:
+      name: sentry_dio
+      sha256: bee438fd790c534da77f0a6c9cd04c54c818184b8a54bbe7d916489c8aad56a0
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.8.0"
   sentry_flutter:
     dependency: transitive
     description:
