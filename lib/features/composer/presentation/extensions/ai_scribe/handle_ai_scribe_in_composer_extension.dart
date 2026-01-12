@@ -71,6 +71,83 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
+  Future<bool> saveSelection() async {
+    try {
+      if (PlatformInfo.isWeb) {
+        final result = await richTextWebController?.editorController.evaluateJavascriptWeb(
+          HtmlUtils.saveSelection.name,
+          hasReturnValue: true,
+        ) ?? false;
+        return result;
+      } else {
+        final result = await richTextMobileTabletController?.htmlEditorApi?.webViewController
+            .evaluateJavascript(
+          source: HtmlUtils.saveSelection.script,
+        ) ?? false;
+        return result;
+      }
+    } catch (e) {
+      logError('$runtimeType::saveSelection:Exception = $e');
+      return false;
+    }
+  }
+
+  Future<bool> restoreSelection() async {
+    try {
+      if (PlatformInfo.isWeb) {
+        final result = await richTextWebController?.editorController.evaluateJavascriptWeb(
+          HtmlUtils.restoreSelection.name,
+          hasReturnValue: true,
+        ) ?? false;
+        return result;
+      } else {
+        final result = await richTextMobileTabletController?.htmlEditorApi?.webViewController
+            .evaluateJavascript(
+          source: HtmlUtils.restoreSelection.script,
+        ) ?? false;
+        return result;
+      }
+    } catch (e) {
+      logError('$runtimeType::restoreSelection:Exception = $e');
+      return false;
+    }
+  }
+
+  Future<void> clearSavedSelection() async {
+    try {
+      if (PlatformInfo.isWeb) {
+        await richTextWebController?.editorController.evaluateJavascriptWeb(
+          HtmlUtils.clearSavedSelection.name,
+          hasReturnValue: false,
+        );
+      } else {
+        await richTextMobileTabletController?.htmlEditorApi?.webViewController
+            .evaluateJavascript(
+          source: HtmlUtils.clearSavedSelection.script,
+        );
+      }
+    } catch (e) {
+      logError('$runtimeType::clearSavedSelection:Exception = $e');
+    }
+  }
+
+  Future<void> unfocusEditor() async {
+    final editorApi = richTextMobileTabletController?.htmlEditorApi;
+    if (PlatformInfo.isIOS) {
+      await editorApi?.unfocus();
+    } else if (PlatformInfo.isAndroid) {
+      await editorApi?.hideKeyboard();
+      await editorApi?.unfocus();
+    }
+  }
+
+  Future<void> saveAndUnfocusForModal() async {
+    final saved = await saveSelection();
+    if (saved) {
+      await unfocusEditor();
+    }
+  }
+
   void clearTextInEditor() {
     try {
       if (PlatformInfo.isWeb) {
@@ -92,6 +169,11 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   // If there is a selection, it will replace the selection, else it will replace everything
   Future<void> onReplaceTextCallback(String text) async {
     final selection = editorTextSelection.value?.selectedText;
+
+    if (PlatformInfo.isMobile) {
+      await restoreSelection();
+    }
+
     if (selection == null || selection.isEmpty) {
       clearTextInEditor();
     }
@@ -102,6 +184,10 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   Future<void> openAIAssistantModal(Offset? position, Size? size) async {
     clearFocusRecipients();
     clearFocusSubject();
+
+    if (PlatformInfo.isMobile) {
+      await saveAndUnfocusForModal();
+    }
 
     final fullText = await _getTextOnlyContentInEditor();
 
@@ -128,6 +214,10 @@ extension HandleAiScribeInComposerExtension on ComposerController {
       case AiScribeSuggestionActions.insert:
         await onInsertTextCallback(suggestionText);
         break;
+    }
+
+    if (PlatformInfo.isMobile) {
+      await clearSavedSelection();
     }
   }
 
