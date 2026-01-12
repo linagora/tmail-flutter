@@ -1,4 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe.dart';
@@ -15,7 +16,7 @@ class AiSelectionOverlay extends StatelessWidget {
   final TextSelectionModel? selection;
   final ImagePaths imagePaths;
   final OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction;
-  final VoidCallback? onTapFallback;
+  final AsyncCallback? onTapFallback;
 
   @override
   Widget build(BuildContext context) {
