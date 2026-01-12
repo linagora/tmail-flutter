@@ -11,13 +11,18 @@ class SentryInitializer {
     'x-auth',
     'x-token',
     'api-key',
+    'x-api-key',
     'apikey',
     'secret',
     'bearer',
+    'session',
+    'password',
   ];
 
   static Future<bool> init(FutureOr<void> Function() appRunner) async {
     final config = await SentryConfig.load();
+
+    if (config == null) return false;
 
     await SentryFlutter.init(
       (options) {

@@ -62,6 +62,7 @@ export 'utils/html/html_utils.dart';
 export 'utils/web_link_generator.dart';
 export 'utils/sentry/sentry_manager.dart';
 export 'utils/config/env_loader.dart';
+export 'utils/sentry/sentry_dio_helper.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';

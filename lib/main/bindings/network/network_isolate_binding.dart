@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
-import 'package:sentry_dio/sentry_dio.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
@@ -53,6 +52,7 @@ class NetworkIsolateBindings extends Bindings {
 
   void _bindingInterceptors() {
     final dio = Get.find<Dio>(tag: BindingTag.isolateTag);
+    Get.put(DynamicUrlInterceptors());
     final authorizationInterceptors = AuthorizationInterceptors(
       dio,
       Get.find<AuthenticationClientBase>(tag: BindingTag.isolateTag),
@@ -67,14 +67,7 @@ class NetworkIsolateBindings extends Bindings {
     if (BuildUtils.isDebugMode) {
       dio.interceptors.add(LogInterceptor(requestBody: true));
     }
-    if (SentryManager.instance.isSentryAvailable) {
-      // Guard against duplicate Sentry interceptor registration
-      final alreadyHasSentry = dio.interceptors
-          .any((i) => i.runtimeType.toString().contains('Sentry'));
-      if (!alreadyHasSentry) {
-        dio.addSentry();
-      }
-    }
+    SentryDioHelper.addIfAvailable(dio);
   }
 
   void _bindingApi() {
