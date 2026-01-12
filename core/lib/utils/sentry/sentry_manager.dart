@@ -20,6 +20,10 @@ class SentryManager {
     required FutureOr<void> Function() fallBackRunner,
   }) async {
     try {
+      if (_isSentryAvailable) {
+        log('[SentryManager] Already initialized, skipping');
+        return;
+      }
       _isSentryAvailable = await SentryInitializer.init(appRunner);
       log('[SentryManager] Sentry initialized: $_isSentryAvailable');
     } catch (e, st) {

@@ -10,6 +10,10 @@ class SentryInitializer {
     'set-cookie',
     'x-auth',
     'x-token',
+    'api-key',
+    'apikey',
+    'secret',
+    'bearer',
   ];
 
   static Future<bool> init(FutureOr<void> Function() appRunner) async {
@@ -63,6 +67,8 @@ class SentryInitializer {
       data: null,
     );
 
+    // Note: The copyWith method is deprecated,
+    // so values must be assigned directly to the instance.
     return SentryEvent(
       eventId: event.eventId,
       contexts: event.contexts,
