@@ -8,4 +8,6 @@ abstract class LabelRepository {
   Future<Label> createNewLabel(AccountId accountId, Label labelData);
 
   Future<Label> editLabel(AccountId accountId, EditLabelRequest labelRequest);
+
+  Future<void> deleteLabel(AccountId accountId, Label label);
 }
