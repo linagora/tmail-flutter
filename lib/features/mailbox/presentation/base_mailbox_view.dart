@@ -380,6 +380,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           onToggleLabelListState: labelController.toggleLabelListState,
           onAddNewLabel: () =>
               labelController.handleLabelActionType(
+                context: context,
                 actionType: LabelActionType.create,
                 accountId: accountId,
               ),

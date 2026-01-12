@@ -5437,5 +5437,21 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "deleteLabelSuccessfullyMessage": "You successfully deleted the {labelName} label",
+  "@deleteLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteALabelFailure": "Delete a label failure",
+  "@deleteALabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
