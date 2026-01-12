@@ -1,7 +1,5 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:scribe/scribe.dart';
 
 class AiScribeContextMenuItem extends StatefulWidget {
@@ -40,48 +38,6 @@ class _AiScribeContextMenuItemState extends State<AiScribeContextMenuItem> {
 
   @override
   Widget build(BuildContext context) {
-    final childWidget = Container(
-      key: _itemKey,
-      height: AIScribeSizes.menuItemHeight,
-      padding: AIScribeSizes.menuCategoryItemPadding,
-      alignment: AlignmentDirectional.centerStart,
-      child: Row(
-        children: [
-          if (widget.menuAction.actionIcon != null)
-            Padding(
-              padding: const EdgeInsetsDirectional.only(end: 12),
-              child: SvgPicture.asset(
-                widget.menuAction.actionIcon!,
-                width: 20,
-                height: 20,
-                fit: BoxFit.fill,
-                colorFilter:
-                    AppColor.gray424244.withValues(alpha: 0.72).asFilter(),
-              ),
-            ),
-          Flexible(
-            child: Text(
-              widget.menuAction.actionName,
-              style: AIScribeTextStyles.menuItem,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          if (widget.menuAction.hasSubmenu)
-            Padding(
-              padding: const EdgeInsetsDirectional.only(start: 3),
-              child: SvgPicture.asset(
-                widget.imagePaths.icArrowRight,
-                width: 16,
-                height: 16,
-                fit: BoxFit.fill,
-                colorFilter: AppColor.gray777778.asFilter(),
-              ),
-            ),
-        ],
-      ),
-    );
-
     if (widget.menuAction.hasSubmenu) {
       return MouseRegion(
         onEnter: (_) {
@@ -96,29 +52,26 @@ class _AiScribeContextMenuItemState extends State<AiScribeContextMenuItem> {
         onExit: (_) {
           _hoverController?.exit();
         },
-        child: Material(
-          type: MaterialType.transparency,
-          child: InkWell(
-            onTap: () => widget.onSelectAction(widget.menuAction),
-            hoverColor: AppColor.grayBackgroundColor,
-            child: childWidget,
-          ),
-        ),
+        child: AiScribeMenuItem(
+          itemKey: _itemKey,
+          menuAction: widget.menuAction,
+          onSelectAction: widget.onSelectAction,
+          imagePaths: widget.imagePaths,
+        )
       );
     }
 
-    return Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        onTap: () => widget.onSelectAction(widget.menuAction),
-        hoverColor: AppColor.grayBackgroundColor,
-        onHover: (_) {
+    return AiScribeMenuItem(
+      itemKey: _itemKey,
+      menuAction: widget.menuAction,
+      onSelectAction: widget.onSelectAction,
+      imagePaths: widget.imagePaths,
+      onHover: (_) {
           _hoverController?.exit();
           widget.onHoverOtherItem?.call();
-        },
-        child: childWidget,
-      ),
+        }
     );
+  
   }
 
   @override
