@@ -15,8 +15,10 @@ class ApplicationManager {
   @visibleForTesting
   static DeviceInfoPlugin? debugDeviceInfoOverride;
 
+  DeviceInfoPlugin? _deviceInfoCache;
+
   DeviceInfoPlugin get _deviceInfo =>
-      debugDeviceInfoOverride ?? DeviceInfoPlugin();
+      debugDeviceInfoOverride ?? (_deviceInfoCache ??= DeviceInfoPlugin());
 
   PackageInfo? _packageInfoCache;
   String? _versionCache;
@@ -31,6 +33,7 @@ class ApplicationManager {
     _cachedWebUserAgent = null;
     _cachedMobileUserAgent = null;
     _isMobileUserAgentInitialized = false;
+    _deviceInfoCache = null;
   }
 
   Future<PackageInfo> getPackageInfo() async {
