@@ -17,6 +17,7 @@ class SentryInitializer {
     'bearer',
     'session',
     'password',
+    'token',
   ];
 
   static Future<bool> init(FutureOr<void> Function() appRunner) async {
