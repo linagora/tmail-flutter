@@ -22,7 +22,11 @@ extension HandleLabelActionTypeExtension on MailboxDashBoardController {
         imagePaths,
         label,
         position: position,
-        _onPerformLabelActionType,
+        (label, actionType) => _onPerformLabelActionType(
+          context: context,
+          label: label,
+          actionType: actionType,
+        ),
       );
     } finally {
       if (PlatformInfo.isWeb) {
@@ -31,8 +35,13 @@ extension HandleLabelActionTypeExtension on MailboxDashBoardController {
     }
   }
 
-  void _onPerformLabelActionType(Label label, LabelActionType actionType) {
+  void _onPerformLabelActionType({
+    required BuildContext context,
+    required Label label,
+    required LabelActionType actionType,
+  }) {
     labelController.handleLabelActionType(
+      context: context,
       actionType: actionType,
       accountId: accountId.value,
       label: label,
@@ -48,7 +57,11 @@ extension HandleLabelActionTypeExtension on MailboxDashBoardController {
       context,
       imagePaths,
       label,
-      _onPerformLabelActionType,
+      (label, actionType) => _onPerformLabelActionType(
+        context: context,
+        label: label,
+        actionType: actionType,
+      ),
     );
   }
 }

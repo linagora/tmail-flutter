@@ -1,15 +1,16 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:labels/model/label.dart';
 
 class DeletingALabel extends LoadingState {}
 
 class DeleteALabelSuccess extends UIState {
-  final String labelDisplayName;
+  final Label deletedLabel;
 
-  DeleteALabelSuccess(this.labelDisplayName);
+  DeleteALabelSuccess(this.deletedLabel);
 
   @override
-  List<Object> get props => [labelDisplayName];
+  List<Object> get props => [deletedLabel];
 }
 
 class DeleteALabelFailure extends FeatureFailure {

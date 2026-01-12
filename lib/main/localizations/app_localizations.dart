@@ -5754,4 +5754,19 @@ class AppLocalizations {
       args: [labelName],
     );
   }
+
+  String deleteLabelSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'You successfully deleted the $labelName label',
+      name: 'deleteLabelSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String get deleteALabelFailure {
+    return Intl.message(
+      'Delete a label failure',
+      name: 'deleteALabelFailure',
+    );
+  }
 }
