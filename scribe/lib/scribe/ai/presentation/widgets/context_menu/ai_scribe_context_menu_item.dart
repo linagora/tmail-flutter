@@ -67,11 +67,9 @@ class _AiScribeContextMenuItemState extends State<AiScribeContextMenuItem> {
       onSelectAction: widget.onSelectAction,
       imagePaths: widget.imagePaths,
       onHover: (_) {
-          _hoverController?.exit();
-          widget.onHoverOtherItem?.call();
-        }
+        widget.onHoverOtherItem?.call();
+      }
     );
-  
   }
 
   @override

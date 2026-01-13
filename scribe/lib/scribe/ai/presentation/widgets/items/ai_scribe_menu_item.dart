@@ -3,12 +3,14 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe.dart';
 
+typedef OnHoverAction = void Function(bool);
+
 class AiScribeMenuItem extends StatelessWidget {
   final GlobalKey? itemKey;
   final AiScribeContextMenuAction menuAction;
   final ValueChanged<AiScribeContextMenuAction> onSelectAction;
   final ImagePaths imagePaths;
-  final void Function(bool)? onHover;
+  final OnHoverAction? onHover;
 
   const AiScribeMenuItem({
     super.key,
