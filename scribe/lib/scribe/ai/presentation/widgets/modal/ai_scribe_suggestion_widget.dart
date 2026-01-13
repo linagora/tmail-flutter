@@ -120,7 +120,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
           imagePaths: widget.imagePaths,
         ),
         Flexible(
-          child: buildStateContent(context, localizations),
+          child: buildStateContent(context),
         ),
       ],
     );
