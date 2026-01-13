@@ -6,11 +6,13 @@ import 'package:scribe/scribe.dart';
 class AiScribeMobileActionsBottomSheet extends StatefulWidget {
   final ImagePaths imagePaths;
   final List<AIScribeMenuCategory> availableCategories;
+  final String? content;
 
   const AiScribeMobileActionsBottomSheet({
     super.key,
     required this.imagePaths,
     required this.availableCategories,
+    this.content,
   });
 
   @override
@@ -123,6 +125,33 @@ class _AiScribeMobileActionsBottomSheetState
     );
   }
 
+  Widget _buildTextCard(BuildContext context) {
+    final displayText = widget.content;
+
+    if (displayText == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: AIScribeSizes.contentCardMargin,
+      constraints: const BoxConstraints(
+        maxHeight: AIScribeSizes.contentCardMaxHeight,
+      ),
+      decoration: BoxDecoration(
+        color: AIScribeColors.background,
+        borderRadius: BorderRadius.circular(AIScribeSizes.contentCardRadius),
+        boxShadow: AIScribeShadows.contentCard,
+      ),
+      child: SingleChildScrollView(
+        padding: AIScribeSizes.contentCardPadding,
+        child: Text(
+          displayText,
+          style: AIScribeTextStyles.contentCard,
+        ),
+      ),
+    );
+  }
+
   Widget _buildBottomBar(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -176,6 +205,7 @@ class _AiScribeMobileActionsBottomSheetState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildHeader(context, localizations),
+                  _buildTextCard(context),
                   Flexible(
                     child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
                       valueListenable: _selectedCategory,
