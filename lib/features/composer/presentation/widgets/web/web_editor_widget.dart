@@ -104,7 +104,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     _editorController = widget.editorController;
 
     final registerSelectionChange =
-      HtmlUtils.registerSelectionChangeListener(_createdViewId);
+      HtmlUtils.registerSelectionChangeListener(_createdViewId, isDesktop: true);
     _selectionChangeScript = WebScript(
       name: registerSelectionChange.name,
       script: registerSelectionChange.script,
