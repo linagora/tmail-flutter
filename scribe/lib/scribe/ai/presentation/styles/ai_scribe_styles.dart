@@ -183,5 +183,5 @@ abstract final class AIScribeSizes {
       EdgeInsetsDirectional.all(8);
 
   static const EdgeInsetsGeometry backIconPadding =
-      EdgeInsets.only(right: 8.0, top: 8.0, bottom: 8.0);
+      EdgeInsetsDirectional.only(end: 8.0, top: 8.0, bottom: 8.0);
 }
