@@ -34,6 +34,9 @@ export 'scribe/ai/presentation/widgets/context_menu/ai_scribe_context_menu_item.
 export 'scribe/ai/presentation/widgets/context_menu/ai_scribe_submenu.dart';
 export 'scribe/ai/presentation/widgets/items/ai_scribe_menu_item.dart';
 export 'scribe/ai/presentation/widgets/items/ai_scribe_submenu_item.dart';
+export 'scribe/ai/presentation/widgets/items/ai_scribe_menu_icon.dart';
+export 'scribe/ai/presentation/widgets/items/ai_scribe_menu_submenu_icon.dart';
+export 'scribe/ai/presentation/widgets/items/ai_scribe_menu_text.dart';
 export 'scribe/ai/presentation/widgets/modal/ai_scribe_modal_widget.dart';
 export 'scribe/ai/presentation/widgets/modal/ai_scribe_suggestion_widget.dart';
 export 'scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_error.dart';
