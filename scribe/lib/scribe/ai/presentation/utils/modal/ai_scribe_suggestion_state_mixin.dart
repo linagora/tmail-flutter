@@ -40,6 +40,16 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
   Future<void> loadSuggestion() async {
     _suggestionState.value = dartz.Right(GenerateAITextLoading());
 
+    if (_interactor == null) {
+      if (!mounted) return;
+      _suggestionState.value = dartz.Left(
+        GenerateAITextFailure(
+          GenerateAITextInteractorIsNotRegisteredException(),
+        ),
+      );
+      return;
+    }
+
     final result = await _interactor!.execute(
       aiAction,
       content,
