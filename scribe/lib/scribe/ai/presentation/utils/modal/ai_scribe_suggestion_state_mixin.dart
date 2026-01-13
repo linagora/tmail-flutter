@@ -64,13 +64,12 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
 
   Widget buildStateContent(
     BuildContext context,
-    ScribeLocalizations localizations,
   ) {
     return ValueListenableBuilder<dartz.Either<Failure, Success>>(
       valueListenable: _suggestionState,
       builder: (_, stateValue, __) {
         return stateValue.fold(
-          (failure) => buildErrorState(localizations),
+          (failure) => buildErrorState(),
           (value) {
             if (value is GenerateAITextSuccess) {
               final hasContent = content?.trim().isNotEmpty == true;
@@ -78,23 +77,22 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
               return buildSuccessState(
                 value.response.result,
                 hasContent,
-                localizations,
               );
             }
-            return buildLoadingState(localizations);
+            return buildLoadingState();
           },
         );
       },
     );
   }
 
-  Widget buildLoadingState(ScribeLocalizations localizations) {
+  Widget buildLoadingState() {
     return AiScribeSuggestionLoading(
       imagePaths: imagePaths,
     );
   }
 
-  Widget buildErrorState(ScribeLocalizations localizations) {
+  Widget buildErrorState() {
     return AiScribeSuggestionError(
       imagePaths: imagePaths,
     );
@@ -103,7 +101,6 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
   Widget buildSuccessState(
     String suggestionText,
     bool hasContent,
-    ScribeLocalizations localizations,
   ) {
     return AiScribeSuggestionSuccess(
       imagePaths: imagePaths,
