@@ -1,7 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:scribe/scribe/ai/localizations/scribe_localizations.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
@@ -57,13 +56,9 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
             if (onOpenAiAssistantModal != null)
               ...[
                 const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-                TMailButtonWidget.fromIcon(
-                  icon: imagePaths.icGradientSparkle,
-                  iconColor: MobileAppBarComposerWidgetStyle.iconColor,
-                  backgroundColor: Colors.transparent,
-                  iconSize: MobileAppBarComposerWidgetStyle.iconSize,
-                  tooltipMessage: ScribeLocalizations.of(context).aiAssistant,
-                  onTapActionCallback: () => onOpenAiAssistantModal!(null, null),
+                AiAssistantButton(
+                  imagePaths: imagePaths,
+                  onOpenAiAssistantModal: onOpenAiAssistantModal!,
                 ),
               ],
             TMailButtonWidget.fromIcon(
