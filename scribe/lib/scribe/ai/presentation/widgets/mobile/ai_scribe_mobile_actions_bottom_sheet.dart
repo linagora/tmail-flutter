@@ -20,7 +20,8 @@ class AiScribeMobileActionsBottomSheet extends StatefulWidget {
 
 class _AiScribeMobileActionsBottomSheetState
     extends State<AiScribeMobileActionsBottomSheet> {
-  AiScribeCategoryContextMenuAction? _selectedCategory;
+  final ValueNotifier<AiScribeCategoryContextMenuAction?> _selectedCategory =
+      ValueNotifier(null);
 
   void _onActionSelected(AiScribeContextMenuAction menuAction) {
     if (menuAction is AiScribeActionContextMenuAction) {
@@ -33,15 +34,11 @@ class _AiScribeMobileActionsBottomSheetState
   }
 
   void _onCategorySelected(AiScribeCategoryContextMenuAction category) {
-    setState(() {
-      _selectedCategory = category;
-    });
+    _selectedCategory.value = category;
   }
 
   void _goBackToCategories() {
-    setState(() {
-      _selectedCategory = null;
-    });
+    _selectedCategory.value = null;
   }
 
   Widget _buildHeader(BuildContext context, ScribeLocalizations localizations) {
@@ -49,28 +46,39 @@ class _AiScribeMobileActionsBottomSheetState
       padding: AIScribeSizes.suggestionHeaderPadding,
       child: Row(
         children: [
-          if (_selectedCategory != null)
-            GestureDetector(
-              onTap: _goBackToCategories,
-              child: Padding(
-                padding: AIScribeSizes.backIconPadding,
-                child: Icon(
-                  Icons.chevron_left,
-                  size: AIScribeSizes.aiAssistantIcon,
-                  color: AppColor.gray424244.withValues(alpha: 0.72),
-                ),
-              ),
-            ),
+          ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
+            valueListenable: _selectedCategory,
+            builder: (context, selectedCategory, _) {
+              return selectedCategory != null
+                ? GestureDetector(
+                    onTap: _goBackToCategories,
+                    child: Padding(
+                      padding: AIScribeSizes.backIconPadding,
+                      child: Icon(
+                        Icons.chevron_left,
+                        size: AIScribeSizes.aiAssistantIcon,
+                        color: AppColor.gray424244.withValues(alpha: 0.72),
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink();
+            },
+          ),
           Expanded(
-            child: Text(
-              _selectedCategory?.actionName ?? localizations.aiAssistant,
-              style: AIScribeTextStyles.suggestionTitle,
+            child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
+              valueListenable: _selectedCategory,
+              builder: (context, selectedCategory, _) {
+                return Text(
+                  selectedCategory?.actionName ?? localizations.aiAssistant,
+                  style: AIScribeTextStyles.suggestionTitle,
+                );
+              },
             ),
           ),
           IconButton(
             icon: const Icon(
               Icons.close,
-              size: 24,
+              size: AIScribeSizes.aiAssistantIcon,
             ),
             color: AppColor.gray424244.withValues(alpha: 0.72),
             onPressed: () => Navigator.of(context).pop(),
@@ -97,14 +105,19 @@ class _AiScribeMobileActionsBottomSheetState
   }
 
   Widget _buildSubmenuListView() {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: _selectedCategory!.submenuActions?.length ?? 0,
-      itemBuilder: (context, index) {
-        final submenuAction = _selectedCategory!.submenuActions![index];
-        return AiScribeSubmenuItem(
-          menuAction: submenuAction,
-          onSelectAction: _onActionSelected,
+    return ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
+      valueListenable: _selectedCategory,
+      builder: (context, selectedCategory, _) {
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: selectedCategory?.submenuActions?.length ?? 0,
+          itemBuilder: (context, index) {
+            final submenuAction = selectedCategory!.submenuActions![index];
+            return AiScribeSubmenuItem(
+              menuAction: submenuAction,
+              onSelectAction: _onActionSelected,
+            );
+          },
         );
       },
     );
@@ -164,9 +177,14 @@ class _AiScribeMobileActionsBottomSheetState
                 children: [
                   _buildHeader(context, localizations),
                   Flexible(
-                    child: _selectedCategory == null
-                        ? _buildMenuListView(menuActions)
-                        : _buildSubmenuListView(),
+                    child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
+                      valueListenable: _selectedCategory,
+                      builder: (context, selectedCategory, _) {
+                        return selectedCategory == null
+                            ? _buildMenuListView(menuActions)
+                            : _buildSubmenuListView();
+                      },
+                    ),
                   ),
                 ],
               ),

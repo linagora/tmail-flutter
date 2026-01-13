@@ -23,7 +23,6 @@ class AiScribeModalManager {
       aiAction = await showMobileAIScribeMenuModal(
         imagePaths: imagePaths,
         availableCategories: availableCategories,
-        content: content,
       );
     } else {
       final PopupSubmenuController submenuController = PopupSubmenuController();
@@ -94,8 +93,10 @@ class AiScribeModalManager {
   static Future<AIAction?> showMobileAIScribeMenuModal({
     required ImagePaths imagePaths,
     required List<AIScribeMenuCategory> availableCategories,
-    String? content,
   }) async {
+    if (Get.context == null) {
+      return null;
+    }
     return await showModalBottomSheet<AIAction>(
       context: Get.context!,
       isScrollControlled: true,
@@ -113,6 +114,9 @@ class AiScribeModalManager {
     required OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction,
     String? content,
   }) async {
+    if (Get.context == null) {
+      return;
+    }
     await showModalBottomSheet(
       context: Get.context!,
       isScrollControlled: true,

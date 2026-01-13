@@ -54,12 +54,12 @@ class _AiScribeMobileSuggestionBottomSheetState
             Padding(
               padding: AIScribeSizes.suggestionHeaderPadding,
               child: AiScribeSuggestionHeader(
-                title: widget.aiAction.getLabel(localizations),
-                imagePaths: widget.imagePaths,
+                title: aiAction.getLabel(localizations),
+                imagePaths: imagePaths,
               ),
             ),
             Flexible(
-              child: buildStateContent(context, localizations),
+              child: buildStateContent(context),
             ),
           ],
         ),
@@ -68,24 +68,18 @@ class _AiScribeMobileSuggestionBottomSheetState
   }
 
   @override
-  Widget buildLoadingState(ScribeLocalizations localizations) {
+  Widget buildLoadingState() {
     return Padding(
       padding: AIScribeSizes.suggestionContentPadding,
-      child: super.buildLoadingState(localizations),
+      child: super.buildLoadingState(),
     );
   }
 
   @override
-  Widget buildErrorState(ScribeLocalizations localizations) {
+  Widget buildErrorState() {
     return Padding(
       padding: AIScribeSizes.suggestionContentPadding,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          super.buildErrorState(localizations),
-        ],
-      ),
+      child: super.buildErrorState(),
     );
   }
 
@@ -93,11 +87,10 @@ class _AiScribeMobileSuggestionBottomSheetState
   Widget buildSuccessState(
     String suggestionText,
     bool hasContent,
-    ScribeLocalizations localizations,
   ) {
     return Padding(
       padding: AIScribeSizes.suggestionContentPadding,
-      child: super.buildSuccessState(suggestionText, hasContent, localizations),
+      child: super.buildSuccessState(suggestionText, hasContent),
     );
   }
 }
