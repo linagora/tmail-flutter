@@ -23,6 +23,7 @@ class AiScribeModalManager {
       aiAction = await showMobileAIScribeMenuModal(
         imagePaths: imagePaths,
         availableCategories: availableCategories,
+        content: content,
       );
     } else {
       final PopupSubmenuController submenuController = PopupSubmenuController();
@@ -93,6 +94,7 @@ class AiScribeModalManager {
   static Future<AIAction?> showMobileAIScribeMenuModal({
     required ImagePaths imagePaths,
     required List<AIScribeMenuCategory> availableCategories,
+    String? content,
   }) async {
     if (Get.context == null) {
       return null;
@@ -104,6 +106,7 @@ class AiScribeModalManager {
       builder: (context) => AiScribeMobileActionsBottomSheet(
         imagePaths: imagePaths,
         availableCategories: availableCategories,
+        content: content,
       ),
     );
   }
