@@ -1,0 +1,16 @@
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
+
+extension EmailInThreadDetailInfoExtension on EmailInThreadDetailInfo {
+  EmailInThreadDetailInfo toggleKeyword({
+    required KeyWordIdentifier keyword,
+    required bool remove,
+  }) {
+    return copyWith(
+      keywords: remove
+          ? keywords.withoutKeyword(keyword)
+          : keywords.withKeyword(keyword),
+    );
+  }
+}

@@ -67,6 +67,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
           threadDetailActionType == EmailActionType.markAsStarred
               ? MarkStarAction.markStar
               : MarkStarAction.unMarkStar,
+          isThread: true,
         ));
         break;
       case EmailActionType.deletePermanently:
