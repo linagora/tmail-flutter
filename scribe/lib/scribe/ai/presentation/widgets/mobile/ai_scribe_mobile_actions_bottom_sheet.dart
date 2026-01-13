@@ -124,6 +124,33 @@ class _AiScribeMobileActionsBottomSheetState
     );
   }
 
+  Widget _buildTextCard(BuildContext context) {
+    final displayText = widget.content;
+
+    if (displayText == null || displayText.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: AIScribeSizes.contentCardMargin,
+      constraints: const BoxConstraints(
+        maxHeight: AIScribeSizes.contentCardMaxHeight,
+      ),
+      decoration: BoxDecoration(
+        color: AIScribeColors.background,
+        borderRadius: BorderRadius.circular(AIScribeSizes.contentCardRadius),
+        boxShadow: AIScribeShadows.contentCard,
+      ),
+      child: SingleChildScrollView(
+        padding: AIScribeSizes.contentCardPadding,
+        child: Text(
+          displayText,
+          style: AIScribeTextStyles.contentCard,
+        ),
+      ),
+    );
+  }
+
   Widget _buildBottomBar(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -185,6 +212,7 @@ class _AiScribeMobileActionsBottomSheetState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildHeader(context, localizations),
+                  _buildTextCard(context),
                   if(hasContent)
                     Flexible(
                       child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
