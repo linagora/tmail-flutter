@@ -148,6 +148,14 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
+  Future<void> ensureMobileEditorFocused() async {
+    try {
+      await richTextMobileTabletController?.focus();
+    } catch (e) {
+      logError('$runtimeType::ensureMobileEditorFocused:Exception = $e');
+    }
+  }
+
   void clearTextInEditor() {
     try {
       if (PlatformInfo.isWeb) {
@@ -207,6 +215,10 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     AiScribeSuggestionActions action,
     String suggestionText,
   ) async {
+    if (PlatformInfo.isMobile) {
+      await ensureMobileEditorFocused();
+    }
+
     switch (action) {
       case AiScribeSuggestionActions.replace:
         await onReplaceTextCallback(suggestionText);
