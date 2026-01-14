@@ -18,6 +18,14 @@ class RichTextMobileTabletController extends GetxController {
 
   Future<bool> get isEditorFocused async => await htmlEditorApi?.hasFocus() ?? false;
 
+  Future<void> focus() async {
+    try {
+      await htmlEditorApi?.webViewController.evaluateJavascript(source: "document.getElementById('editor').focus();");
+    } catch (e) {
+      logWarning('RichTextMobileTabletController::focus:Exception: $e');
+    }
+  }
+
   void insertImage(InlineImage inlineImage) async {
     final isFocused = await isEditorFocused;
     log('RichTextMobileTabletController::insertImage: isEditorFocused = $isFocused');
