@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe.dart';
 
@@ -50,17 +51,14 @@ class _AiScribeMobileActionsBottomSheetState
             valueListenable: _selectedCategory,
             builder: (context, selectedCategory, _) {
               return selectedCategory != null
-                ? GestureDetector(
-                    onTap: _goBackToCategories,
-                    child: Padding(
-                      padding: AIScribeSizes.backIconPadding,
-                      child: Icon(
-                        Icons.chevron_left,
-                        size: AIScribeSizes.aiAssistantIcon,
-                        color: AppColor.gray424244.withValues(alpha: 0.72),
-                      ),
-                    ),
-                  )
+                ? TMailButtonWidget.fromIcon(
+                  icon: widget.imagePaths.icArrowBackIos,
+                  backgroundColor: Colors.transparent,
+                  iconSize: AIScribeSizes.bottomsheetIcon,
+                  iconColor: AIScribeColors.bottomsheetIcon,
+                  padding: AIScribeSizes.backIconPadding,
+                  onTapActionCallback: _goBackToCategories
+                )
                 : const SizedBox.shrink();
             },
           ),
@@ -75,14 +73,13 @@ class _AiScribeMobileActionsBottomSheetState
               },
             ),
           ),
-          IconButton(
-            icon: const Icon(
-              Icons.close,
-              size: AIScribeSizes.aiAssistantIcon,
-            ),
-            color: AppColor.gray424244.withValues(alpha: 0.72),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
+          TMailButtonWidget.fromIcon(
+            icon: widget.imagePaths.icCloseDialog,
+            backgroundColor: Colors.transparent,
+            iconSize: AIScribeSizes.bottomsheetIcon,
+            iconColor: AIScribeColors.bottomsheetIcon,
+            onTapActionCallback: () => Navigator.of(context).pop()
+          )
         ],
       ),
     );
