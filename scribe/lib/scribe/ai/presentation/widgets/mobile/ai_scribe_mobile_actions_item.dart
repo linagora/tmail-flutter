@@ -19,8 +19,7 @@ class AiScribeMobileActionsItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // When category
-    final hasSubmenu = menuAction.hasSubmenu;
-    if (hasSubmenu) {
+    if (menuAction.hasSubmenu) {
       return AiScribeMenuItem(
         menuAction: menuAction,
         imagePaths: imagePaths,
@@ -36,13 +35,11 @@ class AiScribeMobileActionsItem extends StatelessWidget {
 
     // When action alongside category
     final submenuActions = menuAction.submenuActions;
-    if (submenuActions != null && submenuActions.isNotEmpty) {
-      if (submenuActions.length == 1) {
-        return AiScribeSubmenuItem(
-          menuAction: submenuActions.first,
-          onSelectAction: onActionSelected,
-        );
-      }
+    if (submenuActions?.length == 1) {
+      return AiScribeSubmenuItem(
+        menuAction: submenuActions!.first,
+        onSelectAction: onActionSelected,
+      );
     }
 
     // When action inside category

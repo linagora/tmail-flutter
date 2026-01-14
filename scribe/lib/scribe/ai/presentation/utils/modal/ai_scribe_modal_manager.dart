@@ -94,11 +94,12 @@ class AiScribeModalManager {
     required ImagePaths imagePaths,
     required List<AIScribeMenuCategory> availableCategories,
   }) async {
-    if (Get.context == null) {
-      return null;
-    }
+    final context = Get.context;
+
+    if (context == null) return null;
+
     return await showModalBottomSheet<AIAction>(
-      context: Get.context!,
+      context: context,
       isScrollControlled: true,
       useSafeArea: true,
       builder: (context) => AiScribeMobileActionsBottomSheet(
@@ -114,11 +115,12 @@ class AiScribeModalManager {
     required OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction,
     String? content,
   }) async {
-    if (Get.context == null) {
-      return;
-    }
+    final context = Get.context;
+
+    if (context == null) return;
+
     await showModalBottomSheet(
-      context: Get.context!,
+      context: context,
       isScrollControlled: true,
       useSafeArea: true,
       isDismissible: true,
