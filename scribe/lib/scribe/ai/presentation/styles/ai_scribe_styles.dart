@@ -12,6 +12,7 @@ abstract final class AIScribeColors {
   // Icons
   static const Color scribeIcon = AppColor.primaryMain;
   static const Color aiAssistantIcon = AppColor.primaryMain;
+  static final Color bottomsheetIcon = AppColor.gray424244.withValues(alpha: 0.72);
 
   // Overlays
   static final Color dialogBarrier = Colors.black.withValues(alpha: 0.12);
@@ -144,6 +145,7 @@ abstract final class AIScribeSizes {
   static const double sendIcon = 16;
   static const double scribeIcon = 12;
   static const double aiAssistantIcon = 24;
+  static const double bottomsheetIcon = 20;
 
   // Padding
   static const EdgeInsetsGeometry menuItemPadding =
