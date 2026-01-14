@@ -54,13 +54,14 @@ class LandscapeAppBarComposerWidget extends StatelessWidget {
             ),
             const Spacer(),
             if (onOpenAiAssistantModal != null)
-              ...[
-                const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
-                AiAssistantButton(
-                  imagePaths: imagePaths,
-                  onOpenAiAssistantModal: onOpenAiAssistantModal!,
+              AiAssistantButton(
+                imagePaths: imagePaths,
+                margin: const EdgeInsetsDirectional.only(
+                  start: MobileAppBarComposerWidgetStyle.space,
+                  end: MobileAppBarComposerWidgetStyle.space,
                 ),
-              ],
+                onOpenAiAssistantModal: onOpenAiAssistantModal!,
+              ),
             TMailButtonWidget.fromIcon(
               icon: imagePaths.icRichToolbar,
               iconColor: MobileAppBarComposerWidgetStyle.iconColor,
