@@ -241,6 +241,7 @@ class ImagePaths {
   String get icRefreshQuotas => _getImagePath('ic_refresh_quotas.svg');
   String get icCreateFilter => _getImagePath('ic_create_filter.svg');
   String get icArrowBack => _getImagePath('ic_arrow_back.svg');
+  String get icArrowBackIos => _getImagePath('ic_arrow_back_ios.svg');
   String get icRadio => _getImagePath('ic_radio.svg');
   String get icRadioSelected => _getImagePath('ic_radio_selected.svg');
   String get icCheck => _getImagePath('ic_check.svg');
