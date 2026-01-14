@@ -65,8 +65,6 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
   Widget buildStateContent(
     BuildContext context,
   ) {
-    final hasContent = content?.trim().isNotEmpty == true;
-
     return ValueListenableBuilder<dartz.Either<Failure, Success>>(
       valueListenable: _suggestionState,
       builder: (_, stateValue, __) {
@@ -74,6 +72,8 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
           (failure) => buildErrorState(),
           (value) {
             if (value is GenerateAITextSuccess) {
+              final hasContent = content?.trim().isNotEmpty == true;
+
               return buildSuccessState(
                 value.response.result,
                 hasContent,
