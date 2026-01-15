@@ -35,6 +35,10 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   }
 
   Future<void> insertTextInEditor(String text) async {
+    if (PlatformInfo.isMobile) {
+      await ensureMobileEditorFocused();
+    }
+    
     try {
       final htmlContent = StringConvert.convertTextContentToHtmlContent(text);
 
@@ -46,7 +50,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
 
         richTextWebController?.editorController.insertHtml(htmlContent);
       } else {
-        richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
+        await richTextMobileTabletController?.htmlEditorApi?.insertHtml(htmlContent);
       }
     } catch (e) {
       logWarning('$runtimeType::insertTextInEditor:Exception = $e');
@@ -71,45 +75,45 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
-  Future<bool> saveSelection() async {
+  Future<String> saveSelection() async {
     try {
       if (PlatformInfo.isWeb) {
         final result = await richTextWebController?.editorController.evaluateJavascriptWeb(
           HtmlUtils.saveSelection.name,
           hasReturnValue: true,
-        ) ?? false;
+        );
         return result;
       } else {
         final result = await richTextMobileTabletController?.htmlEditorApi?.webViewController
             .evaluateJavascript(
           source: HtmlUtils.saveSelection.script,
-        ) ?? false;
+        );
         return result;
       }
     } catch (e) {
       logError('$runtimeType::saveSelection:Exception = $e');
-      return false;
+      return "";
     }
   }
 
-  Future<bool> restoreSelection() async {
+  Future<String> restoreSelection() async {
     try {
       if (PlatformInfo.isWeb) {
         final result = await richTextWebController?.editorController.evaluateJavascriptWeb(
           HtmlUtils.restoreSelection.name,
           hasReturnValue: true,
-        ) ?? false;
+        );
         return result;
       } else {
         final result = await richTextMobileTabletController?.htmlEditorApi?.webViewController
             .evaluateJavascript(
           source: HtmlUtils.restoreSelection.script,
-        ) ?? false;
+        );
         return result;
       }
     } catch (e) {
       logError('$runtimeType::restoreSelection:Exception = $e');
-      return false;
+      return "";
     }
   }
 
@@ -142,10 +146,8 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   }
 
   Future<void> saveAndUnfocusForModal() async {
-    final saved = await saveSelection();
-    if (saved) {
-      await unfocusEditor();
-    }
+    await saveSelection();
+    await unfocusEditor();
   }
 
   Future<void> ensureMobileEditorFocused() async {
@@ -156,12 +158,12 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
-  void clearTextInEditor() {
+  Future<void> clearTextInEditor() async {
     try {
       if (PlatformInfo.isWeb) {
         richTextWebController?.editorController.setText('');
       } else {
-        richTextMobileTabletController?.htmlEditorApi?.setText('');
+        await richTextMobileTabletController?.htmlEditorApi?.setText('');
       }
     } catch (e) {
       logWarning('$runtimeType::clearTextInEditor:Exception = $e');
@@ -178,12 +180,10 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   Future<void> onReplaceTextCallback(String text) async {
     final selection = editorTextSelection.value?.selectedText;
 
-    if (PlatformInfo.isMobile) {
-      await restoreSelection();
-    }
+    final isSelectionRestored = PlatformInfo.isMobile ? await restoreSelection() : "";
 
-    if (selection == null || selection.isEmpty) {
-      clearTextInEditor();
+    if ((selection == null || selection.isEmpty) && isSelectionRestored.isEmpty) {
+      await clearTextInEditor();
     }
 
     await insertTextInEditor(text);
@@ -215,10 +215,6 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     AiScribeSuggestionActions action,
     String suggestionText,
   ) async {
-    if (PlatformInfo.isMobile) {
-      await ensureMobileEditorFocused();
-    }
-
     switch (action) {
       case AiScribeSuggestionActions.replace:
         await onReplaceTextCallback(suggestionText);

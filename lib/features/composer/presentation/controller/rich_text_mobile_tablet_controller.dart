@@ -21,7 +21,10 @@ class RichTextMobileTabletController extends GetxController {
 
   Future<void> focus() async {
     try {
-      await htmlEditorApi?.webViewController.evaluateJavascript(source: "document.getElementById('editor').focus();");
+      await htmlEditorApi?.webViewController.evaluateJavascript(source: '''
+      (() => {
+        document.getElementById('editor').focus();
+      })();''');
     } catch (e) {
       logWarning('RichTextMobileTabletController::focus:Exception: $e');
     }
