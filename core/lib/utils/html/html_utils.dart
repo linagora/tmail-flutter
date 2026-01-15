@@ -197,7 +197,7 @@ class HtmlUtils {
     script: '''
       (() => {
         const selection = window.getSelection();
-        if (selection) {
+        if (selection && selection.rangeCount > 0) {
           selection.collapseToEnd()
         }
       })();''',
@@ -220,9 +220,9 @@ class HtmlUtils {
         const selection = window.getSelection();
         if (selection && selection.rangeCount > 0) {
           window._savedRange = selection.getRangeAt(0).cloneRange();
-          return true;
+          return selection.toString();
         }
-        return false;
+        return "";
       })();''',
     name: 'saveSelection');
 
@@ -234,10 +234,10 @@ class HtmlUtils {
           if (selection) {
             selection.removeAllRanges();
             selection.addRange(window._savedRange);
-            return true;
+            return selection.toString();
           }
         }
-        return false;
+        return "";
       })();''',
     name: 'restoreSelection');
 
