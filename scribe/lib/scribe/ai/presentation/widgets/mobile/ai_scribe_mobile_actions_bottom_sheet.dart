@@ -7,11 +7,13 @@ import 'package:scribe/scribe.dart';
 class AiScribeMobileActionsBottomSheet extends StatefulWidget {
   final ImagePaths imagePaths;
   final List<AIScribeMenuCategory> availableCategories;
+  final String? content;
 
   const AiScribeMobileActionsBottomSheet({
     super.key,
     required this.imagePaths,
     required this.availableCategories,
+    this.content,
   });
 
   @override
@@ -158,6 +160,8 @@ class _AiScribeMobileActionsBottomSheetState
               widget.imagePaths,
             ))
         .toList();
+    
+    final hasContent = widget.content?.isNotEmpty ?? false;
 
     return Container(
       height: double.infinity,
@@ -175,16 +179,17 @@ class _AiScribeMobileActionsBottomSheetState
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildHeader(context, localizations),
-                  Flexible(
-                    child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
-                      valueListenable: _selectedCategory,
-                      builder: (context, selectedCategory, _) {
-                        return selectedCategory == null
-                            ? _buildMenuListView(menuActions)
-                            : _buildSubmenuListView();
-                      },
+                  if(hasContent)
+                    Flexible(
+                      child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
+                        valueListenable: _selectedCategory,
+                        builder: (context, selectedCategory, _) {
+                          return selectedCategory == null
+                              ? _buildMenuListView(menuActions)
+                              : _buildSubmenuListView();
+                        },
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
