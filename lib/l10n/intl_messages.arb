@@ -4880,6 +4880,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "aiScribe": "AI Scribe",
+  "@aiScribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeSettingExplanation": "Use AI to help write and improve your emails",
+  "@aiScribeSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeToggleDescription": "Enable AI Scribe",
+  "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "showMoreAttachmentButton": "Show +{count} more",
   "@showMoreAttachmentButton": {
     "type": "text",
@@ -5180,6 +5198,170 @@
   },
   "aiNeedsActionSettingExplanation": "Detect emails that need your attention using AI. When turned off, AI will not process any emails.",
   "@aiNeedsActionSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labels": "Labels",
+  "@labels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newLabel": "New label",
+  "@newLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelName": "Label name",
+  "@labelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseEnterNameYourNewLabel": "Please enter the name of your new label",
+  "@pleaseEnterNameYourNewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseALabelColor": "Choose a label color",
+  "@chooseALabelColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabel": "Create label",
+  "@createLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewLabel": "Create a new label",
+  "@createANewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizeYourInboxWithACustomCategory": "Organize your inbox with a custom category",
+  "@organizeYourInboxWithACustomCategory": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tagNameAlreadyExists": "A tag with this name already exists. Please choose a different name.",
+  "@tagNameAlreadyExists": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseCustomColour": "Choose custom colour",
+  "@chooseCustomColour": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColourForThisLabel": "Choose a colour for this label",
+  "@chooseAColourForThisLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabelSuccessfullyMessage": "You successfully created the {labelName} label",
+  "@createLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "createNewLabelFailure": "Create new label failure",
+  "@createNewLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibility": "Label visibility",
+  "@labelVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilitySettingExplanation": "Show labels assigned to emails directly in your message list for easier categorization.",
+  "@labelVisibilitySettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilityToggleDescription": "Display labels",
+  "@labelVisibilityToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "theLabelFeatureIsNowAvailable": "The label feature is now available.",
+  "@theLabelFeatureIsNowAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelAs": "Label as",
+  "@labelAs": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addLabelToEmailSuccessfullyMessage": "Email added to the \"{labelName}\" label",
+  "@addLabelToEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToEmailFailureMessage": "Cannot add email to the \"{labelName}\" label",
+  "@addLabelToEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabel": "Add label",
+  "@addLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addLabelToThreadSuccessfullyMessage": "All emails in thread added to the \"{labelName}\" label",
+  "@addLabelToThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToThreadFailureMessage": "Cannot add all emails in thread to the \"{labelName}\" label",
+  "@addLabelToThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "youDoNotHaveAnyEmailTaggedWithThis": "You don't have any emails tagged with this.",
+  "@youDoNotHaveAnyEmailTaggedWithThis": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_a_thread_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/download/domain/usecase/download_all_attachments_for_web_interactor.dart';
@@ -55,6 +56,7 @@ import 'package:tmail_ui_user/features/identity_creator/data/datasource_impl/loc
 import 'package:tmail_ui_user/features/identity_creator/data/repository/identity_creator_repository_impl.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/repository/identity_creator_repository.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -206,6 +208,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<StoreSpamReportStateInteractor>(),
       Get.find<GetSpamReportStateInteractor>(),
       Get.find<GetSpamMailboxCachedInteractor>()));
+
+    Get.put(LabelController());
 
     Get.lazyPut(() => ComposerManager());
 
@@ -367,6 +371,7 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<EmailRepository>(),
     ));
     Get.lazyPut(() => MarkAsStarMultipleEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => AddALabelToAThreadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveMultipleEmailToMailboxInteractor(
         Get.find<EmailRepository>(),
     ));

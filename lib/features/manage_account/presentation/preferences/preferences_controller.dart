@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -48,14 +49,14 @@ class PreferencesController extends BaseController {
     (failure) => false, 
     (success) => success is GettingServerSetting || success is UpdatingServerSetting);
 
-  final _manageAccountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final accountDashboardController = Get.find<ManageAccountDashBoardController>();
 
   bool get isAICapabilitySupported {
-    return _manageAccountDashBoardController.isAICapabilitySupported;
+    return accountDashboardController.isAICapabilitySupported;
   }
 
   bool get isAIScribeCapabilityAvailable {
-    return _manageAccountDashBoardController.isAIScribeCapabilityAvailable;
+    return accountDashboardController.isAIScribeCapabilityAvailable;
   }
 
   @override
@@ -128,7 +129,7 @@ class PreferencesController extends BaseController {
 
   void _getSettingOption() {
     consumeState(_getLocalSettingInteractor.execute());
-    final accountId = _manageAccountDashBoardController.accountId.value;
+    final accountId = accountDashboardController.accountId.value;
     if (accountId != null) {
       consumeState(_getServerSettingInteractor.execute(accountId));
     } else {
@@ -161,6 +162,9 @@ class PreferencesController extends BaseController {
         break;
       case PreferencesOptionType.aiScribe:
         config = AIScribeConfig(isEnabled: !isEnabled);
+        break;
+      case PreferencesOptionType.label:
+        config = LabelConfig(isEnabled: !isEnabled);
         break;
       default:
         break;
@@ -196,8 +200,8 @@ class PreferencesController extends BaseController {
         break;
     }
 
-    final session = _manageAccountDashBoardController.sessionCurrent;
-    final accountId = _manageAccountDashBoardController.accountId.value;
+    final session = accountDashboardController.sessionCurrent;
+    final accountId = accountDashboardController.accountId.value;
     if (session != null && accountId != null && newSettingOption != null) {
       consumeState(
         _updateServerSettingInteractor.execute(
@@ -214,7 +218,6 @@ class PreferencesController extends BaseController {
       );
     }
   }
-
 
   @override
   void onClose() {

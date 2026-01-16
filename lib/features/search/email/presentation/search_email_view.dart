@@ -12,11 +12,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -654,7 +656,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
     );
   }
 
-  Widget _buildListEmailBody(BuildContext context, List<PresentationEmail> listPresentationEmail) {
+  Widget _buildListEmailBody(
+    BuildContext context,
+    List<PresentationEmail> listPresentationEmail,
+  ) {
     return NotificationListener<ScrollNotification>(
         key: const Key('search_email_list_notification_listener'),
         onNotification: (ScrollNotification scrollInfo) {
@@ -678,11 +683,15 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           separatorBuilder: (context, index) {
             return Obx(() {
               final isMobile = PlatformInfo.isMobile;
+              final isLastItem = index == listPresentationEmail.length - 1;
               final isInactive =
                   controller.selectionMode.value == SelectMode.INACTIVE;
 
-              final dividerColor =
-                  isMobile ? null : (isInactive ? null : Colors.white);
+              final showDivider = !isLastItem;
+
+              final dividerColor = isMobile
+                  ? null
+                  : (showDivider && isInactive ? null : Colors.white);
 
               final padding = isMobile
                   ? SearchEmailUtils.getPaddingItemListMobile(
@@ -693,6 +702,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                       context,
                       controller.responsiveUtils,
                     );
+
+              if (!showDivider) {
+                return const SizedBox.shrink();
+              }
 
               return Padding(
                 padding: padding,
@@ -720,6 +733,21 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
         final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
+        final isLabelCapabilitySupported = dashboardController.isLabelCapabilitySupported;
+
+        final labelController = dashboardController.labelController;
+
+        final isLabelSettingEnabled =
+            labelController.isLabelSettingEnabled.isTrue;
+
+        List<Label>? emailLabels;
+
+        if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+          emailLabels = presentationEmail.getLabelList(
+            labelController.labels,
+          );
+        }
+
         return EmailTileBuilder(
           presentationEmail: presentationEmail,
           selectAllMode: controller.selectionMode.value,
@@ -728,6 +756,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
           isSearchEmailRunning: true,
           isAINeedsActionEnabled: isAINeedsActionEnabled,
+          labels: emailLabels,
           padding: SearchEmailViewStyle.getPaddingSearchResultList(
             context,
             controller.responsiveUtils,

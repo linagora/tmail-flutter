@@ -2,8 +2,10 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:labels/extensions/label_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -12,6 +14,10 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 extension PresentationMailboxExtension on PresentationMailbox {
 
   String getDisplayName(BuildContext context) {
+    if (this is PresentationLabelMailbox) {
+      return (this as PresentationLabelMailbox).label.safeDisplayName;
+    }
+
     if (isDefault) {
       switch(role!.value.toLowerCase()) {
         case PresentationMailbox.inboxRole:
@@ -43,6 +49,10 @@ extension PresentationMailboxExtension on PresentationMailbox {
   }
 
   String getDisplayNameWithoutContext(AppLocalizations appLocalizations) {
+    if (this is PresentationLabelMailbox) {
+      return (this as PresentationLabelMailbox).label.safeDisplayName;
+    }
+
     if (isDefault) {
       switch(role!.value.toLowerCase()) {
         case PresentationMailbox.inboxRole:
@@ -140,7 +150,14 @@ extension PresentationMailboxExtension on PresentationMailbox {
   String? get filterKeyword {
     if (isFavorite) {
       return KeyWordIdentifier.emailFlagged.value;
+    } else if (isLabelMailbox) {
+      return (this as PresentationLabelMailbox).label.keyword?.value;
+    } else {
+      return null;
     }
-    return null;
   }
+
+  bool get isCacheable => !isVirtualFolder && this is! PresentationLabelMailbox;
+
+  bool get isLabelMailbox => this is PresentationLabelMailbox;
 }

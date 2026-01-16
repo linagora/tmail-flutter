@@ -5499,4 +5499,178 @@ class AppLocalizations {
       name: 'aiNeedsActionSettingExplanation',
     );
   }
+
+  String get labels {
+    return Intl.message(
+      'Labels',
+      name: 'labels',
+    );
+  }
+
+  String get newLabel {
+    return Intl.message(
+      'New label',
+      name: 'newLabel',
+    );
+  }
+
+  String get labelName {
+    return Intl.message(
+      'Label name',
+      name: 'labelName',
+    );
+  }
+
+  String get pleaseEnterNameYourNewLabel {
+    return Intl.message(
+      'Please enter the name of your new label',
+      name: 'pleaseEnterNameYourNewLabel',
+    );
+  }
+
+  String get chooseALabelColor {
+    return Intl.message(
+      'Choose a label color',
+      name: 'chooseALabelColor',
+    );
+  }
+
+  String get createLabel {
+    return Intl.message(
+      'Create label',
+      name: 'createLabel',
+    );
+  }
+
+  String get createANewLabel {
+    return Intl.message(
+      'Create a new label',
+      name: 'createANewLabel',
+    );
+  }
+
+  String get organizeYourInboxWithACustomCategory {
+    return Intl.message(
+      'Organize your inbox with a custom category',
+      name: 'organizeYourInboxWithACustomCategory',
+    );
+  }
+
+  String get tagNameAlreadyExists {
+    return Intl.message(
+      'A tag with this name already exists. Please choose a different name.',
+      name: 'tagNameAlreadyExists',
+    );
+  }
+
+  String get chooseCustomColour {
+    return Intl.message(
+      'Choose custom colour',
+      name: 'chooseCustomColour',
+    );
+  }
+
+  String get chooseAColourForThisLabel {
+    return Intl.message(
+      'Choose a colour for this label',
+      name: 'chooseAColourForThisLabel',
+    );
+  }
+
+  String createLabelSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'You successfully created the $labelName label',
+      name: 'createLabelSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String get createNewLabelFailure {
+    return Intl.message(
+      'Create new label failure',
+      name: 'createNewLabelFailure',
+    );
+  }
+
+  String get labelVisibility {
+    return Intl.message(
+      'Label visibility',
+      name: 'labelVisibility',
+    );
+  }
+
+  String get labelVisibilitySettingExplanation {
+    return Intl.message(
+      'Show labels assigned to emails directly in your message list for easier categorization.',
+      name: 'labelVisibilitySettingExplanation',
+    );
+  }
+
+  String get labelVisibilityToggleDescription {
+    return Intl.message(
+      'Display labels',
+      name: 'labelVisibilityToggleDescription',
+    );
+  }
+
+  String get theLabelFeatureIsNowAvailable {
+    return Intl.message(
+      'The label feature is now available.',
+      name: 'theLabelFeatureIsNowAvailable',
+    );
+  }
+
+  String get labelAs {
+    return Intl.message(
+      'Label as',
+      name: 'labelAs',
+    );
+  }
+
+  String addLabelToEmailSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'Email added to the "$labelName" label',
+      name: 'addLabelToEmailSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String addLabelToEmailFailureMessage(String labelName) {
+    return Intl.message(
+      'Cannot add email to the "$labelName" label',
+      name: 'addLabelToEmailFailureMessage',
+      args: [labelName],
+    );
+  }
+
+  String get addLabel {
+    return Intl.message(
+      'Add label',
+      name: 'addLabel',
+    );
+  }
+
+  String addLabelToThreadSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'All emails in thread added to the "$labelName" label',
+      name: 'addLabelToThreadSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String addLabelToThreadFailureMessage(String labelName) {
+    return Intl.message(
+      'Cannot add all emails in thread to the "$labelName" label',
+      name: 'addLabelToThreadFailureMessage',
+      args: [labelName],
+    );
+  }
+
+
+  String get youDoNotHaveAnyEmailTaggedWithThis {
+    return Intl.message(
+      'You don\'t have any emails tagged with this.',
+      name: 'youDoNotHaveAnyEmailTaggedWithThis',
+    );
+  }
 }

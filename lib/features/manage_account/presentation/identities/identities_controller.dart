@@ -230,7 +230,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       );
 
       newIdentityArguments = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
+        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
         : await push(AppRoutes.identityCreator, arguments: arguments);
 
       if (newIdentityArguments is CreateNewIdentityRequest) {
@@ -382,7 +382,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
         actionType: IdentityActionType.edit);
 
       newIdentityArguments = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
+        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
         : await push(AppRoutes.identityCreator, arguments: arguments);
 
       if (newIdentityArguments is CreateNewIdentityRequest) {
@@ -480,7 +480,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       actionType: identityCache.identityActionType);
 
     newIdentityArguments = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
+      ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
       : await push(AppRoutes.identityCreator, arguments: arguments);
 
     if (newIdentityArguments == null) {

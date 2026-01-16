@@ -84,6 +84,7 @@ import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_l
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
@@ -233,6 +234,7 @@ class MailboxDashBoardController extends ReloadableController
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
+  final LabelController labelController = Get.find<LabelController>();
   final ComposerManager composerManager = Get.find<ComposerManager>();
   final getAuthenticationInfoInteractor =
       Get.find<GetAuthenticationInfoInteractor>();
@@ -905,6 +907,17 @@ class MailboxDashBoardController extends ReloadableController
     paywallController = PaywallController(
       ownEmailAddress: ownEmailAddress.value,
     );
+
+    if (isLabelCapabilitySupported) {
+      labelController.checkLabelSettingState(currentAccountId);
+    }
+  }
+
+  bool get isLabelCapabilitySupported {
+    if (accountId.value == null || sessionCurrent == null) return false;
+
+    return labelController
+        .isLabelCapabilitySupported(sessionCurrent!, accountId.value!);
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
@@ -1329,7 +1342,7 @@ class MailboxDashBoardController extends ReloadableController
       );
 
       final destinationMailbox = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
         : await push(AppRoutes.destinationPicker, arguments: arguments);
 
       if (destinationMailbox != null &&
@@ -2073,6 +2086,9 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
+    if (isLabelCapabilitySupported && accountId.value != null) {
+      labelController.checkLabelSettingState(accountId.value!);
+    }
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
@@ -2150,6 +2166,9 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
+    if (isLabelCapabilitySupported && accountId.value != null) {
+      labelController.checkLabelSettingState(accountId.value!);
+    }
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
@@ -2182,7 +2201,7 @@ class MailboxDashBoardController extends ReloadableController
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.from_email_address_prefix.toLowerCase()}'
     );
 
-    final newListContact = await DialogRouter.pushGeneralDialog(
+    final newListContact = await DialogRouter().pushGeneralDialog(
       routeName: AppRoutes.contact,
       arguments: contactArgument);
 
@@ -2205,7 +2224,7 @@ class MailboxDashBoardController extends ReloadableController
       contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.to_email_address_prefix.toLowerCase()}'
     );
 
-    final newListContact = await DialogRouter.pushGeneralDialog(
+    final newListContact = await DialogRouter().pushGeneralDialog(
       routeName: AppRoutes.contact,
       arguments: contactArgument);
 
@@ -2230,7 +2249,7 @@ class MailboxDashBoardController extends ReloadableController
       mailboxIdSelected: mailboxIdSelected);
 
     final destinationMailbox = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(
+      ? await DialogRouter().pushGeneralDialog(
           routeName: AppRoutes.destinationPicker,
           arguments: destinationArgument)
       : await push(
@@ -3256,8 +3275,8 @@ class MailboxDashBoardController extends ReloadableController
     if (currentAccountId != null && currentSession != null) {
       final arguments = EmailRecoveryArguments(currentAccountId, currentSession);
 
-      final result = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(
+      final result = PlatformInfo.isWeb 
+      ? await DialogRouter().pushGeneralDialog(
           routeName: AppRoutes.emailRecovery,
           arguments: arguments,
         )

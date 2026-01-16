@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/mark_star_action.dart';
@@ -262,6 +263,16 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
     EmailId oldEmailId, {
     CancelToken? cancelToken,
   }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> addLabelToEmail(Session session, AccountId accountId, EmailId emailId, KeyWordIdentifier labelKeyword) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> addLabelToThread(Session session, AccountId accountId, List<EmailId> emailIds, KeyWordIdentifier labelKeyword) {
     throw UnimplementedError();
   }
 }

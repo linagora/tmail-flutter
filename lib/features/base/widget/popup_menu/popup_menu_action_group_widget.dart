@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/base/extensions/popup_menu_action_list_ex
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/model/popup_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_submenu_controller.dart';
 
 typedef OnPopupMenuActionSelected = void Function(PopupMenuItemAction action);
 
@@ -11,11 +12,13 @@ class PopupMenuActionGroupWidget with PopupContextMenuActionMixin {
   final List<PopupMenuItemAction> actions;
   final OnPopupMenuActionSelected onActionSelected;
   final double dividerOpacity;
+  final PopupSubmenuController? submenuController;
 
-  const PopupMenuActionGroupWidget({
+  PopupMenuActionGroupWidget({
     required this.actions,
     required this.onActionSelected,
     this.dividerOpacity = 0.12,
+    this.submenuController,
   });
 
   Future<void> show(
@@ -34,9 +37,19 @@ class PopupMenuActionGroupWidget with PopupContextMenuActionMixin {
                 child: PopupMenuItemActionWidget(
                   menuAction: menuAction,
                   menuActionClick: (menuAction) {
+                    submenuController?.hide();
                     Navigator.pop(context);
                     onActionSelected(menuAction);
                   },
+                  onHoverShowSubmenu: submenuController != null && menuAction.submenu != null
+                    ? (itemKey) => _showPopupSubmenu(
+                        context: context,
+                        itemKey: itemKey,
+                        submenuController: submenuController!,
+                        submenu: menuAction.submenu!,
+                      )
+                    : null,
+                  onHoverOtherItem: submenuController?.hide,
                 ),
               ),
             ),
@@ -48,6 +61,30 @@ class PopupMenuActionGroupWidget with PopupContextMenuActionMixin {
       ],
     ];
 
-    return openPopupMenuAction(context, position, popupMenuItems);
+    try {
+      await openPopupMenuAction(context, position, popupMenuItems);
+    } finally {
+      submenuController?.hide();
+    }
+  }
+
+  void _showPopupSubmenu({
+    required BuildContext context,
+    required GlobalKey itemKey,
+    required PopupSubmenuController submenuController,
+    required Widget submenu,
+}) {
+    final renderObject = itemKey.currentContext?.findRenderObject();
+    if (renderObject is! RenderBox) return;
+    final renderBox = renderObject;
+
+    final offset = renderBox.localToGlobal(Offset.zero);
+    final rect = offset & renderBox.size;
+
+    submenuController.show(
+      context: context,
+      anchor: rect,
+      submenu: submenu,
+    );
   }
 }

@@ -1,10 +1,12 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/widget/labels/ai_action_tag_widget.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -21,6 +23,8 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
   final bool isShowingEmailContent;
   final bool isSenderImportantFlagEnabled;
   final bool isAINeedsActionEnabled;
+  final bool autoWrapTagsByMaxWidth;
+  final List<Label>? labels;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
@@ -29,10 +33,12 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
     required this.presentationEmail,
     required this.selectAllMode,
     required this.isShowingEmailContent,
+    this.labels,
     this.searchQuery,
     this.isSearchEmailRunning = false,
     this.isSenderImportantFlagEnabled = true,
     this.isAINeedsActionEnabled = true,
+    this.autoWrapTagsByMaxWidth = false,
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
@@ -125,21 +131,99 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
                 )),
             Padding(
                 padding: const EdgeInsetsDirectional.only(top: 2),
-                child: Row(children: [
-                  Expanded(child: buildEmailPartialContent(
-                    context,
-                    presentationEmail,
-                    isSearchEmailRunning,
-                    searchQuery)),
-                  if (_shouldShowAIAction)
-                    const AiActionTagWidget(
-                      margin: EdgeInsetsDirectional.only(start: 8),
-                    ),
-                ])
+                child: _buildPartialContent(context),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPartialContent(BuildContext context) {
+    final hasLabels = labels?.isNotEmpty == true;
+    final isDesktop = responsiveUtils.isDesktop(context);
+    final isAutoWrap = autoWrapTagsByMaxWidth;
+
+    final hasContent =
+        presentationEmail.getPartialContent().isNotEmpty;
+
+    final partialContent = buildEmailPartialContent(
+      context,
+      presentationEmail,
+      isSearchEmailRunning,
+      searchQuery,
+    );
+
+    if (!hasLabels) {
+      return Row(
+        children: [
+          if (hasContent)
+            Flexible(child: partialContent),
+          if (_shouldShowAIAction)
+            const AiActionTagWidget(
+              margin: EdgeInsetsDirectional.only(start: 8),
+            ),
+        ],
+      );
+    }
+
+    if (!hasContent) {
+      return Row(
+        children: [
+          if (_shouldShowAIAction)
+            const AiActionTagWidget(
+              margin: EdgeInsetsDirectional.only(start: 8),
+            ),
+          Flexible(
+            child: LabelTagListWidget(
+              tags: labels!,
+              autoWrapTagsByMaxWidth: isAutoWrap,
+              isDesktop: isDesktop,
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (!isAutoWrap) {
+      return Row(
+        children: [
+          Flexible(child: partialContent),
+          if (_shouldShowAIAction)
+            const AiActionTagWidget(
+              margin: EdgeInsetsDirectional.only(start: 8),
+            ),
+          const SizedBox(width: 12),
+          LabelTagListWidget(
+            tags: labels!,
+            autoWrapTagsByMaxWidth: isAutoWrap,
+            isDesktop: isDesktop,
+          ),
+        ],
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        return Row(
+          children: [
+            Expanded(child: partialContent),
+            if (_shouldShowAIAction)
+              const AiActionTagWidget(
+                margin: EdgeInsetsDirectional.only(start: 8),
+              ),
+            const SizedBox(width: 12),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
+              child: LabelTagListWidget(
+                tags: labels!,
+                autoWrapTagsByMaxWidth: isAutoWrap,
+                isDesktop: isDesktop,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
@@ -21,7 +22,9 @@ import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/handle_label_for_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/handle_on_iframe_click_in_email_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/validate_display_free_busy_message_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
@@ -100,8 +103,16 @@ class EmailView extends GetWidget<SingleEmailController> {
                         handleEmailAction: controller.handleEmailAction,
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
+                        isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
+                        labels: controller.mailboxDashBoardController.labelController.labels,
                         openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
                         openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
+                        onSelectLabelAction: (label, isSelected) =>
+                            controller.toggleLabelToEmail(
+                              presentationEmail.id!,
+                              label,
+                              isSelected,
+                            ),
                       );
                     },
                     supportBackAction: !isInsideThreadDetailView,
@@ -246,12 +257,32 @@ class EmailView extends GetWidget<SingleEmailController> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (!isInsideThreadDetailView || isFirstEmailInThreadDetail)
-          EmailSubjectWidget(
-            presentationEmail: presentationEmail.copyWith(
-              subject: threadSubject,
-            ),
-            isMobileResponsive: isMobileResponsive,
-          ),
+          Obx(() {
+            final isLabelCapabilitySupported = controller
+                .mailboxDashBoardController.isLabelCapabilitySupported;
+
+            final labelController =
+                controller.mailboxDashBoardController.labelController;
+
+            final isLabelSettingEnabled =
+                labelController.isLabelSettingEnabled.isTrue;
+
+            List<Label>? emailLabels;
+
+            if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+              emailLabels = presentationEmail.getLabelList(
+                labelController.labels,
+              );
+            }
+
+            return EmailSubjectWidget(
+              presentationEmail: presentationEmail.copyWith(
+                subject: threadSubject,
+              ),
+              isMobileResponsive: isMobileResponsive,
+              labels: emailLabels,
+            );
+          }),
         Obx(() => InformationSenderAndReceiverBuilder(
           emailSelected: presentationEmail,
           imagePaths: controller.imagePaths,
@@ -285,8 +316,16 @@ class EmailView extends GetWidget<SingleEmailController> {
               EmailActionType.deletePermanently,
             ],
             emailIsRead: presentationEmail.hasRead,
+            isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
+            labels: controller.mailboxDashBoardController.labelController.labels,
             openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
+            onSelectLabelAction: (label, isSelected) =>
+                controller.toggleLabelToEmail(
+                  presentationEmail.id!,
+                  label,
+                  isSelected,
+                ),
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           mailboxContain: presentationEmail.findMailboxContain(
@@ -557,12 +596,13 @@ class EmailView extends GetWidget<SingleEmailController> {
             ),
           ),
           Obx(() {
+            final dialogRouter = DialogRouter();
             bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
                 MessageDialogActionManager().isDialogOpened ||
                 EmailActionReactor.isDialogOpened ||
                 ColorDialogPicker().isOpened.isTrue ||
-                DialogRouter.isRuleFilterDialogOpened.isTrue ||
-                DialogRouter.isDialogOpened;
+                dialogRouter.isRuleFilterDialogOpened.isTrue ||
+                dialogRouter.isDialogOpened;
 
             if (isOverlayEnabled) {
               return Positioned.fill(

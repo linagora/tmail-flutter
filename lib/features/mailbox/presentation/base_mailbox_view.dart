@@ -4,6 +4,7 @@ import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
@@ -15,8 +16,11 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/toggle_ex
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/labels_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
@@ -336,7 +340,92 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
               ? buildFolders(context)
               : const Offstage(),
         )),
+        buildLabelsBar(context, isDesktop),
+        buildLabelsList(context, isDesktop),
       ]),
     );
+  }
+
+  Widget buildLabelsBar(BuildContext context, bool isDesktop) {
+    return Obx(() {
+      final isLabelCapabilitySupported = controller
+          .mailboxDashBoardController
+          .isLabelCapabilitySupported;
+
+      final labelController =
+          controller.mailboxDashBoardController.labelController;
+
+      final isLabelSettingEnabled = labelController
+          .isLabelSettingEnabled
+          .isTrue;
+
+      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+        final accountId = controller.accountId;
+        final labelListExpandMode = labelController.labelListExpandMode.value;
+        final countLabels = labelController.labels.length;
+
+        return LabelsBarWidget(
+          imagePaths: controller.imagePaths,
+          isDesktop: isDesktop,
+          height: isDesktop ? 48 : 40,
+          padding: isDesktop
+              ? null
+              : const EdgeInsetsDirectional.only(start: 24, end: 12),
+          labelStyle: isDesktop ? null : ThemeUtils.textStyleInter500(),
+          expandMode: labelListExpandMode,
+          countLabels: countLabels,
+          onToggleLabelListState: labelController.toggleLabelListState,
+          onAddNewLabel: () =>
+              labelController.openCreateNewLabelModal(accountId),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
+  }
+
+  Widget buildLabelsList(BuildContext context, bool isDesktop) {
+    return Obx(() {
+      final isLabelCapabilitySupported = controller
+          .mailboxDashBoardController
+          .isLabelCapabilitySupported;
+
+      final labelController =
+          controller.mailboxDashBoardController.labelController;
+
+      final isLabelSettingEnabled = labelController
+          .isLabelSettingEnabled
+          .isTrue;
+
+      final selectedMailbox = controller.mailboxDashBoardController
+          .selectedMailbox.value;
+      Id? labelIdSelected;
+      if (selectedMailbox is PresentationLabelMailbox) {
+        labelIdSelected = selectedMailbox.id.id;
+      }
+
+      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+        final labelListExpandMode = labelController.labelListExpandMode.value;
+        final labels = labelController.labels;
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 400),
+          child: labelListExpandMode == ExpandMode.EXPAND && labels.isNotEmpty
+              ? LabelListView(
+                  labels: labels,
+                  imagePaths: controller.imagePaths,
+                  isDesktop: isDesktop,
+                  labelIdSelected: labelIdSelected,
+                  onOpenLabelCallback: (label) => controller.openMailbox(
+                    context,
+                    PresentationLabelMailbox.initial(label),
+                  ),
+                )
+              : const Offstage(),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    });
   }
 }

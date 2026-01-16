@@ -8,6 +8,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
   final VoidCallback onNegativeAction;
   final VoidCallback onPositiveAction;
   final EdgeInsetsGeometry? padding;
+  final bool isPositiveActionEnabled;
 
   const ModalListActionButtonWidget({
     super.key,
@@ -15,6 +16,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
     required this.negativeLabel,
     required this.onPositiveAction,
     required this.onNegativeAction,
+    this.isPositiveActionEnabled = true,
     this.padding,
   });
 
@@ -34,9 +36,13 @@ class ModalListActionButtonWidget extends StatelessWidget {
       height: 48,
       child: ConfirmDialogButton(
         label: positiveLabel,
-        backgroundColor: AppColor.primaryMain,
-        textColor: Colors.white,
-        onTapAction: onPositiveAction,
+        backgroundColor: isPositiveActionEnabled
+            ? AppColor.primaryMain
+            : AppColor.profileMenuDivider.withValues(alpha: 0.12),
+        textColor: isPositiveActionEnabled
+            ? Colors.white
+            : AppColor.m3SurfaceBackground.withValues(alpha: 0.38),
+        onTapAction: isPositiveActionEnabled ? onPositiveAction : null,
       ),
     );
 

@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
@@ -592,7 +593,7 @@ class ThreadController extends BaseController with EmailActionController {
           _accountId!,
         ),
         getLatestChanges: getLatestChanges,
-        useCache: selectedMailbox?.isVirtualFolder != true,
+        useCache: selectedMailbox?.isCacheable ?? false,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -798,7 +799,7 @@ class ThreadController extends BaseController with EmailActionController {
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
-          useCache: selectedMailbox?.isVirtualFolder != true,
+          useCache: selectedMailbox?.isCacheable ?? false,
         )
       ));
     }

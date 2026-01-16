@@ -4,7 +4,6 @@ import 'package:core/core.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/widget/default_field/default_close_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
 import 'package:tmail_ui_user/features/base/widget/pop_back_barrier_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/handle_toggle_preview_rule_filter_extension.dart';

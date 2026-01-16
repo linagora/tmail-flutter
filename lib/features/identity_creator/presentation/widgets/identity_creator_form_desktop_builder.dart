@@ -1,12 +1,12 @@
 import 'dart:math';
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/button/default_close_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rich_text_composer/views/keyboard_rich_text.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
-import 'package:tmail_ui_user/features/base/widget/default_field/default_close_button_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/pop_back_barrier_widget.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_creator_form_bottom_view.dart';

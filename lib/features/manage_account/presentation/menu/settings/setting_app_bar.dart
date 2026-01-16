@@ -13,6 +13,7 @@ class SettingAppBar extends StatelessWidget {
   final ResponsiveUtils responsiveUtils;
   final VoidCallback onBackAction;
   final VoidCallback? onExportTraceLogAction;
+  final VoidCallback? onMultiClickAction;
 
   const SettingAppBar({
     super.key,
@@ -22,6 +23,7 @@ class SettingAppBar extends StatelessWidget {
     required this.responsiveUtils,
     required this.onBackAction,
     this.onExportTraceLogAction,
+    this.onMultiClickAction,
   });
 
   @override
@@ -39,6 +41,7 @@ class SettingAppBar extends StatelessWidget {
         imagePaths: imagePaths,
         responsiveUtils: responsiveUtils,
         onBackAction: onBackAction,
+        onMultiClickAction: onMultiClickAction,
       );
     }
   }

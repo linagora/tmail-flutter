@@ -441,7 +441,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
         _session);
 
       final destinationMailbox = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+        ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
         : await push(AppRoutes.destinationPicker, arguments: arguments);
 
       if (destinationMailbox is PresentationMailbox && context.mounted) {

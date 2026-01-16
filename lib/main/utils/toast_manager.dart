@@ -15,18 +15,22 @@ import 'package:flutter_svg/svg.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+import 'package:labels/extensions/label_extension.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/parse_email_by_blob_id_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/preview_email_from_eml_file_state.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
@@ -196,6 +200,15 @@ class ToastManager {
     } else if (failure is MoveFolderContentFailure) {
       message = message ??
           appLocalizations.moveFolderContentToastMessage;
+    } else if (failure is CreateNewLabelFailure) {
+      message = message ??
+          appLocalizations.createNewLabelFailure;
+    } else if (failure is AddALabelToAnEmailFailure) {
+      message = message ??
+          appLocalizations.addLabelToEmailFailureMessage(failure.labelDisplay);
+    } else if (failure is AddALabelToAThreadFailure) {
+      message = message ??
+          appLocalizations.addLabelToThreadFailureMessage(failure.labelDisplay);
     }
     log('ToastManager::showMessageFailure: Message: $message');
     if (message?.trim().isNotEmpty == true) {
@@ -259,6 +272,18 @@ class ToastManager {
       message = success.markStarAction == MarkStarAction.markStar
           ? appLocalizations.mailHasBeenStarred
           : appLocalizations.mailHasBeenUnstarred;
+    } else if (success is CreateNewLabelSuccess) {
+      message = appLocalizations.createLabelSuccessfullyMessage(
+        success.newLabel.safeDisplayName,
+      );
+    } else if (success is AddALabelToAnEmailSuccess) {
+      message = appLocalizations.addLabelToEmailSuccessfullyMessage(
+        success.labelDisplay,
+      );
+    } else if (success is AddALabelToAThreadSuccess) {
+      message = appLocalizations.addLabelToThreadSuccessfullyMessage(
+        success.labelDisplay,
+      );
     }
     log('ToastManager::showMessageSuccess: Message: $message');
     if (message?.trim().isNotEmpty == true) {

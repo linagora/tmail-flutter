@@ -175,6 +175,8 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.moveToTrash:
       case EmailActionType.deletePermanently:
         return imagePaths.icDeleteComposer;
+      case EmailActionType.labelAs:
+        return imagePaths.icTag;
       default:
         return '';
     }
@@ -222,6 +224,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return appLocalizations.move_to_trash;
       case EmailActionType.deletePermanently:
         return appLocalizations.delete_permanently;
+      case EmailActionType.labelAs:
+        return appLocalizations.labelAs;
       default:
         return '';
     }

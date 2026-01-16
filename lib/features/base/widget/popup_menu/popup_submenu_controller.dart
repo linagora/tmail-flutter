@@ -12,13 +12,11 @@ class PopupSubmenuController {
   void show({
     required BuildContext context,
     required Rect anchor,
-    required Rect anchorMenu,
     required Widget submenu,
     SubmenuDirection direction = SubmenuDirection.auto,
-    double submenuWidth = 191,
-    double submenuMaxHeight = 352,
-    double offset = 4,
-    double menuFieldSpacing = 8,
+    double submenuWidth = 249,
+    double submenuMaxHeight = 400,
+    double offset = 0,
   }) {
     hide();
 
@@ -51,8 +49,6 @@ class PopupSubmenuController {
       }
     }
 
-    final bottom = screenHeight - anchorMenu.bottom + menuFieldSpacing;
-
     final clampedLeft = finalLeft
         .clamp(0.0, math.max(0.0, screenWidth - submenuWidth))
         .toDouble();
@@ -63,13 +59,20 @@ class PopupSubmenuController {
       builder: (_) {
         return PositionedDirectional(
           start: clampedLeft,
-          bottom: bottom,
+          top: anchor.top,
           child: MouseRegion(
             onExit: (_) => hide(),
-            child: Container(
-              width: submenuWidth,
-              constraints: BoxConstraints(maxHeight: finalHeight),
-              child: submenu,
+            child: Material(
+              elevation: 8,
+              color: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(6)),
+              ),
+              child: Container(
+                width: submenuWidth,
+                constraints: BoxConstraints(maxHeight: finalHeight),
+                child: submenu,
+              ),
             ),
           ),
         );

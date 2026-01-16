@@ -389,6 +389,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.2"
+  flutter_hsvcolor_picker:
+    dependency: transitive
+    description:
+      name: flutter_hsvcolor_picker
+      sha256: f3480d7beaf4d3a3b76512a0c149a3b698076c8cf721bc515cded30de37ded6a
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.1"
   flutter_image_compress:
     dependency: transitive
     description:

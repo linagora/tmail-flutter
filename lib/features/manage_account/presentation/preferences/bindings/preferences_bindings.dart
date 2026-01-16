@@ -13,18 +13,18 @@ class PreferencesBindings extends Bindings {
   void dependencies() {
     PreferencesInteractorsBindings().dependencies();
 
-    Get.lazyPut(() => PreferencesController(
-      Get.find<GetServerSettingInteractor>(),
-      Get.find<UpdateServerSettingInteractor>(),
-      Get.find<GetLocalSettingsInteractor>(),
-      Get.find<UpdateLocalSettingsInteractor>(),
-    ));
-
     Get.lazyPut(() => GetLocalSettingsInteractor(
       Get.find<ManageAccountRepository>(),
     ));
     Get.lazyPut(() => UpdateLocalSettingsInteractor(
       Get.find<ManageAccountRepository>(),
+    ));
+
+    Get.lazyPut(() => PreferencesController(
+      Get.find<GetServerSettingInteractor>(),
+      Get.find<UpdateServerSettingInteractor>(),
+      Get.find<GetLocalSettingsInteractor>(),
+      Get.find<UpdateLocalSettingsInteractor>(),
     ));
   }
 }

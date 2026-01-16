@@ -7,37 +7,26 @@ extension KeyWordIdentifierExtension on KeyWordIdentifier {
   static final unsubscribeMail = KeyWordIdentifier('\$unsubscribe');
   static final needsActionMail = KeyWordIdentifier('\$needs-action');
 
-  String generatePath() {
-    return '${PatchObject.keywordsProperty}/$value';
+  String generatePath() => '${PatchObject.keywordsProperty}/$value';
+
+  /// General helper to generate a boolean patch.
+  PatchObject _boolPatch(bool? flag) {
+    return PatchObject({generatePath(): flag});
   }
 
-  PatchObject generateReadActionPath(ReadActions readActions) {
-    return PatchObject({
-      generatePath(): readActions == ReadActions.markAsRead ? true : null
-    });
+  PatchObject generateReadActionPath(ReadActions action) {
+    return _boolPatch(action == ReadActions.markAsRead ? true : null);
   }
 
-  PatchObject generateMarkStarActionPath(MarkStarAction markStarAction) {
-    return PatchObject({
-      generatePath(): markStarAction == MarkStarAction.markStar ? true : null
-    });
+  PatchObject generateMarkStarActionPath(MarkStarAction action) {
+    return _boolPatch(action == MarkStarAction.markStar ? true : null);
   }
 
-  PatchObject generateAnsweredActionPath() {
-    return PatchObject({
-      generatePath(): true
-    });
-  }
+  PatchObject generateAnsweredActionPath() => _boolPatch(true);
 
-  PatchObject generateForwardedActionPath() {
-    return PatchObject({
-      generatePath(): true
-    });
-  }
+  PatchObject generateForwardedActionPath() => _boolPatch(true);
 
-  PatchObject generateUnsubscribeActionPath() {
-    return PatchObject({
-      generatePath(): true
-    });
-  }
+  PatchObject generateUnsubscribeActionPath() => _boolPatch(true);
+
+  PatchObject generateLabelActionPath() => _boolPatch(true);
 }

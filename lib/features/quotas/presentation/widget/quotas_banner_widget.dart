@@ -1,9 +1,9 @@
+import 'package:core/presentation/views/button/default_close_button_widget.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/base/widget/default_field/default_close_button_widget.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/styles/quotas_banner_styles.dart';

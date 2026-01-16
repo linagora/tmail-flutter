@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
@@ -47,6 +48,7 @@ class CreateEmailRequest with EquatableMixin {
   final int? savedDraftHash;
   final EmailActionType? savedActionType;
   final EmailId? savedEmailDraftId;
+  final List<KeyWordIdentifier>? keywords;
 
   CreateEmailRequest({
     required this.session,
@@ -83,6 +85,7 @@ class CreateEmailRequest with EquatableMixin {
     this.savedDraftHash,
     this.savedActionType,
     this.savedEmailDraftId,
+    this.keywords,
   });
 
   @override
@@ -121,5 +124,6 @@ class CreateEmailRequest with EquatableMixin {
     savedDraftHash,
     savedActionType,
     savedEmailDraftId,
+    keywords,
   ];
 }

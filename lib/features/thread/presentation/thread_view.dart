@@ -5,6 +5,7 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
@@ -13,12 +14,14 @@ import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart'
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
@@ -271,22 +274,29 @@ class ThreadView extends GetWidget<ThreadController>
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Container(
-            padding: const EdgeInsetsDirectional.only(end: 4.0),
-            child: ScrollToTopButtonWidget(
-              scrollController: controller.listEmailController,
-              onTap: controller.scrollToTop,
-              responsiveUtils: controller.responsiveUtils,
-              icon: SvgPicture.asset(
-                controller.imagePaths.icArrowUpOutline,
-                width: ScrollToTopButtonWidgetStyles.iconWidth,
-                height: ScrollToTopButtonWidgetStyles.iconHeight,
-                fit: BoxFit.fill,
-                colorFilter: Colors.white.asFilter(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
+          Obx(() {
+            final emailList =
+                controller.mailboxDashBoardController.emailsInCurrentMailbox;
+            if (emailList.isNotEmpty) {
+              return Padding(
+                padding: const EdgeInsetsDirectional.only(end: 4.0, bottom: 24),
+                child: ScrollToTopButtonWidget(
+                  scrollController: controller.listEmailController,
+                  onTap: controller.scrollToTop,
+                  responsiveUtils: controller.responsiveUtils,
+                  icon: SvgPicture.asset(
+                    controller.imagePaths.icArrowUpOutline,
+                    width: ScrollToTopButtonWidgetStyles.iconWidth,
+                    height: ScrollToTopButtonWidgetStyles.iconHeight,
+                    fit: BoxFit.fill,
+                    colorFilter: Colors.white.asFilter(),
+                  ),
+                ),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
           _buildFloatingButtonCompose(context),
         ],
       ),
@@ -608,6 +618,23 @@ class ThreadView extends GetWidget<ThreadController>
 
       final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
+      final isLabelCapabilitySupported =
+          dashboardController.isLabelCapabilitySupported;
+
+      final labelController =
+          controller.mailboxDashBoardController.labelController;
+
+      final isLabelSettingEnabled =
+          labelController.isLabelSettingEnabled.isTrue;
+
+      List<Label>? emailLabels;
+
+      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+        emailLabels = presentationEmail.getLabelList(
+          labelController.labels,
+        );
+      }
+
       return Dismissible(
         key: ValueKey<EmailId?>(presentationEmail.id),
         direction: controller.getSwipeDirection(
@@ -631,6 +658,7 @@ class ThreadView extends GetWidget<ThreadController>
           mailboxContain: presentationEmail.mailboxContain,
           isSearchEmailRunning: isSearchEmailRunning,
           isAINeedsActionEnabled: isAINeedsActionEnabled,
+          labels: emailLabels,
           emailActionClick: _handleEmailActionClicked,
           onMoreActionClick: (email, position) =>
               _handleEmailContextMenuAction(context, email, position),
@@ -795,6 +823,8 @@ class ThreadView extends GetWidget<ThreadController>
               isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
               isFavoriteFolder: controller.selectedMailbox?.isFavorite == true,
               isActionRequiredFolder: controller.selectedMailbox?.isActionRequired == true,
+              isLabelMailbox:
+                controller.selectedMailbox is PresentationLabelMailbox,
             ),
           );
         }

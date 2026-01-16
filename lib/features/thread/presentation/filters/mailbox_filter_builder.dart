@@ -9,6 +9,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 
@@ -23,10 +24,20 @@ class MailboxFilterBuilder {
 
   MailboxId? get _mailboxId => selectedMailbox?.id;
 
+  bool get _isVirtualFolder => selectedMailbox?.isVirtualFolder == true;
+
+  bool get _isActionRequired => selectedMailbox?.isActionRequired == true;
+
+  bool get _isFavorite => selectedMailbox?.isFavorite == true;
+
+  bool get _isLabelMailbox => selectedMailbox?.isLabelMailbox == true;
+
+  String? get _filterKeyword => selectedMailbox?.filterKeyword;
+
   EmailFilter buildEmailFilterForLoadMailbox() {
     final filterCondition = buildFilterCondition();
 
-    if (selectedMailbox?.isVirtualFolder == true) {
+    if (_isVirtualFolder) {
       return EmailFilter(filter: filterCondition);
     }
 
@@ -40,39 +51,15 @@ class MailboxFilterBuilder {
   Filter buildFilterCondition({PresentationEmail? oldestEmail}) {
     final before = oldestEmail?.receivedAt;
 
-    if (selectedMailbox?.isFavorite == true) {
-      return _buildFavoriteMailboxFilter(before: before);
-    }
-
-    if (selectedMailbox?.isActionRequired == true) {
+    if (_isActionRequired) {
       return _buildActionRequiredMailboxFilter(before: before);
     }
 
-    return buildDefaultMailboxFilter(before: before);
-  }
-
-  Filter _buildFavoriteMailboxFilter({UTCDate? before}) {
-    switch (filterMessageOption) {
-      case FilterMessageOption.unread:
-        return EmailFilterCondition(
-          notKeyword: KeyWordIdentifier.emailSeen.value,
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: before,
-        );
-
-      case FilterMessageOption.attachments:
-        return EmailFilterCondition(
-          hasAttachment: true,
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: before,
-        );
-
-      default:
-        return EmailFilterCondition(
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: before,
-        );
+    if (_isFavorite || _isLabelMailbox) {
+      return _buildKeywordBasedFilter(keyword: _filterKeyword, before: before);
     }
+
+    return buildDefaultMailboxFilter(before: before);
   }
 
   Filter _buildActionRequiredMailboxFilter({UTCDate? before}) {
@@ -88,7 +75,6 @@ class MailboxFilterBuilder {
             EmailFilterCondition(
               notKeyword: KeyWordIdentifier.emailSeen.value,
               hasKeyword: KeyWordIdentifierExtension.needsActionMail.value,
-              before: before,
             ),
           },
         );
@@ -107,6 +93,41 @@ class MailboxFilterBuilder {
           hasKeyword: KeyWordIdentifierExtension.needsActionMail.value,
           before: before,
         );
+    }
+  }
+
+  Filter _buildKeywordBasedFilter({
+    required String? keyword,
+    UTCDate? before,
+  }) {
+    switch (filterMessageOption) {
+      case FilterMessageOption.unread:
+        return EmailFilterCondition(
+          notKeyword: KeyWordIdentifier.emailSeen.value,
+          hasKeyword: keyword,
+          before: before,
+        );
+
+      case FilterMessageOption.attachments:
+        return EmailFilterCondition(
+          hasAttachment: true,
+          hasKeyword: keyword,
+          before: before,
+        );
+
+      case FilterMessageOption.starred:
+        return LogicFilterOperator(
+          Operator.AND,
+          {
+            EmailFilterCondition(
+              hasKeyword: KeyWordIdentifier.emailFlagged.value,
+            ),
+            EmailFilterCondition(hasKeyword: keyword, before: before),
+          },
+        );
+
+      default:
+        return EmailFilterCondition(hasKeyword: keyword, before: before);
     }
   }
 

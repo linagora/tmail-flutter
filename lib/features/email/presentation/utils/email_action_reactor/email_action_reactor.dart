@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
@@ -32,6 +33,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_submenu_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -43,6 +45,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
@@ -50,6 +53,8 @@ import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_context_menu.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_context_menu.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
@@ -292,7 +297,7 @@ class EmailActionReactor {
     );
 
     final newRuleFilterRequest = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(
+      ? await DialogRouter().pushGeneralDialog(
           routeName: AppRoutes.rulesFilterCreator,
           arguments: arguments,
         )
@@ -483,8 +488,11 @@ class EmailActionReactor {
     ) handleEmailAction,
     required List<EmailActionType> additionalActions,
     required bool emailIsRead,
+    required bool isLabelFeatureEnabled,
     required OpenBottomSheetContextMenuAction openBottomSheetContextMenu,
     required OpenPopupMenuActionGroup openPopupMenu,
+    List<Label>? labels,
+    OnSelectLabelAction? onSelectLabelAction,
   }) {
     if (currentContext == null) return;
 
@@ -499,6 +507,8 @@ class EmailActionReactor {
       if (EmailUtils.isReplyToListEnabled(presentationEmail.listPost ?? '') &&
           additionalActions.contains(EmailActionType.replyToList))
         EmailActionType.replyToList,
+      if (isLabelFeatureEnabled)
+        EmailActionType.labelAs,
       if (PlatformInfo.isWeb &&
           PlatformInfo.isCanvasKit &&
           additionalActions.contains(EmailActionType.printAll))
@@ -556,6 +566,8 @@ class EmailActionReactor {
         useGroupedActions: true,
       );
     } else {
+      final submenuController = PopupSubmenuController();
+
       final popupMenuItemEmailActions = moreActions.map((actionType) {
         return PopupMenuItemEmailAction(
           actionType,
@@ -563,18 +575,66 @@ class EmailActionReactor {
           imagePaths,
           key: '${actionType.name}_action',
           category: actionType.category,
+          submenu: _getEmailActionSubmenu(
+            actionType: actionType,
+            imagePaths: imagePaths,
+            presentationEmail: presentationEmail,
+            labels: labels,
+            onSelectLabelAction: (label, isSelected) {
+              onSelectLabelAction?.call(label, isSelected);
+              submenuController.hide();
+              popBack();
+            },
+          ),
         );
       }).toList();
 
       final popupMenuWidget = PopupMenuActionGroupWidget(
         actions: popupMenuItemEmailActions,
+        submenuController: submenuController,
         onActionSelected: (action) {
-          handleEmailAction(presentationEmail, action.action);
+          if (_shouldHandleAction(action.action)) {
+            handleEmailAction(presentationEmail, action.action);
+          }
         },
       );
 
-      openPopupMenu(currentContext!, position, popupMenuWidget);
+      openPopupMenu(
+        currentContext!,
+        position,
+        popupMenuWidget,
+      ).whenComplete(submenuController.hide);
     }
+  }
+
+  bool _shouldHandleAction(EmailActionType action) {
+    if (action != EmailActionType.labelAs) {
+      return true;
+    }
+
+    return PlatformInfo.isWebTouchDevice || PlatformInfo.isMobile;
+  }
+
+  Widget? _getEmailActionSubmenu({
+    required EmailActionType actionType,
+    required ImagePaths imagePaths,
+    required PresentationEmail presentationEmail,
+    required List<Label>? labels,
+    OnSelectLabelAction? onSelectLabelAction,
+  }) {
+    if (actionType == EmailActionType.labelAs && labels?.isNotEmpty == true) {
+      final listLabels = labels ?? [];
+      final emailLabels = presentationEmail.getLabelList(listLabels);
+
+      return LabelListContextMenu(
+        labelList: listLabels,
+        emailLabels: emailLabels,
+        imagePaths: imagePaths,
+        onSelectLabelAction: (label, isSelected) =>
+            onSelectLabelAction?.call(label, isSelected),
+      );
+    }
+    return null;
   }
 
   bool _canDeletePermanently(
@@ -691,7 +751,7 @@ class EmailActionReactor {
     );
 
     final destinationMailbox = PlatformInfo.isWeb
-      ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
+      ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
       : await push(AppRoutes.destinationPicker, arguments: arguments);
 
     if (destinationMailbox is PresentationMailbox) {

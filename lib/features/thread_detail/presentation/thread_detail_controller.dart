@@ -16,8 +16,10 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_a_thread_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
@@ -49,6 +51,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_refresh_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/labels/add_label_to_thread_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/quick_create_rule_from_collapsed_email_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_selected_email_updated.dart';
@@ -66,6 +69,7 @@ class ThreadDetailController extends BaseController {
   final GetEmailContentInteractor _getEmailContentInteractor;
   final MarkAsStarMultipleEmailInteractor markAsStarMultipleEmailInteractor;
   final MarkAsMultipleEmailReadInteractor markAsMultipleEmailReadInteractor;
+  final AddALabelToAThreadInteractor addALabelToAThreadInteractor;
 
   ThreadDetailController(
     this._getEmailIdsByThreadIdInteractor,
@@ -76,6 +80,7 @@ class ThreadDetailController extends BaseController {
     this._getEmailContentInteractor,
     this.markAsStarMultipleEmailInteractor,
     this.markAsMultipleEmailReadInteractor,
+    this.addALabelToAThreadInteractor,
   );
 
   final emailIdsPresentation = <EmailId, PresentationEmail?>{}.obs;
@@ -260,6 +265,8 @@ class ThreadDetailController extends BaseController {
       );
     } else if (success is CreateNewRuleFilterSuccess) {
       quickCreateRuleFromCollapsedEmailSuccess(success);
+    } else if (success is AddALabelToAThreadSuccess) {
+      handleAddLabelToThreadSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -269,26 +276,24 @@ class ThreadDetailController extends BaseController {
   void handleFailureViewState(failure) {
     if (failure is GetThreadByIdFailure) {
       handleGetThreadByIdFailure(failure);
-    }
-    if (failure is GetEmailsByIdsFailure) {
+    } else if (failure is GetEmailsByIdsFailure) {
       if (failure.updateCurrentThreadDetail) return;
       showRetryToast(failure);
-      return;
-    }
-    if (failure is PrintEmailFailure) {
+    } else if (failure is PrintEmailFailure) {
       if (currentOverlayContext != null && currentContext != null) {
         appToast.showToastErrorMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).unknownError,
         );
       }
-      return;
-    }
-    if (failure is MarkAsMultipleEmailReadFailure ||
+    } else if (failure is MarkAsMultipleEmailReadFailure ||
         failure is MarkAsStarMultipleEmailFailure) {
       toastManager.showMessageFailure(failure as FeatureFailure);
+    } else if (failure is AddALabelToAThreadFailure) {
+      handleAddLabelToThreadFailure(failure);
+    } else {
+      super.handleFailureViewState(failure);
     }
-    super.handleFailureViewState(failure);
   }
 
   @override

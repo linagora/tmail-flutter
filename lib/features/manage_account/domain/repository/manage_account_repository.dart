@@ -12,4 +12,10 @@ abstract class ManageAccountRepository {
   Future<PreferencesSetting> getLocalSettings();
 
   Future<AIScribeConfig> getAiScribeConfigLocalSettings();
+
+  Future<bool> getLabelVisibility();
+
+  Future<void> saveLabelVisibility(bool visible);
+
+  Future<bool> getLabelSettingState();
 }

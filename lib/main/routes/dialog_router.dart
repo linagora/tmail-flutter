@@ -1,5 +1,5 @@
-
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/contact/presentation/contact_bindings.dart';
@@ -17,12 +17,19 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_f
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class DialogRouter {
+  static final _instance = DialogRouter._();
 
-  static Future<dynamic> pushGeneralDialog({
+  factory DialogRouter() => _instance;
+
+  DialogRouter._();
+  
+  Future<dynamic> pushGeneralDialog({
     required String routeName,
     required Object? arguments
   }) async {
-    _isDialogOpened.value = true;
+    if (PlatformInfo.isWeb) {
+      _isDialogOpened.value = true;
+    }
     _bindingDI(routeName);
 
     final returnedValue = await Get.generalDialog(
@@ -32,26 +39,30 @@ class DialogRouter {
       pageBuilder: (_, __, ___) => _generateView(routeName: routeName)
     );
 
-    _isDialogOpened.value = false;
-    if (routeName == AppRoutes.rulesFilterCreator) {
-      isRuleFilterDialogOpened.value = false;
+    if (PlatformInfo.isWeb) {
+      _isDialogOpened.value = false;
+      if (routeName == AppRoutes.rulesFilterCreator) {
+        isRuleFilterDialogOpened.value = false;
+      }
     }
     return returnedValue;
   }
 
-  static final RxBool _isDialogOpened = false.obs;
-  static final RxBool isRuleFilterDialogOpened = false.obs;
+  final RxBool _isDialogOpened = false.obs;
+  final RxBool isRuleFilterDialogOpened = false.obs;
 
-  static bool get isDialogOpened => _isDialogOpened.value;
+  bool get isDialogOpened => _isDialogOpened.value;
 
-  static void _bindingDI(String routeName) {
+  void _bindingDI(String routeName) {
     log('DialogRouter::_bindingDI():routeName: $routeName');
     switch(routeName) {
       case AppRoutes.mailboxCreator:
         MailboxCreatorBindings().dependencies();
         break;
       case AppRoutes.rulesFilterCreator:
-        isRuleFilterDialogOpened.value = true;
+        if (PlatformInfo.isWeb) {
+         isRuleFilterDialogOpened.value = true;
+        }
         RulesFilterCreatorBindings().dependencies();
         break;
       case AppRoutes.identityCreator:
@@ -69,7 +80,7 @@ class DialogRouter {
     }
   }
 
-  static Widget _generateView({required String routeName}) {
+  Widget _generateView({required String routeName}) {
     switch(routeName) {
       case AppRoutes.mailboxCreator:
         return MailboxCreatorView();
@@ -86,5 +97,24 @@ class DialogRouter {
       default:
         return const SizedBox.shrink();
     }
+  }
+
+  Future<void> openDialogModal({
+    required Widget child,
+    String? dialogLabel,
+  }) async {
+    if (PlatformInfo.isWeb) {
+      _isDialogOpened.value = true;
+    }
+
+    await Get.generalDialog(
+      barrierDismissible: true,
+      barrierLabel: dialogLabel ?? 'dialog-modal',
+      pageBuilder: (_, __, ___) => child,
+    ).whenComplete(() {
+      if (PlatformInfo.isWeb) {
+        _isDialogOpened.value = false;
+      }
+    });
   }
 }

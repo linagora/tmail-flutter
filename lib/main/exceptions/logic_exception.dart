@@ -1,0 +1,1 @@
+class InteractorNotInitialized implements Exception {}

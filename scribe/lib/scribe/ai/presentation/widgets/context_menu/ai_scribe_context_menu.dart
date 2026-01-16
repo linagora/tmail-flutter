@@ -6,7 +6,7 @@ class AiScribeContextMenu extends StatefulWidget {
   final ImagePaths imagePaths;
   final List<AiScribeContextMenuAction> menuActions;
   final ValueChanged<AiScribeContextMenuAction> onActionSelected;
-  final PopupSubmenuController? submenuController;
+  final ContextSubmenuController? submenuController;
 
   const AiScribeContextMenu({
     super.key,
