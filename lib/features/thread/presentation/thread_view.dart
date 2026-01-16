@@ -618,6 +618,23 @@ class ThreadView extends GetWidget<ThreadController>
 
       final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
+      final isLabelCapabilitySupported =
+          dashboardController.isLabelCapabilitySupported;
+
+      final labelController =
+          controller.mailboxDashBoardController.labelController;
+
+      final isLabelSettingEnabled =
+          labelController.isLabelSettingEnabled.isTrue;
+
+      List<Label>? emailLabels;
+
+      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+        emailLabels = presentationEmail.getLabelList(
+          labelController.labels,
+        );
+      }
+
       return Dismissible(
         key: ValueKey<EmailId?>(presentationEmail.id),
         direction: controller.getSwipeDirection(
@@ -631,40 +648,21 @@ class ThreadView extends GetWidget<ThreadController>
           presentationEmail,
           direction,
         ),
-        child: Obx(() {
-          final isLabelCapabilitySupported = controller
-              .mailboxDashBoardController.isLabelCapabilitySupported;
-
-          final labelController =
-              controller.mailboxDashBoardController.labelController;
-
-          final isLabelSettingEnabled =
-              labelController.isLabelSettingEnabled.isTrue;
-
-          List<Label>? emailLabels;
-
-          if (isLabelCapabilitySupported && isLabelSettingEnabled) {
-            emailLabels = presentationEmail.getLabelList(
-              labelController.labels,
-            );
-          }
-
-          return EmailTileBuilder(
-            key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
-            presentationEmail: presentationEmail,
-            selectAllMode: selectModeAll,
-            isShowingEmailContent: isShowingEmailContent,
-            isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
-            searchQuery: controller.searchQuery,
-            mailboxContain: presentationEmail.mailboxContain,
-            isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
-            isAINeedsActionEnabled: isAINeedsActionEnabled,
-            labels: emailLabels,
-            emailActionClick: _handleEmailActionClicked,
-            onMoreActionClick: (email, position) =>
-                _handleEmailContextMenuAction(context, email, position),
-          );
-        }),
+        child: EmailTileBuilder(
+          key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
+          presentationEmail: presentationEmail,
+          selectAllMode: selectModeAll,
+          isShowingEmailContent: isShowingEmailContent,
+          isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
+          searchQuery: controller.searchQuery,
+          mailboxContain: presentationEmail.mailboxContain,
+          isSearchEmailRunning: isSearchEmailRunning,
+          isAINeedsActionEnabled: isAINeedsActionEnabled,
+          labels: emailLabels,
+          emailActionClick: _handleEmailActionClicked,
+          onMoreActionClick: (email, position) =>
+              _handleEmailContextMenuAction(context, email, position),
+        ),
       );
     });
   }

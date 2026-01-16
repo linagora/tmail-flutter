@@ -54,13 +54,4 @@ class TagWidget extends StatelessWidget {
       child: labelText,
     );
   }
-
-  String _truncateName(String name, {int maxLength = 16}) {
-    try {
-      if (name.length <= maxLength) return name;
-      return '${name.substring(0, maxLength - 1)}...';
-    } catch (_) {
-      return name;
-    }
-  }
 }

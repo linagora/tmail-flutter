@@ -150,21 +150,14 @@ extension PresentationMailboxExtension on PresentationMailbox {
   String? get filterKeyword {
     if (isFavorite) {
       return KeyWordIdentifier.emailFlagged.value;
+    } else if (isLabelMailbox) {
+      return (this as PresentationLabelMailbox).label.keyword?.value;
+    } else {
+      return null;
     }
-    return null;
   }
 
-  bool get isCacheable => !isFavorite && this is! PresentationLabelMailbox;
+  bool get isCacheable => !isVirtualFolder && this is! PresentationLabelMailbox;
 
   bool get isLabelMailbox => this is PresentationLabelMailbox;
-
-  String? get filterKeyword {
-    if (isFavorite) {
-      return KeyWordIdentifier.emailFlagged.value;
-    }
-    if (isLabelMailbox) {
-      return (this as PresentationLabelMailbox).label.keyword?.value;
-    }
-    return null;
-  }
 }
