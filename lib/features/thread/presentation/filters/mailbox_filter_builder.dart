@@ -80,7 +80,6 @@ class MailboxFilterBuilder {
           {
             EmailFilterCondition(
               hasKeyword: KeyWordIdentifier.emailFlagged.value,
-
             ),
             EmailFilterCondition(
               hasKeyword: keyword,
