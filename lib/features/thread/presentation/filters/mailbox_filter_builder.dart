@@ -2,8 +2,6 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
-import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
-import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -26,10 +24,20 @@ class MailboxFilterBuilder {
 
   MailboxId? get _mailboxId => selectedMailbox?.id;
 
+  bool get _isVirtualFolder => selectedMailbox?.isVirtualFolder == true;
+
+  bool get _isActionRequired => selectedMailbox?.isActionRequired == true;
+
+  bool get _isFavorite => selectedMailbox?.isFavorite == true;
+
+  bool get _isLabelMailbox => selectedMailbox?.isLabelMailbox == true;
+
+  String? get _filterKeyword => selectedMailbox?.filterKeyword;
+
   EmailFilter buildEmailFilterForLoadMailbox() {
     final filterCondition = buildFilterCondition();
 
-    if (selectedMailbox?.isVirtualFolder == true) {
+    if (_isVirtualFolder) {
       return EmailFilter(filter: filterCondition);
     }
 
@@ -43,46 +51,15 @@ class MailboxFilterBuilder {
   Filter buildFilterCondition({PresentationEmail? oldestEmail}) {
     final before = oldestEmail?.receivedAt;
 
-    if (selectedMailbox?.isFavorite == true) {
-      return _buildFavoriteMailboxFilter(before: before);
-    }
-
-    if (selectedMailbox?.isActionRequired == true) {
+    if (_isActionRequired) {
       return _buildActionRequiredMailboxFilter(before: before);
     }
 
-    if (selectedMailbox?.isLabelMailbox == true) {
-      return _buildKeywordBasedFilter(
-        selectedMailbox?.filterKeyword,
-        before: before,
-      );
+    if (_isFavorite || _isLabelMailbox) {
+      return _buildKeywordBasedFilter(keyword: _filterKeyword, before: before);
     }
 
     return buildDefaultMailboxFilter(before: before);
-  }
-
-  Filter _buildFavoriteMailboxFilter({UTCDate? before}) {
-    switch (filterMessageOption) {
-      case FilterMessageOption.unread:
-        return EmailFilterCondition(
-          notKeyword: KeyWordIdentifier.emailSeen.value,
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: before,
-        );
-
-      case FilterMessageOption.attachments:
-        return EmailFilterCondition(
-          hasAttachment: true,
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: before,
-        );
-
-      default:
-        return EmailFilterCondition(
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: before,
-        );
-    }
   }
 
   Filter _buildActionRequiredMailboxFilter({UTCDate? before}) {
@@ -98,7 +75,6 @@ class MailboxFilterBuilder {
             EmailFilterCondition(
               notKeyword: KeyWordIdentifier.emailSeen.value,
               hasKeyword: KeyWordIdentifierExtension.needsActionMail.value,
-              before: before,
             ),
           },
         );
@@ -121,7 +97,7 @@ class MailboxFilterBuilder {
   }
 
   Filter _buildKeywordBasedFilter({
-    required String keyword,
+    required String? keyword,
     UTCDate? before,
   }) {
     switch (filterMessageOption) {
@@ -146,18 +122,12 @@ class MailboxFilterBuilder {
             EmailFilterCondition(
               hasKeyword: KeyWordIdentifier.emailFlagged.value,
             ),
-            EmailFilterCondition(
-              hasKeyword: keyword,
-              before: oldestEmail?.receivedAt,
-            ),
+            EmailFilterCondition(hasKeyword: keyword, before: before),
           },
         );
 
       default:
-        return EmailFilterCondition(
-          hasKeyword: keyword,
-          before: before,
-        );
+        return EmailFilterCondition(hasKeyword: keyword, before: before);
     }
   }
 
@@ -168,7 +138,6 @@ class MailboxFilterBuilder {
 
       case FilterMessageOption.unread:
         return EmailFilterCondition(
-          inMailbox: mailboxId,
           notKeyword: KeyWordIdentifier.emailSeen.value,
           before: before,
           inMailbox: _mailboxId,
@@ -176,7 +145,6 @@ class MailboxFilterBuilder {
 
       case FilterMessageOption.attachments:
         return EmailFilterCondition(
-          inMailbox: mailboxId,
           hasAttachment: true,
           before: before,
           inMailbox: _mailboxId,
@@ -184,7 +152,6 @@ class MailboxFilterBuilder {
 
       case FilterMessageOption.starred:
         return EmailFilterCondition(
-          inMailbox: mailboxId,
           hasKeyword: KeyWordIdentifier.emailFlagged.value,
           before: before,
           inMailbox: _mailboxId,

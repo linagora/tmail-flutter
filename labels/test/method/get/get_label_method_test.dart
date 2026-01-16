@@ -226,7 +226,7 @@ void main() {
           (builder..usings(method.requiredCapabilities)).build().execute();
 
       // Assert
-      expect(future, throwsA(isA<DioError>()));
+      expect(future, throwsA(isA<DioException>()));
     });
   });
 }

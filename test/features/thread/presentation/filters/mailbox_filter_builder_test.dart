@@ -7,9 +7,11 @@ import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/filters/mailbox_filter_builder.dart';
 
@@ -99,17 +101,23 @@ void main() {
     );
 
     test(
-      'Starred filter → flagged only',
+      'Starred filter → flagged only (deduplicated by Set)',
       () {
         final builder = MailboxFilterBuilder(
           selectedMailbox: mailbox(favorite: true),
           filterMessageOption: FilterMessageOption.starred,
         );
 
-        final filter = builder.buildFilterCondition() as EmailFilterCondition;
+        final filter = builder.buildFilterCondition();
+        expect(filter, isA<LogicFilterOperator>());
 
-        expect(filter.hasKeyword, KeyWordIdentifier.emailFlagged.value);
-        expect(filter.notKeyword, isNull);
+        final logic = filter as LogicFilterOperator;
+        expect(logic.operator, Operator.AND);
+
+        expect(logic.conditions.length, 1);
+
+        final condition = logic.conditions.first as EmailFilterCondition;
+        expect(condition.hasKeyword, KeyWordIdentifier.emailFlagged.value);
       },
     );
   });
@@ -318,7 +326,7 @@ void main() {
     );
 
     test(
-      'Before date propagated into all conditions of LogicFilterOperator',
+      'Before date propagated into at least one condition of LogicFilterOperator',
       () {
         final before = beforeDate();
 
@@ -331,10 +339,13 @@ void main() {
           oldestEmail: PresentationEmail(receivedAt: before),
         ) as LogicFilterOperator;
 
-        for (final condition in filter.conditions) {
-          final emailFilter = condition as EmailFilterCondition;
-          expect(emailFilter.before, before);
-        }
+        final conditions = filter.conditions.cast<EmailFilterCondition>();
+
+        expect(
+          conditions.any((c) => c.before == before),
+          true,
+          reason: 'At least one condition must contain before date',
+        );
       },
     );
 
@@ -437,6 +448,172 @@ void main() {
           filter.hasKeyword,
           KeyWordIdentifierExtension.needsActionMail.value,
         );
+      },
+    );
+  });
+
+  group('Label mailbox - buildFilterCondition', () {
+    PresentationMailbox labelMailbox(KeyWordIdentifier keyword) {
+      final label = Label(
+        id: Id('label-1'),
+        keyword: keyword,
+        displayName: keyword.value,
+      );
+      return PresentationLabelMailbox.initial(label);
+    }
+
+    test(
+      'Label + All filter → has label keyword',
+      () {
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: labelMailbox(KeyWordIdentifier.emailFlagged),
+          filterMessageOption: FilterMessageOption.all,
+        );
+
+        final filter = builder.buildFilterCondition() as EmailFilterCondition;
+
+        expect(filter.hasKeyword, KeyWordIdentifier.emailFlagged.value);
+        expect(filter.notKeyword, isNull);
+        expect(filter.hasAttachment, isNull);
+        expect(filter.inMailbox, isNull);
+      },
+    );
+
+    test(
+      'Label + Unread → not seen AND label keyword',
+      () {
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: labelMailbox(KeyWordIdentifier.emailFlagged),
+          filterMessageOption: FilterMessageOption.unread,
+        );
+
+        final filter = builder.buildFilterCondition() as EmailFilterCondition;
+
+        expect(filter.notKeyword, KeyWordIdentifier.emailSeen.value);
+        expect(filter.hasKeyword, KeyWordIdentifier.emailFlagged.value);
+      },
+    );
+
+    test(
+      'Label + Attachments → hasAttachment AND label keyword',
+      () {
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: labelMailbox(KeyWordIdentifier.emailFlagged),
+          filterMessageOption: FilterMessageOption.attachments,
+        );
+
+        final filter = builder.buildFilterCondition() as EmailFilterCondition;
+
+        expect(filter.hasAttachment, true);
+        expect(filter.hasKeyword, KeyWordIdentifier.emailFlagged.value);
+      },
+    );
+
+    test(
+      'Label + Starred → AND(flagged, label keyword) with dedup',
+      () {
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: labelMailbox(KeyWordIdentifier.emailFlagged),
+          filterMessageOption: FilterMessageOption.starred,
+        );
+
+        final filter = builder.buildFilterCondition();
+        expect(filter, isA<LogicFilterOperator>());
+
+        final logic = filter as LogicFilterOperator;
+
+        expect(logic.conditions.length, 1);
+        final c = logic.conditions.first as EmailFilterCondition;
+        expect(c.hasKeyword, KeyWordIdentifier.emailFlagged.value);
+      },
+    );
+
+    test(
+      'Label mailbox propagates before date',
+      () {
+        final before = beforeDate();
+
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: labelMailbox(KeyWordIdentifier.emailFlagged),
+          filterMessageOption: FilterMessageOption.unread,
+        );
+
+        final filter = builder.buildFilterCondition(
+          oldestEmail: PresentationEmail(receivedAt: before),
+        ) as EmailFilterCondition;
+
+        expect(filter.before, before);
+      },
+    );
+  });
+
+  group('Edge - Label mailbox with null keyword', () {
+    PresentationMailbox labelMailboxWithNullKeyword() {
+      final label = Label(
+        id: Id('label-null'),
+        keyword: null,
+        displayName: 'NoKeyword',
+      );
+      return PresentationLabelMailbox.initial(label);
+    }
+
+    test(
+      'Label with null keyword → filter has no hasKeyword',
+      () {
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: labelMailboxWithNullKeyword(),
+          filterMessageOption: FilterMessageOption.all,
+        );
+
+        final filter = builder.buildFilterCondition() as EmailFilterCondition;
+
+        expect(filter.hasKeyword, isNull);
+        expect(filter.notKeyword, isNull);
+        expect(filter.hasAttachment, isNull);
+      },
+    );
+  });
+
+  group('Edge - ActionRequired + Attachments + before', () {
+    test(
+      'ActionRequired + Attachments + before → hasAttachment, needsAction, notSeen, before',
+      () {
+        final before = beforeDate();
+
+        final builder = MailboxFilterBuilder(
+          selectedMailbox: mailbox(actionRequired: true),
+          filterMessageOption: FilterMessageOption.attachments,
+        );
+
+        final filter = builder.buildFilterCondition(
+          oldestEmail: PresentationEmail(receivedAt: before),
+        ) as EmailFilterCondition;
+
+        expect(filter.hasAttachment, true);
+        expect(filter.notKeyword, KeyWordIdentifier.emailSeen.value);
+        expect(
+          filter.hasKeyword,
+          KeyWordIdentifierExtension.needsActionMail.value,
+        );
+        expect(filter.before, before);
+      },
+    );
+  });
+
+  group('Edge - Null mailbox + Starred', () {
+    test(
+      'Null mailbox + Starred → only flagged, no inMailbox',
+      () {
+        const builder = MailboxFilterBuilder(
+          selectedMailbox: null,
+          filterMessageOption: FilterMessageOption.starred,
+        );
+
+        final filter = builder.buildFilterCondition() as EmailFilterCondition;
+
+        expect(filter.hasKeyword, KeyWordIdentifier.emailFlagged.value);
+        expect(filter.inMailbox, isNull);
+        expect(filter.notKeyword, isNull);
       },
     );
   });

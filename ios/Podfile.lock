@@ -176,6 +176,8 @@ PODS:
     - nanopb/encode (= 2.30909.1)
   - nanopb/decode (2.30909.1)
   - nanopb/encode (2.30909.1)
+  - objective_c (0.0.1):
+    - Flutter
   - open_file_ios (0.0.1):
     - Flutter
   - OrderedSet (6.0.3)
@@ -210,11 +212,18 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
+  - Sentry/HybridSDK (8.56.2)
+  - sentry_flutter (9.8.0):
+    - Flutter
+    - FlutterMacOS
+    - Sentry/HybridSDK (= 8.56.2)
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - super_dns_client (0.0.1):
+    - Flutter
   - SwiftyGif (5.4.5)
   - UniversalDetector2 (2.0.1)
   - url_launcher_ios (0.0.1):
@@ -247,6 +256,7 @@ DEPENDENCIES:
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_web_auth_2 (from `.symlinks/plugins/flutter_web_auth_2/ios`)
   - lottie_native (from `.symlinks/plugins/lottie_native/ios`)
+  - objective_c (from `.symlinks/plugins/objective_c/ios`)
   - open_file_ios (from `.symlinks/plugins/open_file_ios/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -257,8 +267,10 @@ DEPENDENCIES:
   - pointer_interceptor_ios (from `.symlinks/plugins/pointer_interceptor_ios/ios`)
   - printing (from `.symlinks/plugins/printing/ios`)
   - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
+  - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - super_dns_client (from `.symlinks/plugins/super_dns_client/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - workmanager_apple (from `.symlinks/plugins/workmanager_apple/ios`)
 
@@ -284,6 +296,7 @@ SPEC REPOS:
     - ReachabilitySwift
     - SDWebImage
     - SDWebImageWebPCoder
+    - Sentry
     - SwiftyGif
     - UniversalDetector2
 
@@ -336,6 +349,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_web_auth_2/ios"
   lottie_native:
     :path: ".symlinks/plugins/lottie_native/ios"
+  objective_c:
+    :path: ".symlinks/plugins/objective_c/ios"
   open_file_ios:
     :path: ".symlinks/plugins/open_file_ios/ios"
   package_info_plus:
@@ -356,10 +371,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/printing/ios"
   receive_sharing_intent:
     :path: ".symlinks/plugins/receive_sharing_intent/ios"
+  sentry_flutter:
+    :path: ".symlinks/plugins/sentry_flutter/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  super_dns_client:
+    :path: ".symlinks/plugins/super_dns_client/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   workmanager_apple:
@@ -405,6 +424,7 @@ SPEC CHECKSUMS:
   lottie_native: c2e590a297861fc32a0188cf8dab39aa97f86d81
   Mantle: c5aa8794a29a022dfbbfc9799af95f477a69b62d
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
+  objective_c: 89e720c30d716b036faf9c9684022048eee1eee2
   open_file_ios: 5ff7526df64e4394b4fe207636b67a95e83078bb
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   package_info_plus: 580e9a5f1b6ca5594e7c9ed5f92d1dfb2a66b5e1
@@ -420,8 +440,11 @@ SPEC CHECKSUMS:
   receive_sharing_intent: 222384f00ffe7e952bbfabaa9e3967cb87e5fe00
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
+  Sentry: b53951377b78e21a734f5dc8318e333dbfc682d7
+  sentry_flutter: 4c33648b7e83310aa1fdb1b10c5491027d9643f0
   share_plus: de6030e33b4e106470e09322d87cf2a4258d2d1d
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  super_dns_client: 03e8ebf4df47d1335d1027299f8d2365b7a7bb59
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   UniversalDetector2: 7c9ffd935cf050eeb19edf7e90f6febe3743a1af
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
