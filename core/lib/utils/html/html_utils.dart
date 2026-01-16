@@ -73,11 +73,14 @@ class HtmlUtils {
     name: 'unregisterDropListener');
 
   static ({String name, String script}) registerSelectionChangeListener(
-    String viewId,
-  ) =>
+    String viewId, {
+    bool isWebPlatform = false,
+  }) =>
       (
         script: '''
       let lastSelectedText = '';
+
+      const isWebPlatform = $isWebPlatform;
 
       const sendSelectionChangeMessage = (data) => {
         // When iframe
@@ -101,10 +104,17 @@ class HtmlUtils {
       function getEditableFromSelection(selection) {
         const node = selection?.focusNode || selection?.anchorNode;
         const el = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
-        return (
-          el?.closest('.note-editor .note-editable') ||
-          document.querySelector('.note-editor .note-editable')
-        );
+
+        if (isWebPlatform) {
+          return (
+            el?.closest('.note-editor .note-editable') ||
+            document.querySelector('.note-editor .note-editable')
+          );
+        } else {
+          return (
+            el?.closest('#editor')
+          );
+        }
       }
       
       function clamp(v, min, max) {
@@ -142,9 +152,13 @@ class HtmlUtils {
           }
       
           const lastRect = rects[rects.length - 1];
-      
-          let x = lastRect.right - editableRect.left;
-          let y = lastRect.bottom - editableRect.top;
+
+          // Avoid native selection marks in mobile
+          // Offset has been arbitrary determined to avoid selection marks on Android and iOS
+          const buttonOffset = isWebPlatform ? { x: 0, y: 0 } : { x: 22, y: -20 };
+
+          let x = lastRect.right - editableRect.left + buttonOffset.x;
+          let y = lastRect.bottom - editableRect.top + buttonOffset.y;
       
           const isInside =
             lastRect.bottom >= editableRect.top &&
@@ -183,7 +197,7 @@ class HtmlUtils {
     script: '''
       (() => {
         const selection = window.getSelection();
-        if (selection) {
+        if (selection && selection.rangeCount > 0) {
           selection.collapseToEnd()
         }
       })();''',
@@ -199,6 +213,40 @@ class HtmlUtils {
         }
       })();''',
     name: 'deleteSelectionContent');
+
+  static const saveSelection = (
+    script: '''
+      (() => {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          window._savedRange = selection.getRangeAt(0).cloneRange();
+          return selection.toString();
+        }
+        return "";
+      })();''',
+    name: 'saveSelection');
+
+  static const restoreSelection = (
+    script: '''
+      (() => {
+        if (window._savedRange) {
+          const selection = window.getSelection();
+          if (selection) {
+            selection.removeAllRanges();
+            selection.addRange(window._savedRange);
+            return selection.toString();
+          }
+        }
+        return "";
+      })();''',
+    name: 'restoreSelection');
+
+  static const clearSavedSelection = (
+    script: '''
+      (() => {
+        delete window._savedRange;
+      })();''',
+    name: 'clearSavedSelection');
 
   static recalculateEditorHeight({double? maxHeight}) => (
     script: '''
