@@ -160,6 +160,21 @@ class WebSocketController extends PushBaseController {
     _stateChangeDebouncer?.cancel();
   }
 
+  /// Reconnect WebSocket connection.
+  /// Used when re-enabling auto-sync after it was disabled.
+  void reconnect() {
+    log('WebSocketController::reconnect:');
+    _retryRemained = 3;
+    _connectWebSocket();
+  }
+
+  /// Disconnect WebSocket connection.
+  /// Used when disabling auto-sync.
+  void disconnect() {
+    log('WebSocketController::disconnect:');
+    _cleanUpWebSocketResources();
+  }
+
   void _handleWebSocketConnectionSuccess(WebSocketConnectionSuccess success) {
     log('WebSocketController::_handleWebSocketConnectionSuccess(): $success');
     _cleanUpWebSocketResources();

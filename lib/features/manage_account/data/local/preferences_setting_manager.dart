@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/auto_sync_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
@@ -23,6 +24,8 @@ class PreferencesSettingManager {
       '${_preferencesSettingKey}_AI_SCRIBE';
   static const String _preferencesSettingLabelKey =
       '${_preferencesSettingKey}_LABEL';
+  static const String _preferencesSettingAutoSyncKey =
+      '${_preferencesSettingKey}_AUTO_SYNC';
 
   const PreferencesSettingManager(this._sharedPreferences);
 
@@ -51,6 +54,8 @@ class PreferencesSettingManager {
             return AIScribeConfig.fromJson(jsonDecoded);
           case _preferencesSettingLabelKey:
             return LabelConfig.fromJson(jsonDecoded);
+          case _preferencesSettingAutoSyncKey:
+            return AutoSyncConfig.fromJson(jsonDecoded);
           default:
             return DefaultPreferencesConfig.fromJson(jsonDecoded);
         }
@@ -76,6 +81,8 @@ class PreferencesSettingManager {
       return _preferencesSettingAIScribeKey;
     } else if (config is LabelConfig) {
       return _preferencesSettingLabelKey;
+    } else if (config is AutoSyncConfig) {
+      return _preferencesSettingAutoSyncKey;
     } else {
       return _preferencesSettingKey;
     }
@@ -180,6 +187,24 @@ class PreferencesSettingManager {
 
   Future<void> updateLabel(bool isEnabled) async {
     final currentConfig = await getLabelConfig();
+    final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
+    await savePreferences(updatedConfig);
+  }
+
+  Future<AutoSyncConfig> getAutoSyncConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingAutoSyncKey,
+    );
+
+    return jsonString == null
+        ? AutoSyncConfig.initial()
+        : AutoSyncConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updateAutoSync(bool isEnabled) async {
+    final currentConfig = await getAutoSyncConfig();
     final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
     await savePreferences(updatedConfig);
   }
