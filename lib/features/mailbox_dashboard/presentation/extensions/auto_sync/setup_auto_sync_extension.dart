@@ -10,6 +10,16 @@ extension SetupAutoSyncExtension on MailboxDashBoardController {
 
   RxBool get isAutoSyncEnabled => _isAutoSyncEnabled;
 
+  /// Get the actual WebSocket connection state for UI display
+  Rx<WebSocketConnectionState> get webSocketConnectionState =>
+      WebSocketController.instance.connectionState;
+
+  /// Whether auto-sync is actually working (enabled AND connected)
+  bool get isAutoSyncActive =>
+      _isAutoSyncEnabled.value &&
+      WebSocketController.instance.connectionState.value ==
+          WebSocketConnectionState.connected;
+
   Future<void> loadAutoSyncConfig() async {
     try {
       final preferencesManager = getBinding<PreferencesSettingManager>();

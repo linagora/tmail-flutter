@@ -382,6 +382,7 @@ abstract class BaseController extends GetxController
       // Only require WebSocket capability, not ticket (ticket is James-specific)
       if (!hasWebSocket) {
         log('$runtimeType::injectWebSocket: WebSocket push not available - server does not support WebSocket capability');
+        WebSocketController.instance.markNotSupported();
         return;
       }
 
@@ -392,6 +393,7 @@ abstract class BaseController extends GetxController
 
       if (wsCapability?.supportsPush != true) {
         log('$runtimeType::injectWebSocket: WebSocket push not enabled on server');
+        WebSocketController.instance.markNotSupported();
         return;
       }
       WebSocketInteractorBindings().dependencies();
