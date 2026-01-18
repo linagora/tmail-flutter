@@ -366,41 +366,45 @@ abstract class BaseController extends GetxController
 
   void injectWebSocket(Session? session, AccountId? accountId) {
     try {
-      log('$runtimeType::injectWebSocket:');
+      log('$runtimeType::injectWebSocket:', webConsoleEnabled: true);
 
-      // Log available capabilities for debugging
-      final account = session?.accounts[accountId];
-      if (account != null) {
-        final capabilities = account.accountCapabilities.keys.map((c) => c.value).toList();
-        log('$runtimeType::injectWebSocket: Available capabilities: $capabilities');
-      }
-
-      final hasWebSocket = CapabilityIdentifier.jmapWebSocket.isSupported(session!, accountId!);
-      final hasTicket = CapabilityIdentifier.jmapWebSocketTicket.isSupported(session, accountId);
-      log('$runtimeType::injectWebSocket: WebSocket supported=$hasWebSocket, Ticket supported=$hasTicket');
-
-      // Only require WebSocket capability, not ticket (ticket is James-specific)
-      if (!hasWebSocket) {
-        log('$runtimeType::injectWebSocket: WebSocket push not available - server does not support WebSocket capability');
+      if (session == null || accountId == null) {
+        log('$runtimeType::injectWebSocket: Session or accountId is null', webConsoleEnabled: true);
         WebSocketController.instance.markNotSupported();
         return;
       }
 
-      final wsCapability = session.getCapabilityProperties<WebSocketCapability>(
-        accountId,
-        CapabilityIdentifier.jmapWebSocket);
-      log('$runtimeType::injectWebSocket: wsCapability=$wsCapability, supportsPush=${wsCapability?.supportsPush}, url=${wsCapability?.url}');
+      // Log available session-level capabilities for debugging
+      final sessionCapabilities = session.capabilities.keys.map((c) => c.value.toString()).toList();
+      log('$runtimeType::injectWebSocket: Session capabilities: $sessionCapabilities', webConsoleEnabled: true);
+
+      // WebSocket is a session-level capability, not account-level
+      // Check session.capabilities instead of account.accountCapabilities
+      final hasWebSocket = session.capabilities.containsKey(CapabilityIdentifier.jmapWebSocket);
+      final hasTicket = session.capabilities.containsKey(CapabilityIdentifier.jmapWebSocketTicket);
+      log('$runtimeType::injectWebSocket: WebSocket supported=$hasWebSocket, Ticket supported=$hasTicket', webConsoleEnabled: true);
+
+      // Only require WebSocket capability, not ticket (ticket is James-specific)
+      if (!hasWebSocket) {
+        log('$runtimeType::injectWebSocket: WebSocket push not available - server does not support WebSocket capability', webConsoleEnabled: true);
+        WebSocketController.instance.markNotSupported();
+        return;
+      }
+
+      // Get WebSocket capability properties from session-level capabilities
+      final wsCapability = session.capabilities[CapabilityIdentifier.jmapWebSocket] as WebSocketCapability?;
+      log('$runtimeType::injectWebSocket: wsCapability=$wsCapability, supportsPush=${wsCapability?.supportsPush}, url=${wsCapability?.url}', webConsoleEnabled: true);
 
       if (wsCapability?.supportsPush != true) {
-        log('$runtimeType::injectWebSocket: WebSocket push not enabled on server');
+        log('$runtimeType::injectWebSocket: WebSocket push not enabled on server', webConsoleEnabled: true);
         WebSocketController.instance.markNotSupported();
         return;
       }
       WebSocketInteractorBindings().dependencies();
       WebSocketController.instance.initialize(accountId: accountId, session: session);
-      log('$runtimeType::injectWebSocket: WebSocket initialized successfully');
+      log('$runtimeType::injectWebSocket: WebSocket initialized successfully', webConsoleEnabled: true);
     } catch(e) {
-      logWarning('$runtimeType::injectWebSocket(): exception: $e');
+      logWarning('$runtimeType::injectWebSocket(): exception: $e', webConsoleEnabled: true);
     }
   }
 
