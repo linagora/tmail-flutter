@@ -41,9 +41,9 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
         connectionUri = Uri.parse('${webSocketUri.ensureWebSocketUri().toString()}?ticket=$webSocketTicket');
         log('WebSocketDatasourceImpl::getWebSocketChannel: Using ticket auth');
       } else {
-        // Use standard bearer token authentication (for Stalwart and other JMAP servers)
-        connectionUri = await _buildBearerAuthUri(webSocketUri);
-        log('WebSocketDatasourceImpl::getWebSocketChannel: Using bearer token auth');
+        // Use standard token/basic authentication (for Stalwart and other JMAP servers)
+        connectionUri = await _buildAuthUri(webSocketUri);
+        log('WebSocketDatasourceImpl::getWebSocketChannel: Using standard auth');
       }
 
       log('WebSocketDatasourceImpl::getWebSocketChannel: Connecting to $connectionUri');
@@ -59,29 +59,38 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
     }).catchError(_exceptionThrower.throwException);
   }
 
-  Future<Uri> _buildBearerAuthUri(Uri webSocketUri) async {
+  Future<Uri> _buildAuthUri(Uri webSocketUri) async {
     final wsUri = webSocketUri.ensureWebSocketUri();
 
     try {
       final authInterceptors = Get.find<AuthorizationInterceptors>();
       final authType = authInterceptors.authenticationType;
+      log('WebSocketDatasourceImpl::_buildAuthUri: authType=$authType');
 
       if (authType == AuthenticationType.oidc) {
-        // For OIDC, we need to get the access token
-        // The token is passed as a query parameter since browser WebSocket API doesn't support headers
+        // For OIDC, pass the access token as query parameter
         final token = authInterceptors.currentToken;
+        log('WebSocketDatasourceImpl::_buildAuthUri: OIDC token available=${token != null}');
         if (token != null && token.isNotEmpty) {
           return wsUri.replace(queryParameters: {
             ...wsUri.queryParameters,
             'access_token': token,
           });
         }
+      } else if (authType == AuthenticationType.basic) {
+        // For basic auth, pass credentials as authorization query parameter
+        final basicAuth = authInterceptors.basicAuthCredentials;
+        log('WebSocketDatasourceImpl::_buildAuthUri: Basic auth available=${basicAuth != null}');
+        if (basicAuth != null && basicAuth.isNotEmpty) {
+          return wsUri.replace(queryParameters: {
+            ...wsUri.queryParameters,
+            'authorization': 'Basic $basicAuth',
+          });
+        }
       }
-      // For basic auth or if no token available, connect without auth in URL
-      // The server may use session cookies or reject the connection
-      log('WebSocketDatasourceImpl::_buildBearerAuthUri: No bearer token available, connecting without token');
+      log('WebSocketDatasourceImpl::_buildAuthUri: No auth credentials available, connecting without auth');
     } catch (e) {
-      log('WebSocketDatasourceImpl::_buildBearerAuthUri: Error getting auth: $e');
+      log('WebSocketDatasourceImpl::_buildAuthUri: Error getting auth: $e');
     }
 
     return wsUri;
