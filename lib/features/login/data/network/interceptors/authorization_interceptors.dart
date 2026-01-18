@@ -70,6 +70,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return null;
   }
 
+  /// Returns the base64-encoded basic auth credentials for WebSocket authentication.
+  /// Returns null if not using basic auth.
+  String? get basicAuthCredentials {
+    if (_authenticationType == AuthenticationType.basic) {
+      return _authorization;
+    }
+    return null;
+  }
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     switch(_authenticationType) {
