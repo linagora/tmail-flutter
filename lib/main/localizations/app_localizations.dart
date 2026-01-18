@@ -5499,4 +5499,18 @@ class AppLocalizations {
       name: 'aiNeedsActionSettingExplanation',
     );
   }
+
+  String get autoSyncEnabled {
+    return Intl.message(
+      'Auto-sync enabled',
+      name: 'autoSyncEnabled',
+    );
+  }
+
+  String get autoSyncDisabled {
+    return Intl.message(
+      'Auto-sync disabled',
+      name: 'autoSyncDisabled',
+    );
+  }
 }

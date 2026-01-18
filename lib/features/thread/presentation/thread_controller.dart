@@ -627,13 +627,20 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _refreshEmailChanges({required jmap.State newState}) {
     log('ThreadController::_refreshEmailChanges(): newState: $newState');
-    if (_accountId == null ||
-        _session == null ||
-        mailboxDashBoardController.currentEmailState == null ||
-        mailboxDashBoardController.currentEmailState == newState) {
+    if (_accountId == null || _session == null) {
       return;
     }
-    log('ThreadController::_refreshEmailChanges: websocket enqueue message:');
+
+    // Only skip if currentEmailState is set AND equals the new state
+    // This allows refresh when currentEmailState is null (first load)
+    // or when the state has actually changed
+    final currentState = mailboxDashBoardController.currentEmailState;
+    if (currentState != null && currentState == newState) {
+      log('ThreadController::_refreshEmailChanges: skipping - state unchanged');
+      return;
+    }
+
+    log('ThreadController::_refreshEmailChanges: websocket enqueue message');
     _webSocketQueueHandler?.enqueue(WebSocketMessage(newState: newState));
   }
 
