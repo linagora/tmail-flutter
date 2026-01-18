@@ -10,6 +10,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
@@ -29,6 +30,14 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+/// Represents the WebSocket connection state
+enum WebSocketConnectionState {
+  disconnected,
+  connecting,
+  connected,
+  notSupported,
+}
+
 class WebSocketController extends PushBaseController {
   WebSocketController._internal();
 
@@ -47,6 +56,13 @@ class WebSocketController extends PushBaseController {
   StreamSubscription? _webSocketSubscription;
   AppLifecycleListener? _appLifecycleListener;
   Debouncer<StateChange?>? _stateChangeDebouncer;
+
+  /// Observable connection state for UI binding
+  final Rx<WebSocketConnectionState> connectionState =
+      WebSocketConnectionState.disconnected.obs;
+
+  /// Whether the WebSocket is currently connected
+  bool get isConnected => connectionState.value == WebSocketConnectionState.connected;
 
   @override
   void handleFailureViewState(Failure failure) {
@@ -146,6 +162,7 @@ class WebSocketController extends PushBaseController {
     if (_isConnecting) return;
 
     _isConnecting = true;
+    connectionState.value = WebSocketConnectionState.connecting;
     log('WebSocketController::_connectWebSocket: Connecting');
     consumeState(_connectWebSocketInteractor!.execute(session!, accountId!));
   }
@@ -158,6 +175,10 @@ class WebSocketController extends PushBaseController {
     _webSocketChannel = null;
     _webSocketPingTimer?.cancel();
     _stateChangeDebouncer?.cancel();
+    // Only set to disconnected if not already in notSupported state
+    if (connectionState.value != WebSocketConnectionState.notSupported) {
+      connectionState.value = WebSocketConnectionState.disconnected;
+    }
   }
 
   /// Reconnect WebSocket connection.
@@ -165,6 +186,7 @@ class WebSocketController extends PushBaseController {
   void reconnect() {
     log('WebSocketController::reconnect:');
     _retryRemained = 3;
+    connectionState.value = WebSocketConnectionState.disconnected;
     _connectWebSocket();
   }
 
@@ -173,6 +195,13 @@ class WebSocketController extends PushBaseController {
   void disconnect() {
     log('WebSocketController::disconnect:');
     _cleanUpWebSocketResources();
+    connectionState.value = WebSocketConnectionState.disconnected;
+  }
+
+  /// Mark WebSocket as not supported by the server.
+  void markNotSupported() {
+    log('WebSocketController::markNotSupported:');
+    connectionState.value = WebSocketConnectionState.notSupported;
   }
 
   void _handleWebSocketConnectionSuccess(WebSocketConnectionSuccess success) {
@@ -180,6 +209,7 @@ class WebSocketController extends PushBaseController {
     _cleanUpWebSocketResources();
     _retryRemained = 3;
     _webSocketChannel = success.webSocketChannel;
+    connectionState.value = WebSocketConnectionState.connected;
     _enableWebSocketPush();
     if (AppConfig.isWebSocketEchoPingEnabled) {
       _pingWebSocket();

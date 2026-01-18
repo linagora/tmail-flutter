@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_repor
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/auto_sync/setup_auto_sync_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
@@ -440,19 +441,43 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       Padding(
         padding: const EdgeInsetsDirectional.only(start: 8),
         child: Obx(() {
+          final connectionState = controller.webSocketConnectionState.value;
           final isEnabled = controller.isAutoSyncEnabled.value;
+
+          // Determine icon, color, and tooltip based on actual connection state
+          String tooltipMessage;
+          String iconPath;
+          Color iconColor;
+
+          switch (connectionState) {
+            case WebSocketConnectionState.connected:
+              tooltipMessage = AppLocalizations.of(context).autoSyncEnabled;
+              iconPath = controller.imagePaths.icConnectedInternet;
+              iconColor = Colors.green;
+            case WebSocketConnectionState.connecting:
+              tooltipMessage = 'Connecting...';
+              iconPath = controller.imagePaths.icConnectedInternet;
+              iconColor = Colors.orange;
+            case WebSocketConnectionState.notSupported:
+              tooltipMessage = 'Auto-sync not supported by server';
+              iconPath = controller.imagePaths.icDialogOfflineMode;
+              iconColor = Colors.red;
+            case WebSocketConnectionState.disconnected:
+              tooltipMessage = isEnabled
+                  ? 'Disconnected (click to retry)'
+                  : AppLocalizations.of(context).autoSyncDisabled;
+              iconPath = controller.imagePaths.icDialogOfflineMode;
+              iconColor = Colors.grey;
+          }
+
           return Tooltip(
-            message: isEnabled
-                ? AppLocalizations.of(context).autoSyncEnabled
-                : AppLocalizations.of(context).autoSyncDisabled,
+            message: tooltipMessage,
             child: TMailButtonWidget.fromIcon(
               key: const Key('auto_sync_toggle_button'),
-              icon: isEnabled
-                  ? controller.imagePaths.icConnectedInternet
-                  : controller.imagePaths.icDialogOfflineMode,
+              icon: iconPath,
               borderRadius: 10,
               iconSize: 16,
-              iconColor: isEnabled ? Colors.green : Colors.grey,
+              iconColor: iconColor,
               backgroundColor: AppColor.colorFilterMessageButton.withValues(alpha: 0.6),
               onTapActionCallback: controller.toggleAutoSync,
             ),
