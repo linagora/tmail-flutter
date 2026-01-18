@@ -98,10 +98,14 @@ abstract class PushBaseController {
             ? SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session)
             : StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
       case TypeName.emailDelivery:
-        if (!isForeground) {
+        // Handle emailDelivery in both foreground and background
+        // In foreground: sync the email list to show new emails
+        // In background: show push notification
+        if (isForeground) {
+          return SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session);
+        } else {
           return PushNotificationAction(typeName, newState, session, accountId, userName);
         }
-        break;
       case TypeName.mailboxType:
         return isForeground
             ? SynchronizeMailboxOnForegroundAction(typeName, newState, accountId)

@@ -106,7 +106,7 @@ void main() {
       });
 
       test(
-        'should call emailChangeListener.dispatchActions with nothing '
+        'should call emailChangeListener.dispatchActions with SynchronizeEmailOnForegroundAction '
         'when mapTypeState contains emailDelivery '
         'and isForeground is true',
       () {
@@ -126,7 +126,17 @@ void main() {
         );
 
         // assert
-        verifyNever(emailChangeListener.dispatchActions(any));
+        // emailDelivery in foreground should now trigger sync to show new emails
+        verify(
+          emailChangeListener.dispatchActions([
+            SynchronizeEmailOnForegroundAction(
+              TypeName.emailDelivery,
+              state,
+              accountId,
+              null,
+            ),
+          ]),
+        ).called(1);
         verifyNever(mailboxChangeListener.dispatchActions(any));
       });
 

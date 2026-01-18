@@ -123,6 +123,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_ai_needs_action_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_cached_ai_scribe_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/auto_sync/setup_auto_sync_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
@@ -409,6 +410,7 @@ class MailboxDashBoardController extends ReloadableController
     _handleArguments();
     _loadAppGrid();
     loadAIScribeConfig();
+    loadAutoSyncConfig();
     super.onReady();
   }
 

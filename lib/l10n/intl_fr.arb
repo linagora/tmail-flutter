@@ -5497,5 +5497,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "autoSyncEnabled": "Synchronisation auto activée",
+  "@autoSyncEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "autoSyncDisabled": "Synchronisation auto désactivée",
+  "@autoSyncDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

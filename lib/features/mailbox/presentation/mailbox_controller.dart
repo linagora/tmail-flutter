@@ -567,10 +567,16 @@ class MailboxController extends BaseMailboxController
   
   void _refreshMailboxChanges({required jmap.State newState}) {
     log('MailboxController::_refreshMailboxChanges():newState: $newState');
-    if (accountId == null ||
-        session == null ||
-        currentMailboxState == null ||
-        currentMailboxState == newState) {
+    if (accountId == null || session == null) {
+      _newFolderId = null;
+      return;
+    }
+
+    // Only skip if currentMailboxState is set AND equals the new state
+    // This allows refresh when currentMailboxState is null (first load)
+    // or when the state has actually changed
+    if (currentMailboxState != null && currentMailboxState == newState) {
+      log('MailboxController::_refreshMailboxChanges: skipping - state unchanged');
       _newFolderId = null;
       return;
     }

@@ -3292,5 +3292,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "autoSyncEnabled": "Auto-sync enabled",
+  "@autoSyncEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "autoSyncDisabled": "Auto-sync disabled",
+  "@autoSyncDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
