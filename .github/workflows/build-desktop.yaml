@@ -99,37 +99,6 @@ jobs:
         shell: bash
         run: ./scripts/prebuild.sh
 
-      - name: Patch plugins for Windows (remove Firebase)
-        shell: pwsh
-        run: |
-          # Must run AFTER prebuild since prebuild may regenerate plugin files
-
-          # Remove firebase_core from generated_plugins.cmake
-          $cmakeFile = "windows/flutter/generated_plugins.cmake"
-          if (Test-Path $cmakeFile) {
-            $lines = Get-Content $cmakeFile
-            $filtered = $lines | Where-Object { $_ -notmatch 'firebase_core' }
-            $filtered | Set-Content $cmakeFile
-            Write-Host "Patched $cmakeFile - removed firebase_core"
-          }
-
-          # Remove firebase_core from generated_plugin_registrant.cc
-          $ccFile = "windows/flutter/generated_plugin_registrant.cc"
-          if (Test-Path $ccFile) {
-            $lines = Get-Content $ccFile
-            $filtered = $lines | Where-Object {
-              $_ -notmatch 'firebase_core' -and $_ -notmatch 'FirebaseCorePluginCApi'
-            }
-            $filtered | Set-Content $ccFile
-            Write-Host "Patched $ccFile - removed Firebase references"
-          }
-
-          # Verify the patches
-          Write-Host "=== generated_plugins.cmake content ==="
-          Get-Content "windows/flutter/generated_plugins.cmake" | Select-Object -First 30
-          Write-Host "=== generated_plugin_registrant.cc content ==="
-          Get-Content "windows/flutter/generated_plugin_registrant.cc"
-
       - name: Build Windows release
         run: flutter build windows --release
 
