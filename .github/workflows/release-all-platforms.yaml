@@ -174,6 +174,14 @@ jobs:
           FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
         run: ./scripts/setup-firebase.sh
 
+      - name: Setup Android signing
+        env:
+          PLAY_STORE_UPLOAD_KEY_BASE64: ${{ secrets.PLAY_STORE_UPLOAD_KEY_BASE64 }}
+          PLAY_STORE_KEY_INFO_BASE64: ${{ secrets.PLAY_STORE_KEY_INFO_BASE64 }}
+        run: |
+          cd android
+          ../scripts/setup-android.sh
+
       - name: Install dependencies
         run: flutter pub get
 
