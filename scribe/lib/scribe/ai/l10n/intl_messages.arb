@@ -1,6 +1,6 @@
 {
-  "@@last_modified": "2025-12-18T02:49:48.638213",
-  "categoryCorrectGrammar": "Correct grammar",
+  "@@last_modified": "2026-01-20T08:05:38.377619",
+  "categoryCorrectGrammar": "Correct",
   "@categoryCorrectGrammar": {
     "type": "text",
     "placeholders_order": [],
@@ -90,12 +90,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "inputPlaceholder": "Help me write",
-  "@inputPlaceholder": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "customPromptAction": "Help me write",
   "@customPromptAction": {
     "type": "text",
@@ -104,12 +98,6 @@
   },
   "failedToGenerate": "Failed to generate AI response",
   "@failedToGenerate": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "insertButton": "Insert",
-  "@insertButton": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

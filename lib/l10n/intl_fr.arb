@@ -5492,12 +5492,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiAssistant": "Assistant IA",
-  "@aiAssistant": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "createLabel": "Créer un libellé",
   "@createLabel": {
     "type": "text",

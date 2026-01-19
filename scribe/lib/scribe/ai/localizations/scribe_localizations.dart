@@ -23,7 +23,7 @@ class ScribeLocalizations {
   // Menu Categories
   String get categoryCorrectGrammar {
     return Intl.message(
-      'Correct grammar',
+      'Correct',
       name: 'categoryCorrectGrammar',
     );
   }
@@ -130,13 +130,6 @@ class ScribeLocalizations {
   }
 
   // Input Bar
-  String get inputPlaceholder {
-    return Intl.message(
-      'Help me write',
-      name: 'inputPlaceholder',
-    );
-  }
-
   String get customPromptAction {
     return Intl.message(
       'Help me write',
@@ -149,13 +142,6 @@ class ScribeLocalizations {
     return Intl.message(
       'Failed to generate AI response',
       name: 'failedToGenerate',
-    );
-  }
-
-  String get insertButton {
-    return Intl.message(
-      'Insert',
-      name: 'insertButton',
     );
   }
 
