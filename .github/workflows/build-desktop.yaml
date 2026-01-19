@@ -1,11 +1,7 @@
 name: Build Desktop Apps
 
-# NOTE: Windows build is disabled because firebase_core/firebase_messaging
-# plugins don't support Windows desktop. The Firebase C++ SDK has linking
-# issues with the Windows CRT libraries.
-#
-# To enable Windows builds, Firebase dependencies would need to be made
-# conditional using platform-specific code (dart:io Platform checks).
+# Firebase is excluded from Windows builds via the "Patch plugins" step.
+# Desktop platforms use WebSocket for push notifications instead of FCM.
 
 on:
   workflow_dispatch:
@@ -16,9 +12,9 @@ on:
         default: true
         type: boolean
       build_windows:
-        description: 'Build Windows app (requires Firebase fix)'
+        description: 'Build Windows app'
         required: false
-        default: false
+        default: true
         type: boolean
   push:
     tags:
@@ -98,6 +94,28 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Patch plugins for Windows (remove Firebase)
+        shell: pwsh
+        run: |
+          # Remove firebase_core from generated_plugins.cmake
+          $cmakeFile = "windows/flutter/generated_plugins.cmake"
+          if (Test-Path $cmakeFile) {
+            $content = Get-Content $cmakeFile -Raw
+            $content = $content -replace 'firebase_core\r?\n', ''
+            Set-Content $cmakeFile $content
+            Write-Host "Patched $cmakeFile"
+          }
+
+          # Remove firebase_core from generated_plugin_registrant.cc
+          $ccFile = "windows/flutter/generated_plugin_registrant.cc"
+          if (Test-Path $ccFile) {
+            $content = Get-Content $ccFile -Raw
+            $content = $content -replace '#include <firebase_core/firebase_core_plugin_c_api.h>\r?\n', ''
+            $content = $content -replace '  FirebaseCorePluginCApiRegisterWithRegistrar\(\r?\n      registry->GetRegistrarForPlugin\("FirebaseCorePluginCApi"\)\);\r?\n', ''
+            Set-Content $ccFile $content
+            Write-Host "Patched $ccFile"
+          }
 
       - name: Run prebuild
         shell: bash
