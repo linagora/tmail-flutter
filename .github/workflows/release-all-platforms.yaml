@@ -31,11 +31,6 @@ on:
         required: false
         default: false
         type: boolean
-      build_web:
-        description: 'Build Web app'
-        required: false
-        default: true
-        type: boolean
       build_docker:
         description: 'Build Docker image'
         required: false
@@ -521,68 +516,6 @@ jobs:
           path: build/linux/x64/release/bundle/TMail-Linux-x64.tar.gz
           retention-days: 30
 
-  build-web:
-    name: Build Web App
-    runs-on: ubuntu-latest
-    needs: prebuild
-    if: ${{ github.event_name == 'push' || inputs.build_web }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Restore prebuild cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            .dart_tool/
-            lib/**/*.g.dart
-            lib/**/*.freezed.dart
-            **/lib/**/*.g.dart
-            **/lib/**/*.freezed.dart
-          key: ${{ needs.prebuild.outputs.cache-key }}
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: "stable"
-          cache: true
-          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
-
-      - name: Cache pub dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            .dart_tool/
-          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: pub-${{ runner.os }}-
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Run prebuild (if cache miss)
-        run: |
-          if [ ! -f "lib/l10n/messages_all.dart" ]; then
-            ./scripts/prebuild.sh
-          fi
-
-      - name: Build Web release
-        run: flutter build web --release
-
-      - name: Create ZIP archive
-        run: |
-          cd build/web
-          zip -r TMail-Web.zip *
-
-      - name: Upload Web artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: tmail-web
-          path: build/web/TMail-Web.zip
-          retention-days: 30
-
   build-docker:
     name: Build Docker Image
     runs-on: ubuntu-latest
@@ -635,7 +568,7 @@ jobs:
   release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [build-android, build-ios, build-macos, build-windows, build-linux, build-web, build-docker]
+    needs: [build-android, build-ios, build-macos, build-windows, build-linux, build-docker]
     if: |
       always() &&
       (startsWith(github.ref, 'refs/tags/v') || inputs.create_release) &&
@@ -643,8 +576,7 @@ jobs:
       (needs.build-ios.result == 'success' || needs.build-ios.result == 'skipped') &&
       (needs.build-macos.result == 'success' || needs.build-macos.result == 'skipped') &&
       (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') &&
-      (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') &&
-      (needs.build-web.result == 'success' || needs.build-web.result == 'skipped')
+      (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped')
     permissions:
       contents: write
 
@@ -688,7 +620,6 @@ jobs:
             artifacts/tmail-macos/*.dmg
             artifacts/tmail-windows/*.zip
             artifacts/tmail-linux/*.tar.gz
-            artifacts/tmail-web/*.zip
           body: |
             ## TMail ${{ steps.version.outputs.version }}
 
@@ -701,8 +632,7 @@ jobs:
             | iOS | `TMail-iOS-unsigned.ipa` | iOS app (unsigned, requires re-signing) |
             | macOS | `TMail-macOS-arm64.dmg` | macOS app (Apple Silicon) |
             | Windows | `TMail-Windows-x64.zip` | Windows app (64-bit) |
-            | Linux | `TMail-Linux-x64.tar.gz` | Linux app (64-bit) |
-            | Web | `TMail-Web.zip` | Web app (self-hosted) |
+            | Linux | `TMail-Linux-x64.tar.gz` | Linux app (64-bit, if enabled) |
 
             ### Installation
 
@@ -716,11 +646,9 @@ jobs:
 
             **Linux**: Download and extract the tarball, then run `tmail_ui_user`.
 
-            **Web**: Deploy the contents of the ZIP to any web server or use the Docker image.
+            ### Web App (Docker)
 
-            ### Docker Image
-
-            Pull from GitHub Container Registry:
+            The web app is available via Docker image. Pull from GitHub Container Registry:
 
             ```bash
             docker pull ghcr.io/${{ github.repository_owner }}/tmail-web:${{ steps.version.outputs.version }}
