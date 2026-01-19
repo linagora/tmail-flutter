@@ -44,7 +44,7 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
         log('WebSocketDatasourceImpl::getWebSocketChannel: Using standard auth', webConsoleEnabled: true);
       }
 
-      log('WebSocketDatasourceImpl::getWebSocketChannel: Connecting to $connectionUri', webConsoleEnabled: true);
+      log('WebSocketDatasourceImpl::getWebSocketChannel: Connecting to ${_redactSensitiveParams(connectionUri)}', webConsoleEnabled: true);
       final webSocketChannel = WebSocketChannel.connect(
         connectionUri,
         protocols: ["jmap"],
@@ -121,7 +121,7 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
           });
         }
       }
-      log('WebSocketDatasourceImpl::_buildAuthUri: No auth credentials available, connecting without auth', webConsoleEnabled: true);
+      logWarning('WebSocketDatasourceImpl::_buildAuthUri: No auth credentials available, connecting without auth');
     } catch (e) {
       log('WebSocketDatasourceImpl::_buildAuthUri: Error getting auth: $e', webConsoleEnabled: true);
     }
@@ -161,5 +161,16 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
     if (webSocketUri == null) throw WebSocketUriUnavailableException();
 
     return webSocketUri;
+  }
+
+  /// Redacts sensitive query parameters from a URI for safe logging.
+  String _redactSensitiveParams(Uri uri) {
+    const sensitiveKeys = {'access_token', 'authorization', 'ticket'};
+    if (uri.queryParameters.keys.any((k) => sensitiveKeys.contains(k))) {
+      final redacted = uri.queryParameters.map((k, v) =>
+        MapEntry(k, sensitiveKeys.contains(k) ? '[REDACTED]' : v));
+      return uri.replace(queryParameters: redacted).toString();
+    }
+    return uri.toString();
   }
 }

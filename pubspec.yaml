@@ -307,6 +307,9 @@ dependency_overrides:
 
   json_annotation: 4.8.1
 
+  # Fix macOS build - version 1.2.0 has Swift API compatibility issues with newer Xcode
+  flutter_charset_detector_darwin: 1.2.1
+
   # TODO: Due conflict version of hive_ce_generator with other dependencies
   # So we will remove it when found the appropriate version
   hive:
