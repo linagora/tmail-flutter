@@ -225,7 +225,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
             _editorController.evaluateJavascriptWeb(
               HtmlUtils.registerDropListener.name);
             _editorController.evaluateJavascriptWeb(
-              HtmlUtils.registerSelectionChangeListener(_createdViewId).name);
+              _selectionChangeScript.name);
             _editorListenerRegistered = true;
           }
         },
