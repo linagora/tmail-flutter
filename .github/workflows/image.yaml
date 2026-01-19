@@ -7,12 +7,18 @@ on:
 
 name: Build Docker images
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/tmail-web
+
 jobs:
   build-dev-image:
     name: Build development image
     if: github.ref_type == 'branch' && github.ref_name == 'master'
     runs-on: ubuntu-latest
-    environment: dev
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Set up Docker Buildx
@@ -22,22 +28,15 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ${{ github.repository_owner }}/tmail-web
-            ghcr.io/${{ github.repository_owner }}/tmail-web
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+            type=sha,prefix=
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -46,10 +45,8 @@ jobs:
         with:
           push: true
           platforms: "linux/amd64,linux/arm64"
-          cache-from: |
-            type=gha
-          cache-to: |
-            type=gha
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -57,7 +54,9 @@ jobs:
     name: Build release image
     if: github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    environment: prod
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Set up Docker Buildx
@@ -67,23 +66,15 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ${{ github.repository_owner }}/tmail-web
-            ghcr.io/${{ github.repository_owner }}/tmail-web
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=tag
-            type=raw,value=release
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+            type=raw,value=latest
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -92,9 +83,7 @@ jobs:
         with:
           push: true
           platforms: "linux/amd64,linux/arm64"
-          cache-from: |
-            type=gha
-          cache-to: |
-            type=gha
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
