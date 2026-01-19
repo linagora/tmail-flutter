@@ -14,7 +14,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/presentatio
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/add_label_to_email_modal.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/check_label_available_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/extensions/presentation_email_map_extension.dart';
@@ -22,8 +22,8 @@ import 'package:tmail_ui_user/features/thread_detail/domain/extensions/list_emai
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 
 extension HandleLabelForEmailExtension on SingleEmailController {
-  bool get isLabelFeatureEnabled {
-    return mailboxDashBoardController.isLabelFeatureEnabled;
+  bool get isLabelAvailable {
+    return mailboxDashBoardController.isLabelAvailable;
   }
 
   void toggleLabelToEmail(EmailId emailId, Label label, bool isSelected) {
@@ -213,7 +213,7 @@ extension HandleLabelForEmailExtension on SingleEmailController {
   }
 
   Future<void> openAddLabelToEmailDialogModal(PresentationEmail email) async {
-    if (!isLabelFeatureEnabled) return;
+    if (!isLabelAvailable) return;
     final labels = mailboxDashBoardController.labelController.labels;
     final emailLabels = email.getLabelList(labels);
     final emailId = email.id;

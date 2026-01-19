@@ -5673,4 +5673,11 @@ class AppLocalizations {
       name: 'youDoNotHaveAnyEmailTaggedWithThis',
     );
   }
+
+  String get allLabels {
+    return Intl.message(
+      'All labels',
+      name: 'allLabels',
+    );
+  }
 }
