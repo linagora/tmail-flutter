@@ -5,6 +5,11 @@ on:
 
 name: Build dev binaries
 
+# Prevent duplicate runs
+concurrency:
+  group: build-dev-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   FLUTTER_VERSION: 3.32.8
   XCODE_VERSION: 16.0
@@ -19,7 +24,8 @@ jobs:
           - os: android
             runner: ubuntu-latest
           - os: ios
-            runner: macos-14 # Use macos-14 runners because Xcode 16 only exists on macOS 14+.
+            runner: macos-latest
+      fail-fast: false
     environment: dev
 
     steps:
@@ -32,8 +38,28 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
-          cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
-          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Cache generated code
+        uses: actions/cache@v4
+        with:
+          path: |
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: codegen-${{ hashFiles('**/pubspec.lock', 'scripts/prebuild.sh') }}-${{ github.sha }}
+          restore-keys: codegen-${{ hashFiles('**/pubspec.lock', 'scripts/prebuild.sh') }}-
 
       - name: Setup Fastlane
         uses: ruby/setup-ruby@v1
@@ -54,11 +80,31 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
+      - name: Cache Gradle
+        if: matrix.os == 'android'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
       - name: Select Xcode version
         if: matrix.os == 'ios'
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Cache CocoaPods
+        if: matrix.os == 'ios'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-ios-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: pods-ios-
 
       - name: Setup iOS environment
         if: matrix.os == 'ios'

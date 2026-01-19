@@ -40,20 +40,91 @@ on:
     tags:
       - 'v*'
 
+# Prevent duplicate runs
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   FLUTTER_VERSION: 3.32.8
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/tmail-web
 
 jobs:
+  # Shared prebuild job - runs once and shares artifacts
+  prebuild:
+    name: Prebuild & Generate Code
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate cache key
+        id: cache-key
+        run: echo "key=prebuild-${{ hashFiles('**/pubspec.lock', 'scripts/prebuild.sh') }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Check prebuild cache
+        id: prebuild-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ steps.cache-key.outputs.key }}
+
+      - name: Setup Flutter
+        if: steps.prebuild-cache.outputs.cache-hit != 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        if: steps.prebuild-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Install dependencies
+        if: steps.prebuild-cache.outputs.cache-hit != 'true'
+        run: flutter pub get
+
+      - name: Run prebuild
+        if: steps.prebuild-cache.outputs.cache-hit != 'true'
+        run: ./scripts/prebuild.sh
+
   build-macos:
     name: Build macOS App
     runs-on: macos-latest
+    needs: prebuild
     if: ${{ github.event_name == 'push' || inputs.build_macos }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -61,8 +132,25 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
-          cache-key: macos-deps-${{ hashFiles('**/pubspec.lock') }}
-          cache-path: ${{ runner.tool_cache }}/flutter
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            macos/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-macos-${{ hashFiles('macos/Podfile.lock') }}
+          restore-keys: pods-macos-
 
       - name: Enable macOS desktop
         run: flutter config --enable-macos-desktop
@@ -70,8 +158,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run prebuild
-        run: ./scripts/prebuild.sh
+      - name: Run prebuild (if cache miss)
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
 
       - name: Install CocoaPods dependencies
         run: |
@@ -96,11 +187,23 @@ jobs:
   build-windows:
     name: Build Windows App
     runs-on: windows-latest
+    needs: prebuild
     if: ${{ github.event_name == 'push' || inputs.build_windows }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -108,8 +211,16 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
-          cache-key: windows-deps-${{ hashFiles('**/pubspec.lock') }}
-          cache-path: ${{ runner.tool_cache }}/flutter
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~\AppData\Local\Pub\Cache
+            .dart_tool\
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
 
       - name: Enable Windows desktop
         run: flutter config --enable-windows-desktop
@@ -117,9 +228,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run prebuild
+      - name: Run prebuild (if cache miss)
         shell: bash
-        run: ./scripts/prebuild.sh
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
 
       - name: Build Windows release
         run: flutter build windows --release
@@ -139,11 +253,29 @@ jobs:
   build-linux:
     name: Build Linux App
     runs-on: ubuntu-latest
+    needs: prebuild
     if: ${{ github.event_name == 'push' || inputs.build_linux }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
+
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: apt-linux-desktop-${{ runner.os }}
 
       - name: Install Linux dependencies
         run: |
@@ -156,8 +288,16 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
-          cache-key: linux-deps-${{ hashFiles('**/pubspec.lock') }}
-          cache-path: ${{ runner.tool_cache }}/flutter
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
 
       - name: Enable Linux desktop
         run: flutter config --enable-linux-desktop
@@ -165,8 +305,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run prebuild
-        run: ./scripts/prebuild.sh
+      - name: Run prebuild (if cache miss)
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
 
       - name: Build Linux release
         run: flutter build linux --release
@@ -186,11 +329,23 @@ jobs:
   build-web:
     name: Build Web App
     runs-on: ubuntu-latest
+    needs: prebuild
     if: ${{ github.event_name == 'push' || inputs.build_web }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -198,14 +353,25 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
-          cache-key: web-deps-${{ hashFiles('**/pubspec.lock') }}
-          cache-path: ${{ runner.tool_cache }}/flutter
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run prebuild
-        run: ./scripts/prebuild.sh
+      - name: Run prebuild (if cache miss)
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
 
       - name: Build Web release
         run: flutter build web --release --web-renderer canvaskit
@@ -268,6 +434,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
 
   release:
     name: Create GitHub Release

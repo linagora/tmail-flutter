@@ -44,8 +44,30 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
           cache: true
-          cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
-          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      # 📦 Cache pub dependencies
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      # 📦 Cache generated code
+      - name: Cache generated code
+        uses: actions/cache@v4
+        with:
+          path: |
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: codegen-${{ hashFiles('**/pubspec.lock', 'scripts/prebuild.sh') }}-${{ github.sha }}
+          restore-keys: codegen-${{ hashFiles('**/pubspec.lock', 'scripts/prebuild.sh') }}-
 
       # 🧹 Clean Flutter cache before building
       - name: Flutter clean
