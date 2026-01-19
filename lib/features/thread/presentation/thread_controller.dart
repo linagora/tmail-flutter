@@ -806,8 +806,10 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   bool _validatePresentationEmail(PresentationEmail email) {
-    return (_belongToCurrentMailboxId(email) || selectedMailbox?.isVirtualFolder == true)
-      && _notDuplicatedInCurrentList(email);
+    return (_belongToCurrentMailboxId(email) ||
+            selectedMailbox?.isVirtualFolder == true ||
+            selectedMailbox?.isLabelMailbox == true) &&
+        _notDuplicatedInCurrentList(email);
   }
 
   bool _belongToCurrentMailboxId(PresentationEmail email) {
