@@ -101,21 +101,28 @@ jobs:
           # Remove firebase_core from generated_plugins.cmake
           $cmakeFile = "windows/flutter/generated_plugins.cmake"
           if (Test-Path $cmakeFile) {
-            $content = Get-Content $cmakeFile -Raw
-            $content = $content -replace 'firebase_core\r?\n', ''
-            Set-Content $cmakeFile $content
-            Write-Host "Patched $cmakeFile"
+            $lines = Get-Content $cmakeFile
+            $filtered = $lines | Where-Object { $_ -notmatch 'firebase_core' }
+            $filtered | Set-Content $cmakeFile
+            Write-Host "Patched $cmakeFile - removed firebase_core"
           }
 
           # Remove firebase_core from generated_plugin_registrant.cc
           $ccFile = "windows/flutter/generated_plugin_registrant.cc"
           if (Test-Path $ccFile) {
-            $content = Get-Content $ccFile -Raw
-            $content = $content -replace '#include <firebase_core/firebase_core_plugin_c_api.h>\r?\n', ''
-            $content = $content -replace '  FirebaseCorePluginCApiRegisterWithRegistrar\(\r?\n      registry->GetRegistrarForPlugin\("FirebaseCorePluginCApi"\)\);\r?\n', ''
-            Set-Content $ccFile $content
-            Write-Host "Patched $ccFile"
+            $lines = Get-Content $ccFile
+            $filtered = $lines | Where-Object {
+              $_ -notmatch 'firebase_core' -and $_ -notmatch 'FirebaseCorePluginCApi'
+            }
+            $filtered | Set-Content $ccFile
+            Write-Host "Patched $ccFile - removed Firebase references"
           }
+
+          # Verify the patches
+          Write-Host "=== generated_plugins.cmake content ==="
+          Get-Content "windows/flutter/generated_plugins.cmake" | Select-Object -First 30
+          Write-Host "=== generated_plugin_registrant.cc content ==="
+          Get-Content "windows/flutter/generated_plugin_registrant.cc"
 
       - name: Run prebuild
         shell: bash
