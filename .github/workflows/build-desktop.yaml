@@ -95,9 +95,15 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Run prebuild
+        shell: bash
+        run: ./scripts/prebuild.sh
+
       - name: Patch plugins for Windows (remove Firebase)
         shell: pwsh
         run: |
+          # Must run AFTER prebuild since prebuild may regenerate plugin files
+
           # Remove firebase_core from generated_plugins.cmake
           $cmakeFile = "windows/flutter/generated_plugins.cmake"
           if (Test-Path $cmakeFile) {
@@ -123,10 +129,6 @@ jobs:
           Get-Content "windows/flutter/generated_plugins.cmake" | Select-Object -First 30
           Write-Host "=== generated_plugin_registrant.cc content ==="
           Get-Content "windows/flutter/generated_plugin_registrant.cc"
-
-      - name: Run prebuild
-        shell: bash
-        run: ./scripts/prebuild.sh
 
       - name: Build Windows release
         run: flutter build windows --release
