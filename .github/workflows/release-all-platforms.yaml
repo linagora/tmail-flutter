@@ -1,0 +1,368 @@
+name: Build & Release All Platforms
+
+# Firebase is excluded from desktop builds via platform-specific plugin registrants.
+# Desktop platforms use WebSocket for push notifications instead of FCM.
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_macos:
+        description: 'Build macOS app'
+        required: false
+        default: true
+        type: boolean
+      build_windows:
+        description: 'Build Windows app'
+        required: false
+        default: true
+        type: boolean
+      build_linux:
+        description: 'Build Linux app'
+        required: false
+        default: true
+        type: boolean
+      build_web:
+        description: 'Build Web app'
+        required: false
+        default: true
+        type: boolean
+      build_docker:
+        description: 'Build Docker image'
+        required: false
+        default: true
+        type: boolean
+      create_release:
+        description: 'Create GitHub release'
+        required: false
+        default: false
+        type: boolean
+  push:
+    tags:
+      - 'v*'
+
+env:
+  FLUTTER_VERSION: 3.32.8
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/tmail-web
+
+jobs:
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-latest
+    if: ${{ github.event_name == 'push' || inputs.build_macos }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: macos-deps-${{ hashFiles('**/pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      - name: Enable macOS desktop
+        run: flutter config --enable-macos-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd macos
+          pod install
+
+      - name: Build macOS release
+        run: flutter build macos --release
+
+      - name: Create DMG
+        run: |
+          cd build/macos/Build/Products/Release
+          hdiutil create -volname "TMail" -srcfolder "tmail_ui_user.app" -ov -format UDZO "TMail-macOS-arm64.dmg"
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-macos
+          path: build/macos/Build/Products/Release/TMail-macOS-arm64.dmg
+          retention-days: 30
+
+  build-windows:
+    name: Build Windows App
+    runs-on: windows-latest
+    if: ${{ github.event_name == 'push' || inputs.build_windows }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: windows-deps-${{ hashFiles('**/pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild
+        shell: bash
+        run: ./scripts/prebuild.sh
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Create ZIP archive
+        run: |
+          cd build/windows/x64/runner/Release
+          Compress-Archive -Path * -DestinationPath TMail-Windows-x64.zip
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-windows
+          path: build/windows/x64/runner/Release/TMail-Windows-x64.zip
+          retention-days: 30
+
+  build-linux:
+    name: Build Linux App
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || inputs.build_linux }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: linux-deps-${{ hashFiles('**/pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      - name: Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      - name: Build Linux release
+        run: flutter build linux --release
+
+      - name: Create tarball
+        run: |
+          cd build/linux/x64/release/bundle
+          tar -czvf TMail-Linux-x64.tar.gz *
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-linux
+          path: build/linux/x64/release/bundle/TMail-Linux-x64.tar.gz
+          retention-days: 30
+
+  build-web:
+    name: Build Web App
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || inputs.build_web }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: web-deps-${{ hashFiles('**/pubspec.lock') }}
+          cache-path: ${{ runner.tool_cache }}/flutter
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      - name: Build Web release
+        run: flutter build web --release --web-renderer canvaskit
+
+      - name: Create ZIP archive
+        run: |
+          cd build/web
+          zip -r TMail-Web.zip *
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-web
+          path: build/web/TMail-Web.zip
+          retention-days: 30
+
+  build-docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || inputs.build_docker }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=tag
+            type=ref,event=branch
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-macos, build-windows, build-linux, build-web, build-docker]
+    if: |
+      always() &&
+      (startsWith(github.ref, 'refs/tags/v') || inputs.create_release) &&
+      (needs.build-macos.result == 'success' || needs.build-macos.result == 'skipped') &&
+      (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') &&
+      (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') &&
+      (needs.build-web.result == 'success' || needs.build-web.result == 'skipped')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find artifacts -type f \( -name "*.dmg" -o -name "*.zip" -o -name "*.tar.gz" \) | sort
+
+      - name: Get version from tag
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${{ github.ref_name }}"
+          else
+            VERSION="dev-$(date +%Y%m%d-%H%M%S)"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: TMail ${{ steps.version.outputs.version }}
+          draft: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+          generate_release_notes: true
+          files: |
+            artifacts/tmail-macos/*.dmg
+            artifacts/tmail-windows/*.zip
+            artifacts/tmail-linux/*.tar.gz
+            artifacts/tmail-web/*.zip
+          body: |
+            ## TMail ${{ steps.version.outputs.version }}
+
+            ### Downloads
+
+            | Platform | File | Description |
+            |----------|------|-------------|
+            | macOS | `TMail-macOS-arm64.dmg` | macOS app (Apple Silicon) |
+            | Windows | `TMail-Windows-x64.zip` | Windows app (64-bit) |
+            | Linux | `TMail-Linux-x64.tar.gz` | Linux app (64-bit) |
+            | Web | `TMail-Web.zip` | Web app (self-hosted) |
+
+            ### Installation
+
+            **macOS**: Download the DMG, open it, and drag TMail to Applications.
+
+            **Windows**: Download and extract the ZIP, then run `tmail_ui_user.exe`.
+
+            **Linux**: Download and extract the tarball, then run `tmail_ui_user`.
+
+            **Web**: Deploy the contents of the ZIP to any web server or use the Docker image.
+
+            ### Docker Image
+
+            Pull from GitHub Container Registry:
+
+            ```bash
+            docker pull ghcr.io/${{ github.repository_owner }}/tmail-web:${{ steps.version.outputs.version }}
+            ```
+
+            Or use the latest tag:
+
+            ```bash
+            docker pull ghcr.io/${{ github.repository_owner }}/tmail-web:latest
+            ```
+
+            Run the container:
+
+            ```bash
+            docker run -d -p 8080:80 ghcr.io/${{ github.repository_owner }}/tmail-web:${{ steps.version.outputs.version }}
+            ```
+
+            ---
+
+            See the [CHANGELOG](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md) for details.

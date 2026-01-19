@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-12-22T16:54:22.593873",
+  "@@last_modified": "2026-01-18T11:39:50.714472",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5362,6 +5362,18 @@
   },
   "youDoNotHaveAnyEmailTaggedWithThis": "You don't have any emails tagged with this.",
   "@youDoNotHaveAnyEmailTaggedWithThis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "autoSyncEnabled": "Auto-sync enabled",
+  "@autoSyncEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "autoSyncDisabled": "Auto-sync disabled",
+  "@autoSyncDisabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
