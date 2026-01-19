@@ -5498,12 +5498,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiAssistant": "Trợ lý AI",
-  "@aiAssistant": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "createLabel": "Tạo nhãn",
   "@createLabel": {
     "type": "text",

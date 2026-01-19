@@ -5510,12 +5510,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiAssistant": "Помощник ИИ",
-  "@aiAssistant": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "createLabel": "Создать метку",
   "@createLabel": {
     "type": "text",

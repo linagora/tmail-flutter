@@ -1,6 +1,6 @@
 {
   "@@last_modified": "2025-12-09T07:30:00.000000",
-  "categoryCorrectGrammar": "Исправить грамматику",
+  "categoryCorrectGrammar": "Исправить",
   "@categoryCorrectGrammar": {
     "type": "text",
     "placeholders_order": [],
@@ -90,12 +90,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "inputPlaceholder": "Помогите мне написать",
-  "@inputPlaceholder": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "customPromptAction": "Помогите мне написать",
   "@customPromptAction": {
     "type": "text",
@@ -108,14 +102,26 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertButton": "Вставить",
-  "@insertButton": {
+  "generatingResponse": "Генерация ответа",
+  "@generatingResponse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replaceButton": "Заменить",
-  "@replaceButton": {
+  "insert": "Вставить",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replace": "Заменить",
+  "@replace": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiAssistant": "Помощник ИИ",
+  "@aiAssistant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
