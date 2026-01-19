@@ -222,6 +222,7 @@ class HtmlUtils {
           window._savedRange = selection.getRangeAt(0).cloneRange();
           return selection.toString();
         }
+        delete window._savedRange;
         return "";
       })();''',
     name: 'saveSelection');
