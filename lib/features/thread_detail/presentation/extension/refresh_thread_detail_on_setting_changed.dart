@@ -13,6 +13,9 @@ extension RefreshThreadDetailOnSettingChanged on ThreadDetailManager {
         );
       } else {
         mailboxDashBoardController.selectedEmail.refresh();
+        if (PlatformInfo.isMobile) {
+          mailboxDashBoardController.dashboardRoute.refresh();
+        }
       }
     }
   }
