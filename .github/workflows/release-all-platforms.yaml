@@ -6,6 +6,16 @@ name: Build & Release All Platforms
 on:
   workflow_dispatch:
     inputs:
+      build_android:
+        description: 'Build Android app'
+        required: false
+        default: true
+        type: boolean
+      build_ios:
+        description: 'Build iOS app'
+        required: false
+        default: true
+        type: boolean
       build_macos:
         description: 'Build macOS app'
         required: false
@@ -47,6 +57,7 @@ concurrency:
 
 env:
   FLUTTER_VERSION: 3.32.8
+  XCODE_VERSION: 16.0
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/tmail-web
 
@@ -104,6 +115,181 @@ jobs:
       - name: Run prebuild
         if: steps.prebuild-cache.outputs.cache-hit != 'true'
         run: ./scripts/prebuild.sh
+
+  build-android:
+    name: Build Android App
+    runs-on: ubuntu-latest
+    needs: prebuild
+    if: ${{ github.event_name == 'push' || inputs.build_android }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Setup Firebase env
+        env:
+          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
+        run: ./scripts/setup-firebase.sh
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild (if cache miss)
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
+
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      - name: Build Android App Bundle
+        run: flutter build appbundle --release
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Upload Android App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-android-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+    needs: prebuild
+    if: ${{ github.event_name == 'push' || inputs.build_ios }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Select Xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-ios-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: pods-ios-
+
+      - name: Setup Firebase env
+        env:
+          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
+        run: ./scripts/setup-firebase.sh
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild (if cache miss)
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          pod install
+
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Create unsigned IPA
+        run: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r TMail-iOS-unsigned.ipa Payload
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-ios
+          path: build/ios/iphoneos/TMail-iOS-unsigned.ipa
+          retention-days: 30
 
   build-macos:
     name: Build macOS App
@@ -440,10 +626,12 @@ jobs:
   release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: [build-macos, build-windows, build-linux, build-web, build-docker]
+    needs: [build-android, build-ios, build-macos, build-windows, build-linux, build-web, build-docker]
     if: |
       always() &&
       (startsWith(github.ref, 'refs/tags/v') || inputs.create_release) &&
+      (needs.build-android.result == 'success' || needs.build-android.result == 'skipped') &&
+      (needs.build-ios.result == 'success' || needs.build-ios.result == 'skipped') &&
       (needs.build-macos.result == 'success' || needs.build-macos.result == 'skipped') &&
       (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') &&
       (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped') &&
@@ -463,7 +651,7 @@ jobs:
       - name: List artifacts
         run: |
           echo "Downloaded artifacts:"
-          find artifacts -type f \( -name "*.dmg" -o -name "*.zip" -o -name "*.tar.gz" \) | sort
+          find artifacts -type f \( -name "*.apk" -o -name "*.aab" -o -name "*.ipa" -o -name "*.dmg" -o -name "*.zip" -o -name "*.tar.gz" \) | sort
 
       - name: Get version from tag
         id: version
@@ -485,6 +673,9 @@ jobs:
           prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
           generate_release_notes: true
           files: |
+            artifacts/tmail-android-apk/*.apk
+            artifacts/tmail-android-aab/*.aab
+            artifacts/tmail-ios/*.ipa
             artifacts/tmail-macos/*.dmg
             artifacts/tmail-windows/*.zip
             artifacts/tmail-linux/*.tar.gz
@@ -496,12 +687,19 @@ jobs:
 
             | Platform | File | Description |
             |----------|------|-------------|
+            | Android | `app-release.apk` | Android app (APK for sideloading) |
+            | Android | `app-release.aab` | Android App Bundle (for Play Store) |
+            | iOS | `TMail-iOS-unsigned.ipa` | iOS app (unsigned, requires re-signing) |
             | macOS | `TMail-macOS-arm64.dmg` | macOS app (Apple Silicon) |
             | Windows | `TMail-Windows-x64.zip` | Windows app (64-bit) |
             | Linux | `TMail-Linux-x64.tar.gz` | Linux app (64-bit) |
             | Web | `TMail-Web.zip` | Web app (self-hosted) |
 
             ### Installation
+
+            **Android**: Download the APK and install directly, or use the AAB for Play Store deployment.
+
+            **iOS**: The IPA is unsigned. You'll need to re-sign it with your own provisioning profile using Xcode or a third-party tool.
 
             **macOS**: Download the DMG, open it, and drag TMail to Applications.
 
