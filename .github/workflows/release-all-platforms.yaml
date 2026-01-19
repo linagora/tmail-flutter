@@ -27,9 +27,9 @@ on:
         default: true
         type: boolean
       build_linux:
-        description: 'Build Linux app'
+        description: 'Build Linux app (requires linux/ directory)'
         required: false
-        default: true
+        default: false
         type: boolean
       build_web:
         description: 'Build Web app'
@@ -448,7 +448,8 @@ jobs:
     name: Build Linux App
     runs-on: ubuntu-latest
     needs: prebuild
-    if: ${{ github.event_name == 'push' || inputs.build_linux }}
+    # Linux build disabled by default - project needs linux/ directory
+    if: ${{ inputs.build_linux == true }}
 
     steps:
       - name: Checkout repository
@@ -568,7 +569,7 @@ jobs:
           fi
 
       - name: Build Web release
-        run: flutter build web --release --web-renderer canvaskit
+        run: flutter build web --release
 
       - name: Create ZIP archive
         run: |
