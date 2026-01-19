@@ -231,6 +231,7 @@ No we do not plan to support such extensions, that are currently not standardize
   
     - [Enable and customize the Application grid](docs/configuration/app_grid_configuration.md)
     - [Change logos](docs/configuration/tmail-web-logo.md)
+    - [Deploy with Stalwart + Nginx](docs/deployment/stalwart_nginx.md)
 
 </details>
 
