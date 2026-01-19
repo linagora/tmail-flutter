@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:multiple_localization/multiple_localization.dart';
 import 'package:scribe/scribe/ai/l10n/messages_all.dart';
 
 class ScribeLocalizations {
@@ -7,16 +8,13 @@ class ScribeLocalizations {
     return Localizations.of<ScribeLocalizations>(context, ScribeLocalizations)!;
   }
 
-  static Future<ScribeLocalizations> load(Locale locale) async {
-    final name =
-        locale.countryCode == null ? locale.languageCode : locale.toString();
-
-    final localeName = Intl.canonicalizedLocale(name);
-
-    return initializeMessages(localeName).then((_) {
-      Intl.defaultLocale = localeName;
-      return ScribeLocalizations();
-    });
+  static Future<ScribeLocalizations> load(Locale locale) {
+    return MultipleLocalizations.load(
+      initializeMessages,
+      locale,
+      (locale) => ScribeLocalizations(),
+      setDefaultLocale: true,
+    );
   }
 
   static const LocalizationsDelegate<ScribeLocalizations> delegate =
