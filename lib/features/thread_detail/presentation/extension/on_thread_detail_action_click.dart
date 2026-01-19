@@ -19,7 +19,7 @@ import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_co
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_context_menu.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/check_label_available_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/extensions/list_email_in_thread_detail_info_extension.dart';
@@ -125,7 +125,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
         _moveToMailbox(mailboxId, threadDetailActionType);
         break;
       case EmailActionType.labelAs:
-        if (!mailboxDashBoardController.isLabelFeatureEnabled) return;
+        if (!mailboxDashBoardController.isLabelAvailable) return;
         openAddLabelToEmailDialogModal();
         break;
       default:
@@ -137,7 +137,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     if (currentContext == null) return;
 
     final moreActions = [
-      if (mailboxDashBoardController.isLabelFeatureEnabled)
+      if (mailboxDashBoardController.isLabelAvailable)
         EmailActionType.labelAs,
       threadDetailIsRead
           ? EmailActionType.markAsUnread

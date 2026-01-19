@@ -6,9 +6,12 @@ import 'package:tmail_ui_user/features/base/widget/default_field/default_date_dr
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_with_tab_key_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/base/model/filter_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/advanced_search/update_label_in_advanced_search_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_field_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/label_drop_down_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/sort_by_drop_down_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -119,6 +122,30 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
             )),
           ),
           const SizedBox(height: 12),
+          Obx(() {
+            final isLabelAvailable =
+                controller.mailboxDashBoardController.isLabelAvailable;
+
+            final labels =
+                controller.mailboxDashBoardController.labelController.labels;
+
+            final labelSelected = controller.selectedLabel.value;
+
+            if (isLabelAvailable) {
+              return AdvancedSearchFieldWidget(
+                filterField: FilterField.labels,
+                padding: const EdgeInsets.only(bottom: 12),
+                child: LabelDropDownButton(
+                  imagePaths: controller.imagePaths,
+                  labels: labels,
+                  labelSelected: labelSelected,
+                  onSelectLabelsActions: controller.setSelectedLabel,
+                ),
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          }),
           AdvancedSearchFieldWidget(
             filterField: FilterField.date,
             child: Obx(() => DefaultDateDropDownFieldWidget(

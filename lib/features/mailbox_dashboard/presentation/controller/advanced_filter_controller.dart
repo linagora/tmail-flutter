@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:labels/labels.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -40,6 +41,7 @@ class AdvancedFilterController extends BaseController {
   final endDate = Rxn<DateTime>();
   final sortOrderType = SearchEmailFilter.defaultSortOrder.obs;
   final selectedFolderName = Rxn<String>();
+  final selectedLabel = Rxn<Label>();
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
