@@ -2089,6 +2089,7 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
+    loadOpenEmailInNewWindowConfig();
     if (isLabelCapabilitySupported && accountId.value != null) {
       labelController.checkLabelSettingState(accountId.value!);
     }
@@ -2169,6 +2170,7 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
+    loadOpenEmailInNewWindowConfig();
     if (isLabelCapabilitySupported && accountId.value != null) {
       labelController.checkLabelSettingState(accountId.value!);
     }
