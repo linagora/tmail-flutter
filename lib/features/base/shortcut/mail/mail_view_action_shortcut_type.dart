@@ -9,7 +9,8 @@ enum MailViewActionShortcutType {
   forward,
   delete,
   newMessage,
-  markAsUnread;
+  markAsUnread,
+  closeThreadDetail;
 
   EmailActionType? getEmailActionType({
     required PresentationEmail currentEmail,
@@ -34,6 +35,8 @@ enum MailViewActionShortcutType {
         return EmailActionType.compose;
       case MailViewActionShortcutType.markAsUnread:
         return EmailActionType.markAsUnread;
+      case MailViewActionShortcutType.closeThreadDetail:
+        return null;
     }
   }
 }
