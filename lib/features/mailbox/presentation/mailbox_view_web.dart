@@ -14,8 +14,12 @@ import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class MailboxView extends BaseMailboxView {
+  final bool isCollapsed;
 
-  MailboxView({Key? key}) : super(key: key);
+  MailboxView({
+    Key? key,
+    this.isCollapsed = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,58 +36,60 @@ class MailboxView extends BaseMailboxView {
             Expanded(
               child: isDesktop
                 ? Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 16),
+                    padding: EdgeInsetsDirectional.only(start: isCollapsed ? 8 : 16),
                     child: _buildListMailbox(context),
                   )
                 : _buildListMailbox(context),
             ),
-            const QuotasView(),
-            Obx(() {
-              final isPremiumAvailable = controller
-                .mailboxDashBoardController
-                .validatePremiumIsAvailable();
-
-              final octetQuota = controller
+            if (!isCollapsed) const QuotasView(),
+            if (!isCollapsed)
+              Obx(() {
+                final isPremiumAvailable = controller
                   .mailboxDashBoardController
-                  .octetsQuota
-                  .value;
+                  .validatePremiumIsAvailable();
 
-              final isDesktop = controller.responsiveUtils.isDesktop(context);
+                final octetQuota = controller
+                    .mailboxDashBoardController
+                    .octetsQuota
+                    .value;
 
-              if (isPremiumAvailable && octetQuota?.storageAvailable == true) {
-                return IncreaseSpaceButtonWidget(
-                  imagePaths: controller.imagePaths,
-                  margin: EdgeInsetsDirectional.only(
-                    start: isDesktop ? 26 : 24,
-                    bottom: 8,
-                    end: isDesktop ? 0 : 24,
-                  ),
-                  isDesktop: isDesktop,
-                  onTapAction: () => controller
-                      .mailboxDashBoardController
-                      .paywallController
-                      ?.navigateToPaywall(),
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            Container(
-              alignment: isDesktop
-                ? AlignmentDirectional.center
-                : AlignmentDirectional.centerStart,
-              padding: const EdgeInsetsDirectional.only(
-                bottom: 16,
-                start: 24,
-                end: 24,
+                final isDesktop = controller.responsiveUtils.isDesktop(context);
+
+                if (isPremiumAvailable && octetQuota?.storageAvailable == true) {
+                  return IncreaseSpaceButtonWidget(
+                    imagePaths: controller.imagePaths,
+                    margin: EdgeInsetsDirectional.only(
+                      start: isDesktop ? 26 : 24,
+                      bottom: 8,
+                      end: isDesktop ? 0 : 24,
+                    ),
+                    isDesktop: isDesktop,
+                    onTapAction: () => controller
+                        .mailboxDashBoardController
+                        .paywallController
+                        ?.navigateToPaywall(),
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }),
+            if (!isCollapsed)
+              Container(
+                alignment: isDesktop
+                  ? AlignmentDirectional.center
+                  : AlignmentDirectional.centerStart,
+                padding: const EdgeInsetsDirectional.only(
+                  bottom: 16,
+                  start: 24,
+                  end: 24,
+                ),
+                child: ApplicationVersionWidget(
+                  title: '${AppLocalizations.of(context).version.toLowerCase()} ',
+                  textStyle: isDesktop
+                    ? ThemeUtils.textStyleContentCaption()
+                    : null,
+                ),
               ),
-              child: ApplicationVersionWidget(
-                title: '${AppLocalizations.of(context).version.toLowerCase()} ',
-                textStyle: isDesktop
-                  ? ThemeUtils.textStyleContentCaption()
-                  : null,
-              ),
-            ),
           ],
         ),
     );

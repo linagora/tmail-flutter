@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/text_formatting_menu_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/quoted_content_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/sidebar_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 
 class PreferencesSettingManager {
@@ -29,6 +30,8 @@ class PreferencesSettingManager {
       '${_preferencesSettingKey}_AUTO_SYNC';
   static const String _preferencesSettingQuotedContentKey =
       '${_preferencesSettingKey}_QUOTED_CONTENT';
+  static const String _preferencesSettingSidebarKey =
+      '${_preferencesSettingKey}_SIDEBAR';
 
   const PreferencesSettingManager(this._sharedPreferences);
 
@@ -61,6 +64,8 @@ class PreferencesSettingManager {
             return AutoSyncConfig.fromJson(jsonDecoded);
           case _preferencesSettingQuotedContentKey:
             return QuotedContentConfig.fromJson(jsonDecoded);
+          case _preferencesSettingSidebarKey:
+            return SidebarConfig.fromJson(jsonDecoded);
           default:
             return DefaultPreferencesConfig.fromJson(jsonDecoded);
         }
@@ -90,6 +95,8 @@ class PreferencesSettingManager {
       return _preferencesSettingAutoSyncKey;
     } else if (config is QuotedContentConfig) {
       return _preferencesSettingQuotedContentKey;
+    } else if (config is SidebarConfig) {
+      return _preferencesSettingSidebarKey;
     } else {
       return _preferencesSettingKey;
     }
@@ -231,6 +238,24 @@ class PreferencesSettingManager {
   Future<void> updateQuotedContent(bool isHiddenByDefault) async {
     final currentConfig = await getQuotedContentConfig();
     final updatedConfig = currentConfig.copyWith(isHiddenByDefault: isHiddenByDefault);
+    await savePreferences(updatedConfig);
+  }
+
+  Future<SidebarConfig> getSidebarConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingSidebarKey,
+    );
+
+    return jsonString == null
+        ? SidebarConfig.initial()
+        : SidebarConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updateSidebar(bool isExpanded) async {
+    final currentConfig = await getSidebarConfig();
+    final updatedConfig = currentConfig.copyWith(isExpanded: isExpanded);
     await savePreferences(updatedConfig);
   }
 }

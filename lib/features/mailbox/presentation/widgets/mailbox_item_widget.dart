@@ -32,6 +32,7 @@ class MailboxItemWidget extends StatefulWidget {
   final String? iconSelected;
   final bool isHighlighted;
   final bool isDraggingMailbox;
+  final bool isCollapsed;
 
   final OnClickExpandMailboxNodeAction? onExpandFolderActionClick;
   final OnClickOpenMailboxNodeAction? onOpenMailboxFolderClick;
@@ -47,6 +48,7 @@ class MailboxItemWidget extends StatefulWidget {
     this.mailboxDisplayed = MailboxDisplayed.mailbox,
     this.isHighlighted = false,
     this.isDraggingMailbox = false,
+    this.isCollapsed = false,
     this.mailboxNodeSelected,
     this.mailboxActions,
     this.mailboxIdAlreadySelected,
@@ -79,6 +81,9 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
   @override
   Widget build(BuildContext context) {
     if (_responsiveUtils.isWebDesktop(context) && widget.mailboxDisplayed == MailboxDisplayed.mailbox) {
+      if (widget.isCollapsed) {
+        return _buildCollapsedItem(context);
+      }
       final itemWidget = Material(
         key: widget.mailboxNode.item.isActionRequired ? _key : null,
         type: MaterialType.transparency,
@@ -318,6 +323,82 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
         );
       }
     }
+  }
+
+  Widget _buildCollapsedItem(BuildContext context) {
+    final mailboxName = widget.mailboxNode.item.getDisplayName(context);
+    final unreadCount = widget.mailboxNode.item.countUnReadEmailsAsString;
+    final hasUnread = widget.mailboxNode.item.allowedToDisplayCountOfUnreadEmails &&
+        unreadCount.isNotEmpty &&
+        unreadCount != '0';
+
+    final iconWidget = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        MailboxIconWidget(
+          icon: _iconMailbox,
+          color: widget.iconColor,
+        ),
+        if (hasUnread)
+          Positioned(
+            top: -4,
+            right: -8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+              decoration: BoxDecoration(
+                color: AppColor.primaryColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              constraints: const BoxConstraints(minWidth: 16),
+              child: Text(
+                unreadCount,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
+    );
+
+    final itemWidget = Tooltip(
+      message: mailboxName,
+      preferBelow: false,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
+          onHover: (value) => setState(() => _isItemHovered = value),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(MailboxItemWidgetStyles.borderRadius),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(MailboxItemWidgetStyles.borderRadius),
+              ),
+              color: backgroundColorItem,
+            ),
+            height: MailboxItemWidgetStyles.height,
+            alignment: Alignment.center,
+            child: iconWidget,
+          ),
+        ),
+      ),
+    );
+
+    if (widget.mailboxNode.item.isActionRequired) {
+      return itemWidget;
+    }
+
+    return DragTarget<List<PresentationEmail>>(
+      builder: (context, candidateEmails, rejectedEmails) => itemWidget,
+      onAcceptWithDetails: (emails) =>
+          widget.onDragItemAccepted?.call(emails.data, widget.mailboxNode.item),
+    );
   }
 
   bool get _isSelected =>

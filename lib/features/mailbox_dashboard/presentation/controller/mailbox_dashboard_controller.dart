@@ -126,6 +126,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_cached_ai_scribe_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/auto_sync/setup_auto_sync_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/quoted_content_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/sidebar_collapse_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
@@ -313,6 +314,7 @@ class MailboxDashBoardController extends ReloadableController
   final isAppGridDialogDisplayed = RxBool(false);
   final isDrawerOpened = RxBool(false);
   final isQuotedContentHiddenByDefault = RxBool(true);
+  final isSidebarExpanded = RxBool(true);
   final isContextMenuOpened = RxBool(false);
   final isPopupMenuOpened = RxBool(false);
   final octetsQuota = Rxn<Quota>();
@@ -407,6 +409,7 @@ class MailboxDashBoardController extends ReloadableController
       twakeAppManager.setExecutingBeforeReconnect(false);
       registerReactiveObxVariableListener();
       initialTextFormattingMenuState();
+      loadSidebarConfig();
     }
     loadQuotedContentConfig();
     if (PlatformInfo.isIOS) {
