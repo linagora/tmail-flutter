@@ -169,7 +169,7 @@ class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
     final List<EmailId> createdIds = changesResult.created.toEmailIds().toList();
     final List<EmailId> updatedIds = changesResult.updated.toEmailIds().toList();
     List<EmailId> destroyedEmailIds = changesResult.destroyed.toEmailIds().toList();
-    final State? newStateChanges = changesResult.newState;
+    final State newStateChanges = changesResult.newState;
     final bool hasMoreChanges = changesResult.hasMoreChanges;
 
     log('ThreadAPI::getChanges:createdIds = ${createdIds.length} | updatedIds = ${updatedIds.length} | destroyedIds = ${destroyedEmailIds.length}');

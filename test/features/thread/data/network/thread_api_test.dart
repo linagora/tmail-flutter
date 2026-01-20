@@ -18,7 +18,6 @@ import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.d
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_id_extensions.dart';
-import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_email.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
