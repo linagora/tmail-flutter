@@ -73,23 +73,22 @@ class MailboxView extends BaseMailboxView {
                   return const SizedBox.shrink();
                 }
               }),
-            if (!isCollapsed)
-              Container(
-                alignment: isDesktop
-                  ? AlignmentDirectional.center
-                  : AlignmentDirectional.centerStart,
-                padding: const EdgeInsetsDirectional.only(
-                  bottom: 16,
-                  start: 24,
-                  end: 24,
-                ),
-                child: ApplicationVersionWidget(
-                  title: '${AppLocalizations.of(context).version.toLowerCase()} ',
-                  textStyle: isDesktop
-                    ? ThemeUtils.textStyleContentCaption()
-                    : null,
-                ),
+            Container(
+              alignment: AlignmentDirectional.center,
+              padding: EdgeInsetsDirectional.only(
+                bottom: 16,
+                start: isCollapsed ? 8 : 24,
+                end: isCollapsed ? 8 : 24,
               ),
+              child: ApplicationVersionWidget(
+                title: isCollapsed
+                    ? 'v.'
+                    : '${AppLocalizations.of(context).version.toLowerCase()} ',
+                textStyle: isDesktop
+                  ? ThemeUtils.textStyleContentCaption()
+                  : null,
+              ),
+            ),
           ],
         ),
     );
