@@ -5687,11 +5687,24 @@ class AppLocalizations {
     );
   }
 
-
   String get youDoNotHaveAnyEmailTaggedWithThis {
     return Intl.message(
       'You don\'t have any emails tagged with this.',
       name: 'youDoNotHaveAnyEmailTaggedWithThis',
+    );
+  }
+
+  String get autoSyncEnabled {
+    return Intl.message(
+      'Auto-sync enabled',
+      name: 'autoSyncEnabled',
+    );
+  }
+
+  String get autoSyncDisabled {
+    return Intl.message(
+      'Auto-sync disabled',
+      name: 'autoSyncDisabled',
     );
   }
 }

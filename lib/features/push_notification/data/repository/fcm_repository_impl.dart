@@ -201,7 +201,9 @@ class FCMRepositoryImpl extends FCMRepository {
       propertiesCreated: Properties({
         EmailProperty.id,
         EmailProperty.receivedAt
-      })
+      }),
+      // Limit fetching to only the emails we'll actually use for notifications
+      maxCreatedEmailsToFetch: FcmConstants.MAX_NUMBER_NEW_EMAILS_RETRIEVED,
     );
 
     if (changesResponse.created?.isNotEmpty == true) {

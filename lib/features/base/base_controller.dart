@@ -40,7 +40,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/exceptions/web_socket_exceptions.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_firebase_registration_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_firebase_registration_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_firebase_registration_interactor.dart';
@@ -367,25 +366,45 @@ abstract class BaseController extends GetxController
 
   void injectWebSocket(Session? session, AccountId? accountId) {
     try {
-      log('$runtimeType::injectWebSocket:');
-      requireCapability(
-        session!,
-        accountId!,
-        [
-          CapabilityIdentifier.jmapWebSocket,
-          CapabilityIdentifier.jmapWebSocketTicket
-        ]
-      );
-      final wsCapability = session.getCapabilityProperties<WebSocketCapability>(
-        accountId,
-        CapabilityIdentifier.jmapWebSocket);
+      log('$runtimeType::injectWebSocket:', webConsoleEnabled: true);
+
+      if (session == null || accountId == null) {
+        log('$runtimeType::injectWebSocket: Session or accountId is null', webConsoleEnabled: true);
+        WebSocketController.instance.markNotSupported();
+        return;
+      }
+
+      // Log available session-level capabilities for debugging
+      final sessionCapabilities = session.capabilities.keys.map((c) => c.value.toString()).toList();
+      log('$runtimeType::injectWebSocket: Session capabilities: $sessionCapabilities', webConsoleEnabled: true);
+
+      // WebSocket is a session-level capability, not account-level
+      // Check session.capabilities instead of account.accountCapabilities
+      final hasWebSocket = session.capabilities.containsKey(CapabilityIdentifier.jmapWebSocket);
+      final hasTicket = session.capabilities.containsKey(CapabilityIdentifier.jmapWebSocketTicket);
+      log('$runtimeType::injectWebSocket: WebSocket supported=$hasWebSocket, Ticket supported=$hasTicket', webConsoleEnabled: true);
+
+      // Only require WebSocket capability, not ticket (ticket is James-specific)
+      if (!hasWebSocket) {
+        log('$runtimeType::injectWebSocket: WebSocket push not available - server does not support WebSocket capability', webConsoleEnabled: true);
+        WebSocketController.instance.markNotSupported();
+        return;
+      }
+
+      // Get WebSocket capability properties from session-level capabilities
+      final wsCapability = session.capabilities[CapabilityIdentifier.jmapWebSocket] as WebSocketCapability?;
+      log('$runtimeType::injectWebSocket: wsCapability=$wsCapability, supportsPush=${wsCapability?.supportsPush}, url=${wsCapability?.url}', webConsoleEnabled: true);
+
       if (wsCapability?.supportsPush != true) {
-        throw WebSocketPushNotSupportedException();
+        log('$runtimeType::injectWebSocket: WebSocket push not enabled on server', webConsoleEnabled: true);
+        WebSocketController.instance.markNotSupported();
+        return;
       }
       WebSocketInteractorBindings().dependencies();
       WebSocketController.instance.initialize(accountId: accountId, session: session);
+      log('$runtimeType::injectWebSocket: WebSocket initialized successfully', webConsoleEnabled: true);
     } catch(e) {
-      logWarning('$runtimeType::injectWebSocket(): exception: $e');
+      logWarning('$runtimeType::injectWebSocket(): exception: $e', webConsoleEnabled: true);
     }
   }
 

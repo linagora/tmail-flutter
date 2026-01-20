@@ -104,52 +104,76 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
     switch (categories) {
       case MailboxCategories.exchange:
-        return _buildBodyMailboxCategory(
-          context: context,
-          categories: categories,
-          mailboxNode: mailboxNode,
-          padding: isDesktop ? null : const EdgeInsets.symmetric(horizontal: 12),
-        );
+        return Obx(() {
+          final isSidebarCollapsed = !controller
+              .mailboxDashBoardController
+              .isSidebarExpanded
+              .value;
+          return _buildBodyMailboxCategory(
+            context: context,
+            categories: categories,
+            mailboxNode: mailboxNode,
+            padding: isSidebarCollapsed
+                ? null
+                : (isDesktop ? null : const EdgeInsets.symmetric(horizontal: 12)),
+          );
+        });
       default:
-        return Column(
-          children: [
-            Obx(() => MailboxCategoryWidget(
-              categories: categories,
-              expandMode: categories.getExpandMode(
-                controller.mailboxCategoriesExpandMode.value,
-              ),
-              onToggleMailboxCategories: (categories, itemKey) =>
-                  controller.toggleMailboxCategories(
-                    categories,
-                    controller.mailboxListScrollController,
-                    itemKey,
-                  ),
-              isArrangeLTR: false,
-              showIcon: true,
-              padding: isDesktop
-                  ? const EdgeInsets.symmetric(
-                      horizontal: MailboxItemWidgetStyles.itemPadding,
-                    )
-                  : const EdgeInsets.symmetric(
-                      horizontal: MailboxItemWidgetStyles.mobileItemPadding * 2,
+        return Obx(() {
+          final isSidebarCollapsed = !controller
+              .mailboxDashBoardController
+              .isSidebarExpanded
+              .value;
+          final categoriesExpandMode = controller
+              .mailboxCategoriesExpandMode
+              .value;
+
+          bool isExpand = categories.getExpandMode(categoriesExpandMode) ==
+              ExpandMode.EXPAND;
+
+          // When collapsed, show mailboxes directly without category header
+          if (isSidebarCollapsed) {
+            return isExpand
+                ? _buildBodyMailboxCategory(
+                    context: context,
+                    categories: categories,
+                    mailboxNode: mailboxNode,
+                    padding: null,
+                  )
+                : const Offstage();
+          }
+
+          return Column(
+            children: [
+              MailboxCategoryWidget(
+                categories: categories,
+                expandMode: categories.getExpandMode(
+                  controller.mailboxCategoriesExpandMode.value,
+                ),
+                onToggleMailboxCategories: (categories, itemKey) =>
+                    controller.toggleMailboxCategories(
+                      categories,
+                      controller.mailboxListScrollController,
+                      itemKey,
                     ),
-              height: isDesktop
-                  ? MailboxItemWidgetStyles.height
-                  : MailboxItemWidgetStyles.mobileHeight,
-              iconSpace: isDesktop
-                  ? null
-                  : MailboxItemWidgetStyles.mobileLabelIconSpace,
-              labelTextStyle: isDesktop ? null : ThemeUtils.textStyleInter500(),
-            )),
-            Obx(() {
-              final categoriesExpandMode = controller
-                  .mailboxCategoriesExpandMode
-                  .value;
-
-              bool isExpand = categories.getExpandMode(categoriesExpandMode) ==
-                  ExpandMode.EXPAND;
-
-              return AnimatedContainer(
+                isArrangeLTR: false,
+                showIcon: true,
+                padding: isDesktop
+                    ? const EdgeInsets.symmetric(
+                        horizontal: MailboxItemWidgetStyles.itemPadding,
+                      )
+                    : const EdgeInsets.symmetric(
+                        horizontal: MailboxItemWidgetStyles.mobileItemPadding * 2,
+                      ),
+                height: isDesktop
+                    ? MailboxItemWidgetStyles.height
+                    : MailboxItemWidgetStyles.mobileHeight,
+                iconSpace: isDesktop
+                    ? null
+                    : MailboxItemWidgetStyles.mobileLabelIconSpace,
+                labelTextStyle: isDesktop ? null : ThemeUtils.textStyleInter500(),
+              ),
+              AnimatedContainer(
                 duration: const Duration(milliseconds: 400),
                 child: isExpand
                   ? _buildBodyMailboxCategory(
@@ -161,10 +185,10 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
                         : const EdgeInsetsDirectional.only(start: 24, end: 12),
                     )
                   : const Offstage(),
-              );
-            }),
-          ],
-        );
+              ),
+            ],
+          );
+        });
     }
   }
 
@@ -204,6 +228,10 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         isDraggingMailbox: controller
             .mailboxDashBoardController
             .isDraggingMailbox,
+        isCollapsed: !controller
+            .mailboxDashBoardController
+            .isSidebarExpanded
+            .value,
         isHighlighted: isFolderHighlighted(mailboxNode),
         onOpenMailboxFolderClick: (mailboxNode) =>
             mailboxNode != null
@@ -236,10 +264,16 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
       ));
 
       if (mailboxNode.hasChildren()) {
+        final isCollapsed = !controller
+            .mailboxDashBoardController
+            .isSidebarExpanded
+            .value;
         return TreeViewChild(
           key: const Key('children_tree_mailbox_child'),
           isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-          paddingChild: const EdgeInsetsDirectional.only(start: 12),
+          paddingChild: isCollapsed
+              ? EdgeInsetsDirectional.zero
+              : const EdgeInsetsDirectional.only(start: 12),
           parent: mailboxItemWidget,
           children: _buildListChildTileWidget(context, mailboxNode),
         ).build();
@@ -263,13 +297,21 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
   Widget buildListMailbox(BuildContext context) {
     final isDesktop = controller.responsiveUtils.isDesktop(context);
 
-    return SingleChildScrollView(
-      controller: controller.mailboxListScrollController,
-      key: const PageStorageKey('mailbox_list'),
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: isDesktop
-        ? const EdgeInsetsDirectional.only(end: 16)
-        : const EdgeInsets.only(bottom: 16, top: 16),
+    return Obx(() {
+      final isSidebarCollapsed = !controller
+          .mailboxDashBoardController
+          .isSidebarExpanded
+          .value;
+
+      return SingleChildScrollView(
+        controller: controller.mailboxListScrollController,
+        key: const PageStorageKey('mailbox_list'),
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: isSidebarCollapsed
+          ? const EdgeInsets.symmetric(vertical: 8)
+          : (isDesktop
+              ? const EdgeInsetsDirectional.only(end: 16)
+              : const EdgeInsets.only(bottom: 16, top: 16)),
       child: Column(children: [
         Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
         Obx(() {
@@ -308,6 +350,14 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           final sendingEmails = controller
               .mailboxDashBoardController
               .listSendingEmails;
+          final isSidebarCollapsed = !controller
+              .mailboxDashBoardController
+              .isSidebarExpanded
+              .value;
+
+          if (isSidebarCollapsed) {
+            return const SizedBox.shrink();
+          }
 
           if (controller.defaultMailboxIsNotEmpty ||
               (sendingEmails.isNotEmpty && PlatformInfo.isMobile)) {
@@ -320,6 +370,18 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
           }
         }),
         Obx(() {
+          final isSidebarCollapsed = !controller
+              .mailboxDashBoardController
+              .isSidebarExpanded
+              .value;
+
+          // Hide folders bar when collapsed, but still show folders content
+          if (isSidebarCollapsed) {
+            return controller.foldersExpandMode.value == ExpandMode.EXPAND
+                ? buildFolders(context)
+                : const SizedBox.shrink();
+          }
+
           return FoldersBarWidget(
             onOpenSearchFolder: () => controller.openSearchViewAction(context),
             onAddNewFolder: () => controller.goToCreateNewMailboxView(context),
@@ -334,16 +396,47 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
             onToggleExpandFolder: controller.toggleExpandFolders,
           );
         }),
-        Obx(() => AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
-          child: controller.foldersExpandMode.value == ExpandMode.EXPAND
-              ? buildFolders(context)
-              : const Offstage(),
-        )),
-        buildLabelsBar(context, isDesktop),
-        buildLabelsList(context, isDesktop),
+        Obx(() {
+          final isSidebarCollapsed = !controller
+              .mailboxDashBoardController
+              .isSidebarExpanded
+              .value;
+
+          // Skip animated container when collapsed (folders shown above)
+          if (isSidebarCollapsed) {
+            return const SizedBox.shrink();
+          }
+
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            child: controller.foldersExpandMode.value == ExpandMode.EXPAND
+                ? buildFolders(context)
+                : const Offstage(),
+          );
+        }),
+        Obx(() {
+          final isSidebarCollapsed = !controller
+              .mailboxDashBoardController
+              .isSidebarExpanded
+              .value;
+          if (isSidebarCollapsed) {
+            return const SizedBox.shrink();
+          }
+          return buildLabelsBar(context, isDesktop);
+        }),
+        Obx(() {
+          final isSidebarCollapsed = !controller
+              .mailboxDashBoardController
+              .isSidebarExpanded
+              .value;
+          if (isSidebarCollapsed) {
+            return const SizedBox.shrink();
+          }
+          return buildLabelsList(context, isDesktop);
+        }),
       ]),
     );
+    });
   }
 
   Widget buildLabelsBar(BuildContext context, bool isDesktop) {

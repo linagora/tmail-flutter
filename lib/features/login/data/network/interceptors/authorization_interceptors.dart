@@ -61,6 +61,24 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   AuthenticationType get authenticationType => _authenticationType;
 
+  /// Returns the current access token for WebSocket authentication.
+  /// Returns null if not using OIDC or token is invalid.
+  String? get currentToken {
+    if (_authenticationType == AuthenticationType.oidc && _token?.isTokenValid() == true) {
+      return _token?.token;
+    }
+    return null;
+  }
+
+  /// Returns the base64-encoded basic auth credentials for WebSocket authentication.
+  /// Returns null if not using basic auth.
+  String? get basicAuthCredentials {
+    if (_authenticationType == AuthenticationType.basic) {
+      return _authorization;
+    }
+    return null;
+  }
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     switch(_authenticationType) {

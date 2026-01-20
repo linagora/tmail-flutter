@@ -1,0 +1,671 @@
+name: Build & Release All Platforms
+
+# Firebase is excluded from desktop builds via platform-specific plugin registrants.
+# Desktop platforms use WebSocket for push notifications instead of FCM.
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_android:
+        description: 'Build Android app'
+        required: false
+        default: true
+        type: boolean
+      build_ios:
+        description: 'Build iOS app'
+        required: false
+        default: true
+        type: boolean
+      build_macos:
+        description: 'Build macOS app'
+        required: false
+        default: true
+        type: boolean
+      build_windows:
+        description: 'Build Windows app'
+        required: false
+        default: true
+        type: boolean
+      build_linux:
+        description: 'Build Linux app (requires linux/ directory)'
+        required: false
+        default: false
+        type: boolean
+      build_docker:
+        description: 'Build Docker image'
+        required: false
+        default: true
+        type: boolean
+      create_release:
+        description: 'Create GitHub release'
+        required: false
+        default: false
+        type: boolean
+  push:
+    tags:
+      - 'v*'
+
+# Prevent duplicate runs
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.32.8
+  XCODE_VERSION: 16.0
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/tmail-web
+
+jobs:
+  # Shared prebuild job - runs once and shares artifacts
+  prebuild:
+    name: Prebuild & Generate Code
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate cache key
+        id: cache-key
+        run: echo "key=prebuild-${{ hashFiles('**/pubspec.lock', 'scripts/prebuild.sh') }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Check prebuild cache
+        id: prebuild-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ steps.cache-key.outputs.key }}
+
+      - name: Setup Flutter
+        if: steps.prebuild-cache.outputs.cache-hit != 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        if: steps.prebuild-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Install dependencies
+        if: steps.prebuild-cache.outputs.cache-hit != 'true'
+        run: flutter pub get
+
+      - name: Run prebuild
+        if: steps.prebuild-cache.outputs.cache-hit != 'true'
+        run: ./scripts/prebuild.sh
+
+  build-android:
+    name: Build Android App
+    runs-on: ubuntu-latest
+    needs: prebuild
+    if: ${{ github.event_name == 'push' || inputs.build_android }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Setup Firebase env
+        env:
+          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
+        run: ./scripts/setup-firebase.sh
+
+      - name: Setup Android signing
+        env:
+          PLAY_STORE_UPLOAD_KEY_BASE64: ${{ secrets.PLAY_STORE_UPLOAD_KEY_BASE64 }}
+          PLAY_STORE_KEY_INFO_BASE64: ${{ secrets.PLAY_STORE_KEY_INFO_BASE64 }}
+        run: |
+          cd android
+          ../scripts/setup-android.sh
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild (if cache miss)
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
+
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      - name: Build Android App Bundle
+        run: flutter build appbundle --release
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Upload Android App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-android-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+    needs: prebuild
+    if: ${{ github.event_name == 'push' || inputs.build_ios }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Select Xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-ios-${{ hashFiles('ios/Podfile.lock') }}
+          restore-keys: pods-ios-
+
+      - name: Setup Firebase env
+        env:
+          FIREBASE_ENV: ${{ secrets.FIREBASE_ENV }}
+        run: ./scripts/setup-firebase.sh
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild (if cache miss)
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          pod install
+
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Create unsigned IPA
+        run: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r TMail-iOS-unsigned.ipa Payload
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-ios
+          path: build/ios/iphoneos/TMail-iOS-unsigned.ipa
+          retention-days: 30
+
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-latest
+    needs: prebuild
+    if: ${{ github.event_name == 'push' || inputs.build_macos }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            macos/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-macos-${{ hashFiles('macos/Podfile.lock') }}
+          restore-keys: pods-macos-
+
+      - name: Enable macOS desktop
+        run: flutter config --enable-macos-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild (if cache miss)
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd macos
+          pod install
+
+      - name: Build macOS release
+        run: flutter build macos --release
+
+      - name: Create DMG
+        run: |
+          cd build/macos/Build/Products/Release
+          hdiutil create -volname "TMail" -srcfolder "tmail_ui_user.app" -ov -format UDZO "TMail-macOS-arm64.dmg"
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-macos
+          path: build/macos/Build/Products/Release/TMail-macOS-arm64.dmg
+          retention-days: 30
+
+  build-windows:
+    name: Build Windows App
+    runs-on: windows-latest
+    needs: prebuild
+    if: ${{ github.event_name == 'push' || inputs.build_windows }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~\AppData\Local\Pub\Cache
+            .dart_tool\
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild (if cache miss)
+        shell: bash
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Create ZIP archive
+        run: |
+          cd build/windows/x64/runner/Release
+          Compress-Archive -Path * -DestinationPath TMail-Windows-x64.zip
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-windows
+          path: build/windows/x64/runner/Release/TMail-Windows-x64.zip
+          retention-days: 30
+
+  build-linux:
+    name: Build Linux App
+    runs-on: ubuntu-latest
+    needs: prebuild
+    # Linux build disabled by default - project needs linux/ directory
+    if: ${{ inputs.build_linux == true }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore prebuild cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            lib/**/*.freezed.dart
+            **/lib/**/*.g.dart
+            **/lib/**/*.freezed.dart
+          key: ${{ needs.prebuild.outputs.cache-key }}
+
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        with:
+          path: /var/cache/apt/archives
+          key: apt-linux-desktop-${{ runner.os }}
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: flutter-${{ env.FLUTTER_VERSION }}-${{ hashFiles('**/pubspec.lock') }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool/
+          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run prebuild (if cache miss)
+        run: |
+          if [ ! -f "lib/l10n/messages_all.dart" ]; then
+            ./scripts/prebuild.sh
+          fi
+
+      - name: Build Linux release
+        run: flutter build linux --release
+
+      - name: Create tarball
+        run: |
+          cd build/linux/x64/release/bundle
+          tar -czvf TMail-Linux-x64.tar.gz *
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmail-linux
+          path: build/linux/x64/release/bundle/TMail-Linux-x64.tar.gz
+          retention-days: 30
+
+  build-docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || inputs.build_docker }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=tag
+            type=ref,event=branch
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios, build-macos, build-windows, build-linux, build-docker]
+    if: |
+      always() &&
+      (startsWith(github.ref, 'refs/tags/v') || inputs.create_release) &&
+      (needs.build-android.result == 'success' || needs.build-android.result == 'skipped') &&
+      (needs.build-ios.result == 'success' || needs.build-ios.result == 'skipped') &&
+      (needs.build-macos.result == 'success' || needs.build-macos.result == 'skipped') &&
+      (needs.build-windows.result == 'success' || needs.build-windows.result == 'skipped') &&
+      (needs.build-linux.result == 'success' || needs.build-linux.result == 'skipped')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find artifacts -type f \( -name "*.apk" -o -name "*.aab" -o -name "*.ipa" -o -name "*.dmg" -o -name "*.zip" -o -name "*.tar.gz" \) | sort
+
+      - name: Get version from tag
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${{ github.ref_name }}"
+          else
+            VERSION="dev-$(date +%Y%m%d-%H%M%S)"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: TMail ${{ steps.version.outputs.version }}
+          draft: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+          generate_release_notes: true
+          files: |
+            artifacts/tmail-android-apk/*.apk
+            artifacts/tmail-android-aab/*.aab
+            artifacts/tmail-ios/*.ipa
+            artifacts/tmail-macos/*.dmg
+            artifacts/tmail-windows/*.zip
+            artifacts/tmail-linux/*.tar.gz
+          body: |
+            ## TMail ${{ steps.version.outputs.version }}
+
+            ### Downloads
+
+            | Platform | File | Description |
+            |----------|------|-------------|
+            | Android | `app-release.apk` | Android app (APK for sideloading) |
+            | Android | `app-release.aab` | Android App Bundle (for Play Store) |
+            | iOS | `TMail-iOS-unsigned.ipa` | iOS app (unsigned, requires re-signing) |
+            | macOS | `TMail-macOS-arm64.dmg` | macOS app (Apple Silicon) |
+            | Windows | `TMail-Windows-x64.zip` | Windows app (64-bit) |
+            | Linux | `TMail-Linux-x64.tar.gz` | Linux app (64-bit, if enabled) |
+
+            ### Installation
+
+            **Android**: Download the APK and install directly, or use the AAB for Play Store deployment.
+
+            **iOS**: The IPA is unsigned. You'll need to re-sign it with your own provisioning profile using Xcode or a third-party tool.
+
+            **macOS**: Download the DMG, open it, and drag TMail to Applications.
+
+            **Windows**: Download and extract the ZIP, then run `tmail_ui_user.exe`.
+
+            **Linux**: Download and extract the tarball, then run `tmail_ui_user`.
+
+            ### Web App (Docker)
+
+            The web app is available via Docker image. Pull from GitHub Container Registry:
+
+            ```bash
+            docker pull ghcr.io/${{ github.repository_owner }}/tmail-web:${{ steps.version.outputs.version }}
+            ```
+
+            Or use the latest tag:
+
+            ```bash
+            docker pull ghcr.io/${{ github.repository_owner }}/tmail-web:latest
+            ```
+
+            Run the container:
+
+            ```bash
+            docker run -d -p 8080:80 ghcr.io/${{ github.repository_owner }}/tmail-web:${{ steps.version.outputs.version }}
+            ```
+
+            ---
+
+            See the [CHANGELOG](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md) for details.

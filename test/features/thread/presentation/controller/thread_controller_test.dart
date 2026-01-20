@@ -435,6 +435,74 @@ void main() {
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.isEmpty, isTrue);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.length, equals(0));
       });
+
+      test(
+        'WHEN currentEmailState is null\n'
+        'AND RefreshChangeEmailAction is coming with a new state\n'
+        'THEN should still process the refresh\n'
+        'to handle the case when WebSocket update arrives before initial email fetch',
+      () async {
+        // Arrange
+        PlatformInfo.isTestingForWeb = true;
+        final emailList = [
+          PresentationEmail(
+            id: EmailId(Id('email1')),
+            subject: 'hello'),
+        ];
+
+        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList(emailList));
+        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
+        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn(null));
+        when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn(null));
+        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+        // currentEmailState is null - simulating first load
+        when(mockMailboxDashBoardController.currentEmailState).thenReturn(null);
+        when(mockSearchController.searchState).thenReturn(Rx(SearchState.initial()));
+        when(mockSearchController.isAdvancedSearchViewOpen).thenReturn(RxBool(false));
+        when(mockSearchController.isSearchEmailRunning).thenReturn(false);
+        when(mockSearchController.searchEmailFilter).thenReturn(Rx(SearchEmailFilter.initial()));
+
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+        )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(
+          emailList: emailList,
+          currentEmailState: State('new-state'))))
+        );
+
+        // Act
+        threadController.onInit();
+
+        // Trigger RefreshChangeEmailAction with a new state
+        mockMailboxDashBoardController.emailUIAction.value =
+            RefreshChangeEmailAction(newState: State('new-state'));
+
+        // Give time for the async operations to complete
+        await Future.delayed(const Duration(milliseconds: 100));
+
+        // Assert
+        // The refresh should be triggered even when currentEmailState is null
+        verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          any,
+          sort: anyNamed('sort'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'),
+        )).called(1);
+
+        PlatformInfo.isTestingForWeb = false;
+      });
     });
 
     group('_registerObxStreamListener test:', () {

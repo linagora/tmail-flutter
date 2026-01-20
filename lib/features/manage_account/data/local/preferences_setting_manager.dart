@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/auto_sync_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
@@ -10,6 +11,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/text_formatting_menu_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/sidebar_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 
 class PreferencesSettingManager {
@@ -26,6 +28,10 @@ class PreferencesSettingManager {
       '${_preferencesSettingKey}_LABEL';
   static const String _preferencesSettingOpenEmailInNewWindowKey =
       '${_preferencesSettingKey}_OPEN_EMAIL_IN_NEW_WINDOW';
+  static const String _preferencesSettingAutoSyncKey =
+      '${_preferencesSettingKey}_AUTO_SYNC';
+  static const String _preferencesSettingSidebarKey =
+      '${_preferencesSettingKey}_SIDEBAR';
 
   const PreferencesSettingManager(this._sharedPreferences);
 
@@ -56,6 +62,10 @@ class PreferencesSettingManager {
             return LabelConfig.fromJson(jsonDecoded);
           case _preferencesSettingOpenEmailInNewWindowKey:
             return OpenEmailInNewWindowConfig.fromJson(jsonDecoded);
+          case _preferencesSettingAutoSyncKey:
+            return AutoSyncConfig.fromJson(jsonDecoded);
+          case _preferencesSettingSidebarKey:
+            return SidebarConfig.fromJson(jsonDecoded);
           default:
             return DefaultPreferencesConfig.fromJson(jsonDecoded);
         }
@@ -83,6 +93,10 @@ class PreferencesSettingManager {
       return _preferencesSettingLabelKey;
     } else if (config is OpenEmailInNewWindowConfig) {
       return _preferencesSettingOpenEmailInNewWindowKey;
+    } else if (config is AutoSyncConfig) {
+      return _preferencesSettingAutoSyncKey;
+    } else if (config is SidebarConfig) {
+      return _preferencesSettingSidebarKey;
     } else {
       return _preferencesSettingKey;
     }
@@ -206,6 +220,42 @@ class PreferencesSettingManager {
   Future<void> updateOpenEmailInNewWindow(bool isEnabled) async {
     final currentConfig = await getOpenEmailInNewWindowConfig();
     final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
+    await savePreferences(updatedConfig);
+  }
+
+  Future<AutoSyncConfig> getAutoSyncConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingAutoSyncKey,
+    );
+
+    return jsonString == null
+        ? AutoSyncConfig.initial()
+        : AutoSyncConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updateAutoSync(bool isEnabled) async {
+    final currentConfig = await getAutoSyncConfig();
+    final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
+    await savePreferences(updatedConfig);
+  }
+
+  Future<SidebarConfig> getSidebarConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingSidebarKey,
+    );
+
+    return jsonString == null
+        ? SidebarConfig.initial()
+        : SidebarConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updateSidebar(bool isExpanded) async {
+    final currentConfig = await getSidebarConfig();
+    final updatedConfig = currentConfig.copyWith(isExpanded: isExpanded);
     await savePreferences(updatedConfig);
   }
 }

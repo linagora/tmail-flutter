@@ -144,7 +144,23 @@ Choose the actions you want the rule to perform.
 ![image](https://github.com/user-attachments/assets/a9edba0d-2a6d-4eab-bdf7-41e40f4b96e9)
 
 
-## Spell check 
+## Collapsible sidebar (Web only)
+
+The left navigation sidebar can be collapsed to provide more screen space for reading emails. This feature is available on the web desktop version.
+
+1. **Toggle the sidebar**: Click the arrow button at the bottom of the left sidebar to collapse or expand it.
+
+2. **Collapsed mode**: When collapsed, the sidebar shows only mailbox icons (64px width). Hover over any icon to see the mailbox name in a tooltip. Unread email counts are displayed as badges on the icons.
+
+3. **Expanded mode**: The full sidebar (256px width) displays mailbox names, folder categories, labels, storage quota, and application version.
+
+4. **Persistent state**: Your sidebar preference is automatically saved and restored when you return to the application.
+
+5. **Smooth transition**: The sidebar animates smoothly between collapsed and expanded states (300ms transition).
+
+This feature is especially useful when working with limited screen space or when you want to focus on email content.
+
+## Spell check
 
 Spell check features is designed to help you identify and correct spelling and grammar errors in yout messages. 
 
