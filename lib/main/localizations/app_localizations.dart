@@ -5613,6 +5613,27 @@ class AppLocalizations {
     );
   }
 
+  String get openEmailInNewWindow {
+    return Intl.message(
+      'Open emails in new window',
+      name: 'openEmailInNewWindow',
+    );
+  }
+
+  String get openEmailInNewWindowSettingExplanation {
+    return Intl.message(
+      'When enabled, clicking on an email will automatically open it in a new browser tab instead of the current view.',
+      name: 'openEmailInNewWindowSettingExplanation',
+    );
+  }
+
+  String get openEmailInNewWindowToggleDescription {
+    return Intl.message(
+      'Open in new window',
+      name: 'openEmailInNewWindowToggleDescription',
+    );
+  }
+
   String get theLabelFeatureIsNowAvailable {
     return Intl.message(
       'The label feature is now available.',
