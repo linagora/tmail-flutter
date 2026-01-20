@@ -57,7 +57,7 @@ class _AiScribeMobileActionsBottomSheetState
                   icon: widget.imagePaths.icArrowBackIos,
                   backgroundColor: Colors.transparent,
                   iconSize: AIScribeSizes.bottomsheetIcon,
-                  iconColor: AIScribeColors.bottomsheetIcon,
+                  iconColor: AIScribeColors.secondaryIcon,
                   padding: AIScribeSizes.backIconPadding,
                   onTapActionCallback: _goBackToCategories
                 )
@@ -79,7 +79,7 @@ class _AiScribeMobileActionsBottomSheetState
             icon: widget.imagePaths.icCloseDialog,
             backgroundColor: Colors.transparent,
             iconSize: AIScribeSizes.bottomsheetIcon,
-            iconColor: AIScribeColors.bottomsheetIcon,
+            iconColor: AIScribeColors.secondaryIcon,
             onTapActionCallback: () => Navigator.of(context).pop()
           )
         ],
