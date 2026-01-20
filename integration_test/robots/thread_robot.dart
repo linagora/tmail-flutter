@@ -1,6 +1,7 @@
 import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:labels/extensions/label_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
@@ -30,6 +31,17 @@ class ThreadRobot extends CoreRobot {
     await $.waitUntilVisible(email);
     await email.tap();
     await $.pump(const Duration(seconds: 2));
+  }
+
+  Future<void> openEmailWithLabel(String labelDisplayName) async {
+    final email = $(EmailTileBuilder).which<EmailTileBuilder>(
+      (view) =>
+          view.labels
+              ?.any((label) => label.safeDisplayName == labelDisplayName) ==
+          true,
+    );
+    await $.waitUntilVisible(email);
+    await email.tap();
   }
 
   Future<void> openMailbox() async {

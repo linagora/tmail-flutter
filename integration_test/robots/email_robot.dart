@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/widget/labels/tag_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -82,5 +85,9 @@ class EmailRobot extends CoreRobot {
 
   Future<void> onTapAttachmentItem() async {
     await $(AttachmentItemWidget).$(InkWell).tap();
+  }
+
+  Future<void> tapRemoveLabelButton(String labelDisplayName) async {
+    await $(EmailSubjectWidget).$(LabelWidget).$(TagWidget).$(InkWell).tap();
   }
 }
