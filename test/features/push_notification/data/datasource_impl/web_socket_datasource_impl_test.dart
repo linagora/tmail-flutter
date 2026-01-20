@@ -10,7 +10,6 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
-import 'package:model/account/authentication_type.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/strategies/web_socket_auth_strategy.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/strategies/web_socket_auth_strategy_selector.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/web_socket_capability_provider.dart';
