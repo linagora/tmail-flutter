@@ -4,7 +4,7 @@ import 'dart:math' hide log;
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -284,6 +285,63 @@ mixin MailAPIMixin on HandleSetErrorMixin {
         totalEmails > 0) {
       throw CannotMoveAllEmailException();
     }
+  }
+
+  Future<({List<Email> emails, State? state, List<EmailId> notFoundIds})> getEmailsByIdsBatched({
+    required HttpClient httpClient,
+    required Session session,
+    required AccountId accountId,
+    required List<EmailId> emailIds,
+    required Properties properties,
+    int? batchSize,
+  }) async {
+    final maxObjectsInGet = batchSize ?? getMaxObjectsInGetMethod(session, accountId);
+    final List<Email> allEmails = [];
+    final List<EmailId> allNotFoundIds = [];
+    State? latestState;
+
+    for (int start = 0; start < emailIds.length; start += maxObjectsInGet) {
+      final end = (start + maxObjectsInGet < emailIds.length)
+          ? start + maxObjectsInGet
+          : emailIds.length;
+      final batch = emailIds.sublist(start, end);
+
+      log('$runtimeType::getEmailsByIdsBatched:fetching batch ${start ~/ maxObjectsInGet + 1} with ${batch.length} emails');
+
+      final processingInvocation = ProcessingInvocation();
+      final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+
+      final getEmailMethod = GetEmailMethod(accountId)
+        ..addIds(batch.map((id) => id.id).toSet())
+        ..addProperties(properties);
+
+      final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
+
+      final capabilities = getEmailMethod.requiredCapabilities
+          .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+      final result = await (jmapRequestBuilder
+          ..usings(capabilities))
+        .build()
+        .execute();
+
+      final emailResponse = result.parse<GetEmailResponse>(
+        getEmailInvocation.methodCallId,
+        GetEmailResponse.deserialize,
+      );
+
+      if (emailResponse?.list != null) {
+        allEmails.addAll(emailResponse!.list);
+      }
+      latestState = emailResponse?.state;
+
+      final notFoundIds = emailResponse?.notFound?.toEmailIds().toList() ?? [];
+      if (notFoundIds.isNotEmpty) {
+        allNotFoundIds.addAll(notFoundIds);
+      }
+    }
+
+    return (emails: allEmails, state: latestState, notFoundIds: allNotFoundIds);
   }
 
   Future<List<Email>> getLatestEmails({
