@@ -5686,4 +5686,82 @@ class AppLocalizations {
       name: 'autoSyncDisabled',
     );
   }
+
+  String get oidcLogoutErrorTitle {
+    return Intl.message(
+      'Logout Error',
+      name: 'oidcLogoutErrorTitle',
+    );
+  }
+
+  String get oidcLogoutErrorMissingEndpoint {
+    return Intl.message(
+      'Unable to logout: The server\'s OIDC configuration is missing the logout endpoint. Please contact your administrator.',
+      name: 'oidcLogoutErrorMissingEndpoint',
+    );
+  }
+
+  String get oidcLoginErrorTitle {
+    return Intl.message(
+      'Login Error',
+      name: 'oidcLoginErrorTitle',
+    );
+  }
+
+  String get oidcLoginErrorMissingAuthEndpoint {
+    return Intl.message(
+      'Unable to login: The server\'s OIDC configuration is missing the authorization endpoint. Please contact your administrator.',
+      name: 'oidcLoginErrorMissingAuthEndpoint',
+    );
+  }
+
+  String get oidcLoginErrorMissingTokenEndpoint {
+    return Intl.message(
+      'Unable to login: The server\'s OIDC configuration is missing the token endpoint. Please contact your administrator.',
+      name: 'oidcLoginErrorMissingTokenEndpoint',
+    );
+  }
+
+  String get oidcConfigurationError {
+    return Intl.message(
+      'OIDC Configuration Error',
+      name: 'oidcConfigurationError',
+    );
+  }
+
+  String get oidcDiscoveryFailed {
+    return Intl.message(
+      'Failed to retrieve OIDC configuration from the server. Please check your server settings.',
+      name: 'oidcDiscoveryFailed',
+    );
+  }
+
+  String technicalDetails(String details) {
+    return Intl.message(
+      'Technical details: $details',
+      name: 'technicalDetails',
+      args: [details],
+    );
+  }
+
+  String get logoutFailed {
+    return Intl.message(
+      'Logout failed',
+      name: 'logoutFailed',
+    );
+  }
+
+  String get forceLogout {
+    return Intl.message(
+      'Force logout',
+      name: 'forceLogout',
+    );
+  }
+
+  String get forceLogoutDescription {
+    return Intl.message(
+      'This will clear your local session without notifying the server. You may need to revoke the session manually from your identity provider.',
+      name: 'forceLogoutDescription',
+    );
+  }
 }

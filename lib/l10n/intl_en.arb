@@ -3304,5 +3304,73 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "oidcLogoutErrorTitle": "Logout Error",
+  "@oidcLogoutErrorTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcLogoutErrorMissingEndpoint": "Unable to logout: The server's OIDC configuration is missing the logout endpoint. Please contact your administrator.",
+  "@oidcLogoutErrorMissingEndpoint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcLoginErrorTitle": "Login Error",
+  "@oidcLoginErrorTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcLoginErrorMissingAuthEndpoint": "Unable to login: The server's OIDC configuration is missing the authorization endpoint. Please contact your administrator.",
+  "@oidcLoginErrorMissingAuthEndpoint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcLoginErrorMissingTokenEndpoint": "Unable to login: The server's OIDC configuration is missing the token endpoint. Please contact your administrator.",
+  "@oidcLoginErrorMissingTokenEndpoint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcConfigurationError": "OIDC Configuration Error",
+  "@oidcConfigurationError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcDiscoveryFailed": "Failed to retrieve OIDC configuration from the server. Please check your server settings.",
+  "@oidcDiscoveryFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "technicalDetails": "Technical details: {details}",
+  "@technicalDetails": {
+    "type": "text",
+    "placeholders_order": ["details"],
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "logoutFailed": "Logout failed",
+  "@logoutFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forceLogout": "Force logout",
+  "@forceLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forceLogoutDescription": "This will clear your local session without notifying the server. You may need to revoke the session manually from your identity provider.",
+  "@forceLogoutDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

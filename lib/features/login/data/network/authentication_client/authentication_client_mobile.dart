@@ -60,6 +60,15 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
       config,
       discoveryResponse,
     );
+
+    // If end_session_endpoint is not available (optional per OIDC spec),
+    // return true to indicate local-only logout should proceed
+    if (endSessionRequest == null) {
+      log('$runtimeType::logoutOidc(): end_session_endpoint not configured, '
+          'performing local-only logout');
+      return true;
+    }
+
     final endSession = await _appAuth.endSession(endSessionRequest);
     log('$runtimeType::logoutOidc(): ${endSession.state}');
     return endSession.state?.isNotEmpty == true;

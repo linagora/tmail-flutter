@@ -45,3 +45,48 @@ class NotFoundAuthenticationInfoCache implements Exception {}
 class CanNotFoundSaasServerUrl implements Exception {}
 
 class SaasServerUriIsNull implements Exception {}
+
+/// OIDC Configuration Exceptions
+/// These exceptions provide detailed error information for OIDC-related issues
+
+class OidcConfigurationException implements Exception {
+  final String message;
+  final String? technicalDetails;
+
+  OidcConfigurationException(this.message, {this.technicalDetails});
+
+  @override
+  String toString() => 'OidcConfigurationException: $message${technicalDetails != null ? ' ($technicalDetails)' : ''}';
+}
+
+class MissingEndSessionEndpointException extends OidcConfigurationException {
+  MissingEndSessionEndpointException()
+      : super(
+          'OIDC logout endpoint not configured',
+          technicalDetails: 'end_session_endpoint missing from OIDC discovery',
+        );
+}
+
+class MissingAuthorizationEndpointException extends OidcConfigurationException {
+  MissingAuthorizationEndpointException()
+      : super(
+          'OIDC authorization endpoint not configured',
+          technicalDetails: 'authorization_endpoint missing from OIDC discovery',
+        );
+}
+
+class MissingTokenEndpointException extends OidcConfigurationException {
+  MissingTokenEndpointException()
+      : super(
+          'OIDC token endpoint not configured',
+          technicalDetails: 'token_endpoint missing from OIDC discovery',
+        );
+}
+
+class OidcDiscoveryFailedException extends OidcConfigurationException {
+  OidcDiscoveryFailedException(String details)
+      : super(
+          'Failed to retrieve OIDC configuration',
+          technicalDetails: details,
+        );
+}
