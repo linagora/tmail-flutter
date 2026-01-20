@@ -159,7 +159,8 @@ class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
     State sinceState,
     {
       Properties? propertiesCreated,
-      Properties? propertiesUpdated
+      Properties? propertiesUpdated,
+      int? maxCreatedEmailsToFetch,
     }
   ) async {
     // Step 1: Call Email/changes to get the list of changed IDs
@@ -174,58 +175,78 @@ class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
     log('ThreadAPI::getChanges:createdIds = ${createdIds.length} | updatedIds = ${updatedIds.length} | destroyedIds = ${destroyedEmailIds.length}');
 
     // Step 2: Batch fetch emails respecting maxObjectsInGet limit
-    List<Email>? updatedEmail;
-    List<Email>? createdEmail;
     State? newStateEmail;
 
-    if (propertiesUpdated != null && updatedIds.isNotEmpty) {
-      final result = await getEmailsByIdsBatched(
-        httpClient: httpClient,
-        session: session,
-        accountId: accountId,
-        emailIds: updatedIds,
-        properties: propertiesUpdated,
-      );
-      updatedEmail = result.emails;
-      newStateEmail = result.state;
-      final notFoundIds = result.notFoundIds;
-      log('ThreadAPI::getChanges:notFoundIdsUpdated = $notFoundIds');
-      if (notFoundIds.isNotEmpty) {
-        destroyedEmailIds.addAll(notFoundIds);
-        log('ThreadAPI::getChanges:notFoundIdsUpdated = ${notFoundIds.asListString.toString()} | SinceState = ${sinceState.value}');
-      }
+    final updatedResult = await _fetchEmailsIfNeeded(
+      session: session,
+      accountId: accountId,
+      emailIds: updatedIds,
+      properties: propertiesUpdated,
+      sinceState: sinceState,
+      logPrefix: 'Updated',
+    );
+    if (updatedResult.notFoundIds.isNotEmpty) {
+      destroyedEmailIds.addAll(updatedResult.notFoundIds);
     }
+    newStateEmail = updatedResult.state ?? newStateEmail;
 
-    if (propertiesCreated != null && createdIds.isNotEmpty) {
-      final result = await getEmailsByIdsBatched(
-        httpClient: httpClient,
-        session: session,
-        accountId: accountId,
-        emailIds: createdIds,
-        properties: propertiesCreated,
-      );
-      createdEmail = result.emails;
-      newStateEmail = result.state;
-      final notFoundIds = result.notFoundIds;
-      log('ThreadAPI::getChanges:notFoundIdsCreated = $notFoundIds');
-      if (notFoundIds.isNotEmpty) {
-        destroyedEmailIds.addAll(notFoundIds);
-        log('ThreadAPI::getChanges:notFoundIdsCreated = ${notFoundIds.asListString.toString()} | SinceState = ${sinceState.value}');
-      }
+    final createdResult = await _fetchEmailsIfNeeded(
+      session: session,
+      accountId: accountId,
+      emailIds: createdIds,
+      properties: propertiesCreated,
+      maxEmailsToFetch: maxCreatedEmailsToFetch,
+      sinceState: sinceState,
+      logPrefix: 'Created',
+    );
+    if (createdResult.notFoundIds.isNotEmpty) {
+      destroyedEmailIds.addAll(createdResult.notFoundIds);
     }
+    newStateEmail = createdResult.state ?? newStateEmail;
 
     log('ThreadAPI::getChanges:newStateChanges = $newStateChanges | newStateEmail = $newStateEmail | hasMoreChanges = $hasMoreChanges');
-    log('ThreadAPI::getChanges:updatedEmailSize = ${updatedEmail?.length} | createdEmailSize = ${createdEmail?.length}');
+    log('ThreadAPI::getChanges:updatedEmailSize = ${updatedResult.emails?.length} | createdEmailSize = ${createdResult.emails?.length}');
     log('ThreadAPI::getChanges:destroyedEmailIds = $destroyedEmailIds');
     return EmailChangeResponse(
-      updated: updatedEmail,
-      created: createdEmail,
+      updated: updatedResult.emails,
+      created: createdResult.emails,
       destroyed: destroyedEmailIds,
       newStateEmail: newStateEmail,
       newStateChanges: newStateChanges,
       hasMoreChanges: hasMoreChanges,
       updatedProperties: propertiesUpdated,
     );
+  }
+
+  /// Fetches emails by IDs if properties are provided and IDs are not empty.
+  /// Returns empty results if either condition is not met.
+  Future<({List<Email>? emails, State? state, List<EmailId> notFoundIds})> _fetchEmailsIfNeeded({
+    required Session session,
+    required AccountId accountId,
+    required List<EmailId> emailIds,
+    required Properties? properties,
+    required State sinceState,
+    required String logPrefix,
+    int? maxEmailsToFetch,
+  }) async {
+    if (properties == null || emailIds.isEmpty) {
+      return (emails: null, state: null, notFoundIds: <EmailId>[]);
+    }
+
+    final result = await getEmailsByIdsBatched(
+      httpClient: httpClient,
+      session: session,
+      accountId: accountId,
+      emailIds: emailIds,
+      properties: properties,
+      maxEmailsToFetch: maxEmailsToFetch,
+    );
+
+    if (result.notFoundIds.isNotEmpty) {
+      log('ThreadAPI::getChanges:notFoundIds$logPrefix = ${result.notFoundIds.asListString} | SinceState = ${sinceState.value}');
+    }
+
+    return (emails: result.emails, state: result.state, notFoundIds: result.notFoundIds);
   }
 
   Future<ChangesEmailResponse> _getEmailChangesOnly(

@@ -58,7 +58,7 @@ mixin MailAPIMixin on HandleSetErrorMixin {
       maxObjectsInSetMethod,
       CapabilityIdentifierExtension.defaultMaxObjectsInSet,
     );
-    log('$runtimeType::_getMaxObjectsInSetMethod:minOfMaxObjectsInSetMethod = $minOfMaxObjectsInSetMethod');
+    log('$runtimeType::getMaxObjectsInSetMethod:minOfMaxObjectsInSetMethod = $minOfMaxObjectsInSetMethod');
     return minOfMaxObjectsInSetMethod;
   }
 
@@ -294,19 +294,25 @@ mixin MailAPIMixin on HandleSetErrorMixin {
     required List<EmailId> emailIds,
     required Properties properties,
     int? batchSize,
+    int? maxEmailsToFetch,
   }) async {
     final maxObjectsInGet = batchSize ?? getMaxObjectsInGetMethod(session, accountId);
     final List<Email> allEmails = [];
     final List<EmailId> allNotFoundIds = [];
     State? latestState;
 
-    for (int start = 0; start < emailIds.length; start += maxObjectsInGet) {
-      final end = (start + maxObjectsInGet < emailIds.length)
-          ? start + maxObjectsInGet
-          : emailIds.length;
-      final batch = emailIds.sublist(start, end);
+    // If maxEmailsToFetch is specified, only fetch up to that many IDs
+    final idsToFetch = maxEmailsToFetch != null && maxEmailsToFetch < emailIds.length
+        ? emailIds.sublist(0, maxEmailsToFetch)
+        : emailIds;
 
-      log('$runtimeType::getEmailsByIdsBatched:fetching batch ${start ~/ maxObjectsInGet + 1} with ${batch.length} emails');
+    for (int start = 0; start < idsToFetch.length; start += maxObjectsInGet) {
+      final end = (start + maxObjectsInGet < idsToFetch.length)
+          ? start + maxObjectsInGet
+          : idsToFetch.length;
+      final batch = idsToFetch.sublist(start, end);
+
+      log('$runtimeType::getEmailsByIdsBatched:fetching batch ${start ~/ maxObjectsInGet + 1} with ${batch.length} emails (max: $maxEmailsToFetch)');
 
       final processingInvocation = ProcessingInvocation();
       final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
@@ -338,6 +344,12 @@ mixin MailAPIMixin on HandleSetErrorMixin {
       final notFoundIds = emailResponse?.notFound?.toEmailIds().toList() ?? [];
       if (notFoundIds.isNotEmpty) {
         allNotFoundIds.addAll(notFoundIds);
+      }
+
+      // Early termination: stop if we've fetched enough emails
+      if (maxEmailsToFetch != null && allEmails.length >= maxEmailsToFetch) {
+        log('$runtimeType::getEmailsByIdsBatched:early termination - fetched ${allEmails.length} emails (max: $maxEmailsToFetch)');
+        break;
       }
     }
 
