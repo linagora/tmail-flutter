@@ -1,8 +1,10 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/web_link_generator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:model/oidc/response/oidc_user_info.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
@@ -15,9 +17,35 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/setting
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SettingsController extends GetxController with ContactSupportMixin {
+  FocusNode? keyboardShortcutFocusNode;
   final manageAccountDashboardController = Get.find<ManageAccountDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
+
+  @override
+  void onInit() {
+    super.onInit();
+    if (PlatformInfo.isWeb) {
+      keyboardShortcutFocusNode = FocusNode();
+    }
+  }
+
+  @override
+  void onClose() {
+    if (PlatformInfo.isWeb) {
+      keyboardShortcutFocusNode?.dispose();
+      keyboardShortcutFocusNode = null;
+    }
+    super.onClose();
+  }
+
+  void onKeyDownEventAction(KeyEvent event, BuildContext context) {
+    final keysPressed = HardwareKeyboard.instance.logicalKeysPressed;
+    log('$runtimeType::onKeyDownEventAction: Keys pressed: $keysPressed');
+    if (keysPressed.contains(LogicalKeyboardKey.escape)) {
+      onBackSettingAction(context);
+    }
+  }
 
   void selectSettings(BuildContext context, AccountMenuItem accountMenuItem) {
     if (accountMenuItem == AccountMenuItem.signOut) {

@@ -1,5 +1,7 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_setup_label_visibility_in_setting_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -26,7 +28,7 @@ class SettingsView extends GetWidget<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    Widget bodyWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Obx(() {
@@ -106,6 +108,17 @@ class SettingsView extends GetWidget<SettingsController> {
         Expanded(child: _bodySettingsScreen())
       ]
     );
+
+    if (PlatformInfo.isWeb && controller.keyboardShortcutFocusNode != null) {
+      return KeyboardHandlerWrapper(
+        onKeyDownEventAction: (event) =>
+            controller.onKeyDownEventAction(event, context),
+        focusNode: controller.keyboardShortcutFocusNode!,
+        child: bodyWidget,
+      );
+    } else {
+      return bodyWidget;
+    }
   }
 
   Widget _bodySettingsScreen() {
