@@ -173,6 +173,10 @@ abstract final class AIScribeSizes {
   static const double aiAssistantIcon = 24;
   static const double bottomsheetIcon = 20;
 
+  // Button sizes
+  static const double minButtonWidth = 72;
+  static const double buttonHeight = 36;
+
   // Padding
   static const EdgeInsetsGeometry menuItemPadding =
       EdgeInsetsDirectional.only(start: 16, end: 10);
