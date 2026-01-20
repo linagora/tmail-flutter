@@ -417,10 +417,11 @@ class EmailView extends GetWidget<SingleEmailController> {
                 );
               } else if (PlatformInfo.isIOS) {
                 return Obx(() {
-                  if (controller.isEmailContentHidden.isTrue && !controller.responsiveUtils.isScreenWithShortestSide(context)) {
-                    return const SizedBox.shrink();
-                  } else {
-                    return Column(
+                  return Visibility(
+                    visible: !controller.isEmailContentHidden.isTrue ||
+                        controller.responsiveUtils.isScreenWithShortestSide(context),
+                    maintainState: true,
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
@@ -458,8 +459,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                           }
                         }),
                       ],
-                    );
-                  }
+                    ),
+                  );
                 });
               } else {
                 return Padding(
