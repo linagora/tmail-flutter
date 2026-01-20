@@ -16,7 +16,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_thread_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_a_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_a_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';

@@ -6,7 +6,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_thread_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_a_thread_state.dart';
 
 class AddALabelToAThreadInteractor {
   final EmailRepository _emailRepository;
