@@ -5735,7 +5735,7 @@ class AppLocalizations {
 
   String removeLabelFromThreadFailureMessage(String labelName) {
     return Intl.message(
-      'Cannot remove all emails from thread to the "$labelName" label',
+      'Cannot remove all emails in thread from the "$labelName" label',
       name: 'removeLabelFromThreadFailureMessage',
       args: [labelName],
     );

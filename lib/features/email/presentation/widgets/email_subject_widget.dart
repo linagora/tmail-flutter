@@ -103,11 +103,15 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   }
 
   List<Widget> _buildLabelWidgets() {
+    final canRemove = widget.onDeleteLabelAction != null;
     return _currentLabels
-            ?.map((label) => LabelWidget.create(
+            ?.map((label) => LabelWidget(
                   label: label,
-                  removeLabelAction: _buildRemoveLabelWidget(label),
-                  padding: const EdgeInsetsDirectional.only(start: 4, end: 2),
+                  actionWidget:
+                      canRemove ? _buildRemoveLabelWidget(label) : null,
+                  padding: canRemove
+                      ? const EdgeInsetsDirectional.only(start: 4, end: 2)
+                      : null,
                 ))
             .toList() ??
         const [];
@@ -125,13 +129,12 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   }
 
   void _onDeleteLabelAction(Label labelRemoved) {
-    if (mounted) {
-      setState(() {
-        _currentLabels = _currentLabels
-            ?.where((label) => label.id != labelRemoved.id)
-            .toList();
-      });
-      widget.onDeleteLabelAction?.call(labelRemoved);
-    }
+    if (!mounted || widget.onDeleteLabelAction == null) return;
+    setState(() {
+      _currentLabels = _currentLabels
+          ?.where((label) => label.id != labelRemoved.id)
+          .toList();
+    });
+    widget.onDeleteLabelAction!.call(labelRemoved);
   }
 }

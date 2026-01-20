@@ -48,7 +48,6 @@ class RemoveALabelFromEmailScenario extends BaseTestScenario
     await _expectEmailListDisplayedCorrectByTag(labelDisplayName);
 
     await threadRobot.openEmailWithLabel(labelDisplayName);
-    await $.pumpAndSettle(duration: const Duration(seconds: 1));
     await _expectLabelDisplayedOnEmailSubject(labelDisplayName);
 
     await emailRobot.tapRemoveLabelButton(labelDisplayName);
