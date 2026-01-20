@@ -118,3 +118,8 @@ app.*.symbols
 messages_*.dart
 *.mocks.dart
 integration_test/test_bundle.dart
+
+# Claude Code
+CLAUDE.md
+.claude/
+tree/
