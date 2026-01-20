@@ -991,9 +991,7 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     final isUpdated = emailIdsUpdated.every(ids.contains);
 
     if (emailIdsUpdated.isEmpty || !isUpdated) {
-      for (var id in emailIds) {
-        throw parseErrorForSetResponse(response, id.id);
-      }
+      throw parseErrorForSetResponse(response, emailIds.first.id);
     }
   }
 

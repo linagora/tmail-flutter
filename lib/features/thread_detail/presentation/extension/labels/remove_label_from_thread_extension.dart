@@ -2,7 +2,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:labels/labels.dart';
-import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_an_thread_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_a_thread_state.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/labels/add_label_to_thread_extension.dart';

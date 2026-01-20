@@ -88,6 +88,11 @@ class EmailRobot extends CoreRobot {
   }
 
   Future<void> tapRemoveLabelButton(String labelDisplayName) async {
-    await $(EmailSubjectWidget).$(LabelWidget).$(TagWidget).$(InkWell).tap();
+    await $(EmailSubjectWidget)
+        .$(LabelWidget)
+        .$(TagWidget)
+        .which<TagWidget>((widget) => widget.text == labelDisplayName)
+        .$(InkWell)
+        .tap();
   }
 }

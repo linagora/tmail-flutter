@@ -6,7 +6,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_an_thread_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_a_thread_state.dart';
 
 class RemoveALabelFromAThreadInteractor {
   final EmailRepository _emailRepository;

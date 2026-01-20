@@ -5412,7 +5412,7 @@
       "labelName": {}
     }
   },
-  "removeLabelFromThreadFailureMessage": "Cannot remove all emails from thread to the \"{labelName}\" label",
+  "removeLabelFromThreadFailureMessage": "Cannot remove all emails in thread from the \"{labelName}\" label",
   "@removeLabelFromThreadFailureMessage": {
     "type": "text",
     "placeholders_order": [

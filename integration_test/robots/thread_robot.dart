@@ -42,6 +42,7 @@ class ThreadRobot extends CoreRobot {
     );
     await $.waitUntilVisible(email);
     await email.tap();
+    await $.pump(const Duration(seconds: 2));
   }
 
   Future<void> openMailbox() async {
