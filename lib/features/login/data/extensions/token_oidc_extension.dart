@@ -5,4 +5,8 @@ extension TokenOidcExtension on TokenOIDC {
   TokenOidcCache toTokenOidcCache() {
     return TokenOidcCache(token, tokenId.uuid, refreshToken, expiredTime: expiredTime);
   }
+
+  TokenOidcCache toTokenOidcCacheWithoutToken() {
+    return TokenOidcCache('', tokenId.uuid, refreshToken, expiredTime: expiredTime);
+  }
 }
