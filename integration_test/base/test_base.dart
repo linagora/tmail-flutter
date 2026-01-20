@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -15,6 +16,10 @@ class TestBase {
     required String description,
     required BaseScenario Function(PatrolIntegrationTester $) scenarioBuilder,
   }) {
+    patrolSetUp(_setupAll);
+
+    patrolTearDown(_tearDown);
+
     patrolTest(
       description,
       config: const PatrolTesterConfig(
@@ -40,5 +45,13 @@ class TestBase {
     FlutterError.onError = (FlutterErrorDetails details) {
       originalOnError(details);
     };
+  }
+
+  Future<void> _setupAll() async {
+    PlatformInfo.isIntegrationTesting = true;
+  }
+
+  Future<void> _tearDown() async {
+    PlatformInfo.isIntegrationTesting = false;
   }
 }
