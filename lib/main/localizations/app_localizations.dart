@@ -5613,6 +5613,27 @@ class AppLocalizations {
     );
   }
 
+  String get quotedContentVisibility {
+    return Intl.message(
+      'Quoted content',
+      name: 'quotedContentVisibility',
+    );
+  }
+
+  String get quotedContentSettingExplanation {
+    return Intl.message(
+      'Control how quoted content from previous messages is displayed when viewing email replies and forwards.',
+      name: 'quotedContentSettingExplanation',
+    );
+  }
+
+  String get quotedContentToggleDescription {
+    return Intl.message(
+      'Hide quoted content by default',
+      name: 'quotedContentToggleDescription',
+    );
+  }
+
   String get theLabelFeatureIsNowAvailable {
     return Intl.message(
       'The label feature is now available.',
