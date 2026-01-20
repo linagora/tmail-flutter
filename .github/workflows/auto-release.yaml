@@ -8,6 +8,11 @@ on:
       - "**.md"
       - ".github/workflows/auto-release.yaml"
 
+# Cancel previous runs when new commits are pushed to master
+concurrency:
+  group: auto-release-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
