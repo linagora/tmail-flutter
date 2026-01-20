@@ -4,15 +4,51 @@ import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_inte
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/token_id.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 
 mixin AuthenticationClientInteractionMixin {
-  EndSessionRequest getEndSessionRequest(
+  /// Validates the OIDC discovery response and throws specific exceptions
+  /// if required endpoints are missing.
+  void validateOidcDiscoveryResponse(OIDCDiscoveryResponse discoveryResponse) {
+    log('AuthenticationClientInteractionMixin::validateOidcDiscoveryResponse: '
+        'authorizationEndpoint=${discoveryResponse.authorizationEndpoint}, '
+        'tokenEndpoint=${discoveryResponse.tokenEndpoint}, '
+        'endSessionEndpoint=${discoveryResponse.endSessionEndpoint}');
+
+    if (discoveryResponse.authorizationEndpoint == null) {
+      throw MissingAuthorizationEndpointException();
+    }
+    if (discoveryResponse.tokenEndpoint == null) {
+      throw MissingTokenEndpointException();
+    }
+  }
+
+  /// Checks if end_session_endpoint is available for logout.
+  /// Returns true if available, false otherwise.
+  bool hasEndSessionEndpoint(OIDCDiscoveryResponse discoveryResponse) {
+    final hasEndpoint = discoveryResponse.endSessionEndpoint != null;
+    if (!hasEndpoint) {
+      log('AuthenticationClientInteractionMixin::hasEndSessionEndpoint: '
+          'end_session_endpoint is not available in OIDC discovery response. '
+          'This is optional per OIDC spec - will perform local-only logout.');
+    }
+    return hasEndpoint;
+  }
+
+  EndSessionRequest? getEndSessionRequest(
     TokenId tokenId,
     OIDCConfiguration config,
     OIDCDiscoveryResponse discoveryResponse,
   ) {
+    // Check if end_session_endpoint is available (optional per OIDC spec)
+    if (!hasEndSessionEndpoint(discoveryResponse)) {
+      log('AuthenticationClientInteractionMixin::getEndSessionRequest: '
+          'Returning null - end_session_endpoint not configured on server.');
+      return null;
+    }
+
     final authorizationEndpoint = discoveryResponse.authorizationEndpoint;
     final tokenEndpoint = discoveryResponse.tokenEndpoint;
     AuthorizationServiceConfiguration? serviceConfiguration;

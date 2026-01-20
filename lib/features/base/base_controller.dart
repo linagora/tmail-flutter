@@ -25,7 +25,9 @@ import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interacto
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
+import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_company_server_login_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -258,17 +260,63 @@ abstract class BaseController extends GetxController
   void handleFailureViewState(Failure failure) async {
     logWarning('$runtimeType::handleFailureViewState():Failure = $failure');
     if (failure is LogoutOidcFailure) {
-      if (_isFcmEnabled) {
-        _getStoredFirebaseRegistrationFromCache();
-      } else {
-        await clearDataAndGoToLoginPage();
-      }
+      await _handleLogoutOidcFailure(failure);
     } else if (failure is GetStoredFirebaseRegistrationFailure ||
         failure is DestroyFirebaseRegistrationFailure) {
       await clearDataAndGoToLoginPage();
     } else if (failure is GetCompanyServerLoginInfoFailure) {
       handleGetCompanyServerLoginInfoFailure();
     }
+  }
+
+  Future<void> _handleLogoutOidcFailure(LogoutOidcFailure failure) async {
+    final exception = failure.exception;
+
+    // Check if it's an OIDC configuration error that we should show to user
+    if (exception is OidcConfigurationException) {
+      await _showOidcLogoutErrorDialog(exception);
+    } else {
+      // For other failures, proceed with normal logout flow
+      if (_isFcmEnabled) {
+        _getStoredFirebaseRegistrationFromCache();
+      } else {
+        await clearDataAndGoToLoginPage();
+      }
+    }
+  }
+
+  Future<void> _showOidcLogoutErrorDialog(OidcConfigurationException exception) async {
+    final context = Get.context;
+    if (context == null) {
+      // If no context, fall back to force logout
+      await clearDataAndGoToLoginPage();
+      return;
+    }
+
+    String errorMessage = exception.message;
+
+    // Add technical details if available
+    final technicalDetails = exception.technicalDetails;
+    if (technicalDetails != null) {
+      errorMessage += '\n\n${AppLocalizations.of(context).technicalDetails(technicalDetails)}';
+    }
+
+    await MessageDialogActionManager().showConfirmDialogAction(
+      context,
+      errorMessage,
+      AppLocalizations.of(context).forceLogout,
+      title: AppLocalizations.of(context).oidcLogoutErrorTitle,
+      cancelTitle: AppLocalizations.of(context).cancel,
+      hasCancelButton: true,
+      alignCenter: true,
+      onConfirmAction: () async {
+        // Force logout - clear local data without OIDC server notification
+        await clearDataAndGoToLoginPage();
+      },
+      onCancelAction: () {
+        // User cancelled, do nothing - they stay logged in
+      },
+    );
   }
 
   void handleSuccessViewState(Success success) async {

@@ -8,6 +8,11 @@ on:
 
 name: Analyze and test
 
+# Cancel previous runs when new commits are pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   FLUTTER_VERSION: 3.32.8
 
