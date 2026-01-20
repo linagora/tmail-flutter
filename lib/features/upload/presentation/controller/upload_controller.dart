@@ -222,23 +222,24 @@ class UploadController extends BaseController {
   Future<void> justUploadAttachmentsAction({
     required List<FileInfo> uploadFiles,
     required Uri uploadUri,
-  }) {
-    return Future.forEach<FileInfo>(uploadFiles, (uploadFile) async {
-      await uploadFileAction(uploadFile: uploadFile, uploadUri: uploadUri);
-    });
+  }) async {
+    await Future.wait(
+      uploadFiles.map((uploadFile) {
+        return uploadFileAction(uploadFile: uploadFile, uploadUri: uploadUri);
+      }),
+    );
   }
 
   Future<void> uploadFileAction({
     required FileInfo uploadFile,
     required Uri uploadUri,
-  }) {
+  }) async {
     log('UploadController::_uploadFile():fileName: ${uploadFile.fileName} | mimeType: ${uploadFile.mimeType} | isInline: ${uploadFile.isInline} | fromFileShared: ${uploadFile.isShared}');
     consumeState(_uploadAttachmentInteractor.execute(
       uploadFile,
       uploadUri,
       cancelToken: CancelToken(),
     ));
-    return Future.value();
   }
 
   void _refreshListUploadAttachmentState() {
