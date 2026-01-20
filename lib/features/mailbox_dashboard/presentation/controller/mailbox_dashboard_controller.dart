@@ -125,6 +125,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_ai_needs_action_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_cached_ai_scribe_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/auto_sync/setup_auto_sync_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/quoted_content_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/sidebar_collapse_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
@@ -313,6 +314,7 @@ class MailboxDashBoardController extends ReloadableController
   final isAINeedsActionSettingEnabled = RxBool(false);
   final isAppGridDialogDisplayed = RxBool(false);
   final isDrawerOpened = RxBool(false);
+  final isQuotedContentHiddenByDefault = RxBool(true);
   final isSidebarExpanded = RxBool(true);
   final isContextMenuOpened = RxBool(false);
   final isPopupMenuOpened = RxBool(false);
@@ -411,6 +413,7 @@ class MailboxDashBoardController extends ReloadableController
       initialTextFormattingMenuState();
       loadSidebarConfig();
     }
+    loadQuotedContentConfig();
     if (PlatformInfo.isIOS) {
       _registerPendingCurrentEmailIdInNotification();
     }

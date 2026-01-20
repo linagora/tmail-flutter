@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/text_formatting_menu_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/quoted_content_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/sidebar_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
 
@@ -30,6 +31,8 @@ class PreferencesSettingManager {
       '${_preferencesSettingKey}_OPEN_EMAIL_IN_NEW_WINDOW';
   static const String _preferencesSettingAutoSyncKey =
       '${_preferencesSettingKey}_AUTO_SYNC';
+  static const String _preferencesSettingQuotedContentKey =
+      '${_preferencesSettingKey}_QUOTED_CONTENT';
   static const String _preferencesSettingSidebarKey =
       '${_preferencesSettingKey}_SIDEBAR';
 
@@ -64,6 +67,8 @@ class PreferencesSettingManager {
             return OpenEmailInNewWindowConfig.fromJson(jsonDecoded);
           case _preferencesSettingAutoSyncKey:
             return AutoSyncConfig.fromJson(jsonDecoded);
+          case _preferencesSettingQuotedContentKey:
+            return QuotedContentConfig.fromJson(jsonDecoded);
           case _preferencesSettingSidebarKey:
             return SidebarConfig.fromJson(jsonDecoded);
           default:
@@ -95,6 +100,8 @@ class PreferencesSettingManager {
       return _preferencesSettingOpenEmailInNewWindowKey;
     } else if (config is AutoSyncConfig) {
       return _preferencesSettingAutoSyncKey;
+    } else if (config is QuotedContentConfig) {
+      return _preferencesSettingQuotedContentKey;
     } else if (config is SidebarConfig) {
       return _preferencesSettingSidebarKey;
     } else {
@@ -238,6 +245,24 @@ class PreferencesSettingManager {
   Future<void> updateAutoSync(bool isEnabled) async {
     final currentConfig = await getAutoSyncConfig();
     final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
+    await savePreferences(updatedConfig);
+  }
+
+  Future<QuotedContentConfig> getQuotedContentConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingQuotedContentKey,
+    );
+
+    return jsonString == null
+        ? QuotedContentConfig.initial()
+        : QuotedContentConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updateQuotedContent(bool isHiddenByDefault) async {
+    final currentConfig = await getQuotedContentConfig();
+    final updatedConfig = currentConfig.copyWith(isHiddenByDefault: isHiddenByDefault);
     await savePreferences(updatedConfig);
   }
 

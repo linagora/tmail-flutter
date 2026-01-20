@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/a
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/open_email_in_new_window_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/quoted_content_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/text_formatting_menu_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
@@ -69,6 +70,16 @@ class PreferencesSetting with EquatableMixin {
       return labelConfig as LabelConfig;
     } else {
       return LabelConfig.initial();
+    }
+  }
+
+  QuotedContentConfig get quotedContentConfig {
+    final quotedConfig =
+        configs.firstWhereOrNull((config) => config is QuotedContentConfig);
+    if (quotedConfig != null) {
+      return quotedConfig as QuotedContentConfig;
+    } else {
+      return QuotedContentConfig.initial();
     }
   }
 
