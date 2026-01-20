@@ -140,6 +140,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/initialize_app_language.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/notify_thread_detail_setting_updated.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_email_in_new_window_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
@@ -319,6 +320,7 @@ class MailboxDashBoardController extends ReloadableController
   final isPopupMenuOpened = RxBool(false);
   final octetsQuota = Rxn<Quota>();
   final isTextFormattingMenuOpened = RxBool(false);
+  final isOpenEmailInNewWindowEnabled = RxBool(false);
   final cachedAIScribeConfig = AIScribeConfig.initial().obs;
 
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -418,6 +420,7 @@ class MailboxDashBoardController extends ReloadableController
     _handleArguments();
     _loadAppGrid();
     loadAIScribeConfig();
+    loadOpenEmailInNewWindowConfig();
     loadAutoSyncConfig();
     super.onReady();
   }
@@ -2094,6 +2097,7 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
+    loadOpenEmailInNewWindowConfig();
     if (isLabelCapabilitySupported && accountId.value != null) {
       labelController.checkLabelSettingState(accountId.value!);
     }
@@ -2174,6 +2178,7 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
+    loadOpenEmailInNewWindowConfig();
     if (isLabelCapabilitySupported && accountId.value != null) {
       labelController.checkLabelSettingState(accountId.value!);
     }
