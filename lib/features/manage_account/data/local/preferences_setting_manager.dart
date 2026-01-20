@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/a
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/default_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/empty_preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/open_email_in_new_window_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
@@ -23,6 +24,8 @@ class PreferencesSettingManager {
       '${_preferencesSettingKey}_AI_SCRIBE';
   static const String _preferencesSettingLabelKey =
       '${_preferencesSettingKey}_LABEL';
+  static const String _preferencesSettingOpenEmailInNewWindowKey =
+      '${_preferencesSettingKey}_OPEN_EMAIL_IN_NEW_WINDOW';
 
   const PreferencesSettingManager(this._sharedPreferences);
 
@@ -51,6 +54,8 @@ class PreferencesSettingManager {
             return AIScribeConfig.fromJson(jsonDecoded);
           case _preferencesSettingLabelKey:
             return LabelConfig.fromJson(jsonDecoded);
+          case _preferencesSettingOpenEmailInNewWindowKey:
+            return OpenEmailInNewWindowConfig.fromJson(jsonDecoded);
           default:
             return DefaultPreferencesConfig.fromJson(jsonDecoded);
         }
@@ -76,6 +81,8 @@ class PreferencesSettingManager {
       return _preferencesSettingAIScribeKey;
     } else if (config is LabelConfig) {
       return _preferencesSettingLabelKey;
+    } else if (config is OpenEmailInNewWindowConfig) {
+      return _preferencesSettingOpenEmailInNewWindowKey;
     } else {
       return _preferencesSettingKey;
     }
@@ -180,6 +187,24 @@ class PreferencesSettingManager {
 
   Future<void> updateLabel(bool isEnabled) async {
     final currentConfig = await getLabelConfig();
+    final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
+    await savePreferences(updatedConfig);
+  }
+
+  Future<OpenEmailInNewWindowConfig> getOpenEmailInNewWindowConfig() async {
+    await _sharedPreferences.reload();
+
+    final jsonString = _sharedPreferences.getString(
+      _preferencesSettingOpenEmailInNewWindowKey,
+    );
+
+    return jsonString == null
+        ? OpenEmailInNewWindowConfig.initial()
+        : OpenEmailInNewWindowConfig.fromJson(jsonDecode(jsonString));
+  }
+
+  Future<void> updateOpenEmailInNewWindow(bool isEnabled) async {
+    final currentConfig = await getOpenEmailInNewWindowConfig();
     final updatedConfig = currentConfig.copyWith(isEnabled: isEnabled);
     await savePreferences(updatedConfig);
   }
