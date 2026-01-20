@@ -159,7 +159,9 @@ mixin MailAPIMixin on HandleSetErrorMixin {
       if (emailResponse?.list != null) {
         allEmails.addAll(emailResponse!.list);
       }
-      latestState = emailResponse?.state;
+      if (emailResponse?.state != null) {
+        latestState = emailResponse!.state;
+      }
 
       final notFoundIds = emailResponse?.notFound?.toEmailIds().toList() ?? [];
       if (notFoundIds.isNotEmpty) {
