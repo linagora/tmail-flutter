@@ -116,14 +116,15 @@ mixin MailAPIMixin on HandleSetErrorMixin {
     int? batchSize,
     int? maxEmailsToFetch,
   }) async {
-    final maxObjectsInGet = batchSize ?? getMaxObjectsInGetMethod(session, accountId);
+    // Ensure batch size is at least 1 to prevent infinite loops or division by zero
+    final maxObjectsInGet = max(1, batchSize ?? getMaxObjectsInGetMethod(session, accountId));
     final List<Email> allEmails = [];
     final List<EmailId> allNotFoundIds = [];
     State? latestState;
 
-    // If maxEmailsToFetch is specified, only fetch up to that many IDs
-    final idsToFetch = maxEmailsToFetch != null && maxEmailsToFetch < emailIds.length
-        ? emailIds.sublist(0, maxEmailsToFetch)
+    // If maxEmailsToFetch is specified, clamp it to valid range and only fetch up to that many IDs
+    final idsToFetch = maxEmailsToFetch != null
+        ? emailIds.sublist(0, maxEmailsToFetch.clamp(0, emailIds.length))
         : emailIds;
 
     for (int start = 0; start < idsToFetch.length; start += maxObjectsInGet) {
