@@ -166,7 +166,10 @@ class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
 
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
 
-    final changesEmailMethod = ChangesEmailMethod(accountId, sinceState, maxChanges: UnsignedInt(128));
+    // Limit maxChanges to server's maxObjectsInGet to prevent "too many IDs" error
+    // when Email/get receives all IDs via reference from Email/changes
+    final maxChanges = getMaxObjectsInGetMethod(session, accountId);
+    final changesEmailMethod = ChangesEmailMethod(accountId, sinceState, maxChanges: UnsignedInt(maxChanges));
 
     final changesEmailInvocation = jmapRequestBuilder.invocation(changesEmailMethod);
 

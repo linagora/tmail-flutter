@@ -61,6 +61,23 @@ mixin MailAPIMixin on HandleSetErrorMixin {
     return minOfMaxObjectsInSetMethod;
   }
 
+  int getMaxObjectsInGetMethod(Session session, AccountId accountId) {
+    final coreCapability = session.getCapabilityProperties<CoreCapability>(
+      accountId,
+      CapabilityIdentifier.jmapCore,
+    );
+    final maxObjectsInGetMethod =
+        coreCapability?.maxObjectsInGet?.value.toInt() ??
+            CapabilityIdentifierExtension.defaultMaxObjectsInGet;
+
+    final minOfMaxObjectsInGetMethod = min(
+      maxObjectsInGetMethod,
+      CapabilityIdentifierExtension.defaultMaxObjectsInGet,
+    );
+    log('$runtimeType::getMaxObjectsInGetMethod:minOfMaxObjectsInGetMethod = $minOfMaxObjectsInGetMethod');
+    return minOfMaxObjectsInGetMethod;
+  }
+
   Future<({List<EmailId> emailIdsSuccess, Map<Id, SetError> mapErrors})>
       moveEmailsBetweenMailboxes({
     required HttpClient httpClient,
