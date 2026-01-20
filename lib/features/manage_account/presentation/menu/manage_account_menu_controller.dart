@@ -52,8 +52,7 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
       AccountMenuItem.profiles,
       if (dashBoardController.isRuleFilterCapabilitySupported)
         AccountMenuItem.emailRules,
-      if (dashBoardController.isServerSettingsCapabilitySupported)
-        AccountMenuItem.preferences,
+      AccountMenuItem.preferences,  // Always show for local preferences
       if (dashBoardController.isForwardCapabilitySupported)
         AccountMenuItem.forward,
       if (dashBoardController.isVacationCapabilitySupported)
