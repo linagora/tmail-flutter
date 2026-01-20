@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_subject_styles.dart';
@@ -43,7 +44,9 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   @override
   void didUpdateWidget(covariant EmailSubjectWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _currentLabels = widget.labels;
+    if (!listEquals(widget.labels, oldWidget.labels)) {
+      _currentLabels = widget.labels;
+    }
   }
 
   @override
