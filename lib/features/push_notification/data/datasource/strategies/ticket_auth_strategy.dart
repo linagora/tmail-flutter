@@ -43,7 +43,12 @@ class TicketAuthStrategy implements WebSocketAuthStrategy {
     log('TicketAuthStrategy::buildConnectionUri: Fetching ticket from James server');
 
     final webSocketTicket = await _webSocketApi.getWebSocketTicket(session, accountId);
-    final connectionUri = Uri.parse('${baseUri.toString()}?ticket=$webSocketTicket');
+    final connectionUri = baseUri.replace(
+      queryParameters: {
+        ...baseUri.queryParameters,
+        'ticket': webSocketTicket,
+      },
+    );
 
     log('TicketAuthStrategy::buildConnectionUri: Ticket obtained successfully');
     return connectionUri;

@@ -162,6 +162,23 @@ void main() {
       expect(result.queryParameters['ticket'], equals(testTicket));
       verify(mockWebSocketApi.getWebSocketTicket(session, testAccountId)).called(1);
     });
+
+    test('should preserve existing query parameters', () async {
+      // Arrange
+      const testTicket = 'test-ticket-12345';
+      final uriWithParams = Uri.parse('wss://example.com/ws?existing=param&other=value');
+      final session = _createTestSession();
+      when(mockWebSocketApi.getWebSocketTicket(session, testAccountId))
+          .thenAnswer((_) async => testTicket);
+
+      // Act
+      final result = await strategy.buildConnectionUri(uriWithParams, session, testAccountId);
+
+      // Assert
+      expect(result.queryParameters['existing'], equals('param'));
+      expect(result.queryParameters['other'], equals('value'));
+      expect(result.queryParameters['ticket'], equals(testTicket));
+    });
   });
 }
 
