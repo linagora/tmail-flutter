@@ -51,7 +51,7 @@ class LoginWithBasicAuthScenario extends BaseScenario {
 
     await loginRobot.loginBasicAuth();
 
-    await loginRobot.grantNotificationPermission($.native);
+    await loginRobot.grantNotificationPermission($.platform);
 
     await _expectThreadViewVisible();
   }

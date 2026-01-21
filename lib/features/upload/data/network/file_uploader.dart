@@ -11,7 +11,6 @@ import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:model/upload/upload_response.dart';
@@ -22,7 +21,7 @@ import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/main/exceptions/isolate_exception.dart';
-import 'package:worker_manager/worker_manager.dart' as worker;
+import 'package:worker_manager/worker_manager.dart';
 
 class FileUploader {
 
@@ -31,12 +30,10 @@ class FileUploader {
   static const String filePathExtraKey = 'path';
 
   final DioClient _dioClient;
-  final worker.Executor _isolateExecutor;
   final FileUtils _fileUtils;
 
   FileUploader(
     this._dioClient,
-    this._isolateExecutor,
     this._fileUtils,
   );
 
@@ -63,31 +60,27 @@ class FileUploader {
         throw CanNotGetRootIsolateToken();
       }
 
-      return await _isolateExecutor.execute(
-        arg1: UploadFileArguments(
-          _dioClient,
-          _fileUtils,
-          uploadId,
-          fileInfo,
-          uploadUri,
-          rootIsolateToken,
-        ),
-        fun1: _handleUploadAttachmentAction,
-        notification: (value) {
-          if (value is Success) {
-            log('FileUploader::uploadAttachment(): onUpdateProgress: $value');
-            onSendController?.add(Right(value));
-          }
-        }
-      )
-      .then((value) => value)
-      .catchError((error) => throw error);
+      final args = UploadFileArguments(
+        _dioClient,
+        _fileUtils,
+        uploadId,
+        fileInfo,
+        uploadUri,
+        rootIsolateToken,
+      );
+      return await workerManager.executeWithPort<Attachment, Success>(
+        (sendPort) => _handleUploadAttachmentAction(args, sendPort),
+        onMessage: (value) {
+          log('FileUploader::uploadAttachment(): onUpdateProgress: $value');
+          onSendController?.add(Right(value));
+        },
+      );
     }
   }
 
   static Future<Attachment> _handleUploadAttachmentAction(
       UploadFileArguments argsUpload,
-      worker.TypeSendPort sendPort
+      SendPort sendPort
   ) async {
     try {
       final rootIsolateToken = argsUpload.isolateToken;
@@ -103,7 +96,7 @@ class FileUploader {
           if (argsUpload.fileInfo.filePath?.isNotEmpty == true)
             filePathExtraKey: argsUpload.fileInfo.filePath,
           if (argsUpload.fileInfo.bytes?.isNotEmpty == true)
-            streamDataExtraKey: BodyBytesStream.fromBytes(argsUpload.fileInfo.bytes!),
+            streamDataExtraKey: Stream.value(argsUpload.fileInfo.bytes!),
         }
       };
 
@@ -116,7 +109,7 @@ class FileUploader {
         data: argsUpload.fileInfo.filePath?.isNotEmpty == true
           ? File(argsUpload.fileInfo.filePath!).openRead()
           : argsUpload.fileInfo.bytes != null
-              ? BodyBytesStream.fromBytes(argsUpload.fileInfo.bytes!)
+              ? Stream.value(argsUpload.fileInfo.bytes!)
               : null,
         onSendProgress: (count, total) {
           log('FileUploader::_handleUploadAttachmentAction():onSendProgress: FILE[${argsUpload.uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
@@ -175,7 +168,7 @@ class FileUploader {
     final mapExtra = <String, dynamic>{
       uploadAttachmentExtraKey: {
         if (fileInfo.bytes?.isNotEmpty == true)
-          streamDataExtraKey: BodyBytesStream.fromBytes(fileInfo.bytes!),
+          streamDataExtraKey: Stream.value(fileInfo.bytes!),
       }
     };
 
@@ -185,7 +178,7 @@ class FileUploader {
         headers: headerParam,
         extra: mapExtra
       ),
-      data: BodyBytesStream.fromBytes(fileInfo.bytes!),
+      data: Stream.value(fileInfo.bytes!),
       cancelToken: cancelToken,
       onSendProgress: (count, total) {
         log('FileUploader::_handleUploadAttachmentActionOnWeb():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');

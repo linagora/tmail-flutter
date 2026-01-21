@@ -20,7 +20,7 @@ publish_to: none
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -46,7 +46,7 @@ dependencies:
 
   uri: 1.0.0
 
-  json_annotation: 4.8.0
+  json_annotation: 4.9.0
 
   http_parser: 4.1.2
 
@@ -64,9 +64,9 @@ dev_dependencies:
 
   flutter_lints: 2.0.1
 
-  build_runner: 2.4.10
+  build_runner: 2.10.5
 
-  json_serializable: 6.6.1
+  json_serializable: 6.11.4
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

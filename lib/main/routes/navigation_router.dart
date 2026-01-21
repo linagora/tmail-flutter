@@ -23,6 +23,7 @@ class NavigationRouter with EquatableMixin {
   final AccountMenuItem accountMenuItem;
   final List<EmailAddress>? cc;
   final List<EmailAddress>? bcc;
+  final bool isPopupMode;
 
   NavigationRouter({
     this.emailId,
@@ -36,6 +37,7 @@ class NavigationRouter with EquatableMixin {
     this.accountMenuItem = AccountMenuItem.none,
     this.cc,
     this.bcc,
+    this.isPopupMode = false,
   });
 
   factory NavigationRouter.initial() => NavigationRouter();
@@ -53,5 +55,6 @@ class NavigationRouter with EquatableMixin {
     accountMenuItem,
     cc,
     bcc,
+    isPopupMode,
   ];
 }

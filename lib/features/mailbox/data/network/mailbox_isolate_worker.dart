@@ -39,9 +39,8 @@ class MailboxIsolateWorker {
 
   final ThreadAPI _threadApi;
   final EmailAPI _emailApi;
-  final Executor _isolateExecutor;
 
-  MailboxIsolateWorker(this._threadApi, this._emailApi, this._isolateExecutor);
+  MailboxIsolateWorker(this._threadApi, this._emailApi);
 
   Future<List<EmailId>> markAsMailboxRead(
     Session session,
@@ -63,32 +62,31 @@ class MailboxIsolateWorker {
         throw CanNotGetRootIsolateToken();
       }
 
-      final result = await _isolateExecutor.execute(
-          arg1: MailboxMarkAsReadArguments(
-            session,
-            _threadApi,
-            _emailApi,
-            accountId,
-            mailboxId,
-            rootIsolateToken
-          ),
-          fun1: _handleMarkAsMailboxReadAction,
-          notification: (value) {
-            if (value is List<EmailId>) {
-              log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: PERCENT ${value.length / totalEmailUnread}');
-              onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
-                mailboxId: mailboxId,
-                totalUnread: totalEmailUnread,
-                countRead: value.length)));
-            }
-          });
+      final args = MailboxMarkAsReadArguments(
+        session,
+        _threadApi,
+        _emailApi,
+        accountId,
+        mailboxId,
+        rootIsolateToken
+      );
+      final result = await workerManager.executeWithPort<List<EmailId>, List<EmailId>>(
+        (sendPort) => _handleMarkAsMailboxReadAction(args, sendPort),
+        onMessage: (value) {
+          log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: PERCENT ${value.length / totalEmailUnread}');
+          onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
+            mailboxId: mailboxId,
+            totalUnread: totalEmailUnread,
+            countRead: value.length)));
+        },
+      );
       return result;
     }
   }
 
   static Future<List<EmailId>> _handleMarkAsMailboxReadAction(
       MailboxMarkAsReadArguments args,
-      TypeSendPort sendPort
+      SendPort sendPort
   ) async {
     final rootIsolateToken = args.isolateToken;
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
@@ -230,29 +228,27 @@ class MailboxIsolateWorker {
       throw CanNotGetRootIsolateToken();
     }
 
-    final countEmailsCompleted = await _isolateExecutor.execute(
-      arg1: MoveFolderContentIsolateArguments(
-        session: session,
-        accountId: accountId,
-        threadAPI: _threadApi,
-        emailAPI: _emailApi,
-        currentMailboxId: request.mailboxId,
-        destinationMailboxId: request.destinationMailboxId,
-        isolateToken: rootIsolateToken,
-        markAsRead: request.markAsRead,
-      ),
-      fun1: _moveFolderContentIsolateMethod,
-      notification: (value) {
-        if (value is int) {
-          log('$runtimeType::moveFolderContent(): Progress percent is ${value / request.totalEmails}');
-          onProgressController?.add(
-            Right<Failure, Success>(MoveFolderContentProgressState(
-              request.mailboxId,
-              value,
-              request.totalEmails,
-            )),
-          );
-        }
+    final args = MoveFolderContentIsolateArguments(
+      session: session,
+      accountId: accountId,
+      threadAPI: _threadApi,
+      emailAPI: _emailApi,
+      currentMailboxId: request.mailboxId,
+      destinationMailboxId: request.destinationMailboxId,
+      isolateToken: rootIsolateToken,
+      markAsRead: request.markAsRead,
+    );
+    final countEmailsCompleted = await workerManager.executeWithPort<int, int>(
+      (sendPort) => _moveFolderContentIsolateMethod(args, sendPort),
+      onMessage: (value) {
+        log('$runtimeType::moveFolderContent(): Progress percent is ${value / request.totalEmails}');
+        onProgressController?.add(
+          Right<Failure, Success>(MoveFolderContentProgressState(
+            request.mailboxId,
+            value,
+            request.totalEmails,
+          )),
+        );
       },
     );
 
@@ -265,7 +261,7 @@ class MailboxIsolateWorker {
 
   static Future<int> _moveFolderContentIsolateMethod(
     MoveFolderContentIsolateArguments args,
-    TypeSendPort sendPort,
+    SendPort sendPort,
   ) async {
     final rootIsolateToken = args.isolateToken;
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);

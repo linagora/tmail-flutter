@@ -1,12 +1,12 @@
 import 'package:textfield_tags/textfield_tags.dart';
 
-class CustomController extends TextfieldTagsController {
+class CustomController extends TextfieldTagsController<String> {
   CustomController() : super();
-  late Function(String)? actionRemoveTag;
-  late Function(String)? actionAddTag;
-  late Function(String)? actionChangeText;
 
-  //create your own methods
+  Function(String)? actionRemoveTag;
+  Function(String)? actionAddTag;
+  Function(String)? actionChangeText;
+
   void setActionRemoveTag(Function(String) action) {
     actionRemoveTag = action;
   }
@@ -20,38 +20,36 @@ class CustomController extends TextfieldTagsController {
   }
 
   @override
-  set removeTag(String tag) {
+  bool? onTagRemoved(String tag) {
     actionRemoveTag?.call(tag);
-    super.removeTag = tag;
+    return super.onTagRemoved(tag);
   }
 
   @override
-  void onTagDelete(String tag) {
-    actionRemoveTag?.call(tag);
-    super.onTagDelete(tag);
-  }
-
-  @override
-  void onChanged(String value) {
+  bool? onTagSubmitted(String tag) {
+    // Handle comma-separated input
     final ts = [','];
     final separator = ts.cast<String?>().firstWhere(
-        (element) => value.contains(element!) && value.indexOf(element) != 0,
+        (element) => tag.contains(element!) && tag.indexOf(element) != 0,
         orElse: () => null);
-    actionChangeText?.call(value);
+
     if (separator != null) {
-      final splits = value.split(separator);
+      final splits = tag.split(separator);
       final indexer = splits.length > 1 ? splits.length - 2 : splits.length - 1;
       final val = splits.elementAt(indexer).trim();
-      if(val.isNotEmpty){
+      if (val.isNotEmpty) {
         actionAddTag?.call(val);
       }
+    } else {
+      actionAddTag?.call(tag);
     }
-    super.onChanged(value);
+
+    return super.onTagSubmitted(tag);
   }
 
   @override
-  void onSubmitted(String value) {
-    super.onSubmitted(value);
-    actionAddTag?.call(value);
+  bool? onTagChanged(String tag) {
+    actionChangeText?.call(tag);
+    return super.onTagChanged(tag);
   }
 }

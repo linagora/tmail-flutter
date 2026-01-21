@@ -53,7 +53,7 @@ class SendEmailWithReadReceiptEnabledScenario extends BaseTestScenario {
     await threadRobot.openEmailWithSubject(emailSubject);
     await _expectReadReceiptRequestDialog(appLocalizations);
 
-    await $.native.pressBack();
+    await $.platform.android.pressBack();
     await emailRobot.onTapBackButton();
 
     await $.pumpAndSettle(duration: seconds(5));

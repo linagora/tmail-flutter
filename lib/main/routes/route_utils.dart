@@ -28,6 +28,7 @@ abstract class RouteUtils {
   static const String paramTo = 'to';
   static const String paramCc = 'cc';
   static const String paramBcc = 'bcc';
+  static const String paramPopup = 'popup';
 
   static const String mailtoPrefix = 'mailto';
   static const String uriPrefix = 'uri';
@@ -131,12 +132,14 @@ abstract class RouteUtils {
     final mailtoBcc = parameters[paramBcc];
     final subject = parameters[paramSubject];
     final body = parameters[paramBody];
+    final popupParam = parameters[paramPopup];
 
     final emailId = idParam != null ? EmailId(Id(idParam)) : null;
     final mailboxId = contextPram != null ? MailboxId(Id(contextPram)) : null;
     final searchQuery = queryParam != null ? SearchQuery(queryParam) : null;
     final dashboardType = DashboardType.values.firstWhereOrNull((type) => type.name == typeParam) ?? DashboardType.normal;
     final settingType = AccountMenuItem.values.firstWhereOrNull((type) => type.getAliasBrowser() == typeParam) ?? AccountMenuItem.none;
+    final isPopupMode = popupParam == 'true';
     List<EmailAddress>? listEmailAddress;
     List<EmailAddress>? cc;
     List<EmailAddress>? bcc;
@@ -156,6 +159,7 @@ abstract class RouteUtils {
       subject: subject,
       body: body,
       accountMenuItem: settingType,
+      isPopupMode: isPopupMode,
     );
   }
 

@@ -30,9 +30,8 @@ import 'package:worker_manager/worker_manager.dart';
 class ThreadIsolateWorker {
   final ThreadAPI _threadAPI;
   final EmailAPI _emailAPI;
-  final Executor _isolateExecutor;
 
-  ThreadIsolateWorker(this._threadAPI, this._emailAPI, this._isolateExecutor);
+  ThreadIsolateWorker(this._threadAPI, this._emailAPI);
 
   Future<List<EmailId>> emptyMailboxFolder(
     Session session,
@@ -49,23 +48,21 @@ class ThreadIsolateWorker {
         throw CanNotGetRootIsolateToken();
       }
 
-      final result = await _isolateExecutor.execute(
-        arg1: EmptyMailboxFolderArguments(
-          session,
-          _threadAPI,
-          _emailAPI,
-          accountId,
-          mailboxId,
-          rootIsolateToken
-        ),
-        fun1: _emptyMailboxFolderAction,
-        notification: (value) {
-          if (value is List<EmailId>) {
-            log('ThreadIsolateWorker::emptyMailboxFolder(): processed ${value.length} - totalEmails $totalEmails');
-            onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
-              mailboxId, value.length, totalEmails
-            )));
-          }
+      final args = EmptyMailboxFolderArguments(
+        session,
+        _threadAPI,
+        _emailAPI,
+        accountId,
+        mailboxId,
+        rootIsolateToken
+      );
+      final result = await workerManager.executeWithPort<List<EmailId>, List<EmailId>>(
+        (sendPort) => _emptyMailboxFolderAction(args, sendPort),
+        onMessage: (value) {
+          log('ThreadIsolateWorker::emptyMailboxFolder(): processed ${value.length} - totalEmails $totalEmails');
+          onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
+            mailboxId, value.length, totalEmails
+          )));
         },
       );
 
@@ -79,7 +76,7 @@ class ThreadIsolateWorker {
 
   static Future<List<EmailId>> _emptyMailboxFolderAction(
     EmptyMailboxFolderArguments args,
-    TypeSendPort sendPort
+    SendPort sendPort
   ) async {
     final rootIsolateToken = args.isolateToken;
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);

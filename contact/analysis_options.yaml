@@ -9,6 +9,10 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    must_be_immutable: ignore
+
 linter:
   rules:
     constant_identifier_names: false

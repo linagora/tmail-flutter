@@ -753,6 +753,11 @@ class MailboxController extends BaseMailboxController
       return;
     }
 
+    if (_navigationRouter!.isPopupMode) {
+      mailboxDashBoardController.isPopupMode.value = true;
+      log('MailboxController::_handleDataFromNavigationRouter():isPopupMode = true');
+    }
+
     if (_navigationRouter?.routeName == AppRoutes.mailtoURL) {
       mailboxDashBoardController.openComposer(
         ComposerArguments.fromMailtoUri(

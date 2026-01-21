@@ -78,9 +78,7 @@ void main() {
 
     dioAdapter = DioAdapter(dio: dio);
 
-    dotenv.testLoad(mergeWith: {
-      'PLATFORM': 'other'
-    });
+    dotenv.loadFromString(envString: 'PLATFORM=other');
   });
 
   group('AuthorizationInterceptor test', () {

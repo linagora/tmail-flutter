@@ -90,3 +90,9 @@ class OidcDiscoveryFailedException extends OidcConfigurationException {
           technicalDetails: details,
         );
 }
+
+/// Exception thrown during OAuth web redirect flow when auto-redirecting
+/// after storing the authorize destination URL. This is silently handled
+/// as it indicates a normal redirect flow, not an error condition.
+class AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException
+    implements Exception {}

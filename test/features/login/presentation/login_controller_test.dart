@@ -181,9 +181,7 @@ void main() {
     Get.put<TwakeAppManager>(mockTwakeAppManager);
     Get.testMode = true;
 
-    dotenv.testLoad(mergeWith: {
-      'SERVER_URL': 'https://example.com'
-    });
+    dotenv.loadFromString(envString: 'SERVER_URL=https://example.com');
 
     loginController = LoginController(
       mockAuthenticationInteractor,

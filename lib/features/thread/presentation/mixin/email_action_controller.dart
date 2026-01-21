@@ -341,6 +341,12 @@ mixin EmailActionController {
     AppUtils.launchLink(email.routeWebAsString);
   }
 
+  void openEmailInNewWindowAction(PresentationEmail email) {
+    final url = email.routeWebAsString;
+    final popupUrl = url.contains('?') ? '$url&popup=true' : '$url?popup=true';
+    AppUtils.launchInNewWindow(popupUrl);
+  }
+
   void archiveMessage(PresentationEmail email) {
     mailboxDashBoardController.archiveMessage(email);
   }

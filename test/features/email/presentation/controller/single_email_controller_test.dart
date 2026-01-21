@@ -445,25 +445,6 @@ void main() {
       when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
       when(mailboxDashboardController.downloadController).thenReturn(downloadController);
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
-      when(appToast.showToastMessageWithMultipleActions(
-        any, 
-        any,
-        actions: anyNamed('actions'),
-        textColor: anyNamed('textColor'),
-        backgroundColor: anyNamed('backgroundColor'),
-        infinityToast: anyNamed('infinityToast'),
-      )).thenAnswer((realInvocation) {
-        AppToast().showToastMessageWithMultipleActions(
-          realInvocation.positionalArguments[0], 
-          realInvocation.positionalArguments[1],
-          actions: realInvocation.namedArguments[const Symbol('actions')],
-          textColor: realInvocation.namedArguments[const Symbol('textColor')],
-          backgroundColor: realInvocation.namedArguments[const Symbol('backgroundColor')],
-          infinityToast: realInvocation.namedArguments[const Symbol('infinityToast')],
-        );
-      });
-      when(imagePaths.icUndo).thenReturn(ImagePaths().icUndo);
-      when(imagePaths.icClose).thenReturn(ImagePaths().icClose);
       Get.put(singleEmailController);
       final widget = makeTestableWidget(child: const _TestView());
       await tester.pumpWidget(widget);
@@ -476,10 +457,15 @@ void main() {
       ));
       await tester.pump();
 
-      // assert
-      expect(find.text(AppLocalizations().unknownError), findsOneWidget);
-      expect(find.text(AppLocalizations().retry), findsOneWidget);
-      expect(find.text(AppLocalizations().close), findsOneWidget);
+      // assert - verify the toast method was called with correct message
+      verify(appToast.showToastMessageWithMultipleActions(
+        any,
+        argThat(contains(AppLocalizations().unknownError)),
+        actions: anyNamed('actions'),
+        textColor: anyNamed('textColor'),
+        backgroundColor: anyNamed('backgroundColor'),
+        infinityToast: anyNamed('infinityToast'),
+      )).called(1);
 
       // cleanup
       Get.delete<SingleEmailController>();

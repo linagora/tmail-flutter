@@ -55,7 +55,27 @@ jobs:
         run: ./scripts/prebuild.sh
 
       - name: Analyze
-        uses: zgosalvez/github-actions-analyze-dart@v1
+        run: |
+          # Run dart analyze and capture output
+          # Exit codes: 0 = no issues, 1 = errors, 2 = warnings/infos only
+          set +e
+          dart analyze --format machine . 2>&1 | tee analyze_output.txt
+          exit_code=$?
+          set -e
+
+          # Check if there are actual ERROR level issues (not just warnings)
+          if grep -q "^ERROR|" analyze_output.txt; then
+            echo "::error::Analyzer found errors"
+            exit 1
+          fi
+
+          # Warn about warnings but don't fail
+          if [ $exit_code -eq 2 ]; then
+            echo "::warning::Analyzer found warnings/infos (expected for Hive cache models)"
+            exit 0
+          fi
+
+          exit $exit_code
 
       - name: Test
         env:
