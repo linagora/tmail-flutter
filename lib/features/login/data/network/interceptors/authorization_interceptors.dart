@@ -31,6 +31,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   OIDCConfiguration? _configOIDC;
   TokenOIDC? _token;
   String? _authorization;
+  Timer? _tokenRefreshTimer;
+  bool _isRefreshing = false;
+
+  /// Refresh token when 80% of its lifetime has passed, or 60 seconds before expiry
+  static const double _refreshThresholdPercent = 0.8;
+  static const Duration _minimumRefreshBuffer = Duration(seconds: 60);
 
   AuthorizationInterceptors(
     this._dio,
@@ -50,11 +56,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
     log('AuthorizationInterceptors::setTokenAndAuthorityOidc: INITIAL_TOKEN = ${newToken?.token} | EXPIRED_TIME = ${newToken?.expiredTime}');
+    _scheduleTokenRefresh();
   }
 
   void _updateNewToken(TokenOIDC newToken) {
     log('AuthorizationInterceptors::_updateNewToken: NEW_TOKEN = ${newToken.token} | EXPIRED_TIME = ${newToken.expiredTime}');
     _token = newToken;
+    _scheduleTokenRefresh();
   }
 
   OIDCConfiguration? get oidcConfig => _configOIDC;
@@ -300,10 +308,139 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return _invokeRefreshTokenFromServer();
   }
 
+  /// Schedules a proactive token refresh before the token expires.
+  /// Refreshes at 80% of token lifetime or 60 seconds before expiry, whichever is sooner.
+  void _scheduleTokenRefresh() {
+    _cancelTokenRefreshTimer();
+
+    if (_authenticationType != AuthenticationType.oidc ||
+        _token == null ||
+        _token!.expiredTime == null ||
+        _token!.refreshToken.isEmpty) {
+      log('AuthorizationInterceptors::_scheduleTokenRefresh: Skipping - not OIDC or missing token/expiry/refreshToken');
+      return;
+    }
+
+    final now = DateTime.now();
+    final expiryTime = _token!.expiredTime!;
+
+    if (expiryTime.isBefore(now)) {
+      log('AuthorizationInterceptors::_scheduleTokenRefresh: Token already expired, not scheduling');
+      return;
+    }
+
+    final totalLifetime = expiryTime.difference(now);
+    final refreshAt80Percent = Duration(
+      milliseconds: (totalLifetime.inMilliseconds * _refreshThresholdPercent).round()
+    );
+    final refreshWithBuffer = totalLifetime - _minimumRefreshBuffer;
+
+    // Use whichever is sooner: 80% of lifetime or buffer before expiry
+    final refreshDelay = refreshAt80Percent < refreshWithBuffer
+        ? refreshAt80Percent
+        : refreshWithBuffer;
+
+    // Ensure we don't schedule with negative or zero delay
+    if (refreshDelay.inSeconds <= 0) {
+      log('AuthorizationInterceptors::_scheduleTokenRefresh: Token about to expire, refreshing immediately');
+      _proactivelyRefreshToken();
+      return;
+    }
+
+    log('AuthorizationInterceptors::_scheduleTokenRefresh: Scheduling refresh in ${refreshDelay.inSeconds} seconds (token expires in ${totalLifetime.inSeconds} seconds)');
+
+    _tokenRefreshTimer = Timer(refreshDelay, _proactivelyRefreshToken);
+  }
+
+  /// Proactively refreshes the token before it expires.
+  Future<void> _proactivelyRefreshToken() async {
+    if (_isRefreshing) {
+      log('AuthorizationInterceptors::_proactivelyRefreshToken: Already refreshing, skipping');
+      return;
+    }
+
+    if (_authenticationType != AuthenticationType.oidc ||
+        _token == null ||
+        _token!.refreshToken.isEmpty ||
+        _configOIDC == null) {
+      log('AuthorizationInterceptors::_proactivelyRefreshToken: Cannot refresh - missing configuration');
+      return;
+    }
+
+    _isRefreshing = true;
+    log('AuthorizationInterceptors::_proactivelyRefreshToken: Starting proactive token refresh');
+
+    try {
+      final newTokenOidc = PlatformInfo.isIOS
+          ? await _getNewTokenForIOSPlatform()
+          : await _getNewTokenForOtherPlatform();
+
+      if (newTokenOidc.token == _token?.token) {
+        log('AuthorizationInterceptors::_proactivelyRefreshToken: Token unchanged after refresh');
+        _isRefreshing = false;
+        _scheduleTokenRefresh();
+        return;
+      }
+
+      log('AuthorizationInterceptors::_proactivelyRefreshToken: Got new token, updating');
+      _token = newTokenOidc;
+
+      final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
+
+      if (PlatformInfo.isIOS) {
+        await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
+      }
+
+      log('AuthorizationInterceptors::_proactivelyRefreshToken: Token refresh successful, new expiry: ${newTokenOidc.expiredTime}');
+      _scheduleTokenRefresh();
+    } catch (e, stackTrace) {
+      logError(
+        'AuthorizationInterceptors::_proactivelyRefreshToken: Failed to refresh token: $e',
+        exception: e,
+        stackTrace: stackTrace,
+      );
+      // Schedule retry after a short delay if refresh fails
+      _tokenRefreshTimer = Timer(const Duration(seconds: 30), _proactivelyRefreshToken);
+    } finally {
+      _isRefreshing = false;
+    }
+  }
+
+  void _cancelTokenRefreshTimer() {
+    _tokenRefreshTimer?.cancel();
+    _tokenRefreshTimer = null;
+  }
+
+  /// Manually trigger a token refresh check (e.g., when app resumes from background)
+  Future<void> checkAndRefreshTokenIfNeeded() async {
+    if (_authenticationType != AuthenticationType.oidc ||
+        _token == null ||
+        _token!.refreshToken.isEmpty) {
+      return;
+    }
+
+    // If token is expired or will expire within the buffer, refresh immediately
+    if (_token!.expiredTime != null) {
+      final now = DateTime.now();
+      final expiryTime = _token!.expiredTime!;
+      final timeUntilExpiry = expiryTime.difference(now);
+
+      if (timeUntilExpiry <= _minimumRefreshBuffer) {
+        log('AuthorizationInterceptors::checkAndRefreshTokenIfNeeded: Token expired or expiring soon, refreshing');
+        await _proactivelyRefreshToken();
+      } else {
+        // Reschedule the timer in case it was cancelled
+        _scheduleTokenRefresh();
+      }
+    }
+  }
+
   void clear() {
+    _cancelTokenRefreshTimer();
     _authorization = null;
     _token = null;
     _configOIDC = null;
     _authenticationType = AuthenticationType.none;
+    _isRefreshing = false;
   }
 }

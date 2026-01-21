@@ -696,7 +696,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: c6335ebf2578d3d118b67d134981d4f1f7a6d3ee
+      resolved-ref: "3c4303038990e7708b77f7e90233ae0ed0722e4b"
       url: "https://github.com/Tsopic/flutter_appauth_web.git"
     source: git
     version: "0.0.4"
