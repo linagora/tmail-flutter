@@ -25,6 +25,23 @@ class AppUtils {
     }
   }
 
+  static void launchInNewWindow(
+    String url, {
+    int width = 1200,
+    int height = 800,
+  }) {
+    log('AppUtils::launchInNewWindow: url = $url');
+    if (PlatformInfo.isWeb) {
+      final windowFeatures = 'width=$width,height=$height,menubar=no,toolbar=no,location=yes,resizable=yes,scrollbars=yes,status=no';
+      html.window.open(url, '_blank', windowFeatures);
+    } else {
+      launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      );
+    }
+  }
+
   static bool isDirectionRTL(BuildContext context) {
     return intl.Bidi.isRtlLanguage(Localizations.localeOf(context).languageCode);
   }

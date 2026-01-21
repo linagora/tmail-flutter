@@ -1211,7 +1211,8 @@ class ThreadController extends BaseController with EmailActionController {
         } else if (mailboxContain?.isTemplates == true) {
           editAsNewEmail(selectedEmail, savedEmailTemplateId: selectedEmail.id);
         } else if (PlatformInfo.isWeb && mailboxDashBoardController.isOpenEmailInNewWindowEnabled.value) {
-          openEmailInNewTabAction(selectedEmail);
+          final emailWithRoute = generateEmailByPlatform(selectedEmail);
+          openEmailInNewWindowAction(emailWithRoute);
         } else {
           previewEmail(selectedEmail);
         }
@@ -1249,7 +1250,8 @@ class ThreadController extends BaseController with EmailActionController {
         unSpam(selectedEmail);
         break;
       case EmailActionType.openInNewTab:
-        openEmailInNewTabAction(selectedEmail);
+        final emailWithRouteForTab = generateEmailByPlatform(selectedEmail);
+        openEmailInNewTabAction(emailWithRouteForTab);
         break;
       case EmailActionType.archiveMessage:
         archiveMessage(selectedEmail);
