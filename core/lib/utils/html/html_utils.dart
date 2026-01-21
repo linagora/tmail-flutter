@@ -235,12 +235,24 @@ class HtmlUtils {
           if (selection) {
             selection.removeAllRanges();
             selection.addRange(window._savedRange);
+            delete window._savedRange;
             return selection.toString();
           }
         }
         return "";
       })();''',
     name: 'restoreSelection');
+
+  static const getSavedSelection = (
+    script: '''
+      (() => {
+        if(window._savedRange) {
+          return window._savedRange.toString();
+        } else {
+          return "";
+        }
+      })();''',
+    name: 'getSavedSelection');
 
   static const clearSavedSelection = (
     script: '''
