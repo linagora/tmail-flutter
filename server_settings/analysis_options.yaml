@@ -1,0 +1,9 @@
+analyzer:
+  errors:
+    must_be_immutable: ignore
+
+linter:
+  rules:
+    constant_identifier_names: false
+    non_constant_identifier_names: false
+    unnecessary_string_escapes: false

@@ -1,1 +1,5 @@
 include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    must_be_immutable: ignore

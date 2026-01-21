@@ -1,5 +1,9 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    must_be_immutable: ignore
+
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
 linter:

@@ -9,6 +9,14 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    # HiveObject cache classes use EquatableMixin for value equality while
+    # HiveObjectMixin has mutable _box/_key fields for Hive's storage tracking.
+    # JMAP method classes use Optional* mixins with mutable fields by design.
+    # These are intentional architectural patterns, not bugs.
+    must_be_immutable: ignore
+
 linter:
   rules:
     constant_identifier_names: false

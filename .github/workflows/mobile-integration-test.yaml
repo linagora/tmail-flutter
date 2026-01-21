@@ -158,6 +158,8 @@ jobs:
       - name: Install CocoaPods dependencies
         run: |
           cd ios
+          # Delete Podfile.lock to regenerate with updated Firebase SDK versions
+          rm -f Podfile.lock
           pod install --repo-update
           cd ..
 
