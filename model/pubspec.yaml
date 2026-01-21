@@ -32,15 +32,15 @@ dependencies:
   ### Dependencies from git ###
   jmap_dart_client:
     git:
-      url: https://github.com/linagora/jmap-dart-client.git
+      url: https://github.com/Tsopic/jmap-dart-client.git
       ref: main
 
   ### Dependencies from pub.dev ###
-  cupertino_icons: 1.0.6
+  cupertino_icons: 1.0.8
 
-  equatable: 2.0.5
+  equatable: 2.0.8
 
-  quiver: 3.2.1
+  quiver: 3.2.2
 
   intl: 0.20.2
 
@@ -48,7 +48,7 @@ dependencies:
 
   json_annotation: 4.8.0
 
-  http_parser: 4.0.2
+  http_parser: 4.1.2
 
   mime: 1.0.4
 
@@ -56,7 +56,7 @@ dependencies:
 
   dartz: 0.10.1
 
-  get: 4.6.6
+  get: 4.7.3
 
 dev_dependencies:
   flutter_test:

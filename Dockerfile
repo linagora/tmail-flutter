@@ -1,4 +1,4 @@
-ARG FLUTTER_VERSION=3.32.8
+ARG FLUTTER_VERSION=3.38.7
 # Stage 1 - Install dependencies and build the app
 # This matches the flutter version on our CI/CD pipeline on Github
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env

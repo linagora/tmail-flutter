@@ -73,7 +73,7 @@ dependencies:
 
   jmap_dart_client:
     git:
-      url: https://github.com/linagora/jmap-dart-client.git
+      url: https://github.com/Tsopic/jmap-dart-client.git
       ref: main
 
   contacts_service:
@@ -88,8 +88,8 @@ dependencies:
 
   flutter_appauth_web:
     git:
-      url: https://github.com/linagora/flutter_appauth_web.git
-      ref: upgrade-flutter-appauth
+      url: https://github.com/Tsopic/flutter_appauth_web.git
+      ref: main
 
   flutter_date_range_picker:
     git:
@@ -105,7 +105,7 @@ dependencies:
   ### https://github.com/linagora/intl_generator/pull/1
   intl_generator:
     git:
-      url: https://github.com/linagora/intl_generator.git
+      url: https://github.com/Tsopic/intl_generator.git
       ref: master
 
   ### Dependencies from pub.dev ###
@@ -115,33 +115,33 @@ dependencies:
 
   external_app_launcher: 4.0.3
 
-  cupertino_icons: 1.0.6
+  cupertino_icons: 1.0.8
 
-  get: 4.6.6
+  get: 4.7.3
 
-  flutter_svg: 2.1.0
+  flutter_svg: 2.2.3
 
-  dio: 5.2.0
+  dio: 5.9.0
 
-  equatable: 2.0.5
+  equatable: 2.0.8
 
-  shared_preferences: 2.5.3
+  shared_preferences: 2.5.4
 
   dartz: 0.10.1
 
-  flutter_dotenv: 5.0.2
+  flutter_dotenv: 6.0.0
 
   built_collection: 5.1.1
 
-  textfield_tags: 2.0.2
+  textfield_tags: 3.0.1
 
-  http_parser: 4.0.2
+  http_parser: 4.1.2
 
   collection: 1.19.1
 
   filesize: 2.0.1
 
-  uuid: 3.0.7
+  uuid: 4.5.2
 
   flutter_downloader: 1.12.0
 
@@ -149,39 +149,39 @@ dependencies:
 
   path_provider: 2.1.5
 
-  device_info_plus: 9.0.1
+  device_info_plus: 12.3.0
 
   permission_handler: 12.0.1
 
-  share_plus: 7.2.1
+  share_plus: 12.0.1
 
-  hive_ce: 2.11.3
+  hive_ce: 2.19.0
 
   pointer_interceptor: 0.10.1+2
 
-  rxdart: 0.27.7
+  rxdart: 0.28.0
 
-  connectivity_plus: 4.0.0
+  connectivity_plus: 7.0.0
 
-  dropdown_button2: 2.0.0
+  dropdown_button2: 2.3.9
 
-  flutter_staggered_grid_view: 0.6.2
+  flutter_staggered_grid_view: 0.7.0
 
-  flutter_portal: 1.1.3
+  flutter_portal: 1.1.4
 
   timeago: 3.7.1
 
-  open_file: 3.5.10
+  open_file: 3.5.11
 
-  flutter_appauth: 9.0.1
+  flutter_appauth: 11.0.0
 
-  percent_indicator: 4.2.2
+  percent_indicator: 4.2.5
 
-  worker_manager: 5.0.3
+  worker_manager: 7.2.7
 
   async: 2.13.0
 
-  html: 0.15.3
+  html: 0.15.6
 
   custom_pop_up_menu: 1.2.4
 
@@ -191,11 +191,11 @@ dependencies:
 
   url_launcher: 6.3.1
 
-  firebase_core: 2.11.0
+  firebase_core: 4.4.0
 
-  firebase_messaging: 14.5.0
+  firebase_messaging: 16.1.1
 
-  flutter_local_notifications: 17.2.2
+  flutter_local_notifications: 19.5.0
 
   fading_edge_scrollview: 4.1.1
 
@@ -207,105 +207,103 @@ dependencies:
 
   debounce_throttle: 2.0.0
 
-  flutter_appauth_platform_interface: 9.0.0
+  flutter_appauth_platform_interface: 11.0.0
 
   intl: 0.20.2
 
   workmanager: 0.9.0+3
 
-  flutter_typeahead: 5.0.2
+  flutter_typeahead: 5.2.0
 
   flutter_keyboard_visibility: 6.0.0
 
-  date_format: 2.0.7
+  date_format: 2.0.9
 
   flutter_linkify: 6.0.0
 
-  flutter_slidable: 3.1.2
+  flutter_slidable: 4.0.3
 
-  url_strategy: 0.2.0
-
-  dotted_border: 2.1.0
+  dotted_border: 3.1.0
 
   internet_connection_checker: 1.0.0+1
 
   flutter_image_compress: 2.1.0
 
-  back_button_interceptor: 7.0.0
+  back_button_interceptor: 8.0.4
 
-  flutter_secure_storage: 8.0.0
+  flutter_secure_storage: 10.0.0
 
   mime: 1.0.4
 
-  desktop_drop: 0.4.4
+  desktop_drop: 0.7.0
 
   future_loading_dialog: 0.3.0
 
-  file_picker: 10.2.0
+  file_picker: 10.3.8
 
-  app_settings: 5.1.1
+  app_settings: 7.0.0
 
   web_socket_channel: 3.0.3
 
-  flutter_web_auth_2: 4.1.0
+  flutter_web_auth_2: 5.0.0
 
-  app_links: 6.3.2
+  app_links: 7.0.0
 
   duration: 4.0.3
 
-  flutter_smart_dialog: 4.9.8+5
+  flutter_smart_dialog: 4.9.8+9
 
   uri: 1.0.0
 
-  flutter_file_dialog: 3.0.2
+  flutter_file_dialog: 3.0.3
 
   twake_previewer_flutter:
     git:
       url: https://github.com/linagora/twake-previewer-flutter.git
       ref: update/flutter-3.32.8
 
-  lottie_native: 0.1.2
+  lottie_native: 0.1.4
 
   flutter_custom_tab_bar: 1.2.1
 
-  sentry_flutter: 9.8.0
+  sentry_flutter: 9.10.0
 
-  sentry_dio: 9.8.0
+  sentry_dio: 9.10.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  build_runner: 2.4.10
+  build_runner: 2.10.5
 
-  mockito: 5.4.4
+  mockito: 5.6.3
 
-  hive_generator: 2.0.0
+  hive_ce_generator: 1.11.1
 
   flutter_lints: 2.0.1
 
-  flutter_native_splash: 2.2.18
+  flutter_native_splash: 2.3.6
 
-  flutter_launcher_icons: 0.12.0
+  flutter_launcher_icons: 0.14.4
 
-  xml: 6.3.0
+  xml: 6.6.1
 
-  json_serializable: 6.6.1
+  json_serializable: 6.11.4
 
-  http_mock_adapter: 0.4.2
+  http_mock_adapter: 0.6.1
 
-  patrol: 3.19.0
+  patrol: 4.1.0
 
-  patrol_log: 0.5.0
+  patrol_log: 0.6.0
 
-  patrol_finders: 2.9.0
+  patrol_finders: 3.0.0
 
   plugin_platform_interface: 2.1.8
 
 dependency_overrides:
-  firebase_core_platform_interface: 4.8.0
+  firebase_core_platform_interface: 6.0.2
 
-  json_annotation: 4.8.1
+  json_annotation: 4.9.0
 
   # Fix macOS build - version 1.2.0 has Swift API compatibility issues with newer Xcode
   flutter_charset_detector_darwin: 1.2.1

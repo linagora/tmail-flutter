@@ -51,7 +51,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FLUTTER_VERSION: 3.32.8
+  FLUTTER_VERSION: 3.38.7
   XCODE_VERSION: 16.0
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/tmail-web
