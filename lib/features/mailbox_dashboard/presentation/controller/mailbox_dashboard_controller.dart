@@ -981,7 +981,11 @@ class MailboxDashBoardController extends ReloadableController
 
   void openEmailDetailedView(PresentationEmail presentationEmail) {
     setSelectedEmail(presentationEmail);
-    dispatchRoute(DashboardRoutes.threadDetailed);
+    if (isEmailOpened) {
+      dashboardRoute.refresh();
+    } else {
+      dispatchRoute(DashboardRoutes.threadDetailed);
+    }
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
       RouteUtils.replaceBrowserHistory(
         title: 'Email-${presentationEmail.id?.id.value ?? ''}',
@@ -3405,9 +3409,6 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   jmap.State? get currentEmailState => _currentEmailState;
-
-  bool get isThreadDetailedViewVisible =>
-      dashboardRoute.value == DashboardRoutes.threadDetailed;
 
   void _loadAppGrid() {
     if (PlatformInfo.isWeb && AppConfig.appGridDashboardAvailable) {
