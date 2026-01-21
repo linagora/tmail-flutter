@@ -114,7 +114,7 @@ jobs:
     name: Build Android App
     runs-on: ubuntu-latest
     needs: prebuild
-    if: ${{ inputs.build_android }}
+    if: ${{ inputs.build_android == true }}
 
     steps:
       - name: Checkout repository
@@ -210,7 +210,7 @@ jobs:
     name: Build iOS App
     runs-on: macos-latest
     needs: prebuild
-    if: ${{ inputs.build_ios }}
+    if: ${{ inputs.build_ios == true }}
 
     steps:
       - name: Checkout repository
