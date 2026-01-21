@@ -100,21 +100,17 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         }),
-        Obx(() {
-          if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
-            return Column(children: [
-              _buildSettingItem(
-                key: const ValueKey('setting_preferences'),
-                context: context,
-                menuItem: AccountMenuItem.preferences,
-                appLocalizations: appLocalizations,
-              ),
-              divider,
-            ]);
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
+        // Always show Preferences - it contains local-only settings
+        // (e.g., open email in new window) that are always available
+        Column(children: [
+          _buildSettingItem(
+            key: const ValueKey('setting_preferences'),
+            context: context,
+            menuItem: AccountMenuItem.preferences,
+            appLocalizations: appLocalizations,
+          ),
+          divider,
+        ]),
         Obx(() {
           if (controller.manageAccountDashboardController.isForwardCapabilitySupported) {
             return Column(children: [

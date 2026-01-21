@@ -137,11 +137,9 @@ class SettingsView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.preferences:
-          if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
-            return const PreferencesView();
-          } else {
-            return const SizedBox.shrink();
-          }
+          // Always show PreferencesView - it handles both server settings
+          // and local-only settings (e.g., open email in new window)
+          return const PreferencesView();
         case AccountMenuItem.forward:
           if (controller.manageAccountDashboardController.isForwardCapabilitySupported) {
             return ForwardView();

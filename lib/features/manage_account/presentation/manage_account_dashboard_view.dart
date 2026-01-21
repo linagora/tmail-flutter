@@ -1,11 +1,14 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:cozy/cozy_config_manager/cozy_config_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
@@ -27,9 +30,29 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vaca
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 
-class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardController> {
-
+class ManageAccountDashBoardView extends StatefulWidget {
   const ManageAccountDashBoardView({Key? key}) : super(key: key);
+
+  @override
+  State<ManageAccountDashBoardView> createState() => _ManageAccountDashBoardViewState();
+}
+
+class _ManageAccountDashBoardViewState extends State<ManageAccountDashBoardView> {
+  final ManageAccountDashBoardController controller = Get.find<ManageAccountDashBoardController>();
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleKeyDownEvent(KeyEvent event) {
+    if (!mounted) return;
+    if (event.logicalKey == LogicalKeyboardKey.escape) {
+      controller.backToMailboxDashBoard(context: context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,98 +67,108 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           onTap: () => FocusScope.of(context).unfocus(),
           child: ResponsiveWidget(
               responsiveUtils: controller.responsiveUtils,
-              desktop: Column(children: [
-                FutureBuilder(
-                  future: CozyConfigManager().isInsideCozy,
-                  builder: (context, snapshot) {
-                    if (snapshot.data == true) return const SizedBox.shrink();
-
-                    return Obx(() {
-                      final accountId = controller.accountId.value;
-                      String accountDisplayName = controller.ownEmailAddress.value;
-
-                      if (accountDisplayName.trim().isEmpty) {
-                        accountDisplayName = controller
-                          .sessionCurrent
-                          ?.getOwnEmailAddressOrUsername() ?? '';
-                      }
-
-                      return NavigationBarWidget(
-                        imagePaths: controller.imagePaths,
-                        accountId: accountId,
-                        ownEmailAddress: accountDisplayName,
-                        onTapApplicationLogoAction: () =>
-                            controller.backToMailboxDashBoard(context: context),
-                        settingActionTypes: const [ProfileSettingActionType.signOut],
-                        onProfileSettingActionTypeClick: (actionType) =>
-                          controller.handleProfileSettingActionTypeClick(
-                            context: context,
-                            actionType: actionType,
-                          ),
-                      );
-                    });
-                  },
-                ),
-                Expanded(child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      width: ResponsiveUtils.defaultSizeMenu,
-                      child: ManageAccountMenuView()
-                    ),
-                    Expanded(child: ColoredBox(
-                      color: AppColor.colorBgDesktop,
-                      child: Column(children: [
-                        Obx(() {
-                          final vacation = controller.vacationResponse.value;
-
-                          if (vacation?.vacationResponderIsValid == true) {
-                            return VacationNotificationMessageWidget(
-                              margin: EdgeInsetsDirectional.only(
-                                start: isWebDesktop ? 0 : 16,
-                                end: 16,
-                                top: isWebDesktop ? 16 : 0,
-                                bottom: isWebDesktop ? 0 : 16,
-                              ),
-                              fromAccountDashBoard: true,
-                              vacationResponse: vacation!,
-                              actionGotoVacationSetting: !controller.inVacationSettings()
-                                ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
-                                : null,
-                              actionEndNow: controller.disableVacationResponder,
-                            );
-                          } else if (vacation?.vacationResponderIsWaiting == true &&
-                              controller.inVacationSettings()) {
-                            return VacationNotificationMessageWidget(
-                              margin: EdgeInsetsDirectional.only(
-                                start: isWebDesktop ? 0 : 16,
-                                end: 16,
-                                top: isWebDesktop ? 16 : 0,
-                                bottom: isWebDesktop ? 0 : 16,
-                              ),
-                              fromAccountDashBoard: true,
-                              vacationResponse: vacation!,
-                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                              leadingIcon: const Padding(
-                                padding: EdgeInsetsDirectional.only(end: 12),
-                                child: Icon(Icons.timer, size: 20),
-                              )
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        }),
-                        Expanded(child: _viewDisplayedOfAccountMenuItem())
-                      ]),
-                    ))
-                  ],
-                ))
-              ]),
+              desktop: PlatformInfo.isWeb
+                  ? KeyboardHandlerWrapper(
+                      focusNode: _focusNode,
+                      onKeyDownEventAction: _handleKeyDownEvent,
+                      child: _buildDesktopView(isWebDesktop),
+                    )
+                  : _buildDesktopView(isWebDesktop),
               mobile: const SafeArea(child: SettingsView())
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildDesktopView(bool isWebDesktop) {
+    return Column(children: [
+      FutureBuilder(
+        future: CozyConfigManager().isInsideCozy,
+        builder: (context, snapshot) {
+          if (snapshot.data == true) return const SizedBox.shrink();
+
+          return Obx(() {
+            final accountId = controller.accountId.value;
+            String accountDisplayName = controller.ownEmailAddress.value;
+
+            if (accountDisplayName.trim().isEmpty) {
+              accountDisplayName = controller
+                .sessionCurrent
+                ?.getOwnEmailAddressOrUsername() ?? '';
+            }
+
+            return NavigationBarWidget(
+              imagePaths: controller.imagePaths,
+              accountId: accountId,
+              ownEmailAddress: accountDisplayName,
+              onTapApplicationLogoAction: () =>
+                  controller.backToMailboxDashBoard(context: context),
+              settingActionTypes: const [ProfileSettingActionType.signOut],
+              onProfileSettingActionTypeClick: (actionType) =>
+                controller.handleProfileSettingActionTypeClick(
+                  context: context,
+                  actionType: actionType,
+                ),
+            );
+          });
+        },
+      ),
+      Expanded(child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            width: ResponsiveUtils.defaultSizeMenu,
+            child: ManageAccountMenuView()
+          ),
+          Expanded(child: ColoredBox(
+            color: AppColor.colorBgDesktop,
+            child: Column(children: [
+              Obx(() {
+                final vacation = controller.vacationResponse.value;
+
+                if (vacation?.vacationResponderIsValid == true) {
+                  return VacationNotificationMessageWidget(
+                    margin: EdgeInsetsDirectional.only(
+                      start: isWebDesktop ? 0 : 16,
+                      end: 16,
+                      top: isWebDesktop ? 16 : 0,
+                      bottom: isWebDesktop ? 0 : 16,
+                    ),
+                    fromAccountDashBoard: true,
+                    vacationResponse: vacation!,
+                    actionGotoVacationSetting: !controller.inVacationSettings()
+                      ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
+                      : null,
+                    actionEndNow: controller.disableVacationResponder,
+                  );
+                } else if (vacation?.vacationResponderIsWaiting == true &&
+                    controller.inVacationSettings()) {
+                  return VacationNotificationMessageWidget(
+                    margin: EdgeInsetsDirectional.only(
+                      start: isWebDesktop ? 0 : 16,
+                      end: 16,
+                      top: isWebDesktop ? 16 : 0,
+                      bottom: isWebDesktop ? 0 : 16,
+                    ),
+                    fromAccountDashBoard: true,
+                    vacationResponse: vacation!,
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                    leadingIcon: const Padding(
+                      padding: EdgeInsetsDirectional.only(end: 12),
+                      child: Icon(Icons.timer, size: 20),
+                    )
+                  );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }),
+              Expanded(child: _viewDisplayedOfAccountMenuItem())
+            ]),
+          ))
+        ],
+      ))
+    ]);
   }
 
   Widget _viewDisplayedOfAccountMenuItem() {
@@ -156,11 +189,9 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
             return const SizedBox.shrink();
           }
         case AccountMenuItem.preferences:
-          if (controller.isServerSettingsCapabilitySupported){
-            return const PreferencesView();
-          } else {
-            return const SizedBox.shrink();
-          }
+          // Always show PreferencesView - it handles both server settings
+          // and local-only settings (e.g., open email in new window)
+          return const PreferencesView();
         case AccountMenuItem.forward:
           if (controller.isForwardCapabilitySupported){
             return ForwardView();
