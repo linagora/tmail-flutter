@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:jmap_dart_client/http/converter/capabilities_converter.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/utils/app_logger.dart';
@@ -6,6 +9,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -20,6 +24,8 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/download/presentation/extensions/download_attachment_download_controller_extension.dart';
@@ -47,7 +53,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
-import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 
 /// Lightweight popup implementation of EmailContextProvider.
 /// Fetches only essential data (session, mailboxes, identities) for displaying emails.
@@ -103,8 +108,90 @@ class PopupEmailContextProvider extends ReloadableController
   }
 
   void _initializePopupContext() {
-    // Start authentication flow
+    if (PlatformInfo.isWeb) {
+      // Try to read session from localStorage first (fast path ~500ms)
+      _trySessionHandoff();
+    } else {
+      // Mobile: use standard authentication flow
+      getAuthenticatedAccountAction();
+    }
+  }
+
+  void _trySessionHandoff() {
+    log('PopupEmailContextProvider::_trySessionHandoff: Checking localStorage');
+
+    try {
+      final sessionDataStr = html.window.localStorage['tmail_popup_session'];
+      if (sessionDataStr != null && sessionDataStr.isNotEmpty) {
+        final data = jsonDecode(sessionDataStr) as Map<String, dynamic>;
+
+        // Check if the session data is fresh (within last 10 seconds)
+        final timestamp = data['timestamp'] as int?;
+        if (timestamp != null) {
+          final age = DateTime.now().millisecondsSinceEpoch - timestamp;
+          if (age < 10000) {
+            // Less than 10 seconds old
+            log('PopupEmailContextProvider::_trySessionHandoff: Found fresh session data');
+            _handleSessionHandoff(data);
+            // Clear the localStorage entry after reading
+            html.window.localStorage.remove('tmail_popup_session');
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      log('PopupEmailContextProvider::_trySessionHandoff: Error reading localStorage: $e');
+    }
+
+    // No valid session data, fall back to authentication
+    log('PopupEmailContextProvider::_trySessionHandoff: No valid session, falling back to auth');
     getAuthenticatedAccountAction();
+  }
+
+  void _handleSessionHandoff(Map<String, dynamic> data) {
+    try {
+      final sessionJson = data['sessionJson'];
+      final accountIdStr = data['accountId'] as String?;
+      final ownEmail = data['ownEmailAddress'] as String?;
+      final baseUrl = data['baseUrl'] as String?;
+
+      if (sessionJson != null && accountIdStr != null) {
+        // Reconstruct session from JSON
+        _session = Session.fromJson(
+          sessionJson,
+          converter: CapabilitiesConverter.defaultConverter
+            ..addConverters(SessionExtensions.customMapCapabilitiesConverter),
+        );
+        _accountId.value = AccountId(Id(accountIdStr));
+        if (ownEmail != null) {
+          _ownEmailAddress.value = ownEmail;
+        }
+
+        log('PopupEmailContextProvider::_handleSessionHandoff: Session reconstructed');
+
+        // Set interceptors with the base URL from main window
+        if (baseUrl != null) {
+          _setInterceptorsFromHandoff(baseUrl);
+        }
+
+        // Fetch mailboxes and identities
+        _fetchMailboxes();
+        _fetchIdentities();
+      } else {
+        // Invalid handoff data, fall back to auth
+        log('PopupEmailContextProvider::_handleSessionHandoff: Invalid data, falling back');
+        getAuthenticatedAccountAction();
+      }
+    } catch (e) {
+      log('PopupEmailContextProvider::_handleSessionHandoff: Error $e, falling back');
+      getAuthenticatedAccountAction();
+    }
+  }
+
+  void _setInterceptorsFromHandoff(String baseUrl) {
+    // Set the base URL for API calls
+    dynamicUrlInterceptors.setJmapUrl(baseUrl);
+    dynamicUrlInterceptors.changeBaseUrl(baseUrl);
   }
 
   @override
@@ -503,4 +590,5 @@ class PopupEmailContextProvider extends ReloadableController
   MailboxId? getMailboxIdByRole(Role role) {
     return _mapDefaultMailboxIdByRole[role];
   }
+
 }

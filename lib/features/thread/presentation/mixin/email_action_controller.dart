@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
@@ -31,6 +33,8 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 
 mixin EmailActionController {
 
@@ -345,7 +349,33 @@ mixin EmailActionController {
     final emailId = email.id?.id.value ?? '';
     final baseUrl = Uri.base.origin;
     final popupUrl = '$baseUrl/#/popup/$emailId';
+
+    // Send session data via BroadcastChannel for fast popup initialization
+    _sendSessionToPopup(emailId);
+
     AppUtils.launchInNewWindow(popupUrl);
+  }
+
+  void _sendSessionToPopup(String emailId) {
+    if (!PlatformInfo.isWeb) return;
+
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final baseUrl = mailboxDashBoardController.dynamicUrlInterceptors.jmapUrl;
+    if (session == null || accountId == null) return;
+
+    // Store session data in localStorage for popup to read
+    // This is faster than re-authenticating (~500ms vs ~2-3s)
+    final sessionData = {
+      'type': 'session_handoff',
+      'emailId': emailId,
+      'sessionJson': session.toJson(),
+      'accountId': accountId.id.value,
+      'ownEmailAddress': mailboxDashBoardController.ownEmailAddress.value,
+      'baseUrl': baseUrl,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    };
+    html.window.localStorage['tmail_popup_session'] = jsonEncode(sessionData);
   }
 
   void archiveMessage(PresentationEmail email) {

@@ -86,9 +86,32 @@ class HomeController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
+    // Check if this is a popup URL - route to popup instead of dashboard
+    if (PlatformInfo.isWeb && _isPopupRoute()) {
+      final emailIdParam = _extractPopupEmailId();
+      if (emailIdParam != null) {
+        pushAndPopAll(
+          '/popup/$emailIdParam',
+          arguments: session,
+        );
+        return;
+      }
+    }
+
     pushAndPopAll(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
       arguments: session);
+  }
+
+  bool _isPopupRoute() {
+    final currentUrl = Uri.base.toString();
+    return currentUrl.contains('/#/popup/') || currentUrl.contains('/popup/');
+  }
+
+  String? _extractPopupEmailId() {
+    final currentUrl = Uri.base.toString();
+    final popupMatch = RegExp(r'/popup/([^/?]+)').firstMatch(currentUrl);
+    return popupMatch?.group(1);
   }
 
   @override
