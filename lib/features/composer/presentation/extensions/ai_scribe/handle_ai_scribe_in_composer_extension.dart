@@ -34,11 +34,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
-  Future<void> insertTextInEditor(String text) async {
-    if (PlatformInfo.isMobile) {
-      await ensureMobileEditorFocused();
-    }
-    
+  Future<void> insertTextInEditor(String text) async {    
     try {
       final htmlContent = StringConvert.convertTextContentToHtmlContent(text);
 
@@ -54,6 +50,18 @@ extension HandleAiScribeInComposerExtension on ComposerController {
       }
     } catch (e) {
       logWarning('$runtimeType::insertTextInEditor:Exception = $e');
+    }
+  }
+
+  Future<void> setTextInEditor(String text) async {
+    try {
+      if (PlatformInfo.isWeb) {
+        richTextWebController?.editorController.setText(text);
+      } else {
+        await richTextMobileTabletController?.htmlEditorApi?.setText(text);
+      }
+    } catch (e) {
+      logError('$runtimeType::insertTextInEditor:Exception = $e');
     }
   }
 
@@ -117,6 +125,28 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
+  Future<String> getSavedSelection() async {
+    try {
+      if (PlatformInfo.isWeb) {
+        final result = await richTextWebController?.editorController.evaluateJavascriptWeb(
+          HtmlUtils.getSavedSelection.name,
+          hasReturnValue: true,
+        );
+        return result;
+      } else {
+        final result = await richTextMobileTabletController?.htmlEditorApi?.webViewController
+            .evaluateJavascript(
+          source: HtmlUtils.getSavedSelection.script,
+        );
+        return result;
+      }
+    } catch (e) {
+      logError('$runtimeType::getSavedSelection:Exception = $e');
+      return "";
+    }
+  }
+
+
   Future<void> clearSavedSelection() async {
     try {
       if (PlatformInfo.isWeb) {
@@ -158,21 +188,15 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     }
   }
 
-  Future<void> clearTextInEditor() async {
-    try {
-      if (PlatformInfo.isWeb) {
-        richTextWebController?.editorController.setText('');
-      } else {
-        await richTextMobileTabletController?.htmlEditorApi?.setText('');
-      }
-    } catch (e) {
-      logWarning('$runtimeType::clearTextInEditor:Exception = $e');
-    }
-  }
-
-  // Ensure we only insert at cursor position by collapsing selection before inserting
   Future<void> onInsertTextCallback(String text) async {
+    if (PlatformInfo.isMobile) {
+      await ensureMobileEditorFocused();
+      
+      await restoreSelection();
+    }
+
     await collapseSelection();
+    
     await insertTextInEditor(text);
   }
 
@@ -180,13 +204,25 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   Future<void> onReplaceTextCallback(String text) async {
     final selection = editorTextSelection.value?.selectedText;
 
-    final isSelectionRestored = PlatformInfo.isMobile ? await restoreSelection() : "";
+    final savedSelection = PlatformInfo.isMobile ? await getSavedSelection() : "";
 
-    if ((selection == null || selection.isEmpty) && isSelectionRestored.isEmpty) {
-      await clearTextInEditor();
+    final shouldReplaceEverything = (selection == null || selection.isEmpty) && savedSelection.isEmpty;
+
+    if (shouldReplaceEverything) {
+      try {
+        await setTextInEditor(text);
+      } catch (e) {
+        logError('$runtimeType::onReplaceTextCallback:Exception = $e');
+      }
+    } else {
+      if (PlatformInfo.isMobile) {
+        await ensureMobileEditorFocused();
+        
+        await restoreSelection();
+      }
+
+      await insertTextInEditor(text);
     }
-
-    await insertTextInEditor(text);
   }
 
   Future<void> openAIAssistantModal(Offset? position, Size? size) async {
