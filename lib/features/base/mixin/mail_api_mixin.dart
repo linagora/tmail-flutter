@@ -62,33 +62,6 @@ mixin MailAPIMixin on HandleSetErrorMixin {
     return minOfMaxObjectsInSetMethod;
   }
 
-  /// Gets the maximum number of objects that can be fetched in a single Email/get request.
-  ///
-  /// Some JMAP servers (like Stalwart) enforce strict limits on the number of objects
-  /// that can be requested in a single Email/get call. Exceeding this limit results
-  /// in an error that breaks WebSocket email synchronization.
-  ///
-  /// This method:
-  /// 1. Reads maxObjectsInGet from the server's Core capability
-  /// 2. Falls back to [CapabilityIdentifierExtension.defaultMaxObjectsInGet] if not specified
-  /// 3. Returns the minimum of server limit and default to prevent overloading
-  int getMaxObjectsInGetMethod(Session session, AccountId accountId) {
-    final coreCapability = session.getCapabilityProperties<CoreCapability>(
-      accountId,
-      CapabilityIdentifier.jmapCore,
-    );
-    final maxObjectsInGetMethod =
-        coreCapability?.maxObjectsInGet?.value.toInt() ??
-            CapabilityIdentifierExtension.defaultMaxObjectsInGet;
-
-    final minOfMaxObjectsInGetMethod = min(
-      maxObjectsInGetMethod,
-      CapabilityIdentifierExtension.defaultMaxObjectsInGet,
-    );
-    log('$runtimeType::getMaxObjectsInGetMethod:minOfMaxObjectsInGetMethod = $minOfMaxObjectsInGetMethod');
-    return minOfMaxObjectsInGetMethod;
-  }
-
   /// Fetches emails by IDs in batches to respect server maxObjectsInGet limits.
   ///
   /// This method solves the "too many ids" error that occurs when calling Email/get
@@ -117,7 +90,11 @@ mixin MailAPIMixin on HandleSetErrorMixin {
     int? maxEmailsToFetch,
   }) async {
     // Ensure batch size is at least 1 to prevent infinite loops or division by zero
-    final maxObjectsInGet = max(1, batchSize ?? getMaxObjectsInGetMethod(session, accountId));
+    final maxObjectsInGet = max(
+      1,
+      batchSize ?? session.getMaxObjectsInGet(accountId)?.value.toInt()
+          ?? CapabilityIdentifierExtension.defaultMaxObjectsInGet,
+    );
     final List<Email> allEmails = [];
     final List<EmailId> allNotFoundIds = [];
     State? latestState;
@@ -157,7 +134,7 @@ mixin MailAPIMixin on HandleSetErrorMixin {
         GetEmailResponse.deserialize,
       );
 
-      if (emailResponse?.list != null) {
+      if (emailResponse?.list.isNotEmpty == true) {
         allEmails.addAll(emailResponse!.list);
       }
       if (emailResponse?.state != null) {
