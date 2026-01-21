@@ -35,6 +35,8 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart' deferred as search_mailbox_view;
 import 'package:tmail_ui_user/features/mailto/presentation/mailto_url_view.dart' deferred as mailto_url_view;
 import 'package:tmail_ui_user/features/email_recovery/presentation/email_recovery_view.dart' deferred as email_recovery;
+import 'package:tmail_ui_user/features/email_popup/presentation/email_popup_bindings.dart';
+import 'package:tmail_ui_user/features/email_popup/presentation/email_popup_view.dart' deferred as email_popup;
 import 'package:tmail_ui_user/features/email_previewer/email_previewer_view.dart' deferred as email_previewer_view;
 
 class AppPages {
@@ -89,6 +91,14 @@ class AppPages {
         () => email_previewer_view.EmailPreviewerView(),
       ),
       binding: EmailPreviewerBindings(),
+    ),
+    GetPage(
+      name: AppRoutes.emailPopup,
+      page: () => DeferredWidget(
+        email_popup.loadLibrary,
+        () => email_popup.EmailPopupView(),
+      ),
+      binding: EmailPopupBindings(),
     ),
     unknownRoutePage,
     if (PlatformInfo.isMobile)

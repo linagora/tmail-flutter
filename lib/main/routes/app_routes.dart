@@ -17,4 +17,5 @@ abstract class AppRoutes {
   static const mailtoURL = '/mailto';
   static const emailRecovery = '/email_recovery';
   static const emailEMLPreviewer = '/mail/eml/preview';
+  static const emailPopup = '/popup/:id';
 }
