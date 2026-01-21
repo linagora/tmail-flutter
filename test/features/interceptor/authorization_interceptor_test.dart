@@ -78,7 +78,7 @@ void main() {
 
     dioAdapter = DioAdapter(dio: dio);
 
-    dotenv.testLoad(mergeWith: {
+    dotenv.loadFromString(mergeWith: {
       'PLATFORM': 'other'
     });
   });

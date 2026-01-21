@@ -10,7 +10,7 @@ class NetworkConnectionController extends GetxController {
   static const Duration _timeoutInternetConnection = Duration(milliseconds: 5000);
   static const Duration _timeIntervalInternetConnection = Duration(milliseconds: 5000);
 
-  final _connectivityResult = Rxn<ConnectivityResult>();
+  final _connectivityResult = Rxn<List<ConnectivityResult>>();
   final _internetConnectionStatus = Rxn<InternetConnectionStatus>();
 
   final Connectivity _connectivity;
@@ -20,7 +20,7 @@ class NetworkConnectionController extends GetxController {
     checkInterval: _timeIntervalInternetConnection
   );
 
-  StreamSubscription<ConnectivityResult>? _subscription;
+  StreamSubscription<List<ConnectivityResult>>? _subscription;
   StreamSubscription<InternetConnectionStatus>? _internetSubscription;
 
   NetworkConnectionController(this._connectivity);
@@ -55,8 +55,8 @@ class NetworkConnectionController extends GetxController {
     ]);
     log('NetworkConnectionController::_getCurrentNetworkConnectionState():listConnectionResult: $listConnectionResult');
 
-    if (listConnectionResult[0] is ConnectivityResult) {
-      _setNetworkConnectivityState(listConnectionResult[0] as ConnectivityResult);
+    if (listConnectionResult[0] is List<ConnectivityResult>) {
+      _setNetworkConnectivityState(listConnectionResult[0] as List<ConnectivityResult>);
     }
 
     if (listConnectionResult[1] is InternetConnectionStatus) {
@@ -86,7 +86,7 @@ class NetworkConnectionController extends GetxController {
     );
   }
 
-  void _setNetworkConnectivityState(ConnectivityResult newConnectivityResult) {
+  void _setNetworkConnectivityState(List<ConnectivityResult> newConnectivityResult) {
     _connectivityResult.value = newConnectivityResult;
   }
 
@@ -95,7 +95,9 @@ class NetworkConnectionController extends GetxController {
   }
 
   bool isNetworkConnectionAvailable() {
-    return _internetConnectionStatus.value == InternetConnectionStatus.connected;
+    return _internetConnectionStatus.value == InternetConnectionStatus.connected ||
+        (_connectivityResult.value != null &&
+         !_connectivityResult.value!.contains(ConnectivityResult.none));
   }
 
   Future<bool> hasInternetConnection() {

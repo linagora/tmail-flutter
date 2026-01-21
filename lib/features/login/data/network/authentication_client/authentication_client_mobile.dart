@@ -118,7 +118,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
       url: oidcConfiguration.signInTWPUrl,
       callbackUrlScheme: OIDCConstant.twakeWorkplaceUrlScheme,
       options: const FlutterWebAuth2Options(
-        intentFlags: ephemeralIntentFlags,
+        preferEphemeral: true,
       ),
     );
     log('$runtimeType::signInTwakeWorkplace():Uri = $uri');
@@ -131,7 +131,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
       url: oidcConfiguration.signUpTWPUrl,
       callbackUrlScheme: OIDCConstant.twakeWorkplaceUrlScheme,
       options: const FlutterWebAuth2Options(
-        intentFlags: ephemeralIntentFlags,
+        preferEphemeral: true,
       ),
     );
     log('$runtimeType::signUpTwakeWorkplace():Uri = $uri');

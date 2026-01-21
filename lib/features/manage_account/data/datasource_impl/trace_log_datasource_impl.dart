@@ -38,7 +38,7 @@ class TraceLogDataSourceImpl extends TraceLogDataSource {
       } else {
         final traceLog = await _logTracking.getTraceLog();
         final savePath = await _logTracking.exportTraceLog(traceLog);
-        final result = await Share.shareXFiles([XFile(savePath)]);
+        final result = await SharePlus.instance.share(ShareParams(files: [XFile(savePath)]));
         if (result.status == ShareResultStatus.success) {
           return savePath;
         }

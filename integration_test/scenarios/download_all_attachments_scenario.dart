@@ -45,6 +45,6 @@ class DownloadAllAttachmentsScenario extends BaseTestScenario {
   }
 
   Future<void> _expectNativeSaveButtonVisible() async {
-    await expectLater($.native.tap(Selector(text: 'SAVE')), completes);
+    await expectLater($.platform.mobile.tap(Selector(text: 'SAVE')), completes);
   }
 }

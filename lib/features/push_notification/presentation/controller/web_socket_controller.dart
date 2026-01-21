@@ -47,7 +47,7 @@ class WebSocketController extends PushBaseController {
 
   ConnectWebSocketInteractor? _connectWebSocketInteractor;
   NetworkConnectionController? _networkConnectionController;
-  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
 
   int _retryRemained = 3;
   bool _isConnecting = false;
@@ -304,8 +304,8 @@ class WebSocketController extends PushBaseController {
     _networkConnectionController = getBinding<NetworkConnectionController>();
     _connectivitySubscription = _networkConnectionController
       ?.connectivity
-      .onConnectivityChanged.listen((status) {
-        if (status == ConnectivityResult.none) {
+      .onConnectivityChanged.listen((results) {
+        if (results.contains(ConnectivityResult.none)) {
           log('WebSocketController::_monitorNetwork:No network connection');
           _cleanUpWebSocketResources();
         } else {

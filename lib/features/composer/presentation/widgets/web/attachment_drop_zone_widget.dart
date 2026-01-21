@@ -31,11 +31,12 @@ class AttachmentDropZoneWidget extends StatelessWidget {
         final childWidget = Padding(
           padding: DropZoneWidgetStyle.margin,
           child: DottedBorder(
-            borderType: BorderType.RRect,
-            radius: const Radius.circular(DropZoneWidgetStyle.radius),
-            color: DropZoneWidgetStyle.borderColor,
-            strokeWidth: DropZoneWidgetStyle.borderWidth,
-            dashPattern: DropZoneWidgetStyle.dashSize,
+            options: RoundedRectDottedBorderOptions(
+              radius: const Radius.circular(DropZoneWidgetStyle.radius),
+              color: DropZoneWidgetStyle.borderColor,
+              strokeWidth: DropZoneWidgetStyle.borderWidth,
+              dashPattern: DropZoneWidgetStyle.dashSize,
+            ),
             child: Container(
               clipBehavior: Clip.antiAlias,
               decoration: ShapeDecoration(

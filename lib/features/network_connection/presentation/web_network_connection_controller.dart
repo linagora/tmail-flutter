@@ -15,13 +15,13 @@ class NetworkConnectionController extends GetxController {
   final _imagePaths = Get.find<ImagePaths>();
   final _appToast = Get.find<AppToast>();
 
-  final _connectivityResult = Rxn<ConnectivityResult>();
+  final _connectivityResult = Rxn<List<ConnectivityResult>>();
 
   final Connectivity _connectivity;
 
   bool _isEnableShowToastDisconnection = true;
 
-  StreamSubscription<ConnectivityResult>? _subscription;
+  StreamSubscription<List<ConnectivityResult>>? _subscription;
 
   NetworkConnectionController(this._connectivity);
 
@@ -46,9 +46,9 @@ class NetworkConnectionController extends GetxController {
   Connectivity get connectivity => _connectivity;
 
   void _getCurrentNetworkConnectionState() async {
-    final connectionResult = await _connectivity.checkConnectivity();
-    log('NetworkConnectionController::_getCurrentNetworkConnectionState():connectionResult: $connectionResult');
-    _setNetworkConnectivityState(connectionResult);
+    final connectionResults = await _connectivity.checkConnectivity();
+    log('NetworkConnectionController::_getCurrentNetworkConnectionState():connectionResults: $connectionResults');
+    _setNetworkConnectivityState(connectionResults);
     _handleNetworkConnectionState();
   }
 
@@ -65,11 +65,12 @@ class NetworkConnectionController extends GetxController {
     );
   }
 
-  void _setNetworkConnectivityState(ConnectivityResult newConnectivityResult) {
+  void _setNetworkConnectivityState(List<ConnectivityResult> newConnectivityResult) {
     _connectivityResult.value = newConnectivityResult;
   }
 
-  bool isNetworkConnectionAvailable() => _connectivityResult.value != ConnectivityResult.none;
+  bool isNetworkConnectionAvailable() => _connectivityResult.value != null &&
+      !_connectivityResult.value!.contains(ConnectivityResult.none);
 
   void _handleNetworkConnectionState() {
     if (_isEnableShowToastDisconnection && !isNetworkConnectionAvailable()) {

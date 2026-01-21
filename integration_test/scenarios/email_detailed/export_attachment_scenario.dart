@@ -42,7 +42,7 @@ class ExportAttachmentScenario extends BaseTestScenario {
     await emailRobot.onTapAttachmentItem();
     await $.pumpAndSettle();
 
-    await $.native.pressBack();
+    await $.platform.android.pressBack();
     _expectEmailViewVisible();
     _expectExportDialogLoadingInvisible(appLocalizations);
   }
