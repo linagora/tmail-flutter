@@ -5,74 +5,63 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/model/account_menu_items_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
-import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class ManageAccountMenuController extends GetxController with ContactSupportMixin {
-
+class ManageAccountMenuController extends GetxController
+    with ContactSupportMixin {
   final dashBoardController = Get.find<ManageAccountDashBoardController>();
   final responsiveUtils = Get.find<ResponsiveUtils>();
   final imagePaths = Get.find<ImagePaths>();
 
+  late final AccountMenuItemsBuilder _menuItemsBuilder;
+  late Worker _quotaRxWorker;
+
   final listAccountMenuItem = RxList<AccountMenuItem>([
     AccountMenuItem.profiles,
     AccountMenuItem.mailboxVisibility,
-    if (PlatformInfo.isWeb)
-      AccountMenuItem.keyboardShortcuts,
+    if (PlatformInfo.isWeb) AccountMenuItem.keyboardShortcuts,
   ]);
 
-  late Worker _quotaRxWorker;
+  @override
+  void onInit() {
+    _menuItemsBuilder = AccountMenuItemsBuilder(dashBoardController);
+    _registerObxStreamListener();
+    super.onInit();
+  }
 
   void _registerObxStreamListener() {
     ever(dashBoardController.accountId, (accountId) {
       if (accountId != null) {
-        _createListAccountMenu();
+        _refreshMenuItems();
       }
     });
 
     _quotaRxWorker = ever(
       dashBoardController.octetsQuota,
       (octetsQuota) {
-        if (octetsQuota != null && octetsQuota.storageAvailable) {
+        if (_menuItemsBuilder.canAddStorage()) {
           _addStorageToMenuList();
         }
       },
     );
   }
 
-  @override
-  void onInit() {
-    _registerObxStreamListener();
-    super.onInit();
+  void _refreshMenuItems() {
+    listAccountMenuItem.value = _menuItemsBuilder.buildMenuItems();
+    _selectInitialMenuItem();
   }
 
-  void _createListAccountMenu() {
-    final newListMenuSetting = [
-      AccountMenuItem.profiles,
-      if (dashBoardController.isRuleFilterCapabilitySupported)
-        AccountMenuItem.emailRules,
-      if (dashBoardController.isServerSettingsCapabilitySupported)
-        AccountMenuItem.preferences,
-      if (dashBoardController.isForwardCapabilitySupported)
-        AccountMenuItem.forward,
-      if (dashBoardController.isVacationCapabilitySupported)
-        AccountMenuItem.vacation,
-      AccountMenuItem.mailboxVisibility,
-      if (dashBoardController.isLanguageSettingDisplayed)
-        AccountMenuItem.languageAndRegion,
-      if (PlatformInfo.isWeb)
-        AccountMenuItem.keyboardShortcuts,
-    ];
-    listAccountMenuItem.value = newListMenuSetting;
+  void _selectInitialMenuItem() {
+    if (listAccountMenuItem.isEmpty) return;
 
-    if (listAccountMenuItem.isNotEmpty) {
-      if (currentContext != null && responsiveUtils.isWebDesktop(currentContext!)) {
-        selectAccountMenuItem(listAccountMenuItem.first);
-      } else {
-        selectAccountMenuItem(AccountMenuItem.none);
-      }
-    }
+    final shouldAutoSelect =
+        currentContext != null && responsiveUtils.isWebDesktop(currentContext!);
+
+    selectAccountMenuItem(
+      shouldAutoSelect ? listAccountMenuItem.first : AccountMenuItem.none,
+    );
   }
 
   void selectAccountMenuItem(AccountMenuItem newAccountMenuItem) {
@@ -84,12 +73,17 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
   }
 
   void _addStorageToMenuList() {
-    listAccountMenuItem.add(AccountMenuItem.storage);
+    if (!listAccountMenuItem.contains(AccountMenuItem.storage)) {
+      listAccountMenuItem.add(AccountMenuItem.storage);
+    }
 
-    if (dashBoardController.selectedMenu != null) {
-      dashBoardController.selectAccountMenuItem(
-        dashBoardController.selectedMenu!,
-      );
+    _reselectedCurrentMenuItem();
+  }
+
+  void _reselectedCurrentMenuItem() {
+    final selectedMenu = dashBoardController.selectedMenu;
+    if (selectedMenu != null) {
+      dashBoardController.selectAccountMenuItem(selectedMenu);
     }
   }
 
