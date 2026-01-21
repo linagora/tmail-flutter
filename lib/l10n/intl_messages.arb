@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-01-18T11:39:50.714472",
+  "@@last_modified": "2026-01-21T11:26:25.524158",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4880,24 +4880,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiScribe": "AI Scribe",
-  "@aiScribe": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "aiScribeSettingExplanation": "Use AI to help write and improve your emails",
-  "@aiScribeSettingExplanation": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "aiScribeToggleDescription": "Enable AI Scribe",
-  "@aiScribeToggleDescription": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "showMoreAttachmentButton": "Show +{count} more",
   "@showMoreAttachmentButton": {
     "type": "text",
@@ -5302,6 +5284,42 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "quotedContentVisibility": "Quoted content",
+  "@quotedContentVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotedContentSettingExplanation": "Control how quoted content from previous messages is displayed when viewing email replies and forwards.",
+  "@quotedContentSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotedContentToggleDescription": "Hide quoted content by default",
+  "@quotedContentToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openEmailInNewWindow": "Open emails in new window",
+  "@openEmailInNewWindow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openEmailInNewWindowSettingExplanation": "When enabled, clicking on an email will automatically open it in a new browser tab instead of the current view.",
+  "@openEmailInNewWindowSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openEmailInNewWindowToggleDescription": "Open in new window",
+  "@openEmailInNewWindowToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "theLabelFeatureIsNowAvailable": "The label feature is now available.",
   "@theLabelFeatureIsNowAvailable": {
     "type": "text",
@@ -5374,6 +5392,76 @@
   },
   "autoSyncDisabled": "Auto-sync disabled",
   "@autoSyncDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcLogoutErrorTitle": "Logout Error",
+  "@oidcLogoutErrorTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcLogoutErrorMissingEndpoint": "Unable to logout: The server's OIDC configuration is missing the logout endpoint. Please contact your administrator.",
+  "@oidcLogoutErrorMissingEndpoint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcLoginErrorTitle": "Login Error",
+  "@oidcLoginErrorTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcLoginErrorMissingAuthEndpoint": "Unable to login: The server's OIDC configuration is missing the authorization endpoint. Please contact your administrator.",
+  "@oidcLoginErrorMissingAuthEndpoint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcLoginErrorMissingTokenEndpoint": "Unable to login: The server's OIDC configuration is missing the token endpoint. Please contact your administrator.",
+  "@oidcLoginErrorMissingTokenEndpoint": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcConfigurationError": "OIDC Configuration Error",
+  "@oidcConfigurationError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oidcDiscoveryFailed": "Failed to retrieve OIDC configuration from the server. Please check your server settings.",
+  "@oidcDiscoveryFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "technicalDetails": "Technical details: {details}",
+  "@technicalDetails": {
+    "type": "text",
+    "placeholders_order": [
+      "details"
+    ],
+    "placeholders": {
+      "details": {}
+    }
+  },
+  "logoutFailed": "Logout failed",
+  "@logoutFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forceLogout": "Force logout",
+  "@forceLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forceLogoutDescription": "This will clear your local session without notifying the server. You may need to revoke the session manually from your identity provider.",
+  "@forceLogoutDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -119,9 +119,9 @@ dev_dependencies:
 
   plugin_platform_interface: 2.1.8
 
-  build_runner: 2.4.10
+  build_runner: 2.10.5
 
-  mockito: 5.4.4
+  mockito: 5.6.3
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
