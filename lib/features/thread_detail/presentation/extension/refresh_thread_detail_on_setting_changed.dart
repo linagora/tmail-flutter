@@ -7,7 +7,7 @@ extension RefreshThreadDetailOnSettingChanged on ThreadDetailManager {
     if (threadDetailWasEnabled != isThreadDetailEnabled) {
       threadDetailWasEnabled = isThreadDetailEnabled;
       if (PlatformInfo.isWeb &&
-          mailboxDashBoardController.isThreadDetailedViewVisible) {
+          mailboxDashBoardController.isEmailOpened) {
         mailboxDashBoardController.dispatchThreadDetailUIAction(
           ResyncThreadDetailWhenSettingChangedAction(),
         );
