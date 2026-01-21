@@ -31,8 +31,8 @@ class AttachmentDropZoneWidget extends StatelessWidget {
         final childWidget = Padding(
           padding: DropZoneWidgetStyle.margin,
           child: DottedBorder(
-            options: RoundedRectDottedBorderOptions(
-              radius: const Radius.circular(DropZoneWidgetStyle.radius),
+            options: const RoundedRectDottedBorderOptions(
+              radius: Radius.circular(DropZoneWidgetStyle.radius),
               color: DropZoneWidgetStyle.borderColor,
               strokeWidth: DropZoneWidgetStyle.borderWidth,
               dashPattern: DropZoneWidgetStyle.dashSize,

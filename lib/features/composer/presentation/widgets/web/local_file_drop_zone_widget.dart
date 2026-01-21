@@ -31,8 +31,8 @@ class LocalFileDropZoneWidget extends StatelessWidget {
     Widget childWidget = Padding(
       padding: margin,
       child: DottedBorder(
-        options: RoundedRectDottedBorderOptions(
-          radius: const Radius.circular(DropZoneWidgetStyle.radius),
+        options: const RoundedRectDottedBorderOptions(
+          radius: Radius.circular(DropZoneWidgetStyle.radius),
           color: DropZoneWidgetStyle.borderColor,
           strokeWidth: DropZoneWidgetStyle.borderWidth,
           dashPattern: DropZoneWidgetStyle.dashSize,
