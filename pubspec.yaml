@@ -27,6 +27,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  flutter_web_plugins:
+    sdk: flutter
+
   core:
     path: core
 
