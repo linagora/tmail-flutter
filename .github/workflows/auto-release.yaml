@@ -72,10 +72,35 @@ jobs:
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "New version: $NEW_VERSION"
 
-      - name: Generate changelog
-        id: changelog
+      - name: Find available version
+        id: available_version
+        run: |
+          VERSION="${{ steps.next_version.outputs.new_version }}"
+
+          # Keep incrementing patch version until we find one that doesn't exist
+          while git rev-parse "$VERSION" >/dev/null 2>&1; do
+            echo "Tag $VERSION already exists, trying next..."
+            # Remove 'v' prefix, increment patch, add 'v' back
+            V=${VERSION#v}
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$V"
+            PATCH=$((PATCH + 1))
+            VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+          done
+
+          echo "Using version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a ${{ steps.available_version.outputs.version }} -m "Release ${{ steps.available_version.outputs.version }}"
+          git push origin ${{ steps.available_version.outputs.version }}
+
+      - name: Update changelog with final version
         run: |
           LATEST_TAG="${{ steps.get_latest_tag.outputs.latest_tag }}"
+          FINAL_VERSION="${{ steps.available_version.outputs.version }}"
 
           echo "## What's Changed" > changelog.md
           echo "" >> changelog.md
@@ -88,40 +113,15 @@ jobs:
 
           echo "" >> changelog.md
           echo "" >> changelog.md
-          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${{ steps.next_version.outputs.new_version }}" >> changelog.md
-
-      - name: Check if tag exists
-        id: check_tag
-        run: |
-          if git rev-parse "${{ steps.next_version.outputs.new_version }}" >/dev/null 2>&1; then
-            echo "Tag ${{ steps.next_version.outputs.new_version }} already exists"
-            echo "tag_exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "Tag ${{ steps.next_version.outputs.new_version }} does not exist"
-            echo "tag_exists=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create tag
-        if: steps.check_tag.outputs.tag_exists == 'false'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a ${{ steps.next_version.outputs.new_version }} -m "Release ${{ steps.next_version.outputs.new_version }}"
-          git push origin ${{ steps.next_version.outputs.new_version }}
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${FINAL_VERSION}" >> changelog.md
 
       - name: Create GitHub Release
-        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.next_version.outputs.new_version }}
-          name: Release ${{ steps.next_version.outputs.new_version }}
+          tag_name: ${{ steps.available_version.outputs.version }}
+          name: Release ${{ steps.available_version.outputs.version }}
           body_path: changelog.md
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Skip release (tag exists)
-        if: steps.check_tag.outputs.tag_exists == 'true'
-        run: |
-          echo "::notice::Skipping release - tag ${{ steps.next_version.outputs.new_version }} already exists"
