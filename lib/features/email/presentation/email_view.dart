@@ -17,7 +17,9 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
+import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
@@ -89,7 +91,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     key: const Key('email_view_app_bar_widget'),
                     presentationEmail: currentEmail,
                     mailboxContain: _getMailboxContain(currentEmail),
-                    isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
+                    isSearchActivated: controller.emailContext.searchController.isSearchEmailRunning,
                     onBackAction: () => controller.closeEmailView(context: context),
                     onEmailActionClick: controller.handleEmailAction,
                     onMoreActionClick: (presentationEmail, position) {
@@ -104,9 +106,15 @@ class EmailView extends GetWidget<SingleEmailController> {
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
                         isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
-                        labels: controller.mailboxDashBoardController.labelController.labels,
-                        openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
-                        openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
+                        labels: controller.emailContext.isPopupMode
+                            ? []
+                            : controller.mailboxDashBoardController.labelController.labels,
+                        openBottomSheetContextMenu: controller.emailContext.isPopupMode
+                            ? _noOpBottomSheetContextMenu
+                            : controller.mailboxDashBoardController.openBottomSheetContextMenu,
+                        openPopupMenu: controller.emailContext.isPopupMode
+                            ? _noOpPopupMenuActionGroup
+                            : controller.mailboxDashBoardController.openPopupMenuActionGroup,
                         onSelectLabelAction: (label, isSelected) =>
                             controller.toggleLabelToEmail(
                               presentationEmail.id!,
@@ -129,7 +137,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                     isInsideThreadDetailView: isInsideThreadDetailView,
                   ),
                 ),
-              if (!isInsideThreadDetailView)
+              // Vacation banner not shown in popup mode
+              if (!isInsideThreadDetailView && !controller.emailContext.isPopupMode)
                 Obx(() {
                   final vacation = controller.mailboxDashBoardController.vacationResponse.value;
 
@@ -239,7 +248,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   }
 
   PresentationMailbox? _getMailboxContain(PresentationEmail currentEmail) {
-    return currentEmail.findMailboxContain(controller.mailboxDashBoardController.mapMailboxById);
+    return currentEmail.findMailboxContain(controller.emailContext.mapMailboxById);
   }
 
   Widget _buildEmailMessage({
@@ -258,21 +267,21 @@ class EmailView extends GetWidget<SingleEmailController> {
       children: [
         if (!isInsideThreadDetailView || isFirstEmailInThreadDetail)
           Obx(() {
-            final isLabelCapabilitySupported = controller
-                .mailboxDashBoardController.isLabelCapabilitySupported;
-
-            final labelController =
-                controller.mailboxDashBoardController.labelController;
-
-            final isLabelSettingEnabled =
-                labelController.isLabelSettingEnabled.isTrue;
-
+            // Labels not supported in popup mode
             List<Label>? emailLabels;
+            if (!controller.emailContext.isPopupMode) {
+              final isLabelCapabilitySupported = controller
+                  .mailboxDashBoardController.isLabelCapabilitySupported;
+              final labelController =
+                  controller.mailboxDashBoardController.labelController;
+              final isLabelSettingEnabled =
+                  labelController.isLabelSettingEnabled.isTrue;
 
-            if (isLabelCapabilitySupported && isLabelSettingEnabled) {
-              emailLabels = presentationEmail.getLabelList(
-                labelController.labels,
-              );
+              if (isLabelCapabilitySupported && isLabelSettingEnabled) {
+                emailLabels = presentationEmail.getLabelList(
+                  labelController.labels,
+                );
+              }
             }
 
             return EmailSubjectWidget(
@@ -317,9 +326,15 @@ class EmailView extends GetWidget<SingleEmailController> {
             ],
             emailIsRead: presentationEmail.hasRead,
             isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
-            labels: controller.mailboxDashBoardController.labelController.labels,
-            openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
-            openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
+            labels: controller.emailContext.isPopupMode
+                ? []
+                : controller.mailboxDashBoardController.labelController.labels,
+            openBottomSheetContextMenu: controller.emailContext.isPopupMode
+                ? _noOpBottomSheetContextMenu
+                : controller.mailboxDashBoardController.openBottomSheetContextMenu,
+            openPopupMenu: controller.emailContext.isPopupMode
+                ? _noOpPopupMenuActionGroup
+                : controller.mailboxDashBoardController.openPopupMenuActionGroup,
             onSelectLabelAction: (label, isSelected) =>
                 controller.toggleLabelToEmail(
                   presentationEmail.id!,
@@ -329,7 +344,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           mailboxContain: presentationEmail.findMailboxContain(
-            controller.mailboxDashBoardController.mapMailboxById,
+            controller.emailContext.mapMailboxById,
           ),
         )),
         Obx(() => MailUnsubscribedBanner(
@@ -403,7 +418,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                     contentPadding: 0,
                     useDefaultFontStyle: true,
                     scrollController: scrollController,
-                    enableQuoteToggle: controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
+                    enableQuoteToggle: controller.emailContext.isPopupMode
+                        ? false
+                        : controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
                     useLinkTooltipOverlay: true,
                     fontSize: isMobileResponsive ? 16 : 14,
                     onIFrameKeyboardShortcutAction: onIFrameKeyboardShortcutAction,
@@ -440,7 +457,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                             onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                             onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                             keepAlive: isInsideThreadDetailView,
-                            enableQuoteToggle: controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
+                            enableQuoteToggle: controller.emailContext.isPopupMode
+                                ? false
+                                : controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
                             fontSize: isMobileResponsive ? 16 : 14,
                           ),
                         ),
@@ -476,7 +495,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                     useDefaultFontStyle: true,
                     onMailtoDelegateAction: (uri) async => controller.openMailToLink(uri),
                     keepAlive: isInsideThreadDetailView,
-                    enableQuoteToggle: controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
+                    enableQuoteToggle: controller.emailContext.isPopupMode
+                        ? false
+                        : controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
                     onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                     fontSize: isMobileResponsive ? 16 : 14,
                   )
@@ -598,7 +619,11 @@ class EmailView extends GetWidget<SingleEmailController> {
           ),
           Obx(() {
             final dialogRouter = DialogRouter();
-            bool isOverlayEnabled = controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame ||
+            // Overlay view not supported in popup mode
+            final isDisplayedOverlay = controller.emailContext.isPopupMode
+                ? false
+                : controller.mailboxDashBoardController.isDisplayedOverlayViewOnIFrame;
+            bool isOverlayEnabled = isDisplayedOverlay ||
                 MessageDialogActionManager().isDialogOpened ||
                 EmailActionReactor.isDialogOpened ||
                 ColorDialogPicker().isOpened.isTrue ||
@@ -651,3 +676,18 @@ class EmailView extends GetWidget<SingleEmailController> {
     }
   }
 }
+
+// No-op implementations for popup mode where context menus are not available
+Future<void> _noOpBottomSheetContextMenu({
+  required BuildContext context,
+  required List<ContextMenuItemAction> itemActions,
+  required OnContextMenuActionClick onContextMenuActionClick,
+  Key? key,
+  bool useGroupedActions = false,
+}) async {}
+
+Future<void> _noOpPopupMenuActionGroup(
+  BuildContext context,
+  RelativeRect position,
+  PopupMenuActionGroupWidget popupMenuWidget,
+) async {}
