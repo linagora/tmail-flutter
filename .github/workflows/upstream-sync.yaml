@@ -1,0 +1,124 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      force_sync:
+        description: "Create PR even if already up to date"
+        required: false
+        default: "false"
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: Sync with Upstream
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/linagora/tmail-flutter.git || true
+          git fetch upstream
+
+      - name: Check for upstream changes
+        id: check_changes
+        run: |
+          # Get the number of commits ahead upstream is
+          UPSTREAM_COMMITS=$(git rev-list HEAD..upstream/master --count)
+          echo "upstream_commits=$UPSTREAM_COMMITS" >> $GITHUB_OUTPUT
+
+          if [ "$UPSTREAM_COMMITS" -gt 0 ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Found $UPSTREAM_COMMITS new commits in upstream"
+
+            # Get commit summary for PR body
+            echo "COMMIT_SUMMARY<<EOF" >> $GITHUB_ENV
+            git log HEAD..upstream/master --pretty=format:"- %s (%h)" | head -50
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "Fork is up to date with upstream"
+          fi
+
+      - name: Create sync branch
+        if: steps.check_changes.outputs.has_changes == 'true' || github.event.inputs.force_sync == 'true'
+        id: create_branch
+        run: |
+          BRANCH_NAME="sync-upstream-$(date +%Y%m%d-%H%M%S)"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+          git checkout -b "$BRANCH_NAME"
+          git merge upstream/master --no-edit
+
+          git push origin "$BRANCH_NAME"
+
+      - name: Check for existing sync PR
+        if: steps.check_changes.outputs.has_changes == 'true' || github.event.inputs.force_sync == 'true'
+        id: check_existing_pr
+        run: |
+          EXISTING_PR=$(gh pr list --head "sync-upstream" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "existing_pr=$EXISTING_PR" >> $GITHUB_OUTPUT
+            echo "Found existing sync PR #$EXISTING_PR"
+          else
+            echo "existing_pr=" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Pull Request
+        if: (steps.check_changes.outputs.has_changes == 'true' || github.event.inputs.force_sync == 'true') && steps.check_existing_pr.outputs.existing_pr == ''
+        run: |
+          UPSTREAM_COMMITS="${{ steps.check_changes.outputs.upstream_commits }}"
+
+          gh pr create \
+            --title "Sync with upstream (${UPSTREAM_COMMITS} commits)" \
+            --body "$(cat <<'EOF'
+          ## Upstream Sync
+
+          This PR syncs with the upstream repository [linagora/tmail-flutter](https://github.com/linagora/tmail-flutter).
+
+          ### Changes from upstream
+
+          ${{ env.COMMIT_SUMMARY }}
+
+          ---
+          🤖 This PR was automatically created by the upstream sync workflow.
+          EOF
+          )" \
+            --base master \
+            --head "${{ steps.create_branch.outputs.branch_name }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.check_changes.outputs.has_changes }}" == "true" ]; then
+            echo "### Upstream Sync Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Found **${{ steps.check_changes.outputs.upstream_commits }}** new commits from upstream." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "A PR has been created to sync these changes." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Upstream Sync Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Fork is already up to date with upstream." >> $GITHUB_STEP_SUMMARY
+          fi
