@@ -90,7 +90,19 @@ jobs:
           echo "" >> changelog.md
           echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${{ steps.next_version.outputs.new_version }}" >> changelog.md
 
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "${{ steps.next_version.outputs.new_version }}" >/dev/null 2>&1; then
+            echo "Tag ${{ steps.next_version.outputs.new_version }} already exists"
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag ${{ steps.next_version.outputs.new_version }} does not exist"
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create tag
+        if: steps.check_tag.outputs.tag_exists == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -98,6 +110,7 @@ jobs:
           git push origin ${{ steps.next_version.outputs.new_version }}
 
       - name: Create GitHub Release
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.next_version.outputs.new_version }}
@@ -107,3 +120,8 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Skip release (tag exists)
+        if: steps.check_tag.outputs.tag_exists == 'true'
+        run: |
+          echo "::notice::Skipping release - tag ${{ steps.next_version.outputs.new_version }} already exists"
