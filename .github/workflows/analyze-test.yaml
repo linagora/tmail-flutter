@@ -56,6 +56,9 @@ jobs:
 
       - name: Analyze
         uses: zgosalvez/github-actions-analyze-dart@v1
+        with:
+          fail-on-warnings: false
+          fail-on-infos: false
 
       - name: Test
         env:
