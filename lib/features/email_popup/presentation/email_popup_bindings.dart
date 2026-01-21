@@ -1,20 +1,25 @@
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:tmail_ui_user/features/email_popup/presentation/email_popup_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/email_popup/presentation/popup_email_context_bindings.dart';
 
+/// Bindings for the email popup route.
+/// Uses lightweight PopupEmailContextBindings instead of full MailboxDashBoardBindings
+/// to enable fast popup loading.
 class EmailPopupBindings extends Bindings {
   @override
   void dependencies() {
-    // Initialize dashboard controller and all its dependencies
-    // (required by SingleEmailController for email operations)
-    MailboxDashBoardBindings().dependencies();
-
-    // Set popup mode immediately after dashboard controller is created
-    final dashboardController = Get.find<MailboxDashBoardController>();
-    dashboardController.isPopupMode.value = true;
+    // Initialize lightweight popup context bindings
+    // (session, mailboxes, identities, download controller)
+    PopupEmailContextBindings().dependencies();
 
     // Initialize popup controller
     Get.put(EmailPopupController());
+  }
+
+  /// Initialize email bindings after session is ready.
+  /// Called from EmailPopupController when PopupEmailContextProvider reports ready.
+  static void initializeEmailBindings({required dynamic emailId}) {
+    EmailBindings(currentEmailId: emailId).dependencies();
   }
 }

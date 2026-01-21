@@ -45,6 +45,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
+import 'package:tmail_ui_user/features/email/domain/context/email_context_provider.dart';
+import 'package:tmail_ui_user/features/email/domain/context/dashboard_email_context_provider.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -143,6 +145,9 @@ void main() {
   setUpAll(() {
     Get.put<DownloadController>(downloadController);
     Get.put<MailboxDashBoardController>(mailboxDashboardController);
+    Get.put<EmailContextProvider>(
+      DashboardEmailContextProvider(mailboxDashboardController),
+    );
     Get.put<DownloadManager>(downloadManager);
     Get.put<CachingManager>(cachingManager);
     Get.put<LanguageCacheManager>(languageCacheManager);

@@ -9,6 +9,8 @@ import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/email/domain/context/dashboard_email_context_provider.dart';
+import 'package:tmail_ui_user/features/email/domain/context/email_context_provider.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
@@ -244,6 +246,12 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<StoreEmailSortOrderInteractor>(),
       Get.find<GetStoredEmailSortOrderInteractor>(),
     ));
+
+    // Register EmailContextProvider for SingleEmailController
+    Get.put<EmailContextProvider>(
+      DashboardEmailContextProvider(Get.find<MailboxDashBoardController>()),
+    );
+
     Get.put(AdvancedFilterController());
   }
 
