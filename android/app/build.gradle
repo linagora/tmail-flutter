@@ -62,7 +62,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    // Use key information file
+    // Use key information file (if available)
     signingConfigs {
        release {
            keyAlias keystoreProperties['keyAlias']
@@ -71,11 +71,16 @@ android {
            storePassword keystoreProperties['storePassword']
        }
     }
+
+    // Check if release signing is properly configured
+    def hasReleaseSigningConfig = keystoreProperties['storeFile'] != null &&
+        file(keystoreProperties['storeFile']).exists()
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.release
+            // Use release signing if configured, otherwise fallback to debug signing
+            // This allows CI builds without signing keys to produce unsigned APKs
+            signingConfig hasReleaseSigningConfig ? signingConfigs.release : signingConfigs.debug
         }
         debug {
             minifyEnabled false
