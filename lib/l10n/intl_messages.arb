@@ -5465,5 +5465,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "closeMailDetailView": "Close mail detail view",
+  "@closeMailDetailView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

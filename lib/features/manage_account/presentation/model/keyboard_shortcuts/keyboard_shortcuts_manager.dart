@@ -16,6 +16,12 @@ class KeyboardShortcutsManager {
         keys: ['ESC'],
       ),
       KeyboardShortcut(
+        label: appLocalizations.closeMailDetailView,
+        category: ShortcutCategory.navigationAndClosing,
+        context: ShortcutContext.openedMailView,
+        keys: ['ESC'],
+      ),
+      KeyboardShortcut(
         label: appLocalizations.removeFocusFromSearch,
         category: ShortcutCategory.navigationAndClosing,
         context: ShortcutContext.focusOnSearch,

@@ -5783,4 +5783,11 @@ class AppLocalizations {
       name: 'events',
     );
   }
+
+  String get closeMailDetailView {
+    return Intl.message(
+      'Close mail detail view',
+      name: 'closeMailDetailView',
+    );
+  }
 }
