@@ -419,11 +419,9 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<ManageAccountRepository>(),
       ),
     );
-    if (!PlatformInfo.isMobile) {
-      Get.lazyPut(
-        () => GetAIScribeConfigInteractor(Get.find<ManageAccountRepository>()),
-      );
-    }
+    Get.lazyPut(
+      () => GetAIScribeConfigInteractor(Get.find<ManageAccountRepository>()),
+    );
   }
 
   @override
