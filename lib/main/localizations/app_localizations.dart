@@ -5709,4 +5709,11 @@ class AppLocalizations {
       name: 'editLabelFailure',
     );
   }
+
+  String get closeMailDetailView {
+    return Intl.message(
+      'Close mail detail view',
+      name: 'closeMailDetailView',
+    );
+  }
 }
