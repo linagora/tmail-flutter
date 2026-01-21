@@ -342,8 +342,9 @@ mixin EmailActionController {
   }
 
   void openEmailInNewWindowAction(PresentationEmail email) {
-    final url = email.routeWebAsString;
-    final popupUrl = url.contains('?') ? '$url&popup=true' : '$url?popup=true';
+    final emailId = email.id?.id.value ?? '';
+    final baseUrl = Uri.base.origin;
+    final popupUrl = '$baseUrl/#/popup/$emailId';
     AppUtils.launchInNewWindow(popupUrl);
   }
 
