@@ -31,7 +31,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
     as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_download_attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preview_attachment_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/check_label_available_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -260,7 +260,7 @@ class DashboardEmailContextProvider implements EmailContextProvider {
   // ============================================
 
   @override
-  bool get isLabelFeatureEnabled => _dashboardController.isLabelFeatureEnabled;
+  bool get isLabelFeatureEnabled => _dashboardController.isLabelAvailable;
 
   // ============================================
   // Popup Mode Support

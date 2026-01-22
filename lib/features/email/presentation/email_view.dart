@@ -17,9 +17,7 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
-import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_picker.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
@@ -43,6 +41,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/information_se
 import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -655,18 +654,3 @@ class EmailView extends GetWidget<SingleEmailController> {
     }
   }
 }
-
-// No-op implementations for popup mode where context menus are not available
-Future<void> _noOpBottomSheetContextMenu({
-  required BuildContext context,
-  required List<ContextMenuItemAction> itemActions,
-  required OnContextMenuActionClick onContextMenuActionClick,
-  Key? key,
-  bool useGroupedActions = false,
-}) async {}
-
-Future<void> _noOpPopupMenuActionGroup(
-  BuildContext context,
-  RelativeRect position,
-  PopupMenuActionGroupWidget popupMenuWidget,
-) async {}
