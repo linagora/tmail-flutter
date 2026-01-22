@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_initializer.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -25,15 +26,30 @@ class SentryManager {
         await appRunner();
         return;
       }
-      _isSentryAvailable = await SentryInitializer.init(appRunner);
+      _isSentryAvailable = await SentryInitializer.init(appRunner: appRunner);
       log('[SentryManager] Sentry initialized: $_isSentryAvailable');
 
       if (!_isSentryAvailable) {
         await fallBackRunner();
       }
-    } catch (e, st) {
-      logError('[SentryManager] Init failed', exception: e, stackTrace: st);
+    } catch (e) {
+      logWarning('[SentryManager] Init failed, Exception $e');
       await fallBackRunner();
+    }
+  }
+
+  Future<void> initializeWithSentryConfig(SentryConfig sentryConfig) async {
+    try {
+      if (_isSentryAvailable) {
+        log('[SentryManager] Already initialized, skipping');
+        return;
+      }
+      _isSentryAvailable = await SentryInitializer.init(
+        sentryConfig: sentryConfig,
+      );
+      log('[SentryManager] Sentry initialized: $_isSentryAvailable');
+    } catch (e) {
+      logWarning('[SentryManager] Init failed, Exception $e');
     }
   }
 
