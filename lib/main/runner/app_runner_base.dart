@@ -1,14 +1,10 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:tmail_ui_user/main.dart';
-import 'package:tmail_ui_user/main/main_entry.dart';
 
-Future<void> runAppWithMonitoring(Future<void> Function() runTmail) async {
+Future<void> runWithZoneAndErrorHandling(Future<void> Function() runner) async {
   await runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -32,14 +28,8 @@ Future<void> runAppWithMonitoring(Future<void> Function() runTmail) async {
       return true;
     };
 
-    await SentryManager.instance.initialize(
-      appRunner: () async {
-        await runTmailPreload();
-        runApp(SentryWidget(child: const TMailApp()));
-      },
-      fallBackRunner: runTmail,
-    );
-  }, (error, stack) async {
+    await runner();
+  }, (error, stack) {
     logError(
       'Uncaught zone error: $error',
       exception: error,

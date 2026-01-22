@@ -10,7 +10,8 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
-import 'package:tmail_ui_user/main/app_runner.dart';
+import 'package:tmail_ui_user/main/runner/app_runner_mobile.dart'
+    if (dart.library.html) 'package:tmail_ui_user/main/runner/app_runner_web.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -27,7 +28,6 @@ class TMailApp extends StatefulWidget {
 }
 
 class _TMailAppState extends State<TMailApp> {
-
   DeepLinksManager? _deepLinksManager;
 
   @override
