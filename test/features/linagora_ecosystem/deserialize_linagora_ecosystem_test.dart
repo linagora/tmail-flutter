@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_identifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/mobile_apps_linagora_ecosystem.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 
 void main() {
   group('Deserialize LinagoraEcosystem test', () {
@@ -190,6 +191,190 @@ void main() {
       final parsedLinagoraEcosystem = LinagoraEcosystem.deserialize(json.decode(linagoraEcosystemString));
 
       expect(parsedLinagoraEcosystem, equals(expectedLinagoraEcosystem));
+    });
+  });
+
+  group('Deserialize LinagoraEcosystem with paywallURL & sentryConfig', () {
+    test('Should parse paywallURL correctly when value is string', () {
+      const jsonString = '''
+      {
+        "paywallUrlTemplate": "https://paywall.example.com/{userId}"
+      }
+    ''';
+
+      final expected = LinagoraEcosystem({
+        LinagoraEcosystemIdentifier.paywallURL:
+            ApiUrlLinagoraEcosystem('https://paywall.example.com/{userId}'),
+      });
+
+      final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
+
+      expect(parsed, equals(expected));
+    });
+
+    test('Should parse paywallURL as EmptyLinagoraEcosystem when value is null',
+        () {
+      const jsonString = '''
+      {
+        "paywallUrlTemplate": null
+      }
+    ''';
+
+      final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
+
+      expect(
+        parsed.properties![LinagoraEcosystemIdentifier.paywallURL],
+        isA<EmptyLinagoraEcosystem>(),
+      );
+    });
+
+    test('Should parse sentryConfig correctly when all fields are present', () {
+      const jsonString = '''
+      {
+        "sentry": {
+          "enabled": true,
+          "dsn": "https://dsn@sentry.io/123",
+          "environment": "production"
+        }
+      }
+    ''';
+
+      final expected = LinagoraEcosystem({
+        LinagoraEcosystemIdentifier.sentryConfig: SentryConfigLinagoraEcosystem(
+          enabled: true,
+          dsn: 'https://dsn@sentry.io/123',
+          environment: 'production',
+        ),
+      });
+
+      final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
+
+      expect(parsed, equals(expected));
+    });
+
+    test('Should parse sentryConfig with partial fields', () {
+      const jsonString = '''
+      {
+        "sentry": {
+          "enabled": false
+        }
+      }
+    ''';
+
+      final expected = LinagoraEcosystem({
+        LinagoraEcosystemIdentifier.sentryConfig: SentryConfigLinagoraEcosystem(
+          enabled: false,
+          dsn: null,
+          environment: null,
+        ),
+      });
+
+      final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
+
+      expect(parsed, equals(expected));
+    });
+
+    test(
+        'Should parse sentryConfig as EmptyLinagoraEcosystem when value is null',
+        () {
+      const jsonString = '''
+      {
+        "sentry": null
+      }
+    ''';
+
+      final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
+
+      expect(
+        parsed.properties![LinagoraEcosystemIdentifier.sentryConfig],
+        isA<EmptyLinagoraEcosystem>(),
+      );
+    });
+
+    test(
+        'Should parse sentryConfig as EmptyLinagoraEcosystem when value is not Map',
+        () {
+      const jsonString = '''
+      {
+        "sentry": "invalid"
+      }
+    ''';
+
+      final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
+
+      expect(
+        parsed.properties![LinagoraEcosystemIdentifier.sentryConfig],
+        isA<EmptyLinagoraEcosystem>(),
+      );
+    });
+
+    test(
+        'Should parse paywallURL + sentryConfig together with other properties',
+        () {
+      const jsonString = '''
+      {
+        "linShareApiUrl": "https://example.com/api",
+        "paywallUrlTemplate": "https://paywall.example.com",
+        "sentry": {
+          "enabled": true,
+          "dsn": "dsn_value"
+        }
+      }
+    ''';
+
+      final expected = LinagoraEcosystem({
+        LinagoraEcosystemIdentifier.linShareApiUrl:
+            ApiUrlLinagoraEcosystem('https://example.com/api'),
+        LinagoraEcosystemIdentifier.paywallURL:
+            ApiUrlLinagoraEcosystem('https://paywall.example.com'),
+        LinagoraEcosystemIdentifier.sentryConfig: SentryConfigLinagoraEcosystem(
+          enabled: true,
+          dsn: 'dsn_value',
+          environment: null,
+        ),
+      });
+
+      final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
+
+      expect(parsed, equals(expected));
+    });
+
+    test('Should fallback sentryConfig to Empty when exception occurs', () {
+      const jsonString = '''
+      {
+        "sentry": {
+          "enabled": "not_a_boolean"
+        }
+      }
+    ''';
+
+      final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
+
+      expect(
+        parsed.properties![LinagoraEcosystemIdentifier.sentryConfig],
+        isA<EmptyLinagoraEcosystem>(),
+      );
+    });
+
+    test('Should treat unknown object as DefaultLinagoraEcosystem', () {
+      const jsonString = '''
+      {
+        "unknownConfig": {
+          "abc": "123"
+        }
+      }
+    ''';
+
+      final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
+
+      expect(
+        parsed.properties!.keys.first.value,
+        equals('unknownConfig'),
+      );
+      expect(
+        parsed.properties!.values.first,
+        isA<AppLinagoraEcosystem>(),
+      );
     });
   });
 }
