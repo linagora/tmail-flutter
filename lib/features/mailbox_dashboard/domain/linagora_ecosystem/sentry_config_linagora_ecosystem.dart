@@ -1,3 +1,5 @@
+import 'package:core/utils/application_manager.dart';
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/empty_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_properties.dart';
@@ -27,4 +29,17 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
 
   @override
   List<Object?> get props => [enabled, dsn, environment];
+}
+
+extension SentryConfigLinagoraEcosystemExtension on SentryConfigLinagoraEcosystem {
+  Future<SentryConfig> toSentryConfig() async {
+    final appVersion = await ApplicationManager().getAppVersion();
+
+    return SentryConfig(
+      dsn: dsn ?? '',
+      environment: environment ?? '',
+      release: appVersion,
+      isAvailable: enabled ?? false,
+    );
+  }
 }

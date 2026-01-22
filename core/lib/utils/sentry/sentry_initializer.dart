@@ -20,8 +20,11 @@ class SentryInitializer {
     'token',
   ];
 
-  static Future<bool> init(FutureOr<void> Function() appRunner) async {
-    final config = await SentryConfig.load();
+  static Future<bool> init({
+    FutureOr<void> Function()? appRunner,
+    SentryConfig? sentryConfig,
+  }) async {
+    final config = sentryConfig ?? await SentryConfig.load();
 
     if (config == null) return false;
 
