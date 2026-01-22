@@ -125,12 +125,12 @@ class PopupEmailContextProvider extends ReloadableController
       if (sessionDataStr != null && sessionDataStr.isNotEmpty) {
         final data = jsonDecode(sessionDataStr) as Map<String, dynamic>;
 
-        // Check if the session data is fresh (within last 10 seconds)
+        // Check if the session data is fresh (within last 30 seconds)
         final timestamp = data['timestamp'] as int?;
         if (timestamp != null) {
           final age = DateTime.now().millisecondsSinceEpoch - timestamp;
-          if (age < 10000) {
-            // Less than 10 seconds old
+          if (age < 30000) {
+            // Less than 30 seconds old
             log('PopupEmailContextProvider::_trySessionHandoff: Found fresh session data');
             _handleSessionHandoff(data);
             // Clear the localStorage entry after reading
