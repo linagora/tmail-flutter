@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<void> runWithZoneAndErrorHandling(Future<void> Function() runner) async {
   await runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+    SentryWidgetsFlutterBinding.ensureInitialized();
 
     // Handling Flutter UI and Build Errors
     FlutterError.onError = (details) async {
