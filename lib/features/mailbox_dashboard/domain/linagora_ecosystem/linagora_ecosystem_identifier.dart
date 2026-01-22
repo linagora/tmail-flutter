@@ -12,6 +12,7 @@ class LinagoraEcosystemIdentifier with EquatableMixin {
   static final twakeSync = LinagoraEcosystemIdentifier('Twake Sync');
   static final linShare = LinagoraEcosystemIdentifier('LinShare');
   static final paywallURL = LinagoraEcosystemIdentifier('paywallUrlTemplate');
+  static final sentryConfig = LinagoraEcosystemIdentifier('sentry');
 
   final String value;
 

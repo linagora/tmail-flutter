@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_identifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_properties.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 
 class LinagoraEcosystemConverter {
   static final defaultConverter = LinagoraEcosystemConverter();
@@ -28,6 +29,7 @@ class LinagoraEcosystemConverter {
         LinagoraEcosystemIdentifier.linShare: AppLinagoraEcosystem.deserialize,
         LinagoraEcosystemIdentifier.mobileApps: MobileAppsLinagoraEcosystemConverter.deserialize,
         LinagoraEcosystemIdentifier.paywallURL: ApiUrlLinagoraEcosystem.deserialize,
+        LinagoraEcosystemIdentifier.sentryConfig: SentryConfigLinagoraEcosystem.deserialize,
       });
   }
 
