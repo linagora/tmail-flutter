@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/main/app_runner.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/popup_route_detector.dart';
 
 Future<void> main() async {
   await runAppWithMonitoring(runTmail);
@@ -29,10 +30,14 @@ class TMailApp extends StatefulWidget {
 class _TMailAppState extends State<TMailApp> {
 
   DeepLinksManager? _deepLinksManager;
+  late final String _initialRoute;
 
   @override
   void initState() {
     super.initState();
+    // Detect popup route early to bypass HomeController auth flow
+    _initialRoute = PopupRouteDetector.detectPopupRouteWithSession() ?? AppRoutes.home;
+
     if (PlatformInfo.isMobile) {
       _deepLinksManager = getBinding<DeepLinksManager>();
       _deepLinksManager?.registerDeepLinkStreamListener();
@@ -72,7 +77,7 @@ class _TMailAppState extends State<TMailApp> {
       },
       unknownRoute: AppPages.unknownRoutePage,
       defaultTransition: Transition.noTransition,
-      initialRoute: AppRoutes.home,
+      initialRoute: _initialRoute,
       getPages: AppPages.pages,
       builder: FlutterSmartDialog.init(),
     );
