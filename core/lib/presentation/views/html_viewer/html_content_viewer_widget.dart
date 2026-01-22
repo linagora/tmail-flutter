@@ -36,6 +36,7 @@ class HtmlContentViewer extends StatefulWidget {
   final double offsetHtmlContentHeight;
   final bool keepAlive;
   final bool enableQuoteToggle;
+  final bool quoteStartCollapsed;
   final bool disableScrolling;
   final double? maxViewHeight;
 
@@ -55,6 +56,7 @@ class HtmlContentViewer extends StatefulWidget {
     this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
     this.keepAlive = false,
     this.enableQuoteToggle = false,
+    this.quoteStartCollapsed = true,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
     this.useDefaultFontStyle = false,
@@ -129,7 +131,7 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
     _actualHeight = widget.htmlContentMinHeight;
 
     final processedContent = widget.enableQuoteToggle
-        ? HtmlUtils.addQuoteToggle(widget.contentHtml)
+        ? HtmlUtils.addQuoteToggle(widget.contentHtml, startCollapsed: widget.quoteStartCollapsed)
         : widget.contentHtml;
 
     final combinedCss = [

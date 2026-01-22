@@ -44,6 +44,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final bool keepWidthWhileLoading;
   final ScrollController? scrollController;
   final bool enableQuoteToggle;
+  final bool quoteStartCollapsed;
   final bool disableScrolling;
   final bool keepAlive;
   final double htmlContentMinHeight;
@@ -68,6 +69,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.contentPadding,
     this.scrollController,
     this.enableQuoteToggle = false,
+    this.quoteStartCollapsed = true,
     this.keepAlive = false,
     this.disableScrolling = false,
     this.autoAdjustHeight = false,
@@ -478,7 +480,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb>
     ''';
 
     final processedContent = widget.enableQuoteToggle
-        ? HtmlUtils.addQuoteToggle(content)
+        ? HtmlUtils.addQuoteToggle(content, startCollapsed: widget.quoteStartCollapsed)
         : content;
 
     final combinedCss = [
