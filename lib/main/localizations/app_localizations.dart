@@ -5806,4 +5806,11 @@ class AppLocalizations {
       name: 'forceLogoutDescription',
     );
   }
+
+  String get allLabels {
+    return Intl.message(
+      'All labels',
+      name: 'allLabels',
+    );
+  }
 }

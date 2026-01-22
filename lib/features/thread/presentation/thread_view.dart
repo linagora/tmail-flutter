@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_l
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -618,22 +619,17 @@ class ThreadView extends GetWidget<ThreadController>
 
       final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
-      final isLabelCapabilitySupported =
-          dashboardController.isLabelCapabilitySupported;
+      final isLabelAvailable = controller
+          .mailboxDashBoardController.isLabelAvailable;
 
-      final labelController =
-          controller.mailboxDashBoardController.labelController;
+        final listLabels =
+            controller.mailboxDashBoardController.labelController.labels;
 
-      final isLabelSettingEnabled =
-          labelController.isLabelSettingEnabled.isTrue;
+        List<Label>? emailLabels;
 
-      List<Label>? emailLabels;
-
-      if (isLabelCapabilitySupported && isLabelSettingEnabled) {
-        emailLabels = presentationEmail.getLabelList(
-          labelController.labels,
-        );
-      }
+        if (isLabelAvailable) {
+          emailLabels = presentationEmail.getLabelList(listLabels);
+        }
 
       return Dismissible(
         key: ValueKey<EmailId?>(presentationEmail.id),

@@ -138,6 +138,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_save_email_as_draft_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/initialize_app_language.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/notify_thread_detail_setting_updated.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
@@ -179,6 +180,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/controller
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/mixin/search_label_filter_modal_mixin.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/get_all_sending_email_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/state/update_sending_email_state.dart';
@@ -228,7 +230,8 @@ class MailboxDashBoardController extends ReloadableController
     with ContactSupportMixin,
         OwnEmailAddressMixin,
         SaaSPremiumMixin,
-        AiScribeMixin {
+        AiScribeMixin,
+        SearchLabelFilterModalMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -920,13 +923,6 @@ class MailboxDashBoardController extends ReloadableController
     if (isLabelCapabilitySupported) {
       labelController.checkLabelSettingState(currentAccountId);
     }
-  }
-
-  bool get isLabelCapabilitySupported {
-    if (accountId.value == null || sessionCurrent == null) return false;
-
-    return labelController
-        .isLabelCapabilitySupported(sessionCurrent!, accountId.value!);
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
@@ -2373,10 +2369,9 @@ class MailboxDashBoardController extends ReloadableController
         _deleteFolderSearchFilter();
         break;
       case QuickSearchFilter.starred:
-        deleteStarredSearchFilter();
-        break;
       case QuickSearchFilter.unread:
-        deleteUnreadSearchFilter();
+      case QuickSearchFilter.labels:
+        deleteQuickSearchFilter(filter: searchFilter);
         break;
       default:
         break;

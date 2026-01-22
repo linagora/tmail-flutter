@@ -23,10 +23,12 @@ mixin ProvisioningLabelScenarioMixin {
     final accountId = dashboardController?.accountId.value;
     final labelController = dashboardController?.labelController;
 
-    if (createLabelInteractor == null || accountId == null) {
+    if (dashboardController == null ||
+        createLabelInteractor == null ||
+        accountId == null) {
       log(
         'ProvisioningLabelScenarioMixin::provisionLabels '
-        'skipped: missing CreateNewLabelInteractor or accountId',
+        'skipped: missing dashboardController, CreateNewLabelInteractor, or accountId',
       );
       return [];
     }

@@ -8,17 +8,19 @@ class AdvancedSearchFieldWidget extends StatelessWidget {
   final FilterField filterField;
   final Widget child;
   final bool useHeight;
+  final EdgeInsetsGeometry? padding;
 
   const AdvancedSearchFieldWidget({
     super.key,
     required this.filterField,
     required this.child,
     this.useHeight = true,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
-    final bodyWidget = Row(
+    Widget bodyWidget = Row(
       children: [
         SizedBox(
           width: AdvancedSearchInputFormStyle.labelMaxWidth,
@@ -32,12 +34,16 @@ class AdvancedSearchFieldWidget extends StatelessWidget {
     );
 
     if (useHeight) {
-      return SizedBox(
+      bodyWidget = SizedBox(
         height: AdvancedSearchInputFormStyle.inputFieldHeight,
         child: bodyWidget,
       );
-    } else {
-      return bodyWidget;
     }
+
+    if (padding != null) {
+      bodyWidget = Padding(padding: padding!, child: bodyWidget);
+    }
+
+    return bodyWidget;
   }
 }

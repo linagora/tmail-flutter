@@ -19,6 +19,7 @@ class ContextMenuDialogItem extends StatelessWidget {
     Widget? iconWidget;
     Widget? selectedIconWidget;
     bool isSelected = false;
+    bool isArrangeRTL = true;
 
     if (menuAction is ContextMenuItemActionRequiredIcon) {
       final specificMenuAction =
@@ -47,6 +48,7 @@ class ContextMenuDialogItem extends StatelessWidget {
         ),
       );
       isSelected = specificMenuAction.selectedAction == menuAction.action;
+      isArrangeRTL = specificMenuAction.isArrangeRTL;
     } else if (menuAction is ContextMenuItemActionRequiredFull) {
       final specificMenuAction =
           menuAction as ContextMenuItemActionRequiredFull;
@@ -71,7 +73,11 @@ class ContextMenuDialogItem extends StatelessWidget {
         ),
       );
       isSelected = specificMenuAction.selectedAction == menuAction.action;
+      isArrangeRTL = specificMenuAction.isArrangeRTL;
     }
+
+    final leadingWidget =
+        iconWidget ?? (isArrangeRTL ? const SizedBox(width: 24) : null);
 
     return Material(
       type: MaterialType.transparency,
@@ -81,7 +87,9 @@ class ContextMenuDialogItem extends StatelessWidget {
           height: 48,
           child: Row(
             children: [
-              if (iconWidget != null) iconWidget else const SizedBox(width: 24),
+              if (leadingWidget != null) leadingWidget,
+              if (!isArrangeRTL && selectedIconWidget != null)
+                selectedIconWidget,
               Expanded(
                 child: Text(
                   menuAction.actionName,
@@ -95,7 +103,7 @@ class ContextMenuDialogItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (isSelected && selectedIconWidget != null)
+              if (isArrangeRTL && isSelected && selectedIconWidget != null)
                 selectedIconWidget
               else
                 const SizedBox(width: 24),

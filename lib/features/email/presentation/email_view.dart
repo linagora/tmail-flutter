@@ -105,16 +105,10 @@ class EmailView extends GetWidget<SingleEmailController> {
                         handleEmailAction: controller.handleEmailAction,
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
-                        isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
-                        labels: controller.emailContext.isPopupMode
-                            ? []
-                            : controller.mailboxDashBoardController.labelController.labels,
-                        openBottomSheetContextMenu: controller.emailContext.isPopupMode
-                            ? _noOpBottomSheetContextMenu
-                            : controller.mailboxDashBoardController.openBottomSheetContextMenu,
-                        openPopupMenu: controller.emailContext.isPopupMode
-                            ? _noOpPopupMenuActionGroup
-                            : controller.mailboxDashBoardController.openPopupMenuActionGroup,
+                        isLabelFeatureEnabled: controller.isLabelAvailable,
+                        labels: controller.mailboxDashBoardController.labelController.labels,
+                        openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
+                        openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
                         onSelectLabelAction: (label, isSelected) =>
                             controller.toggleLabelToEmail(
                               presentationEmail.id!,
@@ -267,21 +261,15 @@ class EmailView extends GetWidget<SingleEmailController> {
       children: [
         if (!isInsideThreadDetailView || isFirstEmailInThreadDetail)
           Obx(() {
-            // Labels not supported in popup mode
-            List<Label>? emailLabels;
-            if (!controller.emailContext.isPopupMode) {
-              final isLabelCapabilitySupported = controller
-                  .mailboxDashBoardController.isLabelCapabilitySupported;
-              final labelController =
-                  controller.mailboxDashBoardController.labelController;
-              final isLabelSettingEnabled =
-                  labelController.isLabelSettingEnabled.isTrue;
+            final isLabelAvailable = controller
+                .mailboxDashBoardController.isLabelAvailable;
 
-              if (isLabelCapabilitySupported && isLabelSettingEnabled) {
-                emailLabels = presentationEmail.getLabelList(
-                  labelController.labels,
-                );
-              }
+            final listLabels =
+                controller.mailboxDashBoardController.labelController.labels;
+
+            List<Label>? emailLabels;
+            if (isLabelAvailable) {
+              emailLabels = presentationEmail.getLabelList(listLabels);
             }
 
             return EmailSubjectWidget(
@@ -325,16 +313,10 @@ class EmailView extends GetWidget<SingleEmailController> {
               EmailActionType.deletePermanently,
             ],
             emailIsRead: presentationEmail.hasRead,
-            isLabelFeatureEnabled: controller.isLabelFeatureEnabled,
-            labels: controller.emailContext.isPopupMode
-                ? []
-                : controller.mailboxDashBoardController.labelController.labels,
-            openBottomSheetContextMenu: controller.emailContext.isPopupMode
-                ? _noOpBottomSheetContextMenu
-                : controller.mailboxDashBoardController.openBottomSheetContextMenu,
-            openPopupMenu: controller.emailContext.isPopupMode
-                ? _noOpPopupMenuActionGroup
-                : controller.mailboxDashBoardController.openPopupMenuActionGroup,
+            isLabelFeatureEnabled: controller.isLabelAvailable,
+            labels: controller.mailboxDashBoardController.labelController.labels,
+            openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
+            openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
             onSelectLabelAction: (label, isSelected) =>
                 controller.toggleLabelToEmail(
                   presentationEmail.id!,

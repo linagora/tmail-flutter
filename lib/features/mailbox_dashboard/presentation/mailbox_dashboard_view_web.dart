@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -712,8 +713,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildListButtonQuickSearchFilter(BuildContext context) {
     return Obx(() {
-      if (controller.searchController.isSearchEmailRunning &&
-          controller.dashboardRoute.value == DashboardRoutes.thread) {
+      final isSearchEmailRunning =
+          controller.searchController.isSearchEmailRunning;
+      final isThreadRoute =
+          controller.dashboardRoute.value == DashboardRoutes.thread;
+      final isLabelAvailable = controller.isLabelAvailable;
+
+      if (isSearchEmailRunning && isThreadRoute) {
         return Padding(
           padding: const EdgeInsetsDirectional.only(end: 16),
           child: Row(
@@ -740,6 +746,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       children: [
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.folder),
                         MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
+                        if (isLabelAvailable)
+                          ...[
+                            _buildQuickSearchFilterButton(
+                              context,
+                              QuickSearchFilter.labels,
+                            ),
+                            MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
+                          ],
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.from),
                         MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.to),
@@ -800,6 +814,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       final endDate = controller.searchController.endDateFiltered;
       final receiveTimeType = controller.searchController.receiveTimeFiltered;
       final mailbox = controller.searchController.mailboxFiltered;
+      final label = controller.searchController.labelFiltered;
       final listAddressOfTo = controller.searchController.listAddressOfToFiltered;
       final listHasKeywordFiltered = controller.searchController.listHasKeywordFiltered;
       final unreadFiltered = controller.searchController.unreadFiltered;
@@ -837,13 +852,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         listAddressOfFrom: listAddressOfFrom,
         listAddressOfTo: listAddressOfTo,
         mailbox: mailbox,
+        label: label,
         buttonPadding: buttonPadding,
         backgroundColor: searchFilter == QuickSearchFilter.sortBy
           ? isSelected
               ? AppColor.primaryColor.withValues(alpha: 0.06)
               : AppColor.colorFilterMessageButton.withValues(alpha: 0.6)
           : null,
-        isContextMenuAlignEndButton: isFilterApplied,
+        isContextMenuAlignEndButton:
+          searchFilter != QuickSearchFilter.labels && isFilterApplied,
         onSelectSearchFilterAction: _onSelectSearchFilterAction,
         onDeleteSearchFilterAction: controller.onDeleteSearchFilterAction,
       );
@@ -887,6 +904,19 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         break;
       case QuickSearchFilter.unread:
         controller.selectUnreadSearchFilter();
+        break;
+      case QuickSearchFilter.labels:
+        final listLabels = controller.labelController.labels;
+        final selectedLabel = controller.searchController.labelFiltered;
+
+        controller.openLabelsFilterModal(
+          context: context,
+          position: buttonPosition,
+          labels: listLabels,
+          selectedLabel: selectedLabel,
+          imagePaths: controller.imagePaths,
+          onSelectLabelsActions: controller.onSelectLabelFilter,
+        );
         break;
       default:
         break;

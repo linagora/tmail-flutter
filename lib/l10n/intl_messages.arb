@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-01-21T11:26:25.524158",
+  "@@last_modified": "2026-01-22T12:45:00.000000",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5462,6 +5462,12 @@
   },
   "forceLogoutDescription": "This will clear your local session without notifying the server. You may need to revoke the session manually from your identity provider.",
   "@forceLogoutDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allLabels": "All labels",
+  "@allLabels": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

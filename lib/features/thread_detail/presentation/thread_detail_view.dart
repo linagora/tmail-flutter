@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
@@ -101,16 +102,13 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           }
         }),
         Obx(() {
-          final isLabelCapabilitySupported = controller
-              .mailboxDashBoardController.isLabelCapabilitySupported;
+          final isLabelAvailable = controller
+              .mailboxDashBoardController.isLabelAvailable;
 
           final labelController =
               controller.mailboxDashBoardController.labelController;
 
-          final isLabelSettingEnabled =
-              labelController.isLabelSettingEnabled.isTrue;
-
-          final threadChildren = isLabelCapabilitySupported && isLabelSettingEnabled
+          final threadChildren = isLabelAvailable
             ? controller.getThreadDetailEmailViews(labels: labelController.labels)
             : controller.getThreadDetailEmailViews();
 
