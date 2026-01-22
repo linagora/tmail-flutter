@@ -727,7 +727,7 @@ class HtmlUtils {
     }
   }
 
-  static String addQuoteToggle(String htmlString) {
+  static String addQuoteToggle(String htmlString, {bool startCollapsed = true}) {
     final likelyHtml = htmlString.contains(_htmlStartTagRegex) && // Contains a start tag
       htmlString.contains(_htmlEndTagRegex); // Contains an end tag
 
@@ -757,8 +757,8 @@ class HtmlUtils {
 
     final lastBlockquote = blockquotes.last;
 
-    const buttonHtmlContent = '''
-      <button class="quote-toggle-button collapsed" title="Show trimmed content">
+    final buttonHtmlContent = '''
+      <button class="quote-toggle-button${startCollapsed ? ' collapsed' : ''}" title="${startCollapsed ? 'Show trimmed content' : 'Hide expanded content'}">
           <span class="dot"></span>
           <span class="dot"></span>
           <span class="dot"></span>

@@ -77,5 +77,22 @@ void main() {
       expect(container.querySelector('p')?.text, contains('Hello World'));
       expect(container.querySelector('blockquote p')?.text, contains('Previous message'));
     });
+
+    test('Should add toggle button without collapsed class when startCollapsed is false', () {
+      const htmlInput = '<div><blockquote><p>Quoted</p></blockquote></div>';
+      final result = HtmlUtils.addQuoteToggle(htmlInput, startCollapsed: false);
+
+      expect(result, isNot(contains('quote-toggle-button collapsed')));
+      expect(result, contains('quote-toggle-button'));
+      expect(result, contains('title="Hide expanded content"'));
+    });
+
+    test('Should default to collapsed state when startCollapsed not provided', () {
+      const htmlInput = '<div><blockquote><p>Quoted</p></blockquote></div>';
+      final result = HtmlUtils.addQuoteToggle(htmlInput);
+
+      expect(result, contains('quote-toggle-button collapsed'));
+      expect(result, contains('title="Show trimmed content"'));
+    });
   });
 }

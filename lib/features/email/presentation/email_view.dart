@@ -418,9 +418,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                     contentPadding: 0,
                     useDefaultFontStyle: true,
                     scrollController: scrollController,
-                    enableQuoteToggle: controller.emailContext.isPopupMode
-                        ? false
-                        : controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
+                    enableQuoteToggle: true,
+                    quoteStartCollapsed: controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
                     useLinkTooltipOverlay: true,
                     fontSize: isMobileResponsive ? 16 : 14,
                     onIFrameKeyboardShortcutAction: onIFrameKeyboardShortcutAction,
@@ -457,9 +456,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                             onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                             onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                             keepAlive: isInsideThreadDetailView,
-                            enableQuoteToggle: controller.emailContext.isPopupMode
-                                ? false
-                                : controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
+                            enableQuoteToggle: true,
+                            quoteStartCollapsed: controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
                             fontSize: isMobileResponsive ? 16 : 14,
                           ),
                         ),
@@ -495,9 +493,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                     useDefaultFontStyle: true,
                     onMailtoDelegateAction: (uri) async => controller.openMailToLink(uri),
                     keepAlive: isInsideThreadDetailView,
-                    enableQuoteToggle: controller.emailContext.isPopupMode
-                        ? false
-                        : controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
+                    enableQuoteToggle: true,
+                    quoteStartCollapsed: controller.mailboxDashBoardController.isQuotedContentHiddenByDefault.value,
                     onScrollHorizontalEnd: controller.onScrollHorizontalEnd,
                     fontSize: isMobileResponsive ? 16 : 14,
                   )
