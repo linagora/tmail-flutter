@@ -12,8 +12,7 @@ enum PreferencesOptionType {
   aiScribe(isLocal: true),
   aiNeedsAction(isLocal: false),
   label(isLocal: true),
-  quotedContent(isLocal: true),
-  openEmailInNewWindow(isLocal: true);
+  quotedContent(isLocal: true);
 
   final bool isLocal;
 
@@ -37,8 +36,6 @@ enum PreferencesOptionType {
         return appLocalizations.labelVisibility;
       case PreferencesOptionType.quotedContent:
         return appLocalizations.quotedContentVisibility;
-      case PreferencesOptionType.openEmailInNewWindow:
-        return appLocalizations.openEmailInNewWindow;
     }
   }
 
@@ -60,8 +57,6 @@ enum PreferencesOptionType {
         return appLocalizations.labelVisibilitySettingExplanation;
       case PreferencesOptionType.quotedContent:
         return appLocalizations.quotedContentSettingExplanation;
-      case PreferencesOptionType.openEmailInNewWindow:
-        return appLocalizations.openEmailInNewWindowSettingExplanation;
     }
   }
 
@@ -83,8 +78,6 @@ enum PreferencesOptionType {
         return appLocalizations.labelVisibilityToggleDescription;
       case PreferencesOptionType.quotedContent:
         return appLocalizations.quotedContentToggleDescription;
-      case PreferencesOptionType.openEmailInNewWindow:
-        return appLocalizations.openEmailInNewWindowToggleDescription;
     }
   }
 
@@ -109,8 +102,6 @@ enum PreferencesOptionType {
         return preferencesSetting.labelConfig.isEnabled;
       case PreferencesOptionType.quotedContent:
         return preferencesSetting.quotedContentConfig.isHiddenByDefault;
-      case PreferencesOptionType.openEmailInNewWindow:
-        return preferencesSetting.openEmailInNewWindowConfig.isEnabled;
     }
   }
 }

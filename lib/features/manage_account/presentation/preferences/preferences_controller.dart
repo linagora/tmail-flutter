@@ -9,7 +9,6 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/loader_status.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/open_email_in_new_window_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/quoted_content_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
@@ -170,9 +169,6 @@ class PreferencesController extends BaseController {
         break;
       case PreferencesOptionType.quotedContent:
         config = QuotedContentConfig(isHiddenByDefault: !isEnabled);
-        break;
-      case PreferencesOptionType.openEmailInNewWindow:
-        config = OpenEmailInNewWindowConfig(isEnabled: !isEnabled);
         break;
       default:
         break;
