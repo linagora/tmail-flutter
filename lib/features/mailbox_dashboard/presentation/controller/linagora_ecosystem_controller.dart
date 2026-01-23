@@ -12,7 +12,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LinagoraEcosystemController with SentryEcosystemMixin {
   GetLinagoraEcosystemInteractor? _getLinagoraEcosystemInteractor;
-  String? _baseUrl;
 
   final BaseController _baseController;
 
@@ -33,10 +32,10 @@ class LinagoraEcosystemController with SentryEcosystemMixin {
   }
 
   void _loadLinagoraEcosystem() {
-    _baseUrl ??= _baseController.dynamicUrlInterceptors.jmapUrl;
+    final baseUrl = _baseController.dynamicUrlInterceptors.jmapUrl;
 
-    if (_baseUrl?.trimmed.isNotEmpty != true) {
-      logWarning('LinagoraEcosystemController:_loadLinagoraEcosystem: _baseUrl is empty');
+    if (baseUrl == null || baseUrl.trimmed.isEmpty) {
+      logWarning('LinagoraEcosystemController:_loadLinagoraEcosystem: baseUrl is empty');
       return;
     }
 
@@ -46,7 +45,7 @@ class LinagoraEcosystemController with SentryEcosystemMixin {
     }
 
     _baseController.consumeState(
-      _getLinagoraEcosystemInteractor!.execute(_baseUrl!),
+      _getLinagoraEcosystemInteractor!.execute(baseUrl),
     );
   }
 
