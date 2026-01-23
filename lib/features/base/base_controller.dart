@@ -374,8 +374,12 @@ abstract class BaseController extends GetxController
       } else {
         throw NotSupportFCMException();
       }
-    } catch(e) {
-      logWarning('$runtimeType::injectFCMBindings(): exception: $e');
+    } catch (e, st) {
+      logError(
+        '$runtimeType::injectFCMBindings():',
+        exception: e,
+        stackTrace: st,
+      );
     }
   }
 
