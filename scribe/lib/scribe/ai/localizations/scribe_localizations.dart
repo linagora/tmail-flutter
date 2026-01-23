@@ -4,16 +4,21 @@ import 'package:multiple_localization/multiple_localization.dart';
 import 'package:scribe/scribe/ai/l10n/messages_all.dart';
 
 class ScribeLocalizations {
+  static const List<String> _supportedLanguageCodes = ['en', 'fr', 'ru', 'vi'];
+
   static ScribeLocalizations of(BuildContext context) {
     return Localizations.of<ScribeLocalizations>(context, ScribeLocalizations)!;
   }
 
   static Future<ScribeLocalizations> load(Locale locale) {
+    final effectiveLocale = _supportedLanguageCodes.contains(locale.languageCode)
+        ? locale
+        : const Locale('en');
     return MultipleLocalizations.load(
       initializeMessages,
-      locale,
+      effectiveLocale,
       (locale) => ScribeLocalizations(),
-      setDefaultLocale: true,
+      setDefaultLocale: false,
     );
   }
 
@@ -179,8 +184,7 @@ class _ScribeLocalizationsDelegate
   const _ScribeLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) =>
-      ['en', 'fr', 'ru', 'vi'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => true;
 
   @override
   Future<ScribeLocalizations> load(Locale locale) =>
