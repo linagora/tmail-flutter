@@ -1,4 +1,3 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -13,11 +12,6 @@ import '../../robots/thread_robot.dart';
 class EditATagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
   const EditATagScenario(super.$);
-
-  @override
-  Future<void> setupPreLogin() async {
-    PlatformInfo.isIntegrationTesting = true;
-  }
 
   @override
   Future<void> runTestLogic() async {
@@ -55,10 +49,5 @@ class EditATagScenario extends BaseTestScenario
 
   Future<void> _expectLabelWithNewNameUpdated(String name) async {
     await expectViewVisible($(name));
-  }
-
-  @override
-  Future<void> disposeAfterTest() async {
-    PlatformInfo.isIntegrationTesting = false;
   }
 }
