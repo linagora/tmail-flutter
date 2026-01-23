@@ -16,7 +16,7 @@ class TestBase {
     required String description,
     required BaseScenario Function(PatrolIntegrationTester $) scenarioBuilder,
   }) {
-    patrolSetUp(_setupAll);
+    patrolSetUp(_setup);
 
     patrolTearDown(_tearDown);
 
@@ -47,7 +47,7 @@ class TestBase {
     };
   }
 
-  Future<void> _setupAll() async {
+  Future<void> _setup() async {
     PlatformInfo.isIntegrationTesting = true;
   }
 
