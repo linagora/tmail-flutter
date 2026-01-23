@@ -51,7 +51,7 @@ class LinagoraEcosystemController with SentryEcosystemMixin {
   }
 
   Future<void> handleGetLinagoraEcosystemSuccess(
-    GetLinagraEcosystemSuccess success,
+    GetLinagoraEcosystemSuccess success,
   ) async {
     if (!PlatformInfo.isAndroid) return;
 
@@ -67,7 +67,7 @@ class LinagoraEcosystemController with SentryEcosystemMixin {
   }
 
   Future<void> handleGetLinagoraEcosystemFailure(
-    GetLinagraEcosystemFailure failure,
+    GetLinagoraEcosystemFailure failure,
   ) async {
     logWarning('LinagoraEcosystemController:handleGetLinagoraEcosystemFailure: $failure');
   }

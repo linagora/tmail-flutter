@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:flutter/material.dart';
 
 /// Configures global error handlers for both Flutter framework and Platform dispatcher.
@@ -23,7 +24,7 @@ void setupErrorHooks() {
       exception: error,
       stackTrace: stack,
     );
-    // Return true to prevent the app from crashing.
-    return true;
+    // Return true in release to prevent crashes; false in debug to surface errors.
+    return BuildUtils.isReleaseMode;
   };
 }
