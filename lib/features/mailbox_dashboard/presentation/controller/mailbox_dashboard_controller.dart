@@ -862,8 +862,12 @@ class MailboxDashBoardController extends ReloadableController
       await super.injectFCMBindings(session, accountId);
       await LocalNotificationManager.instance.recreateStreamController();
       _registerLocalNotificationStreamListener();
-    } catch (e) {
-      logWarning('MailboxDashBoardController::injectFCMBindings(): $e');
+    } catch (e, st) {
+      logError(
+        'MailboxDashBoardController::injectFCMBindings():',
+        exception: e,
+        stackTrace: st,
+      );
     }
   }
 
