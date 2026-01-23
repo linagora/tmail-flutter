@@ -19,7 +19,7 @@ class LinagoraEcosystemController with SentryEcosystemMixin {
 
   void init({SentryUser? newSentryUser}) {
     try {
-      if (!PlatformInfo.isAndroid) return;
+      if (!PlatformInfo.isMobile) return;
 
       initSentryUser(newSentryUser);
 
@@ -56,7 +56,7 @@ class LinagoraEcosystemController with SentryEcosystemMixin {
   Future<void> handleGetLinagoraEcosystemSuccess(
     GetLinagoraEcosystemSuccess success,
   ) async {
-    if (!PlatformInfo.isAndroid) return;
+    if (!PlatformInfo.isMobile) return;
 
     final properties = success.linagoraEcosystem.properties;
 
