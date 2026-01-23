@@ -15,7 +15,7 @@ mixin SentryEcosystemMixin {
     SentryConfigLinagoraEcosystem ecosystemConfig,
   ) async {
     if (ecosystemConfig.enabled != true) {
-      logWarning('SentryEcosystemMixin::_setUpSentry: Sentry is disabled');
+      logWarning('SentryEcosystemMixin::setUpSentry: Sentry is disabled');
       return;
     }
 
@@ -24,13 +24,13 @@ mixin SentryEcosystemMixin {
 
     if (dsn == null || dsn.isEmpty) {
       logWarning(
-          'SentryEcosystemMixin::_setUpSentry: Sentry DSN is invalid (null or empty)');
+          'SentryEcosystemMixin::setUpSentry: Sentry DSN is invalid (null or empty)');
       return;
     }
 
     if (env == null || env.isEmpty) {
       logWarning(
-          'SentryEcosystemMixin::_setUpSentry: Sentry Environment is invalid (null or empty)');
+          'SentryEcosystemMixin::setUpSentry: Sentry Environment is invalid (null or empty)');
       return;
     }
 

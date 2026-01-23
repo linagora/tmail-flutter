@@ -546,7 +546,7 @@ class MailboxDashBoardController extends ReloadableController
       updateTextFormattingMenuState(success.isDisplayed);
     } else if (success is GetAIScribeConfigSuccess) {
       handleLoadAIScribeConfigSuccess(success.aiScribeConfig);
-    } else if (success is GetLinagraEcosystemSuccess) {
+    } else if (success is GetLinagoraEcosystemSuccess) {
       _ecosystemController?.handleGetLinagoraEcosystemSuccess(success);
     } else {
       super.handleSuccessViewState(success);
@@ -598,7 +598,7 @@ class MailboxDashBoardController extends ReloadableController
       updateTextFormattingMenuState(false);
     } else if (failure is GetAIScribeConfigFailure) {
       handleLoadAIScribeConfigFailure();
-    } else if (failure is GetLinagraEcosystemFailure) {
+    } else if (failure is GetLinagoraEcosystemFailure) {
       _ecosystemController?.handleGetLinagoraEcosystemFailure(failure);
     } else {
       super.handleFailureViewState(failure);

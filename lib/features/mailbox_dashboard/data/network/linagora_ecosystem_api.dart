@@ -34,14 +34,12 @@ class LinagoraEcosystemApi {
     final linagoraEcosystem = await getLinagoraEcosystem(baseUrl);
 
     final paywallProperty =
-        linagoraEcosystem.properties?[LinagoraEcosystemIdentifier.paywallURL]
-            as ApiUrlLinagoraEcosystem?;
+        linagoraEcosystem.properties?[LinagoraEcosystemIdentifier.paywallURL];
     log('LinagoraEcosystemApi::getPaywallUrl: paywallProperty = $paywallProperty');
 
-    if (paywallProperty == null) {
-      throw NotFoundPaywallUrl();
-    } else {
+    if (paywallProperty is ApiUrlLinagoraEcosystem) {
       return PaywallUrlPattern(paywallProperty.value);
     }
+    throw NotFoundPaywallUrl();
   }
 }

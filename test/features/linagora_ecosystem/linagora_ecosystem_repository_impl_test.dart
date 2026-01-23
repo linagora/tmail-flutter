@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/linagora_ecosystem_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/linagora_ecosystem_repository_impl.dart'; // Adjust path if needed
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/linagora_ecosystem_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 
 import 'linagora_ecosystem_repository_impl_test.mocks.dart';
@@ -45,13 +45,14 @@ void main() {
         // Arrange
         final exception = Exception('Something went wrong');
 
-        when(mockDatasource.getLinagoraEcosystem(any)).thenThrow(exception);
+        when(mockDatasource.getLinagoraEcosystem(any))
+            .thenAnswer((_) async => throw exception);
 
         // Act
         final call = repository.getLinagoraEcosystem;
 
         // Assert
-        expect(() => call(baseUrl), throwsA(equals(exception)));
+        await expectLater(call(baseUrl), throwsA(equals(exception)));
         verify(mockDatasource.getLinagoraEcosystem(baseUrl)).called(1);
         verifyNoMoreInteractions(mockDatasource);
       },
