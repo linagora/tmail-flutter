@@ -16,19 +16,19 @@ extension HandleLabelActionTypeExtension on MailboxDashBoardController {
     if (PlatformInfo.isWeb) {
       isPopupMenuOpened.value = true;
     }
-    return labelController
-      .openLabelMenuAction(
+    try {
+      await labelController.openLabelMenuAction(
         context,
         imagePaths,
         label,
         position: position,
         _onPerformLabelActionType,
-      )
-      .whenComplete(() {
-        if (PlatformInfo.isWeb) {
-          isPopupMenuOpened.value = false;
-        }
-      });
+      );
+    } finally {
+      if (PlatformInfo.isWeb) {
+        isPopupMenuOpened.value = false;
+      }
+    }
   }
 
   void _onPerformLabelActionType(Label label, LabelActionType actionType) {

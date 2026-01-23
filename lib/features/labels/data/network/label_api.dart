@@ -47,10 +47,11 @@ class LabelApi with HandleSetErrorMixin {
       SetLabelResponse.deserialize,
     );
 
-    final labelCreated = response?.created?[generateCreateId];
+    final labelIdsCreated = response?.created?.keys ?? <Id>[];
 
-    if (labelCreated != null) {
-      final newLabelCreated = labelCreated.copyWith(
+    if (labelIdsCreated.contains(generateCreateId)) {
+      final labelCreated = response?.created?[generateCreateId];
+      final newLabelCreated = labelCreated!.copyWith(
         displayName: labelData.displayName,
         color: labelData.color,
       );
@@ -83,9 +84,9 @@ class LabelApi with HandleSetErrorMixin {
       SetLabelResponse.deserialize,
     );
 
-    final labelUpdated = response?.updated?[labelId];
+    final labelIdsUpdated = response?.updated?.keys ?? <Id>[];
 
-    if (labelUpdated != null) {
+    if (labelIdsUpdated.contains(labelId)) {
       final newLabelUpdated = newLabel.copyWith(
         id: labelId,
         keyword: labelRequest.labelKeyword,

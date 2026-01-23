@@ -1,8 +1,8 @@
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/core_robot.dart';
 
@@ -16,7 +16,11 @@ class CreateLabelModalRobot extends CoreRobot {
         .enterText(name);
   }
 
-  Future<void> tapSaveButton() async {
-    await $(CreateNewLabelModal).$(AppLocalizations().save).tap();
+  Future<void> tapPositiveActionButton(LabelActionType actionType) async {
+    if (actionType == LabelActionType.create) {
+      await $(CreateNewLabelModal).$(#create_label_button_action).tap();
+    } else {
+      await $(CreateNewLabelModal).$(#save_label_button_action).tap();
+    }
   }
 }

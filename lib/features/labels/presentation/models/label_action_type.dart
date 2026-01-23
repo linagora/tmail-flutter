@@ -43,6 +43,15 @@ enum LabelActionType {
     }
   }
 
+  Key getModalPositiveActionKey() {
+    switch (this) {
+      case LabelActionType.create:
+        return const Key('create_label_button_action');
+      case LabelActionType.edit:
+        return const Key('save_label_button_action');
+    }
+  }
+
   String getContextMenuIcon(ImagePaths imagePaths) {
     switch (this) {
       case LabelActionType.create:

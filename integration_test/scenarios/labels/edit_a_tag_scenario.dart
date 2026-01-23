@@ -1,5 +1,6 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -40,7 +41,7 @@ class EditATagScenario extends BaseTestScenario
 
     const newLabelName = 'New edit tag 1';
     await createLabelModalRobot.enterNewLabelName(newLabelName);
-    await createLabelModalRobot.tapSaveButton();
+    await createLabelModalRobot.tapPositiveActionButton(LabelActionType.edit);
     await _expectLabelWithNewNameUpdated(newLabelName);
   }
 
