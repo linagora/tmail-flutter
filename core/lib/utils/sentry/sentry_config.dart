@@ -51,10 +51,9 @@ class SentryConfig {
     this.dist,
   });
 
-  /// Load configuration from an env file.
+  /// Loads configuration from loaded environment variables.
   static Future<SentryConfig?> load() async {
-    await EnvLoader.loadConfigFromEnv();
-
+    // Note: Ensure EnvLoader.loadEnvFile() is called in main.dart before this.
     final sentryAvailable = dotenv.get('SENTRY_ENABLED', fallback: 'false');
 
     final isAvailable = sentryAvailable == 'true';
