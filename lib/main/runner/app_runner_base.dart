@@ -1,39 +1,12 @@
 import 'dart:async';
 
-import 'package:core/utils/app_logger.dart';
-import 'package:flutter/foundation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:tmail_ui_user/main/runner/app_error_handlers.dart';
 
 Future<void> runWithZoneAndErrorHandling(Future<void> Function() runner) async {
-  await runZonedGuarded(() async {
-    SentryWidgetsFlutterBinding.ensureInitialized();
+  SentryWidgetsFlutterBinding.ensureInitialized();
 
-    // Handling Flutter UI and Build Errors
-    FlutterError.onError = (details) async {
-      logError(
-        'FlutterError: ${details.exception}',
-        exception: details.exception,
-        stackTrace: details.stack,
-      );
-      FlutterError.presentError(details);
-    };
+  setupErrorHooks();
 
-    // Handling Uncaught and Platform-Specific Errors
-    PlatformDispatcher.instance.onError = (error, stack) {
-      logError(
-        'PlatformDispatcher: Error: $error',
-        exception: error,
-        stackTrace: stack,
-      );
-      return true;
-    };
-
-    await runner();
-  }, (error, stack) {
-    logError(
-      'Uncaught zone error: $error',
-      exception: error,
-      stackTrace: stack,
-    );
-  });
+  await runner();
 }
