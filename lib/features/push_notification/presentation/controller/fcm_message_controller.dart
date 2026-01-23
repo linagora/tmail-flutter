@@ -58,14 +58,32 @@ class FcmMessageController extends PushBaseController {
         .debounceTime(const Duration(
           milliseconds: FcmUtils.durationBackgroundMessageComing,
         ))
-        .listen(_handleBackgroundMessageAction);
+        .listen(
+          _handleBackgroundMessageAction,
+          onError: (e, st) {
+            logError(
+              'FcmMessageController::_listenBackgroundMessageStream',
+              exception: e,
+              stackTrace: st,
+            );
+          },
+        );
   }
 
   void _listenTokenStream() {
     FcmService.instance.fcmTokenStreamController
       ?.stream
       .debounceTime(const Duration(milliseconds: FcmUtils.durationRefreshToken))
-      .listen(FcmTokenController.instance.onFcmTokenChanged);
+      .listen(
+        FcmTokenController.instance.onFcmTokenChanged,
+        onError: (e, st) {
+          logError(
+            'FcmMessageController::_listenTokenStream',
+            exception: e,
+            stackTrace: st,
+          );
+        },
+      );
   }
 
   void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
@@ -102,6 +120,10 @@ class FcmMessageController extends PushBaseController {
   void _getAuthenticatedAccount({StateChange? stateChange}) {
     if (_getAuthenticatedAccountInteractor != null) {
       consumeState(_getAuthenticatedAccountInteractor!.execute(stateChange: stateChange));
+    } else {
+      logError(
+        'GetAuthenticatedAccountInteractor is null',
+      );
     }
   }
 
@@ -175,9 +197,17 @@ class FcmMessageController extends PushBaseController {
           userName: success.session.username,
           stateChange: stateChange,
           session: success.session);
+      } else {
+        logError(
+          'FcmMessageController::_handleGetSessionSuccess: Api url or state change is null',
+        );
       }
-    } catch (e) {
-      logWarning('FcmMessageController::_handleGetSessionSuccess: Exception $e');
+    } catch (e, st) {
+      logError(
+        'FcmMessageController::_handleGetSessionSuccess:',
+        exception: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -202,6 +232,17 @@ class FcmMessageController extends PushBaseController {
   @override
   void handleFailureViewState(Failure failure) {
     log('FcmMessageController::_handleFailureViewState(): $failure');
+    if (failure is GetStoredTokenOidcFailure) {
+      logError(
+        'Get stored token oidc is failed',
+        exception: failure.exception,
+      );
+    } else if (failure is GetSessionFailure) {
+      logError(
+        'Get session is failed',
+        exception: failure.exception,
+      );
+    }
   }
 
   @override
