@@ -11,6 +11,8 @@
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		756BBC4C51FCB44047AB39E4 /* Pods_TeamMailShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 143BD7B2CF181BA69CDE351A /* Pods_TeamMailShareExtension.framework */; };
+		84EC933C2F236E8300A0EDC7 /* SentryConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC933B2F236E7800A0EDC7 /* SentryConfig.swift */; };
+		84EC933E2F23705E00A0EDC7 /* SentryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC933D2F23705D00A0EDC7 /* SentryManager.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
@@ -50,7 +52,7 @@
 		F5BBBF512B2EEC37007930E1 /* NetworkExceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BBBF502B2EEC37007930E1 /* NetworkExceptions.swift */; };
 		F5BBBF532B2EECAA007930E1 /* JmapExceptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BBBF522B2EECAA007930E1 /* JmapExceptions.swift */; };
 		F5BBBF552B2EEF3D007930E1 /* BundleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BBBF542B2EEF3D007930E1 /* BundleExtension.swift */; };
-		F5CFE0352B335322005A90A9 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		F5CFE0352B335322005A90A9 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		F5D4EA032B2ABF090090DDFC /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D4EA022B2ABF090090DDFC /* NotificationService.swift */; };
 		F5D4EA072B2ABF090090DDFC /* TwakeMailNSE.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F5D4EA002B2ABF090090DDFC /* TwakeMailNSE.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F5E7D8742B3578F90009BB8A /* JmapConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E7E2B2E3C2600051FD0 /* JmapConstants.swift */; };
@@ -133,6 +135,8 @@
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
+		84EC933B2F236E7800A0EDC7 /* SentryConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryConfig.swift; sourceTree = "<group>"; };
+		84EC933D2F23705D00A0EDC7 /* SentryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentryManager.swift; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,7 +202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDFECA8C54311B749F044831 /* Pods_Runner.framework in Frameworks */,
-				F5CFE0352B335322005A90A9 /* BuildFile in Frameworks */,
+				F5CFE0352B335322005A90A9 /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +404,7 @@
 		F5630C792B2CE133003CC0FD /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				84EC933B2F236E7800A0EDC7 /* SentryConfig.swift */,
 				F5630C7A2B2CE148003CC0FD /* KeychainSharingSession.swift */,
 				F5630C842B2CF50C003CC0FD /* TypeName.swift */,
 			);
@@ -409,6 +414,7 @@
 		F5630C7C2B2CE33A003CC0FD /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				84EC933D2F23705D00A0EDC7 /* SentryManager.swift */,
 				F5630C7D2B2CE359003CC0FD /* InfoPlistReader.swift */,
 				F5BBBF542B2EEF3D007930E1 /* BundleExtension.swift */,
 				F5630C862B2D0387003CC0FD /* PayloadParser.swift */,
@@ -715,9 +721,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -785,9 +795,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -860,6 +874,7 @@
 			files = (
 				F5BBBF512B2EEC37007930E1 /* NetworkExceptions.swift in Sources */,
 				F53D1E7F2B2E3C2600051FD0 /* JmapConstants.swift in Sources */,
+				84EC933C2F236E8300A0EDC7 /* SentryConfig.swift in Sources */,
 				F5E7D8822B3876F60009BB8A /* AuthenticationCredential.swift in Sources */,
 				F5D4EA032B2ABF090090DDFC /* NotificationService.swift in Sources */,
 				F522E8872C0EE8B600DDA35B /* CoreUtils.swift in Sources */,
@@ -871,6 +886,7 @@
 				F53D1E662B2DE8B800051FD0 /* AlamofireService.swift in Sources */,
 				F5BBBF532B2EECAA007930E1 /* JmapExceptions.swift in Sources */,
 				F53D1E882B2E4B3B00051FD0 /* AuthenticationType.swift in Sources */,
+				84EC933E2F23705E00A0EDC7 /* SentryManager.swift in Sources */,
 				F53D1E6C2B2E208C00051FD0 /* Email.swift in Sources */,
 				F5630C872B2D0387003CC0FD /* PayloadParser.swift in Sources */,
 				F5E7D8862B3877390009BB8A /* TokenResponse.swift in Sources */,

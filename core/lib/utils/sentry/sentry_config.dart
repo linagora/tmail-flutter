@@ -79,4 +79,23 @@ class SentryConfig {
       isAvailable: isAvailable,
     );
   }
+
+  static const String sentryConfigKeyChain = 'sentry_config_data';
+
+  Map<String, dynamic> toJson() {
+    return {
+      'dsn': dsn,
+      'environment': environment,
+      'release': release,
+      'tracesSampleRate': tracesSampleRate,
+      'profilesSampleRate': profilesSampleRate,
+      'sessionSampleRate': sessionSampleRate,
+      'onErrorSampleRate': onErrorSampleRate,
+      'enableLogs': enableLogs,
+      'isDebug': isDebug,
+      'attachScreenshot': attachScreenshot,
+      'isAvailable': isAvailable,
+      'enableFramesTracking': enableFramesTracking,
+    };
+  }
 }

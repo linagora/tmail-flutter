@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -103,7 +104,7 @@ class IOSSharingManager {
         isTWP: tokenRecords?.isTWP ?? false,
       );
 
-      await _keychainSharingManager.save(keychainSharingSession);
+      await _keychainSharingManager.saveSharingSession(keychainSharingSession);
 
       log('IOSSharingManager::_saveKeyChainSharingSession: COMPLETED');
     } catch (e, st) {
@@ -198,7 +199,7 @@ class IOSSharingManager {
       return;
     }
     final newKeychain = keychainSharingStored.updating(emailState: newEmailState);
-    await _keychainSharingManager.save(newKeychain);
+    await _keychainSharingManager.saveSharingSession(newKeychain);
   }
 
   Future<bool> isExistMailboxIdsBlockNotificationInKeyChain(AccountId accountId) async {
@@ -221,7 +222,7 @@ class IOSSharingManager {
         return;
       }
       final newKeychain = keychainSharingStored.updating(mailboxIdsBlockNotification: mailboxIds);
-      await _keychainSharingManager.save(newKeychain);
+      await _keychainSharingManager.saveSharingSession(newKeychain);
     } catch (e) {
       logWarning('IOSSharingManager::updateMailboxIdsBlockNotificationInKeyChain: Exception = $e');
     }
@@ -242,6 +243,16 @@ class IOSSharingManager {
     } catch (e) {
       logWarning('IOSSharingManager::_getMailboxIdsBlockNotification:Exception: $e');
       return null;
+    }
+  }
+
+  Future<void> saveSentryConfigToKeychain(SentryConfig sentryConfig) async {
+    log('IOSSharingManager::saveSentryConfigToKeychain: START');
+    try {
+      await _keychainSharingManager.saveSentryConfig(sentryConfig);
+      log('IOSSharingManager::saveSentryConfigToKeychain: COMPLETED');
+    } catch (e) {
+      logWarning('IOSSharingManager::saveSentryConfigToKeychain: Exception: $e');
     }
   }
 }

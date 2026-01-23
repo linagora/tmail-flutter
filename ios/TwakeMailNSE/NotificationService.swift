@@ -1,4 +1,5 @@
 import UserNotifications
+import Sentry
 import SwiftUI
 
 class NotificationService: UNNotificationServiceExtension {
@@ -13,6 +14,9 @@ class NotificationService: UNNotificationServiceExtension {
                                                              accessGroup: InfoPlistReader.main.keychainAccessGroupIdentifier)
     
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+        
+        SentryManager.shared.configure(with: keychainController)
+        
         handler = contentHandler
         modifiedContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
@@ -22,10 +26,12 @@ class NotificationService: UNNotificationServiceExtension {
         if isAppActive == true {
             self.modifiedContent?.userInfo = request.content.userInfo.merging(["data": request.content.userInfo], uniquingKeysWith: {(_, new) in new})
             contentHandler(self.modifiedContent ?? request.content)
+            return
         }
         
         guard let payloadData = request.content.userInfo as? [String: Any],
               !keychainController.retrieveSharingSessions().isEmpty else {
+            SentryManager.shared.capture(message: "NSE: Payload invalid or No Session found in Keychain")
             self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
             return self.notify()
         }
@@ -42,6 +48,7 @@ class NotificationService: UNNotificationServiceExtension {
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
+        SentryManager.shared.capture(message: "NSE: Service Extension Time Expired (Timeout)")
         self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
         self.notify()
     }
@@ -55,20 +62,30 @@ class NotificationService: UNNotificationServiceExtension {
         let mapStateChanges: [String: [TypeName: String]] = PayloadParser.shared.parsingPayloadNotification(payloadData: payloadData)
         
         if (mapStateChanges.isEmpty) {
+            SentryManager.shared.capture(message: "NSE: Payload parsing returned empty state changes")
             self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
             return self.notify()
         } else {
             guard let currentAccountId = mapStateChanges.keys.first,
                   let keychainSharingSession = keychainController.retrieveSharingSessionFromKeychain(accountId: currentAccountId),
-                  keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil,
-                  let listStateOfAccount = mapStateChanges[currentAccountId],
+                  keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil else {
+                SentryManager.shared.capture(message: "NSE: Session missing or invalid credential for account: \(mapStateChanges.keys.first ?? "unknown")")
+                self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
+                return self.notify()
+            }
+
+            SentryManager.shared.setSentryUser(keychainSharingSession.sentryUser)
+            
+            guard let listStateOfAccount = mapStateChanges[currentAccountId],
                   let newEmailDeliveryState = listStateOfAccount[TypeName.emailDelivery] else {
+                SentryManager.shared.capture(message: "NSE: Missing emailDelivery state in payload")
                 self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
                 return self.notify()
             }
             
             guard let oldEmailDeliveryState = keychainSharingSession.emailDeliveryState ?? keychainSharingSession.emailState,
                   newEmailDeliveryState != oldEmailDeliveryState else {
+                SentryManager.shared.capture(message: "NSE: Email state unchanged (No new emails)")
                 self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                 return self.notify()
             }
@@ -86,6 +103,7 @@ class NotificationService: UNNotificationServiceExtension {
                 onComplete: { (emails, errors) in
                     do {
                         if emails.isEmpty {
+                            SentryManager.shared.capture(message: "NSE: GetNewEmails returned empty list despite state change")
                             self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                             return self.notify()
                         } else {
@@ -106,7 +124,8 @@ class NotificationService: UNNotificationServiceExtension {
                             }
                         }
                     } catch {
-                        TwakeLogger.shared.log(message: "JmapClient.shared.getNewEmails: \(error)")
+                        TwakeLogger.shared.log(message: "Error processing emails: \(error)")
+                        SentryManager.shared.capture(error: error)
                         self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                         return self.notify()
                     }
@@ -183,7 +202,7 @@ class NotificationService: UNNotificationServiceExtension {
         content.userInfo = userInfo
 
         // Create a notification trigger
-         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
         // Create a notification request
         let request = UNNotificationRequest(identifier: notificationId, content: content, trigger: trigger)
 
@@ -191,6 +210,7 @@ class NotificationService: UNNotificationServiceExtension {
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 TwakeLogger.shared.log(message: "Error scheduling notification: \(error.localizedDescription)")
+                SentryManager.shared.capture(error: error)
             } else {
                 TwakeLogger.shared.log(message: "Notification scheduled successfully")
             }
