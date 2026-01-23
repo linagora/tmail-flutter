@@ -66,8 +66,8 @@ void main() {
         when(mockDioClient.get(any)).thenAnswer((_) async => []);
 
         // Act & Assert
-        expect(
-          () => api.getLinagoraEcosystem(baseUrl),
+        await expectLater(
+          api.getLinagoraEcosystem(baseUrl),
           throwsA(isA<NotFoundLinagoraEcosystem>()),
         );
       });
@@ -98,8 +98,8 @@ void main() {
         when(mockDioClient.get(any)).thenAnswer((_) async => emptyPropsMap);
 
         // Act & Assert
-        expect(
-          () => api.getPaywallUrl(baseUrl),
+        await expectLater(
+          api.getPaywallUrl(baseUrl),
           throwsA(isA<NotFoundPaywallUrl>()),
         );
       });
