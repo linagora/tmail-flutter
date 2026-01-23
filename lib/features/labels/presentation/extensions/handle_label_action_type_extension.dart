@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/extensions/list_label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/model/edit_label_request.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
@@ -73,8 +74,17 @@ extension HandleLabelActionTypeExtension on LabelController {
         Stream.value(Left(EditLabelFailure(InteractorNotInitialized()))),
       );
     } else {
+      final labelId = selectedLabel.id;
+
+      if (labelId == null) {
+        consumeState(
+          Stream.value(Left(EditLabelFailure(LabelIdIsNull()))),
+        );
+        return;
+      }
+
       final labelRequest = EditLabelRequest(
-        labelId: selectedLabel.id!,
+        labelId: labelId,
         labelKeyword: selectedLabel.keyword,
         newLabel: newLabel,
       );
