@@ -1,6 +1,5 @@
 import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/build_utils.dart';
-import 'package:core/utils/config/env_loader.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Holds configuration values for initializing Sentry.
@@ -44,10 +43,9 @@ class SentryConfig {
     this.isAvailable = false,
   });
 
-  /// Load configuration from an env file.
+  /// Loads configuration from loaded environment variables.
   static Future<SentryConfig?> load() async {
-    await EnvLoader.loadConfigFromEnv();
-
+    // Note: Ensure EnvLoader.loadEnvFile() is called in main.dart before this.
     final sentryAvailable = dotenv.get('SENTRY_ENABLED', fallback: 'false');
 
     final isAvailable = sentryAvailable == 'true';

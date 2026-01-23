@@ -1,3 +1,4 @@
+import 'package:core/utils/config/env_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -34,6 +35,7 @@ class TestBase {
   }
 
   Future<void> setupTest() async {
+    await EnvLoader.loadEnvFile();
     await runTmail();
 
     final originalOnError = FlutterError.onError!;
