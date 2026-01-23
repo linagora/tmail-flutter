@@ -83,12 +83,20 @@ class FcmTokenController extends PushBaseController {
   void _getStoredFirebaseRegistrationFromCache() {
     if (_getStoredFirebaseRegistrationInteractor != null) {
       consumeState(_getStoredFirebaseRegistrationInteractor!.execute());
+    } else {
+      logError(
+        'GetStoredFirebaseRegistrationInteractor is null',
+      );
     }
   }
 
   void _storeFirebaseRegistrationToCache(FirebaseRegistration firebaseRegistration){
     if (_storeFirebaseRegistrationInteractor != null) {
       consumeState(_storeFirebaseRegistrationInteractor!.execute(firebaseRegistration));
+    } else {
+      logError(
+        'StoreFirebaseRegistrationInteractor is null',
+      );
     }
   }
 
@@ -123,6 +131,10 @@ class FcmTokenController extends PushBaseController {
           )
         )
       );
+    } else {
+      logError(
+        'UpdateFirebaseRegistrationTokenInteractor is null or firebaseRegistration.id is null',
+      );
     }
   }
 
@@ -143,12 +155,20 @@ class FcmTokenController extends PushBaseController {
           )
         )
       );
+    } else {
+      logError(
+        'RegisterNewFirebaseRegistrationTokenInteractor is null',
+      );
     }
   }
   
   void _deleteFirebaseRegistrationInCache() {
     if (_deleteFirebaseRegistrationCacheInteractor != null) {
       consumeState(_deleteFirebaseRegistrationCacheInteractor!.execute());
+    } else {
+      logError(
+        'DeleteFirebaseRegistrationCacheInteractor is null',
+      );
     }
   }
 

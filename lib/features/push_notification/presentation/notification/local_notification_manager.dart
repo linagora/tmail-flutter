@@ -39,8 +39,12 @@ class LocalNotificationManager {
         await _createAndroidNotificationChannelGroup(groupId);
         await _createAndroidNotificationChannel(groupId);
       }
-    } catch (e) {
-      logWarning('LocalNotificationManager::setUp(): ERROR: ${e.toString()}');
+    } catch (e, st) {
+      logError(
+        'LocalNotificationManager::setUp:ERROR',
+        exception: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -48,8 +52,12 @@ class LocalNotificationManager {
     try {
       _notificationAppLaunchDetails = await _localNotificationsPlugin.getNotificationAppLaunchDetails();
       return _notificationAppLaunchDetails?.notificationResponse;
-    } catch (e) {
-      logWarning('LocalNotificationManager::getCurrentNotificationResponse(): ERROR: ${e.toString()}');
+    } catch (e, st) {
+      logError(
+        'Get notification app launch details failed from local notification plugin',
+        exception: e,
+        stackTrace: st,
+      );
     }
     return null;
   }

@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -19,7 +20,12 @@ class GetStoredEmailStateInteractor {
       } else {
         yield Left<Failure, Success>(NotFoundEmailState());
       }
-    } catch (e) {
+    } catch (e, st) {
+      logError(
+        'Get stored email state is failed',
+        exception: e,
+        stackTrace: st,
+      );
       yield Left<Failure, Success>(GetStoredEmailStateFailure(e));
     }
   }

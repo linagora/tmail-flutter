@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
@@ -17,7 +18,12 @@ class UpdateFirebaseRegistrationTokenInteractor {
       yield Right<Failure, Success>(UpdateFirebaseRegistrationTokenLoading());
       await _fcmRepository.updateFirebaseRegistrationToken(updateTokenExpiredTimeRequest);
       yield Right<Failure, Success>(UpdateFirebaseRegistrationTokenSuccess());
-    } catch (e) {
+    } catch (e, st) {
+      logError(
+        'Update expired time for firebase registration token is failed',
+        exception: e,
+        stackTrace: st,
+      );
       yield Left<Failure, Success>(UpdateFirebaseRegistrationTokenFailure(e));
     }
   }

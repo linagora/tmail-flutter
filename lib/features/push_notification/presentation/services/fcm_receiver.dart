@@ -34,8 +34,12 @@ class FcmReceiver {
       final token = await FirebaseMessaging.instance.getToken();
       log('FcmReceiver::_getInitialToken:token: $token');
       return token;
-    } catch (e) {
-      logWarning('FcmReceiver::_getInitialToken: TYPE = ${e.runtimeType} | Exception = $e');
+    } catch (e, st) {
+      logError(
+        'FcmReceiver::_getInitialToken:',
+        exception: e,
+        stackTrace: st,
+      );
       return null;
     }
   }
@@ -44,11 +48,20 @@ class FcmReceiver {
     final token = await _getInitialToken();
     FcmService.instance.handleToken(token);
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-      log('FcmReceiver::_onHandleFcmToken:onTokenRefresh: $newToken');
-      if (newToken != token) {
-        FcmService.instance.handleToken(newToken);
+    FirebaseMessaging.instance.onTokenRefresh.listen(
+      (newToken) {
+        log('FcmReceiver::_onHandleFcmToken:onTokenRefresh: $newToken');
+        if (newToken != token) {
+          FcmService.instance.handleToken(newToken);
+        }
+      },
+      onError: (e, st) {
+        logError(
+          'FcmReceiver::_onHandleFcmToken:onTokenRefresh:',
+          exception: e,
+          stackTrace: st,
+        );
       }
-    });
+    );
   }
 }

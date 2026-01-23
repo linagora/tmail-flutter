@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_st
 import 'package:tmail_ui_user/features/email/domain/usecases/store_list_new_email_interator.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
@@ -138,12 +139,20 @@ class EmailChangeListener extends ChangeListener {
   void _getStoredEmailDeliveryState(AccountId accountId, UserName userName) {
     if (_getStoredEmailDeliveryStateInteractor != null) {
       consumeState(_getStoredEmailDeliveryStateInteractor!.execute(accountId, userName));
+    } else {
+      logError(
+        'GetStoredEmailDeliveryStateInteractor is null',
+      );
     }
   }
 
   void _getStoredEmailState() {
     if (_getStoredEmailStateInteractor != null && _session != null && _accountId != null) {
       consumeState(_getStoredEmailStateInteractor!.execute(_session!, _accountId!));
+    } else {
+      logError(
+        'GetStoredEmailStateInteractor is null',
+      );
     }
   }
 
@@ -162,12 +171,20 @@ class EmailChangeListener extends ChangeListener {
           _accountId!,
         ),
       ));
+    } else {
+      logError(
+        'GetEmailChangesToPushNotificationInteractor is null, or accountId is null, or session is null, or userName is null',
+      );
     }
   }
 
   void _storeEmailDeliveryStateAction(AccountId accountId, UserName userName, jmap.State state) {
     if (_storeEmailDeliveryStateInteractor != null) {
       consumeState(_storeEmailDeliveryStateInteractor!.execute(accountId, userName, state));
+    } else {
+      logError(
+        'StoreEmailDeliveryStateInteractor is null',
+      );
     }
   }
 
@@ -195,6 +212,11 @@ class EmailChangeListener extends ChangeListener {
       _getStoredEmailState();
     } else if (failure is GetMailboxesNotPutNotificationsFailure) {
       final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification();
+      if (listEmails.isEmpty) {
+        logError(
+          'List email available to push notification is empty'
+        );
+      }
       _handleLocalPushNotification(
         userName: failure.userName,
         emailList: listEmails
@@ -217,10 +239,20 @@ class EmailChangeListener extends ChangeListener {
           userName: success.userName,
           emailList: success.emailList
         );
+        if (success.emailList.isEmpty) {
+          logError(
+            'Get new emails with new state ${_newStateEmailDelivery?.value} to push notification is empty'
+          );
+        }
       }
     } else if (success is GetMailboxesNotPutNotificationsSuccess) {
       final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification(
         mailboxIdsNotPutNotifications: success.mailboxes.mailboxIds);
+      if (listEmails.isEmpty) {
+        logError(
+          'List email available to push notification is empty, with mailbox id not put notifications: ${success.mailboxes.mailboxIds.toListString()}'
+        );
+      }
       _handleLocalPushNotification(
         userName: success.userName,
         emailList: listEmails
@@ -249,6 +281,11 @@ class EmailChangeListener extends ChangeListener {
       consumeState(_getMailboxesNotPutNotificationsInteractor!.execute(_session!, _accountId!));
     } else {
       final listEmails = _emailsAvailablePushNotification.toEmailsAvailablePushNotification();
+      if (listEmails.isEmpty) {
+        logError(
+          'List email available to push notification is empty'
+        );
+      }
       _handleLocalPushNotification(
         userName: userName,
         emailList: listEmails
