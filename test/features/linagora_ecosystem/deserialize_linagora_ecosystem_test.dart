@@ -356,7 +356,7 @@ void main() {
       );
     });
 
-    test('Should treat unknown object as DefaultLinagoraEcosystem', () {
+    test('Should treat unknown object with app-like properties as AppLinagoraEcosystem', () {
       const jsonString = '''
       {
         "unknownConfig": {

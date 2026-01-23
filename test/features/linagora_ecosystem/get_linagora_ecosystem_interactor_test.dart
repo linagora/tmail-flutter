@@ -41,14 +41,14 @@ void main() {
             predicate<Either>(
               (either) => either.fold(
                 (_) => false,
-                (success) => success is GettingLinagraEcosystem,
+                (success) => success is GettingLinagoraEcosystem,
               ),
             ),
             predicate<Either>(
               (either) => either.fold(
                 (_) => false,
                 (success) =>
-                    success is GetLinagraEcosystemSuccess &&
+                    success is GetLinagoraEcosystemSuccess &&
                     success.linagoraEcosystem == ecosystem,
               ),
             ),
@@ -79,13 +79,13 @@ void main() {
             predicate<Either>(
               (either) => either.fold(
                 (_) => false,
-                (success) => success is GettingLinagraEcosystem,
+                (success) => success is GettingLinagoraEcosystem,
               ),
             ),
             predicate<Either>(
               (either) => either.fold(
                 (failure) =>
-                    failure is GetLinagraEcosystemFailure &&
+                    failure is GetLinagoraEcosystemFailure &&
                     failure.exception == tException,
                 (_) => false,
               ),

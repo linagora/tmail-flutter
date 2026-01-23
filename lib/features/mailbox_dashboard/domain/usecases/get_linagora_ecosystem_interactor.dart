@@ -11,12 +11,12 @@ class GetLinagoraEcosystemInteractor {
 
   Stream<Either<Failure, Success>> execute(String baseUrl) async* {
     try {
-      yield Right(GettingLinagraEcosystem());
+      yield Right(GettingLinagoraEcosystem());
       final linagoraEcosystem =
           await _ecosystemRepository.getLinagoraEcosystem(baseUrl);
-      yield Right(GetLinagraEcosystemSuccess(linagoraEcosystem));
+      yield Right(GetLinagoraEcosystemSuccess(linagoraEcosystem));
     } catch (e) {
-      yield Left(GetLinagraEcosystemFailure(e));
+      yield Left(GetLinagoraEcosystemFailure(e));
     }
   }
 }

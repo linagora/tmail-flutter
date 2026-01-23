@@ -151,7 +151,9 @@ class EmailChangeListener extends ChangeListener {
       consumeState(_getStoredEmailStateInteractor!.execute(_session!, _accountId!));
     } else {
       logError(
-        'GetStoredEmailStateInteractor is null',
+        'GetStoredEmailStateInteractor/session/accountId missing '
+        '(interactorNull=${_getStoredEmailStateInteractor == null}, '
+        'sessionNull=${_session == null}, accountIdNull=${_accountId == null})',
       );
     }
   }
