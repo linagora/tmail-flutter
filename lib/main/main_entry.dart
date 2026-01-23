@@ -1,6 +1,5 @@
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/build_utils.dart';
-import 'package:core/utils/config/env_loader.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -23,7 +22,6 @@ Future<void> runTmailPreload() async {
   await Future.wait([
     MainBindings().dependencies(),
     HiveCacheConfig.instance.setUp(),
-    EnvLoader.loadEnvFile(),
     if (PlatformInfo.isWeb) AssetPreloader.preloadHtmlEditorAssets(),
   ], eagerError: false);
 
