@@ -48,7 +48,7 @@ extension HandleLabelActionTypeExtension on LabelController {
         labels: labels,
         selectedLabel: label,
         actionType: LabelActionType.edit,
-        onCreateNewLabelCallback: (newLabel) =>
+        onLabelActionCallback: (newLabel) =>
           editLabel(
             accountId: accountId,
             selectedLabel: label,

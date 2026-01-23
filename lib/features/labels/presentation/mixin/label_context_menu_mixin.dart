@@ -12,6 +12,8 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin LabelContextMenuMixin on PopupContextMenuActionMixin {
+  static const _labelActions = [LabelActionType.edit];
+
   Future<void> _openLabelPopupMenuAction(
     BuildContext context,
     ImagePaths imagePaths,
@@ -19,9 +21,7 @@ mixin LabelContextMenuMixin on PopupContextMenuActionMixin {
     RelativeRect position,
     OnLabelActionTypeCallback onLabelActionTypeCallback,
   ) async {
-    final listLabelAction = [LabelActionType.edit];
-
-    final popupMenuItems = listLabelAction
+    final popupMenuItems = _labelActions
         .map((actionType) => _buildLabelPopupMenuItem(
               label,
               actionType,
@@ -89,9 +89,7 @@ mixin LabelContextMenuMixin on PopupContextMenuActionMixin {
     Label label,
     OnLabelActionTypeCallback onLabelActionTypeCallback,
   ) async {
-    final listLabelAction = [LabelActionType.edit];
-
-    final contextMenuActions = listLabelAction
+    final contextMenuActions = _labelActions
         .map((actionType) => _buildLabelContextMenuItem(
           actionType,
           AppLocalizations.of(context),

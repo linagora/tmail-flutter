@@ -25,18 +25,18 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/v
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-typedef OnCreateNewLabelCallback = Function(Label label);
+typedef OnLabelActionCallback = Function(Label label);
 
 class CreateNewLabelModal extends StatefulWidget {
   final List<Label> labels;
   final LabelActionType actionType;
-  final OnCreateNewLabelCallback onCreateNewLabelCallback;
+  final OnLabelActionCallback onLabelActionCallback;
   final Label? selectedLabel;
 
   const CreateNewLabelModal({
     super.key,
     required this.labels,
-    required this.onCreateNewLabelCallback,
+    required this.onLabelActionCallback,
     this.actionType = LabelActionType.create,
     this.selectedLabel,
   });
@@ -182,6 +182,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                                 isPositiveActionEnabled: value,
                                 onPositiveAction: _onCreateNewLabel,
                                 onNegativeAction: _onCloseModal,
+                                positiveKey: widget.actionType.getModalPositiveActionKey(),
                               );
                             },
                           ),
@@ -338,7 +339,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
           ? HexColor(_selectedColor!.toHexTriplet())
           : null,
     );
-    widget.onCreateNewLabelCallback(newLabel);
+    widget.onLabelActionCallback(newLabel);
 
     popBack();
   }
