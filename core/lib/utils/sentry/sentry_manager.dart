@@ -27,9 +27,11 @@ class SentryManager {
         return;
       }
       _isSentryAvailable = await SentryInitializer.init(appRunner: appRunner);
-      log('[SentryManager] Sentry initialized: $_isSentryAvailable');
 
-      if (!_isSentryAvailable) {
+      if (_isSentryAvailable) {
+        log('[SentryManager] Sentry is active.');
+      } else {
+        log('[SentryManager] Sentry is not active.');
         await fallBackRunner();
       }
     } catch (e) {
@@ -47,7 +49,11 @@ class SentryManager {
       _isSentryAvailable = await SentryInitializer.init(
         sentryConfig: sentryConfig,
       );
-      log('[SentryManager] Sentry initialized: $_isSentryAvailable');
+      if (_isSentryAvailable) {
+        log('[SentryManager] Sentry is active.');
+      } else {
+        log('[SentryManager] Sentry is not active.');
+      }
     } catch (e) {
       logWarning('[SentryManager] Init failed, Exception $e');
     }
