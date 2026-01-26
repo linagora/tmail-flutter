@@ -9,6 +9,8 @@ extension ListEmailIdExtension on List<EmailId> {
 
   List<Id> toIds() => map((emailId) => emailId.id).toList();
 
+  Set<Id> toSetIds() => map((emailId) => emailId.id).toSet();
+
   Map<Id, PatchObject> generateMapUpdateObjectMarkAsRead(ReadActions readActions) {
     return {
       for (var emailId in this)
