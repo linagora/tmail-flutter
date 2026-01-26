@@ -25,6 +25,8 @@ class AppShortcutManager {
       return MailViewActionShortcutType.newMessage;
     } else if (keysPressed.isOnly(LogicalKeyboardKey.keyU)) {
       return MailViewActionShortcutType.markAsUnread;
+    } else if (keysPressed.isOnly(LogicalKeyboardKey.escape)) {
+      return MailViewActionShortcutType.closeThreadDetail;
     } else {
       return null;
     }

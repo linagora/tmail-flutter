@@ -9,6 +9,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/base/shortcut/app_shortcut_manager.dart';
 import 'package:tmail_ui_user/features/base/shortcut/mail/mail_view_action_shortcut_type.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/key_shortcut_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/model/mail_view_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -64,6 +65,12 @@ extension HandleMailShortcutActionsExtension on ThreadDetailController {
 
   void handleMailShortcutAction(MailViewActionShortcutType shortcutType) {
     log('$runtimeType::handleMailShortcutAction:🔥ShortcutType: $shortcutType');
+
+    if (shortcutType == MailViewActionShortcutType.closeThreadDetail) {
+      closeThreadDetailAction();
+      return;
+    }
+
     final expandedEmail = currentExpandedEmail;
 
     if (expandedEmail == null) return;
