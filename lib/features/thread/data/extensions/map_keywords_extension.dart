@@ -32,11 +32,11 @@ extension MapKeywordsExtension on Map<KeyWordIdentifier, bool>? {
     this?.remove(keyword);
   }
 
-  void toggleKeyword(KeyWordIdentifier keyword, bool remove) {
-    if (remove) {
-      this?.remove(keyword);
+  void toggleKeyword(KeyWordIdentifier keyword, bool shouldRemove) {
+    if (shouldRemove) {
+      removeKeyword(keyword);
     } else {
-      this?[keyword] = true;
+      addKeyword(keyword);
     }
   }
 }

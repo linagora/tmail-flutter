@@ -19,6 +19,7 @@ class RemoveALabelFromEmailScenario extends BaseTestScenario
   @override
   Future<void> runTestLogic() async {
     const emailUser = String.fromEnvironment('BASIC_AUTH_EMAIL');
+    expect(emailUser, isNotEmpty, reason: 'BASIC_AUTH_EMAIL must be set');
 
     final threadRobot = ThreadRobot($);
     final emailRobot = EmailRobot($);

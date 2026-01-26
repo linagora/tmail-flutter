@@ -971,6 +971,10 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     List<EmailId> emailIds,
     KeyWordIdentifier labelKeyword,
   ) async {
+    if (emailIds.isEmpty) {
+      throw ArgumentError.value(emailIds, 'emailIds', 'must not be empty');
+    }
+
     final method = SetEmailMethod(accountId)
       ..addUpdates(emailIds.generateMapUpdateObjectLabel(labelKeyword));
 
@@ -987,8 +991,9 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     );
 
     final emailIdsUpdated = response?.updated?.keys ?? <Id>[];
-    final ids = emailIds.map((emailId) => emailId.id);
-    final isUpdated = emailIdsUpdated.every(ids.contains);
+    final ids = emailIds.toSetIds();
+    final isUpdated = ids.every(emailIdsUpdated.contains) &&
+        emailIdsUpdated.length == ids.length;
 
     if (emailIdsUpdated.isEmpty || !isUpdated) {
       throw parseErrorForSetResponse(response, emailIds.first.id);
@@ -1031,6 +1036,10 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     List<EmailId> emailIds,
     KeyWordIdentifier labelKeyword,
   ) async {
+    if (emailIds.isEmpty) {
+      throw ArgumentError.value(emailIds, 'emailIds', 'must not be empty');
+    }
+
     final method = SetEmailMethod(accountId)
       ..addUpdates(emailIds.generateMapUpdateObjectLabel(
         labelKeyword,
@@ -1050,13 +1059,12 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     );
 
     final emailIdsUpdated = response?.updated?.keys ?? <Id>[];
-    final ids = emailIds.map((emailId) => emailId.id);
-    final isUpdated = emailIdsUpdated.every(ids.contains);
+    final ids = emailIds.toSetIds();
+    final isUpdated = emailIdsUpdated.every(ids.contains) &&
+        emailIdsUpdated.length == ids.length;
 
     if (emailIdsUpdated.isEmpty || !isUpdated) {
-      for (var id in emailIds) {
-        throw parseErrorForSetResponse(response, id.id);
-      }
+      throw parseErrorForSetResponse(response, emailIds.first.id);
     }
   }
 }
