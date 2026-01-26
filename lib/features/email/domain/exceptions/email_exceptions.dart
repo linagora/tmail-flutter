@@ -23,3 +23,5 @@ class NotParsableBlobIdToEmailException implements Exception {
 
   NotParsableBlobIdToEmailException({this.ids});
 }
+
+class EmailIdListIsEmptyException implements Exception {}

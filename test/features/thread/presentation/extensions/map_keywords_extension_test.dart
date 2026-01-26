@@ -253,7 +253,7 @@ void main() {
       final keyword = KeyWordIdentifier('\$seen');
       final map = <KeyWordIdentifier, bool>{};
 
-      map.toggleKeyword(keyword, false);
+      map.toggleKeyword(keyword: keyword, shouldRemove: false);
 
       expect(map.length, 1);
       expect(map[keyword], true);
@@ -265,7 +265,7 @@ void main() {
         KeyWordIdentifier('\$flagged'): true,
       };
 
-      map.toggleKeyword(keyword, false);
+      map.toggleKeyword(keyword: keyword, shouldRemove: false);
 
       expect(map.length, 2);
       expect(map[keyword], true);
@@ -277,7 +277,7 @@ void main() {
         keyword: false,
       };
 
-      map.toggleKeyword(keyword, false);
+      map.toggleKeyword(keyword: keyword, shouldRemove: false);
 
       expect(map.length, 1);
       expect(map[keyword], true);
@@ -290,7 +290,7 @@ void main() {
         KeyWordIdentifier('\$flagged'): true,
       };
 
-      map.toggleKeyword(keyword, true);
+      map.toggleKeyword(keyword: keyword, shouldRemove: true);
 
       expect(map.length, 1);
       expect(map.containsKey(keyword), false);
@@ -302,7 +302,7 @@ void main() {
       };
       final keyword = KeyWordIdentifier('\$seen');
 
-      map.toggleKeyword(keyword, true);
+      map.toggleKeyword(keyword: keyword, shouldRemove: true);
 
       expect(map.length, 1);
       expect(map.values.first, true);
@@ -312,7 +312,7 @@ void main() {
       final map = <KeyWordIdentifier, bool>{};
       final keyword = KeyWordIdentifier('\$seen');
 
-      expect(() => map.toggleKeyword(keyword, true), returnsNormally);
+      expect(() => map.toggleKeyword(keyword: keyword, shouldRemove: true), returnsNormally);
       expect(map.isEmpty, true);
     });
 
@@ -320,7 +320,7 @@ void main() {
       final map = <KeyWordIdentifier, bool>{};
       final keyword = KeyWordIdentifier('\$seen');
 
-      expect(() => map.toggleKeyword(keyword, false), returnsNormally);
+      expect(() => map.toggleKeyword(keyword: keyword, shouldRemove: false), returnsNormally);
       expect(map.length, 1);
       expect(map[keyword], true);
     });
@@ -329,16 +329,16 @@ void main() {
       Map<KeyWordIdentifier, bool>? map;
       final keyword = KeyWordIdentifier('\$seen');
 
-      expect(() => map.toggleKeyword(keyword, true), returnsNormally);
-      expect(() => map.toggleKeyword(keyword, false), returnsNormally);
+      expect(() => map.toggleKeyword(keyword: keyword, shouldRemove: true), returnsNormally);
+      expect(() => map.toggleKeyword(keyword: keyword, shouldRemove: false), returnsNormally);
     });
 
     test('calling toggleKeyword on null map has no side effects', () {
       Map<KeyWordIdentifier, bool>? map;
       final keyword = KeyWordIdentifier('\$seen');
 
-      map.toggleKeyword(keyword, false);
-      map.toggleKeyword(keyword, true);
+      map.toggleKeyword(keyword: keyword, shouldRemove: false);
+      map.toggleKeyword(keyword: keyword, shouldRemove: true);
 
       expect(map, isNull);
     });
@@ -351,7 +351,7 @@ void main() {
 
       final originalIdentity = identityHashCode(map);
 
-      map.toggleKeyword(keyword, true);
+      map.toggleKeyword(keyword: keyword, shouldRemove: true);
 
       expect(identityHashCode(map), originalIdentity);
       expect(map.isEmpty, true);

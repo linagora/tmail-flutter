@@ -37,7 +37,11 @@ extension AddLabelToThreadExtension on ThreadDetailController {
         emailLabels: threadLabels,
         emailIds: emailIds,
         onAddLabelToEmailsCallback: (emailIds, label, isSelected) {
-          toggleLabelToThread(label, isSelected, currentEmailIds: emailIds);
+          toggleLabelToThread(
+            label,
+            isSelected: isSelected,
+            currentEmailIds: emailIds,
+          );
         },
       ),
       dialogLabel: 'add-label-to-thread-modal',
@@ -45,8 +49,8 @@ extension AddLabelToThreadExtension on ThreadDetailController {
   }
 
   void toggleLabelToThread(
-    Label label,
-    bool isSelected, {
+    Label label,{
+    required bool isSelected,
     List<EmailId>? currentEmailIds,
   }) {
     final accountId = mailboxDashBoardController.accountId.value;

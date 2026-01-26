@@ -32,7 +32,10 @@ extension MapKeywordsExtension on Map<KeyWordIdentifier, bool>? {
     this?.remove(keyword);
   }
 
-  void toggleKeyword(KeyWordIdentifier keyword, bool shouldRemove) {
+  void toggleKeyword({
+    required KeyWordIdentifier keyword,
+    required bool shouldRemove,
+  }) {
     if (shouldRemove) {
       removeKeyword(keyword);
     } else {
