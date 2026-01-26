@@ -22,6 +22,7 @@ export 'scribe/ai/presentation/model/modal/modal_placement.dart';
 export 'scribe/ai/presentation/model/text_selection_model.dart';
 export 'scribe/ai/presentation/styles/ai_scribe_styles.dart';
 export 'scribe/ai/presentation/utils/ai_scribe_constants.dart';
+export 'scribe/ai/presentation/utils/ai_scribe_mobile_utils.dart';
 export 'scribe/ai/presentation/utils/context_menu/hover_submenu_controller.dart';
 export 'scribe/ai/presentation/utils/context_menu/context_submenu_controller.dart';
 export 'scribe/ai/presentation/utils/modal/ai_scribe_modal_manager.dart';
