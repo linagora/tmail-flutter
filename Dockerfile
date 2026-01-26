@@ -11,7 +11,7 @@ COPY . .
 # Precompile tmail flutter
 RUN ./scripts/prebuild.sh
 # Build flutter for web
-RUN flutter build web --release
+RUN flutter build web --release --source-maps
 
 # Stage 2 - Create the run-time image
 FROM nginx:alpine
