@@ -19,7 +19,7 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
     consumeState(Stream.value(Right(GetAllEmailLoading())));
     await Future.delayed(const Duration(milliseconds: 300)); // Create loading effect
     canLoadMore = false;
-    loadingMoreStatus.value == LoadingMoreStatus.idle;
+    loadingMoreStatus.value = LoadingMoreStatus.idle;
     getAllEmailAction();
   }
 
