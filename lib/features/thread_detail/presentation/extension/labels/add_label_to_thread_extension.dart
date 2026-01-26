@@ -49,7 +49,7 @@ extension AddLabelToThreadExtension on ThreadDetailController {
   }
 
   void toggleLabelToThread(
-    Label label,{
+    Label label, {
     required bool isSelected,
     List<EmailId>? currentEmailIds,
   }) {

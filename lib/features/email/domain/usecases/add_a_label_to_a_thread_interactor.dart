@@ -37,7 +37,7 @@ class AddALabelToAThreadInteractor {
         ));
       } else if (result.emailIdsSuccess.isEmpty) {
         yield Left(AddALabelToAThreadFailure(
-          exception: EmailIdListIsEmptyException(),
+          exception: EmailIdsSuccessIsEmptyException(),
           labelDisplay: labelDisplay,
         ));
       } else {

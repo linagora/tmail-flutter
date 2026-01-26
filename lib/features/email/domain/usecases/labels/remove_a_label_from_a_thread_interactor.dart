@@ -37,7 +37,7 @@ class RemoveALabelFromAThreadInteractor {
         ));
       } else if (result.emailIdsSuccess.isEmpty) {
         yield Left(RemoveALabelFromAThreadFailure(
-          exception: EmailIdListIsEmptyException(),
+          exception: EmailIdsSuccessIsEmptyException(),
           labelDisplay: labelDisplay,
         ));
       } else {
