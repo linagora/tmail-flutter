@@ -68,10 +68,16 @@ mixin BatchSetEmailProcessingMixin on HandleSetErrorMixin, MailAPIMixin {
       final response =
           await (requestBuilder..usings(capabilities)).build().execute();
 
-      final setEmailResponse = response.parse<SetEmailResponse>(
-        setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize,
-      );
+      SetEmailResponse? setEmailResponse;
+      try {
+        setEmailResponse = response.parse<SetEmailResponse>(
+          setEmailInvocation.methodCallId,
+          SetEmailResponse.deserialize,
+        );
+      } catch (e) {
+        log('EmailAPI::$debugLabel: Failed to parse response: $e');
+        setEmailResponse = null;
+      }
 
       if (setEmailResponse == null) {
         log('EmailAPI::$debugLabel: Batch from ${start + 1} to $end returned null response');
