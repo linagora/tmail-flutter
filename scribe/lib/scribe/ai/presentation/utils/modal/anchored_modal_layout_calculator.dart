@@ -154,10 +154,14 @@ class AnchoredModalLayoutCalculator {
     if (isTop) {
       final availableHeight = anchorPosition.dy - padding - gap;
       final positionBottom = screenSize.height - anchorPosition.dy + gap;
+      final clampedLeft = anchorPosition.dx.clamp(
+        padding,
+        screenSize.width - menuSize.width - padding,
+      );
 
       return AnchoredSuggestionLayoutResult(
         availableHeight: availableHeight,
-        left: anchorPosition.dx,
+        left: clampedLeft,
         bottom: positionBottom,
       );
     }

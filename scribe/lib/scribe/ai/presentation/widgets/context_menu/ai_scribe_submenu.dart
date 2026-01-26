@@ -24,6 +24,7 @@ class AiScribeSubmenu extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: ListView.builder(
         shrinkWrap: true,
+        padding: EdgeInsets.zero,
         itemCount: menuActions.length,
         itemBuilder: (_, index) {
           final action = menuActions[index];

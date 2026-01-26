@@ -53,7 +53,7 @@ class _AiScribeContextMenuContentState extends State<AiScribeContextMenu> {
               widget.submenuController?.hide();
               widget.onActionSelected(menuAction);
             },
-            onHoverShowSubmenu: (itemKey) =>
+            onSelectCategory: (itemKey) =>
                 menuAction.submenuActions?.isNotEmpty == true
                     ? _showSubmenu(
                         context: context,
