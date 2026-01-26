@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +35,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final eventDesc = calendarEvent.description?.isNotEmpty == true
-      ? calendarEvent.description!
-      : emailContent;
+    final eventDesc = _generateEventDescriptionAsHtml();
 
     return Container(
       clipBehavior: Clip.antiAlias,
@@ -74,5 +73,20 @@ class CalendarEventDetailWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _generateEventDescriptionAsHtml() {
+    final descriptions = calendarEvent.description?.trimmed ?? '';
+    final emailContentTrimmed = emailContent.trimmed;
+
+    if (descriptions.isEmpty || emailContentTrimmed.isEmpty) {
+      return '';
+    }
+
+    return '''
+      $descriptions
+      <br>
+      $emailContentTrimmed
+    ''';
   }
 }
