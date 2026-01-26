@@ -37,14 +37,14 @@ _.Q=!1
 _.as=null
 _.eh$=d
 _.c=_.a=null},
-cVs:function cVs(d,e){this.a=d
+cVr:function cVr(d,e){this.a=d
 this.b=e},
-cVt:function cVt(d){this.a=d},
-cVu:function cVu(d,e){this.a=d
+cVs:function cVs(d){this.a=d},
+cVt:function cVt(d,e){this.a=d
 this.b=e},
-cVv:function cVv(d){this.a=d},
-cVr:function cVr(d){this.a=d},
+cVu:function cVu(d){this.a=d},
 cVq:function cVq(d){this.a=d},
+cVp:function cVp(d){this.a=d},
 awc:function awc(){},
 YU:function YU(d,e,f){this.a=d
 this.b=e
@@ -67,8 +67,8 @@ _.d=g
 _.e=h
 _.f=i},
 bWG:function bWG(d){this.a=d},
-dUe(d){var x,w,v,u,t,s,r,q,p="text/html"
-if(!(B.d.t(d,$.dGa())&&B.d.t(d,$.dG9())))return d
+dUd(d){var x,w,v,u,t,s,r,q,p="text/html"
+if(!(B.d.t(d,$.dG9())&&B.d.t(d,$.dG8())))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
 v.toString
@@ -82,7 +82,7 @@ q=new DOMParser().parseFromString('      <button class="quote-toggle-button coll
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.dLX(v)
+v=v==null?null:J.dLW(v)
 return v==null?d:v},
 aSh(){if(!B.d.t(window.navigator.userAgent.toLowerCase(),"iphone"))var x=B.d.t(window.navigator.userAgent.toLowerCase(),"android")&&B.d.t(window.navigator.userAgent.toLowerCase(),"mobile")
 else x=!0
@@ -99,7 +99,7 @@ C.N1.prototype={
 X(){return new C.art(null)}}
 C.art.prototype={
 aq(){var x,w=this
-w.aY8()
+w.aY7()
 x=w.a
 w.e=x.e
 w.f=x.d
@@ -108,10 +108,10 @@ if(!C.aSh()&&!C.aSi()){x=w.a.fy
 w.as=new C.aKg(x)}w.ask()
 x=window
 x.toString
-x=A.js(x,"message",w.gbd7(),!1,y._)
+x=A.js(x,"message",w.gbd6(),!1,y._)
 w.z!==$&&A.cJ()
 w.z=x},
-bd8(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
+bd7(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
 try{x=B.au.hh(0,new A.RP([],[]).NO(d.data,!0))
 w=J.ah(x,"view")
 t=n.d
@@ -122,13 +122,13 @@ if(n.gasZ()){t=v
 t=(t==null?m:B.d.t(t,"toDart: onScrollChanged"))===!0}else t=!1
 if(t){t=n.a.ay
 t.toString
-n.bcE(x,t)
+n.bcD(x,t)
 return}else{if(n.gasZ()){t=v
 t=(t==null?m:B.d.t(t,"toDart: onScrollEnd"))===!0}else t=!1
 if(t){t=n.a.ay
 t.toString
 s=J.ah(x,"velocity")
-r=J.dnu(s==null?0:s,800)
+r=J.dnt(s==null?0:s,800)
 q=t.f
 p=B.c.gbl(q).at
 p.toString
@@ -137,23 +137,23 @@ return}else{t=v
 q=n.a
 if(q.Q!=null)t=(t==null?m:B.d.t(t,"toDart: iframeKeydown"))===!0
 else t=!1
-if(t){n.bdO(x)
+if(t){n.bdN(x)
 return}else{t=v
 if(q.fx)t=(t==null?m:B.d.t(t,"toDart: iframeClick"))===!0
 else t=!1
-if(t){n.bdN(x)
+if(t){n.bdM(x)
 return}else{t=v
-if((t==null?m:B.d.t(t,"toDart: iframeLinkHover"))===!0){n.bdP(x)
+if((t==null?m:B.d.t(t,"toDart: iframeLinkHover"))===!0){n.bdO(x)
 return}else{t=v
-if((t==null?m:B.d.t(t,"toDart: iframeLinkOut"))===!0){n.bdQ(x)
+if((t==null?m:B.d.t(t,"toDart: iframeLinkOut"))===!0){n.bdP(x)
 return}}}}}}if(J.u(J.ah(x,"message"),"iframeHasBeenLoaded"))n.Q=!0
 if(!n.Q)return
 t=v
-if((t==null?m:B.d.t(t,"toDart: htmlHeight"))===!0)n.baR(J.ah(x,"height"))
+if((t==null?m:B.d.t(t,"toDart: htmlHeight"))===!0)n.baQ(J.ah(x,"height"))
 else{t=v
 t=(t==null?m:B.d.t(t,"toDart: htmlWidth"))===!0
 if(t)n.a.toString
-if(t)n.baS(J.ah(x,"width"))
+if(t)n.baR(J.ah(x,"width"))
 else{t=v
 if((t==null?m:B.d.t(t,"toDart: OpenLink"))===!0){t=J.ah(x,"url")
 if(t!=null&&n.c!=null&&typeof t=="string"&&B.d.aO(t,"mailto:")){q=n.a.y
@@ -166,7 +166,7 @@ gasZ(){var x=this.a.ay
 if(x!=null)x=x.f.length!==0===!0
 else x=!1
 return x},
-bcE(d,e){var x,w,v,u,t,s,r,q
+bcD(d,e){var x,w,v,u,t,s,r,q
 try{t=J.ah(d,"deltaY")
 x=t==null?0:t
 s=e.f
@@ -179,7 +179,7 @@ e.iL(v,B.af,B.ok)}else if(w<B.c.gbl(s).geS())e.ic(B.c.gbl(s).geS())
 else if(w>B.c.gbl(s).gee())e.ic(B.c.gbl(s).gee())
 else e.ic(w)}catch(q){u=A.O(q)
 A.x(A.D(this).l(0)+"::_handleIframeOnScrollChangedListener:Exception = "+A.e(u),null,null,B.w,null,!1)}},
-baR(d){var x,w,v,u,t,s,r=this
+baQ(d){var x,w,v,u,t,s,r=this
 if(d==null){x=r.e
 x===$&&A.d()
 w=x}else w=d
@@ -191,25 +191,25 @@ u=J.a6r(v)
 t=r.y
 if(x){t===$&&A.d()
 s=u.pF(v,t)}else{t===$&&A.d()
-s=u.ng(v,t)}if(s)r.V(new C.cVs(r,v))}if(r.c!=null&&r.x)r.V(new C.cVt(r))},
-baS(d){var x,w,v=this
+s=u.ng(v,t)}if(s)r.V(new C.cVr(r,v))}if(r.c!=null&&r.x)r.V(new C.cVs(r))},
+baR(d){var x,w,v=this
 if(d==null){x=v.f
 x===$&&A.d()
 w=x}else w=d
-if(v.c!=null&&J.dnt(w,v.a.db)&&v.a.at)v.V(new C.cVu(v,w))},
-bdO(d){var x,w,v,u,t=null
+if(v.c!=null&&J.dns(w,v.a.db)&&v.a.at)v.V(new C.cVt(v,w))},
+bdN(d){var x,w,v,u,t=null
 try{v=J.am(d)
 x=new C.YU(A.aJ(v.j(d,"key")),A.aJ(v.j(d,"code")),J.u(v.j(d,"shift"),!0))
 A.x(A.D(this).l(0)+"::_handleOnIFrameKeyboardEvent:\ud83d\udce5 Shortcut pressed: "+A.e(x),t,t,B.f,t,!1)
 v=this.a.Q
 if(v!=null)v.$1(x)}catch(u){w=A.O(u)
 A.x(A.D(this).l(0)+"::_handleOnIFrameKeyboardEvent: Exception = "+A.e(w),t,t,B.w,t,!1)}},
-bdN(d){var x,w,v,u=null
+bdM(d){var x,w,v,u=null
 try{A.x(A.D(this).l(0)+"::_handleOnIFrameClickEvent: "+A.e(d),u,u,B.f,u,!1)
 w=this.a.as
 if(w!=null)w.$0()}catch(v){x=A.O(v)
 A.x(A.D(this).l(0)+"::_handleOnIFrameClickEvent: Exception = "+A.e(x),u,u,B.w,u,!1)}},
-bdP(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
+bdO(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
 try{A.x(A.D(n).l(0)+"::_handleOnIFrameLinkHoverEvent: "+A.e(d),m,m,B.f,m,!1)
 t=J.am(d)
 s=t.j(d,"url")
@@ -232,7 +232,7 @@ t=n.c
 if(t!=null){r=n.as
 if(r!=null)r.ak5(0,t,x,v)}}}catch(o){u=A.O(o)
 A.x(A.D(n).l(0)+"::_handleOnIFrameLinkHoverEvent: Exception = "+A.e(u),m,m,B.w,m,!1)}},
-bdQ(d){var x,w,v,u=null
+bdP(d){var x,w,v,u=null
 try{A.x(A.D(this).l(0)+"::_handleOnIFrameLinkOutEvent: "+A.e(d),u,u,B.f,u,!1)
 w=this.as
 if(w!=null)w.f8()}catch(v){x=A.O(v)
@@ -248,11 +248,11 @@ w=x.e
 if(w!==d.e)v.e=w
 x=x.d
 if(x!==d.d)v.f=x},
-ask(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.drT(10),r=u.a,q=r.c,p=!r.fr,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
+ask(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.drS(10),r=u.a,q=r.c,p=!r.fr,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 l=l?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 n=n?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ch)q=C.dUe(q)
+if(r.ch)q=C.dUd(q)
 r=y.s
 x=A.c([],r)
 if(u.a.ch)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -282,13 +282,13 @@ u.r=A.bF(!0,y.y)},
 u(d){var x=this
 x.w4(d)
 if(x.a.fr)return x.an6()
-else return A.f5(new C.cVv(x))},
+else return A.f5(new C.cVu(x))},
 an6(){var x,w=this,v=null,u=A.D(w).l(0),t=w.e
 t===$&&A.d()
 A.x(u+"::_buildHtmlElementView: ActualHeight: "+A.e(t),v,v,B.f,v,!1)
 t=A.c([],y.p)
 u=w.w
-if((u==null?v:B.d.am(u).length!==0)===!0)t.push(A.X5(new C.cVr(w),w.r,y.y))
+if((u==null?v:B.d.am(u).length!==0)===!0)t.push(A.X5(new C.cVq(w),w.r,y.y))
 if(w.x)t.push(D.a3Y)
 x=new A.cy(B.aa,v,B.a2,B.G,t,v)
 w.a.toString
@@ -312,8 +312,8 @@ if(x!=null){x.aS()
 x.i3()
 this.eh$=null}this.oU()}}
 C.YU.prototype={
-aHa(d,e,f){return this.a.toLowerCase()===e.toLowerCase()&&this.c===f},
-zR(d,e){return this.aHa(0,e,!1)},
+aH9(d,e,f){return this.a.toLowerCase()===e.toLowerCase()&&this.c===f},
+zQ(d,e){return this.aH9(0,e,!1)},
 gB(){return[this.a,this.b,this.c]}}
 C.ba7.prototype={}
 C.bWE.prototype={}
@@ -341,27 +341,27 @@ f8(){var x=this.a
 if(x!=null)x.e8(0)
 this.a=null}}
 var z=a.updateTypes(["~(vP)","~()"])
-C.cVs.prototype={
+C.cVr.prototype={
 $0(){var x=this.a
 x.e=this.b
 x.x=!1},
 $S:0}
-C.cVt.prototype={
+C.cVs.prototype={
 $0(){this.a.x=!1},
 $S:0}
-C.cVu.prototype={
+C.cVt.prototype={
 $0(){return this.a.f=this.b},
 $S:0}
-C.cVv.prototype={
+C.cVu.prototype={
 $2(d,e){var x=this.a,w=x.y
 w===$&&A.d()
 x.y=Math.min(e.d,w)
 return x.an6()},
 $S:219}
-C.cVr.prototype={
+C.cVq.prototype={
 $2(d,e){var x,w,v,u,t=null
 if(e.b!=null){x=this.a
-w=A.drP(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.cVq(x),"iframe")
+w=A.drO(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.cVp(x),"iframe")
 v=x.a.dy
 u=x.e
 x=x.f
@@ -371,7 +371,7 @@ return A.a8(t,w,B.k,t,new A.aq(0,1/0,0,v),t,t,u,t,t,t,t,t,x)}else{u===$&&A.d()
 x===$&&A.d()
 return new A.b0(x,u,w,t)}}else return B.x},
 $S:187}
-C.cVq.prototype={
+C.cVp.prototype={
 $1(d){var x,w
 y.v.a(d)
 x=this.a
@@ -391,7 +391,7 @@ x=d.style
 x.width="100%"
 x=d.style
 x.height="100%"},
-$S:703}
+$S:702}
 C.bWH.prototype={
 $0(){var x=this,w=x.b
 if(w.e!=null)x.a.ak5(0,w,x.c,x.d)},
@@ -400,21 +400,21 @@ C.bWI.prototype={
 $1(d){var x=this,w=null,v=x.b,u=A.iL(0,A.cQ(B.bP,w,B.M,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,v.gxk(),w,w,w,w,w,w,w,w,!1,B.a3),w),t=x.a.a,s=A.c([new A.c2(0,B.X,B.n.aB(0.15),B.r,20)],y.V)
 v=v.b.e
 if(v==null)v=D.aXO
-return A.dj4(new C.bWG(x.c),new A.cy(B.aa,w,B.a2,B.G,A.c([u,A.kq(w,A.cO(A.cp(B.D,!0,B.lv,A.a8(w,A.ae(x.f,w,1,B.C,w,w,v,w,w,w),B.k,w,new A.aq(0,x.e,28,1/0),new A.b8(B.n,w,w,B.lv,s,w,w,B.B),w,w,w,w,B.m8,w,w,w),B.k,w,0,w,w,w,w,w,B.az)),w,t,x.d,w)],y.p),w),B.hC,B.y5,new A.bD(0,1,y.t),y.i)},
+return A.dj3(new C.bWG(x.c),new A.cy(B.aa,w,B.a2,B.G,A.c([u,A.kq(w,A.cO(A.cp(B.D,!0,B.lv,A.a8(w,A.ae(x.f,w,1,B.C,w,w,v,w,w,w),B.k,w,new A.aq(0,x.e,28,1/0),new A.b8(B.n,w,w,B.lv,s,w,w,B.B),w,w,w,w,B.m8,w,w,w),B.k,w,0,w,w,w,w,w,B.az)),w,t,x.d,w)],y.p),w),B.hC,B.y5,new A.bD(0,1,y.t),y.i)},
 $S:342}
 C.bWG.prototype={
 $3(d,e,f){var x=this.a?-1:1
 return A.mA(A.b_g(f,new A.H(0,x*(1-e)*8)),null,e)},
 $S:341};(function aliases(){var x=C.awc.prototype
-x.aY8=x.aq})();(function installTearOffs(){var x=a._instance_1u,w=a._instance_0u
-x(C.art.prototype,"gbd7","bd8",0)
+x.aY7=x.aq})();(function installTearOffs(){var x=a._instance_1u,w=a._instance_0u
+x(C.art.prototype,"gbd6","bd7",0)
 w(C.aKg.prototype,"gxk","f8",1)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
 v(C.N1,A.af)
 v(C.awc,A.ac)
 v(C.art,C.awc)
-u(A.vb,[C.cVs,C.cVt,C.cVu,C.bWH])
-u(A.vc,[C.cVv,C.cVr])
-u(A.oM,[C.cVq,C.bWI,C.bWG])
+u(A.vb,[C.cVr,C.cVs,C.cVt,C.bWH])
+u(A.vc,[C.cVu,C.cVq])
+u(A.oM,[C.cVp,C.bWI,C.bWG])
 u(A.a5,[C.ba7,C.bWE,C.aKg])
 v(C.YU,C.ba7)
 x(C.awc,A.qW)
@@ -425,7 +425,7 @@ return{v:x("FD"),V:x("N<c2>"),s:x("N<h>"),p:x("N<i>"),w:x("no"),_:x("vP"),P:x("b
 D.aKZ=new A.W(B.cj,D.aT6,null)
 D.a3Y=new A.dJ(B.da,null,null,D.aKZ,null)
 D.aXO=new A.ai(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})();(function lazyInitializers(){var x=a.lazyFinal
-x($,"eFJ","dGa",()=>A.bi("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
-x($,"eFI","dG9",()=>A.bi("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
+x($,"eFI","dG9",()=>A.bi("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
+x($,"eFH","dG8",()=>A.bi("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"oY6KvMDpcRdCCUJz+9dQuiJXIfU=");
+a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"V8OQrf77urqw3oSZqrGJVga+h0Y=");
