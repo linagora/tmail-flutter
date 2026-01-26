@@ -61,7 +61,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         await richTextMobileTabletController?.htmlEditorApi?.setText(text);
       }
     } catch (e) {
-      logError('$runtimeType::insertTextInEditor:Exception = $e');
+      logWarning('$runtimeType::insertTextInEditor:Exception = $e');
     }
   }
 
@@ -99,7 +99,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         return result;
       }
     } catch (e) {
-      logError('$runtimeType::saveSelection:Exception = $e');
+      logWarning('$runtimeType::saveSelection:Exception = $e');
       return "";
     }
   }
@@ -120,7 +120,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         return result;
       }
     } catch (e) {
-      logError('$runtimeType::restoreSelection:Exception = $e');
+      logWarning('$runtimeType::restoreSelection:Exception = $e');
       return "";
     }
   }
@@ -141,7 +141,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         return result;
       }
     } catch (e) {
-      logError('$runtimeType::getSavedSelection:Exception = $e');
+      logWarning('$runtimeType::getSavedSelection:Exception = $e');
       return "";
     }
   }
@@ -161,7 +161,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         );
       }
     } catch (e) {
-      logError('$runtimeType::clearSavedSelection:Exception = $e');
+      logWarning('$runtimeType::clearSavedSelection:Exception = $e');
     }
   }
 
@@ -184,7 +184,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     try {
       await richTextMobileTabletController?.focus();
     } catch (e) {
-      logError('$runtimeType::ensureMobileEditorFocused:Exception = $e');
+      logWarning('$runtimeType::ensureMobileEditorFocused:Exception = $e');
     }
   }
 
@@ -212,7 +212,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
       try {
         await setTextInEditor(text);
       } catch (e) {
-        logError('$runtimeType::onReplaceTextCallback:Exception = $e');
+        logWarning('$runtimeType::onReplaceTextCallback:Exception = $e');
       }
     } else {
       if (PlatformInfo.isMobile) {
