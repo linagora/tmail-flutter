@@ -3,6 +3,7 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:scribe/scribe.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
@@ -19,6 +20,11 @@ extension HandleAiScribeInComposerExtension on ComposerController {
         mailboxDashBoardController.cachedAIScribeConfig.value.isEnabled;
 
     return isAIScribeConfigEnabled && isAIScribeEndpointAvailable;
+  }
+
+  bool get isScribeMobile {
+    final context = Get.context;
+    return AiScribeMobileUtils.isScribeInMobileMode(context);
   }
 
   Future<String> _getTextOnlyContentInEditor() async {
@@ -204,7 +210,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   Future<void> onReplaceTextCallback(String text) async {
     final selection = editorTextSelection.value?.selectedText;
 
-    final savedSelection = PlatformInfo.isMobile ? await getSavedSelection() : "";
+    final savedSelection = isScribeMobile ? await getSavedSelection() : "";
 
     final shouldReplaceEverything = (selection == null || selection.isEmpty) && savedSelection.isEmpty;
 
@@ -229,7 +235,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
     clearFocusRecipients();
     clearFocusSubject();
 
-    if (PlatformInfo.isMobile) {
+    if (isScribeMobile) {
       await saveAndUnfocusForModal();
     }
 
@@ -244,6 +250,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
       preferredPlacement: ModalPlacement.top,
       crossAxisAlignment: ModalCrossAxisAlignment.start,
       onSelectAiScribeSuggestionAction: handleAiScribeSuggestionAction,
+      isScribeMobile: isScribeMobile,
     );
   }
 

@@ -1,5 +1,4 @@
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scribe/scribe.dart';
@@ -8,6 +7,7 @@ class AiScribeModalManager {
   AiScribeModalManager._();
 
   static Future<void> showAIScribeMenuModal({
+    required bool isScribeMobile,
     required ImagePaths imagePaths,
     required List<AIScribeMenuCategory> availableCategories,
     required OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction,
@@ -19,7 +19,7 @@ class AiScribeModalManager {
   }) async {
     final AIAction? aiAction;
 
-    if (PlatformInfo.isMobile) {
+    if (isScribeMobile) {
       aiAction = await showMobileAIScribeMenuModal(
         imagePaths: imagePaths,
         content: content,
@@ -46,6 +46,7 @@ class AiScribeModalManager {
     if (aiAction != null) {
       await showAIScribeSuggestionModal(
         aiAction: aiAction,
+        isScribeMobile: isScribeMobile,
         imagePaths: imagePaths,
         content: content,
         buttonPosition: buttonPosition,
@@ -59,6 +60,7 @@ class AiScribeModalManager {
 
   static Future<void> showAIScribeSuggestionModal({
     required AIAction aiAction,
+    required bool isScribeMobile,
     required ImagePaths imagePaths,
     required OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction,
     String? content,
@@ -67,7 +69,7 @@ class AiScribeModalManager {
     ModalPlacement? preferredPlacement,
     ModalCrossAxisAlignment crossAxisAlignment = ModalCrossAxisAlignment.center,
   }) async {
-    if (PlatformInfo.isMobile) {
+    if (isScribeMobile) {
       await showMobileAIScribeSuggestionModal(
         aiAction: aiAction,
         imagePaths: imagePaths,
