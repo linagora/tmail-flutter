@@ -4,7 +4,7 @@ import 'package:multiple_localization/multiple_localization.dart';
 import 'package:scribe/scribe/ai/l10n/messages_all.dart';
 
 class ScribeLocalizations {
-  static const List<String> _supportedLanguageCodes = ['en', 'fr', 'ru', 'vi'];
+  static const List<String> _supportedLanguageCodes = ['en', 'fr', 'ru', 'vi', 'de', 'it', 'ar'];
 
   static ScribeLocalizations of(BuildContext context) {
     return Localizations.of<ScribeLocalizations>(context, ScribeLocalizations)!;
