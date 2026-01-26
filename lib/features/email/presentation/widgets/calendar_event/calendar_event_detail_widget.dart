@@ -79,7 +79,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
     final descriptions = calendarEvent.description?.trimmed ?? '';
     final emailContentTrimmed = emailContent.trimmed;
 
-    if (descriptions.isEmpty || emailContentTrimmed.isEmpty) {
+    if (descriptions.isEmpty && emailContentTrimmed.isEmpty) {
       return '';
     }
 
