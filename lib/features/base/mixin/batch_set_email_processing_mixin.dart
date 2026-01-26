@@ -40,14 +40,14 @@ mixin BatchSetEmailProcessingMixin on HandleSetErrorMixin, MailAPIMixin {
 
     final maxObjects = getMaxObjectsInSetMethod(session, accountId);
     final totalEmails = emailIds.length;
-    final maxBatches = min(totalEmails, maxObjects);
+    final batchSize = min(totalEmails, maxObjects);
 
     final List<EmailId> updatedEmailIds = List.empty(growable: true);
     final List<SetResponse> listSetResponse = List.empty(growable: true);
 
-    for (int start = 0; start < totalEmails; start += maxBatches) {
+    for (int start = 0; start < totalEmails; start += batchSize) {
       int end =
-          (start + maxBatches < totalEmails) ? start + maxBatches : totalEmails;
+          (start + batchSize < totalEmails) ? start + batchSize : totalEmails;
 
       log('EmailAPI::$debugLabel:emails from ${start + 1} to $end');
 
@@ -73,7 +73,10 @@ mixin BatchSetEmailProcessingMixin on HandleSetErrorMixin, MailAPIMixin {
         SetEmailResponse.deserialize,
       );
 
-      if (setEmailResponse == null) continue;
+      if (setEmailResponse == null) {
+        log('EmailAPI::$debugLabel: Batch from ${start + 1} to $end returned null response');
+        continue;
+      }
 
       final listEmailIds = setEmailResponse.updated?.keys.toEmailIds() ?? [];
       updatedEmailIds.addAll(listEmailIds);

@@ -694,10 +694,10 @@ class EmailAPI with
       );
 
       final listEmailIds = setEmailResponse?.destroyed?.toEmailIds() ?? [];
-      final mapErrors = handleSetResponse([setEmailResponse]);
+      final batchErrors = handleSetResponse([setEmailResponse]);
 
       destroyedEmailIds.addAll(listEmailIds);
-      mapErrors.addAll(mapErrors);
+      mapErrors.addAll(batchErrors);
     }
 
     return (emailIdsSuccess: destroyedEmailIds, mapErrors: mapErrors);
