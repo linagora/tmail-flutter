@@ -151,6 +151,12 @@ class _AiScribeMobileActionsBottomSheetState
   }
 
   @override
+  void dispose() {
+    _selectedCategory.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final localizations = ScribeLocalizations.of(context);
     final menuActions = widget.availableCategories
