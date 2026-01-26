@@ -572,7 +572,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> addLabelToThread(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addLabelToThread(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
@@ -606,7 +609,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> removeLabelFromThread(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> removeLabelFromThread(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,

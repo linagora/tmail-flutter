@@ -169,7 +169,10 @@ abstract class EmailRepository {
     KeyWordIdentifier labelKeyword,
   );
 
-  Future<void> addLabelToThread(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addLabelToThread(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
@@ -183,7 +186,10 @@ abstract class EmailRepository {
     KeyWordIdentifier labelKeyword,
   );
 
-  Future<void> removeLabelFromThread(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> removeLabelFromThread(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,

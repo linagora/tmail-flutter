@@ -53,23 +53,27 @@ import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/list_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tmail_ui_user/features/base/mixin/batch_set_email_processing_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
+import 'package:tmail_ui_user/features/download/domain/state/download_all_attachments_for_web_state.dart';
+import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
-import 'package:tmail_ui_user/features/download/domain/state/download_all_attachments_for_web_state.dart';
-import 'package:tmail_ui_user/features/download/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:uri/uri.dart';
 import 'package:uuid/uuid.dart';
 
-class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
+class EmailAPI with
+    HandleSetErrorMixin,
+    MailAPIMixin,
+    BatchSetEmailProcessingMixin {
 
   final HttpClient _httpClient;
   final DownloadManager _downloadManager;
@@ -246,51 +250,15 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     List<EmailId> emailIds,
     ReadActions readActions,
   ) async {
-    final maxObjects = getMaxObjectsInSetMethod(session, accountId);
-    final totalEmails = emailIds.length;
-    final maxBatches = min(totalEmails, maxObjects);
-
-    final List<EmailId> updatedEmailIds = List.empty(growable: true);
-    final Map<Id, SetError> mapErrors = <Id, SetError>{};
-
-    for (int start = 0; start < totalEmails; start += maxBatches) {
-      int end = (start + maxBatches < totalEmails)
-        ? start + maxBatches
-        : totalEmails;
-      log('EmailAPI::markAsRead:emails from ${start + 1} to $end');
-
-      final currentListEmailIds = emailIds.sublist(start, end);
-
-      final setEmailMethod = SetEmailMethod(accountId)
-        ..addUpdates(
-            currentListEmailIds.generateMapUpdateObjectMarkAsRead(readActions)
-          );
-
-      final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-
-      final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
-
-      final capabilities = setEmailMethod.requiredCapabilities
-          .toCapabilitiesSupportTeamMailboxes(session, accountId);
-
-      final response = await (requestBuilder
-          ..usings(capabilities))
-        .build()
-        .execute();
-
-      final setEmailResponse = response.parse<SetEmailResponse>(
-        setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize,
-      );
-
-      final listEmailIds = setEmailResponse?.updated?.keys.toEmailIds() ?? [];
-      final mapErrors = handleSetResponse([setEmailResponse]);
-
-      updatedEmailIds.addAll(listEmailIds);
-      mapErrors.addAll(mapErrors);
-    }
-
-    return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);
+    return executeBatchSetEmail(
+      session: session,
+      accountId: accountId,
+      emailIds: emailIds,
+      httpClient: _httpClient,
+      debugLabel: 'markAsRead',
+      onGenerateUpdates: (batchIds) =>
+          batchIds.generateMapUpdateObjectMarkAsRead(readActions),
+    );
   }
 
   Future<DownloadedResponse> exportAttachment(
@@ -486,51 +454,15 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     List<EmailId> emailIds,
     MarkStarAction markStarAction
   ) async {
-    final maxObjects = getMaxObjectsInSetMethod(session, accountId);
-    final totalEmails = emailIds.length;
-    final maxBatches = min(totalEmails, maxObjects);
-
-    final List<EmailId> updatedEmailIds = List.empty(growable: true);
-    final Map<Id, SetError> mapErrors = <Id, SetError>{};
-
-    for (int start = 0; start < totalEmails; start += maxBatches) {
-      int end = (start + maxBatches < totalEmails)
-        ? start + maxBatches
-        : totalEmails;
-      log('EmailAPI::markAsStar:emails from ${start + 1} to $end');
-
-      final currentListEmailIds = emailIds.sublist(start, end);
-
-      final setEmailMethod = SetEmailMethod(accountId)
-        ..addUpdates(
-            currentListEmailIds.generateMapUpdateObjectMarkAsStar(markStarAction),
-          );
-
-      final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-
-      final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
-
-      final capabilities = setEmailMethod.requiredCapabilities
-          .toCapabilitiesSupportTeamMailboxes(session, accountId);
-
-      final response = await (requestBuilder
-          ..usings(capabilities))
-        .build()
-        .execute();
-
-      final setEmailResponse = response.parse<SetEmailResponse>(
-        setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize,
-      );
-
-      final listEmailIds = setEmailResponse?.updated?.keys.toEmailIds() ?? [];
-      final mapErrors = handleSetResponse([setEmailResponse]);
-
-      updatedEmailIds.addAll(listEmailIds);
-      mapErrors.addAll(mapErrors);
-    }
-
-    return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);
+    return executeBatchSetEmail(
+      session: session,
+      accountId: accountId,
+      emailIds: emailIds,
+      httpClient: _httpClient,
+      debugLabel: 'markAsStar',
+      onGenerateUpdates: (batchIds) =>
+          batchIds.generateMapUpdateObjectMarkAsStar(markStarAction),
+    );
   }
 
   Future<Email> _emailSetCreateMethod(
@@ -965,39 +897,24 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     }
   }
 
-  Future<void> addLabelToThread(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addLabelToThread(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
     KeyWordIdentifier labelKeyword,
   ) async {
-    if (emailIds.isEmpty) {
-      throw ArgumentError.value(emailIds, 'emailIds', 'must not be empty');
-    }
-
-    final method = SetEmailMethod(accountId)
-      ..addUpdates(emailIds.generateMapUpdateObjectLabel(labelKeyword));
-
-    final builder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-    final invocation = builder.invocation(method);
-
-    final capabilities = method.requiredCapabilities
-        .toCapabilitiesSupportTeamMailboxes(session, accountId);
-    final result = await (builder..usings(capabilities)).build().execute();
-
-    final response = result.parse<SetEmailResponse>(
-      invocation.methodCallId,
-      SetEmailResponse.deserialize,
+    return executeBatchSetEmail(
+      session: session,
+      accountId: accountId,
+      emailIds: emailIds,
+      httpClient: _httpClient,
+      debugLabel: 'addLabelToThread',
+      onGenerateUpdates: (batchIds) =>
+          batchIds.generateMapUpdateObjectLabel(labelKeyword),
     );
-
-    final emailIdsUpdated = response?.updated?.keys ?? <Id>[];
-    final ids = emailIds.toSetIds();
-    final isUpdated = ids.every(emailIdsUpdated.contains) &&
-        emailIdsUpdated.length == ids.length;
-
-    if (emailIdsUpdated.isEmpty || !isUpdated) {
-      throw parseErrorForSetResponse(response, emailIds.first.id);
-    }
   }
 
   Future<void> removeLabelFromEmail(
@@ -1030,41 +947,25 @@ class EmailAPI with HandleSetErrorMixin, MailAPIMixin {
     }
   }
 
-  Future<void> removeLabelFromThread(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> removeLabelFromThread(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
     KeyWordIdentifier labelKeyword,
   ) async {
-    if (emailIds.isEmpty) {
-      throw ArgumentError.value(emailIds, 'emailIds', 'must not be empty');
-    }
-
-    final method = SetEmailMethod(accountId)
-      ..addUpdates(emailIds.generateMapUpdateObjectLabel(
+    return executeBatchSetEmail(
+      session: session,
+      accountId: accountId,
+      emailIds: emailIds,
+      httpClient: _httpClient,
+      debugLabel: 'removeLabelFromThread',
+      onGenerateUpdates: (batchIds) => batchIds.generateMapUpdateObjectLabel(
         labelKeyword,
         remove: true,
-      ));
-
-    final builder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-    final invocation = builder.invocation(method);
-
-    final capabilities = method.requiredCapabilities
-        .toCapabilitiesSupportTeamMailboxes(session, accountId);
-    final result = await (builder..usings(capabilities)).build().execute();
-
-    final response = result.parse<SetEmailResponse>(
-      invocation.methodCallId,
-      SetEmailResponse.deserialize,
+      ),
     );
-
-    final emailIdsUpdated = response?.updated?.keys ?? <Id>[];
-    final ids = emailIds.toSetIds();
-    final isUpdated = emailIdsUpdated.every(ids.contains) &&
-        emailIdsUpdated.length == ids.length;
-
-    if (emailIdsUpdated.isEmpty || !isUpdated) {
-      throw parseErrorForSetResponse(response, emailIds.first.id);
-    }
   }
 }

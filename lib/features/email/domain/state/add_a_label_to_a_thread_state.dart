@@ -16,6 +16,14 @@ class AddALabelToAThreadSuccess extends UIState {
   List<Object> get props => [emailIds, labelKeyword, labelDisplay];
 }
 
+class AddALabelToAThreadHasSomeFailure extends AddALabelToAThreadSuccess {
+  AddALabelToAThreadHasSomeFailure(
+    super.emailIds,
+    super.labelKeyword,
+    super.labelDisplay,
+  );
+}
+
 class AddALabelToAThreadFailure extends FeatureFailure {
   final String labelDisplay;
 

@@ -20,6 +20,15 @@ class RemoveALabelFromAThreadSuccess extends UIState {
   List<Object> get props => [emailIds, labelKeyword, labelDisplay];
 }
 
+class RemoveALabelFromAThreadHasSomeFailure
+    extends RemoveALabelFromAThreadSuccess {
+  RemoveALabelFromAThreadHasSomeFailure(
+    super.emailIds,
+    super.labelKeyword,
+    super.labelDisplay,
+  );
+}
+
 class RemoveALabelFromAThreadFailure extends FeatureFailure {
   final String labelDisplay;
 

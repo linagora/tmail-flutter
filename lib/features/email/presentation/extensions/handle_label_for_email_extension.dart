@@ -169,7 +169,10 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     final selectedEmail = mailboxDashBoardController.selectedEmail.value;
     if (selectedEmail?.id != emailId) return;
 
-    selectedEmail?.keywords?.toggleKeyword(labelKeyword, remove);
+    selectedEmail?.keywords?.toggleKeyword(
+      keyword: labelKeyword,
+      shouldRemove: remove,
+    );
   }
 
   void _updateLabelOnThreadIfNeeded({

@@ -188,7 +188,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
             emailInThreadDetailInfos: emailsInThreadDetailInfo,
             labels: mailboxDashBoardController.labelController.labels,
             onSelectLabelAction: (label, isSelected) {
-              toggleLabelToThread(label, isSelected);
+              toggleLabelToThread(label, isSelected: isSelected);
               submenuController.hide();
               popBack();
             },
