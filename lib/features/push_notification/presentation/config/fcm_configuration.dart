@@ -7,8 +7,12 @@ class FcmConfiguration {
   static Future<void> initialize() async {
     try {
       await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    } catch (e) {
-      logWarning('FcmConfiguration::initialize: Exception = $e');
+    } catch (e, st) {
+      logError(
+        'FcmConfiguration::initialize',
+        exception: e,
+        stackTrace: st
+      );
     }
   }
 }

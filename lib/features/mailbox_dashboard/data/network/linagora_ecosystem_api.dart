@@ -31,31 +31,15 @@ class LinagoraEcosystemApi {
   }
 
   Future<PaywallUrlPattern> getPaywallUrl(String baseUrl) async {
-    final result = await _dioClient.get(
-      Endpoint.linagoraEcosystem.usingBaseUrl(baseUrl).generateEndpointPath(),
-    );
-    log('LinagoraEcosystemApi::getPaywallUrl: $result');
+    final linagoraEcosystem = await getLinagoraEcosystem(baseUrl);
 
-    LinagoraEcosystem? linagoraEcosystem;
+    final paywallProperty =
+        linagoraEcosystem.properties?[LinagoraEcosystemIdentifier.paywallURL];
+    log('LinagoraEcosystemApi::getPaywallUrl: paywallProperty = $paywallProperty');
 
-    if (result is Map<String, dynamic>) {
-      linagoraEcosystem = LinagoraEcosystem.deserialize(result);
-    } else if (result is String) {
-      linagoraEcosystem = LinagoraEcosystem.deserialize(jsonDecode(result));
+    if (paywallProperty is ApiUrlLinagoraEcosystem) {
+      return PaywallUrlPattern(paywallProperty.value);
     }
-
-    if (linagoraEcosystem == null) {
-      throw NotFoundLinagoraEcosystem();
-    } else {
-      final paywallProperty =
-          linagoraEcosystem.properties?[LinagoraEcosystemIdentifier.paywallURL] as ApiUrlLinagoraEcosystem?;
-      log('LinagoraEcosystemApi::getPaywallUrl: paywallProperty = $paywallProperty');
-
-      if (paywallProperty == null) {
-        throw NotFoundPaywallUrl();
-      } else {
-        return PaywallUrlPattern(paywallProperty.value);
-      }
-    }
+    throw NotFoundPaywallUrl();
   }
 }

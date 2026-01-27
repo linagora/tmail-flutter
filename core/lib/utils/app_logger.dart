@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
@@ -81,13 +79,11 @@ void _internalLog(
   }
 
   if (shouldSentry) {
-    unawaited(
-      SentryManager.instance.captureException(
-        exception ?? rawMessage,
-        stackTrace: stackTrace,
-        message: rawMessage,
-        extras: extras,
-      ),
+    SentryManager.instance.captureException(
+      exception ?? rawMessage,
+      stackTrace: stackTrace,
+      message: rawMessage,
+      extras: extras,
     );
   }
 }
