@@ -14,4 +14,7 @@ COPY build/web /usr/share/nginx/html
 EXPOSE 80
 
 # Re-gzip assets to ensure correct compression
-CMD gzip -k -r -f /usr/share/nginx/html/ && nginx -g 'daemon off;'
+# Pre-compress static assets at build time
+RUN gzip -k -r -f /usr/share/nginx/html/
+
+CMD ["nginx", "-g", "daemon off;"]

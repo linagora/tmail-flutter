@@ -54,7 +54,7 @@ jobs:
 
       # Export SENTRY_RELEASE to sentry_dart_plugin to upload source maps
       - name: Export release
-        run: echo "SENTRY_RELEASE=${{ steps.version.outputs.VERSION }}" >> $GITHUB_ENV
+        run: echo "SENTRY_RELEASE=${{ steps.version.outputs.VERSION }}" >> "$GITHUB_ENV"
 
       # Build Flutter Web
       - name: Build Flutter Web
@@ -63,6 +63,10 @@ jobs:
       # Upload source maps via sentry_dart_plugin
       - name: Upload source maps to Sentry via sentry_dart_plugin
         run: dart run sentry_dart_plugin
+
+      # Remove source maps before Docker build
+      - name: Remove source maps before Docker build
+        run: find build/web -type f -name '*.map' -delete
 
       # ------------- DOCKER SECTION ---------------
       - name: Set up Docker Buildx
@@ -94,13 +98,12 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          build-args: |
-            SENTRY_RELEASE=${{ env.SENTRY_RELEASE }}
           push: true
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha
+          platforms: "linux/amd64,linux/arm64"
+          cache-from: |
+            type=gha
+          cache-to: |
+            type=gha
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -143,11 +146,11 @@ jobs:
         id: version
         run: |
           VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
 
       # Export SENTRY_RELEASE to sentry_dart_plugin to upload source maps
       - name: Export release
-        run: echo "SENTRY_RELEASE=${{ steps.version.outputs.VERSION }}" >> $GITHUB_ENV
+        run: echo "SENTRY_RELEASE=${{ steps.version.outputs.VERSION }}" >> "$GITHUB_ENV"
 
       # Build Flutter Web
       - name: Build Flutter Web
@@ -159,7 +162,7 @@ jobs:
 
       # 🛡️ Remove source maps so the Docker image doesn't contain original code.
       - name: Remove source maps before Docker build
-        run: rm -rf build/web/*.js.map
+        run: find build/web -type f -name '*.map' -delete
 
       # ---- DOCKER BUILD ----
       - name: Set up Docker Buildx
@@ -192,12 +195,11 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          build-args: |
-            SENTRY_RELEASE=${{ env.SENTRY_RELEASE }}
           push: true
-          platforms: linux/amd64,linux/arm64
-          cache-from: type=gha
-          cache-to: type=gha
+          platforms: "linux/amd64,linux/arm64"
+          cache-from: |
+            type=gha
+          cache-to: |
+            type=gha
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

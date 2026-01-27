@@ -68,7 +68,7 @@ jobs:
         run: |
           # Take the line containing the version, remove 'version: ', and discard the space.
           VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/[[:space:]]//g')
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Version found: $VERSION"
 
       # 🧱 Build Flutter Web (release)
@@ -84,6 +84,7 @@ jobs:
 
       # Upload source maps via sentry_dart_plugin
       - name: Upload source maps to Sentry
+        if: ${{ secrets.SENTRY_AUTH_TOKEN != '' && github.event.pull_request.head.repo.fork == false }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
