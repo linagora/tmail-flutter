@@ -40,7 +40,7 @@ mixin BatchSetEmailProcessingMixin on HandleSetErrorMixin, MailAPIMixin {
 
     final maxObjects = getMaxObjectsInSetMethod(session, accountId);
     final totalEmails = emailIds.length;
-    final batchSize = min(totalEmails, maxObjects);
+    final batchSize = max(1, min(totalEmails, maxObjects));
 
     final List<EmailId> updatedEmailIds = List.empty(growable: true);
     final List<SetResponse> listSetResponse = List.empty(growable: true);
@@ -70,7 +70,7 @@ mixin BatchSetEmailProcessingMixin on HandleSetErrorMixin, MailAPIMixin {
         }
       } catch (e) {
         logWarning(
-          'BatchSetEmailProcessingMixin::$debugLabel: Error processing batch ${start + 1}-$end',
+          'BatchSetEmailProcessingMixin::$debugLabel: Error processing batch ${start + 1}-$end: $e',
         );
       }
     }
