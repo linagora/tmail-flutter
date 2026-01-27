@@ -17,10 +17,22 @@
 opt_out_usage # Opt out of telemetry
 default_platform(:android)
 
+# Get version from git tag, with fallback to pubspec.yaml version
+def get_git_version
+  begin
+    version = `git describe --tags --abbrev=0 2>/dev/null`.strip.gsub("v", "")
+    version.empty? ? nil : version
+  rescue
+    nil
+  end
+end
+
 platform :android do
   desc "Build development version"
   lane :dev do
-    sh "flutter build apk --verbose --debug --dart-define=SERVER_URL=$SERVER_URL"
+    build_name = get_git_version
+    version_args = build_name ? "--build-name=#{build_name}" : ""
+    sh "flutter build apk --verbose --debug --dart-define=SERVER_URL=$SERVER_URL #{version_args}"
   end
 
   desc "Build and deploy release version"
@@ -30,7 +42,7 @@ platform :android do
       track: track,
       json_key_data: ENV["PLAY_STORE_CONFIG_JSON"]
     )[0].to_i
-    build_name = last_git_tag.gsub("v", "")
+    build_name = get_git_version || last_git_tag.gsub("v", "")
     sh "flutter build appbundle --verbose --release --dart-define=SERVER_URL=$SERVER_URL --build-number=#{latest_build_number+1} --build-name=#{build_name}"
     upload_to_play_store(
       json_key_data: ENV["PLAY_STORE_CONFIG_JSON"],
