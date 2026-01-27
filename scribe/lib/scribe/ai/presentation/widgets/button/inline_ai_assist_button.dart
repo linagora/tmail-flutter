@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe.dart';
 
@@ -7,7 +8,7 @@ class InlineAiAssistButton extends StatelessWidget {
   final ImagePaths imagePaths;
   final String? selectedText;
   final OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction;
-  final VoidCallback? onTapFallback;
+  final AsyncCallback? onTapFallback;
 
   const InlineAiAssistButton({
     super.key,
@@ -42,7 +43,7 @@ class InlineAiAssistButton extends StatelessWidget {
       size = renderBox.size;
     }
 
-    onTapFallback?.call();
+    await onTapFallback?.call();
 
     await AiScribeModalManager.showAIScribeMenuModal(
       imagePaths: imagePaths,
