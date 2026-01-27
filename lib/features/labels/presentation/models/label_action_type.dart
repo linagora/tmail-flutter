@@ -30,17 +30,14 @@ enum LabelActionType {
     }
   }
 
-  String getModalSubtitle(
-    AppLocalizations appLocalizations, {
-    String labelName = '',
-  }) {
+  String getModalSubtitle(AppLocalizations appLocalizations) {
     switch (this) {
       case LabelActionType.create:
         return appLocalizations.organizeYourInboxWithACustomCategory;
       case LabelActionType.edit:
         return appLocalizations.updateTheLabelName;
-      case LabelActionType.delete:
-        return appLocalizations.areYouSureYouWantToDeleteTheLabel(labelName);
+      default:
+        return '';
     }
   }
 
