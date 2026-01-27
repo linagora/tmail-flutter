@@ -36,7 +36,8 @@ extension HandleAiScribeInComposerExtension on ComposerController {
 
   Future<void> insertTextInEditor(String text) async {    
     try {
-      final htmlContent = StringConvert.convertTextContentToHtmlContent(text);
+      final escapedText = StringConvert.escapeTextContent(text);
+      final htmlContent = StringConvert.convertTextContentToHtmlContent(escapedText);
 
       if (PlatformInfo.isWeb) {
         await richTextWebController?.editorController.evaluateJavascriptWeb(
@@ -55,13 +56,15 @@ extension HandleAiScribeInComposerExtension on ComposerController {
 
   Future<void> setTextInEditor(String text) async {
     try {
+      final escapedText = StringConvert.escapeTextContent(text);
+      
       if (PlatformInfo.isWeb) {
-        richTextWebController?.editorController.setText(text);
+        richTextWebController?.editorController.setText(escapedText);
       } else {
-        await richTextMobileTabletController?.htmlEditorApi?.setText(text);
+        await richTextMobileTabletController?.htmlEditorApi?.setText(escapedText);
       }
     } catch (e) {
-      logWarning('$runtimeType::insertTextInEditor:Exception = $e');
+      logWarning('$runtimeType::setTextInEditor:Exception = $e');
     }
   }
 
