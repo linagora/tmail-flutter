@@ -59,7 +59,11 @@ enum EmailSortOrderType {
               ..setIsAscending(true))
         );
       case EmailSortOrderType.relevance:
-        return const None();
+        return Some(
+          <Comparator>{}
+            ..add(EmailComparator(EmailComparatorProperty.receivedAt)
+              ..setIsAscending(false))
+        );
       case EmailSortOrderType.senderAscending:
         return Some(
           <Comparator>{}
