@@ -302,6 +302,8 @@ dev_dependencies:
 
   plugin_platform_interface: 2.1.8
 
+  sentry_dart_plugin: 3.2.0
+
 dependency_overrides:
   firebase_core_platform_interface: 4.8.0
 
@@ -446,3 +448,8 @@ patrol:
   app_name: Twake Mail
   android:
     package_name: com.linagora.android.teammail
+
+sentry:
+  release: "${SENTRY_RELEASE}"
+  upload_source_maps: true
+  ignore_missing: true
