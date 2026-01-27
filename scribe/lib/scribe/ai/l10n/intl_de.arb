@@ -1,127 +1,127 @@
 {
-  "@@last_modified": "2026-01-26T09:26:56.495094",
-  "categoryCorrectGrammar": "Correct",
+  "@@last_modified": "2026-01-26T07:59:00.000000",
+  "categoryCorrectGrammar": "Korrigieren",
   "@categoryCorrectGrammar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "categoryImprove": "Improve",
+  "categoryImprove": "Verbessern",
   "@categoryImprove": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "categoryChangeTone": "Change tone",
+  "categoryChangeTone": "Ton ändern",
   "@categoryChangeTone": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "categoryTranslate": "Translate",
+  "categoryTranslate": "Übersetzen",
   "@categoryTranslate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionMakeShorter": "Make it shorter",
+  "actionMakeShorter": "Kürzer machen",
   "@actionMakeShorter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionExpandContext": "Expand context",
+  "actionExpandContext": "Kontext erweitern",
   "@actionExpandContext": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionEmojify": "Emojify",
+  "actionEmojify": "Emojis hinzufügen",
   "@actionEmojify": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionTransformToBullets": "Transform to bullets",
+  "actionTransformToBullets": "In Aufzählungspunkte umwandeln",
   "@actionTransformToBullets": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionMoreProfessional": "More professional",
+  "actionMoreProfessional": "Professioneller",
   "@actionMoreProfessional": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionMoreCasual": "More casual",
+  "actionMoreCasual": "Lockerer",
   "@actionMoreCasual": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionMorePolite": "More polite",
+  "actionMorePolite": "Höflicher",
   "@actionMorePolite": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageFrench": "French",
+  "languageFrench": "Französisch",
   "@languageFrench": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageEnglish": "English",
+  "languageEnglish": "Englisch",
   "@languageEnglish": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageRussian": "Russian",
+  "languageRussian": "Russisch",
   "@languageRussian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageVietnamese": "Vietnamese",
+  "languageVietnamese": "Vietnamesisch",
   "@languageVietnamese": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "customPromptAction": "Help me write",
+  "customPromptAction": "Hilf mir beim Schreiben",
   "@customPromptAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "failedToGenerate": "Failed to generate AI response",
+  "failedToGenerate": "KI-Antwort konnte nicht generiert werden",
   "@failedToGenerate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiAssistant": "AI assistant",
-  "@aiAssistant": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "generatingResponse": "Generating response",
+  "generatingResponse": "Antwort wird generiert",
   "@generatingResponse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replace": "Replace",
+  "insert": "Einfügen",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replace": "Ersetzen",
   "@replace": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insert": "Insert",
-  "@insert": {
+  "aiAssistant": "KI-Assistent",
+  "@aiAssistant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

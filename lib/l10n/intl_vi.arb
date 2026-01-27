@@ -5497,11 +5497,5 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "aiAssistant": "Trợ lý AI",
-  "@aiAssistant": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   }
 }

@@ -1,127 +1,127 @@
 {
-  "@@last_modified": "2026-01-26T09:26:56.495094",
-  "categoryCorrectGrammar": "Correct",
+  "@@last_modified": "2026-01-26T08:00:00.000000",
+  "categoryCorrectGrammar": "تصحيح",
   "@categoryCorrectGrammar": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "categoryImprove": "Improve",
+  "categoryImprove": "تحسين",
   "@categoryImprove": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "categoryChangeTone": "Change tone",
+  "categoryChangeTone": "تغيير النبرة",
   "@categoryChangeTone": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "categoryTranslate": "Translate",
+  "categoryTranslate": "ترجمة",
   "@categoryTranslate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionMakeShorter": "Make it shorter",
+  "actionMakeShorter": "اجعله أقصر",
   "@actionMakeShorter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionExpandContext": "Expand context",
+  "actionExpandContext": "توسيع السياق",
   "@actionExpandContext": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionEmojify": "Emojify",
+  "actionEmojify": "إضافة الرموز التعبيرية",
   "@actionEmojify": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionTransformToBullets": "Transform to bullets",
+  "actionTransformToBullets": "تحويل إلى نقاط",
   "@actionTransformToBullets": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionMoreProfessional": "More professional",
+  "actionMoreProfessional": "أكثر احترافية",
   "@actionMoreProfessional": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionMoreCasual": "More casual",
+  "actionMoreCasual": "أكثر عفوية",
   "@actionMoreCasual": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionMorePolite": "More polite",
+  "actionMorePolite": "أكثر تهذيباً",
   "@actionMorePolite": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageFrench": "French",
+  "languageFrench": "الفرنسية",
   "@languageFrench": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageEnglish": "English",
+  "languageEnglish": "الإنجليزية",
   "@languageEnglish": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageRussian": "Russian",
+  "languageRussian": "الروسية",
   "@languageRussian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageVietnamese": "Vietnamese",
+  "languageVietnamese": "الفيتنامية",
   "@languageVietnamese": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "customPromptAction": "Help me write",
+  "customPromptAction": "ساعدني في الكتابة",
   "@customPromptAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "failedToGenerate": "Failed to generate AI response",
+  "failedToGenerate": "فشل في إنشاء استجابة الذكاء الاصطناعي",
   "@failedToGenerate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "aiAssistant": "AI assistant",
-  "@aiAssistant": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "generatingResponse": "Generating response",
+  "generatingResponse": "إنشاء الاستجابة",
   "@generatingResponse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replace": "Replace",
+  "insert": "إدراج",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replace": "استبدال",
   "@replace": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insert": "Insert",
-  "@insert": {
+  "aiAssistant": "مساعد الذكاء الاصطناعي",
+  "@aiAssistant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

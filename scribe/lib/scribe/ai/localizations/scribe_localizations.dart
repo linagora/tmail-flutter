@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:multiple_localization/multiple_localization.dart';
 import 'package:scribe/scribe/ai/l10n/messages_all.dart';
 
 class ScribeLocalizations {
+  static const List<String> _supportedLanguageCodes = ['en', 'fr', 'ru', 'vi', 'de', 'it', 'ar'];
+
   static ScribeLocalizations of(BuildContext context) {
     return Localizations.of<ScribeLocalizations>(context, ScribeLocalizations)!;
   }
 
-  static Future<ScribeLocalizations> load(Locale locale) async {
-    final name =
-        locale.countryCode == null ? locale.languageCode : locale.toString();
-
-    final localeName = Intl.canonicalizedLocale(name);
-
-    return initializeMessages(localeName).then((_) {
-      Intl.defaultLocale = localeName;
-      return ScribeLocalizations();
-    });
+  static Future<ScribeLocalizations> load(Locale locale) {
+    final effectiveLocale = _supportedLanguageCodes.contains(locale.languageCode)
+        ? locale
+        : const Locale('en');
+    return MultipleLocalizations.load(
+      initializeMessages,
+      effectiveLocale,
+      (locale) => ScribeLocalizations(),
+      setDefaultLocale: false,
+    );
   }
 
   static const LocalizationsDelegate<ScribeLocalizations> delegate =
@@ -25,7 +28,7 @@ class ScribeLocalizations {
   // Menu Categories
   String get categoryCorrectGrammar {
     return Intl.message(
-      'Correct grammar',
+      'Correct',
       name: 'categoryCorrectGrammar',
     );
   }
@@ -132,13 +135,6 @@ class ScribeLocalizations {
   }
 
   // Input Bar
-  String get inputPlaceholder {
-    return Intl.message(
-      'Help me write',
-      name: 'inputPlaceholder',
-    );
-  }
-
   String get customPromptAction {
     return Intl.message(
       'Help me write',
@@ -151,13 +147,6 @@ class ScribeLocalizations {
     return Intl.message(
       'Failed to generate AI response',
       name: 'failedToGenerate',
-    );
-  }
-
-  String get insertButton {
-    return Intl.message(
-      'Insert',
-      name: 'insertButton',
     );
   }
 
@@ -195,8 +184,7 @@ class _ScribeLocalizationsDelegate
   const _ScribeLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) =>
-      ['en', 'fr', 'ru', 'vi'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => true;
 
   @override
   Future<ScribeLocalizations> load(Locale locale) =>
