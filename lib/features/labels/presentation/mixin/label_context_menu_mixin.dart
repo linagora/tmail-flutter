@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin LabelContextMenuMixin on PopupContextMenuActionMixin {
-  static const _labelActions = [LabelActionType.edit];
+  static const _labelActions = [LabelActionType.edit, LabelActionType.delete];
 
   Future<void> _openLabelPopupMenuAction(
     BuildContext context,

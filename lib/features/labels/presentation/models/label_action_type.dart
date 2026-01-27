@@ -5,7 +5,8 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum LabelActionType {
   create,
-  edit;
+  edit,
+  delete;
 
   String getContextMenuTitle(AppLocalizations appLocalizations) {
     switch (this) {
@@ -13,6 +14,8 @@ enum LabelActionType {
         return appLocalizations.create;
       case LabelActionType.edit:
         return appLocalizations.edit;
+      case LabelActionType.delete:
+        return appLocalizations.delete;
     }
   }
 
@@ -22,15 +25,22 @@ enum LabelActionType {
         return appLocalizations.createANewLabel;
       case LabelActionType.edit:
         return appLocalizations.editLabel;
+      case LabelActionType.delete:
+        return appLocalizations.deleteLabel;
     }
   }
 
-  String getModalSubtitle(AppLocalizations appLocalizations) {
+  String getModalSubtitle(
+    AppLocalizations appLocalizations, {
+    String labelName = '',
+  }) {
     switch (this) {
       case LabelActionType.create:
         return appLocalizations.organizeYourInboxWithACustomCategory;
       case LabelActionType.edit:
         return appLocalizations.updateTheLabelName;
+      case LabelActionType.delete:
+        return appLocalizations.areYouSureYouWantToDeleteTheLabel(labelName);
     }
   }
 
@@ -40,15 +50,19 @@ enum LabelActionType {
         return appLocalizations.createLabel;
       case LabelActionType.edit:
         return appLocalizations.save;
+      case LabelActionType.delete:
+        return '';
     }
   }
 
-  Key getModalPositiveActionKey() {
+  Key? getModalPositiveActionKey() {
     switch (this) {
       case LabelActionType.create:
         return const Key('create_label_button_action');
       case LabelActionType.edit:
         return const Key('save_label_button_action');
+      case LabelActionType.delete:
+        return null;
     }
   }
 
@@ -58,16 +72,44 @@ enum LabelActionType {
         return imagePaths.icAddNewFolder;
       case LabelActionType.edit:
         return imagePaths.icRenameMailbox;
+      case LabelActionType.delete:
+        return imagePaths.icDeleteMailbox;
     }
   }
 
-  Color getPopupMenuTitleColor() => Colors.black;
+  Color getPopupMenuTitleColor() {
+    switch (this) {
+      case LabelActionType.delete:
+        return AppColor.redFF3347;
+      default:
+        return Colors.black;
+    }
+  }
 
-  Color getPopupMenuIconColor() => AppColor.steelGrayA540;
+  Color getPopupMenuIconColor() {
+    switch (this) {
+      case LabelActionType.delete:
+        return AppColor.redFF3347;
+      default:
+        return AppColor.steelGrayA540;
+    }
+  }
 
-  Color getContextMenuIconColor() =>
-      AppColor.gray424244.withValues(alpha: 0.72);
+  Color getContextMenuIconColor() {
+    switch (this) {
+      case LabelActionType.delete:
+        return AppColor.redFF3347;
+      default:
+        return AppColor.gray424244.withValues(alpha: 0.72);
+    }
+  }
 
-  Color getContextMenuTitleColor() =>
-      AppColor.gray424244.withValues(alpha: 0.9);
+  Color getContextMenuTitleColor() {
+    switch (this) {
+      case LabelActionType.delete:
+        return AppColor.redFF3347;
+      default:
+        return AppColor.gray424244.withValues(alpha: 0.9);
+    }
+  }
 }

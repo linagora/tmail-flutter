@@ -5421,5 +5421,21 @@
     "placeholders": {
       "labelName": {}
     }
+  },
+  "deleteLabel": "Delete label",
+  "@deleteLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "areYouSureYouWantToDeleteTheLabel": "Are you sure you want to delete the label \"{labelName}\"?",
+  "@areYouSureYouWantToDeleteTheLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
   }
 }
