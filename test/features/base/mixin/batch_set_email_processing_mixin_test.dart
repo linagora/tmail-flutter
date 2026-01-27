@@ -1,227 +1,28 @@
-import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/base/mixin/batch_set_email_processing_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/account/authentication_type.dart';
-import 'package:model/account/personal_account.dart';
-import 'package:jmap_dart_client/jmap/core/account/account.dart';
-import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
-import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
-import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
-import 'package:jmap_dart_client/jmap/core/capability/mail_capability.dart';
-import 'package:jmap_dart_client/jmap/core/capability/mdn_capability.dart';
-import 'package:jmap_dart_client/jmap/core/capability/submission_capability.dart';
-import 'package:jmap_dart_client/jmap/core/capability/vacation_capability.dart';
-import 'package:jmap_dart_client/jmap/core/capability/websocket_capability.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/collation_identifier.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
-import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 
-// --- Fixtures Cloned from Integration Tests ---
-
-class AccountFixtures {
-  static final aliceAccountId = AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6'));
-  static final aliceAccount = PersonalAccount(
-    'dab',
-    AuthenticationType.oidc,
-    isSelected: true,
-    accountId: aliceAccountId,
-    apiUrl: 'https://domain.com/jmap',
-    userName: UserName('Alice')
-  );
-}
-
-class SessionFixtures {
-  static final aliceSession = Session(
-    {
-      CapabilityIdentifier.jmapSubmission: SubmissionCapability(
-        maxDelayedSend: UnsignedInt(0),
-        submissionExtensions: {}
-      ),
-      CapabilityIdentifier.jmapCore: CoreCapability(
-        maxSizeUpload: UnsignedInt(20971520),
-        maxConcurrentUpload: UnsignedInt(4),
-        maxSizeRequest: UnsignedInt(10000000),
-        maxConcurrentRequests: UnsignedInt(4),
-        maxCallsInRequest: UnsignedInt(16),
-        maxObjectsInGet: UnsignedInt(500),
-        maxObjectsInSet: UnsignedInt(500),
-        collationAlgorithms: {CollationIdentifier("i;unicode-casemap")}
-      ),
-      CapabilityIdentifier.jmapMail: MailCapability(
-        maxMailboxesPerEmail: UnsignedInt(10000000),
-        maxSizeAttachmentsPerEmail: UnsignedInt(20000000),
-        emailQuerySortOptions: {"receivedAt", "sentAt", "size", "from", "to", "subject"},
-        mayCreateTopLevelMailbox: true
-      ),
-      CapabilityIdentifier.jmapWebSocket: WebSocketCapability(
-        supportsPush: true,
-        url: Uri.parse('ws://domain.com/jmap/ws')
-      ),
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): DefaultCapability(<String, dynamic>{}),
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): DefaultCapability(<String, dynamic>{}),
-      CapabilityIdentifier.jmapVacationResponse: VacationCapability(),
-      CapabilityIdentifier.jmapMdn: MdnCapability(),
-    },
-    {
-      AccountFixtures.aliceAccountId: Account(
-        AccountName('alice@domain.tld'),
-        true,
-        false,
-        {
-          CapabilityIdentifier.jmapSubmission: SubmissionCapability(
-            maxDelayedSend: UnsignedInt(0),
-            submissionExtensions: {}
-          ),
-          CapabilityIdentifier.jmapWebSocket: WebSocketCapability(
-            supportsPush: true,
-            url: Uri.parse('ws://domain.com/jmap/ws')
-          ),
-          CapabilityIdentifier.jmapCore: CoreCapability(
-            maxSizeUpload: UnsignedInt(20971520),
-            maxConcurrentUpload: UnsignedInt(4),
-            maxSizeRequest: UnsignedInt(10000000),
-            maxConcurrentRequests: UnsignedInt(4),
-            maxCallsInRequest: UnsignedInt(16),
-            maxObjectsInGet: UnsignedInt(500),
-            maxObjectsInSet: UnsignedInt(500),
-            collationAlgorithms: {CollationIdentifier("i;unicode-casemap")}
-          ),
-          CapabilityIdentifier.jmapMail: MailCapability(
-            maxMailboxesPerEmail: UnsignedInt(10000000),
-            maxSizeAttachmentsPerEmail: UnsignedInt(20000000),
-            emailQuerySortOptions: {"receivedAt", "sentAt", "size", "from", "to", "subject"},
-            mayCreateTopLevelMailbox: true
-          ),
-          CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): DefaultCapability(<String, dynamic>{}),
-          CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): DefaultCapability(<String, dynamic>{}),
-          CapabilityIdentifier.jmapVacationResponse: VacationCapability(),
-          CapabilityIdentifier.jmapMdn: MdnCapability()
-        }
-      )
-    },
-    {
-      CapabilityIdentifier.jmapSubmission: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapWebSocket: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapCore: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapMail: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): AccountFixtures.aliceAccountId,
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapVacationResponse: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapMdn: AccountFixtures.aliceAccountId,
-    },
-    UserName('alice@domain.tld'),
-    Uri.parse('http://domain.com/jmap'),
-    Uri.parse('http://domain.com/download/{accountId}/{blobId}/?type={type}&name={name}'),
-    Uri.parse('http://domain.com/upload/{accountId}'),
-    Uri.parse('http://domain.com/eventSource?types={types}&closeAfter={closeafter}&ping={ping}'),
-    State('2c9f1b12-b35a-43e6-9af2-0106fb53a943')
-  );
-
-  static getAliceSessionWithMaxObjectsInSet(int maxObjectsInSet) => Session(
-    {
-      CapabilityIdentifier.jmapSubmission: SubmissionCapability(
-        maxDelayedSend: UnsignedInt(0),
-        submissionExtensions: {}
-      ),
-      CapabilityIdentifier.jmapCore: CoreCapability(
-        maxSizeUpload: UnsignedInt(20971520),
-        maxConcurrentUpload: UnsignedInt(4),
-        maxSizeRequest: UnsignedInt(10000000),
-        maxConcurrentRequests: UnsignedInt(4),
-        maxCallsInRequest: UnsignedInt(16),
-        maxObjectsInGet: UnsignedInt(500),
-        maxObjectsInSet: UnsignedInt(maxObjectsInSet),
-        collationAlgorithms: {CollationIdentifier("i;unicode-casemap")}
-      ),
-      CapabilityIdentifier.jmapMail: MailCapability(
-        maxMailboxesPerEmail: UnsignedInt(10000000),
-        maxSizeAttachmentsPerEmail: UnsignedInt(20000000),
-        emailQuerySortOptions: {"receivedAt", "sentAt", "size", "from", "to", "subject"},
-        mayCreateTopLevelMailbox: true
-      ),
-      CapabilityIdentifier.jmapWebSocket: WebSocketCapability(
-        supportsPush: true,
-        url: Uri.parse('ws://domain.com/jmap/ws')
-      ),
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): DefaultCapability(<String, dynamic>{}),
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): DefaultCapability(<String, dynamic>{}),
-      CapabilityIdentifier.jmapVacationResponse: VacationCapability(),
-      CapabilityIdentifier.jmapMdn: MdnCapability(),
-    },
-    {
-      AccountFixtures.aliceAccountId: Account(
-        AccountName('alice@domain.tld'),
-        true,
-        false,
-        {
-          CapabilityIdentifier.jmapSubmission: SubmissionCapability(
-            maxDelayedSend: UnsignedInt(0),
-            submissionExtensions: {}
-          ),
-          CapabilityIdentifier.jmapWebSocket: WebSocketCapability(
-            supportsPush: true,
-            url: Uri.parse('ws://domain.com/jmap/ws')
-          ),
-          CapabilityIdentifier.jmapCore: CoreCapability(
-            maxSizeUpload: UnsignedInt(20971520),
-            maxConcurrentUpload: UnsignedInt(4),
-            maxSizeRequest: UnsignedInt(10000000),
-            maxConcurrentRequests: UnsignedInt(4),
-            maxCallsInRequest: UnsignedInt(16),
-            maxObjectsInGet: UnsignedInt(500),
-            maxObjectsInSet: UnsignedInt(maxObjectsInSet),
-            collationAlgorithms: {CollationIdentifier("i;unicode-casemap")}
-          ),
-          CapabilityIdentifier.jmapMail: MailCapability(
-            maxMailboxesPerEmail: UnsignedInt(10000000),
-            maxSizeAttachmentsPerEmail: UnsignedInt(20000000),
-            emailQuerySortOptions: {"receivedAt", "sentAt", "size", "from", "to", "subject"},
-            mayCreateTopLevelMailbox: true
-          ),
-          CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): DefaultCapability(<String, dynamic>{}),
-          CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): DefaultCapability(<String, dynamic>{}),
-          CapabilityIdentifier.jmapVacationResponse: VacationCapability(),
-          CapabilityIdentifier.jmapMdn: MdnCapability()
-        }
-      )
-    },
-    {
-      CapabilityIdentifier.jmapSubmission: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapWebSocket: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapCore: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapMail: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): AccountFixtures.aliceAccountId,
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapVacationResponse: AccountFixtures.aliceAccountId,
-      CapabilityIdentifier.jmapMdn: AccountFixtures.aliceAccountId,
-    },
-    UserName('alice@domain.tld'),
-    Uri.parse('http://domain.com/jmap'),
-    Uri.parse('http://domain.com/download/{accountId}/{blobId}/?type={type}&name={name}'),
-    Uri.parse('http://domain.com/upload/{accountId}'),
-    Uri.parse('http://domain.com/eventSource?types={types}&closeAfter={closeafter}&ping={ping}'),
-    State('2c9f1b12-b35a-43e6-9af2-0106fb53a943')
-  );
-}
-
-// --- End Fixtures ---
+import '../../../fixtures/account_fixtures.dart';
+import '../../../fixtures/session_fixtures.dart';
 
 class ManualMockHttpClient implements HttpClient {
   int postCallCount = 0;
   final Map<int, dynamic> _responses = {};
+  final Map<int, Object> _errors = {}; // Store errors/exceptions to throw
 
   void setResponse(int callIndex, dynamic response) {
     _responses[callIndex] = response;
+  }
+
+  /// Simulate a crash for a specific batch
+  void setError(int callIndex, Object error) {
+    _errors[callIndex] = error;
   }
 
   @override
@@ -234,18 +35,24 @@ class ManualMockHttpClient implements HttpClient {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final response = _responses[postCallCount];
+    final currentCall = postCallCount;
     postCallCount++;
+
+    // If an error is registered for this call, throw it immediately
+    if (_errors.containsKey(currentCall)) {
+      throw _errors[currentCall]!;
+    }
+
+    final response = _responses[currentCall];
     if (response is Map<String, dynamic>) {
-       return response;
+      return response;
     }
     return <String, dynamic>{};
   }
-  
+
   @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
-
 
 class TestBatchSetEmailProcessing
     with HandleSetErrorMixin, MailAPIMixin, BatchSetEmailProcessingMixin {}
@@ -258,7 +65,7 @@ void main() {
     setUp(() {
       httpClient = ManualMockHttpClient();
       testMixin = TestBatchSetEmailProcessing();
-      httpClient.postCallCount = 0; // Explicit reset or ensure new instance
+      httpClient.postCallCount = 0;
     });
 
     test(
@@ -287,73 +94,64 @@ void main() {
       final List<EmailId> emailIds = List<EmailId>.generate(
           totalEmails, (index) => EmailId(Id('email_$index')));
 
-      // Mock response for 3 batches (10, 10, 5)
-      // Call 0: 10 success
+      // Batch 1 (0-9): Success
       httpClient.setResponse(0, {
-          "sessionState": "session_state",
-          "methodResponses": [
-            [
-              "Email/set",
-              {
-                "accountId": AccountFixtures.aliceAccountId.id.value,
-                "oldState": "oldState",
-                "newState": "newState",
-                "updated": {
-                  for (var i = 0; i < 10; i++) "email_$i": null
-                }
-              },
-              "c0"
-            ]
+        "sessionState": "session_state",
+        "methodResponses": [
+          [
+            "Email/set",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "oldState": "oldState",
+              "newState": "newState",
+              "updated": {for (var i = 0; i < 10; i++) "email_$i": null}
+            },
+            "c0"
           ]
-        });
-        
-      // Call 1: 10 success
+        ]
+      });
+
+      // Batch 2 (10-19): Success
       httpClient.setResponse(1, {
-          "sessionState": "session_state",
-          "methodResponses": [
-            [
-              "Email/set",
-              {
-                  "accountId": AccountFixtures.aliceAccountId.id.value,
-                "oldState": "oldState",
-                "newState": "newState",
-                "updated": {
-                  for (var i = 10; i < 20; i++) "email_$i": null
-                }
-              },
-              "c0"
-            ]
+        "sessionState": "session_state",
+        "methodResponses": [
+          [
+            "Email/set",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "oldState": "oldState",
+              "newState": "newState",
+              "updated": {for (var i = 10; i < 20; i++) "email_$i": null}
+            },
+            "c0"
           ]
-        });
+        ]
+      });
 
-      // Call 2: 5 success
+      // Batch 3 (20-24): Success
       httpClient.setResponse(2, {
-          "sessionState": "session_state",
-          "methodResponses": [
-            [
-              "Email/set",
-              {
-                  "accountId": AccountFixtures.aliceAccountId.id.value,
-                "oldState": "oldState",
-                "newState": "newState",
-                "updated": {
-                  for (var i = 20; i < 25; i++) "email_$i": null
-                }
-              },
-              "c0"
-            ]
+        "sessionState": "session_state",
+        "methodResponses": [
+          [
+            "Email/set",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "oldState": "oldState",
+              "newState": "newState",
+              "updated": {for (var i = 20; i < 25; i++) "email_$i": null}
+            },
+            "c0"
           ]
-        });
-
+        ]
+      });
 
       final result = await testMixin.executeBatchSetEmail(
         session: session,
         accountId: AccountFixtures.aliceAccountId,
         emailIds: emailIds,
         httpClient: httpClient,
-        onGenerateUpdates: (batchIds) => {
-          for (final id in batchIds) id.id: PatchObject({})
-        },
+        onGenerateUpdates: (batchIds) =>
+            {for (final id in batchIds) id.id: PatchObject({})},
       );
 
       expect(result.emailIdsSuccess.length, totalEmails);
@@ -369,74 +167,7 @@ void main() {
       final List<EmailId> emailIds = List<EmailId>.generate(
           totalEmails, (index) => EmailId(Id('email_$index')));
 
-      // Batch 1: Success (0-9)
-      httpClient.setResponse(0, {
-            "sessionState": "session_state",
-            "methodResponses": [
-              [
-                "Email/set",
-                {
-                  "accountId": AccountFixtures.aliceAccountId.id.value,
-                  "oldState": "oldState",
-                  "newState": "newState",
-                  "updated": {
-                    for (var i = 0; i < 10; i++) "email_$i": null
-                  }
-                },
-                "c0"
-              ]
-            ]
-          });
-          
-      // Batch 2: Partial failure (10-19, 19 fails)
-      httpClient.setResponse(1, {
-            "sessionState": "session_state",
-            "methodResponses": [
-              [
-                "Email/set",
-                {
-                  "accountId": AccountFixtures.aliceAccountId.id.value,
-                  "oldState": "oldState",
-                  "newState": "newState",
-                  "updated": {
-                     for (var i = 10; i < 19; i++) "email_$i": null
-                  },
-                  "notUpdated": {
-                    "email_19": {
-                      "type": "someError",
-                      "description": "error description"
-                    }
-                  }
-                },
-                "c0"
-              ]
-            ]
-          });
-
-      final result = await testMixin.executeBatchSetEmail(
-        session: session,
-        accountId: AccountFixtures.aliceAccountId,
-        emailIds: emailIds,
-        httpClient: httpClient,
-        onGenerateUpdates: (batchIds) => {
-          for (final id in batchIds) id.id: PatchObject({})
-        },
-      );
-
-      expect(result.emailIdsSuccess.length, 19);
-      expect(result.mapErrors.length, 1);
-      expect(result.mapErrors[Id('email_19')], isNotNull);
-      expect(httpClient.postCallCount, 2);
-    });
-    test('executeBatchSetEmail should handle null response gracefully from a batch', () async {
-      const maxObjects = 10;
-      final session =
-          SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
-      const totalEmails = 20; // 2 batches
-      final List<EmailId> emailIds = List<EmailId>.generate(
-          totalEmails, (index) => EmailId(Id('email_$index')));
-
-      // Batch 1: Success (0-9)
+      // Batch 1: Success
       httpClient.setResponse(0, {
         "sessionState": "session_state",
         "methodResponses": [
@@ -446,30 +177,32 @@ void main() {
               "accountId": AccountFixtures.aliceAccountId.id.value,
               "oldState": "oldState",
               "newState": "newState",
-              "updated": {
-                for (var i = 0; i < 10; i++) "email_$i": null
-              }
+              "updated": {for (var i = 0; i < 10; i++) "email_$i": null}
             },
             "c0"
           ]
         ]
       });
 
-      // Batch 2: Null response (simulated by mismatching methodCallId)
-      // Request uses 'c0' (default in tests usually), so we return 'c999'
-      // This causes response.parse('c0') to not find the response and should return null.
+      // Batch 2: Partial failure (ID email_19 fails)
       httpClient.setResponse(1, {
         "sessionState": "session_state",
         "methodResponses": [
           [
             "Email/set",
             {
-               "accountId": AccountFixtures.aliceAccountId.id.value,
-               "oldState": "oldState",
-               "newState": "newState",
-               "updated": {}
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "oldState": "oldState",
+              "newState": "newState",
+              "updated": {for (var i = 10; i < 19; i++) "email_$i": null},
+              "notUpdated": {
+                "email_19": {
+                  "type": "someError",
+                  "description": "error description"
+                }
+              }
             },
-            "c999" // Mismatched ID
+            "c0"
           ]
         ]
       });
@@ -479,23 +212,23 @@ void main() {
         accountId: AccountFixtures.aliceAccountId,
         emailIds: emailIds,
         httpClient: httpClient,
-        onGenerateUpdates: (batchIds) => {
-          for (final id in batchIds) id.id: PatchObject({})
-        },
+        onGenerateUpdates: (batchIds) =>
+            {for (final id in batchIds) id.id: PatchObject({})},
       );
 
-      // Should have processed 10 successfully from first batch
-      expect(result.emailIdsSuccess.length, 10);
-      // And 0 from second batch (silently ignored/logged)
-      expect(result.mapErrors, isEmpty);
+      expect(result.emailIdsSuccess.length, 19);
+      expect(result.mapErrors.length, 1);
+      expect(result.mapErrors[Id('email_19')], isNotNull);
       expect(httpClient.postCallCount, 2);
     });
 
-    test('executeBatchSetEmail should handle exact match of maxObjectsInSet boundary', () async {
+    test(
+        'executeBatchSetEmail should handle null response gracefully from a batch',
+        () async {
       const maxObjects = 10;
       final session =
           SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
-      const totalEmails = 20; // Exactly 2 batches
+      const totalEmails = 20;
       final List<EmailId> emailIds = List<EmailId>.generate(
           totalEmails, (index) => EmailId(Id('email_$index')));
 
@@ -509,9 +242,61 @@ void main() {
               "accountId": AccountFixtures.aliceAccountId.id.value,
               "oldState": "oldState",
               "newState": "newState",
-              "updated": {
-                for (var i = 0; i < 10; i++) "email_$i": null
-              }
+              "updated": {for (var i = 0; i < 10; i++) "email_$i": null}
+            },
+            "c0"
+          ]
+        ]
+      });
+
+      // Batch 2: Null response simulation (wrong methodCallId)
+      httpClient.setResponse(1, {
+        "sessionState": "session_state",
+        "methodResponses": [
+          [
+            "Email/set",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "updated": {}
+            },
+            "c999" // Mismatched ID causes parse to return null
+          ]
+        ]
+      });
+
+      final result = await testMixin.executeBatchSetEmail(
+        session: session,
+        accountId: AccountFixtures.aliceAccountId,
+        emailIds: emailIds,
+        httpClient: httpClient,
+        onGenerateUpdates: (batchIds) =>
+            {for (final id in batchIds) id.id: PatchObject({})},
+      );
+
+      expect(result.emailIdsSuccess.length, 10);
+      expect(result.mapErrors, isEmpty);
+      expect(httpClient.postCallCount, 2);
+    });
+
+    test(
+        'executeBatchSetEmail should handle exact match of maxObjectsInSet boundary',
+        () async {
+      const maxObjects = 10;
+      final session =
+          SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
+      const totalEmails = 20;
+      final List<EmailId> emailIds = List<EmailId>.generate(
+          totalEmails, (index) => EmailId(Id('email_$index')));
+
+      // Batch 1: Success
+      httpClient.setResponse(0, {
+        "sessionState": "session_state",
+        "methodResponses": [
+          [
+            "Email/set",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "updated": {for (var i = 0; i < 10; i++) "email_$i": null}
             },
             "c0"
           ]
@@ -526,11 +311,7 @@ void main() {
             "Email/set",
             {
               "accountId": AccountFixtures.aliceAccountId.id.value,
-              "oldState": "oldState",
-              "newState": "newState",
-              "updated": {
-                for (var i = 10; i < 20; i++) "email_$i": null
-              }
+              "updated": {for (var i = 10; i < 20; i++) "email_$i": null}
             },
             "c0"
           ]
@@ -542,14 +323,90 @@ void main() {
         accountId: AccountFixtures.aliceAccountId,
         emailIds: emailIds,
         httpClient: httpClient,
-        onGenerateUpdates: (batchIds) => {
-          for (final id in batchIds) id.id: PatchObject({})
-        },
+        onGenerateUpdates: (batchIds) =>
+            {for (final id in batchIds) id.id: PatchObject({})},
       );
 
       expect(result.emailIdsSuccess.length, 20);
-      expect(result.mapErrors, isEmpty);
       expect(httpClient.postCallCount, 2);
     });
+
+    test(
+      'executeBatchSetEmail should continue processing subsequent batches even when one batch throws an exception',
+      () async {
+        // Setup: 3 batches of 10 emails each (Total 30)
+        const maxObjects = 10;
+        final session =
+            SessionFixtures.getAliceSessionWithMaxObjectsInSet(maxObjects);
+        const totalEmails = 30;
+        final List<EmailId> emailIds = List<EmailId>.generate(
+            totalEmails, (index) => EmailId(Id('email_$index')));
+
+        // Batch 1 (0-9): SUCCESS
+        httpClient.setResponse(0, {
+          "sessionState": "session_state",
+          "methodResponses": [
+            [
+              "Email/set",
+              {
+                "accountId": AccountFixtures.aliceAccountId.id.value,
+                "updated": {for (var i = 0; i < 10; i++) "email_$i": null}
+              },
+              "c0"
+            ]
+          ]
+        });
+
+        // Batch 2 (10-19): FAILURE (Network Exception)
+        // This simulates a DioException or any error during the API call
+        httpClient.setError(1, Exception('Network connection failed'));
+
+        // Batch 3 (20-29): SUCCESS
+        // This ensures the loop didn't break after Batch 2 failed
+        httpClient.setResponse(2, {
+          "sessionState": "session_state",
+          "methodResponses": [
+            [
+              "Email/set",
+              {
+                "accountId": AccountFixtures.aliceAccountId.id.value,
+                "updated": {for (var i = 20; i < 30; i++) "email_$i": null}
+              },
+              "c0"
+            ]
+          ]
+        });
+
+        final result = await testMixin.executeBatchSetEmail(
+          session: session,
+          accountId: AccountFixtures.aliceAccountId,
+          emailIds: emailIds,
+          httpClient: httpClient,
+          onGenerateUpdates: (batchIds) =>
+              {for (final id in batchIds) id.id: PatchObject({})},
+        );
+
+        // Assertions:
+        // We expect emails from Batch 1 and Batch 3 to be successful (10 + 10 = 20)
+        expect(result.emailIdsSuccess.length, 20);
+
+        // Ensure Batch 1 IDs are present
+        expect(result.emailIdsSuccess.contains(EmailId(Id('email_0'))), isTrue);
+
+        // Ensure Batch 3 IDs are present
+        expect(
+            result.emailIdsSuccess.contains(EmailId(Id('email_20'))), isTrue);
+
+        // Ensure Batch 2 IDs are NOT present
+        expect(
+            result.emailIdsSuccess.contains(EmailId(Id('email_10'))), isFalse);
+
+        // Ensure the httpClient was called 3 times (it tried all batches)
+        expect(httpClient.postCallCount, 3);
+
+        // mapErrors should be empty
+        expect(result.mapErrors, isEmpty);
+      },
+    );
   });
 }
