@@ -1,3 +1,8 @@
+## [0.24.1] - 2026-01-28
+### Added
+- enable source map when building web application
+- Translate vi, ru, fr
+
 ## [0.24.0] - 2026-01-27
 ### Added
 - TF-4169: Add Labels module with JMAP Label/get, Label/set, Label/changes methods
