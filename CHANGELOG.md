@@ -1,3 +1,30 @@
+## [0.24.0] - 2026-01-27
+### Added
+- TF-4169: Add Labels module with JMAP Label/get, Label/set, Label/changes methods
+- TF-4171: Display labels/tags in mailbox and search list
+- TF-4174: Display labels/tags in opened email view
+- TF-4178: Create new label with color picker
+- TF-4179: Display sorted label list in sidebar
+- TF-4193: Add Label visibility toggle in Settings
+- TF-4195: Add "Label as" context menu to assign labels to emails and threads
+- TF-4227: Open and display all emails filtered by a specific label
+- TF-4229: Search emails by label filter with quick search button
+- TF-4233: Edit label name and color
+- TF-4236: Remove a label from an email or thread with batch processing
+- TF-4243: Delete a label
+- TF-4141: Add AI "Action Required" virtual folder with action tags in email list
+- TF-4136: Integrate Sentry error tracking with unified logging
+
+### Fixed
+- TF-4272: Fix calendar events always displaying email body instead of description
+- TF-4224: Fix ReDoS vulnerability in regex patterns
+- TF-4223: Fix welcome email not displayed correctly
+- Fix email content not rendering after switching folder with thread view enabled
+- Fix blank screen when opening emails repeatedly on iPad
+- Fix unable to select another email on iPad
+- Fix email content not displayed due to HTML sanitization
+- Fix unwanted word-break in table elements
+
 ## [0.23.1] - 2025-12-29
 ### Fixed
 - Memory leak in Mobile editor
