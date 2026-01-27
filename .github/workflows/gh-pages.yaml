@@ -68,6 +68,10 @@ jobs:
         run: |
           # Take the line containing the version, remove 'version: ', and discard the space.
           VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/[[:space:]]//g')
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not extract version from pubspec.yaml"
+              exit 1
+          fi
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Version found: $VERSION"
 
@@ -82,9 +86,19 @@ jobs:
           echo "=== Disk usage after build ==="
           df -h
 
+      # Check if Sentry secrets are available
+      - name: Check Sentry availability
+        id: sentry_check
+        run: |
+          if [ -n "${{ secrets.SENTRY_AUTH_TOKEN }}" ]; then
+           echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+           echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # Upload source maps via sentry_dart_plugin
       - name: Upload source maps to Sentry
-        if: ${{ secrets.SENTRY_AUTH_TOKEN != '' && github.event.pull_request.head.repo.fork == false }}
+        if: ${{ steps.sentry_check.outputs.available == 'true' && github.event.pull_request.head.repo.fork == false }}
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
@@ -94,7 +108,7 @@ jobs:
 
       # 🛡️ Delete the source map before deploying to GitHub Pages.
       - name: Remove source maps before deploy
-        run: rm -rf build/web/*.js.map
+        run: find build/web -type f -name '*.map' -delete
 
       # 🚀 Deploy to GitHub Pages
       - name: Deploy to GitHub Pages

@@ -50,7 +50,7 @@ jobs:
         id: version
         run: |
           VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
 
       # Export SENTRY_RELEASE to sentry_dart_plugin to upload source maps
       - name: Export release
@@ -98,6 +98,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
+          context: .
           push: true
           platforms: "linux/amd64,linux/arm64"
           cache-from: |
@@ -195,6 +196,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
+          context: .
           push: true
           platforms: "linux/amd64,linux/arm64"
           cache-from: |
