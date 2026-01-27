@@ -17,9 +17,23 @@ opt_out_usage
 default_platform(:ios)
 setup_ci if ENV['CI']
 
+# Get version from git tag, with fallback
+def get_git_version
+  begin
+    version = `git describe --tags --abbrev=0 2>/dev/null`.strip.gsub("v", "")
+    version.empty? ? nil : version
+  rescue
+    nil
+  end
+end
+
 platform :ios do
   desc "Build development version"
   lane :dev do
+    git_version = get_git_version
+    if git_version
+      increment_version_number(version_number: git_version)
+    end
     sync_code_signing(
       type: "development",
       git_private_key: ENV["APPLE_CERTIFICATES_SSH_KEY"]
@@ -48,7 +62,7 @@ platform :ios do
       build_number: latest_testflight_build_number + 1
     )
     increment_version_number(
-      version_number: last_git_tag.gsub("v", "")
+      version_number: get_git_version || last_git_tag.gsub("v", "")
     )
     build_app(
       scheme: "Runner",
