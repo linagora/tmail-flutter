@@ -44,6 +44,21 @@ abstract final class AIScribeShadows {
       offset: const Offset(0, 6),
     ),
   ];
+
+  static final List<BoxShadow> contentCard = [
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.1),
+      spreadRadius: 0,
+      blurRadius: 3,
+      offset: const Offset(0, 1),
+    ),
+    BoxShadow(
+      color: Colors.black.withValues(alpha: 0.1),
+      spreadRadius: 0,
+      blurRadius: 2,
+      offset: const Offset(0, 2),
+    ),
+  ];
 }
 
 abstract final class AIScribeTextStyles {
@@ -93,6 +108,14 @@ abstract final class AIScribeTextStyles {
     color: Colors.black.withValues(alpha: 0.85),
   );
 
+  static final TextStyle contentCard =
+      ThemeUtils.textStyleInter400.copyWith(
+    fontSize: 14,
+    height: 22 / 14,
+    letterSpacing: 0.4,
+    color: Colors.black.withValues(alpha: 0.85),
+  );
+
   static final TextStyle mainActionButton =
       ThemeUtils.textStyleInter500().copyWith(
     color: AppColor.blue700,
@@ -106,6 +129,7 @@ abstract final class AIScribeSizes {
   static const double searchBarRadius = 10;
   static const double scribeButtonRadius = 100;
   static const double aiAssistantIconRadius = 8;
+  static const double contentCardRadius = 16;
 
   // Width / height
   static const double menuItemHeight = 40;
@@ -123,6 +147,7 @@ abstract final class AIScribeSizes {
   static const double suggestionModalMaxWidth = 482;
   static const double suggestionModalMinHeight = 96;
   static const double suggestionModalMaxHeight = 587;
+  static const double contentCardMaxHeight = 240;
 
   static const double infoHeight = 120;
 
@@ -186,4 +211,10 @@ abstract final class AIScribeSizes {
 
   static const EdgeInsetsGeometry backIconPadding =
       EdgeInsetsDirectional.only(end: 8.0, top: 8.0, bottom: 8.0);
+
+  static const EdgeInsetsGeometry contentCardMargin =
+      EdgeInsetsDirectional.only(start: 16, top: 0, end: 16, bottom: 8);
+
+  static const EdgeInsetsGeometry contentCardPadding =
+      EdgeInsetsDirectional.all(16);
 }
