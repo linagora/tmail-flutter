@@ -522,8 +522,7 @@ void main() {
         sortOrderType: EmailSortOrderType.relevance,
         text: SearchQuery(emailContainsWord),
         notKeyword: {emailNotContainsWord},
-        emailReceiveTimeType: EmailReceiveTimeType.last30Days,
-        position: 0));
+        emailReceiveTimeType: EmailReceiveTimeType.last30Days));
 
       // expect mailbox dashboard controller calls GetEmailsInMailboxInteractor
       // when [selectedMailbox] is changed and triggered obx listener in thread controller
@@ -578,7 +577,6 @@ void main() {
         text: SearchQuery(queryString),
         emailReceiveTimeType: EmailReceiveTimeType.last30Days,
         hasAttachment: true,
-        position: 0,
       )
     );
   });
