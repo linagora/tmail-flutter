@@ -7,6 +7,9 @@ on:
 
 name: Build Docker images
 
+env:
+  FLUTTER_VERSION: 3.32.8
+
 jobs:
   build-dev-image:
     name: Build development image
@@ -14,7 +17,54 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
 
+    env:
+      # Sentry ENV for sentry_dart_plugin
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ----------- FLUTTER WEB BUILD -------------
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
+          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+
+      # 🧹 Clean Flutter cache before building
+      - name: Flutter clean
+        run: flutter clean
+
+      # 📦 Run prebuild (if any)
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      # Get version from pubspec.yaml for Sentry Release
+      - name: Read version from pubspec.yaml
+        id: version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      # Export SENTRY_RELEASE to sentry_dart_plugin to upload source maps
+      - name: Export release
+        run: echo "SENTRY_RELEASE=${{ steps.version.outputs.VERSION }}" >> $GITHUB_ENV
+
+      # Build Flutter Web
+      - name: Build Flutter Web
+        run: flutter build web --release --source-maps
+
+      # Upload source maps via sentry_dart_plugin
+      - name: Upload source maps to Sentry via sentry_dart_plugin
+        run: dart run sentry_dart_plugin
+
+      # ------------- DOCKER SECTION ---------------
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -44,22 +94,74 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
+          context: .
+          build-args: |
+            SENTRY_RELEASE=${{ env.SENTRY_RELEASE }}
           push: true
-          platforms: "linux/amd64,linux/arm64"
-          cache-from: |
-            type=gha
-          cache-to: |
-            type=gha
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  # ================= RELEASE IMAGE JOB ===================
   build-release-image:
     name: Build release image
     if: github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     environment: prod
 
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ----------- FLUTTER WEB BUILD -------------
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+          cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
+          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
+
+      # 🧹 Clean Flutter cache before building
+      - name: Flutter clean
+        run: flutter clean
+
+      # 📦 Run prebuild (if any)
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      # Get version from pubspec.yaml for Sentry Release
+      - name: Read version from pubspec.yaml
+        id: version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      # Export SENTRY_RELEASE to sentry_dart_plugin to upload source maps
+      - name: Export release
+        run: echo "SENTRY_RELEASE=${{ steps.version.outputs.VERSION }}" >> $GITHUB_ENV
+
+      # Build Flutter Web
+      - name: Build Flutter Web
+        run: flutter build web --release --source-maps
+
+      # Upload source maps via sentry_dart_plugin
+      - name: Upload source maps to Sentry via sentry_dart_plugin
+        run: dart run sentry_dart_plugin
+
+      # 🛡️ Remove source maps so the Docker image doesn't contain original code.
+      - name: Remove source maps before Docker build
+        run: rm -rf build/web/*.js.map
+
+      # ---- DOCKER BUILD ----
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -90,11 +192,12 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
+          context: .
+          build-args: |
+            SENTRY_RELEASE=${{ env.SENTRY_RELEASE }}
           push: true
-          platforms: "linux/amd64,linux/arm64"
-          cache-from: |
-            type=gha
-          cache-to: |
-            type=gha
+          platforms: linux/amd64,linux/arm64
+          cache-from: type=gha
+          cache-to: type=gha
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

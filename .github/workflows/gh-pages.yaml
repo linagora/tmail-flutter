@@ -62,6 +62,15 @@ jobs:
           FOLDER: ${{ github.event.pull_request.number }}
         run: ./scripts/configure-web-environment.sh
 
+      # 🏷️ Read the version from pubspec.yaml
+      - name: Read version from pubspec.yaml
+        id: pubspec_version
+        run: |
+          # Take the line containing the version, remove 'version: ', and discard the space.
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/[[:space:]]//g')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version found: $VERSION"
+
       # 🧱 Build Flutter Web (release)
       - name: Build Web (Release)
         env:
@@ -72,6 +81,19 @@ jobs:
           ./scripts/build-web.sh
           echo "=== Disk usage after build ==="
           df -h
+
+      # Upload source maps via sentry_dart_plugin
+      - name: Upload source maps to Sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_RELEASE: ${{ steps.pubspec_version.outputs.VERSION }}
+        run: dart run sentry_dart_plugin
+
+      # 🛡️ Delete the source map before deploying to GitHub Pages.
+      - name: Remove source maps before deploy
+        run: rm -rf build/web/*.js.map
 
       # 🚀 Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
