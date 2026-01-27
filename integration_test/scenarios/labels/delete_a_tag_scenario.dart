@@ -1,4 +1,3 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -13,11 +12,6 @@ import '../../robots/thread_robot.dart';
 class DeleteATagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
   const DeleteATagScenario(super.$);
-
-  @override
-  Future<void> setupPreLogin() async {
-    PlatformInfo.isIntegrationTesting = true;
-  }
 
   @override
   Future<void> runTestLogic() async {
@@ -54,10 +48,5 @@ class DeleteATagScenario extends BaseTestScenario
 
   Future<void> _expectLabelDeletedByName(String name) async {
     await expectViewInvisible($(LabelListView).$(name));
-  }
-
-  @override
-  Future<void> disposeAfterTest() async {
-    PlatformInfo.isIntegrationTesting = false;
   }
 }
