@@ -48,52 +48,67 @@ mixin BatchSetEmailProcessingMixin on HandleSetErrorMixin, MailAPIMixin {
     for (int start = 0; start < totalEmails; start += batchSize) {
       int end =
           (start + batchSize < totalEmails) ? start + batchSize : totalEmails;
-
-      log('EmailAPI::$debugLabel:emails from ${start + 1} to $end');
-
       final currentListEmailIds = emailIds.sublist(start, end);
 
-      final setEmailMethod = SetEmailMethod(accountId)
-        ..addUpdates(onGenerateUpdates(currentListEmailIds));
+      log('BatchSetEmailProcessingMixin::$debugLabel: processing batch ${start + 1} to $end');
 
-      final requestBuilder = JmapRequestBuilder(
-        httpClient,
-        ProcessingInvocation(),
-      );
-      final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
-
-      final capabilities = setEmailMethod.requiredCapabilities
-          .toCapabilitiesSupportTeamMailboxes(session, accountId);
-
-      final response =
-          await (requestBuilder..usings(capabilities)).build().execute();
-
-      SetEmailResponse? setEmailResponse;
       try {
-        setEmailResponse = response.parse<SetEmailResponse>(
-          setEmailInvocation.methodCallId,
-          SetEmailResponse.deserialize,
+        final response = await _executeSetEmailBatch(
+          session: session,
+          accountId: accountId,
+          httpClient: httpClient,
+          emailIds: currentListEmailIds,
+          onGenerateUpdates: onGenerateUpdates,
         );
+
+        if (response != null) {
+          final listEmailIds = response.updated?.keys.toEmailIds() ?? [];
+          updatedEmailIds.addAll(listEmailIds);
+          listSetResponse.add(response);
+        } else {
+          throw Exception('SetEmailResponse is null');
+        }
       } catch (e) {
-        log('EmailAPI::$debugLabel: Failed to parse response: $e');
-        setEmailResponse = null;
+        logWarning(
+          'BatchSetEmailProcessingMixin::$debugLabel: Error processing batch ${start + 1}-$end',
+        );
       }
-
-      if (setEmailResponse == null) {
-        log('EmailAPI::$debugLabel: Batch from ${start + 1} to $end returned null response');
-        continue;
-      }
-
-      final listEmailIds = setEmailResponse.updated?.keys.toEmailIds() ?? [];
-      updatedEmailIds.addAll(listEmailIds);
-      listSetResponse.add(setEmailResponse);
     }
 
-    Map<Id, SetError> mapErrors = <Id, SetError>{};
+    Map<Id, SetError> finalMapErrors = <Id, SetError>{};
     if (listSetResponse.isNotEmpty) {
-      mapErrors = handleSetResponse(listSetResponse);
+      finalMapErrors = handleSetResponse(listSetResponse);
     }
 
-    return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);
+    return (emailIdsSuccess: updatedEmailIds, mapErrors: finalMapErrors);
+  }
+
+  Future<SetEmailResponse?> _executeSetEmailBatch({
+    required Session session,
+    required AccountId accountId,
+    required HttpClient httpClient,
+    required List<EmailId> emailIds,
+    required OnGeneratePatchObjectUpdates onGenerateUpdates,
+  }) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(onGenerateUpdates(emailIds));
+
+    final requestBuilder = JmapRequestBuilder(
+      httpClient,
+      ProcessingInvocation(),
+    );
+
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final capabilities = setEmailMethod.requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response =
+        await (requestBuilder..usings(capabilities)).build().execute();
+
+    return response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
   }
 }
