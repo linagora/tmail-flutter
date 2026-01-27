@@ -5515,5 +5515,247 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "createLabel": "Создать метку",
+  "@createLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLabel": "Редактировать метку",
+  "@editLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteLabel": "Удалить метку",
+  "@deleteLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewLabel": "Создать новую метку",
+  "@createANewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLabelFailure": "Не удалось редактировать метку",
+  "@editLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteALabelFailure": "Не удалось удалить метку",
+  "@deleteALabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelName": "Название метки",
+  "@labelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelAs": "Пометить как",
+  "@labelAs": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allLabels": "Все метки",
+  "@allLabels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labels": "Метки",
+  "@labels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newLabel": "Новая метка",
+  "@newLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addLabel": "Добавить метку",
+  "@addLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColourForThisLabel": "Выберите цвет для этой метки",
+  "@chooseAColourForThisLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibility": "Видимость метки",
+  "@labelVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyEmailTaggedWithThis": "У вас нет писем с этой меткой.",
+  "@youDoNotHaveAnyEmailTaggedWithThis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizeYourInboxWithACustomCategory": "Организуйте входящие с помощью пользовательской категории",
+  "@organizeYourInboxWithACustomCategory": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsAction": "ИИ: требуется действие",
+  "@aiNeedsAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionSettingExplanation": "Определяйте письма, требующие вашего внимания, с помощью ИИ. При отключении ИИ не будет обрабатывать письма.",
+  "@aiNeedsActionSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionToggleDescription": "Включить ИИ: требуется действие",
+  "@aiNeedsActionToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequired": "Требуется действие",
+  "@actionRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequiredMailboxDisplayName": "Требуется действие",
+  "@actionRequiredMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyActionRequiredEmails": "У вас нет писем, требующих действия.",
+  "@youDoNotHaveAnyActionRequiredEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabelSuccessfullyMessage": "Метка {labelName} успешно создана",
+  "@createLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "editLabelSuccessfullyMessage": "Метка {labelName} успешно отредактирована",
+  "@editLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteLabelSuccessfullyMessage": "Метка {labelName} успешно удалена",
+  "@deleteLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToEmailSuccessfullyMessage": "Письмо добавлено в метку \"{labelName}\"",
+  "@addLabelToEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToEmailFailureMessage": "Не удалось добавить письмо в метку \"{labelName}\"",
+  "@addLabelToEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromEmailSuccessfullyMessage": "Письмо удалено из метки \"{labelName}\"",
+  "@removeLabelFromEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromEmailFailureMessage": "Не удалось удалить письмо из метки \"{labelName}\"",
+  "@removeLabelFromEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToThreadSuccessfullyMessage": "Все письма в цепочке добавлены в метку \"{labelName}\"",
+  "@addLabelToThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToThreadFailureMessage": "Не удалось добавить все письма в цепочке в метку \"{labelName}\"",
+  "@addLabelToThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadSuccessfullyMessage": "Все письма в цепочке удалены из метки \"{labelName}\"",
+  "@removeLabelFromThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadFailureMessage": "Не удалось удалить все письма в цепочке из метки \"{labelName}\"",
+  "@removeLabelFromThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
   }
 }
