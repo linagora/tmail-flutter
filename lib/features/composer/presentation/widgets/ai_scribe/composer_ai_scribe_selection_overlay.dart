@@ -34,7 +34,7 @@ class ComposerAiScribeSelectionOverlay extends StatelessWidget {
     controller.clearFocusRecipients();
     controller.clearFocusSubject();
 
-    if (PlatformInfo.isMobile) {
+    if (controller.isScribeMobile) {
       await controller.saveAndUnfocusForModal();
     }
   }
