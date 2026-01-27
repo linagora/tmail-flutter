@@ -28,6 +28,8 @@ extension HandleLabelActionTypeExtension on LabelController {
         if (label == null) return;
         openEditLabelModal(accountId: accountId, label: label);
         break;
+      case LabelActionType.delete:
+        break;
     }
   }
 

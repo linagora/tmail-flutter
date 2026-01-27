@@ -5740,4 +5740,18 @@ class AppLocalizations {
       args: [labelName],
     );
   }
+  String get deleteLabel {
+    return Intl.message(
+      'Delete label',
+      name: 'deleteLabel',
+    );
+  }
+
+  String areYouSureYouWantToDeleteTheLabel(String labelName) {
+    return Intl.message(
+      'Are you sure you want to delete the label "$labelName"?',
+      name: 'areYouSureYouWantToDeleteTheLabel',
+      args: [labelName],
+    );
+  }
 }

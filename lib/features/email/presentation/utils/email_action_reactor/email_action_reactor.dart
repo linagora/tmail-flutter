@@ -488,7 +488,7 @@ class EmailActionReactor {
     ) handleEmailAction,
     required List<EmailActionType> additionalActions,
     required bool emailIsRead,
-    required bool isLabelFeatureEnabled,
+    required bool isLabelAvailable,
     required OpenBottomSheetContextMenuAction openBottomSheetContextMenu,
     required OpenPopupMenuActionGroup openPopupMenu,
     List<Label>? labels,
@@ -507,7 +507,7 @@ class EmailActionReactor {
       if (EmailUtils.isReplyToListEnabled(presentationEmail.listPost ?? '') &&
           additionalActions.contains(EmailActionType.replyToList))
         EmailActionType.replyToList,
-      if (isLabelFeatureEnabled)
+      if (isLabelAvailable)
         EmailActionType.labelAs,
       if (PlatformInfo.isWeb &&
           PlatformInfo.isCanvasKit &&
