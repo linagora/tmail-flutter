@@ -7,12 +7,9 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
@@ -119,9 +116,9 @@ class SearchController extends BaseController with DateRangePickerMixin {
       session,
       accountId,
       limit: UnsignedInt(5),
-      sort: <Comparator>{}..add(
-        EmailComparator(EmailComparatorProperty.receivedAt)
-          ..setIsAscending(false)),
+      sort: searchEmailFilter.value.sortOrderType
+                  .getSortOrder()
+                  .toNullable(),
       filter: _mappingToFilterOnSuggestionForm(
         currentUserEmail: ownEmailAddress,
         query: query,
