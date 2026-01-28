@@ -70,7 +70,7 @@ class CachingManager {
       await Future.wait([
         clearMailDataCached(),
         clearAccountDataCached(),
-      ], eagerError: true);
+      ]);
     } catch (e) {
       logWarning('CachingManager::clearAll: Cannot clear all cache: $e');
     }

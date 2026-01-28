@@ -254,7 +254,11 @@ class LoginController extends ReloadableController {
     SmartDialog.dismiss();
 
     if (PlatformInfo.isWeb) {
-      await cachingManager.clearAllEmailAndStateCache();
+      try {
+        await cachingManager.clearAllEmailAndStateCache();
+      } catch (e) {
+        logWarning('$runtimeType::handleReloaded: Failed to clear cache: $e');
+      }
     }
 
     popAndPush(

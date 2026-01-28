@@ -355,7 +355,7 @@ class ThreadController extends BaseController with EmailActionController {
       if (action is RefreshChangeEmailAction) {
         _refreshEmailChanges(newState: action.newState);
       } else if (action is RefreshAllEmailAction) {
-        refreshAllEmail(forceEmailQuery: true);
+        refreshAllEmail(shouldClearCache: PlatformInfo.isWeb);
         mailboxDashBoardController.clearEmailUIAction();
       }
     });
@@ -604,8 +604,8 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  Future<void> refreshAllEmail({bool forceEmailQuery = false}) async {
-    if (forceEmailQuery) {
+  Future<void> refreshAllEmail({bool shouldClearCache = false}) async {
+    if (shouldClearCache) {
       await cachingManager.clearAllEmailAndStateCache();
     }
 
@@ -622,7 +622,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched);
     } else {
-      getAllEmailAction(forceEmailQuery: forceEmailQuery);
+      getAllEmailAction();
     }
   }
 
