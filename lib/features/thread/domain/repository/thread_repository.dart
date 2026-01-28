@@ -43,6 +43,16 @@ abstract class ThreadRepository {
     Properties? propertiesCreated,
   });
 
+  Stream<EmailsResponse> forceQueryAllEmailsForWeb({
+    required Session session,
+    required AccountId accountId,
+    UnsignedInt? limit,
+    int? position,
+    Set<Comparator>? sort,
+    EmailFilter? emailFilter,
+    Properties? propertiesCreated,
+  });
+
   Stream<EmailsResponse> refreshChanges(
     Session session,
     AccountId accountId,
