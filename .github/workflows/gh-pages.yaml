@@ -19,8 +19,12 @@ jobs:
       name: PR-${{ github.event.pull_request.number }}
       url: ${{ steps.configure.outputs.URL }}
 
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
     steps:
-      # 🧹 Free up space before building
       - name: Free up disk space before build
         run: |
           echo "=== Disk space before cleanup ==="
@@ -33,84 +37,24 @@ jobs:
           echo "=== Disk space after cleanup ==="
           df -h
 
-      # 🔄 Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🧰 Setup Flutter
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: "stable"
-          cache: true
-          cache-key: deps-${{ hashFiles('**/pubspec.lock') }} # optional, change this to force refresh cache
-          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
-
-      # 🧹 Clean Flutter cache before building
-      - name: Flutter clean
-        run: flutter clean
-
-      # 📦 Run prebuild (if any)
-      - name: Run prebuild
-        run: ./scripts/prebuild.sh
-
-      # ⚙️ Configure environment for PR
       - name: Configure environments
         id: configure
         env:
           FOLDER: ${{ github.event.pull_request.number }}
         run: ./scripts/configure-web-environment.sh
 
-      # 🏷️ Read the version from pubspec.yaml
-      - name: Read version from pubspec.yaml
-        id: pubspec_version
-        run: |
-          # Take the line containing the version, remove 'version: ', and discard the space.
-          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/[[:space:]]//g')
-          if [ -z "$VERSION" ]; then
-            echo "::error::Could not extract version from pubspec.yaml"
-              exit 1
-          fi
-          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Version found: $VERSION"
-
-      # 🧱 Build Flutter Web (release)
-      - name: Build Web (Release)
+      - name: Build Flutter Web
+        uses: ./.github/actions/build-flutter-web
         env:
           FOLDER: ${{ github.event.pull_request.number }}
-        run: |
-          echo "=== Disk usage before build ==="
-          df -h
-          ./scripts/build-web.sh
-          echo "=== Disk usage after build ==="
-          df -h
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          build-command: "./scripts/build-web.sh"
+          artifact-name: source-maps-pr-${{ github.event.pull_request.number }}
 
-      # Check if Sentry secrets are available
-      - name: Check Sentry availability
-        id: sentry_check
-        run: |
-          if [ -n "${{ secrets.SENTRY_AUTH_TOKEN }}" ]; then
-           echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-           echo "available=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      # Upload source maps via sentry_dart_plugin
-      - name: Upload source maps to Sentry
-        if: ${{ steps.sentry_check.outputs.available == 'true' && github.event.pull_request.head.repo.fork == false }}
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-          SENTRY_RELEASE: ${{ steps.pubspec_version.outputs.VERSION }}
-        run: dart run sentry_dart_plugin
-
-      # 🛡️ Delete the source map before deploying to GitHub Pages.
-      - name: Remove source maps before deploy
-        run: find build/web -type f -name '*.map' -delete
-
-      # 🚀 Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -119,7 +63,6 @@ jobs:
           keep_files: true
           publish_dir: "build/web"
 
-      # 🧹 Clean up after build to save space
       - name: Cleanup after deploy
         if: always()
         run: |
@@ -128,7 +71,6 @@ jobs:
           echo "=== Disk usage after cleanup ==="
           df -h
 
-      # 💬 Create or update comments on PR
       - name: Find deployment comment
         uses: peter-evans/find-comment@v3
         id: fc

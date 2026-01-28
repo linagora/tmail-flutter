@@ -1,0 +1,125 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Deployment environment (dev/prod)"
+        type: string
+        required: true
+      docker-tags:
+        description: "Docker metadata tags (passed to docker/metadata-action)"
+        type: string
+        required: true
+      artifact-name:
+        description: "Name for the source map artifact"
+        type: string
+        required: false
+        default: "source-maps"
+
+name: Build and push web Docker image
+
+env:
+  FLUTTER_VERSION: 3.32.8
+
+jobs:
+  build:
+    name: Build and push
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build the Flutter build stage and load locally for source map extraction
+      - name: Build Flutter Web (Docker build stage)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: build-env
+          load: true
+          tags: tmail-build:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Extract source maps from the build stage container
+      - name: Extract source maps from Docker
+        run: |
+          CONTAINER_ID=$(docker create tmail-build:latest)
+          mkdir -p ./source-maps
+          docker cp "$CONTAINER_ID:/app/build/web" ./source-maps/web
+          docker rm "$CONTAINER_ID"
+
+      - name: Read version from pubspec.yaml
+        id: version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/[[:space:]]//g')
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not extract version from pubspec.yaml"
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # Upload source maps to Sentry via sentry-cli
+      - name: Upload source maps to Sentry
+        if: env.SENTRY_AUTH_TOKEN != ''
+        env:
+          SENTRY_RELEASE: ${{ steps.version.outputs.VERSION }}
+        run: |
+          npx @sentry/cli releases new "$SENTRY_RELEASE"
+          npx @sentry/cli releases files "$SENTRY_RELEASE" \
+            upload-sourcemaps ./source-maps/web/ \
+            --url-prefix '~/'
+          npx @sentry/cli releases finalize "$SENTRY_RELEASE"
+
+      # Upload source maps as GitHub Artifact
+      - name: Upload source maps as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: source-maps/web/**/*.map
+          retention-days: 30
+          if-no-files-found: warn
+
+      # Docker metadata for tagging
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ github.repository_owner }}/tmail-web
+            ghcr.io/${{ github.repository_owner }}/tmail-web
+          tags: ${{ inputs.docker-tags }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push the final multi-platform image
+      # The build-env stage is cached from the extraction step above
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: "linux/amd64,linux/arm64"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

@@ -1,0 +1,85 @@
+name: "Build Flutter Web"
+description: "Setup Flutter, build web, upload source maps to Sentry & GitHub Artifacts, remove .map files"
+
+inputs:
+  flutter-version:
+    description: "Flutter SDK version"
+    required: true
+  build-command:
+    description: "Build command to execute"
+    required: false
+    default: "flutter build web --release --source-maps"
+  sentry-enabled:
+    description: "Whether to upload source maps to Sentry (true/false)"
+    required: false
+    default: "true"
+  artifact-name:
+    description: "Name for the uploaded source map artifact"
+    required: false
+    default: "source-maps"
+  artifact-retention-days:
+    description: "Retention days for the source map artifact"
+    required: false
+    default: "30"
+
+outputs:
+  version:
+    description: "Version extracted from pubspec.yaml"
+    value: ${{ steps.version.outputs.VERSION }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ inputs.flutter-version }}
+        channel: "stable"
+        cache: true
+        cache-key: deps-${{ hashFiles('**/pubspec.lock') }}
+        cache-path: ${{ runner.tool_cache }}/flutter
+
+    - name: Flutter clean
+      shell: bash
+      run: flutter clean
+
+    - name: Run prebuild
+      shell: bash
+      run: ./scripts/prebuild.sh
+
+    - name: Read version from pubspec.yaml
+      id: version
+      shell: bash
+      run: |
+        VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //;s/[[:space:]]//g')
+        if [ -z "$VERSION" ]; then
+          echo "::error::Could not extract version from pubspec.yaml"
+          exit 1
+        fi
+        echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+        echo "Version found: $VERSION"
+
+    - name: Export SENTRY_RELEASE
+      shell: bash
+      run: echo "SENTRY_RELEASE=${{ steps.version.outputs.VERSION }}" >> "$GITHUB_ENV"
+
+    - name: Build Flutter Web
+      shell: bash
+      run: ${{ inputs.build-command }}
+
+    - name: Upload source maps to Sentry
+      if: inputs.sentry-enabled == 'true' && env.SENTRY_AUTH_TOKEN != ''
+      shell: bash
+      run: dart run sentry_dart_plugin
+
+    - name: Upload source maps as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: build/web/**/*.map
+        retention-days: ${{ inputs.artifact-retention-days }}
+        if-no-files-found: warn
+
+    - name: Remove source maps
+      shell: bash
+      run: find build/web -type f -name '*.map' -delete

@@ -1,20 +1,29 @@
-# Stage 1: Runtime only — Nginx
+ARG FLUTTER_VERSION=3.32.8
+# Stage 1 - Install dependencies and build the app
+# This matches the flutter version on our CI/CD pipeline on Github
+FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
+
+# Set directory to Copy App
+WORKDIR /app
+
+COPY . .
+
+# Precompile tmail flutter
+RUN ./scripts/prebuild.sh
+# Build flutter for web with source maps (used for Sentry, removed in Stage 2)
+RUN flutter build web --release --source-maps
+
+# Stage 2 - Create the run-time image
 FROM nginx:alpine
+RUN apk add gzip
+COPY --from=build-env /app/server/nginx.conf /etc/nginx
+COPY --from=build-env /app/build/web /usr/share/nginx/html
 
-# Install gzip support
-RUN apk add --no-cache gzip
+# Remove source maps so the final image doesn't contain original code
+RUN find /usr/share/nginx/html -type f -name '*.map' -delete
 
-# Copy custom nginx config
-COPY server/nginx.conf /etc/nginx/nginx.conf
-
-# Copy Flutter Web build from GitHub Actions pipeline
-COPY build/web /usr/share/nginx/html
-
-# Expose port
+# Record the exposed port
 EXPOSE 80
 
-# Re-gzip assets to ensure correct compression
-# Pre-compress static assets at build time
-RUN gzip -k -r -f /usr/share/nginx/html/
-
-CMD ["nginx", "-g", "daemon off;"]
+# Before starting NGinx, re-zip all the content to ensure customizations are propagated
+CMD gzip -k -r -f /usr/share/nginx/html/ && nginx -g 'daemon off;'
