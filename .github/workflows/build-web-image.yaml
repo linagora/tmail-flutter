@@ -17,6 +17,10 @@ on:
 
 name: Build and push web Docker image
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   FLUTTER_VERSION: 3.32.8
 
