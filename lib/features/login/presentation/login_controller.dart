@@ -253,7 +253,7 @@ class LoginController extends ReloadableController {
   Future<void> handleReloaded(Session session) async {
     SmartDialog.dismiss();
 
-    if (PlatformInfo.isWeb && AppConfig.isForceEmailQueryEnabled) {
+    if (PlatformInfo.isWeb) {
       await cachingManager.clearAllEmailAndStateCache();
     }
 
