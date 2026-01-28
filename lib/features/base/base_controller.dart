@@ -506,7 +506,7 @@ abstract class BaseController extends GetxController
     if (_isFcmEnabled) {
       await _handleDeleteFCMRegistration();
     }
-    clearAllData();
+    await clearAllData();
   }
 
   Future<void> _handleDeleteFCMRegistration() async {

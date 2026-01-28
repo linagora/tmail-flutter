@@ -20,7 +20,7 @@ The issue typically manifests in the following sequence, as reported in [Issue #
 * **Crucially:** The email *can* be found using the Search function (proving data existence).
 
 
-4. **Resolution:** The user is forced to **Logout and Login**, which magically restores the email to the list.
+4. **Resolution:** The user is forced to **log out and log in**, which magically restores the email to the list.
 
 ### Root Cause Analysis
 
@@ -104,4 +104,4 @@ FORCE_EMAIL_QUERY=false
 
 ## References
 
-* **Github Issue:** [linagora/tmail-flutter#4274](https://github.com/linagora/tmail-flutter/issues/4274)
+* **GitHub Issue:** [linagora/tmail-flutter#4274](https://github.com/linagora/tmail-flutter/issues/4274)
