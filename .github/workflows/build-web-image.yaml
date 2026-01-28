@@ -19,7 +19,13 @@ name: Build and push web Docker image
 
 permissions:
   contents: read
+name: Build and push web Docker image
+
+permissions:
+  contents: read
   packages: write
+  actions: write
+  artifact-metadata: write
 
 env:
   FLUTTER_VERSION: 3.32.8
@@ -34,7 +40,6 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
       SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
