@@ -1,3 +1,6 @@
+## [0.24.2] - 2026-01-29
+- add CORS for source map
+
 ## [0.24.1] - 2026-01-28
 ### Added
 - enable source map when building web application
