@@ -26,7 +26,24 @@ jobs:
         id: app_version
         run: |
           VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          echo "Extracted version: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Debug Sentry build args
+        run: |
+          echo "=== Sentry Build Args Debug ==="
+          echo "SENTRY_RELEASE: ${{ steps.app_version.outputs.version }}"
+          echo ""
+          echo "Checking secrets (values are hidden for security):"
+          ORG_CHECK="${{ secrets.SENTRY_ORG != '' && '✓' || '✗' }}"
+          PROJECT_CHECK="${{ secrets.SENTRY_PROJECT != '' && '✓' || '✗' }}"
+          TOKEN_CHECK="${{ secrets.SENTRY_AUTH_TOKEN != '' && '✓' || '✗' }}"
+          URL_CHECK="${{ secrets.SENTRY_URL != '' && '✓' || '⚠ (optional)' }}"
+          echo "SENTRY_ORG: $ORG_CHECK"
+          echo "SENTRY_PROJECT: $PROJECT_CHECK"
+          echo "SENTRY_AUTH_TOKEN: $TOKEN_CHECK"
+          echo "SENTRY_URL: $URL_CHECK"
+          echo "================================="
 
       - name: Docker metadata
         id: meta
@@ -89,7 +106,24 @@ jobs:
         id: app_version
         run: |
           VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          echo "Extracted version: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Debug Sentry build args
+        run: |
+          echo "=== Sentry Build Args Debug ==="
+          echo "SENTRY_RELEASE: ${{ steps.app_version.outputs.version }}"
+          echo ""
+          echo "Checking secrets (values are hidden for security):"
+          ORG_CHECK="${{ secrets.SENTRY_ORG != '' && '✓' || '✗' }}"
+          PROJECT_CHECK="${{ secrets.SENTRY_PROJECT != '' && '✓' || '✗' }}"
+          TOKEN_CHECK="${{ secrets.SENTRY_AUTH_TOKEN != '' && '✓' || '✗' }}"
+          URL_CHECK="${{ secrets.SENTRY_URL != '' && '✓' || '⚠ (optional)' }}"
+          echo "SENTRY_ORG: $ORG_CHECK"
+          echo "SENTRY_PROJECT: $PROJECT_CHECK"
+          echo "SENTRY_AUTH_TOKEN: $TOKEN_CHECK"
+          echo "SENTRY_URL: $URL_CHECK"
+          echo "================================="
 
       - name: Docker metadata
         id: meta

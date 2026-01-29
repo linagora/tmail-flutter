@@ -13,6 +13,13 @@ ARG SENTRY_RELEASE
 # This matches the flutter version on our CI/CD pipeline on Github
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
 
+# Re-declare ARGs in this stage to make them available in RUN commands
+ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ARG SENTRY_URL
+ARG SENTRY_RELEASE
+
 # Set directory to Copy App
 WORKDIR /app
 
