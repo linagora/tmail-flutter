@@ -45,16 +45,21 @@ RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJ
       [ -n "$SENTRY_URL" ] && export SENTRY_URL="$SENTRY_URL" || true && \
       sentry-cli releases new "$SENTRY_RELEASE" && \
       sentry-cli releases set-commits "$SENTRY_RELEASE" --auto || echo "Sentry set-commits failed, continuing" && \
-      echo "Uploading .map files to Sentry..." && \
+      echo "Uploading sourcemaps to Sentry (JS files with .map files)..." && \
       MAP_COUNT=$(find build/web -type f -name "*.map" | wc -l) && \
       echo "Found $MAP_COUNT .map files" && \
       mkdir -p /tmp/sourcemaps && \
-      find build/web -type f -name "*.map" -exec sh -c ' \
-        relpath="$1" && \
-        destpath="/tmp/sourcemaps/$(echo "$relpath" | sed "s|^build/web/||")" && \
-        mkdir -p "$(dirname "$destpath")" && \
-        cp "$relpath" "$destpath" \
-      ' _ {} \; && \
+      find build/web -type f -name "*.map" | while read -r mapfile; do \
+        jsfile=$(echo "$mapfile" | sed 's|\.map$||') && \
+        if [ -f "$jsfile" ]; then \
+          relpath=$(echo "$jsfile" | sed "s|^build/web/||") && \
+          destdir="/tmp/sourcemaps/$(dirname "$relpath")" && \
+          mkdir -p "$destdir" && \
+          cp "$jsfile" "$destdir/" && \
+          cp "$mapfile" "$destdir/" && \
+          echo "Prepared: $relpath with sourcemap"; \
+        fi; \
+      done && \
       cd /tmp/sourcemaps && \
       sentry-cli sourcemaps upload "$SENTRY_RELEASE" . --url-prefix "~/" || echo "Sentry sourcemaps upload failed, continuing" && \
       rm -rf /tmp/sourcemaps && \
