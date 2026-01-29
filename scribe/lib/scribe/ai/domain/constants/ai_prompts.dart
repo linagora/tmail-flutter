@@ -1,3 +1,4 @@
+import 'package:scribe/scribe/ai/data/model/ai_message.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
 
@@ -8,8 +9,8 @@ class AIPrompts {
   static const _doNotAddInfoPrompt =
       "Do not add any extra information or interpret anything beyond the explicit task.";
 
-  static String buildPrompt(AIAction action, String? text) {
-    return switch (action) {
+  static List<AIMessage> buildPrompt(AIAction action, String? text) {
+    final prompt =  switch (action) {
       PredefinedAction(action: final menuAction) =>
       text?.trim().isNotEmpty == true
           ? buildPredefinedPrompt(menuAction, text!)
@@ -17,6 +18,10 @@ class AIPrompts {
       CustomPromptAction(prompt: final customPrompt) =>
         buildCustomPrompt(customPrompt, text),
     };
+
+    final message = [AIMessage.ofUser(prompt)];
+
+    return message;
   }
 
   static String buildPredefinedPrompt(AIScribeMenuAction action, String text) {
