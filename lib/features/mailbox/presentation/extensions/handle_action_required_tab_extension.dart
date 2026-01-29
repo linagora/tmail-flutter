@@ -59,8 +59,7 @@ extension HandleActionRequiredTabExtension on BaseMailboxController {
     )) {
       return currentAllMailboxes;
     }
-    currentAllMailboxes.add(folder);
-    return currentAllMailboxes;
+    return [...currentAllMailboxes, folder];
   }
 
   bool _allMailboxesContains({

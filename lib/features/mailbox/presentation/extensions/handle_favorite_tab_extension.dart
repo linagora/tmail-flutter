@@ -61,8 +61,6 @@ extension HandleFavoriteTabExtension on BaseMailboxController {
     );
     if (alreadyExists) return allMailboxes;
 
-    allMailboxes.add(favoriteFolder);
-
-    return allMailboxes;
+    return [...allMailboxes, favoriteFolder];
   }
 }
