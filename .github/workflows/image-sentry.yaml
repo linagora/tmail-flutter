@@ -19,6 +19,40 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Fix Docker permissions
+        run: |
+          echo "=== Fixing Docker Permissions ==="
+          CURRENT_USER=$(whoami)
+          echo "Current user: $CURRENT_USER"
+          
+          # Check if user is in docker group
+          if groups | grep -q docker; then
+            echo "✓ User $CURRENT_USER is already in docker group"
+          else
+            echo "✗ User $CURRENT_USER is NOT in docker group"
+            echo "Attempting to add user to docker group..."
+            
+            # Try to add user to docker group (requires sudo)
+            if sudo usermod -aG docker $CURRENT_USER 2>/dev/null; then
+              echo "✓ Successfully added $CURRENT_USER to docker group"
+              echo "⚠ Note: Changes may require logout/login or service restart to take effect"
+              
+              # Try to apply new groups immediately
+              newgrp docker <<EOF
+              echo "Groups updated in subshell"
+              EOF
+            else
+              echo "✗ Failed to add user to docker group (may need manual intervention)"
+              echo "Run on server: sudo usermod -aG docker $CURRENT_USER"
+              echo "Then restart runner service: sudo systemctl restart actions.runner.*.service"
+            fi
+          fi
+          
+          # Verify docker group membership
+          echo ""
+          echo "Current groups: $(groups)"
+          echo "================================="
+
       - name: Debug Docker environment
         run: |
           echo "=== Docker Environment Debug ==="
@@ -126,6 +160,40 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Fix Docker permissions
+        run: |
+          echo "=== Fixing Docker Permissions ==="
+          CURRENT_USER=$(whoami)
+          echo "Current user: $CURRENT_USER"
+          
+          # Check if user is in docker group
+          if groups | grep -q docker; then
+            echo "✓ User $CURRENT_USER is already in docker group"
+          else
+            echo "✗ User $CURRENT_USER is NOT in docker group"
+            echo "Attempting to add user to docker group..."
+            
+            # Try to add user to docker group (requires sudo)
+            if sudo usermod -aG docker $CURRENT_USER 2>/dev/null; then
+              echo "✓ Successfully added $CURRENT_USER to docker group"
+              echo "⚠ Note: Changes may require logout/login or service restart to take effect"
+              
+              # Try to apply new groups immediately
+              newgrp docker <<EOF
+              echo "Groups updated in subshell"
+              EOF
+            else
+              echo "✗ Failed to add user to docker group (may need manual intervention)"
+              echo "Run on server: sudo usermod -aG docker $CURRENT_USER"
+              echo "Then restart runner service: sudo systemctl restart actions.runner.*.service"
+            fi
+          fi
+          
+          # Verify docker group membership
+          echo ""
+          echo "Current groups: $(groups)"
+          echo "================================="
 
       - name: Debug Docker environment
         run: |
