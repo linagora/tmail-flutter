@@ -65,6 +65,23 @@ enum AIScribeMenuAction {
     }
   }
 
+  String get promptId {
+    return switch (this) {
+      AIScribeMenuAction.correctGrammar => 'correct-grammar',
+      AIScribeMenuAction.improveMakeShorter => 'make-shorter',
+      AIScribeMenuAction.improveExpandContext => 'expand-context',
+      AIScribeMenuAction.improveEmojify => 'emojify',
+      AIScribeMenuAction.improveTransformToBullets => 'transform-to-bullets',
+      AIScribeMenuAction.changeToneProfessional => 'change-tone-professional',
+      AIScribeMenuAction.changeToneCasual => 'change-tone-casual',
+      AIScribeMenuAction.changeTonePolite => 'change-tone-polite',
+      AIScribeMenuAction.translateFrench => 'translate-french',
+      AIScribeMenuAction.translateEnglish => 'translate-english',
+      AIScribeMenuAction.translateRussian => 'translate-russian',
+      AIScribeMenuAction.translateVietnamese => 'translate-vietnamese',
+    };
+  }
+
   String getFullLabel(ScribeLocalizations localizations) {
     final categoryLabel = category.getLabel(localizations);
     if (category.hasSubmenu) {
