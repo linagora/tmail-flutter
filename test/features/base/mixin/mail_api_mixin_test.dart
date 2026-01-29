@@ -43,14 +43,21 @@ class TestMailApiMixin with HandleSetErrorMixin, MailAPIMixin {
 void main() {
   final baseOption = BaseOptions(method: 'POST');
   final dio = Dio(baseOption)..options.baseUrl = 'http://domain.com/jmap';
-  final dioAdapter = DioAdapter(dio: dio);
-  final httpClient = HttpClient(dio);
-  final testMailApiMixin = TestMailApiMixin();
+  late DioAdapter dioAdapter;
+  late HttpClient httpClient;
+  late TestMailApiMixin testMailApiMixin;
 
   final sessionState = State('some-session-state');
   final state = State('some-state');
   final filter = EmailFilterCondition(text: 'some-text');
   final queryState = State('some-query-state');
+
+  setUp(() {
+    dioAdapter = DioAdapter(dio: dio);
+    httpClient = HttpClient(dio);
+    testMailApiMixin = TestMailApiMixin();
+  });
+
   group('mail api mixin test:', () {
     group('fetchAllEmail:', () {
       Map<String, dynamic> generateRequest({
@@ -176,17 +183,6 @@ void main() {
           dioAdapter.onPost(
             '',
             (server) => server.reply(
-              200,
-              generateResponse(
-                foundEmails: [email],
-                notFoundEmailIds: [],
-              ),
-            ),
-            data: generateRequest(filter: filter),
-          );
-          dioAdapter.onPost(
-            '',
-            (server) => server.reply(
               403,
               generateResponse(
                 foundEmails: [email],
@@ -196,25 +192,16 @@ void main() {
             data: generateRequest(filter: filter, position: 0),
           );
 
-          // act
-          final result = await testMailApiMixin.fetchAllEmail(
-            session: SessionFixtures.aliceSession,
-            accountId: AccountFixtures.aliceAccountId,
-            httpClient: httpClient,
-            filter: filter,
-            position: 0,
-          );
-
-          // assert
+          // act & assert
           expect(
-            result,
-            equals(
-              EmailsResponse(
-                emailList: [email],
-                state: state,
-                notFoundEmailIds: [],
-              ),
+            () => testMailApiMixin.fetchAllEmail(
+              session: SessionFixtures.aliceSession,
+              accountId: AccountFixtures.aliceAccountId,
+              httpClient: httpClient,
+              filter: filter,
+              position: 0,
             ),
+            throwsA(isA<DioException>()),
           );
         },
       );
