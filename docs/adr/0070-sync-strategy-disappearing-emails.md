@@ -35,15 +35,15 @@ To resolve this, we are standardizing the **Cache Invalidation** triggers and in
 We define specific "Hard Actions" that must strictly trigger a complete cache clearance to ensure data freshness. We move away from "soft updates" for these specific interactions to guarantee the UI reflects the server state.
 
 * **F5 (Browser Refresh):**
-* **Action:** Triggers `clear cache`  Reloads application.
+* **Action:** Triggers `clear cache` and reloads application.
 
 
 * **Logout:**
-* **Action:** Triggers `clear cache` (Session wipe)  Redirects to login.
+* **Action:** Triggers `clear cache` (session wipe) and redirects to login.
 
 
 * **UI Refresh Button:**
-* **Action:** Triggers `clear cache` explicitly for the current view  Re-fetches list from server.
+* **Action:** Triggers `clear cache` explicitly for the current view and re-fetches list from server.
 * *Rationale:* Previously, this might have only requested a delta update. Now it forces a clean slate fetch for the current list.
 
 
@@ -75,8 +75,7 @@ FORCE_EMAIL_QUERY=false
 1. **Reliability:** Directly addresses the "disappearing email" bug, ensuring users always see their actual messages.
 2. **User Experience:** Eliminates the need for users to perform a disruptive Logout/Login cycle to restore their view.
 3. **Maintainability:** By externalizing the logic to an environment variable (`FORCE_EMAIL_QUERY`), we allow DevOps/Developers to toggle query behaviors in different environments without altering source code.
-4. **Clarity:** clearly defines what "Refresh" implies for the system (Clear Cache vs. Delta Update).
-
+4. **Clarity:** Clearly defines what "Refresh" implies for the system (Clear Cache vs. Delta Update).
 ### Negative
 
 1. **Performance Overhead:** Forcing a `clear cache` on the UI Refresh button is more resource-intensive than a delta update, potentially leading to slightly longer loading spinners for users with large mailboxes.

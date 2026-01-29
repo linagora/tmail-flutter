@@ -617,6 +617,7 @@ class MailboxDashBoardController extends ReloadableController
 
     if (shouldPrevent) {
       event.preventDefault();
+      return;
     }
 
     if (PlatformInfo.isWeb) {
