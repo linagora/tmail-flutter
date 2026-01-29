@@ -11,7 +11,8 @@ enum PreferencesOptionType {
   spamReport(isLocal: true),
   aiScribe(isLocal: true),
   aiNeedsAction(isLocal: false),
-  label(isLocal: true);
+  label(isLocal: true),
+  openEmailInNewWindow(isLocal: true);
 
   final bool isLocal;
 
@@ -33,6 +34,8 @@ enum PreferencesOptionType {
         return appLocalizations.aiNeedsAction;
       case PreferencesOptionType.label:
         return appLocalizations.labelVisibility;
+      case PreferencesOptionType.openEmailInNewWindow:
+        return appLocalizations.openEmailInNewWindow;
     }
   }
 
@@ -52,6 +55,8 @@ enum PreferencesOptionType {
         return appLocalizations.aiNeedsActionSettingExplanation;
       case PreferencesOptionType.label:
         return appLocalizations.labelVisibilitySettingExplanation;
+      case PreferencesOptionType.openEmailInNewWindow:
+        return appLocalizations.openEmailInNewWindowSettingExplanation;
     }
   }
 
@@ -71,6 +76,8 @@ enum PreferencesOptionType {
         return appLocalizations.aiNeedsActionToggleDescription;
       case PreferencesOptionType.label:
         return appLocalizations.labelVisibilityToggleDescription;
+      case PreferencesOptionType.openEmailInNewWindow:
+        return appLocalizations.openEmailInNewWindowToggleDescription;
     }
   }
 
@@ -93,6 +100,8 @@ enum PreferencesOptionType {
         return settingOption?.isAINeedsActionEnabled ?? false;
       case PreferencesOptionType.label:
         return preferencesSetting.labelConfig.isEnabled;
+      case PreferencesOptionType.openEmailInNewWindow:
+        return preferencesSetting.openEmailInNewWindowConfig.isEnabled;
     }
   }
 }

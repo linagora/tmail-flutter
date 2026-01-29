@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
@@ -98,6 +99,8 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                           (type) =>
                               type.isLocal &&
                               type != PreferencesOptionType.label &&
+                              (type != PreferencesOptionType.openEmailInNewWindow ||
+                                  PlatformInfo.isWeb) &&
                               (type != PreferencesOptionType.aiScribe ||
                                   controller.isAIScribeCapabilityAvailable),
                         ),

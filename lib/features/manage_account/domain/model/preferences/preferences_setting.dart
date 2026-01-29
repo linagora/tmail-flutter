@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/label_config.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/open_email_in_new_window_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/text_formatting_menu_config.dart';
@@ -68,6 +69,16 @@ class PreferencesSetting with EquatableMixin {
       return labelConfig as LabelConfig;
     } else {
       return LabelConfig.initial();
+    }
+  }
+
+  OpenEmailInNewWindowConfig get openEmailInNewWindowConfig {
+    final config = configs
+        .firstWhereOrNull((config) => config is OpenEmailInNewWindowConfig);
+    if (config != null) {
+      return config as OpenEmailInNewWindowConfig;
+    } else {
+      return OpenEmailInNewWindowConfig.initial();
     }
   }
 
