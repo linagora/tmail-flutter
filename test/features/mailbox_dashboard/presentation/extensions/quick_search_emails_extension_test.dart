@@ -67,7 +67,7 @@ void main() {
           session,
           accountId,
           limit: anyNamed('limit'),
-          sort: null,
+          sort: sortOrderType?.getSortOrder().toNullable(),
           filter: anyNamed('filter'),
           properties: anyNamed('properties'),
         )).called(1);
@@ -91,7 +91,7 @@ void main() {
           session,
           accountId,
           limit: anyNamed('limit'),
-          sort: EmailSortOrderType.oldest.getSortOrder().toNullable(),
+          sort: sortOrderType?.getSortOrder().toNullable(),
           filter: anyNamed('filter'),
           properties: anyNamed('properties'),
         )).called(1);
