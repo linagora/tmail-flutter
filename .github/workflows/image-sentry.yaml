@@ -19,6 +19,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Debug Docker environment
+        run: |
+          echo "=== Docker Environment Debug ==="
+          echo "Current user: $(whoami)"
+          echo "User ID: $(id -u)"
+          echo "User groups: $(groups)"
+          echo "User ID details:"
+          id
+          echo ""
+          echo "Docker socket permissions:"
+          ls -la /var/run/docker.sock 2>/dev/null || echo "Docker socket not found"
+          echo ""
+          echo "Docker version:"
+          docker --version 2>/dev/null || echo "Docker not available"
+          echo ""
+          echo "Docker Buildx version:"
+          docker buildx version 2>/dev/null || echo "Docker Buildx not available"
+          echo ""
+          echo "Docker info:"
+          docker info 2>&1 | head -20 || echo "Cannot access docker info"
+          echo ""
+          echo "Docker ps test:"
+          docker ps 2>&1 || echo "Cannot run docker ps"
+          echo ""
+          echo "Docker buildx ls:"
+          docker buildx ls 2>&1 || echo "Cannot list buildx builders"
+          echo "================================="
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -98,6 +126,34 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Debug Docker environment
+        run: |
+          echo "=== Docker Environment Debug ==="
+          echo "Current user: $(whoami)"
+          echo "User ID: $(id -u)"
+          echo "User groups: $(groups)"
+          echo "User ID details:"
+          id
+          echo ""
+          echo "Docker socket permissions:"
+          ls -la /var/run/docker.sock 2>/dev/null || echo "Docker socket not found"
+          echo ""
+          echo "Docker version:"
+          docker --version 2>/dev/null || echo "Docker not available"
+          echo ""
+          echo "Docker Buildx version:"
+          docker buildx version 2>/dev/null || echo "Docker Buildx not available"
+          echo ""
+          echo "Docker info:"
+          docker info 2>&1 | head -20 || echo "Cannot access docker info"
+          echo ""
+          echo "Docker ps test:"
+          docker ps 2>&1 || echo "Cannot run docker ps"
+          echo ""
+          echo "Docker buildx ls:"
+          docker buildx ls 2>&1 || echo "Cannot list buildx builders"
+          echo "================================="
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
