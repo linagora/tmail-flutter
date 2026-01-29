@@ -48,13 +48,16 @@ RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJ
       echo "Uploading .map files to Sentry..." && \
       MAP_COUNT=$(find build/web -type f -name "*.map" | wc -l) && \
       echo "Found $MAP_COUNT .map files" && \
-      cd build/web && \
-      find . -type f -name "*.map" -exec sh -c ' \
+      mkdir -p /tmp/sourcemaps && \
+      find build/web -type f -name "*.map" -exec sh -c ' \
         relpath="$1" && \
-        urlpath=$(echo "$relpath" | sed "s|^\./||" | sed "s|\.map$||") && \
-        echo "Uploading: $relpath -> ~/$urlpath" && \
-        sentry-cli releases files "$SENTRY_RELEASE" upload "$relpath" "~/$urlpath" || echo "Failed to upload $relpath" \
+        destpath="/tmp/sourcemaps/$(echo "$relpath" | sed "s|^build/web/||")" && \
+        mkdir -p "$(dirname "$destpath")" && \
+        cp "$relpath" "$destpath" \
       ' _ {} \; && \
+      cd /tmp/sourcemaps && \
+      sentry-cli sourcemaps upload "$SENTRY_RELEASE" . --url-prefix "~/" || echo "Sentry sourcemaps upload failed, continuing" && \
+      rm -rf /tmp/sourcemaps && \
       echo "Sourcemap upload completed"; \
     else \
       echo "Sentry configuration not complete, skipping sourcemap upload"; \
