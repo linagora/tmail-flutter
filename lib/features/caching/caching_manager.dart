@@ -104,7 +104,6 @@ class CachingManager {
         _oidcConfigurationCacheManager.clear(),
         _tokenOidcCacheManager.clear(),
         _authenticationInfoCacheManager.clear(),
-        _encryptionKeyCacheManager.clear(),
       ], eagerError: true);
     } catch (e) {
       logWarning('CachingManager::clearAccountDataCached: Cannot clear account data cache: $e');
