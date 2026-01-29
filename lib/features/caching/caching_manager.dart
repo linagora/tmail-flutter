@@ -121,7 +121,7 @@ class CachingManager {
           clearDetailedEmailCache(),
       ]);
     } catch (e) {
-      logWarning('CachingManager::_clearEmailAndStateCache: Cannot clear email and state cache: $e');
+      logWarning('CachingManager::clearAllEmailAndStateCache: Cannot clear email and state cache: $e');
     }
   }
 
@@ -139,12 +139,14 @@ class CachingManager {
 
   Future<void> _clearEmailContentFileInStorage() async {
     try {
-      await _fileUtils.removeFolder(
-        CachingConstants.openedEmailContentFolderName,
-      );
-      await _fileUtils.removeFolder(
-        CachingConstants.newEmailsContentFolderName,
-      );
+      await Future.wait([
+        _fileUtils.removeFolder(
+          CachingConstants.openedEmailContentFolderName,
+        ),
+        _fileUtils.removeFolder(
+          CachingConstants.newEmailsContentFolderName,
+        ),
+      ]);
     } catch (e) {
       logWarning(
         'CachingManager::_clearEmailContentFileInStorage: Cannot clear file in storage: $e',
@@ -167,7 +169,7 @@ class CachingManager {
         _stateCacheManager.clear(),
       ], eagerError: true);
     } catch (e) {
-      logWarning('CachingManager::clearMailboxCache: Cannot clear mailbox cache: $e');
+      logWarning('CachingManager::clearMailboxAndStateCache: Cannot clear mailbox cache: $e');
     }
   }
 
