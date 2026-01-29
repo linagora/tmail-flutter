@@ -142,7 +142,7 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<void> clearEmailCacheAndStateCache(AccountId accountId, Session session) {
+  Future<void> clearEmailCacheAndStateCache() {
     throw UnimplementedError();
   }
 }

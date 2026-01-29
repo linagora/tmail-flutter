@@ -42,6 +42,6 @@ class CredentialRepositoryImpl extends CredentialRepository {
 
   @override
   Future<void> removeAuthenticationInfo() {
-    return _authenticationInfoCacheManager.removeAuthenticationInfo();
+    return _authenticationInfoCacheManager.clear();
   }
 }

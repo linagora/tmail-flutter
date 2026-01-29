@@ -611,10 +611,17 @@ class MailboxDashBoardController extends ReloadableController
   @override
   Future<void> onBeforeUnloadBrowserListener(html.Event event) async {
     log('MailboxDashBoardController::onBeforeUnloadBrowserListener:event = ${event.runtimeType} | hasComposer = ${twakeAppManager.hasComposer} | isExecutingBeforeReconnect = ${twakeAppManager.isExecutingBeforeReconnect}');
-    if (event is html.BeforeUnloadEvent &&
+    final shouldPrevent = event is html.BeforeUnloadEvent &&
         twakeAppManager.hasComposer &&
-        !twakeAppManager.isExecutingBeforeReconnect) {
+        !twakeAppManager.isExecutingBeforeReconnect;
+
+    if (shouldPrevent) {
       event.preventDefault();
+      return;
+    }
+
+    if (event is html.BeforeUnloadEvent) {
+      await cachingManager.clearAllEmailAndStateCache();
     }
   }
 

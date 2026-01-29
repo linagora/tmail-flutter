@@ -133,12 +133,9 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<void> clearEmailCacheAndStateCache(AccountId accountId, Session session) {
+  Future<void> clearEmailCacheAndStateCache() {
     return Future.sync(() async {
-      return await _cachingManager.clearAllEmailAndStateCache(
-        accountId: accountId,
-        userName: session.username,
-      );
+      return await _cachingManager.clearAllEmailAndStateCache();
     }).catchError(_exceptionThrower.throwException);
   }
 }

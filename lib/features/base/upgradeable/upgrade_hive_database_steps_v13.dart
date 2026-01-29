@@ -11,7 +11,7 @@ class UpgradeHiveDatabaseStepsV13 extends UpgradeDatabaseSteps {
   @override
   Future<void> onUpgrade(int oldVersion, int newVersion) async {
     if (oldVersion > 0 && oldVersion < newVersion && newVersion == 13) {
-      await _cachingManager.clearMailboxCache();
+      await _cachingManager.clearMailboxAndStateCache();
     }
   }
 }

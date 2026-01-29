@@ -53,7 +53,7 @@ class SendingEmailCacheManager extends CacheManagerInteraction {
     return sendingEmailsCache;
   }
 
-  Future<void> clearAllSendingEmails() => _hiveCacheClient.clearAllData();
+  Future<void> clear() => _hiveCacheClient.clearAllData();
 
   Future<SendingEmailHiveCache> updateSendingEmail(
     AccountId accountId,

@@ -138,6 +138,62 @@ class ThreadRepositoryImpl extends ThreadRepository {
     yield newEmailResponse;
   }
 
+  @override
+  Stream<EmailsResponse> forceQueryAllEmailsForWeb({
+    required Session session,
+    required AccountId accountId,
+    UnsignedInt? limit,
+    int? position,
+    Set<Comparator>? sort,
+    EmailFilter? emailFilter,
+    Properties? propertiesCreated,
+  }) async* {
+    jmap.State? cachedState;
+
+    // Load cached state
+    try {
+      cachedState = await stateDataSource.getState(
+        accountId,
+        session.username,
+        StateType.email,
+      );
+    } catch (_) {
+      logWarning(
+        'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+        'Failed to load cached email state',
+      );
+    }
+
+    log(
+      'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+      'State cache = ${cachedState?.value}',
+    );
+
+    // Query fresh emails from server
+    final serverResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
+      session,
+      accountId,
+      limit: limit,
+      position: position,
+      sort: sort,
+      filter: emailFilter?.filter,
+      properties: propertiesCreated,
+    );
+
+    final serverCount = serverResponse.emailList?.length ?? 0;
+
+    log(
+      'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+      'Server email count = $serverCount',
+    );
+
+    // Combine server list + keep existing state
+    yield EmailsResponse(
+      emailList: serverResponse.emailList,
+      state: cachedState ?? serverResponse.state,
+    );
+  }
+
   bool _isApproveFilterOption(FilterMessageOption? filterOption, List<Email>? listEmailResponse) {
     return filterOption != FilterMessageOption.all && listEmailResponse!.isNotEmpty;
   }
@@ -493,13 +549,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<void> clearEmailCacheAndStateCache(
-    AccountId accountId,
-    Session session,
-  ) => mapDataSource[DataSourceType.local]!.clearEmailCacheAndStateCache(
-    accountId,
-    session,
-  );
+  Future<void> clearEmailCacheAndStateCache() =>
+      mapDataSource[DataSourceType.local]!.clearEmailCacheAndStateCache();
 
   @override
   Stream<EmailsResponse> loadAllEmailInFolderWithoutCache({

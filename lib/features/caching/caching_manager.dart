@@ -1,14 +1,9 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:fcm/model/type_name.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/manager/session_cache_manger.dart';
-import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_username_cache_manager.dart';
@@ -20,13 +15,11 @@ import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
-import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/extensions/type_name_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 
 class CachingManager {
@@ -73,80 +66,110 @@ class CachingManager {
   );
 
   Future<void> clearAll() async {
-    await Future.wait([
-      _stateCacheManager.clear(),
-      _mailboxCacheManager.clear(),
-      _emailCacheManager.clear(),
-      _fcmCacheManager.clear(),
-      _accountCacheManager.clear(),
-      if (PlatformInfo.isMobile)
-        ...[
-          _sessionCacheManager.clear(),
-          _newEmailCacheManager.clear(),
-          _openedEmailCacheManager.clear(),
-          _sendingEmailCacheManager.clearAllSendingEmails(),
-        ],
-      if (PlatformInfo.isIOS)
-        _keychainSharingManager.delete()
-    ], eagerError: true);
-  }
-
-  Future<void> clearEmailAndStateCache({AccountId? accountId, UserName? userName}) {
-    log('CachingManager::clearEmailAndStateCache:userName = $userName');
-    if (accountId != null && userName != null) {
-      final emailKey = TupleKey(accountId.asString, userName.value).encodeKey;
-      final stateKey = StateType.email.getTupleKeyStored(accountId, userName);
-
-      return Future.wait([
-        _emailCacheManager.deleteByKey(emailKey),
-        _stateCacheManager.deleteByKey(stateKey),
-        if (PlatformInfo.isMobile)
-          clearFCMEmailStateCache(accountId: accountId, userName: userName),
+    try {
+      await Future.wait([
+        clearMailDataCached(),
+        clearAccountDataCached(),
       ]);
-    } else {
-      final stateKey = StateType.email.getTupleKeyStoredWithoutAccount();
-      return Future.wait([
-        _emailCacheManager.clear(),
-        _stateCacheManager.deleteByKey(stateKey),
-        if (PlatformInfo.isMobile) clearFCMEmailStateCache(),
-      ]);
+    } catch (e) {
+      logWarning('CachingManager::clearAll: Cannot clear all cache: $e');
     }
   }
 
-  Future<void> clearDetailedEmailCache({AccountId? accountId, UserName? userName}) {
-    log('CachingManager::clearDetailedEmailCache:userName = $userName');
-    if (accountId != null && userName != null) {
-      final emailKey = TupleKey(accountId.asString, userName.value).encodeKey;
-      return Future.wait([
-        _newEmailCacheManager.deleteByKey(emailKey),
-        _openedEmailCacheManager.deleteByKey(emailKey),
-        clearAllFileInStorage(),
+  Future<void> clearMailDataCached() async {
+    try {
+      await Future.wait([
+        _stateCacheManager.clear(),
+        _mailboxCacheManager.clear(),
+        _emailCacheManager.clear(),
+        _clearFCMStateCache(),
+        if (PlatformInfo.isMobile)
+          ...[
+            clearDetailedEmailCache(),
+            _sendingEmailCacheManager.clear(),
+            _sessionCacheManager.clear(),
+          ],
+        if (PlatformInfo.isIOS)
+          _keychainSharingManager.delete(),
+      ], eagerError: true);
+    } catch (e) {
+      logWarning('CachingManager::clearMailDataCached: Cannot clear mail data cache: $e');
+    }
+  }
+
+  Future<void> clearAccountDataCached() async {
+    try {
+      await Future.wait([
+        _accountCacheManager.clear(),
+        _oidcConfigurationCacheManager.clear(),
+        _tokenOidcCacheManager.clear(),
+        _authenticationInfoCacheManager.clear(),
+      ], eagerError: true);
+    } catch (e) {
+      logWarning('CachingManager::clearAccountDataCached: Cannot clear account data cache: $e');
+    }
+  }
+
+  Future<void> clearAllEmailAndStateCache() async {
+    try {
+      await Future.wait([
+        _emailCacheManager.clear(),
+        _stateCacheManager.clear(),
+        _clearFCMStateCache(),
+        if (PlatformInfo.isMobile)
+          clearDetailedEmailCache(),
       ]);
-    } else {
-      return Future.wait([
+    } catch (e) {
+      logWarning('CachingManager::clearAllEmailAndStateCache: Cannot clear email and state cache: $e');
+    }
+  }
+
+  Future<void> clearDetailedEmailCache() async {
+    try {
+      await Future.wait([
         _newEmailCacheManager.clear(),
         _openedEmailCacheManager.clear(),
-        clearAllFileInStorage(),
+        _clearEmailContentFileInStorage(),
       ]);
+    } catch (e) {
+      logWarning('CachingManager::clearDetailedEmailCache: Cannot clear detailed email cache: $e');
     }
   }
 
-  Future<void> clearAllEmailAndStateCache({AccountId? accountId, UserName? userName}) {
-    log('CachingManager::clearAllEmailAndStateCache:userName = $userName');
-    return Future.wait([
-      clearEmailAndStateCache(accountId: accountId, userName: userName),
-      if (PlatformInfo.isMobile)
-        clearDetailedEmailCache(accountId: accountId, userName: userName),
-    ]);
+  Future<void> _clearEmailContentFileInStorage() async {
+    try {
+      await Future.wait([
+        _fileUtils.removeFolder(
+          CachingConstants.openedEmailContentFolderName,
+        ),
+        _fileUtils.removeFolder(
+          CachingConstants.newEmailsContentFolderName,
+        ),
+      ]);
+    } catch (e) {
+      logWarning(
+        'CachingManager::_clearEmailContentFileInStorage: Cannot clear file in storage: $e',
+      );
+    }
   }
 
-  Future<void> clearMailboxCache() {
-    return Future.wait([
-      _stateCacheManager.deleteByKey(
-        StateType.mailbox.getTupleKeyStoredWithoutAccount(),
-      ),
-      _mailboxCacheManager.clear(),
-    ], eagerError: true);
+  Future<void> _clearFCMStateCache() async {
+    try {
+      await _fcmCacheManager.clear();
+    } catch (e) {
+      logWarning('CachingManager::_clearFCMStateCache: Cannot clear fcm state cache: $e');
+    }
+  }
+
+  Future<void> clearMailboxAndStateCache() async {
+    try {
+      await Future.wait([
+        _mailboxCacheManager.clear(),
+        _stateCacheManager.clear(),
+      ], eagerError: true);
+    } catch (e) {
+      logWarning('CachingManager::clearMailboxAndStateCache: Cannot clear mailbox cache: $e');
+    }
   }
 
   Future<bool> storeCacheVersion(int newVersion) async {
@@ -160,25 +183,6 @@ class CachingManager {
 
   Future<void> closeHive({bool isolated = true}) =>
       HiveCacheConfig.instance.closeHive(isolated: isolated);
-
-  Future<void> clearAllFileInStorage() async {
-    await _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName);
-    await _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName);
-  }
-  
-  Future<void> clearFCMEmailStateCache({AccountId? accountId, UserName? userName}) async {
-    if (accountId != null && userName != null) {
-      await _fcmCacheManager.deleteByKey(
-        TypeName.emailDelivery.getTupleKeyStored(accountId, userName));
-      await _fcmCacheManager.deleteByKey(
-        TypeName.emailType.getTupleKeyStored(accountId, userName));
-    } else {
-      await _fcmCacheManager.deleteByKey(
-        TypeName.emailDelivery.getTupleKeyStoredWithoutAccount());
-      await _fcmCacheManager.deleteByKey(
-        TypeName.emailType.getTupleKeyStoredWithoutAccount());
-    }
-  }
 
   Future<void> clearLoginRecentData() async {
     await Future.wait([
