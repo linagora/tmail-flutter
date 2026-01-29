@@ -72,7 +72,8 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
     State sinceState,
     {
       Properties? propertiesCreated,
-      Properties? propertiesUpdated
+      Properties? propertiesUpdated,
+      int? maxCreatedEmailsToFetch,
     }
   ) {
     throw UnimplementedError();

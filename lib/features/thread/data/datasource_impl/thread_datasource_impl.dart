@@ -91,7 +91,8 @@ class ThreadDataSourceImpl extends ThreadDataSource {
     State sinceState,
     {
       Properties? propertiesCreated,
-      Properties? propertiesUpdated
+      Properties? propertiesUpdated,
+      int? maxCreatedEmailsToFetch,
     }
   ) {
     return Future.sync(() async {
@@ -100,7 +101,8 @@ class ThreadDataSourceImpl extends ThreadDataSource {
         accountId,
         sinceState,
         propertiesCreated: propertiesCreated,
-        propertiesUpdated: propertiesUpdated);
+        propertiesUpdated: propertiesUpdated,
+        maxCreatedEmailsToFetch: maxCreatedEmailsToFetch);
     }).catchError(_exceptionThrower.throwException);
   }
 
