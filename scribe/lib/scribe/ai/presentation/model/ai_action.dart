@@ -25,4 +25,6 @@ class CustomPromptAction extends AIAction {
   String getLabel(ScribeLocalizations localizations) {
     return localizations.customPromptAction;
   }
+  
+  static const String promptId = 'custom-prompt-mail';
 }
