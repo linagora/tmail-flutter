@@ -1211,6 +1211,8 @@ class ThreadController extends BaseController with EmailActionController {
           editDraftEmail(selectedEmail);
         } else if (mailboxContain?.isTemplates == true) {
           editAsNewEmail(selectedEmail, savedEmailTemplateId: selectedEmail.id);
+        } else if (PlatformInfo.isWeb && mailboxDashBoardController.isOpenEmailInNewWindowEnabled.value) {
+          openEmailInNewTabAction(selectedEmail);
         } else {
           previewEmail(selectedEmail);
         }
