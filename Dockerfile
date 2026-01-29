@@ -40,8 +40,20 @@ RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJ
       export SENTRY_PROJECT="$SENTRY_PROJECT" && \
       export SENTRY_RELEASE="$SENTRY_RELEASE" && \
       [ -n "$SENTRY_URL" ] && export SENTRY_URL="$SENTRY_URL" || true && \
-      echo "Uploading sourcemaps to Sentry using sentry_dart_plugin..." && \
-      dart run sentry_dart_plugin || echo "Sentry sourcemaps upload failed, continuing" && \
+      echo "Creating sentry.properties to enable sourcemap upload..." && \
+      cat > sentry.properties << EOF \
+defaults.url=$([ -n "$SENTRY_URL" ] && echo "$SENTRY_URL" || echo "https://sentry.io/") \
+defaults.org=$SENTRY_ORG \
+defaults.project=$SENTRY_PROJECT \
+auth.token=$SENTRY_AUTH_TOKEN \
+release.version=$SENTRY_RELEASE \
+upload.sourcemaps=true \
+upload.sourcemaps.path=build/web \
+upload.sourcemaps.urlPrefix=~/ \
+EOF \
+      && echo "Uploading sourcemaps to Sentry using sentry_dart_plugin..." && \
+      dart run sentry_dart_plugin --ignore-missing || echo "Sentry sourcemaps upload failed, continuing" && \
+      rm -f sentry.properties && \
       echo "Sourcemap upload completed"; \
     else \
       echo "Sentry configuration not complete, skipping sourcemap upload"; \
