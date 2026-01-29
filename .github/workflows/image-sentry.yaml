@@ -14,6 +14,9 @@ jobs:
     if: github.ref_type == 'branch' && (github.ref_name == 'master' || startsWith(github.ref_name, 'feature/'))
     runs-on: self-hosted
     environment: dev
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout repository
@@ -147,11 +150,48 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: Preserve build artifacts
+        if: always()
+        run: |
+          echo "=== Preserving build artifacts ==="
+          WORKSPACE_DIR="${{ github.workspace }}"
+          PRESERVE_DIR="/tmp/github-actions-artifacts/$(date +%Y%m%d-%H%M%S)-${{ github.run_id }}"
+          
+          echo "Workspace: $WORKSPACE_DIR"
+          echo "Preserve to: $PRESERVE_DIR"
+          
+          mkdir -p "$PRESERVE_DIR"
+          
+          # Copy build output if exists
+          if [ -d "$WORKSPACE_DIR/build" ]; then
+            echo "Copying build directory..."
+            cp -r "$WORKSPACE_DIR/build" "$PRESERVE_DIR/" || true
+          fi
+          
+          # Copy sourcemaps if exists
+          if [ -d "$WORKSPACE_DIR/build/web" ]; then
+            echo "Copying sourcemaps..."
+            find "$WORKSPACE_DIR/build/web" -name "*.map" -exec cp --parents {} "$PRESERVE_DIR/" \; 2>/dev/null || true
+          fi
+          
+          # List preserved files
+          echo ""
+          echo "Preserved files:"
+          find "$PRESERVE_DIR" -type f | head -20
+          echo ""
+          echo "Total files preserved: $(find "$PRESERVE_DIR" -type f | wc -l)"
+          echo ""
+          echo "To access files, go to: $PRESERVE_DIR"
+          echo "================================="
+
   build-release-image-with-sentry:
     name: Build release image with Sentry
     if: github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v')
     runs-on: self-hosted
     environment: prod
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout repository
@@ -285,5 +325,39 @@ jobs:
             SENTRY_RELEASE=${{ steps.app_version.outputs.version }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Preserve build artifacts
+        if: always()
+        run: |
+          echo "=== Preserving build artifacts ==="
+          WORKSPACE_DIR="${{ github.workspace }}"
+          PRESERVE_DIR="/tmp/github-actions-artifacts/$(date +%Y%m%d-%H%M%S)-${{ github.run_id }}"
+          
+          echo "Workspace: $WORKSPACE_DIR"
+          echo "Preserve to: $PRESERVE_DIR"
+          
+          mkdir -p "$PRESERVE_DIR"
+          
+          # Copy build output if exists
+          if [ -d "$WORKSPACE_DIR/build" ]; then
+            echo "Copying build directory..."
+            cp -r "$WORKSPACE_DIR/build" "$PRESERVE_DIR/" || true
+          fi
+          
+          # Copy sourcemaps if exists
+          if [ -d "$WORKSPACE_DIR/build/web" ]; then
+            echo "Copying sourcemaps..."
+            find "$WORKSPACE_DIR/build/web" -name "*.map" -exec cp --parents {} "$PRESERVE_DIR/" \; 2>/dev/null || true
+          fi
+          
+          # List preserved files
+          echo ""
+          echo "Preserved files:"
+          find "$PRESERVE_DIR" -type f | head -20
+          echo ""
+          echo "Total files preserved: $(find "$PRESERVE_DIR" -type f | wc -l)"
+          echo ""
+          echo "To access files, go to: $PRESERVE_DIR"
+          echo "================================="
 
 
