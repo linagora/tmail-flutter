@@ -25,10 +25,6 @@ WORKDIR /app
 
 COPY . .
 
-# Install Sentry CLI for uploading source maps when configuration is provided.
-# If the install script fails (e.g. offline/local build), we log and continue.
-RUN curl -sL https://sentry.io/get-cli/ | bash || echo "Sentry CLI install failed, continuing without sourcemap upload"
-
 # Precompile tmail flutter
 RUN ./scripts/prebuild.sh
 
@@ -36,24 +32,16 @@ RUN ./scripts/prebuild.sh
 RUN flutter build web --release --source-maps
 
 # Upload source maps to Sentry when all required variables are available.
-# The build will NOT fail if this step or Sentry CLI is unavailable.
+# The build will NOT fail if this step is unavailable.
 RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT" ] && [ -n "$SENTRY_RELEASE" ]; then \
       echo "Sentry configuration detected, uploading sourcemaps for release $SENTRY_RELEASE" && \
-      mkdir -p /tmp/sentry-filestore && \
       export SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" && \
       export SENTRY_ORG="$SENTRY_ORG" && \
       export SENTRY_PROJECT="$SENTRY_PROJECT" && \
-      export SENTRY_FILESTORE_DIR="/tmp/sentry-filestore" && \
+      export SENTRY_RELEASE="$SENTRY_RELEASE" && \
       [ -n "$SENTRY_URL" ] && export SENTRY_URL="$SENTRY_URL" || true && \
-      sentry-cli releases delete "$SENTRY_RELEASE" 2>/dev/null || echo "Release $SENTRY_RELEASE does not exist, creating new" && \
-      sentry-cli releases new "$SENTRY_RELEASE" && \
-      sentry-cli releases set-commits "$SENTRY_RELEASE" --auto --ignore-missing || echo "Sentry set-commits failed, continuing" && \
-      echo "Uploading sourcemaps to Sentry..." && \
-      MAP_COUNT=$(find build/web -type f -name "*.map" | wc -l) && \
-      echo "Found $MAP_COUNT .map files" && \
-      cd build/web && \
-      sentry-cli sourcemaps upload "$SENTRY_RELEASE" . --url-prefix "~/" --no-rewrite || echo "Sentry sourcemaps upload failed, continuing" && \
-      rm -rf /tmp/sentry-filestore && \
+      echo "Uploading sourcemaps to Sentry using sentry_dart_plugin..." && \
+      flutter pub run sentry_dart_plugin || echo "Sentry sourcemaps upload failed, continuing" && \
       echo "Sourcemap upload completed"; \
     else \
       echo "Sentry configuration not complete, skipping sourcemap upload"; \
