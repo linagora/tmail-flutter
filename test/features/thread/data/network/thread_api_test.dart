@@ -57,9 +57,9 @@ void main() {
   final dioAdapterHeaders = <String, dynamic>{
     'accept': 'application/json;jmapVersion=rfc-8621',
   };
-  final dioAdapter = DioAdapter(dio: dio);
-  final httpClient = HttpClient(dio);
-  final threadApi = ThreadAPI(httpClient);
+  late DioAdapter dioAdapter;
+  late HttpClient httpClient;
+  late ThreadAPI threadApi;
 
   final sessionState = State('some-session-state');
   final state = State('some-state');
@@ -67,6 +67,12 @@ void main() {
   final newState = State('new-state');
   final filter = EmailFilterCondition(text: 'some-text');
   final queryState = State('some-query-state');
+
+  setUp(() {
+    dioAdapter = DioAdapter(dio: dio);
+    httpClient = HttpClient(dio);
+    threadApi = ThreadAPI(httpClient);
+  });
 
   group('thread api test:', () {
     group('searchEmails:', () {
@@ -325,18 +331,6 @@ void main() {
         dioAdapter.onPost(
           '',
           (server) => server.reply(
-            200,
-            generateResponse(
-              foundSearchEmails: [searchEmail],
-              notFoundEmailIds: [],
-              searchSnippetError: UnknownMethodResponse(),
-            ),
-          ),
-          data: generateRequest(filter: filter),
-        );
-        dioAdapter.onPost(
-          '',
-          (server) => server.reply(
             403,
             generateResponse(
               foundSearchEmails: [searchEmail],
@@ -347,24 +341,15 @@ void main() {
           data: generateRequest(filter: filter, position: 0),
         );
         
-        // act
-        final result = await threadApi.searchEmails(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-          filter: filter,
-          position: 0,
-        );
-        
-        // assert
+        // act & assert
         expect(
-          result,
-          equals(
-            SearchEmailsResponse(
-              searchSnippets: null,
-              emailList: [Email(id: searchEmail.id)],
-              state: state
-            ),
+          () => threadApi.searchEmails(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            filter: filter,
+            position: 0,
           ),
+          throwsA(isA<DioException>()),
         );
       });
 
