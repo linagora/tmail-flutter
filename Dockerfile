@@ -39,30 +39,21 @@ RUN flutter build web --release --source-maps
 # The build will NOT fail if this step or Sentry CLI is unavailable.
 RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT" ] && [ -n "$SENTRY_RELEASE" ]; then \
       echo "Sentry configuration detected, uploading sourcemaps for release $SENTRY_RELEASE" && \
+      mkdir -p /tmp/sentry-filestore && \
       export SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" && \
       export SENTRY_ORG="$SENTRY_ORG" && \
       export SENTRY_PROJECT="$SENTRY_PROJECT" && \
+      export SENTRY_FILESTORE_DIR="/tmp/sentry-filestore" && \
       [ -n "$SENTRY_URL" ] && export SENTRY_URL="$SENTRY_URL" || true && \
+      sentry-cli releases delete "$SENTRY_RELEASE" 2>/dev/null || echo "Release $SENTRY_RELEASE does not exist, creating new" && \
       sentry-cli releases new "$SENTRY_RELEASE" && \
-      sentry-cli releases set-commits "$SENTRY_RELEASE" --auto || echo "Sentry set-commits failed, continuing" && \
-      echo "Uploading sourcemaps to Sentry (JS files with .map files)..." && \
+      sentry-cli releases set-commits "$SENTRY_RELEASE" --auto --ignore-missing || echo "Sentry set-commits failed, continuing" && \
+      echo "Uploading sourcemaps to Sentry..." && \
       MAP_COUNT=$(find build/web -type f -name "*.map" | wc -l) && \
       echo "Found $MAP_COUNT .map files" && \
-      mkdir -p /tmp/sourcemaps && \
-      find build/web -type f -name "*.map" | while read -r mapfile; do \
-        jsfile=$(echo "$mapfile" | sed 's|\.map$||') && \
-        if [ -f "$jsfile" ]; then \
-          relpath=$(echo "$jsfile" | sed "s|^build/web/||") && \
-          destdir="/tmp/sourcemaps/$(dirname "$relpath")" && \
-          mkdir -p "$destdir" && \
-          cp "$jsfile" "$destdir/" && \
-          cp "$mapfile" "$destdir/" && \
-          echo "Prepared: $relpath with sourcemap"; \
-        fi; \
-      done && \
-      cd /tmp/sourcemaps && \
-      sentry-cli sourcemaps upload "$SENTRY_RELEASE" . --url-prefix "~/" || echo "Sentry sourcemaps upload failed, continuing" && \
-      rm -rf /tmp/sourcemaps && \
+      cd build/web && \
+      sentry-cli sourcemaps upload "$SENTRY_RELEASE" . --url-prefix "~/" --no-rewrite || echo "Sentry sourcemaps upload failed, continuing" && \
+      rm -rf /tmp/sentry-filestore && \
       echo "Sourcemap upload completed"; \
     else \
       echo "Sentry configuration not complete, skipping sourcemap upload"; \
