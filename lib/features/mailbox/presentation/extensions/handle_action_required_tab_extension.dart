@@ -3,15 +3,29 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleActionRequiredTabExtension on BaseMailboxController {
-  void addActionRequiredFolder() {
+  MailboxCollection addActionRequiredFolder({
+    required MailboxCollection mailboxCollection,
+  }) {
     final folder = _buildActionRequiredFolder();
-    _addToDefaultMailboxTree(folder);
-    _addToAllMailboxes(folder);
+    final newDefaultTree = _addToDefaultMailboxTree(
+      folder: folder,
+      currentDefaultTree: mailboxCollection.defaultTree,
+    );
+    final newAllMailboxes = _addToAllMailboxes(
+      folder: folder,
+      currentAllMailboxes: mailboxCollection.allMailboxes,
+    );
+
+    return mailboxCollection.copyWith(
+      defaultTree: newDefaultTree,
+      allMailboxes: newAllMailboxes,
+    );
   }
 
   PresentationMailbox _buildActionRequiredFolder() {
@@ -23,24 +37,37 @@ extension HandleActionRequiredTabExtension on BaseMailboxController {
     );
   }
 
-  void _addToDefaultMailboxTree(PresentationMailbox folder) {
-    final root = defaultMailboxTree.value.root;
+  MailboxTree _addToDefaultMailboxTree({
+    required PresentationMailbox folder,
+    required MailboxTree currentDefaultTree,
+  }) {
+    final root = currentDefaultTree.root;
     final children = List<MailboxNode>.from(root.childrenItems ?? []);
 
     children.insertAfterStarredOrInbox(MailboxNode(folder));
 
-    defaultMailboxTree.value = MailboxTree(
-      root.copyWith(children: children),
-    );
+    return MailboxTree(root.copyWith(children: children));
   }
 
-  void _addToAllMailboxes(PresentationMailbox folder) {
-    if (_allMailboxesContains(folder.id)) return;
-    allMailboxes.add(folder);
+  List<PresentationMailbox> _addToAllMailboxes({
+    required PresentationMailbox folder,
+    required List<PresentationMailbox> currentAllMailboxes,
+  }) {
+    if (_allMailboxesContains(
+      id: folder.id,
+      currentAllMailboxes: currentAllMailboxes,
+    )) {
+      return currentAllMailboxes;
+    }
+    currentAllMailboxes.add(folder);
+    return currentAllMailboxes;
   }
 
-  bool _allMailboxesContains(MailboxId id) {
-    return allMailboxes.any((mailbox) => mailbox.id == id);
+  bool _allMailboxesContains({
+    required MailboxId id,
+    required List<PresentationMailbox> currentAllMailboxes,
+  }) {
+    return currentAllMailboxes.any((mailbox) => mailbox.id == id);
   }
 
   void removeActionRequiredFolder() {

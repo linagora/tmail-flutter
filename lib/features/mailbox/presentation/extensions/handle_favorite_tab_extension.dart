@@ -2,12 +2,15 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleFavoriteTabExtension on BaseMailboxController {
-  void addFavoriteFolderToMailboxList() {
+  MailboxCollection addFavoriteFolderToMailboxList({
+    required MailboxCollection mailboxCollection,
+  }) {
     PresentationMailbox favoriteFolder = PresentationMailbox.favoriteFolder;
     if (currentContext != null) {
       favoriteFolder = favoriteFolder.copyWith(
@@ -15,14 +18,26 @@ extension HandleFavoriteTabExtension on BaseMailboxController {
       );
     }
 
-    _addFavoriteFolderToDefaultMailboxTree(favoriteFolder);
-    _addFavoriteFolderToAllMailboxes(favoriteFolder);
+    final newDefaultTree = _addFavoriteFolderToDefaultMailboxTree(
+      favoriteFolder: favoriteFolder,
+      defaultTree: mailboxCollection.defaultTree,
+    );
+    final newAllMailboxes = _addFavoriteFolderToAllMailboxes(
+      favoriteFolder: favoriteFolder,
+      allMailboxes: mailboxCollection.allMailboxes,
+    );
+
+    return mailboxCollection.copyWith(
+      defaultTree: newDefaultTree,
+      allMailboxes: newAllMailboxes,
+    );
   }
 
-  void _addFavoriteFolderToDefaultMailboxTree(
-    PresentationMailbox favoriteFolder,
-  ) {
-    final defaultMailboxNode = defaultMailboxTree.value.root;
+  MailboxTree _addFavoriteFolderToDefaultMailboxTree({
+    required PresentationMailbox favoriteFolder,
+    required MailboxTree defaultTree,
+  }) {
+    final defaultMailboxNode = defaultTree.root;
     List<MailboxNode> currentDefaultFolders =
         defaultMailboxNode.childrenItems ?? [];
 
@@ -32,17 +47,22 @@ extension HandleFavoriteTabExtension on BaseMailboxController {
       currentDefaultFolders.insertAfterInbox(MailboxNode(favoriteFolder));
     }
 
-    defaultMailboxTree.value = MailboxTree(
+    return MailboxTree(
       defaultMailboxNode.copyWith(children: currentDefaultFolders),
     );
   }
 
-  void _addFavoriteFolderToAllMailboxes(PresentationMailbox favoriteFolder) {
+  List<PresentationMailbox> _addFavoriteFolderToAllMailboxes({
+    required PresentationMailbox favoriteFolder,
+    required List<PresentationMailbox> allMailboxes,
+  }) {
     final alreadyExists = allMailboxes.any(
       (mailbox) => mailbox.id == favoriteFolder.id,
     );
-    if (alreadyExists) return;
+    if (alreadyExists) return allMailboxes;
 
     allMailboxes.add(favoriteFolder);
+
+    return allMailboxes;
   }
 }
