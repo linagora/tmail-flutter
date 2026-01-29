@@ -620,7 +620,7 @@ class MailboxDashBoardController extends ReloadableController
       return;
     }
 
-    if (PlatformInfo.isWeb) {
+    if (event is html.BeforeUnloadEvent) {
       await cachingManager.clearAllEmailAndStateCache();
     }
   }
