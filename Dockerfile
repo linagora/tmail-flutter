@@ -53,7 +53,7 @@ RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJ
         echo "upload.sourcemaps.path=build/web"; \
         echo "upload.sourcemaps.urlPrefix=~/"; \
       } > sentry.properties && \
-      && echo "Uploading sourcemaps to Sentry using sentry_dart_plugin..." && \
+      echo "Uploading sourcemaps to Sentry using sentry_dart_plugin..." && \
       dart run sentry_dart_plugin --ignore-missing || echo "Sentry sourcemaps upload failed, continuing" && \
       rm -f sentry.properties && \
       echo "Sourcemap upload completed"; \
