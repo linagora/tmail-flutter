@@ -16,7 +16,7 @@ class GenerateAITextInteractor {
     String? selectedText,
   ) async {
     try {
-      final prompt = AIPrompts.buildPrompt(action, selectedText);
+      final prompt = await AIPrompts.buildPrompt(action, selectedText);
       final response = await _repository.generateMessage(prompt);
       return Right(GenerateAITextSuccess(response));
     } catch (e) {
