@@ -81,7 +81,7 @@ class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
 
     if (limit != null) queryEmailMethod.addLimit(limit);
 
-    if (position != null) queryEmailMethod.addPosition(position);
+    if (position != null && position > 0) queryEmailMethod.addPosition(position);
 
     if (sort != null) queryEmailMethod.addSorts(sort);
 
