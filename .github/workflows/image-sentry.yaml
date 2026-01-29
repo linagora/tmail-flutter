@@ -35,12 +35,8 @@ jobs:
             # Try to add user to docker group (requires sudo)
             if sudo usermod -aG docker $CURRENT_USER 2>/dev/null; then
               echo "✓ Successfully added $CURRENT_USER to docker group"
-              echo "⚠ Note: Changes may require logout/login or service restart to take effect"
-              
-              # Try to apply new groups immediately
-              newgrp docker <<EOF
-              echo "Groups updated in subshell"
-              EOF
+              echo "⚠ Note: Changes require service restart to take effect"
+              echo "⚠ Run on server: sudo systemctl restart actions.runner.*.service"
             else
               echo "✗ Failed to add user to docker group (may need manual intervention)"
               echo "Run on server: sudo usermod -aG docker $CURRENT_USER"
@@ -177,12 +173,8 @@ jobs:
             # Try to add user to docker group (requires sudo)
             if sudo usermod -aG docker $CURRENT_USER 2>/dev/null; then
               echo "✓ Successfully added $CURRENT_USER to docker group"
-              echo "⚠ Note: Changes may require logout/login or service restart to take effect"
-              
-              # Try to apply new groups immediately
-              newgrp docker <<EOF
-              echo "Groups updated in subshell"
-              EOF
+              echo "⚠ Note: Changes require service restart to take effect"
+              echo "⚠ Run on server: sudo systemctl restart actions.runner.*.service"
             else
               echo "✗ Failed to add user to docker group (may need manual intervention)"
               echo "Run on server: sudo usermod -aG docker $CURRENT_USER"
