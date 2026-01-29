@@ -39,9 +39,13 @@ RUN flutter build web --release --source-maps
 # The build will NOT fail if this step or Sentry CLI is unavailable.
 RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT" ] && [ -n "$SENTRY_RELEASE" ]; then \
       echo "Sentry configuration detected, uploading sourcemaps for release $SENTRY_RELEASE" && \
+      export SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" && \
+      export SENTRY_ORG="$SENTRY_ORG" && \
+      export SENTRY_PROJECT="$SENTRY_PROJECT" && \
+      [ -n "$SENTRY_URL" ] && export SENTRY_URL="$SENTRY_URL" || true && \
       sentry-cli releases new "$SENTRY_RELEASE" && \
       sentry-cli releases set-commits "$SENTRY_RELEASE" --auto || echo "Sentry set-commits failed, continuing" && \
-      sentry-cli releases files "$SENTRY_RELEASE" upload-sourcemaps build/web --url-prefix "~/"; \
+      sentry-cli sourcemaps upload "$SENTRY_RELEASE" build/web --url-prefix "~/" || echo "Sentry sourcemaps upload failed, continuing"; \
     else \
       echo "Sentry configuration not complete, skipping sourcemap upload"; \
     fi || echo "Sentry sourcemap upload step failed, continuing build"
