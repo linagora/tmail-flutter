@@ -5,11 +5,11 @@
 * When a user composes an email, the system detects if the content implies an attachment (e.g., "Please find attached...") but no file is attached.
 * We need a flexible way to add specific keywords (Include) or ignore specific tokens (Exclude) without modifying the source code.
 
-### How to config
+### How to configure
 
 1. Configuration File Location
 
-   * The configuration is managed in the JSON file: `configurations\attachment_keywords.json`
+   * The configuration is managed in the JSON file: `configurations/attachment_keywords.json`
    * This file must be declared in `pubspec.yaml` under `assets`.
 
 2. JSON Structure

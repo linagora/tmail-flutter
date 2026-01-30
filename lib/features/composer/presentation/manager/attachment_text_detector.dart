@@ -46,13 +46,12 @@ class AttachmentTextDetector {
       "مستند",
       "ملف",
       "تقرير",
-      "ملف",
       "إرفاق",
     ],
   };
 
-  /// Cached RegExp for the default case (when no include list is provided).
-  static RegExp? _cachedDefaultRegExp;
+  /// Cached RegExp Pattern for the default case (when no include list is provided).
+  static String? _cachedDefaultPattern;
   /// Threshold to switch from Sync to Async execution.
   ///
   /// Value: 20,000 characters (approx. 4-5 pages of text).
@@ -118,7 +117,7 @@ class AttachmentTextDetector {
 
   /// Builds the Regex pattern.
   /// Merges [defaultKeywords] with [includeList] to create the search scope.
-  static RegExp _buildRegExp(List<String> additionalKeywords) {
+  static String _generatePatternString(List<String> additionalKeywords) {
     // 1. Get all default keywords
     final defaultKeywords = _keywordsByLang.values.expand((l) => l).toList();
 
@@ -133,11 +132,16 @@ class AttachmentTextDetector {
     // (?![\p{L}]) ensures we don't match substrings inside other words (e.g., "filetage").
     final pattern = allKeywords.map(RegExp.escape).join('|');
 
-    return RegExp(
-      '($pattern)(?![\\p{L}])',
-      unicode: true,
-      caseSensitive: false,
-    );
+    return'($pattern)(?![\\p{L}])';
+  }
+
+  static String _getPattern(List<String> includeList) {
+    if (includeList.isNotEmpty) {
+      return _generatePatternString(includeList);
+    }
+
+    _cachedDefaultPattern ??= _generatePatternString([]);
+    return _cachedDefaultPattern!;
   }
 
   /// The core logic function.
@@ -148,16 +152,11 @@ class AttachmentTextDetector {
     final text = params.text;
     if (text.isEmpty) return [];
 
-    RegExp regex;
-
-    // Use cached Regex if there are no custom keywords.
-    if (params.includeList.isEmpty) {
-      _cachedDefaultRegExp ??= _buildRegExp([]);
-      regex = _cachedDefaultRegExp!;
-    } else {
-      // Rebuild Regex if Include List is present.
-      regex = _buildRegExp(params.includeList);
-    }
+    final regex = RegExp(
+      params.regexPattern,
+      unicode: true,
+      caseSensitive: false,
+    );
 
     final matches = regex.allMatches(text);
     final result = <String>{};
@@ -199,10 +198,12 @@ class AttachmentTextDetector {
       filters.add(ExcludeListFilter(excludeList));
     }
 
+    final patternString = _getPattern(includeList);
+
     final params = DetectionParams(
       text: text,
-      includeList: includeList, // Passed to build the Regex
-      filters: filters, // Passed to filter the matches
+      regexPattern: patternString,
+      filters: filters,
     );
 
     // Decision: Run Sync (fast) or Async (safe)
