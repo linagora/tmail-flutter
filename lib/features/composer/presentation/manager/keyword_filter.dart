@@ -1,6 +1,5 @@
-/// Common interface for all keyword filters.
+/// Interface for defining custom keyword validation logic.
 abstract class KeywordFilter {
-  /// Returns `true` if the keyword is valid.
-  /// Returns `false` if the keyword should be rejected.
+  /// Returns `true` to keep the keyword, `false` to reject it.
   bool isValid(String fullText, Match match);
 }
