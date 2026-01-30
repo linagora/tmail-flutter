@@ -74,6 +74,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentat
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
@@ -264,8 +265,17 @@ class MailboxController extends BaseMailboxController
     viewState.value.fold(
       (failure) {
         if (failure is GetAllMailboxFailure) {
-          autoCreateVirtualFolder(
-            mailboxDashBoardController.isAINeedsActionEnabled,
+          final newMailboxCollection = addActionRequiredFolder(
+            mailboxCollection: MailboxCollection(
+              allMailboxes: allMailboxes,
+              defaultTree: defaultMailboxTree.value,
+              personalTree: personalMailboxTree.value,
+              teamTree: teamMailboxesTree.value,
+            ),
+          );
+          updateMailboxTree(
+            mailboxCollection: newMailboxCollection,
+            isRefreshTrigger: false,
           );
           mailboxDashBoardController.updateRefreshAllMailboxState(Left(RefreshAllMailboxFailure()));
           showRetryToast(failure);
@@ -273,9 +283,6 @@ class MailboxController extends BaseMailboxController
       },
       (success) {
         if (success is GetAllMailboxSuccess) {
-          autoCreateVirtualFolder(
-            mailboxDashBoardController.isAINeedsActionEnabled,
-          );
           mailboxDashBoardController.updateRefreshAllMailboxState(Right(RefreshAllMailboxSuccess()));
           _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
           _handleDataFromNavigationRouter();
@@ -283,10 +290,6 @@ class MailboxController extends BaseMailboxController
           if (PlatformInfo.isIOS) {
             _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
           }
-        } else if (success is CreateDefaultMailboxAllSuccess) {
-          autoCreateVirtualFolder(
-            mailboxDashBoardController.isAINeedsActionEnabled,
-          );
         }
       });
   }
@@ -325,7 +328,18 @@ class MailboxController extends BaseMailboxController
         refreshAllMailbox();
         mailboxDashBoardController.clearMailboxUIAction();
       } else if (action is AutoCreateActionRequiredFolderMailboxAction) {
-        addActionRequiredFolder();
+        final newMailboxCollection = addActionRequiredFolder(
+          mailboxCollection: MailboxCollection(
+            allMailboxes: allMailboxes,
+            defaultTree: defaultMailboxTree.value,
+            personalTree: personalMailboxTree.value,
+            teamTree: teamMailboxesTree.value,
+          ),
+        );
+        updateMailboxTree(
+          mailboxCollection: newMailboxCollection,
+          isRefreshTrigger: false,
+        );
         mailboxDashBoardController.clearMailboxUIAction();
       } else if (action is AutoRemoveActionRequiredFolderMailboxAction) {
         removeActionRequiredFolder();
@@ -612,14 +626,14 @@ class MailboxController extends BaseMailboxController
         .mailboxList
         .listSubscribedMailboxesAndDefaultMailboxes;
 
-    await refreshTree(listMailboxDisplayed);
+    await refreshTree(
+      listMailboxDisplayed,
+      onUpdateMailboxCollectionCallback: updateMailboxCollection,
+    );
 
     if (currentContext != null) {
       syncAllMailboxWithDisplayName(currentContext!);
     }
-    autoCreateVirtualFolder(
-      mailboxDashBoardController.isAINeedsActionEnabled,
-    );
     _setMapMailbox();
     _setOutboxMailbox();
     _selectSelectedMailboxDefault();
@@ -629,6 +643,10 @@ class MailboxController extends BaseMailboxController
       _redirectToNewFolder();
     }
   }
+
+  @override
+  bool get isAINeedsActionEnabled =>
+      mailboxDashBoardController.isAINeedsActionEnabled;
 
   void _setMapMailbox() {
     final mapDefaultMailboxIdByRole = {
@@ -731,7 +749,10 @@ class MailboxController extends BaseMailboxController
       allMailboxes.add(mailbox.toPresentationMailbox());
     }
 
-    await buildTree(allMailboxes);
+    await buildTree(
+      allMailboxes,
+      onUpdateMailboxCollectionCallback: updateMailboxCollection,
+    );
     if (currentContext != null) {
       syncAllMailboxWithDisplayName(currentContext!);
     }
@@ -1315,7 +1336,10 @@ class MailboxController extends BaseMailboxController
     currentMailboxState = success.currentMailboxState;
     log('MailboxController::_handleGetAllMailboxSuccess:currentMailboxState: $currentMailboxState');
     final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
-    await buildTree(listMailboxDisplayed);
+    await buildTree(
+      listMailboxDisplayed,
+      onUpdateMailboxCollectionCallback: updateMailboxCollection,
+    );
     if (currentContext != null) {
       syncAllMailboxWithDisplayName(currentContext!);
     }
