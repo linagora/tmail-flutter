@@ -890,6 +890,12 @@ class ComposerController extends BaseController
       emailSubject: subjectEmail.value ?? '',
       emailContent: emailContent,
     );
+
+    if (!context.mounted) {
+      logWarning('ComposerController::_prepareToSendMessages: CONTEXT IS NOT MOUNTED');
+      return;
+    }
+
     if (attachmentKeywords.isNotEmpty &&
         uploadController.attachmentsUploaded.isEmpty) {
       showAttachmentReminderModal(

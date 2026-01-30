@@ -12,6 +12,7 @@ class AppConfig {
   static const int defaultLimitAutocomplete = 8;
 
   static const String appDashboardConfigurationPath = "configurations/app_dashboard.json";
+  static const String attachmentKeywordsConfigurationPath = "configurations/attachment_keywords.json";
   static const String iOSKeychainSharingGroupId = 'KUT463DS29.com.linagora.ios.teammail.shared';
   static const String iOSKeychainSharingService = 'com.linagora.ios.teammail.sessions';
   static const String saasPlatform = 'saas';
