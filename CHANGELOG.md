@@ -1,3 +1,12 @@
+## [0.24.8] - 2026-01-30
+### Fixed 
+- #4283 fix: normalize "$needs-action" keyword to "needs-action"
+- #4282 sort of quick search must be the same with sort in search result 
+
+### Added
+- add `FORCE_EMAIL_QUERY` to `env.file` to apply Email query whenever switch mailbox
+- #4274 clear cache when f5/refresh/logout
+
 ## [0.24.1] - 2026-01-28
 ### Added
 - enable source map when building web application
