@@ -23,6 +23,10 @@ class ExcludeListFilter with TokenExtractionMixin implements KeywordFilter {
     final cleanToken = lowerToken.replaceAll(RegExp(r'[^\w\s]+$'), '');
     if (_excludes.contains(cleanToken)) return false;
 
+    // Check 3: Block even if it has leading punctuation (e.g., "(file")
+    final fullyCleanToken = cleanToken.replaceAll(RegExp(r'^[^\w\s]+'), '');
+    if (_excludes.contains(fullyCleanToken)) return false;
+
     return true;
   }
 }
