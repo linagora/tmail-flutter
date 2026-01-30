@@ -132,7 +132,9 @@ class AttachmentTextDetector {
     // (?![\p{L}]) ensures we don't match substrings inside other words (e.g., "filetage").
     final pattern = allKeywords.map(RegExp.escape).join('|');
 
-    return'($pattern)(?![\\p{L}])';
+    // (?<![\p{L}]) ensures no letter precedes the keyword
+    // (?![\p{L}]) ensures no letter follows the keyword
+    return '(?<![\\p{L}])($pattern)(?![\\p{L}])';
   }
 
   static String _getPattern(List<String> includeList) {
