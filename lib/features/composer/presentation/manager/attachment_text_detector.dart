@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/detection_params.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/exclude_list_filter.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/keyword_filter.dart';
 import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
 
@@ -50,8 +51,9 @@ class AttachmentTextDetector {
     ],
   };
 
-  static RegExp? _combinedRegExp;
-  /// SYNC/ASYNC EXECUTION THRESHOLD
+  /// Cached RegExp for the default case (when no include list is provided).
+  static RegExp? _cachedDefaultRegExp;
+  /// Threshold to switch from Sync to Async execution.
   ///
   /// Value: 20,000 characters (approx. 4-5 pages of text).
   ///
@@ -114,55 +116,61 @@ class AttachmentTextDetector {
     return result;
   }
 
-  /// Initializes the single optimized RegExp pattern.
-  static void _initializeRegExp() {
-    if (_combinedRegExp != null) return;
+  /// Builds the Regex pattern.
+  /// Merges [defaultKeywords] with [includeList] to create the search scope.
+  static RegExp _buildRegExp(List<String> additionalKeywords) {
+    // 1. Get all default keywords
+    final defaultKeywords = _keywordsByLang.values.expand((l) => l).toList();
 
-    final allKeywords =
-        _keywordsByLang.values.expand((l) => l).toSet().toList();
+    // 2. Merge with Include List (Add user-defined keywords)
+    final allKeywords = {...defaultKeywords, ...additionalKeywords}.toList();
 
-    // Sort by length descending (Longest first).
-    // Crucial to ensure "attachment" is matched before "attach".
+    // 3. Sort by length descending.
+    // Crucial to match "attachment" (long) before "attach" (short).
     allKeywords.sort((a, b) => b.length.compareTo(a.length));
 
-    // LOGIC:
-    // 1. RegExp.escape: Neutralizes special characters.
-    // 2. No Nested Quantifiers: Prevents catastrophic backtracking.
-    // 3. Linear Scan: Uses logical OR (|) for a single-pass scan.
+    // 4. Create Pattern: (keyword1|keyword2)(?![\p{L}])
+    // (?![\p{L}]) ensures we don't match substrings inside other words (e.g., "filetage").
     final pattern = allKeywords.map(RegExp.escape).join('|');
 
-    // Pattern: (keyword1|keyword2)(?![\p{L}])
-    // (?![\p{L}]): Negative lookahead to ensure the next char is NOT a letter.
-    // Allows: numbers (file123), punctuation (file.), spaces (file ).
-    // Rejects: letter extensions (filetage).
-    _combinedRegExp = RegExp(
+    return RegExp(
       '($pattern)(?![\\p{L}])',
       unicode: true,
       caseSensitive: false,
     );
   }
 
-  static List<String> _processMatchedKeywordsInIsolate(DetectionParams params) {
-    // Re-initialize RegExp (Isolates do not share static memory with the main app)
-    _initializeRegExp();
-
+  /// The core logic function.
+  /// 1. Builds/Retrieves the Regex.
+  /// 2. Scans the text.
+  /// 3. Filters results using Exclude List.
+  static List<String> _processInIsolate(DetectionParams params) {
     final text = params.text;
-    final filters = params.filters;
-
     if (text.isEmpty) return [];
 
-    final matches = _combinedRegExp!.allMatches(text);
+    RegExp regex;
+
+    // Use cached Regex if there are no custom keywords.
+    if (params.includeList.isEmpty) {
+      _cachedDefaultRegExp ??= _buildRegExp([]);
+      regex = _cachedDefaultRegExp!;
+    } else {
+      // Rebuild Regex if Include List is present.
+      regex = _buildRegExp(params.includeList);
+    }
+
+    final matches = regex.allMatches(text);
     final result = <String>{};
 
     for (final match in matches) {
       final keyword = match.group(0)!.toLowerCase();
 
-      // Apply Filter Pipeline
+      // Check if the found keyword should be excluded based on context.
       bool isAccepted = true;
-      for (final filter in filters) {
+      for (final filter in params.filters) {
         if (!filter.isValid(text, match)) {
           isAccepted = false;
-          break; // Stop checking other filters to save CPU
+          break;
         }
       }
 
@@ -174,25 +182,34 @@ class AttachmentTextDetector {
     return result.toList();
   }
 
-  /// Smart keyword detection (Hybrid Sync/Async).
-  /// Automatically decides whether to run on the UI Thread or a Background Thread.
-  /// [forceSync]: If true, it will be MANDATORY to run on the UI Thread (ignoring the threshold).
-  /// Use this parameter for unit tests to benchmark the algorithm more accurately.
+  /// Detects keywords in the text.
+  ///
+  /// [includeList]: Adds NEW keywords to the search (e.g., 'invoice').
+  /// [excludeList]: BLOCKS specific tokens from results (e.g., 'invoice-draft').
+  /// [forceSync]: If true, forces execution on the UI thread (for testing).
   static Future<List<String>> matchedKeywordsUnique(
     String text, {
-    List<KeywordFilter> filters = const [],
+    List<String> includeList = const [],
+    List<String> excludeList = const [],
     bool forceSync = false,
   }) async {
-    // If text is short, run Synchronously to avoid Isolate overhead cost.
+    // Prepare filters (Exclude List)
+    final filters = <KeywordFilter>[];
+    if (excludeList.isNotEmpty) {
+      filters.add(ExcludeListFilter(excludeList));
+    }
+
+    final params = DetectionParams(
+      text: text,
+      includeList: includeList, // Passed to build the Regex
+      filters: filters, // Passed to filter the matches
+    );
+
+    // Decision: Run Sync (fast) or Async (safe)
     if (forceSync || text.length < _kAsyncExecutionThreshold) {
-      return _processMatchedKeywordsInIsolate(
-        DetectionParams(text: text, filters: filters),
-      );
-    } else { // If text is long, use `compute` to offload to an Isolate, preventing UI freeze.
-      return await compute(
-        _processMatchedKeywordsInIsolate,
-        DetectionParams(text: text, filters: filters),
-      );
+      return _processInIsolate(params);
+    } else {
+      return await compute(_processInIsolate, params);
     }
   }
 }
