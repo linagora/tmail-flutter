@@ -515,6 +515,79 @@ void main() {
       const html = '&amp;lt;weird&amp;gt;X&amp;lt;/weird&amp;gt;Y';
       expect(HtmlUtils.extractPlainText(html), '<weird>X</weird>Y');
     });
+
+    test('removes tmail-signature div by default', () {
+      const html = '''
+      <p>Hello world</p>
+      <div class="tmail-signature">
+        Sent from my iPhone
+      </div>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Hello world');
+    });
+
+    test('keeps tmail-signature when removeTMailSignature is false', () {
+      const html = '''
+      <p>Content</p>
+      <div class="tmail-signature">My Signature</div>
+    ''';
+      expect(
+        HtmlUtils.extractPlainText(html, removeTMailSignature: false),
+        'Content My Signature',
+      );
+    });
+
+    test('removes tmail-signature containing nested html elements', () {
+      const html = '''
+      <div>Actual message</div>
+      <div class="tmail-signature">
+        <hr>
+        <b>Sent from my Android</b>
+        <br>
+        <a href="https://example.com">Get Outlook for Android</a>
+      </div>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Actual message');
+    });
+
+    test('removes multiple tmail-signature divs', () {
+      const html = '''
+      <div class="tmail-signature">Old Sig</div>
+      <p>New Content</p>
+      <div class="tmail-signature">New Sig</div>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'New Content');
+    });
+
+    test('removes tmail-signature even when combined with other classes', () {
+      const html = '''
+      <p>Main text</p>
+      <div class="tmail-signature flex-row p-4">
+        Should be removed
+      </div>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Main text');
+    });
+
+    test('ignores divs looking like signature but with wrong class name', () {
+      const html = '''
+      <p>Main text</p>
+      <div class="not-tmail-signature">Should keep this</div>
+      <div class="tmail-signature-fake">And this</div>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Main text Should keep this And this');
+    });
+
+    test('removes tmail-signature inside blockquote if both flags are true', () {
+      const html = '''
+      <p>Start</p>
+      <blockquote>
+        <div class="tmail-signature">Sig inside quote</div>
+      </blockquote>
+      <p>End</p>
+    ''';
+      expect(HtmlUtils.extractPlainText(html), 'Start End');
+    });
   });
 
   group('HtmlUtils.wrapPlainTextLinks', () {
