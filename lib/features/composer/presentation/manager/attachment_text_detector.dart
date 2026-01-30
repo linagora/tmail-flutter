@@ -7,6 +7,10 @@ class AttachmentTextDetector {
     LanguageCodeConstants.english: [
       'attach',
       'attachment',
+      'attachments',
+      'attached',
+      'file',
+      'files',
     ],
     LanguageCodeConstants.french: [
       'pièce jointe',
@@ -91,18 +95,47 @@ class AttachmentTextDetector {
     return result;
   }
 
-  /// Returns a list of matching keywords but removes duplicates
+  // Store a single combined RegExp pattern
+  static RegExp? _combinedRegExp;
+
+  /// Initializes a single optimized RegExp that contains all keywords.
+  static void _initializeRegExp() {
+    if (_combinedRegExp != null) return;
+
+    // Flatten all keywords from all languages into a single list
+    final allKeywords = _keywordsByLang.values.expand((list) => list).toSet().toList();
+
+    // Sort keywords by length descending (longest first).
+    allKeywords.sort((a, b) => b.length.compareTo(a.length));
+
+    // Create a pattern like: (attachment|attach|file|files)(?![\p{L}])
+    // Join all keywords with OR operator (|)
+    final patternString = allKeywords.map(RegExp.escape).join('|');
+
+    _combinedRegExp = RegExp(
+      '($patternString)(?![\\p{L}])',
+      unicode: true,
+      caseSensitive: false, // Let Regex handle case-insensitivity
+    );
+  }
+
+  /// Detects unique keywords in the provided text based on predefined language lists.
   static List<String> matchedKeywordsUnique(String text) {
-    final lowerText = text.toLowerCase();
+    if (text.isEmpty) return [];
+
+    // Ensure RegExp are initialized
+    _initializeRegExp();
+
+    final matches = _combinedRegExp!.allMatches(text);
     final result = <String>{};
 
-    _keywordsByLang.forEach((_, keywords) {
-      for (final k in keywords) {
-        if (lowerText.contains(k.toLowerCase())) {
-          result.add(k);
-        }
+    for (final match in matches) {
+      // match.group(0) returns the actual text found (e.g., "FILE", "File").
+      // We convert it to lowercase to normalize the result list.
+      if (match.group(0) != null) {
+        result.add(match.group(0)!.toLowerCase());
       }
-    });
+    }
 
     return result.toList();
   }
