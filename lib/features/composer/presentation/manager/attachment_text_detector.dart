@@ -52,7 +52,10 @@ class AttachmentTextDetector {
 
   /// Cached RegExp Pattern for the default case (when no include list is provided).
   static String? _cachedDefaultPattern;
-  /// Threshold to switch from Sync to Async execution.
+  /// Cached RegExp Pattern for the case when a custom include list is provided.
+  static List<String>? _cachedIncludeList;
+  static String? _cachedIncludePattern;
+  /// Threshold to switch from Sync to Async execution on native platforms.
   ///
   /// Value: 20,000 characters (approx. 4-5 pages of text).
   ///
@@ -64,56 +67,13 @@ class AttachmentTextDetector {
   ///    - For > 20k chars, Regex processing might exceed 16ms on low-end devices, causing jank.
   ///
   /// -> Below 20k: Run Sync (Instant response).
-  /// -> Above 20k: Run Async (Safety for UI).
+  /// -> Above 20k: Run Async via `compute` (offloads to a separate Isolate on native).
+  ///
+  /// **Web limitation:** Flutter Web does not support true Dart isolates. On web, `compute()`
+  /// runs on the same main thread, so the async branch does NOT provide UI isolation.
+  /// Long drafts (> 20k chars) may still block the event loop on web. A proper web
+  /// strategy (e.g., Service Worker or chunked async processing) is not yet implemented.
   static const int _kAsyncExecutionThreshold = 20000;
-
-  /// Detect if the text contains keywords suggesting there is an attachment.
-  /// [lang] is the language code (`en`, `fr`, `ru`, `vi`, `ar`, ...).
-  static bool containsAttachmentKeyword(String text, {required String lang}) {
-    final lowerText = text.toLowerCase();
-    final keywords = _keywordsByLang[lang.toLowerCase()];
-    if (keywords == null) return false;
-
-    return keywords.any((k) => lowerText.contains(k.toLowerCase()));
-  }
-
-  /// Returns a list of matched keywords (if any) for the specified language
-  static List<String> matchedKeywords(String text, {required String lang}) {
-    final lowerText = text.toLowerCase();
-    final keywords = _keywordsByLang[lang.toLowerCase()];
-    if (keywords == null) return [];
-
-    return keywords
-        .where((k) => lowerText.contains(k.toLowerCase()))
-        .toList();
-  }
-
-  /// Detect if text contains keyword in any language
-  static bool containsAnyAttachmentKeyword(String text) {
-    final lowerText = text.toLowerCase();
-    for (final keywords in _keywordsByLang.values) {
-      if (keywords.any((k) => lowerText.contains(k.toLowerCase()))) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /// Returns a map of languages with a list of matched keywords
-  static Map<String, List<String>> matchedKeywordsAll(String text) {
-    final result = <String, List<String>>{};
-    final lowerText = text.toLowerCase();
-
-    _keywordsByLang.forEach((lang, keywords) {
-      final matches =
-      keywords.where((k) => lowerText.contains(k.toLowerCase())).toList();
-      if (matches.isNotEmpty) {
-        result[lang] = matches;
-      }
-    });
-
-    return result;
-  }
 
   /// Builds the Regex pattern.
   /// Merges [defaultKeywords] with [includeList] to create the search scope.
@@ -132,23 +92,40 @@ class AttachmentTextDetector {
     // (?![\p{L}]) ensures we don't match substrings inside other words (e.g., "filetage").
     final pattern = allKeywords.map(RegExp.escape).join('|');
 
-    return'($pattern)(?![\\p{L}])';
+    // (?<![\p{L}]) ensures no letter precedes the keyword
+    // (?![\p{L}]) ensures no letter follows the keyword
+    return '(?<![\\p{L}])($pattern)(?![\\p{L}])';
   }
 
   static String _getPattern(List<String> includeList) {
-    if (includeList.isNotEmpty) {
-      return _generatePatternString(includeList);
+    if (includeList.isEmpty) {
+      _cachedDefaultPattern ??= _generatePatternString([]);
+      return _cachedDefaultPattern!;
     }
 
-    _cachedDefaultPattern ??= _generatePatternString([]);
-    return _cachedDefaultPattern!;
+    final cached = _cachedIncludeList;
+    if (cached != null &&
+        cached.length == includeList.length &&
+        cached.every(includeList.contains)) {
+      return _cachedIncludePattern!;
+    }
+
+    _cachedIncludeList = List.unmodifiable(includeList);
+    _cachedIncludePattern = _generatePatternString(includeList);
+    return _cachedIncludePattern!;
+  }
+
+  static bool _passesAllFilters(
+      String text, Match match, List<KeywordFilter> filters) {
+    return filters.every((filter) => filter.isValid(text, match));
   }
 
   /// The core logic function.
   /// 1. Builds/Retrieves the Regex.
   /// 2. Scans the text.
   /// 3. Filters results using Exclude List.
-  static List<String> _processInIsolate(DetectionParams params) {
+  /// Can be executed on the main thread (sync path) or inside an Isolate (async path).
+  static List<String> _detectKeywords(DetectionParams params) {
     final text = params.text;
     if (text.isEmpty) return [];
 
@@ -158,27 +135,20 @@ class AttachmentTextDetector {
       caseSensitive: false,
     );
 
-    final matches = regex.allMatches(text);
-    final result = <String>{};
+    return regex
+        .allMatches(text)
+        .where((match) => _passesAllFilters(text, match, params.filters))
+        .map((match) => match.group(0)!.toLowerCase())
+        .toSet()
+        .toList();
+  }
 
-    for (final match in matches) {
-      final keyword = match.group(0)!.toLowerCase();
-
-      // Check if the found keyword should be excluded based on context.
-      bool isAccepted = true;
-      for (final filter in params.filters) {
-        if (!filter.isValid(text, match)) {
-          isAccepted = false;
-          break;
-        }
-      }
-
-      if (isAccepted) {
-        result.add(keyword);
-      }
-    }
-
-    return result.toList();
+  /// Clears all cached regex patterns.
+  /// Call this when the keyword configuration changes (e.g., on logout or config reload).
+  static void clearPatternCache() {
+    _cachedDefaultPattern = null;
+    _cachedIncludeList = null;
+    _cachedIncludePattern = null;
   }
 
   /// Detects keywords in the text.
@@ -206,11 +176,12 @@ class AttachmentTextDetector {
       filters: filters,
     );
 
-    // Decision: Run Sync (fast) or Async (safe)
+    // On native: below threshold → sync (faster), above → offload to Isolate via compute().
+    // On web: compute() does not create a real Isolate; both paths run on the main thread.
     if (forceSync || text.length < _kAsyncExecutionThreshold) {
-      return _processInIsolate(params);
+      return _detectKeywords(params);
     } else {
-      return await compute(_processInIsolate, params);
+      return await compute(_detectKeywords, params);
     }
   }
 }

@@ -8,6 +8,9 @@ class ExcludeListFilter with TokenExtractionMixin implements KeywordFilter {
   ExcludeListFilter(List<String> rawExcludes)
       : _excludes = rawExcludes.map((e) => e.toLowerCase()).toSet();
 
+  static final _trailingPunctRegex = RegExp(r'[^\w\s]+$');
+  static final _leadingPunctRegex  = RegExp(r'^[^\w\s]+');
+
   @override
   bool isValid(String fullText, Match match) {
     if (_excludes.isEmpty) return true;
@@ -20,11 +23,11 @@ class ExcludeListFilter with TokenExtractionMixin implements KeywordFilter {
     if (_excludes.contains(lowerToken)) return false;
 
     // Check 2: Block even if it has trailing punctuation (e.g., "file-246.")
-    final cleanToken = lowerToken.replaceAll(RegExp(r'[^\w\s]+$'), '');
+    final cleanToken = lowerToken.replaceAll(_trailingPunctRegex, '');
     if (_excludes.contains(cleanToken)) return false;
 
     // Check 3: Block even if it has leading punctuation (e.g., "(file")
-    final fullyCleanToken = cleanToken.replaceAll(RegExp(r'^[^\w\s]+'), '');
+    final fullyCleanToken = cleanToken.replaceAll(_leadingPunctRegex, '');
     if (_excludes.contains(fullyCleanToken)) return false;
 
     return true;

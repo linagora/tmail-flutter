@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/attachment_text_detector.dart';
-import 'package:tmail_ui_user/features/composer/presentation/manager/keyword_config_manager.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/attachment_keyword_config_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -17,17 +17,13 @@ extension AttachmentDetectionExtension on ComposerController {
     try {
       final fullContent = '$emailSubject $emailContent';
       final plainText = HtmlUtils.extractPlainText(fullContent);
-      final keywordConfig = await KeywordConfigManager().getConfig();
+      final attachmentKeywordConfig = await AttachmentKeywordConfigManager().getConfig();
       final keywords = await AttachmentTextDetector.matchedKeywordsUnique(
         plainText,
-        includeList: keywordConfig.includeList,
-        excludeList: keywordConfig.excludeList,
+        includeList: attachmentKeywordConfig.includeList,
+        excludeList: attachmentKeywordConfig.excludeList,
       );
-      if (keywords.isEmpty) {
-        return [];
-      } else {
-        return keywords;
-      }
+      return keywords;
     } catch (e) {
       logWarning('$runtimeType::validateAttachmentReminder:Error $e');
       return [];
@@ -49,7 +45,7 @@ extension AttachmentDetectionExtension on ComposerController {
       title: appLocalizations.attachmentReminderModalTitle,
       appLocalizations.attachmentReminderModalMessage(formattedKeywords),
       appLocalizations.sendMessage,
-      cancelTitle: AppLocalizations.of(context).cancel,
+      cancelTitle: appLocalizations.cancel,
       onConfirmAction: onConfirmAction,
       onCancelAction: onCancelAction,
       onCloseButtonAction: popBack,

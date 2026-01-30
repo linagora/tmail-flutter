@@ -3,22 +3,23 @@
 mixin TokenExtractionMixin {
   static final RegExp _whitespaceRegExp = RegExp(r'\s');
 
-  String getSurroundingToken(String text, int matchStart, int matchEnd) {
-    int start = matchStart;
-    int end = matchEnd;
-
-    // Expand left until whitespace
-    while (start > 0) {
-      if (_whitespaceRegExp.hasMatch(text[start - 1])) break;
+  int _expandLeft(String text, int start) {
+    while (start > 0 && !_whitespaceRegExp.hasMatch(text[start - 1])) {
       start--;
     }
+    return start;
+  }
 
-    // Expand right until whitespace
-    while (end < text.length) {
-      if (_whitespaceRegExp.hasMatch(text[end])) break;
+  int _expandRight(String text, int end) {
+    while (end < text.length && !_whitespaceRegExp.hasMatch(text[end])) {
       end++;
     }
+    return end;
+  }
 
+  String getSurroundingToken(String text, int matchStart, int matchEnd) {
+    final start = _expandLeft(text, matchStart);
+    final end = _expandRight(text, matchEnd);
     return text.substring(start, end);
   }
 }

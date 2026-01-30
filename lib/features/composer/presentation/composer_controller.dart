@@ -883,6 +883,22 @@ class ComposerController extends BaseController
 
     final emailContent = await getContentInEditor();
 
+    if (uploadController.attachmentsUploaded.isNotEmpty) {
+      if (!context.mounted) {
+        logWarning('ComposerController::_prepareToSendMessages: CONTEXT IS NOT MOUNTED');
+        _sendButtonState = ButtonState.enabled;
+        return;
+      }
+      _sendMessageToServer(
+        context: context,
+        session: session,
+        accountId: accountId,
+        arguments: arguments,
+        emailContent: emailContent,
+      );
+      return;
+    }
+
     final attachmentKeywords = await validateAttachmentReminder(
       emailSubject: subjectEmail.value ?? '',
       emailContent: emailContent,
@@ -894,8 +910,7 @@ class ComposerController extends BaseController
       return;
     }
 
-    if (attachmentKeywords.isNotEmpty &&
-        uploadController.attachmentsUploaded.isEmpty) {
+    if (attachmentKeywords.isNotEmpty) {
       showAttachmentReminderModal(
         context: context,
         keywords: attachmentKeywords,

@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_fi
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_firebase_registration_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_firebase_registration_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/attachment_keyword_config_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/web_socket_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
@@ -598,6 +599,8 @@ abstract class BaseController extends GetxController
       await cachingManager.closeHive();
     } catch (e) {
       logWarning('BaseController::clearAllData: Cannot clear all data: $e');
+    } finally {
+      AttachmentKeywordConfigManager().clearCache();
     }
   }
 
