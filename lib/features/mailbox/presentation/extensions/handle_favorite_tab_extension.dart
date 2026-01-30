@@ -38,8 +38,8 @@ extension HandleFavoriteTabExtension on BaseMailboxController {
     required MailboxTree defaultTree,
   }) {
     final defaultMailboxNode = defaultTree.root;
-    List<MailboxNode> currentDefaultFolders =
-        defaultMailboxNode.childrenItems ?? [];
+    final currentDefaultFolders =
+        List<MailboxNode>.from(defaultMailboxNode.childrenItems ?? []);
 
     if (currentDefaultFolders.isEmpty) {
       currentDefaultFolders.add(MailboxNode(favoriteFolder));

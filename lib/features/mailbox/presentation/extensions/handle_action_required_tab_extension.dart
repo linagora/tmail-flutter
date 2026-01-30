@@ -43,6 +43,9 @@ extension HandleActionRequiredTabExtension on BaseMailboxController {
   }) {
     final root = currentDefaultTree.root;
     final children = List<MailboxNode>.from(root.childrenItems ?? []);
+    if (children.any((node) => node.item.id == folder.id)) {
+      return currentDefaultTree;
+    }
 
     children.insertAfterStarredOrInbox(MailboxNode(folder));
 
