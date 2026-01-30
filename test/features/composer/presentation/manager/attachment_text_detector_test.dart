@@ -1,6 +1,7 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/attachment_text_detector.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/exclude_list_filter.dart';
 import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
 
 /// Helper: generate email about [targetLength] characters long
@@ -17,6 +18,8 @@ String generateLongEmail(int targetLength, {bool includeKeywords = true}) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  
   group('AttachmentTextDetector.containsAttachmentKeyword', () {
     test('English - should detect "attach" and "attachment"', () {
       expect(
@@ -266,14 +269,14 @@ void main() {
   });
 
   group('AttachmentTextDetector.matchedKeywordsUnique', () {
-    test('should return unique matches across multiple languages', () {
+    test('should return unique matches across multiple languages', () async {
       const email = """
         Please see the attached document.
         Vui lòng xem tài liệu đính kèm.
         Смотрите приложение с отчетом.
       """;
 
-      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
 
       expect(matches,
           containsAll(['tài liệu', 'đính kèm', 'приложение']));
@@ -281,14 +284,14 @@ void main() {
           reason: 'No duplicates allowed');
     });
 
-    test('should return unique matches even if repeated multiple times', () {
+    test('should return unique matches even if repeated multiple times', () async {
       const email = """
         file file file attach attach attach 
         đính kèm đính kèm 
         приложение приложение
       """;
 
-      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
 
       expect(
           matches, containsAll(['file', 'attach', 'đính kèm', 'приложение']));
@@ -296,15 +299,15 @@ void main() {
           reason: 'Duplicates must be removed');
     });
 
-    test('should return empty list if no keywords present', () {
+    test('should return empty list if no keywords present', () async {
       const email = "This email does not mention anything related to document.";
-      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
       expect(matches, isEmpty);
     });
 
-    test('should match Russian word with both ё and е', () {
+    test('should match Russian word with both ё and е', () async {
       const email = "Вот наш отчёт и вот наш снова.";
-      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
 
       expect(matches, containsAll(['отчёт']));
     });
@@ -384,25 +387,25 @@ void main() {
 
   /// Test input validation and edge cases
   group('AttachmentTextDetector Input Validation', () {
-    test('should handle empty input gracefully', () {
+    test('should handle empty input gracefully', () async {
       expect(AttachmentTextDetector.containsAnyAttachmentKeyword(''), isFalse);
-      expect(AttachmentTextDetector.matchedKeywordsUnique(''), isEmpty);
+      expect((await AttachmentTextDetector.matchedKeywordsUnique('')), isEmpty);
       expect(AttachmentTextDetector.matchedKeywordsAll(''), isEmpty);
     });
 
-    test('should handle special characters and symbols', () {
+    test('should handle special characters and symbols', () async {
       const email = "attach@#\$%^&*()_+ pièce jointe!@#\$%";
       expect(
           AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
-      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
       expect(matches, containsAll(['attach', 'pièce jointe']));
     });
 
-    test('should handle whitespace-only input', () {
+    test('should handle whitespace-only input', () async {
       const email = "   \n\t\r   ";
       expect(
           AttachmentTextDetector.containsAnyAttachmentKeyword(email), isFalse);
-      expect(AttachmentTextDetector.matchedKeywordsUnique(email), isEmpty);
+      expect((await AttachmentTextDetector.matchedKeywordsUnique(email)), isEmpty);
     });
 
     test('should handle newlines and tabs in content', () {
@@ -504,11 +507,11 @@ void main() {
 
   /// Test Unicode and encoding edge cases
   group('AttachmentTextDetector Unicode Handling', () {
-    test('should handle emoji and special Unicode characters', () {
+    test('should handle emoji and special Unicode characters', () async {
       const email = "📎 attachment 📄 file 🔗 pièce jointe";
       expect(
           AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
-      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
       expect(matches, containsAll(['attachment', 'file', 'pièce jointe']));
     });
 
@@ -538,7 +541,7 @@ void main() {
 
   /// Test real-world scenarios and integration cases
   group('AttachmentTextDetector Real-World Scenarios', () {
-    test('should handle common email signatures and footers', () {
+    test('should handle common email signatures and footers', () async {
       const email = """
         Please review the attached document.
         
@@ -547,7 +550,7 @@ void main() {
         
         This email and any attachments are confidential and may be privileged.
       """;
-      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
       expect(matches, containsAll(['attached', 'attachments']));
     });
 
@@ -558,7 +561,7 @@ void main() {
           AttachmentTextDetector.containsAnyAttachmentKeyword(email), isTrue);
     });
 
-    test('should handle quoted email content', () {
+    test('should handle quoted email content', () async {
       const email = """
         Hi John,
         
@@ -570,11 +573,11 @@ void main() {
         
         Thanks!
       """;
-      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
       expect(matches, containsAll(['attachment', 'attached', 'file']));
     });
 
-    test('should handle multiple languages in single email', () {
+    test('should handle multiple languages in single email', () async {
       const email = """
         English: Please see the attached file.
         French: Veuillez voir le fichier joint.
@@ -584,7 +587,7 @@ void main() {
       final matchesAll = AttachmentTextDetector.matchedKeywordsAll(email);
       expect(matchesAll.keys, containsAll(['en', 'fr', 'vi', 'ru']));
 
-      final matchesUnique = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matchesUnique = await AttachmentTextDetector.matchedKeywordsUnique(email);
       expect(
           matchesUnique,
           containsAll([
@@ -622,10 +625,13 @@ void main() {
           returnsNormally);
     });
 
-    test('should handle repeated keyword patterns efficiently', () {
-      final email = "attach " * 10000; // 10K repetitions
+    test('should handle repeated keyword patterns efficiently', () async {
+      final email = "attach " * 10000; // 10K repetitions, ~70k chars
       final sw = Stopwatch()..start();
-      final result = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final result = await AttachmentTextDetector.matchedKeywordsUnique(
+        email,
+        forceSync: true,
+      );
       sw.stop();
 
       expect(result, equals(['attach']));
@@ -644,7 +650,7 @@ void main() {
           lessThan(500)); // Should complete within 500ms
     });
 
-    test('should handle many different keywords in large text', () {
+    test('should handle many different keywords in large text', () async {
       final email = """
         attach attachment file document report
         pièce jointe fichier joint document joint
@@ -654,7 +660,7 @@ void main() {
           1000; // Repeat 1000 times
 
       final sw = Stopwatch()..start();
-      final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
       sw.stop();
 
       expect(matches.length, greaterThan(10));
@@ -714,9 +720,9 @@ void main() {
       expect(result.keys.length, equals(1));
     });
 
-    test('matchedKeywordsUnique should return unique Arabic keywords only', () {
+    test('matchedKeywordsUnique should return unique Arabic keywords only', () async {
       const text = 'مرفق ملف مرفق تقرير ملف';
-      final result = AttachmentTextDetector.matchedKeywordsUnique(text);
+      final result = await AttachmentTextDetector.matchedKeywordsUnique(text);
 
       expect(result, containsAll(['مرفق', 'ملف', 'تقرير']));
       // Ensure no duplicates
@@ -753,10 +759,10 @@ void main() {
       expect(result[LanguageCodeConstants.french], contains('pièce jointe'));
     });
 
-    test('matchedKeywordsUnique should return unique keywords from all languages', () {
+    test('matchedKeywordsUnique should return unique keywords from all languages', () async {
       const text = 'Attached báo cáo مرفق pièce jointe file مستند attach đính kèm';
 
-      final result = AttachmentTextDetector.matchedKeywordsUnique(text);
+      final result = await AttachmentTextDetector.matchedKeywordsUnique(text);
 
       expect(result, containsAll([
         'attach',
@@ -775,27 +781,27 @@ void main() {
 
   group('AttachmentTextDetector.matchedKeywordsUnique', () {
     group('Logic Tests', () {
-      test('Basic Match: Should detect simple keywords', () {
-        final result = AttachmentTextDetector.matchedKeywordsUnique(
+      test('Basic Match: Should detect simple keywords', () async {
+        final result = await AttachmentTextDetector.matchedKeywordsUnique(
             'Please find the attachment.');
         expect(result, contains('attachment'));
       });
 
-      test('Case Insensitivity: Should detect mixed case keywords', () {
+      test('Case Insensitivity: Should detect mixed case keywords', () async {
         final result =
-            AttachmentTextDetector.matchedKeywordsUnique('FiLe is here');
+            await AttachmentTextDetector.matchedKeywordsUnique('FiLe is here');
         expect(result, contains('file'));
       });
 
-      test('Unique Results: Should not return duplicates', () {
-        final result = AttachmentTextDetector.matchedKeywordsUnique(
+      test('Unique Results: Should not return duplicates', () async {
+        final result = await AttachmentTextDetector.matchedKeywordsUnique(
             'File here, file there, FILE everywhere.');
         expect(result.length, 1);
         expect(result, contains('file'));
       });
 
-      test('Multiple Keywords: Should detect different keywords', () {
-        final result = AttachmentTextDetector.matchedKeywordsUnique(
+      test('Multiple Keywords: Should detect different keywords', () async {
+        final result = await AttachmentTextDetector.matchedKeywordsUnique(
             'See file and attachment');
         expect(result, containsAll(['file', 'attachment']));
       });
@@ -804,40 +810,40 @@ void main() {
     group('Suffix & Boundary Tests (Crucial)', () {
       test(
           'Invalid Suffix: Should IGNORE words extended by letters (e.g., filetage)',
-          () {
+          () async {
         // "filetage" contains "file", but followed by 't' (letter) -> Should fail
-        final result = AttachmentTextDetector.matchedKeywordsUnique(
+        final result = await AttachmentTextDetector.matchedKeywordsUnique(
             'This is a filetage system.');
         expect(result, isEmpty);
       });
 
       test(
           'Valid Suffix (Number): Should ACCEPT words followed by numbers (e.g., file123)',
-          () {
+          () async {
         final result =
-            AttachmentTextDetector.matchedKeywordsUnique('Check file123 now.');
+            await AttachmentTextDetector.matchedKeywordsUnique('Check file123 now.');
         expect(result, contains('file'));
       });
 
       test(
           'Valid Suffix (Punctuation): Should ACCEPT words followed by punctuation',
-          () {
-        final result = AttachmentTextDetector.matchedKeywordsUnique(
+          () async {
+        final result = await AttachmentTextDetector.matchedKeywordsUnique(
             'Is this a file? Yes, file.');
         expect(result, contains('file'));
       });
 
       test('Valid Suffix (Whitespace): Should ACCEPT words followed by space',
-          () {
+          () async {
         final result =
-            AttachmentTextDetector.matchedKeywordsUnique('file name');
+            await AttachmentTextDetector.matchedKeywordsUnique('file name');
         expect(result, contains('file'));
       });
 
       test('Valid Suffix (End of String): Should ACCEPT word at the very end',
-          () {
+          () async {
         final result =
-            AttachmentTextDetector.matchedKeywordsUnique('Open file');
+            await AttachmentTextDetector.matchedKeywordsUnique('Open file');
         expect(result, contains('file'));
       });
     });
@@ -845,10 +851,10 @@ void main() {
     group('Complex & Unicode Tests', () {
       test(
           'Longest Match Priority: Should match "attachment" instead of "attach"',
-          () {
+          () async {
         // Because we sort by length desc, "attachment" comes before "attach" in regex
         final result =
-            AttachmentTextDetector.matchedKeywordsUnique('See attachment.');
+            await AttachmentTextDetector.matchedKeywordsUnique('See attachment.');
 
         expect(result, contains('attachment'));
         // Note: "attachment" contains "attach", but since it consumes the text,
@@ -857,27 +863,27 @@ void main() {
         expect(result, isNot(contains('attach')));
       });
 
-      test('Vietnamese Support: Should detect keywords with accents', () {
-        final result = AttachmentTextDetector.matchedKeywordsUnique(
+      test('Vietnamese Support: Should detect keywords with accents', () async {
+        final result = await AttachmentTextDetector.matchedKeywordsUnique(
             'Gửi tài liệu đính kèm.');
         expect(result, containsAll(['tài liệu', 'đính kèm']));
       });
 
-      test('Russian Support: Should detect Cyrillic characters', () {
+      test('Russian Support: Should detect Cyrillic characters', () async {
         final result =
-            AttachmentTextDetector.matchedKeywordsUnique('Это файл.');
+            await AttachmentTextDetector.matchedKeywordsUnique('Это файл.');
         expect(result, contains('файл'));
       });
 
-      test('Arabic Support: Should detect Arabic characters', () {
-        final result = AttachmentTextDetector.matchedKeywordsUnique(
+      test('Arabic Support: Should detect Arabic characters', () async {
+        final result = await AttachmentTextDetector.matchedKeywordsUnique(
             'هذا ملف مهم'); // "This is an important file"
         expect(result, contains('ملف'));
       });
     });
 
     group('Performance Benchmark', () {
-      test('Large Text Performance: Should process 100k chars under 50ms', () {
+      test('Large Text Performance: Should process 100k chars under 50ms', () async {
         // Generate a large text (~100k characters)
         final buffer = StringBuffer();
         for (int i = 0; i < 5000; i++) {
@@ -887,11 +893,14 @@ void main() {
           }
           if (i % 150 == 0) buffer.write('filetage '); // Insert trap word
         }
-        final largeText = buffer.toString();
+        final largeText = buffer.toString(); // ~215k chars
 
         // Measure execution time
         final stopwatch = Stopwatch()..start();
-        final result = AttachmentTextDetector.matchedKeywordsUnique(largeText);
+        final result = await AttachmentTextDetector.matchedKeywordsUnique(
+          largeText,
+          forceSync: true,
+        );
         stopwatch.stop();
 
         log('Performance result: Found ${result.length} keywords in ${stopwatch.elapsedMilliseconds}ms for ${largeText.length} chars.');
@@ -904,6 +913,114 @@ void main() {
         // Setting 50ms as a safe upper bound for CI environments.
         expect(stopwatch.elapsedMilliseconds, lessThan(50));
       });
+    });
+  });
+
+  group('AttachmentTextDetector with exclude filter', () {
+    test('Basic detection without filters', () async {
+      final result =
+          await AttachmentTextDetector.matchedKeywordsUnique('Check file attachment');
+      expect(result, containsAll(['file', 'attachment']));
+    });
+
+    test('Exclude Filter: Should exclude blacklisted tokens', () async {
+      final excludeFilter = ExcludeListFilter(['file-246', 'my_file']);
+
+      final result = await AttachmentTextDetector.matchedKeywordsUnique(
+        'Check file-246 and my_file please.',
+        filters: [excludeFilter],
+      );
+
+      expect(result, isEmpty);
+    });
+
+    test('Exclude Filter: Should NOT exclude partial matches', () async {
+      final excludeFilter = ExcludeListFilter(['file-246']);
+
+      final result = await AttachmentTextDetector.matchedKeywordsUnique(
+        'Check file-999.',
+        filters: [excludeFilter],
+      );
+
+      expect(result, contains('file'));
+    });
+
+    test('Multiple Filters Integration (Future Proof)', () async {
+      final excludeFilter = ExcludeListFilter(['file-bad']);
+
+      final result = await AttachmentTextDetector.matchedKeywordsUnique(
+        'file-good vs file-bad',
+        filters: [
+          excludeFilter,
+        ],
+      );
+
+      expect(result, contains('file'));
+      expect(result, isNot(contains('file-bad')));
+    });
+  });
+
+  group('AttachmentTextDetector Sync vs Async Logic', () {
+    test('Should run SYNC for short text and detect keywords', () async {
+      const shortText = "Please check the attached file for details.";
+
+      expect(shortText.length, lessThan(20000));
+
+      final result =
+          await AttachmentTextDetector.matchedKeywordsUnique(shortText);
+
+      expect(result, containsAll(['attached', 'file']));
+    });
+
+    test('Should run ASYNC (via compute) for large text', () async {
+      final sb = StringBuffer();
+      sb.write("nonsense " * 3000);
+      sb.write(" attachment ");
+      sb.write("garbage " * 1000);
+
+      final longText = sb.toString();
+
+      expect(longText.length, greaterThan(20000));
+
+      final result =
+          await AttachmentTextDetector.matchedKeywordsUnique(longText);
+
+      expect(result, contains('attachment'));
+      expect(result, isNot(contains('nonsense')));
+    });
+
+    test(
+        'Should apply Filters correctly even when running in Isolate (Long text)',
+        () async {
+      final sb = StringBuffer();
+      sb.write("padding " * 3000);
+      sb.write(" file-246 ");
+      sb.write(" file-ok ");
+      sb.write("padding " * 1000);
+
+      final longText = sb.toString();
+
+      final excludeFilter = ExcludeListFilter(['file-246']);
+
+      final result = await AttachmentTextDetector.matchedKeywordsUnique(
+        longText,
+        filters: [excludeFilter],
+      );
+
+      expect(result, contains('file'));
+    });
+
+    test('Should handle multiple async calls concurrently', () async {
+      final longText = "file " * 4000; // ~20k chars
+
+      final futures = List.generate(
+          10, (_) => AttachmentTextDetector.matchedKeywordsUnique(longText));
+
+      final results = await Future.wait(futures);
+
+      for (final res in results) {
+        expect(res, contains('file'));
+      }
     });
   });
 }

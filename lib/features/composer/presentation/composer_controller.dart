@@ -886,7 +886,7 @@ class ComposerController extends BaseController
       _sendButtonState = ButtonState.enabled;
       return;
     }
-    final attachmentKeywords = validateAttachmentReminder(
+    final attachmentKeywords = await validateAttachmentReminder(
       emailSubject: subjectEmail.value ?? '',
       emailContent: emailContent,
     );

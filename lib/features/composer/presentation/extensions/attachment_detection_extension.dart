@@ -9,14 +9,15 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension AttachmentDetectionExtension on ComposerController {
 
-  List<String> validateAttachmentReminder({
+  Future<List<String>> validateAttachmentReminder({
     required String emailContent,
     required String emailSubject,
-  }) {
+  }) async {
     try {
       final fullContent = '$emailSubject $emailContent';
       final plainText = HtmlUtils.extractPlainText(fullContent);
-      final keywords = AttachmentTextDetector.matchedKeywordsUnique(plainText);
+      final keywords =
+          await AttachmentTextDetector.matchedKeywordsUnique(plainText);
       if (keywords.isEmpty) {
         return [];
       } else {
