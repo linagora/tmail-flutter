@@ -276,7 +276,7 @@ void main() {
       final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
 
       expect(matches,
-          containsAll(['attach', 'tài liệu', 'đính kèm', 'приложение']));
+          containsAll(['tài liệu', 'đính kèm', 'приложение']));
       expect(matches.toSet().length, matches.length,
           reason: 'No duplicates allowed');
     });
@@ -548,7 +548,7 @@ void main() {
         This email and any attachments are confidential and may be privileged.
       """;
       final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
-      expect(matches, containsAll(['attach', 'attachment']));
+      expect(matches, containsAll(['attached', 'attachments']));
     });
 
     test('should handle HTML-like content', () {
@@ -571,7 +571,7 @@ void main() {
         Thanks!
       """;
       final matches = AttachmentTextDetector.matchedKeywordsUnique(email);
-      expect(matches, containsAll(['attachment', 'attach', 'file']));
+      expect(matches, containsAll(['attachment', 'attached', 'file']));
     });
 
     test('should handle multiple languages in single email', () {
@@ -588,10 +588,9 @@ void main() {
       expect(
           matchesUnique,
           containsAll([
-            'attach',
+            'attached',
             'file',
             'fichier joint',
-            'joint',
             'tài liệu',
             'đính kèm',
             'приложение'
@@ -762,8 +761,6 @@ void main() {
       expect(result, containsAll([
         'attach',
         'pièce jointe',
-        'jointe',
-        'joint',
         'đính kèm',
         'báo cáo',
         'file',
@@ -773,6 +770,140 @@ void main() {
 
       // Ensure no duplicates
       expect(result.length, equals(result.toSet().length));
+    });
+  });
+
+  group('AttachmentTextDetector.matchedKeywordsUnique', () {
+    group('Logic Tests', () {
+      test('Basic Match: Should detect simple keywords', () {
+        final result = AttachmentTextDetector.matchedKeywordsUnique(
+            'Please find the attachment.');
+        expect(result, contains('attachment'));
+      });
+
+      test('Case Insensitivity: Should detect mixed case keywords', () {
+        final result =
+            AttachmentTextDetector.matchedKeywordsUnique('FiLe is here');
+        expect(result, contains('file'));
+      });
+
+      test('Unique Results: Should not return duplicates', () {
+        final result = AttachmentTextDetector.matchedKeywordsUnique(
+            'File here, file there, FILE everywhere.');
+        expect(result.length, 1);
+        expect(result, contains('file'));
+      });
+
+      test('Multiple Keywords: Should detect different keywords', () {
+        final result = AttachmentTextDetector.matchedKeywordsUnique(
+            'See file and attachment');
+        expect(result, containsAll(['file', 'attachment']));
+      });
+    });
+
+    group('Suffix & Boundary Tests (Crucial)', () {
+      test(
+          'Invalid Suffix: Should IGNORE words extended by letters (e.g., filetage)',
+          () {
+        // "filetage" contains "file", but followed by 't' (letter) -> Should fail
+        final result = AttachmentTextDetector.matchedKeywordsUnique(
+            'This is a filetage system.');
+        expect(result, isEmpty);
+      });
+
+      test(
+          'Valid Suffix (Number): Should ACCEPT words followed by numbers (e.g., file123)',
+          () {
+        final result =
+            AttachmentTextDetector.matchedKeywordsUnique('Check file123 now.');
+        expect(result, contains('file'));
+      });
+
+      test(
+          'Valid Suffix (Punctuation): Should ACCEPT words followed by punctuation',
+          () {
+        final result = AttachmentTextDetector.matchedKeywordsUnique(
+            'Is this a file? Yes, file.');
+        expect(result, contains('file'));
+      });
+
+      test('Valid Suffix (Whitespace): Should ACCEPT words followed by space',
+          () {
+        final result =
+            AttachmentTextDetector.matchedKeywordsUnique('file name');
+        expect(result, contains('file'));
+      });
+
+      test('Valid Suffix (End of String): Should ACCEPT word at the very end',
+          () {
+        final result =
+            AttachmentTextDetector.matchedKeywordsUnique('Open file');
+        expect(result, contains('file'));
+      });
+    });
+
+    group('Complex & Unicode Tests', () {
+      test(
+          'Longest Match Priority: Should match "attachment" instead of "attach"',
+          () {
+        // Because we sort by length desc, "attachment" comes before "attach" in regex
+        final result =
+            AttachmentTextDetector.matchedKeywordsUnique('See attachment.');
+
+        expect(result, contains('attachment'));
+        // Note: "attachment" contains "attach", but since it consumes the text,
+        // "attach" usually won't be reported separately if they overlap fully,
+        // dependent on regex engine. In our logic, it matches the longest token.
+        expect(result, isNot(contains('attach')));
+      });
+
+      test('Vietnamese Support: Should detect keywords with accents', () {
+        final result = AttachmentTextDetector.matchedKeywordsUnique(
+            'Gửi tài liệu đính kèm.');
+        expect(result, containsAll(['tài liệu', 'đính kèm']));
+      });
+
+      test('Russian Support: Should detect Cyrillic characters', () {
+        final result =
+            AttachmentTextDetector.matchedKeywordsUnique('Это файл.');
+        expect(result, contains('файл'));
+      });
+
+      test('Arabic Support: Should detect Arabic characters', () {
+        final result = AttachmentTextDetector.matchedKeywordsUnique(
+            'هذا ملف مهم'); // "This is an important file"
+        expect(result, contains('ملف'));
+      });
+    });
+
+    group('Performance Benchmark', () {
+      test('Large Text Performance: Should process 100k chars under 50ms', () {
+        // Generate a large text (~100k characters)
+        final buffer = StringBuffer();
+        for (int i = 0; i < 5000; i++) {
+          buffer.write('This is some random text without keywords. ');
+          if (i % 100 == 0) {
+            buffer.write('file '); // Insert keyword occasionally
+          }
+          if (i % 150 == 0) buffer.write('filetage '); // Insert trap word
+        }
+        final largeText = buffer.toString();
+
+        // Measure execution time
+        final stopwatch = Stopwatch()..start();
+        final result = AttachmentTextDetector.matchedKeywordsUnique(largeText);
+        stopwatch.stop();
+
+        log('Performance result: Found ${result.length} keywords in ${stopwatch.elapsedMilliseconds}ms for ${largeText.length} chars.');
+
+        // Assertions
+        expect(result, contains('file'));
+        expect(result, isNot(contains('filetage'))); // Ensure trap didn't work
+
+        // Typical optimized regex should be VERY fast (<10ms for 100k chars on modern CPU)
+        // Setting 50ms as a safe upper bound for CI environments.
+        expect(stopwatch.elapsedMilliseconds, lessThan(50));
+      });
     });
   });
 }
