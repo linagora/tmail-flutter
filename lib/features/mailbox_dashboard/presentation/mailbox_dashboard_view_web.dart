@@ -650,6 +650,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       final isThreadRoute =
           controller.dashboardRoute.value == DashboardRoutes.thread;
       final isLabelAvailable = controller.isLabelAvailable;
+      final labelList = controller.labelController.labels;
 
       if (isSearchEmailRunning && isThreadRoute) {
         return Padding(
@@ -678,7 +679,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       children: [
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.folder),
                         MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
-                        if (isLabelAvailable)
+                        if (isLabelAvailable && labelList.isNotEmpty)
                           ...[
                             _buildQuickSearchFilterButton(
                               context,

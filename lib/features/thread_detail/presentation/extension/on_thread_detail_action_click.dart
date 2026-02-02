@@ -137,7 +137,8 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     if (currentContext == null) return;
 
     final moreActions = [
-      if (mailboxDashBoardController.isLabelAvailable)
+      if (mailboxDashBoardController.isLabelAvailable &&
+          mailboxDashBoardController.labelController.labels.isNotEmpty)
         EmailActionType.labelAs,
       threadDetailIsRead
           ? EmailActionType.markAsUnread
