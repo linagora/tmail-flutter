@@ -656,10 +656,13 @@ void main() {
         приложение документ файл отчёт вложение
         đính kèm tài liệu tệp báo cáo
       """ *
-          1000; // Repeat 1000 times
+          1000; // Repeat 1000 times, ~200,000 chars
 
       final sw = Stopwatch()..start();
-      final matches = await AttachmentTextDetector.matchedKeywordsUnique(email);
+      final matches = await AttachmentTextDetector.matchedKeywordsUnique(
+        email,
+        forceSync: true,
+      );
       sw.stop();
 
       expect(matches.length, greaterThan(10));
