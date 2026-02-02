@@ -79,12 +79,16 @@ void _internalLog(
   }
 
   if (shouldSentry) {
-    SentryManager.instance.captureException(
-      exception ?? rawMessage,
-      stackTrace: stackTrace,
-      message: rawMessage,
-      extras: extras,
-    );
+    if (level == Level.trace) {
+      SentryManager.instance.captureMessage(rawMessage, extras: extras);
+    } else {
+      SentryManager.instance.captureException(
+        exception ?? rawMessage,
+        stackTrace: stackTrace,
+        message: rawMessage,
+        extras: extras,
+      );
+    }
   }
 }
 
@@ -128,7 +132,9 @@ void _printWebConsole(Level level, String value) {
 }
 
 bool _shouldReportToSentry(Level level) {
-  return level == Level.error || level == Level.critical;
+  return level == Level.error ||
+      level == Level.critical ||
+      level == Level.trace;
 }
 
 void logError(
