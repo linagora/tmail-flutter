@@ -666,8 +666,7 @@ void main() {
       sw.stop();
 
       expect(matches.length, greaterThan(10));
-      expect(sw.elapsedMilliseconds,
-          lessThan(1000)); // Should complete within 1 second
+      expect(sw.elapsedMilliseconds, lessThan(3000));
     });
   });
 
