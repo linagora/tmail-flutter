@@ -270,6 +270,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               child: Obx(() {
                 final isLabelAvailable =
                     controller.mailboxDashBoardController.isLabelAvailable;
+                final labelList = controller
+                    .mailboxDashBoardController.labelController.labels;
 
                 return ListView(
                   key: const Key('search_filter_list_view'),
@@ -283,7 +285,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   children: [
                     _buildSearchFilterButton(context, QuickSearchFilter.folder),
                     SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                    if (isLabelAvailable)
+                    if (isLabelAvailable && labelList.isNotEmpty)
                      ...[
                        _buildSearchFilterButton(context, QuickSearchFilter.labels),
                        SearchEmailViewStyle.searchFilterSizeBoxMargin,
