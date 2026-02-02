@@ -1,6 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:flutter/animation.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/base/model/popup_menu_item_action.dart';
@@ -32,4 +32,9 @@ class PopupMenuItemLabelTypeAction
 
   @override
   bool get isArrangeRTL => false;
+
+  @override
+  EdgeInsetsGeometry get itemPadding =>  const EdgeInsetsDirectional.only(
+    end: 12,
+  );
 }
