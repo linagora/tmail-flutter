@@ -44,6 +44,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/identit
 import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_in_identity_arguments.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/create_public_asset_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public_assets_interactor.dart';
+import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
@@ -178,6 +179,10 @@ void main() {
       mockGetAllIdentitiesInteractor,
       mockSaveIdentityCacheOnWebInteractor,
       mockIdentityUtils);
+  });
+
+  tearDown(() {
+    Get.delete<PublicAssetController>(tag: BindingTag.publicAssetBindingsTag);
   });
 
   group("IdentityCreatorController test:", () {
