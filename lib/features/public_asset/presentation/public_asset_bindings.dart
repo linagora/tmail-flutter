@@ -43,7 +43,7 @@ class PublicAssetBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.create(
+    Get.lazyPut(
       () => PublicAssetController(
         Get.find<UploadAttachmentInteractor>(tag: BindingTag.publicAssetBindingsTag),
         Get.find<CreatePublicAssetInteractor>(tag: BindingTag.publicAssetBindingsTag),
