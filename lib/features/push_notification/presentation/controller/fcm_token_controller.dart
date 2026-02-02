@@ -175,8 +175,12 @@ class FcmTokenController extends PushBaseController {
   @override
   void handleFailureViewState(Failure failure) {
     log('FcmTokenController::_handleFailureViewState(): $failure');
-    if (failure is GetFirebaseRegistrationByDeviceIdFailure && failure.newFcmToken != null) {
-      _registerNewFirebaseRegistrationToken(failure.newFcmToken!);
+    if (failure is GetFirebaseRegistrationByDeviceIdFailure) {
+      if (failure.newFcmToken != null) {
+        _registerNewFirebaseRegistrationToken(failure.newFcmToken!);
+      } else {
+        logError('FcmTokenController::GetFirebaseRegistrationByDeviceIdFailure: newFcmToken is null');
+      }
     } else if (failure is RegisterNewFirebaseRegistrationTokenFailure) {
       _deleteFirebaseRegistrationInCache();
     }

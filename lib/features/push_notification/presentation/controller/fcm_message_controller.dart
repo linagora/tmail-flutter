@@ -89,23 +89,35 @@ class FcmMessageController extends PushBaseController {
   void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
     log('FcmMessageController::_handleBackgroundMessageAction():payloadData: $payloadData');
     final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
+    if (stateChange == null) {
+      logTrace('FcmMessageController::_handleBackgroundMessageAction(): stateChange is null');
+      return;
+    }
     await _initialAppConfig();
     _getAuthenticatedAccount(stateChange: stateChange);
   }
 
   Future<void> _initialAppConfig() async {
-    await Future.wait([
-      MainBindings().dependencies(),
-      HiveCacheConfig.instance.setUp()
-    ]);
+    try {
+      await Future.wait([
+        MainBindings().dependencies(),
+        HiveCacheConfig.instance.setUp()
+      ]);
 
-    await Future.sync(() {
-      HomeBindings().dependencies();
-      MailboxDashBoardBindings().dependencies();
-      FcmInteractorBindings().dependencies();
-    });
+      await Future.sync(() {
+        HomeBindings().dependencies();
+        MailboxDashBoardBindings().dependencies();
+        FcmInteractorBindings().dependencies();
+      });
 
-    _getInteractorBindings();
+      _getInteractorBindings();
+    } catch (e, st) {
+      logError(
+        'FcmMessageController::_initialAppConfig: throw exception',
+        exception: e,
+        stackTrace: st,
+      );
+    }
   }
 
   void _getInteractorBindings() {
@@ -121,7 +133,7 @@ class FcmMessageController extends PushBaseController {
     if (_getAuthenticatedAccountInteractor != null) {
       consumeState(_getAuthenticatedAccountInteractor!.execute(stateChange: stateChange));
     } else {
-      logError(
+      logTrace(
         'GetAuthenticatedAccountInteractor is null',
       );
     }
@@ -149,6 +161,8 @@ class FcmMessageController extends PushBaseController {
           accountId: accountId,
           userName: username,
           stateChange: stateChange);
+      } else {
+        logTrace('FcmMessageController::_handleGetAccountByOidcSuccess: accountId or username or stateChange is null');
       }
     }
   }
@@ -174,6 +188,8 @@ class FcmMessageController extends PushBaseController {
           accountId: accountId,
           userName: username,
           stateChange: stateChange);
+      } else {
+        logTrace('FcmMessageController::_handleGetAccountByBasicAuthSuccess: accountId or username or stateChange is null');
       }
     }
   }
@@ -181,6 +197,8 @@ class FcmMessageController extends PushBaseController {
   void _getSessionAction({StateChange? stateChange}) {
     if (_getSessionInteractor != null) {
       consumeState(_getSessionInteractor!.execute(stateChange: stateChange));
+    } else {
+      logTrace('FcmMessageController::_getSessionAction: _getSessionInteractor is null');
     }
   }
 
@@ -198,7 +216,7 @@ class FcmMessageController extends PushBaseController {
           stateChange: stateChange,
           session: success.session);
       } else {
-        logError(
+        logTrace(
           'FcmMessageController::_handleGetSessionSuccess: Api url or state change is null',
         );
       }
@@ -218,7 +236,7 @@ class FcmMessageController extends PushBaseController {
     Session? session
   }) {
     final mapTypeState = stateChange.getMapTypeState(accountId);
-
+    logTrace('FcmMessageController::_pushActionFromRemoteMessageBackground: Mapping type state to action ${mapTypeState.toString()}');
     mappingTypeStateToAction(
       mapTypeState,
       accountId,
@@ -233,15 +251,9 @@ class FcmMessageController extends PushBaseController {
   void handleFailureViewState(Failure failure) {
     log('FcmMessageController::_handleFailureViewState(): $failure');
     if (failure is GetStoredTokenOidcFailure) {
-      logError(
-        'Get stored token oidc is failed',
-        exception: failure.exception,
-      );
+     logTrace('FcmMessageController::GetStoredTokenOidcFailure: Get stored token oidc is failed');
     } else if (failure is GetSessionFailure) {
-      logError(
-        'Get session is failed',
-        exception: failure.exception,
-      );
+      logTrace('FcmMessageController::GetSessionFailure: Get session is failed');
     }
   }
 

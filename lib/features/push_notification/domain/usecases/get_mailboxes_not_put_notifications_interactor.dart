@@ -1,8 +1,10 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/fcm_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_mailboxes_not_put_notifications_state.dart';
 
@@ -11,13 +13,31 @@ class GetMailboxesNotPutNotificationsInteractor {
 
   GetMailboxesNotPutNotificationsInteractor(this._fcmRepository);
 
-  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId) async* {
+  Stream<Either<Failure, Success>> execute(
+    Session session,
+    AccountId accountId,
+    List<PresentationEmail> emails,
+    State currentState,
+  ) async* {
     try {
       yield Right<Failure, Success>(GetMailboxesNotPutNotificationsLoading());
-      final mailboxes = await _fcmRepository.getMailboxesNotPutNotifications(session, accountId);
-      yield Right<Failure, Success>(GetMailboxesNotPutNotificationsSuccess(mailboxes, session.username));
+      final mailboxes = await _fcmRepository.getMailboxesNotPutNotifications(
+        session,
+        accountId,
+      );
+      yield Right<Failure, Success>(GetMailboxesNotPutNotificationsSuccess(
+        mailboxes,
+        session.username,
+        emails,
+        currentState,
+      ));
     } catch (e) {
-      yield Left<Failure, Success>(GetMailboxesNotPutNotificationsFailure(e, session.username));
+      yield Left<Failure, Success>(GetMailboxesNotPutNotificationsFailure(
+        e,
+        session.username,
+        emails,
+        currentState,
+      ));
     }
   }
 }

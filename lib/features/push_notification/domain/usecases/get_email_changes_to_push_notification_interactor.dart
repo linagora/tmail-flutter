@@ -39,9 +39,17 @@ class GetEmailChangesToPushNotificationInteractor {
         ?.map((email) => email.toPresentationEmail())
         .toList() ?? List.empty();
 
-      yield Right<Failure, Success>(GetEmailChangesToPushNotificationSuccess(accountId, userName, presentationEmailList));
+      yield Right<Failure, Success>(GetEmailChangesToPushNotificationSuccess(
+        accountId,
+        userName,
+        presentationEmailList,
+        currentState,
+      ));
     } catch (e) {
-      yield Left<Failure, Success>(GetEmailChangesToPushNotificationFailure(e));
+      yield Left<Failure, Success>(GetEmailChangesToPushNotificationFailure(
+        e,
+        currentState,
+      ));
     }
   }
 }
