@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cac
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/sending_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/sentry_configuration_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/sentry_user_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.dart';
@@ -99,9 +100,11 @@ class LocalBindings extends Bindings {
     Get.put(LocalSortOrderManager(Get.find<SharedPreferences>()));
     Get.put(SettingCacheManager(Get.find<SharedPreferences>()));
     Get.put(SentryConfigurationCacheClient());
+    Get.put(SentryUserCacheClient());
     Get.put(
       SentryConfigurationCacheManager(
         Get.find<SentryConfigurationCacheClient>(),
+        Get.find<SentryUserCacheClient>(),
       ),
     );
     Get.put(CachingManager(

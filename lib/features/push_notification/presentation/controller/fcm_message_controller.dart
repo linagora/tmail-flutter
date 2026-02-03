@@ -146,6 +146,14 @@ class FcmMessageController extends PushBaseController {
       }
 
       await SentryManager.instance.initializeWithSentryConfig(sentryConfig);
+
+      final sentryUser = await cachingManager.getSentryUser();
+      if (sentryUser == null) {
+        logTrace('FcmMessageController::setUpSentryConfiguration: Sentry user is null');
+        return;
+      }
+
+      SentryManager.instance.setUser(sentryUser);
     } catch (e, st) {
       logError(
         'FcmMessageController::_initialAppConfig: throw exception',

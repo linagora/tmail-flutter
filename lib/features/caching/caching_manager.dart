@@ -2,10 +2,13 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/caching/extensions/sentry_config_extension.dart';
 import 'package:tmail_ui_user/features/caching/extensions/sentry_configuration_cache_extension.dart';
+import 'package:tmail_ui_user/features/caching/extensions/sentry_user_cache_extension.dart';
+import 'package:tmail_ui_user/features/caching/extensions/sentry_user_extension.dart';
 import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/caching/manager/session_cache_manger.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
@@ -245,6 +248,38 @@ class CachingManager {
     } catch (e, st) {
       logError(
         'CachingManager::getSentryConfiguration: Cannot get sentry configuration',
+        exception: e,
+        stackTrace: st,
+      );
+      return null;
+    }
+  }
+
+  Future<void> saveSentryUser(SentryUser sentryUser) async {
+    try {
+      await _sentryConfigurationCacheManager.saveSentryUser(
+        sentryUser.toSentryUserCache(),
+      );
+      log('CachingManager::saveSentryConfiguration: Sentry user saved successfully');
+    } catch (e, st) {
+      logError(
+        'CachingManager::saveSentryUser: Cannot save sentry user',
+        exception: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  Future<SentryUser?> getSentryUser() async {
+    try {
+      final sentryUserCache =
+          await _sentryConfigurationCacheManager.getSentryUser();
+      final sentryUser = sentryUserCache.toSentryUser();
+      log('CachingManager::getSentryUser: Sentry user: $sentryUser');
+      return sentryUser;
+    } catch (e, st) {
+      logError(
+        'CachingManager::getSentryUser: Cannot get sentry user',
         exception: e,
         stackTrace: st,
       );
