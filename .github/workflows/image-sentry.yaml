@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -46,7 +48,16 @@ jobs:
           echo "SENTRY_AUTH_TOKEN: $TOKEN_CHECK"
           echo "SENTRY_URL: $URL_CHECK"
           echo "================================="
-
+      - name: Associate Sentry commits
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        run: |
+          echo "SENTRY_RELEASE: ${{ steps.app_version.outputs.version }}"
+          curl -sL https://sentry.io/get-cli/ | bash
+          sentry-cli releases set-commits "$SENTRY_RELEASE" --auto
+          
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
