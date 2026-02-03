@@ -18,12 +18,16 @@ class LinagoraEcosystemController with SentryEcosystemMixin {
   LinagoraEcosystemController(this._baseController);
 
   void init({SentryUser? newSentryUser}) {
-    if (!PlatformInfo.isAndroid) return;
+    try {
+      if (!PlatformInfo.isAndroid) return;
 
-    initSentryUser(newSentryUser);
+      initSentryUser(newSentryUser);
 
-    _initInteractor();
-    _loadLinagoraEcosystem();
+      _initInteractor();
+      _loadLinagoraEcosystem();
+    } catch (e) {
+      logWarning('LinagoraEcosystemController:init: $e');
+    }
   }
 
   void _initInteractor() {

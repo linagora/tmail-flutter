@@ -5,9 +5,19 @@ import 'package:tmail_ui_user/features/push_notification/presentation/services/f
 
 @pragma('vm:entry-point')
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
-  FcmService.instance.initialStreamController();
-  FcmMessageController.instance.initialize();
-  FcmService.instance.handleFirebaseBackgroundMessage(message);
+  try {
+    FcmService.instance.initialStreamController();
+    FcmMessageController.instance.initialize();
+    await FcmMessageController.instance.initialAppConfig();
+    await FcmMessageController.instance.setUpSentryConfiguration();
+    FcmService.instance.handleFirebaseBackgroundMessage(message);
+  } catch (e, st) {
+    logError(
+      'FcmReceiver::handleFirebaseBackgroundMessage: throw exception',
+      exception: e,
+      stackTrace: st,
+    );
+  }
 }
 
 class FcmReceiver {
@@ -50,7 +60,6 @@ class FcmReceiver {
 
     FirebaseMessaging.instance.onTokenRefresh.listen(
       (newToken) {
-        log('FcmReceiver::_onHandleFcmToken:onTokenRefresh: $newToken');
         if (newToken != token) {
           FcmService.instance.handleToken(newToken);
         }

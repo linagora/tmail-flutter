@@ -28,16 +28,31 @@ class FcmService {
   }
 
   void initialStreamController() {
-    log('FcmService::initialStreamController:');
-    backgroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
-    fcmTokenStreamController = StreamController<String?>.broadcast();
+    try {
+      backgroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
+      fcmTokenStreamController = StreamController<String?>.broadcast();
+    } catch (e, st) {
+      logError(
+        'FcmService::initialStreamController: throw exception',
+        exception: e,
+        stackTrace: st,
+      );
+    }
   }
 
   void closeStream() {
-    backgroundMessageStreamController?.close();
-    fcmTokenStreamController?.close();
+    try {
+      backgroundMessageStreamController?.close();
+      fcmTokenStreamController?.close();
 
-    backgroundMessageStreamController = null;
-    fcmTokenStreamController = null;
+      backgroundMessageStreamController = null;
+      fcmTokenStreamController = null;
+    } catch (e, st) {
+      logError(
+        'FcmService::closeStream: throw exception',
+        exception: e,
+        stackTrace: st,
+      );
+    }
   }
 }

@@ -1,8 +1,12 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/extensions/sentry_config_extension.dart';
+import 'package:tmail_ui_user/features/caching/extensions/sentry_configuration_cache_extension.dart';
+import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/caching/manager/session_cache_manger.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
@@ -42,6 +46,7 @@ class CachingManager {
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
   final EncryptionKeyCacheManager _encryptionKeyCacheManager;
   final AuthenticationInfoCacheManager _authenticationInfoCacheManager;
+  final SentryConfigurationCacheManager _sentryConfigurationCacheManager;
 
   CachingManager(
     this._mailboxCacheManager,
@@ -63,6 +68,7 @@ class CachingManager {
     this._oidcConfigurationCacheManager,
     this._encryptionKeyCacheManager,
     this._authenticationInfoCacheManager,
+    this._sentryConfigurationCacheManager,
   );
 
   Future<void> clearAll() async {
@@ -212,5 +218,37 @@ class CachingManager {
           _sendingEmailCacheManager.migrateHiveToIsolatedHive(),
         ]
     ]);
+  }
+
+  Future<void> saveSentryConfiguration(SentryConfig sentryConfig) async {
+    try {
+      await _sentryConfigurationCacheManager.saveSentryConfiguration(
+        sentryConfig.toSentryConfigurationCache(),
+      );
+      log('CachingManager::saveSentryConfiguration: Sentry configuration saved successfully');
+    } catch (e, st) {
+      logError(
+        'CachingManager::saveSentryConfiguration: Cannot save sentry configuration',
+        exception: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  Future<SentryConfig?> getSentryConfiguration() async {
+    try {
+      final sentryConfigurationCache =
+          await _sentryConfigurationCacheManager.getSentryConfiguration();
+      final sentryConfig = sentryConfigurationCache.toSentryConfig();
+      log('CachingManager::getSentryConfiguration: Sentry configuration: $sentryConfig');
+      return sentryConfig;
+    } catch (e, st) {
+      logError(
+        'CachingManager::getSentryConfiguration: Cannot get sentry configuration',
+        exception: e,
+        stackTrace: st,
+      );
+      return null;
+    }
   }
 }

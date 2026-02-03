@@ -5,7 +5,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/email/presentation_email.dart';
 
-class GetEmailChangesToPushNotificationLoading extends UIState {}
+class GetEmailChangesToPushNotificationLoading extends LoadingState {}
 
 class GetEmailChangesToPushNotificationSuccess extends UIState {
   final List<PresentationEmail> emailList;
@@ -27,6 +27,10 @@ class GetEmailChangesToPushNotificationSuccess extends UIState {
 class GetEmailChangesToPushNotificationFailure extends FeatureFailure {
   final State currentState;
 
-  GetEmailChangesToPushNotificationFailure(exception, this.currentState)
-      : super(exception: exception);
+  GetEmailChangesToPushNotificationFailure({
+    super.exception,
+    super.stackTrace,
+    super.onRetry,
+    required this.currentState,
+  });
 }

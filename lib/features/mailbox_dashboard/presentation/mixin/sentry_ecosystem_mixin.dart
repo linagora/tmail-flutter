@@ -1,8 +1,11 @@
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin SentryEcosystemMixin {
   SentryUser? _sentryUser;
@@ -39,11 +42,22 @@ mixin SentryEcosystemMixin {
     await SentryManager.instance.initializeWithSentryConfig(sentryConfig);
 
     _setupSentryUser();
+
+    await _saveSentryConfiguration(sentryConfig);
   }
 
   void _setupSentryUser() {
     if (_sentryUser == null) return;
 
     SentryManager.instance.setUser(_sentryUser!);
+  }
+
+  Future<void> _saveSentryConfiguration(SentryConfig sentryConfig) async {
+    final cachingManager = getBinding<CachingManager>();
+    if (cachingManager != null) {
+      await cachingManager.saveSentryConfiguration(sentryConfig);
+    } else {
+      logTrace('SentryEcosystemMixin::saveSentryConfiguration: CachingManager is null');
+    }
   }
 }

@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_st
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
 import 'package:tmail_ui_user/features/caching/config/fcm_isolate_name_server.dart';
+import 'package:tmail_ui_user/features/caching/entries/sentry_configuration_cache.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
@@ -237,6 +238,11 @@ class HiveCacheConfig {
     registerCacheAdapter<OidcConfigurationCache>(
       OidcConfigurationCacheAdapter(),
       CachingConstants.OIDC_CONFIGURATION_CACHE_ID,
+      isolated: isolated,
+    );
+    registerCacheAdapter<SentryConfigurationCache>(
+      SentryConfigurationCacheAdapter(),
+      CachingConstants.SENTRY_CONFIGURATION_CACHE_ID,
       isolated: isolated,
     );
   }

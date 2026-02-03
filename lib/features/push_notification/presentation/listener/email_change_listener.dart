@@ -220,7 +220,11 @@ class EmailChangeListener extends ChangeListener {
         currentState: failure.currentState,
       );
     } else if (failure is GetEmailChangesToPushNotificationFailure) {
-      logTrace('EmailChangeListener::GetEmailChangesToPushNotificationFailure from current state ${failure.currentState.value} to new state ${_newStateEmailDelivery?.value}');
+      logError(
+        'EmailChangeListener::GetEmailChangesToPushNotificationFailure from current state ${failure.currentState.value} to new state ${_newStateEmailDelivery?.value}',
+        exception: failure.exception,
+        stackTrace: failure.stackTrace,
+      );
     }
   }
 

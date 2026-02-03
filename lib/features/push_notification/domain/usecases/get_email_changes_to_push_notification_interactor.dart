@@ -45,10 +45,11 @@ class GetEmailChangesToPushNotificationInteractor {
         presentationEmailList,
         currentState,
       ));
-    } catch (e) {
+    } catch (e, st) {
       yield Left<Failure, Success>(GetEmailChangesToPushNotificationFailure(
-        e,
-        currentState,
+        exception: e,
+        stackTrace: st,
+        currentState: currentState,
       ));
     }
   }

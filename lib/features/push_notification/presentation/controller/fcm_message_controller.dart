@@ -6,12 +6,14 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:model/model.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
@@ -47,10 +49,18 @@ class FcmMessageController extends PushBaseController {
 
   @override
   void initialize({AccountId? accountId, Session? session}) {
-    super.initialize(accountId: accountId, session: session);
+    try {
+      super.initialize(accountId: accountId, session: session);
 
-    _listenTokenStream();
-    _listenBackgroundMessageStream();
+      _listenTokenStream();
+      _listenBackgroundMessageStream();
+    } catch (e, st) {
+      logError(
+        'FcmMessageController::initialize: throw exception',
+        exception: e,
+        stackTrace: st,
+      );
+    }
   }
 
   void _listenBackgroundMessageStream() {
@@ -87,17 +97,18 @@ class FcmMessageController extends PushBaseController {
   }
 
   void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
-    log('FcmMessageController::_handleBackgroundMessageAction():payloadData: $payloadData');
+    logTrace('FcmMessageController::_handleBackgroundMessageAction():payloadData: ${payloadData.toString()}');
     final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
     if (stateChange == null) {
       logTrace('FcmMessageController::_handleBackgroundMessageAction(): stateChange is null');
       return;
+    } else {
+      logTrace('FcmMessageController::_handleBackgroundMessageAction(): stateChange: ${stateChange.toString()}');
     }
-    await _initialAppConfig();
     _getAuthenticatedAccount(stateChange: stateChange);
   }
 
-  Future<void> _initialAppConfig() async {
+  Future<void> initialAppConfig() async {
     try {
       await Future.wait([
         MainBindings().dependencies(),
@@ -120,6 +131,30 @@ class FcmMessageController extends PushBaseController {
     }
   }
 
+  Future<void> setUpSentryConfiguration() async {
+    try {
+      final cachingManager = getBinding<CachingManager>();
+      if (cachingManager == null) {
+        logWarning('FcmMessageController::setUpSentryConfiguration: CachingManager is null');
+        return;
+      }
+
+      final sentryConfig = await cachingManager.getSentryConfiguration();
+      if (sentryConfig == null) {
+        logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfiguration is null');
+        return;
+      }
+
+      await SentryManager.instance.initializeWithSentryConfig(sentryConfig);
+    } catch (e, st) {
+      logError(
+        'FcmMessageController::_initialAppConfig: throw exception',
+        exception: e,
+        stackTrace: st,
+      );
+    }
+  }
+
   void _getInteractorBindings() {
     _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
     _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
@@ -129,7 +164,7 @@ class FcmMessageController extends PushBaseController {
     FcmTokenController.instance.initialBindingInteractor();
   }
 
-  void _getAuthenticatedAccount({StateChange? stateChange}) {
+  void _getAuthenticatedAccount({required StateChange stateChange}) {
     if (_getAuthenticatedAccountInteractor != null) {
       consumeState(_getAuthenticatedAccountInteractor!.execute(stateChange: stateChange));
     } else {
@@ -251,7 +286,7 @@ class FcmMessageController extends PushBaseController {
   void handleFailureViewState(Failure failure) {
     log('FcmMessageController::_handleFailureViewState(): $failure');
     if (failure is GetStoredTokenOidcFailure) {
-     logTrace('FcmMessageController::GetStoredTokenOidcFailure: Get stored token oidc is failed');
+      logTrace('FcmMessageController::GetStoredTokenOidcFailure: Get stored token oidc is failed');
     } else if (failure is GetSessionFailure) {
       logTrace('FcmMessageController::GetSessionFailure: Get session is failed');
     }
