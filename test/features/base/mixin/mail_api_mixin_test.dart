@@ -12,12 +12,13 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/session_fixtures.dart';
 
-class TestMailApiMixin with HandleSetErrorMixin, MailAPIMixin {
+class TestMailApiMixin with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
   @override
   void handleSetErrors({
     SetMethodErrors? notDestroyedError,

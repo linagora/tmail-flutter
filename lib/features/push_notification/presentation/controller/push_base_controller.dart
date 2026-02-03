@@ -12,6 +12,7 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/push_notification_state_change_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/listener/label_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 
 abstract class PushBaseController {
@@ -51,7 +52,8 @@ abstract class PushBaseController {
     bool isForeground = true,
     Session? session,
     required EmailChangeListener emailChangeListener,
-    required MailboxChangeListener mailboxChangeListener
+    required MailboxChangeListener mailboxChangeListener,
+    required LabelChangeListener labelChangeListener,
   }) {
     log('PushBaseController::mappingTypeStateToAction():mapTypeState: $mapTypeState');
     final listTypeName = mapTypeState.keys
@@ -81,6 +83,22 @@ abstract class PushBaseController {
     if (listMailboxActions.isNotEmpty) {
       mailboxChangeListener.dispatchActions(listMailboxActions);
     }
+
+    final labelActions = listTypeName
+        .where((typeName) => typeName == TypeName.labelType)
+        .map((typeName) => _toPushNotificationAction(
+              typeName,
+              accountId,
+              userName,
+              mapTypeState,
+              isForeground,
+            ))
+        .nonNulls
+        .toList();
+    log('PushBaseController::mappingTypeStateToAction():LabelActions: $labelActions');
+    if (labelActions.isNotEmpty) {
+      labelChangeListener.dispatchActions(labelActions);
+    }
   }
 
   PushNotificationStateChangeAction? _toPushNotificationAction(
@@ -106,6 +124,15 @@ abstract class PushBaseController {
         return isForeground
             ? SynchronizeMailboxOnForegroundAction(typeName, newState, accountId)
             : StoreMailboxStateToRefreshAction(typeName, newState, accountId, userName);
+      case TypeName.labelType:
+        return isForeground
+            ? SynchronizeLabelOnForegroundAction(typeName, newState, accountId)
+            : StoreLabelStateToRefreshAction(
+                typeName,
+                newState,
+                accountId,
+                userName,
+              );
     }
     return null;
   }
