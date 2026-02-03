@@ -2,7 +2,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_attachments_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
 
 import '../../base/base_test_scenario.dart';
 import '../../models/provisioning_email.dart';
@@ -56,9 +56,6 @@ class ForwardingEmailLostAttachmentsScenario extends BaseTestScenario {
 
     await composerRobot.grantContactPermission();
 
-    await composerRobot.expandRecipientsFields();
-    await $.pumpAndSettle();
-
     await composerRobot.addRecipientIntoField(
       prefixEmailAddress: PrefixEmailAddress.to,
       email: emailUser,
@@ -75,5 +72,8 @@ class ForwardingEmailLostAttachmentsScenario extends BaseTestScenario {
 
   Future<void> _expectComposerViewVisible() => expectViewVisible($(ComposerView));
 
-  Future<void> _expectAttachmentListVisible() => expectViewVisible($(EmailAttachmentsWidget));
+  Future<void> _expectAttachmentListVisible() async {
+    await $.waitUntilVisible($(AttachmentItemWidget));
+    expect($(AttachmentItemWidget), findsNWidgets(2));
+  }
 }

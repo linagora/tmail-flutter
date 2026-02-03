@@ -75,7 +75,11 @@ class RichTextMobileTabletController extends GetxController {
   @override
   void onClose() {
     richTextController.dispose();
-    htmlEditorApi?.webViewController.dispose();
+    try {
+      htmlEditorApi?.webViewController.dispose();
+    } catch (e) {
+      logWarning('RichTextMobileTabletController::onClose:Exception: $e');
+    }
     htmlEditorApi = null;
     super.onClose();
   }
