@@ -14,7 +14,7 @@ class LabelRepositoryImpl extends LabelRepository {
   LabelRepositoryImpl(this._labelDatasource);
 
   @override
-  Future<List<Label>> getAllLabels(AccountId accountId) {
+  Future<({List<Label> labels, State? newState})> getAllLabels(AccountId accountId) {
     return _labelDatasource.getAllLabels(accountId);
   }
 

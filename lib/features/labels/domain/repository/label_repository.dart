@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/labels/domain/model/edit_label_request.da
 import 'package:tmail_ui_user/features/labels/domain/model/label_changes_result.dart';
 
 abstract class LabelRepository {
-  Future<List<Label>> getAllLabels(AccountId accountId);
+  Future<({List<Label> labels, State? newState})> getAllLabels(AccountId accountId);
 
   Future<Label> createNewLabel(AccountId accountId, Label labelData);
 

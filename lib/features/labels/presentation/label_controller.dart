@@ -179,6 +179,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void handleSuccessViewState(Success success) {
     if (success is GetAllLabelSuccess) {
       labels.value = success.labels..sortByAlphabetically();
+      setCurrentLabelState(success.newState);
     } else if (success is CreateNewLabelSuccess) {
       _handleCreateNewLabelSuccess(success);
     } else if (success is GetLabelSettingStateSuccess) {

@@ -13,8 +13,8 @@ class GetAllLabelInteractor {
   Stream<Either<Failure, Success>> execute(AccountId accountId) async* {
     try {
       yield Right(GettingAllLabel());
-      final labels = await _labelRepository.getAllLabels(accountId);
-      yield Right(GetAllLabelSuccess(labels));
+      final result = await _labelRepository.getAllLabels(accountId);
+      yield Right(GetAllLabelSuccess(result.labels, result.newState));
     } catch (e) {
       yield Left(GetAllLabelFailure(e));
     }

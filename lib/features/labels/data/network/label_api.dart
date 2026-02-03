@@ -24,7 +24,7 @@ class LabelApi
 
   LabelApi(this._httpClient, this._uuid);
 
-  Future<List<Label>> getAllLabels(AccountId accountId) async {
+  Future<({List<Label> labels, State? newState})> getAllLabels(AccountId accountId) async {
     final builder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final method = GetLabelMethod(accountId);
     final invocation = builder.invocation(method);
@@ -37,7 +37,7 @@ class LabelApi
       GetLabelResponse.deserialize,
     );
 
-    return response?.list ?? [];
+    return (labels: response?.list ?? [], newState: response?.state);
   }
 
   Future<Label> createNewLabel(AccountId accountId, Label labelData) async {
