@@ -243,4 +243,28 @@ class LabelUtils {
       return name;
     }
   }
+
+  static void applyLabelChanges({
+    required List<Label> currentLabels,
+    required List<Label> created,
+    required List<Label> updated,
+    required List<Id> destroyedIds,
+  }) {
+    final idsToRemove = {
+      ...destroyedIds,
+      ...updated.map((label) => label.id),
+    };
+
+    if (idsToRemove.isNotEmpty) {
+      currentLabels.removeWhere((label) => idsToRemove.contains(label.id));
+    }
+
+    if (created.isNotEmpty) {
+      currentLabels.addAll(created);
+    }
+
+    if (updated.isNotEmpty) {
+      currentLabels.addAll(updated);
+    }
+  }
 }
