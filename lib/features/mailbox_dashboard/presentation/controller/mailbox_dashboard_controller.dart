@@ -3451,7 +3451,7 @@ class MailboxDashBoardController extends ReloadableController
     progressStateController.close();
     _refreshActionEventController.close();
     _notificationManager.closeStream();
-    _fcmService.closeStream();
+    unawaited(_fcmService.closeStream());
     ApplicationManager().releaseUserAgent();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     _identities = null;

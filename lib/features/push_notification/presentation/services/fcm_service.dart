@@ -32,6 +32,13 @@ class FcmService {
       backgroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
       fcmTokenStreamController = StreamController<String?>.broadcast();
     } catch (e, st) {
+      try {
+        backgroundMessageStreamController?.close();
+        fcmTokenStreamController?.close();
+      } finally {
+        backgroundMessageStreamController = null;
+        fcmTokenStreamController = null;
+      }
       logError(
         'FcmService::initialStreamController: throw exception',
         exception: e,
