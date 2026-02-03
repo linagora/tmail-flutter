@@ -35,7 +35,7 @@ void main() {
         final stream = interactor.execute(baseUrl);
 
         // Assert
-        expectLater(
+        await expectLater(
           stream,
           emitsInOrder([
             predicate<Either>(
@@ -55,8 +55,6 @@ void main() {
           ]),
         );
 
-        await untilCalled(mockRepository.getLinagoraEcosystem(baseUrl));
-
         verify(mockRepository.getLinagoraEcosystem(baseUrl)).called(1);
       },
     );
@@ -73,7 +71,7 @@ void main() {
         final stream = interactor.execute(baseUrl);
 
         // Assert
-        expectLater(
+        await expectLater(
           stream,
           emitsInOrder([
             predicate<Either>(
@@ -92,8 +90,6 @@ void main() {
             ),
           ]),
         );
-
-        await untilCalled(mockRepository.getLinagoraEcosystem(baseUrl));
 
         verify(mockRepository.getLinagoraEcosystem(baseUrl)).called(1);
       },
