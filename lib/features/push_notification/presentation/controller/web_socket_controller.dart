@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/connect
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/listener/label_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -185,7 +186,7 @@ class WebSocketController extends PushBaseController {
   void _enableWebSocketPush() {
     log('WebSocketController::_enableWebSocketPush:');
     _webSocketChannel?.sink.add(jsonEncode(WebSocketPushEnableRequest.toJson(
-      dataTypes: [TypeName.emailType, TypeName.mailboxType]
+      dataTypes: [TypeName.emailType, TypeName.mailboxType, TypeName.labelType]
     )));
   }
 
@@ -247,6 +248,7 @@ class WebSocketController extends PushBaseController {
         accountId!,
         emailChangeListener: EmailChangeListener.instance,
         mailboxChangeListener: MailboxChangeListener.instance,
+        labelChangeListener: LabelChangeListener.instance,
         session!.username,
         session: session,
       );
