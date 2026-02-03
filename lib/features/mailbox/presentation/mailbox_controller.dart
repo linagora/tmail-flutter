@@ -265,15 +265,15 @@ class MailboxController extends BaseMailboxController
     viewState.value.fold(
       (failure) {
         if (failure is GetAllMailboxFailure) {
-          final newMailboxCollection = addActionRequiredFolder(
-            mailboxCollection: MailboxCollection(
-              allMailboxes: allMailboxes,
-              defaultTree: defaultMailboxTree.value,
-              personalTree: personalMailboxTree.value,
-              teamTree: teamMailboxesTree.value,
-            ),
-          );
-          updateMailboxTree(
+        final newMailboxCollection = updateMailboxCollection(
+          MailboxCollection(
+            allMailboxes: allMailboxes,
+            defaultTree: defaultMailboxTree.value,
+            personalTree: personalMailboxTree.value,
+            teamTree: teamMailboxesTree.value,
+          ),
+        );
+        updateMailboxTree(
             mailboxCollection: newMailboxCollection,
             isRefreshTrigger: false,
           );
