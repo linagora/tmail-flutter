@@ -5,6 +5,7 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
@@ -75,7 +76,15 @@ class RichTextMobileTabletController extends GetxController {
   @override
   void onClose() {
     richTextController.dispose();
-    htmlEditorApi?.webViewController.dispose();
+    if (kDebugMode) {
+      try {
+        htmlEditorApi?.webViewController.dispose();
+      } catch (e) {
+        logWarning('Dispose error: $e');
+      }
+    } else {
+      htmlEditorApi?.webViewController.dispose();
+    }
     htmlEditorApi = null;
     super.onClose();
   }
