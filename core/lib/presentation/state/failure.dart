@@ -16,5 +16,5 @@ abstract class FeatureFailure extends Failure {
   FeatureFailure({this.exception, this.stackTrace, this.onRetry});
 
   @override
-  List<Object?> get props => [exception, onRetry];
+  List<Object?> get props => [exception, stackTrace, onRetry];
 }
