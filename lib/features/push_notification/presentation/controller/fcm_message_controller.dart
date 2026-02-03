@@ -97,7 +97,7 @@ class FcmMessageController extends PushBaseController {
   }
 
   void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
-    logTrace('FcmMessageController::_handleBackgroundMessageAction():payloadData: ${payloadData.toString()}');
+    logTrace('FcmMessageController::_handleBackgroundMessageAction():payloadData keys: ${payloadData.keys.toList()}');
     final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
     if (stateChange == null) {
       logTrace('FcmMessageController::_handleBackgroundMessageAction(): stateChange is null');
