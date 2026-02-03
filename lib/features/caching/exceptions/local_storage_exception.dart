@@ -6,3 +6,10 @@ class NotFoundDataWithThisKeyException extends AppBaseException {
   @override
   String get exceptionName => 'NotFoundDataWithThisKeyException';
 }
+
+class NotFoundSentryConfigurationException extends AppBaseException {
+  const NotFoundSentryConfigurationException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundSentryConfigurationException';
+}
