@@ -8,6 +8,7 @@ on:
 
 name: Build Docker images with Sentry
 
+
 jobs:
   build-dev-image-with-sentry:
     name: Build development image with Sentry
