@@ -8,6 +8,7 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 
 import 'mailbox_node.dart';
 import 'mailbox_tree.dart';
@@ -37,12 +38,7 @@ class TreeBuilder {
     return tree;
   }
 
-  Future<({
-    List<PresentationMailbox> allMailboxes,
-    MailboxTree defaultTree,
-    MailboxTree personalTree,
-    MailboxTree teamMailboxTree
-  })> generateMailboxTreeInUI({
+  Future<MailboxCollection> generateMailboxTreeInUI({
     required List<PresentationMailbox> allMailboxes,
     required MailboxTree currentDefaultTree,
     required MailboxTree currentPersonalTree,
@@ -106,19 +102,15 @@ class TreeBuilder {
 
     sortNodeChildren(newDefaultTree.root);
 
-    return (
+    return MailboxCollection(
       allMailboxes: newAllMailboxes,
       defaultTree: newDefaultTree,
       personalTree: newPersonalTree,
-      teamMailboxTree: newTeamMailboxTree,
+      teamTree: newTeamMailboxTree,
     );
   }
 
-  Future<({
-    MailboxTree defaultTree,
-    MailboxTree personalTree,
-    MailboxTree teamMailboxTree
-  })> generateMailboxTreeInUIAfterRefreshChanges({
+  Future<MailboxCollection> generateMailboxTreeInUIAfterRefreshChanges({
     required List<PresentationMailbox> allMailboxes,
     required MailboxTree currentDefaultTree,
     required MailboxTree currentPersonalTree,
@@ -169,10 +161,11 @@ class TreeBuilder {
 
     sortNodeChildren(newDefaultTree.root);
 
-    return (
+    return MailboxCollection(
+      allMailboxes: allMailboxes,
       defaultTree: newDefaultTree,
       personalTree: newPersonalTree,
-      teamMailboxTree: newTeamMailboxTree,
+      teamTree: newTeamMailboxTree,
     );
   }
 

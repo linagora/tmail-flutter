@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -215,11 +216,11 @@ void main() {
         currentPersonalTree: MailboxTree(MailboxNode.root()),
         currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
       )).thenAnswer((_) async {
-        return (
+        return MailboxCollection(
           allMailboxes: [spamMailbox],
           defaultTree: MailboxTree(MailboxNode(spamMailbox)),
           personalTree: MailboxTree(MailboxNode.root()),
-          teamMailboxTree: MailboxTree(MailboxNode.root()),
+          teamTree: MailboxTree(MailboxNode.root()),
         );
       });
 
@@ -296,11 +297,11 @@ void main() {
         currentPersonalTree: MailboxTree(MailboxNode.root()),
         currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
       )).thenAnswer((_) async {
-        return (
+        return MailboxCollection(
           allMailboxes: [mailboxA],
           defaultTree: MailboxTree(MailboxNode.root()),
           personalTree: MailboxTree(MailboxNode(mailboxA)),
-          teamMailboxTree: MailboxTree(MailboxNode.root()),
+          teamTree: MailboxTree(MailboxNode.root()),
         );
       });
 
