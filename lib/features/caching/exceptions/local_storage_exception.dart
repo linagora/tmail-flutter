@@ -13,3 +13,10 @@ class NotFoundSentryConfigurationException extends AppBaseException {
   @override
   String get exceptionName => 'NotFoundSentryConfigurationException';
 }
+
+class NotFoundSentryUserException extends AppBaseException {
+  const NotFoundSentryUserException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundSentryUserException';
+}
