@@ -43,7 +43,10 @@ mixin SentryEcosystemMixin {
 
     _setupSentryUser();
 
-    await _saveSentryConfiguration(sentryConfig);
+    await _saveSentryConfiguration(
+      sentryConfig: sentryConfig,
+      sentryUser: _sentryUser,
+    );
   }
 
   void _setupSentryUser() {
@@ -52,12 +55,20 @@ mixin SentryEcosystemMixin {
     SentryManager.instance.setUser(_sentryUser!);
   }
 
-  Future<void> _saveSentryConfiguration(SentryConfig sentryConfig) async {
+  Future<void> _saveSentryConfiguration({
+    required SentryConfig sentryConfig,
+    SentryUser? sentryUser,
+  }) async {
     final cachingManager = getBinding<CachingManager>();
     if (cachingManager != null) {
       await cachingManager.saveSentryConfiguration(sentryConfig);
+
+      if (sentryUser != null) {
+        await cachingManager.saveSentryUser(sentryUser);
+      }
     } else {
-      logTrace('SentryEcosystemMixin::saveSentryConfiguration: CachingManager is null');
+      logTrace(
+          'SentryEcosystemMixin::saveSentryConfiguration: CachingManager is null');
     }
   }
 }
