@@ -46,6 +46,7 @@ RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJ
         echo "defaults.project=$SENTRY_PROJECT"; \
         echo "auth.token=$SENTRY_AUTH_TOKEN"; \
         echo "release.version=$SENTRY_RELEASE"; \
+        echo "release.associateCommits=false"; \
         if [ -n "$SENTRY_URL" ]; then \
           echo "defaults.url=$SENTRY_URL"; \
         fi; \
