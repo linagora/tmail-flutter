@@ -252,6 +252,7 @@ class LabelUtils {
   }) {
     final idsToRemove = {
       ...destroyedIds,
+      ...created.map((label) => label.id),
       ...updated.map((label) => label.id),
     };
 

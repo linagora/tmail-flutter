@@ -15,7 +15,7 @@ class LabelDatasourceImpl extends LabelDatasource {
   LabelDatasourceImpl(this._labelApi, this._exceptionThrower);
 
   @override
-  Future<List<Label>> getAllLabels(AccountId accountId) {
+  Future<({List<Label> labels, State? newState})> getAllLabels(AccountId accountId) {
     return Future.sync(() async {
       return await _labelApi.getAllLabels(accountId);
     }).catchError(_exceptionThrower.throwException);
