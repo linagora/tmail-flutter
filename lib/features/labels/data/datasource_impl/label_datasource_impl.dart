@@ -1,6 +1,9 @@
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/labels/data/datasource/label_datasource.dart';
+import 'package:tmail_ui_user/features/labels/data/model/label_change_response.dart';
 import 'package:tmail_ui_user/features/labels/data/network/label_api.dart';
 import 'package:tmail_ui_user/features/labels/domain/model/edit_label_request.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -36,6 +39,21 @@ class LabelDatasourceImpl extends LabelDatasource {
   Future<void> deleteLabel(AccountId accountId, Label label) {
     return Future.sync(() async {
       return await _labelApi.deleteLabel(accountId, label);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<LabelChangeResponse> getLabelChanges(
+    Session session,
+    AccountId accountId,
+    State sinceState,
+  ) {
+    return Future.sync(() async {
+      return await _labelApi.getLabelChangesWithResult(
+        session,
+        accountId,
+        sinceState,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 }
