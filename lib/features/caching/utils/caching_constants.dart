@@ -21,6 +21,7 @@ class CachingConstants {
   static const int SESSION_HIVE_CACHE_ID = 19;
   static const int OIDC_CONFIGURATION_CACHE_ID = 20;
   static const int SENTRY_CONFIGURATION_CACHE_ID = 21;
+  static const int SENTRY_USER_CACHE_ID = 22;
 
   static const String fcmCacheBoxName = 'fcm_cache_box';
   static const String newEmailCacheBoxName = 'new_email_cache_box';
@@ -33,6 +34,7 @@ class CachingConstants {
 
   static const String oidcConfigurationCacheKeyName = 'oidc_configuration_cache_key';
   static const String sentryConfigurationCacheKeyName = 'sentry_configuration_cache_key';
+  static const String sentryUserCacheKeyName = 'sentry_user_cache_key';
 
   static const String newEmailsContentFolderName = 'new_emails';
   static const String openedEmailContentFolderName = 'opened_email';
