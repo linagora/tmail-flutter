@@ -124,7 +124,7 @@ class FcmMessageController extends PushBaseController {
       _getInteractorBindings();
     } catch (e, st) {
       logError(
-        'FcmMessageController::_initialAppConfig: throw exception',
+        'FcmMessageController::initialAppConfig: throw exception',
         exception: e,
         stackTrace: st,
       );
@@ -145,18 +145,23 @@ class FcmMessageController extends PushBaseController {
         return;
       }
 
+      if (!sentryConfig.isAvailable) {
+        logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfiguration is not available');
+        return;
+      }
+
       await SentryManager.instance.initializeWithSentryConfig(sentryConfig);
 
       final sentryUser = await cachingManager.getSentryUser();
       if (sentryUser == null) {
         logTrace('FcmMessageController::setUpSentryConfiguration: Sentry user is null');
-        return;
+        // Sentry initialized without user context - this is acceptable
+      } else {
+        SentryManager.instance.setUser(sentryUser);
       }
-
-      SentryManager.instance.setUser(sentryUser);
     } catch (e, st) {
       logError(
-        'FcmMessageController::_initialAppConfig: throw exception',
+        'FcmMessageController::setUpSentryConfiguration: throw exception',
         exception: e,
         stackTrace: st,
       );

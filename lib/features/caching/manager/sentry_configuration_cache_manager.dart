@@ -50,4 +50,8 @@ class SentryConfigurationCacheManager {
   ) async {
     await _userCacheClient.insertItem(_userCacheKey, sentryUserCache);
   }
+
+  Future<void> clearSentryConfiguration() async {
+    await _configurationCacheClient.clearAllData();
+  }
 }

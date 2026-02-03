@@ -19,6 +19,7 @@ mixin SentryEcosystemMixin {
   ) async {
     if (ecosystemConfig.enabled != true) {
       logWarning('SentryEcosystemMixin::setUpSentry: Sentry is disabled');
+      await clearSentryConfiguration();
       return;
     }
 
@@ -28,12 +29,14 @@ mixin SentryEcosystemMixin {
     if (dsn == null || dsn.isEmpty) {
       logWarning(
           'SentryEcosystemMixin::setUpSentry: Sentry DSN is invalid (null or empty)');
+      await clearSentryConfiguration();
       return;
     }
 
     if (env == null || env.isEmpty) {
       logWarning(
           'SentryEcosystemMixin::setUpSentry: Sentry Environment is invalid (null or empty)');
+      await clearSentryConfiguration();
       return;
     }
 
@@ -69,6 +72,16 @@ mixin SentryEcosystemMixin {
     } else {
       logTrace(
           'SentryEcosystemMixin::saveSentryConfiguration: CachingManager is null');
+    }
+  }
+
+  Future<void> clearSentryConfiguration() async {
+    final cachingManager = getBinding<CachingManager>();
+    if (cachingManager != null) {
+      await cachingManager.clearSentryConfiguration();
+    } else {
+      logTrace(
+          'SentryEcosystemMixin::clearSentryConfiguration: CachingManager is null');
     }
   }
 }
