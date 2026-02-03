@@ -40,19 +40,19 @@ class FcmService {
     }
   }
 
-  void closeStream() {
+  Future<void> closeStream() async {
     try {
-      backgroundMessageStreamController?.close();
-      fcmTokenStreamController?.close();
-
-      backgroundMessageStreamController = null;
-      fcmTokenStreamController = null;
+      await backgroundMessageStreamController?.close();
+      await fcmTokenStreamController?.close();
     } catch (e, st) {
       logError(
         'FcmService::closeStream: throw exception',
         exception: e,
         stackTrace: st,
       );
+    } finally {
+      backgroundMessageStreamController = null;
+      fcmTokenStreamController = null;
     }
   }
 }

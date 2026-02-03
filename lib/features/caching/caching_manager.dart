@@ -260,7 +260,7 @@ class CachingManager {
       await _sentryConfigurationCacheManager.saveSentryUser(
         sentryUser.toSentryUserCache(),
       );
-      log('CachingManager::saveSentryConfiguration: Sentry user saved successfully');
+      log('CachingManager::saveSentryUser: Sentry user saved successfully');
     } catch (e, st) {
       logError(
         'CachingManager::saveSentryUser: Cannot save sentry user',
@@ -275,7 +275,7 @@ class CachingManager {
       final sentryUserCache =
           await _sentryConfigurationCacheManager.getSentryUser();
       final sentryUser = sentryUserCache.toSentryUser();
-      log('CachingManager::getSentryUser: Sentry user: $sentryUser');
+      log('CachingManager::getSentryUser: Sentry user loaded');
       return sentryUser;
     } catch (e, st) {
       logError(
@@ -284,6 +284,19 @@ class CachingManager {
         stackTrace: st,
       );
       return null;
+    }
+  }
+
+  Future<void> clearSentryConfiguration() async {
+    try {
+      await _sentryConfigurationCacheManager.clearSentryConfiguration();
+      log('CachingManager::clearSentryConfiguration: Sentry configuration cleared successfully');
+    } catch (e, st) {
+      logError(
+        'CachingManager::clearSentryConfiguration: throw exception',
+        exception: e,
+        stackTrace: st,
+      );
     }
   }
 }
