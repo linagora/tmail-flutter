@@ -33,4 +33,7 @@ class GetEmailChangesToPushNotificationFailure extends FeatureFailure {
     super.onRetry,
     required this.currentState,
   });
+
+  @override
+  List<Object?> get props => [...super.props, currentState];
 }
