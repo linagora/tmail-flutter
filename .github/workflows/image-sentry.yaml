@@ -5,6 +5,7 @@ on:
       - "feature/**"
     tags:
       - "v*.*.*"
+  workflow_dispatch:
 
 name: Build Docker images with Sentry
 
