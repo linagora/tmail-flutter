@@ -52,8 +52,8 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_RELEASE: ${{ steps.app_version.outputs.version }}
         run: |
-          echo "SENTRY_RELEASE: ${{ steps.app_version.outputs.version }}"
           curl -sL https://sentry.io/get-cli/ | bash
           sentry-cli releases set-commits "$SENTRY_RELEASE" --auto
           
