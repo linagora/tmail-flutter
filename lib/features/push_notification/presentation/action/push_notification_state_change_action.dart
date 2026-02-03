@@ -87,3 +87,32 @@ class StoreMailboxStateToRefreshAction extends PushNotificationStateChangeAction
   @override
   List<Object?> get props => [typeName, newState, accountId, userName];
 }
+
+class SynchronizeLabelOnForegroundAction
+    extends PushNotificationStateChangeAction {
+  final AccountId accountId;
+
+  SynchronizeLabelOnForegroundAction(
+    TypeName typeName,
+    jmap.State newState,
+    this.accountId,
+  ) : super(typeName, newState);
+
+  @override
+  List<Object?> get props => [typeName, newState, accountId];
+}
+
+class StoreLabelStateToRefreshAction extends PushNotificationStateChangeAction {
+  final AccountId accountId;
+  final UserName userName;
+
+  StoreLabelStateToRefreshAction(
+    TypeName typeName,
+    jmap.State newState,
+    this.accountId,
+    this.userName,
+  ) : super(typeName, newState);
+
+  @override
+  List<Object?> get props => [typeName, newState, accountId, userName];
+}

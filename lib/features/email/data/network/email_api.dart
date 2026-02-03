@@ -56,6 +56,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/base/mixin/batch_set_email_processing_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/download/domain/model/download_source_view.dart';
@@ -70,11 +71,12 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:uri/uri.dart';
 import 'package:uuid/uuid.dart';
 
-class EmailAPI with
-    HandleSetErrorMixin,
-    MailAPIMixin,
-    BatchSetEmailProcessingMixin {
-
+class EmailAPI
+    with
+        HandleSetErrorMixin,
+        SessionMixin,
+        MailAPIMixin,
+        BatchSetEmailProcessingMixin {
   final HttpClient _httpClient;
   final DownloadManager _downloadManager;
   final DioClient _dioClient;
