@@ -137,8 +137,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     if (currentContext == null) return;
 
     final moreActions = [
-      if (mailboxDashBoardController.isLabelAvailable &&
-          mailboxDashBoardController.labelController.labels.isNotEmpty)
+      if (mailboxDashBoardController.isLabelAvailable)
         EmailActionType.labelAs,
       threadDetailIsRead
           ? EmailActionType.markAsUnread
@@ -230,7 +229,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     required List<Label>? labels,
     OnSelectLabelAction? onSelectLabelAction,
   }) {
-    if (actionType == EmailActionType.labelAs && labels?.isNotEmpty == true) {
+    if (actionType == EmailActionType.labelAs) {
       final listLabels = labels ?? [];
       final threadLabels =
           emailInThreadDetailInfos.findCommonLabelsInThread(labels: listLabels);

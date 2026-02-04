@@ -507,7 +507,7 @@ class EmailActionReactor {
       if (EmailUtils.isReplyToListEnabled(presentationEmail.listPost ?? '') &&
           additionalActions.contains(EmailActionType.replyToList))
         EmailActionType.replyToList,
-      if (isLabelAvailable && labels?.isNotEmpty == true)
+      if (isLabelAvailable)
         EmailActionType.labelAs,
       if (PlatformInfo.isWeb &&
           PlatformInfo.isCanvasKit &&
@@ -622,7 +622,7 @@ class EmailActionReactor {
     required List<Label>? labels,
     OnSelectLabelAction? onSelectLabelAction,
   }) {
-    if (actionType == EmailActionType.labelAs && labels?.isNotEmpty == true) {
+    if (actionType == EmailActionType.labelAs) {
       final listLabels = labels ?? [];
       final emailLabels = presentationEmail.getLabelList(listLabels);
 
