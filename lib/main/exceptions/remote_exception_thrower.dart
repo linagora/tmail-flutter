@@ -17,14 +17,12 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
   @override
   throwException(dynamic error, dynamic stackTrace) {
-    logError(
+    logWarning(
       'RemoteExceptionThrower::throwException():error: $error | stackTrace: $stackTrace',
-      exception: error,
-      stackTrace: stackTrace,
     );
     final networkConnectionController = getBinding<NetworkConnectionController>();
     if (networkConnectionController?.isNetworkConnectionAvailable() == false) {
-      logWarning('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
+      logWarning('RemoteExceptionThrower::throwException(): not available network connection');
       throw const NoNetworkError();
     } else {
       handleDioError(error);
