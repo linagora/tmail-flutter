@@ -1,10 +1,11 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:labels/extensions/list_label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:labels/utils/labels_constants.dart';
@@ -19,12 +20,15 @@ import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_i
 import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/delete_a_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/get_label_changes_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_websocket_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_context_menu_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_setting_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -40,12 +44,26 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   GetLabelSettingStateInteractor? _getLabelSettingStateInteractor;
   EditLabelInteractor? _editLabelInteractor;
   DeleteALabelInteractor? _deleteALabelInteractor;
+  GetLabelChangesInteractor? _getLabelChangesInteractor;
+
+  WebSocketQueueHandler? _webSocketQueueHandler;
+  State? _currentLabelState;
+  AccountId? _accountId;
+  Session? _session;
+
+  @override
+  void onInit() {
+    _initWebSocketQueueHandler();
+    super.onInit();
+  }
 
   bool isLabelCapabilitySupported(Session session, AccountId accountId) {
     return LabelsConstants.labelsCapability.isSupported(session, accountId);
   }
 
-  void checkLabelSettingState(AccountId accountId) {
+  void checkLabelSettingState(Session session, AccountId accountId) {
+    _session = session;
+    _accountId = accountId;
     _getLabelSettingStateInteractor =
         getBinding<GetLabelSettingStateInteractor>();
     if (_getLabelSettingStateInteractor != null) {
@@ -66,11 +84,33 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     _createNewLabelInteractor = getBinding<CreateNewLabelInteractor>();
     _editLabelInteractor = getBinding<EditLabelInteractor>();
     _deleteALabelInteractor = getBinding<DeleteALabelInteractor>();
+    _getLabelChangesInteractor = getBinding<GetLabelChangesInteractor>();
   }
 
   EditLabelInteractor? get editLabelInteractor => _editLabelInteractor;
 
   DeleteALabelInteractor? get deleteALabelInteractor => _deleteALabelInteractor;
+
+  GetLabelChangesInteractor? get getLabelChangesInteractor =>
+      _getLabelChangesInteractor;
+
+  WebSocketQueueHandler? get webSocketQueueHandler =>
+      _webSocketQueueHandler;
+
+  AccountId? get accountId => _accountId;
+
+  Session? get session => _session;
+
+  State? get currentLabelState => _currentLabelState;
+
+  void setCurrentLabelState(State? newState) => _currentLabelState = newState;
+
+  void _initWebSocketQueueHandler() {
+    _webSocketQueueHandler = WebSocketQueueHandler(
+      processMessageCallback: handleWebSocketMessage,
+      onErrorCallback: onError,
+    );
+  }
 
   void getAllLabels(AccountId accountId) {
     if (_getAllLabelInteractor == null) return;
@@ -139,6 +179,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void handleSuccessViewState(Success success) {
     if (success is GetAllLabelSuccess) {
       labels.value = success.labels..sortByAlphabetically();
+      setCurrentLabelState(success.newState);
     } else if (success is CreateNewLabelSuccess) {
       _handleCreateNewLabelSuccess(success);
     } else if (success is GetLabelSettingStateSuccess) {
@@ -177,6 +218,11 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     _editLabelInteractor = null;
     _deleteALabelInteractor = null;
     _getLabelSettingStateInteractor = null;
+    _webSocketQueueHandler?.dispose();
+    _webSocketQueueHandler = null;
+    _currentLabelState = null;
+    _accountId = null;
+    _session = null;
     super.onClose();
   }
 }

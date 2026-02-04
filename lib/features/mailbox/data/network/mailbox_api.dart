@@ -35,6 +35,7 @@ import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
@@ -55,7 +56,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_m
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:uuid/uuid.dart';
 
-class MailboxAPI with HandleSetErrorMixin, MailAPIMixin {
+class MailboxAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
 
   final HttpClient httpClient;
   final Uuid _uuid;

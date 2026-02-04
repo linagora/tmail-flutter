@@ -11,6 +11,7 @@ import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/push_notification_state_change_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/listener/label_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 
 import 'push_base_controller_test.mocks.dart';
@@ -26,6 +27,7 @@ class TestPushController extends PushBaseController {
 @GenerateNiceMocks([
   MockSpec<EmailChangeListener>(),
   MockSpec<MailboxChangeListener>(),
+  MockSpec<LabelChangeListener>(),
 ])
 void main() {
   final accountId = AccountId(Id('accountId'));
@@ -35,6 +37,7 @@ void main() {
     group('mappingTypeStateToAction:', () {
       final emailChangeListener = MockEmailChangeListener();
       final mailboxChangeListener = MockMailboxChangeListener();
+      final labelChangeListener = MockLabelChangeListener();
 
       test(
         'should call emailChangeListener.dispatchActions with SynchronizeEmailOnForegroundAction '
@@ -53,7 +56,8 @@ void main() {
           userName,
           isForeground: true,
           emailChangeListener: emailChangeListener,
-          mailboxChangeListener: mailboxChangeListener
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
         );
 
         // assert
@@ -68,6 +72,7 @@ void main() {
           ]),
         ).called(1);
         verifyNever(mailboxChangeListener.dispatchActions(any));
+        verifyNever(labelChangeListener.dispatchActions(any));
       });
 
       test(
@@ -87,7 +92,8 @@ void main() {
           userName,
           isForeground: false,
           emailChangeListener: emailChangeListener,
-          mailboxChangeListener: mailboxChangeListener
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
         );
 
         // assert
@@ -103,6 +109,7 @@ void main() {
           ]),
         ).called(1);
         verifyNever(mailboxChangeListener.dispatchActions(any));
+        verifyNever(labelChangeListener.dispatchActions(any));
       });
 
       test(
@@ -122,12 +129,14 @@ void main() {
           userName,
           isForeground: true,
           emailChangeListener: emailChangeListener,
-          mailboxChangeListener: mailboxChangeListener
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
         );
 
         // assert
         verifyNever(emailChangeListener.dispatchActions(any));
         verifyNever(mailboxChangeListener.dispatchActions(any));
+        verifyNever(labelChangeListener.dispatchActions(any));
       });
 
       test(
@@ -147,7 +156,8 @@ void main() {
           userName,
           isForeground: false,
           emailChangeListener: emailChangeListener,
-          mailboxChangeListener: mailboxChangeListener
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
         );
 
         // assert
@@ -163,6 +173,7 @@ void main() {
           ]),
         ).called(1);
         verifyNever(mailboxChangeListener.dispatchActions(any));
+        verifyNever(labelChangeListener.dispatchActions(any));
       });
       
       test(
@@ -182,7 +193,8 @@ void main() {
           userName,
           isForeground: true,
           emailChangeListener: emailChangeListener,
-          mailboxChangeListener: mailboxChangeListener
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
         );
 
         // assert
@@ -196,6 +208,7 @@ void main() {
           ]),
         ).called(1);
         verifyNever(emailChangeListener.dispatchActions(any));
+        verifyNever(labelChangeListener.dispatchActions(any));
       });
 
       test(
@@ -215,7 +228,8 @@ void main() {
           userName,
           isForeground: false,
           emailChangeListener: emailChangeListener,
-          mailboxChangeListener: mailboxChangeListener
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
         );
 
         // assert
@@ -230,6 +244,78 @@ void main() {
           ]),
         ).called(1);
         verifyNever(emailChangeListener.dispatchActions(any));
+        verifyNever(labelChangeListener.dispatchActions(any));
+      });
+
+      test(
+        'should call labelChangeListener.dispatchActions with SynchronizeLabelOnForegroundAction '
+        'when mapTypeState contains labelType '
+        'and isForeground is true',
+      () {
+        // arrange
+        final state = State('some-state');
+        final mapTypeState = {TypeName.labelType.value: state.value};
+
+        // act
+        final pushBaseController = TestPushController();
+        pushBaseController.mappingTypeStateToAction(
+          mapTypeState,
+          accountId,
+          userName,
+          isForeground: true,
+          emailChangeListener: emailChangeListener,
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
+        );
+
+        // assert
+        verify(
+          labelChangeListener.dispatchActions([
+            SynchronizeLabelOnForegroundAction(
+              TypeName.labelType,
+              state,
+              accountId,
+            ),
+          ]),
+        ).called(1);
+        verifyNever(emailChangeListener.dispatchActions(any));
+        verifyNever(mailboxChangeListener.dispatchActions(any));
+      });
+
+      test(
+        'should call labelChangeListener.dispatchActions with StoreLabelStateToRefreshAction '
+        'when mapTypeState contains labelType '
+        'and isForeground is false',
+      () {
+        // arrange
+        final state = State('some-state');
+        final mapTypeState = {TypeName.labelType.value: state.value};
+
+        // act
+        final pushBaseController = TestPushController();
+        pushBaseController.mappingTypeStateToAction(
+          mapTypeState,
+          accountId,
+          userName,
+          isForeground: false,
+          emailChangeListener: emailChangeListener,
+          mailboxChangeListener: mailboxChangeListener,
+          labelChangeListener: labelChangeListener,
+        );
+
+        // assert
+        verify(
+          labelChangeListener.dispatchActions([
+            StoreLabelStateToRefreshAction(
+              TypeName.labelType,
+              state,
+              accountId,
+              userName,
+            ),
+          ]),
+        ).called(1);
+        verifyNever(emailChangeListener.dispatchActions(any));
+        verifyNever(mailboxChangeListener.dispatchActions(any));
       });
     });
   });
