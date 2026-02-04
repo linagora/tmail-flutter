@@ -50,8 +50,6 @@ RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENT
 # The build will NOT fail if this step is unavailable.
 # RUN sentry-cli releases set-commits "$SENTRY_RELEASE" --commit "$VCS_REF"
 
-RUN sentry-cli sourcemaps list --release "$SENTRY_RELEASE"
-
 RUN sentry-cli sourcemaps upload build/web \
         --org "$SENTRY_ORG" \
         --project "$SENTRY_PROJECT" \
@@ -60,7 +58,8 @@ RUN sentry-cli sourcemaps upload build/web \
         --dist "$GITHUB_SHA" \
         --url-prefix "~/" \
         --no-rewrite \
-        --validate
+        --validate \
+        --wait-for 360
 
 RUN sentry-cli releases finalize "$SENTRY_RELEASE"
 
