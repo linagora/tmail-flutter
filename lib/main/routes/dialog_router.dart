@@ -40,7 +40,7 @@ class DialogRouter {
     );
 
     if (PlatformInfo.isWeb) {
-      _isMapDialogOpened[routeName] = false;
+      _isMapDialogOpened.remove(routeName);
     }
     return returnedValue;
   }
@@ -106,7 +106,7 @@ class DialogRouter {
       pageBuilder: (_, __, ___) => child,
     );
     if (PlatformInfo.isWeb) {
-      _isMapDialogOpened[dialogLabel] = false;
+      _isMapDialogOpened.remove(dialogLabel);
     }
   }
 }
