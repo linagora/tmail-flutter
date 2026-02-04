@@ -53,9 +53,13 @@ RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENT
 RUN sentry-cli sourcemaps list --release "$SENTRY_RELEASE"
 
 RUN sentry-cli sourcemaps upload build/web \
+        --org "$SENTRY_ORG" \
+        --project "$SENTRY_PROJECT" \
+        --auth-token "$SENTRY_AUTH_TOKEN" \
         --release "$SENTRY_RELEASE" \
         --dist "$GITHUB_SHA" \
         --url-prefix "~/" \
+        --no-rewrite \
         --validate
 
 RUN sentry-cli releases finalize "$SENTRY_RELEASE"
