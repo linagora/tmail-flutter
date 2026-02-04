@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/labels/presentation/models/label_action_t
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_mailbox_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/open_app_grid_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/toggle_expand_folders_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
@@ -405,8 +406,8 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
 
       final selectedMailbox = dashboardController.selectedMailbox.value;
       Id? labelIdSelected;
-      if (selectedMailbox is PresentationLabelMailbox) {
-        labelIdSelected = selectedMailbox.id.id;
+      if (selectedMailbox?.isLabelMailbox == true) {
+        labelIdSelected = selectedMailbox?.id.id;
       }
 
       if (isLabelAvailable) {

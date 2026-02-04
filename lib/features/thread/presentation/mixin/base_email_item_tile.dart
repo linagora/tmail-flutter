@@ -32,9 +32,10 @@ mixin BaseEmailItemTile {
   Widget buildMailboxContain(
     BuildContext context,
     bool isSearchEmailRunning,
+    bool isLabelMailboxOpened,
     PresentationEmail email
   ) {
-    if (hasMailboxLabel(isSearchEmailRunning, email)) {
+    if (hasMailboxLabel(isSearchEmailRunning, isLabelMailboxOpened, email)) {
       return Container(
           margin: const EdgeInsetsDirectional.only(start: 8),
           padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
@@ -68,8 +69,13 @@ mixin BaseEmailItemTile {
   Color buildTextColorForReadEmail(PresentationEmail email) =>
       email.hasRead ? AppColor.steelGray400 : Colors.black;
 
-  bool hasMailboxLabel(bool isSearchEmailRunning, PresentationEmail email) {
-    return isSearchEmailRunning && email.mailboxContain != null;
+  bool hasMailboxLabel(
+    bool isSearchEmailRunning,
+    bool isLabelMailboxOpened,
+    PresentationEmail email,
+  ) {
+    return (isSearchEmailRunning || isLabelMailboxOpened) &&
+        email.mailboxContain != null;
   }
 
   String informationSender(PresentationEmail email, PresentationMailbox? mailbox) {
