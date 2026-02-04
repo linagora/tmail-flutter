@@ -339,7 +339,7 @@ void main() {
       expect(parsed, equals(expected));
     });
 
-    test('Should fallback sentryConfig to Empty when exception occurs', () {
+    test('Should fallback sentryConfig to default value SentryConfigLinagoraEcosystem(false, null, null) when enabled is not boolean', () {
       const jsonString = '''
       {
         "sentry": {
@@ -352,7 +352,7 @@ void main() {
 
       expect(
         parsed.properties![LinagoraEcosystemIdentifier.sentryConfig],
-        isA<EmptyLinagoraEcosystem>(),
+        isA<SentryConfigLinagoraEcosystem>(),
       );
     });
 

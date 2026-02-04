@@ -225,6 +225,12 @@ class EmailChangeListener extends ChangeListener {
         exception: failure.exception,
         stackTrace: failure.stackTrace,
       );
+    } else if (failure is GetStoredEmailStateFailure) {
+      logError(
+        'EmailChangeListener::GetStoredEmailStateFailure',
+        exception: failure.exception,
+        stackTrace: failure.stackTrace,
+      );
     }
   }
 
