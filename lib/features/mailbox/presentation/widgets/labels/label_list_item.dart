@@ -98,7 +98,7 @@ class _LabelListItemState extends State<LabelListItem> {
           child: Row(
             children: [
               _LabelIcon(
-                icon: widget.imagePaths.icTag,
+                icon: widget.imagePaths.icLabel,
                 color: widget.label.backgroundColor,
                 spacing: _iconSpacing,
               ),
