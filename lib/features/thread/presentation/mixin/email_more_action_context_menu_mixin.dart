@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_
 import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_sub_menu_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_context_menu.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_context_menu.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -26,6 +27,7 @@ class EmailContextMenuParams {
   final OpenPopupMenuActionGroup openPopupMenu;
   final OnHandleEmailByActionType onHandleEmailByActionType;
   final OnSelectLabelAction onSelectLabelAction;
+  final OnCreateANewLabelAction onCreateANewLabelAction;
 
   EmailContextMenuParams({
     required this.context,
@@ -38,6 +40,7 @@ class EmailContextMenuParams {
     required this.openPopupMenu,
     required this.onHandleEmailByActionType,
     required this.onSelectLabelAction,
+    required this.onCreateANewLabelAction,
   });
 }
 
@@ -65,8 +68,7 @@ mixin EmailMoreActionContextMenu on LabelSubMenuMixin {
     final isChildOfTeam = mb?.isChildOfTeamMailboxes ?? false;
 
     final canPermanentlyDelete = isDrafts || isSpam || isTrash;
-    final shouldShowLabelAs =
-        params.isLabelAvailable && (params.labels?.isNotEmpty ?? false);
+    final shouldShowLabelAs = params.isLabelAvailable;
 
     return [
       isRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
@@ -135,6 +137,11 @@ mixin EmailMoreActionContextMenu on LabelSubMenuMixin {
             submenuController.hide();
             popBack();
             params.onSelectLabelAction(label, isSelected);
+          },
+          onCreateANewLabelAction: () {
+            submenuController.hide();
+            popBack();
+            params.onCreateANewLabelAction();
           },
         ),
       );

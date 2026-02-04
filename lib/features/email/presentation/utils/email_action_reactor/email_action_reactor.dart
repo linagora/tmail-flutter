@@ -54,6 +54,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_sub_menu_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_context_menu.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_context_menu.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
@@ -486,6 +487,7 @@ class EmailActionReactor with LabelSubMenuMixin {
     required bool isLabelAvailable,
     required OpenBottomSheetContextMenuAction openBottomSheetContextMenu,
     required OpenPopupMenuActionGroup openPopupMenu,
+    required OnCreateANewLabelAction onCreateANewLabelAction,
     List<Label>? labels,
     OnSelectLabelAction? onSelectLabelAction,
   }) {
@@ -508,8 +510,7 @@ class EmailActionReactor with LabelSubMenuMixin {
         EmailActionType.printAll,
       if (additionalActions.contains(EmailActionType.moveToMailbox))
         EmailActionType.moveToMailbox,
-      if (isLabelAvailable && labels?.isNotEmpty == true)
-        EmailActionType.labelAs,
+      if (isLabelAvailable) EmailActionType.labelAs,
       if (additionalActions.contains(EmailActionType.markAsStarred) &&
           additionalActions.contains(EmailActionType.unMarkAsStarred))
         presentationEmail.hasStarred
@@ -579,6 +580,11 @@ class EmailActionReactor with LabelSubMenuMixin {
               onSelectLabelAction?.call(label, isSelected);
               submenuController.hide();
               popBack();
+            },
+            onCreateANewLabelAction: () {
+              submenuController.hide();
+              popBack();
+              onCreateANewLabelAction();
             },
           ),
         );

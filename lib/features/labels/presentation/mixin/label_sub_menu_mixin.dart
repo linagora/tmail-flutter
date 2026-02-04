@@ -15,8 +15,9 @@ mixin LabelSubMenuMixin {
     required PresentationEmail presentationEmail,
     required List<Label>? labels,
     required OnSelectLabelAction onSelectLabelAction,
+    required OnCreateANewLabelAction onCreateANewLabelAction,
   }) {
-    if (actionType == EmailActionType.labelAs && labels?.isNotEmpty == true) {
+    if (actionType == EmailActionType.labelAs) {
       final listLabels = labels ?? [];
       final emailLabels = presentationEmail.getLabelList(listLabels);
       return LabelListContextMenu(
@@ -24,6 +25,7 @@ mixin LabelSubMenuMixin {
         emailLabels: emailLabels,
         imagePaths: imagePaths,
         onSelectLabelAction: onSelectLabelAction,
+        onCreateANewLabelAction: onCreateANewLabelAction,
       );
     }
     return null;

@@ -1,10 +1,13 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_loaded_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/extensions/presentation_email_map_extension.dart';
@@ -15,7 +18,11 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     return mailboxDashBoardController.isLabelAvailable;
   }
 
-  void onToggleLabelAction(EmailId? emailId, Label label, bool isSelected) {
+  void onToggleLabelAction({
+    required EmailId? emailId,
+    required Label label,
+    required bool isSelected,
+  }) {
     if (emailId == null) {
       logWarning('HandleLabelForEmailExtension::onToggleLabelAction: Email id is null');
       return;
@@ -123,6 +130,24 @@ extension HandleLabelForEmailExtension on SingleEmailController {
       emailId: emailId,
       keyword: labelKeyword,
       remove: remove,
+    );
+  }
+
+  void createNewLabelToEmail(BuildContext context, EmailId? emailId) {
+    if (emailId == null) {
+      logWarning('HandleLabelForEmailExtension::createNewLabelToEmail: Email id is null');
+      return;
+    }
+
+    mailboxDashBoardController.labelController.handleLabelActionType(
+      actionType: LabelActionType.create,
+      accountId: accountId,
+      onLabelActionCallback: (label) =>
+          onToggleLabelAction(
+            emailId: emailId,
+            label: label,
+            isSelected: true,
+          ),
     );
   }
 }

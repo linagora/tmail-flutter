@@ -42,7 +42,6 @@ extension HandleLabelActionTypeExtension on MailboxDashBoardController {
     required LabelActionType actionType,
   }) {
     labelController.handleLabelActionType(
-      context: context,
       actionType: actionType,
       accountId: accountId.value,
       label: label,

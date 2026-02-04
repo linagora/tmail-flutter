@@ -952,9 +952,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         pressEmailAction(actionType, presentationEmail);
         break;
       case EmailActionType.labelAs:
-        if (!isLabelAvailable) return;
-        mailboxDashBoardController
-            .openAddLabelToEmailDialogModal(presentationEmail);
+        mailboxDashBoardController.openAddLabelToEmailDialogModal(
+          email: presentationEmail,
+          onCreateANewLabelAction: () {
+            mailboxDashBoardController.labelController.onCreateALabelAction(
+              accountId: accountId,
+              shouldPop: true,
+            );
+          },
+        );
         break;
       default:
         break;

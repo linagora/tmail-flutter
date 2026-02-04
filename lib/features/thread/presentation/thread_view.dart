@@ -15,7 +15,9 @@ import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wra
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_sub_menu_mixin.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
@@ -631,6 +633,14 @@ class ThreadView extends GetWidget<ThreadController>
                     emailId,
                     label,
                     isSelected,
+                  );
+                },
+                onCreateANewLabelAction: () {
+                  dashboardController.labelController.handleLabelActionType(
+                    actionType: LabelActionType.create,
+                    accountId: dashboardController.accountId.value,
+                    onLabelActionCallback: (label) => dashboardController
+                        .toggleLabelToEmail(email.id!, label, true),
                   );
                 },
               ),

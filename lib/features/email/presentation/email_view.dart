@@ -110,9 +110,14 @@ class EmailView extends GetWidget<SingleEmailController> {
                         openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
                         onSelectLabelAction: (label, isSelected) =>
                             controller.onToggleLabelAction(
+                              emailId: presentationEmail.id,
+                              label: label,
+                              isSelected: isSelected,
+                            ),
+                        onCreateANewLabelAction: () =>
+                            controller.createNewLabelToEmail(
+                              context,
                               presentationEmail.id,
-                              label,
-                              isSelected,
                             ),
                       );
                     },
@@ -276,9 +281,9 @@ class EmailView extends GetWidget<SingleEmailController> {
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,
               onDeleteLabelAction: (label) => controller.onToggleLabelAction(
-                presentationEmail.id,
-                label,
-                false,
+                emailId: presentationEmail.id,
+                label: label,
+                isSelected: false,
               ),
             );
           }),
@@ -321,9 +326,14 @@ class EmailView extends GetWidget<SingleEmailController> {
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
             onSelectLabelAction: (label, isSelected) =>
                 controller.onToggleLabelAction(
+                  emailId: presentationEmail.id,
+                  label: label,
+                  isSelected: isSelected,
+                ),
+            onCreateANewLabelAction: () =>
+                controller.createNewLabelToEmail(
+                  context,
                   presentationEmail.id,
-                  label,
-                  isSelected,
                 ),
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
@@ -601,7 +611,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                 MessageDialogActionManager().isDialogOpened ||
                 EmailActionReactor.isDialogOpened ||
                 ColorDialogPicker().isOpened.isTrue ||
-                dialogRouter.isRuleFilterDialogOpened.isTrue ||
                 dialogRouter.isDialogOpened;
 
             if (isOverlayEnabled) {

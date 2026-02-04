@@ -19,19 +19,18 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 
 extension AddLabelToThreadExtension on ThreadDetailController {
   Future<void> openAddLabelToEmailDialogModal() async {
-    if (!mailboxDashBoardController.isLabelAvailable) return;
-
-    final labels = mailboxDashBoardController.labelController.labels;
-    if (emailsInThreadDetailInfo.isEmpty || labels.isEmpty) {
+    if (!mailboxDashBoardController.isLabelAvailable ||
+        emailsInThreadDetailInfo.isEmpty) {
       return;
     }
-
+    final labelController = mailboxDashBoardController.labelController;
+    final labels = labelController.labels;
     final threadLabels =
         emailsInThreadDetailInfo.findCommonLabelsInThread(labels: labels);
 
     final emailIds = emailsInThreadDetailInfo.emailIdsToDisplay(true);
 
-    await DialogRouter().openDialogModal(
+    final newLabel = await DialogRouter().openDialogModal(
       child: AddLabelToEmailModal(
         labels: labels,
         emailLabels: threadLabels,
@@ -43,9 +42,17 @@ extension AddLabelToThreadExtension on ThreadDetailController {
             currentEmailIds: emailIds,
           );
         },
+        onCreateANewLabelAction: () => labelController.onCreateALabelAction(
+          accountId: accountId,
+          shouldPop: true,
+        ),
       ),
       dialogLabel: 'add-label-to-thread-modal',
     );
+
+    if (newLabel is Label) {
+      toggleLabelToThread(newLabel, isSelected: true);
+    }
   }
 
   void toggleLabelToThread(

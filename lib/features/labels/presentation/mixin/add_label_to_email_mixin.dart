@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -18,6 +19,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/presentatio
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/add_label_to_email_modal.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_context_menu.dart';
 import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -180,7 +182,10 @@ mixin AddLabelToEmailMixin on EmitStateMixin {
     );
   }
 
-  Future<void> openAddLabelToEmailDialogModal(PresentationEmail email) async {
+  Future<void> openAddLabelToEmailDialogModal({
+    required PresentationEmail email,
+    required OnCreateANewLabelAction onCreateANewLabelAction,
+  }) async {
     final emailId = email.id;
     if (emailId == null) {
       logWarning(
@@ -192,8 +197,9 @@ mixin AddLabelToEmailMixin on EmitStateMixin {
     final labels = currentLabelList;
     final emailLabels = email.getLabelList(labels);
 
-    await DialogRouter().openDialogModal(
+    final newLabel = await DialogRouter().openDialogModal(
       child: AddLabelToEmailModal(
+        key: const Key('add_label_to_email_modal'),
         labels: labels,
         emailLabels: emailLabels,
         emailIds: [emailId],
@@ -202,9 +208,14 @@ mixin AddLabelToEmailMixin on EmitStateMixin {
             toggleLabelToEmail(emailIds.first, label, isSelected);
           }
         },
+        onCreateANewLabelAction: onCreateANewLabelAction,
       ),
       dialogLabel: 'add-label-to-email-modal',
     );
+
+    if (newLabel is Label) {
+      toggleLabelToEmail(emailId, newLabel, true);
+    }
   }
 
   void subscribeLabelViewStateSuccess(Success success) {
