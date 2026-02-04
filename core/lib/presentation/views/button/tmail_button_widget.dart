@@ -43,7 +43,7 @@ class TMailButtonWidget extends StatelessWidget {
   final bool isLoading;
   final Color? hoverColor;
   final TextOverflow? textOverflow;
-  final Alignment? alignment;
+  final AlignmentGeometry? alignment;
   final bool isTextExpanded;
 
   const TMailButtonWidget({
@@ -109,7 +109,7 @@ class TMailButtonWidget extends StatelessWidget {
     List<BoxShadow>? boxShadow,
     EdgeInsetsGeometry? margin,
     Color? hoverColor,
-    Alignment? alignment,
+    AlignmentGeometry? alignment,
     BoxBorder? border,
   }) {
     return TMailButtonWidget(
@@ -165,7 +165,7 @@ class TMailButtonWidget extends StatelessWidget {
     int? maxLines,
     Color? hoverColor,
     TextOverflow? textOverflow,
-    Alignment? alignment,
+    AlignmentGeometry? alignment,
     bool isTextExpanded = false,
   }) {
     return TMailButtonWidget(

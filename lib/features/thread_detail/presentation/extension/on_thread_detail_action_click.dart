@@ -1,5 +1,4 @@
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/utils/platform_info.dart';
+import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -15,6 +14,8 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_context_menu.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_context_menu.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -137,8 +138,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     if (currentContext == null) return;
 
     final moreActions = [
-      if (mailboxDashBoardController.isLabelAvailable &&
-          mailboxDashBoardController.labelController.labels.isNotEmpty)
+      if (mailboxDashBoardController.isLabelAvailable)
         EmailActionType.labelAs,
       threadDetailIsRead
           ? EmailActionType.markAsUnread
@@ -175,6 +175,8 @@ extension OnThreadDetailActionClick on ThreadDetailController {
       );
     } else {
       final submenuController = PopupSubmenuController();
+      final labelController = mailboxDashBoardController.labelController;
+      final labelList = labelController.labels;
 
       final popupMenuItemEmailActions = moreActions.map((actionType) {
         return PopupMenuItemEmailAction(
@@ -187,12 +189,25 @@ extension OnThreadDetailActionClick on ThreadDetailController {
             actionType: actionType,
             imagePaths: imagePaths,
             emailInThreadDetailInfos: emailsInThreadDetailInfo,
-            labels: mailboxDashBoardController.labelController.labels,
+            labels: labelList,
             onSelectLabelAction: (label, isSelected) {
               toggleLabelToThread(label, isSelected: isSelected);
               submenuController.hide();
               popBack();
             },
+            onCreateANewLabelAction: () {
+              submenuController.hide();
+              popBack();
+              if (currentContext == null) {
+                logWarning('OnThreadDetailActionClick::onThreadDetailMoreActionClick::onCreateANewLabelAction:currentContext is null');
+                return;
+              }
+              labelController.handleLabelActionType(
+                context: currentContext!,
+                actionType: LabelActionType.create,
+                accountId: accountId,
+              );
+            }
           ),
         );
       }).toList();
@@ -228,9 +243,10 @@ extension OnThreadDetailActionClick on ThreadDetailController {
     required ImagePaths imagePaths,
     required List<EmailInThreadDetailInfo> emailInThreadDetailInfos,
     required List<Label>? labels,
-    OnSelectLabelAction? onSelectLabelAction,
+    required OnSelectLabelAction onSelectLabelAction,
+    required OnCreateANewLabelAction onCreateANewLabelAction,
   }) {
-    if (actionType == EmailActionType.labelAs && labels?.isNotEmpty == true) {
+    if (actionType == EmailActionType.labelAs) {
       final listLabels = labels ?? [];
       final threadLabels =
           emailInThreadDetailInfos.findCommonLabelsInThread(labels: listLabels);
@@ -239,8 +255,8 @@ extension OnThreadDetailActionClick on ThreadDetailController {
         labelList: listLabels,
         emailLabels: threadLabels,
         imagePaths: imagePaths,
-        onSelectLabelAction: (label, isSelected) =>
-            onSelectLabelAction?.call(label, isSelected),
+        onSelectLabelAction: onSelectLabelAction,
+        onCreateANewLabelAction: onCreateANewLabelAction,
       );
     }
     return null;
