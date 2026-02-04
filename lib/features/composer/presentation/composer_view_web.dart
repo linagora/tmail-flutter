@@ -61,7 +61,6 @@ class ComposerView extends GetWidget<ComposerController> {
           MessageDialogActionManager().isDialogOpened ||
           EmailActionReactor.isDialogOpened ||
           ColorDialogPicker().isOpened.isTrue ||
-          dialogRouter.isRuleFilterDialogOpened.isTrue ||
           dialogRouter.isDialogOpened;
 
       if (isOverlayEnabled) {
