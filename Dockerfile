@@ -20,13 +20,14 @@ ARG SENTRY_PROJECT
 ARG SENTRY_URL
 ARG SENTRY_RELEASE
 ARG VCS_REF
+ARG GITHUB_SHA
 
 # Set directory to Copy App
 WORKDIR /app
 
 COPY . .
 
-ENV VCS_REF=$VCS_REF
+ENV GITHUB_SHA=$GITHUB_SHA
 ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 ENV SENTRY_ORG=$SENTRY_ORG
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
@@ -51,6 +52,7 @@ RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENT
 
 RUN sentry-cli sourcemaps upload build/web \
         --release "$SENTRY_RELEASE" \
+        --dist "$GITHUB_SHA" \
         --url-prefix "~/" \
         --validate && \
     sentry-cli releases finalize "$SENTRY_RELEASE"
