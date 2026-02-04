@@ -50,7 +50,7 @@ class LabelRepositoryImpl extends LabelRepository {
       final changesResponse = await _labelDatasource.getLabelChanges(
         session,
         accountId,
-        sinceState,
+        newSinceState,
       );
 
       hasMoreChanges = changesResponse.hasMoreChanges;
