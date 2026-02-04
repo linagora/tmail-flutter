@@ -26,33 +26,28 @@ WORKDIR /app
 
 COPY . .
 
-RUN ls -la
+ENV VCS_REF=$VCS_REF
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+ENV SENTRY_ORG=$SENTRY_ORG
+ENV SENTRY_PROJECT=$SENTRY_PROJECT
+ENV SENTRY_URL=$SENTRY_URL
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
 
 # Precompile tmail flutter
 RUN ./scripts/prebuild.sh
 
 RUN curl -sL https://sentry.io/get-cli/ | bash
 
-RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT" ] && [ -n "$SENTRY_RELEASE" ]; then \
-      echo "Sentry configuration detected, uploading sourcemaps for release $SENTRY_RELEASE" && \
-      export VCS_REF="$VCS_REF" && \
-      export SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" && \
-      export SENTRY_ORG="$SENTRY_ORG" && \
-      export SENTRY_PROJECT="$SENTRY_PROJECT" && \
-      export SENTRY_RELEASE="$SENTRY_RELEASE" && \
-      [ -n "$SENTRY_URL" ] && export SENTRY_URL="$SENTRY_URL" || true && \
-    else \
-      echo "Sentry configuration not complete, skipping sourcemap upload"; \
-    fi || echo "Sentry sourcemap upload step failed, continuing build"
-
 RUN sentry-cli releases new "$SENTRY_RELEASE" || true
 
 # Build flutter for web (with source maps for Sentry)
 RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE
 
+RUN echo "VCS_REF is $VCS_REF"
+
 # Upload source maps to Sentry when all required variables are available.
 # The build will NOT fail if this step is unavailable.
-RUN sentry-cli releases set-commits "$SENTRY_RELEASE" --commit $VCS_REF
+RUN sentry-cli releases set-commits "$SENTRY_RELEASE" --commit "$VCS_REF"
 
 RUN sentry-cli sourcemaps upload build/web \
         --url-prefix "~/" \
