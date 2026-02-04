@@ -241,6 +241,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
         imagePaths: imagePaths,
         onSelectLabelAction: (label, isSelected) =>
             onSelectLabelAction?.call(label, isSelected),
+        onCreateANewLabelAction: () {},
       );
     }
     return null;

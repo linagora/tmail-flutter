@@ -632,6 +632,7 @@ class EmailActionReactor {
         imagePaths: imagePaths,
         onSelectLabelAction: (label, isSelected) =>
             onSelectLabelAction?.call(label, isSelected),
+        onCreateANewLabelAction: () {},
       );
     }
     return null;

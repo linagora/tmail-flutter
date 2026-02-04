@@ -23,7 +23,7 @@ class TMailContainerWidget extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
   final BoxBorder? border;
   final Color? hoverColor;
-  final Alignment? alignment;
+  final AlignmentGeometry? alignment;
 
   const TMailContainerWidget({
     super.key,
