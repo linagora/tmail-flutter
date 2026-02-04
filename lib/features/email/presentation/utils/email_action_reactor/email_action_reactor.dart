@@ -507,14 +507,14 @@ class EmailActionReactor {
       if (EmailUtils.isReplyToListEnabled(presentationEmail.listPost ?? '') &&
           additionalActions.contains(EmailActionType.replyToList))
         EmailActionType.replyToList,
-      if (isLabelAvailable && labels?.isNotEmpty == true)
-        EmailActionType.labelAs,
       if (PlatformInfo.isWeb &&
           PlatformInfo.isCanvasKit &&
           additionalActions.contains(EmailActionType.printAll))
         EmailActionType.printAll,
       if (additionalActions.contains(EmailActionType.moveToMailbox))
         EmailActionType.moveToMailbox,
+      if (isLabelAvailable && labels?.isNotEmpty == true)
+        EmailActionType.labelAs,
       if (additionalActions.contains(EmailActionType.markAsStarred) &&
           additionalActions.contains(EmailActionType.unMarkAsStarred))
         presentationEmail.hasStarred
