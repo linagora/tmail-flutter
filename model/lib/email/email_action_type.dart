@@ -4,7 +4,7 @@ enum EmailActionType {
   replyToList(1),
   forward(1),
   replyAll(1),
-  labelAs(1),
+  labelAs(2),
   compose(),
   markAsRead(2),
   markAsUnread(2),

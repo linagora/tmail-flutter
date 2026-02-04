@@ -13,11 +13,13 @@ import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_submenu_controller.dart';
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/label_sub_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
@@ -60,7 +62,9 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadView extends GetWidget<ThreadController>
-  with AppLoaderMixin, PopupMenuWidgetMixin {
+  with AppLoaderMixin,
+      PopupMenuWidgetMixin,
+      LabelSubMenuMixin {
 
   ThreadView({Key? key}) : super(key: key);
 
@@ -689,10 +693,16 @@ class ThreadView extends GetWidget<ThreadController>
     final isRead = presentationEmail.hasRead;
     final isTrash = mailboxContain?.isTrash ?? false;
     final canPermanentlyDelete = isDrafts || isSpam || isTrash;
+    final isLabelAvailable =
+        controller.mailboxDashBoardController.isLabelAvailable;
+    final listLabels =
+        controller.mailboxDashBoardController.labelController.labels;
+    final shouldShowLabelAs = isLabelAvailable && listLabels.isNotEmpty;
 
     final listEmailActions = [
       isRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
       EmailActionType.moveToMailbox,
+      if (shouldShowLabelAs) EmailActionType.labelAs,
       canPermanentlyDelete ? EmailActionType.deletePermanently : EmailActionType.moveToTrash,
       EmailActionType.openInNewTab,
       if (!isDrafts && !isChildOfTeamMailboxes)
@@ -725,23 +735,38 @@ class ThreadView extends GetWidget<ThreadController>
         useGroupedActions: true,
       );
     } else {
+      final submenuController = PopupSubmenuController();
+
       final popupMenuItemEmailActions = listEmailActions.map((actionType) {
         return PopupMenuItemEmailAction(
           actionType,
           AppLocalizations.of(context),
           controller.imagePaths,
           category: actionType.category,
+          submenu: buildLabelSubmenuForEmail(
+            actionType: actionType,
+            imagePaths: controller.imagePaths,
+            presentationEmail: presentationEmail,
+            labels: listLabels,
+            onSelectLabelAction: (label, isSelected) {
+              submenuController.hide();
+              popBack();
+            },
+          ),
         );
       }).toList();
 
       final popupMenuWidget = PopupMenuActionGroupWidget(
         actions: popupMenuItemEmailActions,
+        submenuController: submenuController,
         onActionSelected: (action) {
-          controller.handleEmailActionType(
-            action.action,
-            presentationEmail,
-            mailboxContain: mailboxContain,
-          );
+          if (shouldHandleAction(action.action)) {
+            controller.handleEmailActionType(
+              action.action,
+              presentationEmail,
+              mailboxContain: mailboxContain,
+            );
+          }
         },
       );
 
@@ -749,7 +774,7 @@ class ThreadView extends GetWidget<ThreadController>
         context,
         position,
         popupMenuWidget,
-      );
+      ).whenComplete(submenuController.hide);
     }
   }
 
