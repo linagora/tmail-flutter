@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-01-26T09:26:56.495094",
+  "@@last_modified": "2026-02-04T15:15:31.191557",
   "categoryCorrectGrammar": "Correct",
   "@categoryCorrectGrammar": {
     "type": "text",
@@ -122,6 +122,18 @@
   },
   "insert": "Insert",
   "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy": "Copy",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "Retry",
+  "@retry": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

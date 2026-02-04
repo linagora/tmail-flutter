@@ -177,6 +177,21 @@ class ScribeLocalizations {
       name: 'insert',
     );
   }
+
+  // Suggestion Success Toolbar
+  String get copy {
+    return Intl.message(
+      'Copy',
+      name: 'copy',
+    );
+  }
+
+  String get retry {
+    return Intl.message(
+      'Retry',
+      name: 'retry',
+    );
+  }
 }
 
 class _ScribeLocalizationsDelegate

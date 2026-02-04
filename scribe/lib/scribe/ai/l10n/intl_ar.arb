@@ -125,5 +125,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "copy": "نسخ",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "إعادة المحاولة",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
