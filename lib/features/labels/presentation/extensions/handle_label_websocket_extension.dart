@@ -36,8 +36,10 @@ extension HandleLabelWebsocketExtension on LabelController {
 
       if (refreshState is GetLabelChangesSuccess) {
         await _handleGetLabelChangesSuccess(refreshState);
-      } else {
+      } else if (refreshState != null) {
         onDataFailureViewState(refreshState);
+      } else {
+        logWarning('HandleLabelWebsocketExtension::handleWebSocketMessage: refreshState is null');
       }
     } catch (e, stackTrace) {
       logWarning(
