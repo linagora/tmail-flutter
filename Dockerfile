@@ -43,11 +43,11 @@ RUN sentry-cli releases new "$SENTRY_RELEASE" || true
 # Build flutter for web (with source maps for Sentry)
 RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE
 
-RUN echo "VCS_REF is $VCS_REF"
+# RUN echo "VCS_REF is $VCS_REF"
 
 # Upload source maps to Sentry when all required variables are available.
 # The build will NOT fail if this step is unavailable.
-RUN sentry-cli releases set-commits "$SENTRY_RELEASE" --commit "$VCS_REF"
+# RUN sentry-cli releases set-commits "$SENTRY_RELEASE" --commit "$VCS_REF"
 
 RUN sentry-cli sourcemaps upload build/web \
         --url-prefix "~/" \
