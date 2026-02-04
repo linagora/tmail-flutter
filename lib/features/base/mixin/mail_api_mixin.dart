@@ -92,10 +92,10 @@ mixin MailAPIMixin on HandleSetErrorMixin, SessionMixin {
       );
 
       final listEmailIds = setEmailResponse?.updated?.keys.toEmailIds() ?? [];
-      final mapErrors = handleSetResponse([setEmailResponse]);
+      final batchErrors = handleSetResponse([setEmailResponse]);
 
       updatedEmailIds.addAll(listEmailIds);
-      mapErrors.addAll(mapErrors);
+      mapErrors.addAll(batchErrors);
     }
 
     return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);

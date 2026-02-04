@@ -31,16 +31,16 @@ mixin BatchGetLabelProcessingMixin on HandleSetErrorMixin, SessionMixin {
     }
 
     final maxObjects = getMaxObjectsInGetMethod(session, accountId);
-    final totalEmails = labelIds.length;
-    final batchSize = max(1, min(totalEmails, maxObjects));
+    final totalLabels = labelIds.length;
+    final batchSize = max(1, min(totalLabels, maxObjects));
 
     final List<Label> allLabels = [];
     final List<Id> allNotFoundIds = [];
     State? latestState;
 
-    for (int start = 0; start < totalEmails; start += batchSize) {
+    for (int start = 0; start < totalLabels; start += batchSize) {
       int end =
-          (start + batchSize < totalEmails) ? start + batchSize : totalEmails;
+          (start + batchSize < totalLabels) ? start + batchSize : totalLabels;
       final currentListIds = labelIds.sublist(start, end);
 
       log('BatchGetLabelProcessingMixin::$debugLabel: processing batch ${start + 1} to $end');

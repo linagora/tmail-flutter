@@ -22,7 +22,7 @@ mixin SessionMixin {
       maxObjectsInSetMethod,
       CapabilityIdentifierExtension.defaultMaxObjectsInSet,
     );
-    log('$runtimeType::_getMaxObjectsInSetMethod:minOfMaxObjectsInSetMethod = $minOfMaxObjectsInSetMethod');
+    log('$runtimeType::getMaxObjectsInSetMethod:minOfMaxObjectsInSetMethod = $minOfMaxObjectsInSetMethod');
     return minOfMaxObjectsInSetMethod;
   }
 

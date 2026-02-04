@@ -244,6 +244,10 @@ class LabelUtils {
     }
   }
 
+  /// Applies label changes to [currentLabels] **in place**.
+  ///
+  /// Removes labels matching [destroyedIds], [created], and [updated] IDs,
+  /// then appends [created] and [updated] labels.
   static void applyLabelChanges({
     required List<Label> currentLabels,
     required List<Label> created,
