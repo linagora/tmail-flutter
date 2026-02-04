@@ -15,6 +15,7 @@ class DesktopListEmailActionHoverWidget extends StatefulWidget {
   final bool isHovered;
   final bool canDeletePermanently;
   final bool isSearchEmailRunning;
+  final bool isLabelMailboxOpened;
   final PresentationMailbox? mailboxContain;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
@@ -25,6 +26,7 @@ class DesktopListEmailActionHoverWidget extends StatefulWidget {
     required this.isHovered,
     required this.canDeletePermanently,
     required this.isSearchEmailRunning,
+    required this.isLabelMailboxOpened,
     required this.mailboxContain,
     required this.emailActionClick,
     required this.onMoreActionClick,
@@ -135,6 +137,7 @@ class _DesktopListEmailActionHoverWidgetState
         buildMailboxContain(
           context,
           widget.isSearchEmailRunning,
+          widget.isLabelMailboxOpened,
           widget.presentationEmail,
         ),
         if (widget.presentationEmail.hasAttachment == true)

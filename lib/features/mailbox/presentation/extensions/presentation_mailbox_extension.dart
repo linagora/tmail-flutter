@@ -14,7 +14,7 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 extension PresentationMailboxExtension on PresentationMailbox {
 
   String getDisplayName(BuildContext context) {
-    if (this is PresentationLabelMailbox) {
+    if (isLabelMailbox) {
       return (this as PresentationLabelMailbox).label.safeDisplayName;
     }
 
@@ -49,7 +49,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
   }
 
   String getDisplayNameWithoutContext(AppLocalizations appLocalizations) {
-    if (this is PresentationLabelMailbox) {
+    if (isLabelMailbox) {
       return (this as PresentationLabelMailbox).label.safeDisplayName;
     }
 
