@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -13,6 +14,8 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/email_loade
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/add_label_to_email_modal.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
@@ -20,6 +23,7 @@ import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_exten
 import 'package:tmail_ui_user/features/thread/domain/extensions/presentation_email_map_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/extensions/list_email_in_thread_detail_info_extension.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleLabelForEmailExtension on SingleEmailController {
   bool get isLabelAvailable {
@@ -233,12 +237,11 @@ extension HandleLabelForEmailExtension on SingleEmailController {
 
   Future<void> openAddLabelToEmailDialogModal(PresentationEmail email) async {
     if (!isLabelAvailable) return;
-    final labels = mailboxDashBoardController.labelController.labels;
-    final emailLabels = email.getLabelList(labels);
     final emailId = email.id;
-    if (emailId == null || labels.isEmpty) {
-      return;
-    }
+    if (emailId == null) return;
+    final labelController = mailboxDashBoardController.labelController;
+    final labels = labelController.labels;
+    final emailLabels = email.getLabelList(labels);
 
     await DialogRouter().openDialogModal(
       child: AddLabelToEmailModal(
@@ -249,6 +252,17 @@ extension HandleLabelForEmailExtension on SingleEmailController {
           if (emailIds.length == 1) {
             toggleLabelToEmail(emailIds.first, label, isSelected);
           }
+        },
+        onCreateANewLabelAction: () {
+          if (currentContext == null) {
+            logWarning('HandleLabelForEmailExtension::openAddLabelToEmailDialogModal:currentContext is null');
+            return;
+          }
+          labelController.handleLabelActionType(
+            context: currentContext!,
+            actionType: LabelActionType.create,
+            accountId: accountId,
+          );
         },
       ),
       dialogLabel: 'add-label-to-email-modal',
