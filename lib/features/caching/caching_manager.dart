@@ -246,10 +246,8 @@ class CachingManager {
       log('CachingManager::getSentryConfiguration: Sentry configuration: $sentryConfig');
       return sentryConfig;
     } catch (e, st) {
-      logError(
-        'CachingManager::getSentryConfiguration: Cannot get sentry configuration',
-        exception: e,
-        stackTrace: st,
+      logWarning(
+        'CachingManager::getSentryConfiguration: Cannot get sentry configuration, error: $e | stackTrace: $st',
       );
       return null;
     }
@@ -278,10 +276,8 @@ class CachingManager {
       log('CachingManager::getSentryUser: Sentry user loaded');
       return sentryUser;
     } catch (e, st) {
-      logError(
-        'CachingManager::getSentryUser: Cannot get sentry user',
-        exception: e,
-        stackTrace: st,
+      logWarning(
+        'CachingManager::getSentryUser: Cannot get sentry user, error: $e | stackTrace: $st',
       );
       return null;
     }
@@ -292,10 +288,8 @@ class CachingManager {
       await _sentryConfigurationCacheManager.clearSentryConfiguration();
       log('CachingManager::clearSentryConfiguration: Sentry configuration cleared successfully');
     } catch (e, st) {
-      logError(
-        'CachingManager::clearSentryConfiguration: throw exception',
-        exception: e,
-        stackTrace: st,
+      logWarning(
+        'CachingManager::clearSentryConfiguration: throw exception, error: $e | stackTrace: $st',
       );
     }
   }
