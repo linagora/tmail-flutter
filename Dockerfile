@@ -50,12 +50,15 @@ RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENT
 # The build will NOT fail if this step is unavailable.
 # RUN sentry-cli releases set-commits "$SENTRY_RELEASE" --commit "$VCS_REF"
 
+RUN sentry-cli sourcemaps list --release "$SENTRY_RELEASE"
+
 RUN sentry-cli sourcemaps upload build/web \
         --release "$SENTRY_RELEASE" \
         --dist "$GITHUB_SHA" \
         --url-prefix "~/" \
-        --validate && \
-    sentry-cli releases finalize "$SENTRY_RELEASE"
+        --validate
+
+RUN sentry-cli releases finalize "$SENTRY_RELEASE"
 
 # Stage 2 - Create the run-time image
 FROM nginx:alpine
