@@ -8,6 +8,7 @@ part 'sentry_config_linagora_ecosystem.g.dart';
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
+  @JsonKey(fromJson: _parseBool)
   final bool? enabled;
   final String? dsn;
   final String? environment;
@@ -16,6 +17,13 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
 
   factory SentryConfigLinagoraEcosystem.fromJson(Map<String, dynamic> json) =>
       _$SentryConfigLinagoraEcosystemFromJson(json);
+
+  static bool? _parseBool(dynamic value) {
+    if (value == null) return null;
+    if (value is bool) return value;
+    if (value is String) return value.toLowerCase() == 'true';
+    return null;
+  }
 
   Map<String, dynamic> toJson() => _$SentryConfigLinagoraEcosystemToJson(this);
 
