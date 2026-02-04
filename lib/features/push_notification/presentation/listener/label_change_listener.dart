@@ -11,11 +11,10 @@ class LabelChangeListener extends ChangeListener {
   LabelController? _labelController;
 
   LabelChangeListener._internal() {
-    try {
-      _labelController = getBinding<LabelController>();
-    } catch (e) {
-      logError(
-          'LabelChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
+    _labelController = getBinding<LabelController>();
+    if (_labelController == null) {
+      logWarning(
+          'LabelChangeListener::_internal(): LabelController IS NOT REGISTERED');
     }
   }
 

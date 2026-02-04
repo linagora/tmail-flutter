@@ -19,6 +19,8 @@ import 'package:uuid/uuid.dart';
 class LabelApi
     with HandleSetErrorMixin, SessionMixin, BatchGetLabelProcessingMixin {
 
+  static const int _defaultMaxChanges = 128;
+
   final HttpClient _httpClient;
   final Uuid _uuid;
 
@@ -179,7 +181,7 @@ class LabelApi
     final changesLabelMethod = ChangesLabelMethod(
       accountId,
       sinceState,
-      maxChanges: UnsignedInt(128),
+      maxChanges: UnsignedInt(_defaultMaxChanges),
     );
     final changesLabelInvocation =
         jmapRequestBuilder.invocation(changesLabelMethod);

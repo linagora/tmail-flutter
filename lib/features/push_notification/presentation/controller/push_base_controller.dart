@@ -78,7 +78,7 @@ abstract class PushBaseController {
       .nonNulls
       .toList();
 
-    log('PushBaseController::mappingTypeStateToAction():listMailboxActions: $listEmailActions');
+    log('PushBaseController::mappingTypeStateToAction():listMailboxActions: $listMailboxActions');
 
     if (listMailboxActions.isNotEmpty) {
       mailboxChangeListener.dispatchActions(listMailboxActions);
