@@ -14,12 +14,14 @@ class AiScribeSuggestionSuccessListActions extends StatelessWidget {
   final String suggestionText;
   final bool hasContent;
   final OnSelectAiScribeSuggestionAction onSelectAction;
+  final VoidCallback onLoadSuggestion;
 
   const AiScribeSuggestionSuccessListActions({
     super.key,
     required this.imagePaths,
     required this.suggestionText,
     required this.onSelectAction,
+    required this.onLoadSuggestion,
     this.hasContent = false,
   });
 
@@ -27,45 +29,50 @@ class AiScribeSuggestionSuccessListActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = ScribeLocalizations.of(context);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      spacing: 8,
+    return Column(
       children: [
-        if (hasContent)
-          Flexible(
-            child: Container(
-              constraints: const BoxConstraints(minWidth: 67),
-              height: 36,
-              child: ConfirmDialogButton(
-                label: AiScribeSuggestionActions.replace.getLabel(localizations),
-                textColor: AppColor.primaryMain,
-                onTapAction: () {
-                  Navigator.of(context).pop();
-                  onSelectAction(
-                    AiScribeSuggestionActions.replace,
-                    suggestionText,
-                  );
-                },
+        AiScribeSuggestionSuccessToolbar(suggestionText: suggestionText, onLoadSuggestion: onLoadSuggestion, imagePaths: imagePaths),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          spacing: 8,
+          children: [
+            if (hasContent)
+              Flexible(
+                child: Container(
+                  constraints: const BoxConstraints(minWidth: 67),
+                  height: 36,
+                  child: ConfirmDialogButton(
+                    label: AiScribeSuggestionActions.replace.getLabel(localizations),
+                    textColor: AppColor.primaryMain,
+                    onTapAction: () {
+                      Navigator.of(context).pop();
+                      onSelectAction(
+                        AiScribeSuggestionActions.replace,
+                        suggestionText,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            Flexible(
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 72),
+                height: 36,
+                child: ConfirmDialogButton(
+                  label: AiScribeSuggestionActions.insert.getLabel(localizations),
+                  backgroundColor: AppColor.blueD2E9FF,
+                  textColor: AppColor.primaryMain,
+                  onTapAction: () {
+                    Navigator.of(context).pop();
+                    onSelectAction(
+                      AiScribeSuggestionActions.insert,
+                      suggestionText,
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        Flexible(
-          child: Container(
-            constraints: const BoxConstraints(minWidth: 72),
-            height: 36,
-            child: ConfirmDialogButton(
-              label: AiScribeSuggestionActions.insert.getLabel(localizations),
-              backgroundColor: AppColor.blueD2E9FF,
-              textColor: AppColor.primaryMain,
-              onTapAction: () {
-                Navigator.of(context).pop();
-                onSelectAction(
-                  AiScribeSuggestionActions.insert,
-                  suggestionText,
-                );
-              },
-            ),
-          ),
+          ],
         ),
       ],
     );

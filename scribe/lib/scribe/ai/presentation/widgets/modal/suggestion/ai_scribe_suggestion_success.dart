@@ -7,12 +7,14 @@ class AiScribeSuggestionSuccess extends StatelessWidget {
   final String suggestionText;
   final bool hasContent;
   final OnSelectAiScribeSuggestionAction onSelectAction;
+  final VoidCallback onLoadSuggestion;
 
   const AiScribeSuggestionSuccess({
     super.key,
     required this.imagePaths,
     required this.suggestionText,
     required this.onSelectAction,
+    required this.onLoadSuggestion,
     this.hasContent = false,
   });
 
@@ -42,6 +44,7 @@ class AiScribeSuggestionSuccess extends StatelessWidget {
             suggestionText: suggestionText,
             hasContent: hasContent,
             onSelectAction: onSelectAction,
+            onLoadSuggestion: onLoadSuggestion,
           ),
         ],
       ),
