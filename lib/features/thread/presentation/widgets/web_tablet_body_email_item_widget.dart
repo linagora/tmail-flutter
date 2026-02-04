@@ -22,6 +22,7 @@ class WebTabletBodyEmailItemWidget extends StatefulWidget {
   final bool canDeletePermanently;
   final bool isSearchEmailRunning;
   final bool isShowingEmailContent;
+  final bool isLabelMailboxOpened;
   final bool isShowDateTimeView;
   final bool isDrag;
   final bool isSenderImportantFlagEnabled;
@@ -40,6 +41,7 @@ class WebTabletBodyEmailItemWidget extends StatefulWidget {
     required this.selectAllMode,
     required this.canDeletePermanently,
     required this.isSearchEmailRunning,
+    required this.isLabelMailboxOpened,
     required this.isShowingEmailContent,
     required this.isDrag,
     required this.isSenderImportantFlagEnabled,
@@ -153,6 +155,7 @@ class _WebTabletBodyEmailItemWidgetState
                             buildMailboxContain(
                               context,
                               widget.isSearchEmailRunning,
+                              widget.isLabelMailboxOpened,
                               widget.presentationEmail,
                             ),
                             if (widget.presentationEmail.hasStarred)

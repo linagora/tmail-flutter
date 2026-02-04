@@ -24,6 +24,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
   final bool isSenderImportantFlagEnabled;
   final bool isAINeedsActionEnabled;
   final bool autoWrapTagsByMaxWidth;
+  final bool isLabelMailboxOpened;
   final List<Label>? labels;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
@@ -39,6 +40,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
     this.isSenderImportantFlagEnabled = true,
     this.isAINeedsActionEnabled = true,
     this.autoWrapTagsByMaxWidth = false,
+    this.isLabelMailboxOpened = false,
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
@@ -121,6 +123,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
                     buildMailboxContain(
                       context,
                       isSearchEmailRunning,
+                      isLabelMailboxOpened,
                       presentationEmail),
                     if (presentationEmail.hasStarred)
                       Padding(

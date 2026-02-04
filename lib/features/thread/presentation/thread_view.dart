@@ -19,7 +19,7 @@ import 'package:tmail_ui_user/features/labels/presentation/mixin/label_sub_menu_
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/presentation_label_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
@@ -530,6 +530,9 @@ class ThreadView extends GetWidget<ThreadController>
 
       final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
 
+      final isLabelMailboxOpened =
+          dashboardController.selectedMailbox.value?.isLabelMailbox == true;
+
       return EmailTileBuilder(
         key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
         presentationEmail: presentationEmail,
@@ -538,6 +541,7 @@ class ThreadView extends GetWidget<ThreadController>
         searchQuery: controller.searchQuery,
         mailboxContain: presentationEmail.mailboxContain,
         isSearchEmailRunning: isSearchEmailRunning,
+        isLabelMailboxOpened: isLabelMailboxOpened,
         isDrag: true,
         isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
         isAINeedsActionEnabled: isAINeedsActionEnabled,
@@ -629,14 +633,17 @@ class ThreadView extends GetWidget<ThreadController>
       final isLabelAvailable = controller
           .mailboxDashBoardController.isLabelAvailable;
 
-        final listLabels =
-            controller.mailboxDashBoardController.labelController.labels;
+      final listLabels =
+          controller.mailboxDashBoardController.labelController.labels;
 
-        List<Label>? emailLabels;
+      final isLabelMailboxOpened =
+          controller.selectedMailbox?.isLabelMailbox == true;
 
-        if (isLabelAvailable) {
-          emailLabels = presentationEmail.getLabelList(listLabels);
-        }
+      List<Label>? emailLabels;
+
+      if (isLabelAvailable) {
+        emailLabels = presentationEmail.getLabelList(listLabels);
+      }
 
       return Dismissible(
         key: ValueKey<EmailId?>(presentationEmail.id),
@@ -661,6 +668,7 @@ class ThreadView extends GetWidget<ThreadController>
           mailboxContain: presentationEmail.mailboxContain,
           isSearchEmailRunning: isSearchEmailRunning,
           isAINeedsActionEnabled: isAINeedsActionEnabled,
+          isLabelMailboxOpened: isLabelMailboxOpened,
           labels: emailLabels,
           emailActionClick: _handleEmailActionClicked,
           onMoreActionClick: (email, position) async {
@@ -772,8 +780,7 @@ class ThreadView extends GetWidget<ThreadController>
               isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
               isFavoriteFolder: controller.selectedMailbox?.isFavorite == true,
               isActionRequiredFolder: controller.selectedMailbox?.isActionRequired == true,
-              isLabelMailbox:
-                controller.selectedMailbox is PresentationLabelMailbox,
+              isLabelMailbox: controller.selectedMailbox?.isLabelMailbox == true,
             ),
           );
         }
