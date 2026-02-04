@@ -622,7 +622,7 @@ class EmailActionReactor {
     required List<Label>? labels,
     OnSelectLabelAction? onSelectLabelAction,
   }) {
-    if (actionType == EmailActionType.labelAs && labels?.isNotEmpty == true) {
+    if (actionType == EmailActionType.labelAs) {
       final listLabels = labels ?? [];
       final emailLabels = presentationEmail.getLabelList(listLabels);
 
