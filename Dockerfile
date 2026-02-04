@@ -50,6 +50,7 @@ RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENT
 # RUN sentry-cli releases set-commits "$SENTRY_RELEASE" --commit "$VCS_REF"
 
 RUN sentry-cli sourcemaps upload build/web \
+        --release "$SENTRY_RELEASE" \
         --url-prefix "~/" \
         --validate && \
     sentry-cli releases finalize "$SENTRY_RELEASE"
