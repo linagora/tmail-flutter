@@ -47,15 +47,6 @@ jobs:
           echo "SENTRY_AUTH_TOKEN: $TOKEN_CHECK"
           echo "SENTRY_URL: $URL_CHECK"
           echo "================================="
-      - name: Associate Sentry commits
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-          SENTRY_RELEASE: ${{ steps.app_version.outputs.version }}
-        run: |
-          curl -sL https://sentry.io/get-cli/ | bash
-          sentry-cli releases set-commits "$SENTRY_RELEASE" --auto
           
       - name: Docker metadata
         id: meta

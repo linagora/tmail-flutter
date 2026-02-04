@@ -28,8 +28,10 @@ COPY . .
 # Precompile tmail flutter
 RUN ./scripts/prebuild.sh
 
+RUN curl -sL https://sentry.io/get-cli/ | bash
+
 # Build flutter for web (with source maps for Sentry)
-RUN flutter build web --release --source-maps
+RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE
 
 # Upload source maps to Sentry when all required variables are available.
 # The build will NOT fail if this step is unavailable.
@@ -56,7 +58,11 @@ RUN if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJ
         echo "upload.sourcemaps.urlPrefix=~/"; \
       } > sentry.properties && \
       echo "Uploading sourcemaps to Sentry using sentry_dart_plugin..." && \
-      dart run sentry_dart_plugin --ignore-missing || echo "Sentry sourcemaps upload failed, continuing" && \
+      sentry-cli releases new "$SENTRY_RELEASE" || true && \
+      sentry-cli releases files "$SENTRY_RELEASE" upload-sourcemaps build/web \
+        --url-prefix "~/" \
+        --validate && \
+      sentry-cli releases finalize "$SENTRY_RELEASE" && \
       rm -f sentry.properties && \
       echo "Sourcemap upload completed"; \
     else \
