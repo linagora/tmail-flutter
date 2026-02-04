@@ -37,7 +37,7 @@ ENV SENTRY_RELEASE=$SENTRY_RELEASE
 # Precompile tmail flutter
 RUN ./scripts/prebuild.sh
 
-RUN curl -sL https://sentry.io/get-cli/ | bash
+RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=2.20.7 bash
 
 RUN sentry-cli releases new "$SENTRY_RELEASE" || true
 
@@ -57,9 +57,8 @@ RUN sentry-cli sourcemaps upload build/web \
         --release "$SENTRY_RELEASE" \
         --dist "$GITHUB_SHA" \
         --url-prefix "~/" \
-        --no-rewrite \
         --validate \
-        --wait-for 360
+        --wait
 
 RUN sentry-cli releases finalize "$SENTRY_RELEASE"
 
