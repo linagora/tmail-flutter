@@ -170,6 +170,7 @@ jobs:
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
             SENTRY_URL=${{ secrets.SENTRY_URL }}
             SENTRY_RELEASE=${{ steps.app_version.outputs.version }}
+            VCS_REF=${{ github.repository }}@${{ github.sha }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
