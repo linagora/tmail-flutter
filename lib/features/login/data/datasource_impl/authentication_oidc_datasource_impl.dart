@@ -104,24 +104,6 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   }
 
   @override
-  Future<TokenOIDC> refreshingTokensOIDC(
-    String clientId,
-    String redirectUrl,
-    String discoveryUrl,
-    List<String> scopes,
-    String refreshToken
-  ) {
-    return Future.sync(() async {
-      return await _authenticationClient.refreshingTokensOIDC(
-        clientId,
-        redirectUrl,
-        discoveryUrl,
-        scopes,
-        refreshToken);
-    }).catchError(_exceptionThrower.throwException);
-  }
-
-  @override
   Future<bool> logout(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery) {
     return Future.sync(() async {
        return await _authenticationClient.logoutOidc(tokenId, config, oidcRescovery);
