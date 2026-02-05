@@ -48,7 +48,7 @@ class _AiAssistantAnimatedButtonState extends State<AiAssistantAnimatedButton>
       onTapActionCallback: widget.onTapActionCallback,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
-        onHover: (event) {
+        onEnter: (event) {
           _animationController.forward();
         },
         onExit: (event) {
