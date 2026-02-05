@@ -301,6 +301,8 @@ dev_dependencies:
   patrol_finders: 2.9.0
 
   plugin_platform_interface: 2.1.8
+  
+  sentry_dart_plugin: ^3.0.0
 
 dependency_overrides:
   firebase_core_platform_interface: 4.8.0

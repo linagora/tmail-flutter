@@ -1,17 +1,66 @@
 ARG FLUTTER_VERSION=3.32.8
+
+# Sentry build-time configuration (used only during the build stage)
+# These values are provided via GitHub Actions secrets and are NOT persisted
+# into the final runtime image.
+ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ARG SENTRY_URL
+ARG SENTRY_RELEASE
+
 # Stage 1 - Install dependencies and build the app
 # This matches the flutter version on our CI/CD pipeline on Github
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
+
+# Re-declare ARGs in this stage to make them available in RUN commands
+ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ARG SENTRY_URL
+ARG SENTRY_RELEASE
+ARG VCS_REF
+ARG GITHUB_SHA
 
 # Set directory to Copy App
 WORKDIR /app
 
 COPY . .
 
+ENV GITHUB_SHA=$GITHUB_SHA
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+ENV SENTRY_ORG=$SENTRY_ORG
+ENV SENTRY_PROJECT=$SENTRY_PROJECT
+ENV SENTRY_URL=$SENTRY_URL
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
+
 # Precompile tmail flutter
 RUN ./scripts/prebuild.sh
-# Build flutter for web
-RUN flutter build web --release --source-maps
+
+RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=2.20.7 bash
+
+RUN sentry-cli releases new "$SENTRY_RELEASE" || true
+
+# Build flutter for web (with source maps for Sentry)
+RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE
+
+# RUN echo "VCS_REF is $VCS_REF"
+
+# Upload source maps to Sentry when all required variables are available.
+# The build will NOT fail if this step is unavailable.
+# RUN sentry-cli releases set-commits "$SENTRY_RELEASE" --commit "$VCS_REF"
+
+RUN sentry-cli sourcemaps upload build/web \
+        --org "$SENTRY_ORG" \
+        --project "$SENTRY_PROJECT" \
+        --auth-token "$SENTRY_AUTH_TOKEN" \
+        --release "$SENTRY_RELEASE" \
+        --dist "$GITHUB_SHA" \
+        --url-prefix "~/" \
+        --validate \
+        --wait
+
+RUN sentry-cli releases finalize "$SENTRY_RELEASE"
 
 # Stage 2 - Create the run-time image
 FROM nginx:alpine
