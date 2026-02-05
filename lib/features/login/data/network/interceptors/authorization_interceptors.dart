@@ -142,6 +142,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         log('AuthorizationInterceptors::onError: Request using old token');
         isRetryRequest = true;
       } else {
+        logTrace(
+          'AuthorizationInterceptors::onError: '
+          '401 received but refresh skipped. '
+          'statusCode = ${err.response?.statusCode} | '
+          'authType = $_authenticationType | '
+          'hasConfig = ${_configOIDC != null} | '
+          'url = ${err.requestOptions.uri}',
+          webConsoleEnabled: true,
+        );
         return super.onError(err, handler);
       }
 
@@ -238,6 +247,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       'hasAccessToken = $hasAccessToken | '
       'hasRefreshToken = $hasRefreshToken | '
       'isExpired = $isExpired | '
+      'expiredTime = ${tokenOIDC?.expiredTime} | '
+      'now = ${DateTime.now()} | '
       'canProceedRefresh = $canProceedRefresh',
       webConsoleEnabled: true,
     );
