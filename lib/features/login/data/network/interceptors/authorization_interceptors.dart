@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
@@ -93,24 +94,47 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         responseStatusCode: err.response?.statusCode,
         tokenOIDC: _token
       )) {
-        log('AuthorizationInterceptors::onError: Perform get New Token');
-        final newTokenOidc = PlatformInfo.isIOS
-          ? await _getNewTokenForIOSPlatform()
-          : await _getNewTokenForOtherPlatform();
+        try {
+          log('AuthorizationInterceptors::onError: Perform get New Token');
+          final newTokenOidc = PlatformInfo.isIOS
+            ? await _getNewTokenForIOSPlatform()
+            : await _getNewTokenForOtherPlatform();
 
-        if (newTokenOidc.token == _token?.token) {
-          log('AuthorizationInterceptors::onError: Token duplicated');
+          if (newTokenOidc.token == _token?.token) {
+            log('AuthorizationInterceptors::onError: Token duplicated');
+            return super.onError(err, handler);
+          }
+          _updateNewToken(newTokenOidc);
+
+          final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
+
+          if (PlatformInfo.isIOS) {
+            await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
+          }
+
+          isRetryRequest = true;
+        } on DioException catch (refreshError, st) {
+          if (refreshError.response?.statusCode == 400) {
+            logError(
+              'AuthorizationInterceptors: Refresh Token Failed 400',
+              exception: refreshError,
+              stackTrace: st,
+            );
+
+            clear();
+
+            final sessionExpiredError = DioException(
+              requestOptions: err.requestOptions,
+              error: RefreshTokenFailedException(),
+              type: DioExceptionType.badResponse,
+              response: refreshError.response,
+            );
+
+            return handler.reject(sessionExpiredError);
+          }
+
           return super.onError(err, handler);
         }
-        _updateNewToken(newTokenOidc);
-
-        final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
-
-        if (PlatformInfo.isIOS) {
-          await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
-        }
-
-        isRetryRequest = true;
       } else if (validateToRetryTheRequestWithNewToken(
         authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
         tokenOIDC: _token
