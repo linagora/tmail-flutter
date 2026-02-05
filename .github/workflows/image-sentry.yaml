@@ -9,6 +9,11 @@ on:
 
 name: Build Docker images with Sentry
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
 jobs:
   build-dev-image-with-sentry:
     name: Build development image with Sentry
@@ -187,6 +192,7 @@ jobs:
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
             SENTRY_URL=${{ secrets.SENTRY_URL }}
             SENTRY_RELEASE=${{ steps.app_version.outputs.version }}
+            GITHUB_SHA=${{ github.sha }}
             VCS_REF=${{ github.repository }}@${{ github.sha }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
