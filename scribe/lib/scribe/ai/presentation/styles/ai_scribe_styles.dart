@@ -12,7 +12,7 @@ abstract final class AIScribeColors {
   // Icons
   static const Color scribeIcon = AppColor.primaryMain;
   static const Color aiAssistantIcon = AppColor.primaryMain;
-  static final Color bottomsheetIcon = AppColor.gray424244.withValues(alpha: 0.72);
+  static final Color secondaryIcon = AppColor.gray424244.withValues(alpha: 0.72);
 
   // Overlays
   static final Color dialogBarrier = Colors.black.withValues(alpha: 0.12);

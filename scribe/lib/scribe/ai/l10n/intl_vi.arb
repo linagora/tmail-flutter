@@ -125,5 +125,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "copy": "Sao chép",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "Thử lại",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
