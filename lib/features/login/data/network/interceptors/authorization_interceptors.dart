@@ -217,25 +217,56 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   bool _isRefreshTokenNotEmpty(TokenOIDC? tokenOIDC) => tokenOIDC?.refreshToken.isNotEmpty == true;
 
-  bool validateToRefreshToken({
-    required int? responseStatusCode,
-    required TokenOIDC? tokenOIDC
-  }) {
-    return responseStatusCode == 401
-      && _isAuthenticationOidcValid()
-      && _isTokenNotEmpty(tokenOIDC)
-      && _isRefreshTokenNotEmpty(tokenOIDC)
-      && _isTokenExpired(tokenOIDC);
+  bool validateToRefreshToken(
+      {required int? responseStatusCode, required TokenOIDC? tokenOIDC}) {
+    final isStatusCode401 = responseStatusCode == 401;
+    final isLoginWithOIDC = _isAuthenticationOidcValid();
+    final hasAccessToken = _isTokenNotEmpty(tokenOIDC);
+    final hasRefreshToken = _isRefreshTokenNotEmpty(tokenOIDC);
+    final isExpired = _isTokenExpired(tokenOIDC);
+
+    final canProceedRefresh = isStatusCode401 &&
+        isLoginWithOIDC &&
+        hasAccessToken &&
+        hasRefreshToken &&
+        isExpired;
+
+    logTrace(
+      'AuthorizationInterceptors::validateToRefreshToken: '
+      'isStatusCode401 = $isStatusCode401 | '
+      'isLoginWithOIDC = $isLoginWithOIDC | '
+      'hasAccessToken = $hasAccessToken | '
+      'hasRefreshToken = $hasRefreshToken | '
+      'isExpired = $isExpired | '
+      'canProceedRefresh = $canProceedRefresh',
+      webConsoleEnabled: true,
+    );
+
+    return canProceedRefresh;
   }
 
-  bool validateToRetryTheRequestWithNewToken({
-    required String? authHeader,
-    required TokenOIDC? tokenOIDC
-  }) {
-    return authHeader != null
-      && _isTokenNotEmpty(tokenOIDC)
-      && !_isTokenExpired(tokenOIDC)
-      && !authHeader.contains(tokenOIDC!.token);
+  bool validateToRetryTheRequestWithNewToken(
+      {required String? authHeader, required TokenOIDC? tokenOIDC}) {
+    final hasAuthHeader = authHeader != null;
+    final hasAccessToken = _isTokenNotEmpty(tokenOIDC);
+    final isTokenStillValid = !_isTokenExpired(tokenOIDC);
+    final isTokenUpdated =
+        tokenOIDC != null && authHeader?.contains(tokenOIDC.token) != true;
+
+    final shouldRetry =
+        hasAuthHeader && hasAccessToken && isTokenStillValid && isTokenUpdated;
+
+    logTrace(
+      'AuthorizationInterceptors::validateToRetryWithNewToken: '
+      'hasHeader = $hasAuthHeader | '
+      'hasAccessToken = $hasAccessToken | '
+      'isTokenValid = $isTokenStillValid | '
+      'isNewToken = $isTokenUpdated | '
+      'shouldRetry = $shouldRetry',
+      webConsoleEnabled: true,
+    );
+
+    return shouldRetry;
   }
 
   String _getAuthorizationAsBasicHeader(String? authorization) => 'Basic $authorization';
