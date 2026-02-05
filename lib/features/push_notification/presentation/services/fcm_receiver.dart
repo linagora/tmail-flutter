@@ -5,9 +5,19 @@ import 'package:tmail_ui_user/features/push_notification/presentation/services/f
 
 @pragma('vm:entry-point')
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
-  FcmService.instance.initialStreamController();
-  FcmMessageController.instance.initialize();
-  FcmService.instance.handleFirebaseBackgroundMessage(message);
+  try {
+    FcmService.instance.initialStreamController();
+    FcmMessageController.instance.initialize();
+    await FcmMessageController.instance.initialAppConfig();
+    await FcmMessageController.instance.setUpSentryConfiguration();
+    FcmService.instance.handleFirebaseBackgroundMessage(message);
+  } catch (e, st) {
+    logError(
+      'FcmReceiver::handleFirebaseBackgroundMessage: throw exception',
+      exception: e,
+      stackTrace: st,
+    );
+  }
 }
 
 class FcmReceiver {
@@ -34,8 +44,12 @@ class FcmReceiver {
       final token = await FirebaseMessaging.instance.getToken();
       log('FcmReceiver::_getInitialToken:token: $token');
       return token;
-    } catch (e) {
-      logWarning('FcmReceiver::_getInitialToken: TYPE = ${e.runtimeType} | Exception = $e');
+    } catch (e, st) {
+      logError(
+        'FcmReceiver::_getInitialToken:',
+        exception: e,
+        stackTrace: st,
+      );
       return null;
     }
   }
@@ -44,11 +58,19 @@ class FcmReceiver {
     final token = await _getInitialToken();
     FcmService.instance.handleToken(token);
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-      log('FcmReceiver::_onHandleFcmToken:onTokenRefresh: $newToken');
-      if (newToken != token) {
-        FcmService.instance.handleToken(newToken);
+    FirebaseMessaging.instance.onTokenRefresh.listen(
+      (newToken) {
+        if (newToken != token) {
+          FcmService.instance.handleToken(newToken);
+        }
+      },
+      onError: (e, st) {
+        logError(
+          'FcmReceiver::_onHandleFcmToken:onTokenRefresh:',
+          exception: e,
+          stackTrace: st,
+        );
       }
-    });
+    );
   }
 }
