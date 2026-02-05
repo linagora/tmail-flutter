@@ -24,7 +24,7 @@ RUN ./scripts/prebuild.sh && \
     if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT" ] && [ -n "$SENTRY_RELEASE" ]; then \
         echo "Sentry configuration detected, uploading sourcemaps..." && \
         curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=2.20.7 bash && \
-        sentry-cli releases new "$SENTRY_RELEASE" || true && \
+        sentry-cli releases new "$SENTRY_RELEASE" && \
         sentry-cli sourcemaps upload build/web \
             --org "$SENTRY_ORG" \
             --project "$SENTRY_PROJECT" \
@@ -33,8 +33,9 @@ RUN ./scripts/prebuild.sh && \
             --dist "$GITHUB_SHA" \
             --url-prefix "~/" \
             --validate \
-            --wait || echo "Sentry sourcemaps upload failed, continuing build" && \
-        sentry-cli releases finalize "$SENTRY_RELEASE" || echo "Sentry release finalize failed, continuing build"; \
+            --wait && \
+        sentry-cli releases finalize "$SENTRY_RELEASE" && \
+        echo "Sentry sourcemaps uploaded successfully"; \
     else \
         echo "Sentry configuration not complete, skipping sourcemap upload"; \
     fi
