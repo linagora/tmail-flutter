@@ -9,12 +9,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/account/authentication_type.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 import '../../fixtures/account_fixtures.dart';
@@ -47,6 +49,20 @@ void main() {
     response: Response(
       statusCode: responseStatusCode401,
       requestOptions: RequestOptions(path: baseUrl)
+    ),
+    type: DioExceptionType.badResponse,
+  );
+
+  final dioErrorRefresh400 = DioException(
+    error: {
+      'error': 'invalid_grant',
+      'error_description': 'Refresh token expired',
+    },
+    requestOptions: RequestOptions(path: '/token', method: 'POST'),
+    response: Response(
+      statusCode: 400,
+      requestOptions: RequestOptions(path: '/token'),
+      data: {'error': 'invalid_grant'},
     ),
     type: DioExceptionType.badResponse,
   );
@@ -373,6 +389,110 @@ void main() {
 
       verifyZeroInteractions(authenticationClient);
     });
+  });
+
+  group('Refresh Token Failed Handling (400 Bad Request)', () {
+    test(
+      'WHEN make a request with `tokenOidcExpiredTime`\n'
+      'AND returns error `dioError401`\n'
+      'THEN refresh token is called\n'
+      'AND refresh token call returns 400 (Invalid Grant)\n'
+      'THEN interceptor SHOULD reject with `RefreshTokenFailedException`\n'
+      'AND interceptor state SHOULD be cleared',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, dioError401),
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenThrow(dioErrorRefresh400);
+
+        when(accountCacheManager.getCurrentAccount())
+            .thenAnswer((_) async => AccountFixtures.aliceAccount);
+
+        await expectLater(
+          () async => await dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            final isCorrectType = e.type == DioExceptionType.badResponse;
+            final isCustomError = e.error is RefreshTokenFailedException;
+            final has400Response = e.response?.statusCode == 400;
+
+            return isCorrectType && isCustomError && has400Response;
+          })),
+        );
+
+        verify(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).called(1);
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.none,
+        );
+      },
+    );
+
+    test(
+      'WHEN refresh token fails with other error (e.g., 500)\n'
+      'THEN interceptor SHOULD NOT throw `RefreshTokenFailedException`\n'
+      'AND SHOULD return original error from super.onError',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, dioError401),
+        );
+
+        final dioErrorRefresh500 = DioException(
+          requestOptions: RequestOptions(path: '/token'),
+          response: Response(
+            statusCode: 500,
+            requestOptions: RequestOptions(path: '/token'),
+          ),
+          type: DioExceptionType.badResponse,
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenThrow(dioErrorRefresh500);
+
+        await expectLater(
+          () async => await dio.post(baseUrl),
+          throwsA(predicate<DioException>((e) {
+            return e.response?.statusCode == 401 ||
+                e.response?.statusCode == 500;
+          })),
+        );
+
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
+        );
+      },
+    );
   });
 
   tearDown(() {
