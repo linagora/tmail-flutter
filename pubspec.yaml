@@ -302,9 +302,6 @@ dev_dependencies:
 
   plugin_platform_interface: 2.1.8
 
-  # Used in CI/Docker to upload Flutter web sourcemaps to Sentry
-  sentry_dart_plugin: ^3.0.0
-
 dependency_overrides:
   firebase_core_platform_interface: 4.8.0
 
