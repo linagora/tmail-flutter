@@ -1,14 +1,17 @@
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/container/tmail_container_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:scribe/scribe.dart';
 
 class AiAssistantAnimatedButton extends StatefulWidget {
+  final ImagePaths imagePaths;
   final void Function() onTapActionCallback;
   final EdgeInsetsGeometry? margin;
 
   const AiAssistantAnimatedButton({
     super.key,
+    required this.imagePaths,
     required this.onTapActionCallback,
     this.margin,
   });
@@ -52,7 +55,7 @@ class _AiAssistantAnimatedButtonState extends State<AiAssistantAnimatedButton>
           _animationController.reset();
         },
         child: Lottie.asset(
-          'assets/animations/lottie-scribe.json',
+          widget.imagePaths.animLottieScribe,
           width: AIScribeSizes.aiAssistantIcon,
           height: AIScribeSizes.aiAssistantIcon,
           fit: BoxFit.fill,

@@ -27,6 +27,7 @@ class AiAssistantButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (PlatformInfo.isWebDesktop) {
       return AiAssistantAnimatedButton(
+        imagePaths: imagePaths,
         onTapActionCallback: () => _onTapActionCallback(context),
         margin: margin,
       );
