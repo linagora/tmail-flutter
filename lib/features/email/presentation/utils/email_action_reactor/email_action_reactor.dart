@@ -81,6 +81,12 @@ typedef OpenPopupMenuActionGroup = Future<void> Function(
   PopupMenuActionGroupWidget popupMenuWidget,
 );
 
+typedef OnHandleEmailByActionType = void Function(
+  EmailActionType actionType,
+  PresentationEmail presentationEmail,
+  PresentationMailbox? mailboxContain,
+);
+
 class EmailActionReactor with LabelSubMenuMixin {
   EmailActionReactor(
     this._markAsEmailReadInteractor,
