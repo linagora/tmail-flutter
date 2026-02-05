@@ -76,6 +76,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_inter
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
+import 'package:tmail_ui_user/features/thread/presentation/mixin/email_more_action_context_menu_mixin.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/mail_list_shortcut_action_view_event.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -89,7 +90,8 @@ class SearchEmailController extends BaseController
     with EmailActionController,
         DateRangePickerMixin,
         SearchLabelFilterModalMixin,
-        LabelSubMenuMixin {
+        LabelSubMenuMixin,
+        EmailMoreActionContextMenu {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -912,10 +914,9 @@ class SearchEmailController extends BaseController
   }
 
   void pressEmailAction(
-      BuildContext context,
       EmailActionType actionType,
       PresentationEmail selectedEmail,
-      {required PresentationMailbox? mailboxContain}
+      PresentationMailbox? mailboxContain,
   ) {
     switch(actionType) {
       case EmailActionType.preview:
@@ -926,7 +927,7 @@ class SearchEmailController extends BaseController
         }
         break;
       case EmailActionType.selection:
-        selectEmail(context, selectedEmail);
+        selectEmail(selectedEmail);
         break;
       case EmailActionType.markAsRead:
         markAsEmailRead(selectedEmail, ReadActions.markAsRead, MarkReadAction.tap);
@@ -947,7 +948,11 @@ class SearchEmailController extends BaseController
         moveToTrash(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.deletePermanently:
-        deleteEmailPermanently(context, selectedEmail);
+        if (currentContext != null) {
+          deleteEmailPermanently(currentContext!, selectedEmail);
+        } else {
+          logWarning('SearchEmailController.pressEmailAction: currentContext is null');
+        }
         break;
       case EmailActionType.moveToSpam:
         moveToSpam(selectedEmail, mailboxContain: mailboxContain);
@@ -963,7 +968,7 @@ class SearchEmailController extends BaseController
     }
   }
 
-  void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
+  void selectEmail(PresentationEmail presentationEmailSelected) {
     listResultSearch.value = listResultSearch
         .map((email) => email.id == presentationEmailSelected.id ? email.toggleSelect() : email)
         .toList();
