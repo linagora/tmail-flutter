@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/add_label_to_list_emails_action_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -80,7 +81,9 @@ import 'package:universal_html/html.dart' as html;
 typedef StartRangeSelection = int;
 typedef EndRangeSelection = int;
 
-class ThreadController extends BaseController with EmailActionController {
+class ThreadController extends BaseController
+    with EmailActionController,
+        AddLabelToListEmailsActionMixin {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -1192,6 +1195,12 @@ class ThreadController extends BaseController with EmailActionController {
         break;
       case EmailActionType.compose:
         mailboxDashBoardController.openComposer(ComposerArguments());
+        break;
+      case EmailActionType.labelAs:
+        openChooseLabelModal(
+          labels: mailboxDashBoardController.labelController.labels,
+          imagePaths: imagePaths,
+        );
         break;
       default:
         break;

@@ -6,18 +6,21 @@ import 'package:flutter/material.dart';
 class DefaultCloseButtonWidget extends StatelessWidget {
   final String iconClose;
   final VoidCallback onTapActionCallback;
+  final bool isAlignTopEnd;
 
   const DefaultCloseButtonWidget({
     super.key,
     required this.iconClose,
     required this.onTapActionCallback,
+    this.isAlignTopEnd = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return PositionedDirectional(
       top: 4,
-      end: 4,
+      end: isAlignTopEnd ? 4 : null,
+      start: isAlignTopEnd ? 0 : 4,
       child: TMailButtonWidget.fromIcon(
         icon: iconClose,
         iconSize: 24,

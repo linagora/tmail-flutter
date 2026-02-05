@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-01-26T09:26:54.654131",
+  "@@last_modified": "2026-02-05T16:39:05.418474",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5450,6 +5450,12 @@
   },
   "deleteALabelFailure": "Delete a label failure",
   "@deleteALabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseLabel": "Choose label",
+  "@chooseLabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
