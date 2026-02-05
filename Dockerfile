@@ -1,19 +1,7 @@
 ARG FLUTTER_VERSION=3.32.8
 
-# Sentry build-time configuration (used only during the build stage)
-# These values are provided via GitHub Actions secrets and are NOT persisted
-# into the final runtime image.
-ARG SENTRY_AUTH_TOKEN
-ARG SENTRY_ORG
-ARG SENTRY_PROJECT
-ARG SENTRY_URL
-ARG SENTRY_RELEASE
-
-# Stage 1 - Install dependencies and build the app
-# This matches the flutter version on our CI/CD pipeline on Github
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
 
-# Re-declare ARGs in this stage to make them available in RUN commands
 ARG SENTRY_AUTH_TOKEN
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
@@ -22,35 +10,21 @@ ARG SENTRY_RELEASE
 ARG VCS_REF
 ARG GITHUB_SHA
 
-# Set directory to Copy App
 WORKDIR /app
-
 COPY . .
 
-ENV GITHUB_SHA=$GITHUB_SHA
-ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
-ENV SENTRY_ORG=$SENTRY_ORG
-ENV SENTRY_PROJECT=$SENTRY_PROJECT
-ENV SENTRY_URL=$SENTRY_URL
-ENV SENTRY_RELEASE=$SENTRY_RELEASE
+ENV GITHUB_SHA=$GITHUB_SHA \
+    SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN \
+    SENTRY_ORG=$SENTRY_ORG \
+    SENTRY_PROJECT=$SENTRY_PROJECT \
+    SENTRY_URL=$SENTRY_URL \
+    SENTRY_RELEASE=$SENTRY_RELEASE
 
-# Precompile tmail flutter
-RUN ./scripts/prebuild.sh
-
-RUN curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=2.20.7 bash
-
-RUN sentry-cli releases new "$SENTRY_RELEASE" || true
-
-# Build flutter for web (with source maps for Sentry)
-RUN flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE
-
-# RUN echo "VCS_REF is $VCS_REF"
-
-# Upload source maps to Sentry when all required variables are available.
-# The build will NOT fail if this step is unavailable.
-# RUN sentry-cli releases set-commits "$SENTRY_RELEASE" --commit "$VCS_REF"
-
-RUN sentry-cli sourcemaps upload build/web \
+RUN ./scripts/prebuild.sh && \
+    curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=2.20.7 bash && \
+    sentry-cli releases new "$SENTRY_RELEASE" || true && \
+    flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE && \
+    sentry-cli sourcemaps upload build/web \
         --org "$SENTRY_ORG" \
         --project "$SENTRY_PROJECT" \
         --auth-token "$SENTRY_AUTH_TOKEN" \
@@ -58,18 +32,12 @@ RUN sentry-cli sourcemaps upload build/web \
         --dist "$GITHUB_SHA" \
         --url-prefix "~/" \
         --validate \
-        --wait
+        --wait && \
+    sentry-cli releases finalize "$SENTRY_RELEASE"
 
-RUN sentry-cli releases finalize "$SENTRY_RELEASE"
-
-# Stage 2 - Create the run-time image
 FROM nginx:alpine
 RUN apk add gzip
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
 COPY --from=build-env /app/build/web /usr/share/nginx/html
-
-# Record the exposed port
 EXPOSE 80
-
-# Before stating NGinx, re-zip all the content to ensure customizations are propagated
 CMD gzip -k -r -f /usr/share/nginx/html/ && nginx -g 'daemon off;'
