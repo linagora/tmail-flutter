@@ -29,25 +29,8 @@ jobs:
         id: app_version
         run: |
           VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-          echo "Extracted version: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Debug Sentry build args
-        run: |
-          echo "=== Sentry Build Args Debug ==="
-          echo "SENTRY_RELEASE: ${{ steps.app_version.outputs.version }}"
-          echo ""
-          echo "Checking secrets (values are hidden for security):"
-          ORG_CHECK="${{ secrets.SENTRY_ORG != '' && '✓' || '✗' }}"
-          PROJECT_CHECK="${{ secrets.SENTRY_PROJECT != '' && '✓' || '✗' }}"
-          TOKEN_CHECK="${{ secrets.SENTRY_AUTH_TOKEN != '' && '✓' || '✗' }}"
-          URL_CHECK="${{ secrets.SENTRY_URL != '' && '✓' || '⚠ (optional)' }}"
-          echo "SENTRY_ORG: $ORG_CHECK"
-          echo "SENTRY_PROJECT: $PROJECT_CHECK"
-          echo "SENTRY_AUTH_TOKEN: $TOKEN_CHECK"
-          echo "SENTRY_URL: $URL_CHECK"
-          echo "================================="
-          
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -93,6 +76,54 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: Extract sourcemaps from Docker image
+        if: always()
+        run: |
+          # Get the first image tag (for amd64 platform)
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
+          
+          if [ -z "$IMAGE_TAG" ]; then
+            echo "No image tag found, skipping sourcemap extraction"
+            exit 0
+          fi
+          
+          echo "Extracting sourcemaps from image: $IMAGE_TAG"
+          
+          # Create temporary container to extract files
+          CONTAINER_ID=$(docker create --platform linux/amd64 "$IMAGE_TAG" 2>/dev/null | head -n1)
+          
+          if [ -n "$CONTAINER_ID" ]; then
+            echo "Created container: $CONTAINER_ID"
+            
+            # Create directory for sourcemaps
+            mkdir -p sourcemaps
+            
+            # Copy all files from container
+            docker cp "$CONTAINER_ID:/usr/share/nginx/html/." sourcemaps/ 2>/dev/null || true
+            
+            # Remove container
+            docker rm "$CONTAINER_ID" 2>/dev/null || true
+            
+            # Filter only .map files and keep directory structure
+            find sourcemaps -type f ! -name "*.map" -delete 2>/dev/null || true
+            
+            echo "Sourcemaps extracted:"
+            find sourcemaps -name "*.map" | head -10 || echo "No .map files found"
+            MAP_COUNT=$(find sourcemaps -name "*.map" 2>/dev/null | wc -l)
+            echo "Total .map files: $MAP_COUNT"
+          else
+            echo "Warning: Could not create container from image"
+          fi
+
+      - name: Upload sourcemaps as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sourcemaps-${{ steps.app_version.outputs.version }}
+          path: sourcemaps/**/*.map
+          retention-days: 30
+          if-no-files-found: warn
+
   build-release-image-with-sentry:
     name: Build release image with Sentry
     if: github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v')
@@ -102,6 +133,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -110,24 +143,7 @@ jobs:
         id: app_version
         run: |
           VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-          echo "Extracted version: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Debug Sentry build args
-        run: |
-          echo "=== Sentry Build Args Debug ==="
-          echo "SENTRY_RELEASE: ${{ steps.app_version.outputs.version }}"
-          echo ""
-          echo "Checking secrets (values are hidden for security):"
-          ORG_CHECK="${{ secrets.SENTRY_ORG != '' && '✓' || '✗' }}"
-          PROJECT_CHECK="${{ secrets.SENTRY_PROJECT != '' && '✓' || '✗' }}"
-          TOKEN_CHECK="${{ secrets.SENTRY_AUTH_TOKEN != '' && '✓' || '✗' }}"
-          URL_CHECK="${{ secrets.SENTRY_URL != '' && '✓' || '⚠ (optional)' }}"
-          echo "SENTRY_ORG: $ORG_CHECK"
-          echo "SENTRY_PROJECT: $PROJECT_CHECK"
-          echo "SENTRY_AUTH_TOKEN: $TOKEN_CHECK"
-          echo "SENTRY_URL: $URL_CHECK"
-          echo "================================="
 
       - name: Docker metadata
         id: meta
@@ -174,4 +190,52 @@ jobs:
             VCS_REF=${{ github.repository }}@${{ github.sha }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Extract sourcemaps from Docker image
+        if: always()
+        run: |
+          # Get the first image tag (for amd64 platform)
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
+          
+          if [ -z "$IMAGE_TAG" ]; then
+            echo "No image tag found, skipping sourcemap extraction"
+            exit 0
+          fi
+          
+          echo "Extracting sourcemaps from image: $IMAGE_TAG"
+          
+          # Create temporary container to extract files
+          CONTAINER_ID=$(docker create --platform linux/amd64 "$IMAGE_TAG" 2>/dev/null | head -n1)
+          
+          if [ -n "$CONTAINER_ID" ]; then
+            echo "Created container: $CONTAINER_ID"
+            
+            # Create directory for sourcemaps
+            mkdir -p sourcemaps
+            
+            # Copy all files from container
+            docker cp "$CONTAINER_ID:/usr/share/nginx/html/." sourcemaps/ 2>/dev/null || true
+            
+            # Remove container
+            docker rm "$CONTAINER_ID" 2>/dev/null || true
+            
+            # Filter only .map files and keep directory structure
+            find sourcemaps -type f ! -name "*.map" -delete 2>/dev/null || true
+            
+            echo "Sourcemaps extracted:"
+            find sourcemaps -name "*.map" | head -10 || echo "No .map files found"
+            MAP_COUNT=$(find sourcemaps -name "*.map" 2>/dev/null | wc -l)
+            echo "Total .map files: $MAP_COUNT"
+          else
+            echo "Warning: Could not create container from image"
+          fi
+
+      - name: Upload sourcemaps as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sourcemaps-${{ steps.app_version.outputs.version }}
+          path: sourcemaps/**/*.map
+          retention-days: 30
+          if-no-files-found: warn
 
