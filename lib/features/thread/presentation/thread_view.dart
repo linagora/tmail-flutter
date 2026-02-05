@@ -669,7 +669,18 @@ class ThreadView extends GetWidget<ThreadController>
                 openBottomSheetContextMenu: dashboardController.openBottomSheetContextMenu,
                 openPopupMenu: dashboardController.openPopupMenuActionGroup,
                 onHandleEmailByActionType: controller.handleEmailActionType,
-                onSelectLabelAction: (label, isSelected) {},
+                onSelectLabelAction: (label, isSelected) {
+                  final emailId = presentationEmail.id;
+                  if (emailId == null) {
+                    logWarning('ThreadView::onSelectLabelAction: Email id is null');
+                    return;
+                  }
+                  dashboardController.toggleLabelToEmail(
+                    emailId,
+                    label,
+                    isSelected,
+                  );
+                },
               ),
             );
           }

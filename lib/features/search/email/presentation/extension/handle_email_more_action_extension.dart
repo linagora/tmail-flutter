@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/presentation_email.dart';
@@ -24,7 +25,18 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
         openPopupMenu: (context, position, popupMenuWidget) =>
             popupMenuWidget.show(context, position),
         onHandleEmailByActionType: pressEmailAction,
-        onSelectLabelAction: (label, isSelected) {},
+        onSelectLabelAction: (label, isSelected) {
+          final emailId = presentationEmail.id;
+          if (emailId == null) {
+            logWarning('HandleEmailMoreActionExtension::onSelectLabelAction: Email id is null');
+            return;
+          }
+          mailboxDashBoardController.toggleLabelToEmail(
+            emailId,
+            label,
+            isSelected,
+          );
+        },
       ),
     );
   }
