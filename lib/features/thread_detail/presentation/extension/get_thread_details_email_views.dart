@@ -2,10 +2,12 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_in_thread_status.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/labels/remove_label_from_email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load_more_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_load_more_segments.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
@@ -18,6 +20,20 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread
 extension GetThreadDetailEmailViews on ThreadDetailController {
   List<Widget> getThreadDetailEmailViews({List<Label>? labels}) {
     final loadMoreSegments = Map<LoadMoreIndex, LoadMoreCount>.from(this.loadMoreSegments);
+    PresentationEmail? emailDisplayLabel;
+
+    final lastEmail = emailIdsPresentation.values.lastOrNull;
+
+    if (currentExpandedEmailId.value == null) {
+      emailDisplayLabel = lastEmail;
+    } else  {
+      emailDisplayLabel = emailIdsPresentation[currentExpandedEmailId.value];
+    }
+
+    final emailLabels = _getLabelsForEmail(
+      email: emailDisplayLabel,
+      availableLabels: labels,
+    );
 
     return emailIdsPresentation.entries.map((entry) {
       final emailId = entry.key;
@@ -46,15 +62,10 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       final isFirstEmailInThreadDetail = indexOfEmailId == 0;
 
       if (presentationEmail.emailInThreadStatus == EmailInThreadStatus.collapsed) {
-        final emailLabels = _getLabelsForFirstEmail(
-          isFirstEmailInThreadDetail: isFirstEmailInThreadDetail,
-          availableLabels: labels,
-        );
-
         return ThreadDetailCollapsedEmail(
           presentationEmail: presentationEmail.copyWith(
             subject: isFirstEmailInThreadDetail
-              ? emailIdsPresentation.values.last?.subject
+              ? lastEmail?.subject
               : null
           ),
           showSubject: isFirstEmailInThreadDetail,
@@ -72,6 +83,10 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           onToggleThreadDetailCollapseExpand: () {
             toggleThreadDetailCollapseExpand(presentationEmail);
           },
+          onDeleteLabelAction: (label) {
+            if (emailDisplayLabel?.id == null) return;
+            removeLabelFromEmail(emailDisplayLabel!.id!, label);
+          },
         );
       }
 
@@ -83,7 +98,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           isInsideThreadDetailView: true,
           emailId: presentationEmail.id,
           isFirstEmailInThreadDetail: true,
-          threadSubject: emailIdsPresentation.values.last?.subject,
+          threadSubject: lastEmail?.subject,
           onToggleThreadDetailCollapseExpand: () {
             toggleThreadDetailCollapseExpand(presentationEmail);
           },
@@ -111,17 +126,15 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
     }).toList();
   }
 
-  List<Label>? _getLabelsForFirstEmail({
-    required bool isFirstEmailInThreadDetail,
+  List<Label>? _getLabelsForEmail({
+    required PresentationEmail? email,
     required List<Label>? availableLabels,
   }) {
-    if (!isFirstEmailInThreadDetail ||
-        availableLabels == null ||
+    if (availableLabels == null ||
         availableLabels.isEmpty) {
       return null;
     }
 
-    final lastEmail = emailIdsPresentation.values.last;
-    return lastEmail?.getLabelList(availableLabels);
+    return email?.getLabelList(availableLabels);
   }
 }

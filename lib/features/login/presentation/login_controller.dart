@@ -250,8 +250,16 @@ class LoginController extends ReloadableController {
   }
 
   @override
-  void handleReloaded(Session session) {
+  Future<void> handleReloaded(Session session) async {
     SmartDialog.dismiss();
+
+    if (PlatformInfo.isWeb) {
+      try {
+        await cachingManager.clearAllEmailAndStateCache();
+      } catch (e) {
+        logWarning('$runtimeType::handleReloaded: Failed to clear cache: $e');
+      }
+    }
 
     popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),

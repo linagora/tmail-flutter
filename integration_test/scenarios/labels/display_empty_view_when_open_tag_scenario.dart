@@ -1,4 +1,3 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
@@ -13,11 +12,6 @@ import '../../robots/thread_robot.dart';
 class DisplayEmptyViewWhenOpenTagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
   const DisplayEmptyViewWhenOpenTagScenario(super.$);
-
-  @override
-  Future<void> setupPreLogin() async {
-    PlatformInfo.isIntegrationTesting = true;
-  }
 
   @override
   Future<void> runTestLogic() async {
@@ -88,10 +82,5 @@ class DisplayEmptyViewWhenOpenTagScenario extends BaseTestScenario
     await expectViewVisible(
       $(find.text(AppLocalizations().youDoNotHaveAnyEmailTaggedWithThis)),
     );
-  }
-
-  @override
-  Future<void> disposeAfterTest() async {
-    PlatformInfo.isIntegrationTesting = false;
   }
 }

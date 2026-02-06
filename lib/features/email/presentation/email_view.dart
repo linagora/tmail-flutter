@@ -104,7 +104,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         handleEmailAction: controller.handleEmailAction,
                         additionalActions: [],
                         emailIsRead: presentationEmail.hasRead,
-                        isLabelFeatureEnabled: controller.isLabelAvailable,
+                        isLabelAvailable: controller.isLabelAvailable,
                         labels: controller.mailboxDashBoardController.labelController.labels,
                         openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
                         openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
@@ -270,13 +270,16 @@ class EmailView extends GetWidget<SingleEmailController> {
             if (isLabelAvailable) {
               emailLabels = presentationEmail.getLabelList(listLabels);
             }
-
             return EmailSubjectWidget(
-              presentationEmail: presentationEmail.copyWith(
-                subject: threadSubject,
-              ),
+              emailSubject: threadSubject ?? presentationEmail.getEmailTitle(),
+              imagePaths: controller.imagePaths,
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,
+              onDeleteLabelAction: (label) => controller.toggleLabelToEmail(
+                presentationEmail.id!,
+                label,
+                false,
+              ),
             );
           }),
         Obx(() => InformationSenderAndReceiverBuilder(
@@ -312,7 +315,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               EmailActionType.deletePermanently,
             ],
             emailIsRead: presentationEmail.hasRead,
-            isLabelFeatureEnabled: controller.isLabelAvailable,
+            isLabelAvailable: controller.isLabelAvailable,
             labels: controller.mailboxDashBoardController.labelController.labels,
             openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,

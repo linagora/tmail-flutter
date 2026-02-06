@@ -5813,4 +5813,93 @@ class AppLocalizations {
       name: 'allLabels',
     );
   }
+
+  String get editLabel {
+    return Intl.message(
+      'Edit label',
+      name: 'editLabel',
+    );
+  }
+
+  String get updateTheLabelName {
+    return Intl.message(
+      'Update the label name',
+      name: 'updateTheLabelName',
+    );
+  }
+
+  String editLabelSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'You successfully edited the $labelName label',
+      name: 'editLabelSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String get editLabelFailure {
+    return Intl.message(
+      'Edit label failure',
+      name: 'editLabelFailure',
+    );
+  }
+  String removeLabelFromEmailSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'Email removed from the "$labelName" label',
+      name: 'removeLabelFromEmailSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String removeLabelFromEmailFailureMessage(String labelName) {
+    return Intl.message(
+      'Cannot remove email from the "$labelName" label',
+      name: 'removeLabelFromEmailFailureMessage',
+      args: [labelName],
+    );
+  }
+
+  String removeLabelFromThreadSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'All emails in thread removed from the "$labelName" label',
+      name: 'removeLabelFromThreadSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String removeLabelFromThreadFailureMessage(String labelName) {
+    return Intl.message(
+      'Cannot remove all emails in thread from the "$labelName" label',
+      name: 'removeLabelFromThreadFailureMessage',
+      args: [labelName],
+    );
+  }
+  String get deleteLabel {
+    return Intl.message(
+      'Delete label',
+      name: 'deleteLabel',
+    );
+  }
+
+  String areYouSureYouWantToDeleteTheLabel(String labelName) {
+    return Intl.message(
+      'Are you sure you want to delete the label "$labelName"?',
+      name: 'areYouSureYouWantToDeleteTheLabel',
+      args: [labelName],
+    );
+  }
+
+  String deleteLabelSuccessfullyMessage(String labelName) {
+    return Intl.message(
+      'You successfully deleted the $labelName label',
+      name: 'deleteLabelSuccessfullyMessage',
+      args: [labelName],
+    );
+  }
+
+  String get deleteALabelFailure {
+    return Intl.message(
+      'Delete a label failure',
+      name: 'deleteALabelFailure',
+    );
+  }
 }

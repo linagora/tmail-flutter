@@ -47,6 +47,7 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/remove_a_label_from_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_an_email_interactor.dart';
@@ -60,6 +61,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/remove_a_label_from_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -124,6 +126,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final PrintEmailInteractor _printEmailInteractor;
   final AddALabelToAnEmailInteractor addALabelToAnEmailInteractor;
+  final RemoveALabelFromAnEmailInteractor removeALabelFromAnEmailInteractor;
   final EmailId? _currentEmailId;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
@@ -194,6 +197,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._getAllIdentitiesInteractor,
     this._storeOpenedEmailInteractor,
     this.addALabelToAnEmailInteractor,
+    this.removeALabelFromAnEmailInteractor,
     this._printEmailInteractor, {
     EmailId? currentEmailId,
   }) : _currentEmailId = currentEmailId;
@@ -252,6 +256,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       calendarEventSuccess(success);
     } else if (success is AddALabelToAnEmailSuccess) {
       handleAddLabelToEmailSuccess(success);
+    } else if (success is RemoveALabelFromAnEmailSuccess) {
+      handleRemoveLabelFromEmailSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -271,6 +277,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _calendarEventFailure(failure);
     } else if (failure is AddALabelToAnEmailFailure) {
       handleAddLabelToEmailFailure(failure);
+    } else if (failure is RemoveALabelFromAnEmailFailure) {
+      handleRemoveLabelFromEmailFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -354,6 +362,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           actionType: action.actionType,
           email: action.email,
         );
+      } else if (action is RemoveLabelFromEmailAction) {
+        mailboxDashBoardController.clearEmailUIAction();
+        if (_currentEmailId == null ||
+            action.emailId != _currentEmailId) {
+          return;
+        }
+        toggleLabelToEmail(action.emailId, action.label, false);
       }
     }));
 

@@ -38,6 +38,8 @@ dependencies:
 
   flutter_svg: 2.2.3
 
+  multiple_localization: 0.6.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

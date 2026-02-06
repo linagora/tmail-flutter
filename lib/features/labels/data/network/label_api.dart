@@ -1,9 +1,12 @@
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
+import 'package:tmail_ui_user/features/labels/domain/model/edit_label_request.dart';
+import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
 import 'package:uuid/uuid.dart';
 
 class LabelApi with HandleSetErrorMixin {
@@ -45,16 +48,78 @@ class LabelApi with HandleSetErrorMixin {
       SetLabelResponse.deserialize,
     );
 
-    final labelCreated = response?.created?[generateCreateId];
+    final labelIdsCreated = response?.created?.keys ?? <Id>[];
 
-    if (labelCreated != null) {
-      final newLabelCreated = labelCreated.copyWith(
+    if (labelIdsCreated.contains(generateCreateId)) {
+      final labelCreated = response?.created?[generateCreateId];
+      final newLabelCreated = labelCreated!.copyWith(
         displayName: labelData.displayName,
         color: labelData.color,
       );
       return newLabelCreated;
     } else {
       throw parseErrorForSetResponse(response, generateCreateId);
+    }
+  }
+
+  Future<Label> editLabel(
+    AccountId accountId,
+    EditLabelRequest labelRequest,
+  ) async {
+    final labelId = labelRequest.labelId;
+    final newLabel = labelRequest.newLabel;
+
+    final method = SetLabelMethod(accountId)
+      ..addUpdates({
+        labelId: PatchObject(newLabel.toJson())
+      });
+
+    final builder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final invocation = builder.invocation(method);
+
+    final result =
+        await (builder..usings(method.requiredCapabilities)).build().execute();
+
+    final response = result.parse<SetLabelResponse>(
+      invocation.methodCallId,
+      SetLabelResponse.deserialize,
+    );
+
+    final labelIdsUpdated = response?.updated?.keys ?? <Id>[];
+
+    if (labelIdsUpdated.contains(labelId)) {
+      final newLabelUpdated = newLabel.copyWith(
+        id: labelId,
+        keyword: labelRequest.labelKeyword,
+      );
+      return newLabelUpdated;
+    } else {
+      throw parseErrorForSetResponse(response, labelId);
+    }
+  }
+
+  Future<void> deleteLabel(AccountId accountId, Label label) async {
+    final labelId = label.id;
+
+    if (labelId == null) {
+      throw LabelIdIsNull();
+    }
+
+    final method = SetLabelMethod(accountId)..addDestroy({labelId});
+
+    final builder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final invocation = builder.invocation(method);
+
+    final result =
+        await (builder..usings(method.requiredCapabilities)).build().execute();
+
+    final response = result.parse<SetLabelResponse>(
+      invocation.methodCallId,
+      SetLabelResponse.deserialize,
+    );
+
+    if (response?.destroyed?.contains(labelId) != true) {
+      throw parseErrorForSetResponse(response, labelId);
     }
   }
 }
