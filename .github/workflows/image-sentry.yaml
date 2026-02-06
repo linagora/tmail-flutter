@@ -1,0 +1,129 @@
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+name: Build Docker images with Sentry
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  build-release-image-with-sentry:
+    name: Build release image with Sentry
+    if: github.event_name == 'workflow_dispatch' || (github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract app version from pubspec.yaml
+        id: app_version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ github.repository_owner }}/tmail-web
+            ghcr.io/${{ github.repository_owner }}/tmail-web
+          tags: |
+            type=ref,event=tag
+            type=raw,value=release
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image (release)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          cache-from: |
+            type=gha
+          cache-to: |
+            type=gha
+          build-args: |
+            FLUTTER_VERSION=3.32.8
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+            SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
+            SENTRY_URL=${{ secrets.SENTRY_URL }}
+            SENTRY_RELEASE=${{ steps.app_version.outputs.version }}
+            GITHUB_SHA=${{ github.sha }}
+            VCS_REF=${{ github.repository }}@${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Extract sourcemaps from Docker image
+        if: always()
+        run: |
+          # Get the first image tag (for amd64 platform)
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
+          
+          if [ -z "$IMAGE_TAG" ]; then
+            echo "No image tag found, skipping sourcemap extraction"
+            exit 0
+          fi
+          
+          echo "Extracting sourcemaps from image: $IMAGE_TAG"
+          
+          # Create temporary container to extract files
+          CONTAINER_ID=$(docker create --platform linux/amd64 "$IMAGE_TAG" 2>/dev/null | head -n1)
+          
+          if [ -n "$CONTAINER_ID" ]; then
+            echo "Created container: $CONTAINER_ID"
+            
+            # Create directory for sourcemaps
+            mkdir -p sourcemaps
+            
+            # Copy all files from container
+            docker cp "$CONTAINER_ID:/usr/share/nginx/html/." sourcemaps/ 2>/dev/null || true
+            
+            # Remove container
+            docker rm "$CONTAINER_ID" 2>/dev/null || true
+            
+            # Filter only .map files and keep directory structure
+            find sourcemaps -type f ! -name "*.map" -delete 2>/dev/null || true
+            
+            echo "Sourcemaps extracted:"
+            find sourcemaps -name "*.map" | head -10 || echo "No .map files found"
+            MAP_COUNT=$(find sourcemaps -name "*.map" 2>/dev/null | wc -l)
+            echo "Total .map files: $MAP_COUNT"
+          else
+            echo "Warning: Could not create container from image"
+          fi
+
+      - name: Upload sourcemaps as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sourcemaps-${{ steps.app_version.outputs.version }}
+          path: sourcemaps/**/*.map
+          retention-days: 30
+          if-no-files-found: warn
