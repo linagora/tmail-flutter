@@ -1,4 +1,3 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_view.dart';
@@ -12,11 +11,6 @@ import '../../robots/thread_robot.dart';
 class DisplayViewWithAllEmailWithTagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
   const DisplayViewWithAllEmailWithTagScenario(super.$);
-
-  @override
-  Future<void> setupPreLogin() async {
-    PlatformInfo.isIntegrationTesting = true;
-  }
 
   @override
   Future<void> runTestLogic() async {
@@ -73,10 +67,5 @@ class DisplayViewWithAllEmailWithTagScenario extends BaseTestScenario
     );
 
     expect(listEmailTileWithTag.length, greaterThanOrEqualTo(emailCount));
-  }
-
-  @override
-  Future<void> disposeAfterTest() async {
-    PlatformInfo.isIntegrationTesting = false;
   }
 }

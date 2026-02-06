@@ -80,7 +80,7 @@ class _AIScribeBarState extends State<AIScribeBar> {
                 child: TextField(
                   controller: _controller,
                   decoration: InputDecoration(
-                    hintText: ScribeLocalizations.of(context).inputPlaceholder,
+                    hintText: ScribeLocalizations.of(context).customPromptAction,
                     hintStyle: AIScribeTextStyles.searchBarHint,
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 8),

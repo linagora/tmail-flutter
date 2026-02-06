@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/remove_a_label_from_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -120,6 +121,9 @@ class EmailInteractorBindings extends InteractorsBindings {
     }
     Get.lazyPut<AddALabelToAnEmailInteractor>(
       () => AddALabelToAnEmailInteractor(Get.find<EmailRepository>()),
+    );
+    Get.lazyPut<RemoveALabelFromAnEmailInteractor>(
+      () => RemoveALabelFromAnEmailInteractor(Get.find<EmailRepository>()),
     );
   }
 

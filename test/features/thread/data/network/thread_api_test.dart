@@ -75,7 +75,7 @@ void main() {
 
   group('thread api test:', () {
     group('searchEmails:', () {
-      Map<String, dynamic> generateRequest({required Filter filter}) => {
+      Map<String, dynamic> generateRequest({required Filter filter, int? position}) => {
         "using": [
           "urn:ietf:params:jmap:core",
           "urn:ietf:params:jmap:mail",
@@ -86,6 +86,7 @@ void main() {
             "Email/query",
             {
               "accountId": AccountFixtures.aliceAccountId.id.value,
+              if (position != null) "position": position,
               "filter": filter.toJson(),
             },
             "c0"
@@ -260,6 +261,128 @@ void main() {
           filter: filter,
         );
 
+        // assert
+        expect(
+          result,
+          equals(
+            SearchEmailsResponse(
+              searchSnippets: null,
+              emailList: [Email(id: searchEmail.id)],
+              state: state
+            ),
+          ),
+        );
+      });
+
+      test(
+        'should not add position to request '
+        'when position is null',
+      () async {
+        // arrange
+        final searchEmail = SearchEmail(
+          id: EmailId(Id('someEmailId')),
+          searchSnippetSubject: 'searchSnippetSubject',
+          searchSnippetPreview: 'searchSnippetPreview',
+        );
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              foundSearchEmails: [searchEmail],
+              notFoundEmailIds: [],
+              searchSnippetError: UnknownMethodResponse(),
+            ),
+          ),
+          data: generateRequest(filter: filter),
+        );
+        
+        // act
+        final result = await threadApi.searchEmails(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          filter: filter,
+        );
+        
+        // assert
+        expect(
+          result,
+          equals(
+            SearchEmailsResponse(
+              searchSnippets: null,
+              emailList: [Email(id: searchEmail.id)],
+              state: state
+            ),
+          ),
+        );
+      });
+
+      test(
+        'should not add position to request '
+        'when position is 0',
+      () async {
+        // arrange
+        final searchEmail = SearchEmail(
+          id: EmailId(Id('someEmailId')),
+          searchSnippetSubject: 'searchSnippetSubject',
+          searchSnippetPreview: 'searchSnippetPreview',
+        );
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            403,
+            generateResponse(
+              foundSearchEmails: [searchEmail],
+              notFoundEmailIds: [],
+              searchSnippetError: UnknownMethodResponse(),
+            ),
+          ),
+          data: generateRequest(filter: filter, position: 0),
+        );
+        
+        // act & assert
+        expect(
+          () => threadApi.searchEmails(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            filter: filter,
+            position: 0,
+          ),
+          throwsA(isA<DioException>()),
+        );
+      });
+
+      test(
+        'should add position to request '
+        'when position > 0',
+      () async {
+        // arrange
+        final searchEmail = SearchEmail(
+          id: EmailId(Id('someEmailId')),
+          searchSnippetSubject: 'searchSnippetSubject',
+          searchSnippetPreview: 'searchSnippetPreview',
+        );
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              foundSearchEmails: [searchEmail],
+              notFoundEmailIds: [],
+              searchSnippetError: UnknownMethodResponse(),
+            ),
+          ),
+          data: generateRequest(filter: filter, position: 1),
+        );
+        
+        // act
+        final result = await threadApi.searchEmails(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          filter: filter,
+          position: 1,
+        );
+        
         // assert
         expect(
           result,

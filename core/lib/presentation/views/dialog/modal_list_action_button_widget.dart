@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 class ModalListActionButtonWidget extends StatelessWidget {
   final String positiveLabel;
   final String negativeLabel;
+  final Key? positiveKey;
+  final Key? negativeKey;
   final VoidCallback onNegativeAction;
   final VoidCallback onPositiveAction;
   final EdgeInsetsGeometry? padding;
@@ -18,6 +20,8 @@ class ModalListActionButtonWidget extends StatelessWidget {
     required this.onNegativeAction,
     this.isPositiveActionEnabled = true,
     this.padding,
+    this.positiveKey,
+    this.negativeKey,
   });
 
   @override
@@ -26,6 +30,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 67),
       height: 48,
       child: ConfirmDialogButton(
+        key: negativeKey,
         label: negativeLabel,
         onTapAction: onNegativeAction,
       ),
@@ -35,6 +40,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 153),
       height: 48,
       child: ConfirmDialogButton(
+        key: positiveKey,
         label: positiveLabel,
         backgroundColor: isPositiveActionEnabled
             ? AppColor.primaryMain

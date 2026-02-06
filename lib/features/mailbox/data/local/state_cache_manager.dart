@@ -33,6 +33,9 @@ class StateCacheManager extends CacheManagerInteraction {
 
   Future<void> deleteByKey(String key) => _stateCacheClient.deleteItem(key);
 
+  Future<void> deleteContainKey(String key) =>
+      _stateCacheClient.clearAllDataContainKey(key);
+
   Future<void> clear() => _stateCacheClient.clearAllData();
 
   @override

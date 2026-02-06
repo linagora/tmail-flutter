@@ -47,6 +47,9 @@ class _ColorsMapWidgetState extends State<ColorsMapWidget> {
     Color(0xFF646580),
   ];
 
+  static final Set<int> _defaultColorValues =
+    _defaultColors.map((c) => c.toInt()).toSet();
+
   final ValueNotifier<Color?> _selectedColor = ValueNotifier(null);
   List<Color> _colorList = <Color>[];
 
@@ -128,7 +131,14 @@ class _ColorsMapWidgetState extends State<ColorsMapWidget> {
 
   void _setUpColorList() {
     final custom = widget.customColor;
-    _colorList = custom != null ? [custom, ..._defaultColors] : _defaultColors;
+    final hasCustom = custom != null;
+    final isCustomInDefaults =
+        hasCustom && _defaultColorValues.contains(custom.toInt());
+
+    _colorList = (hasCustom && !isCustomInDefaults)
+        ? [custom, ..._defaultColors]
+        : _defaultColors;
+
     _selectedColor.value = custom;
   }
 

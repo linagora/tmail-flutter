@@ -22,14 +22,18 @@ import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exc
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_thread_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_a_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_a_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/parse_email_by_blob_id_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/preview_email_from_eml_file_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/remove_a_label_from_an_email_state.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
@@ -208,6 +212,20 @@ class ToastManager {
     } else if (failure is AddALabelToAThreadFailure) {
       message = message ??
           appLocalizations.addLabelToThreadFailureMessage(failure.labelDisplay);
+    } else if (failure is EditLabelFailure) {
+      message = message ?? appLocalizations.editLabelFailure;
+    } else if (failure is RemoveALabelFromAnEmailFailure) {
+      message = message ??
+          appLocalizations.removeLabelFromEmailFailureMessage(
+            failure.labelDisplay,
+          );
+    } else if (failure is RemoveALabelFromAThreadFailure) {
+      message = message ??
+          appLocalizations.removeLabelFromThreadFailureMessage(
+            failure.labelDisplay,
+          );
+    } else if (failure is DeleteALabelFailure) {
+      message = message ?? appLocalizations.deleteALabelFailure;
     }
     log('ToastManager::showMessageFailure: Message: $message');
     if (message?.trim().isNotEmpty == true) {
@@ -275,6 +293,10 @@ class ToastManager {
       message = appLocalizations.createLabelSuccessfullyMessage(
         success.newLabel.safeDisplayName,
       );
+    } else if (success is EditLabelSuccess) {
+      message = appLocalizations.editLabelSuccessfullyMessage(
+        success.newLabel.safeDisplayName,
+      );
     } else if (success is AddALabelToAnEmailSuccess) {
       message = appLocalizations.addLabelToEmailSuccessfullyMessage(
         success.labelDisplay,
@@ -282,6 +304,18 @@ class ToastManager {
     } else if (success is AddALabelToAThreadSuccess) {
       message = appLocalizations.addLabelToThreadSuccessfullyMessage(
         success.labelDisplay,
+      );
+    } else if (success is RemoveALabelFromAnEmailSuccess) {
+      message = appLocalizations.removeLabelFromEmailSuccessfullyMessage(
+        success.labelDisplay,
+      );
+    } else if (success is RemoveALabelFromAThreadSuccess) {
+      message = appLocalizations.removeLabelFromThreadSuccessfullyMessage(
+        success.labelDisplay,
+      );
+    } else if (success is DeleteALabelSuccess) {
+      message = appLocalizations.deleteLabelSuccessfullyMessage(
+        success.deletedLabel.safeDisplayName,
       );
     }
     log('ToastManager::showMessageSuccess: Message: $message');

@@ -212,7 +212,27 @@ abstract class EmailDataSource {
     KeyWordIdentifier labelKeyword,
   );
 
-  Future<void> addLabelToThread(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addLabelToThread(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    KeyWordIdentifier labelKeyword,
+  );
+
+  Future<void> removeLabelFromEmail(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  );
+
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> removeLabelFromThread(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,

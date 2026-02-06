@@ -1,6 +1,6 @@
 {
   "@@last_modified": "2025-12-09T07:30:00.000000",
-  "categoryCorrectGrammar": "Corriger la grammaire",
+  "categoryCorrectGrammar": "Corriger",
   "@categoryCorrectGrammar": {
     "type": "text",
     "placeholders_order": [],
@@ -90,12 +90,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "inputPlaceholder": "Aidez-moi à écrire",
-  "@inputPlaceholder": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "customPromptAction": "Aidez-moi à écrire",
   "@customPromptAction": {
     "type": "text",
@@ -108,14 +102,26 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertButton": "Insérer",
-  "@insertButton": {
+  "generatingResponse": "Génération de la réponse",
+  "@generatingResponse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replaceButton": "Remplacer",
-  "@replaceButton": {
+  "insert": "Insérer",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replace": "Remplacer",
+  "@replace": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiAssistant": "Assistant IA",
+  "@aiAssistant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

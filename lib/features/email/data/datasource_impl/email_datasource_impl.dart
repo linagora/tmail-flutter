@@ -572,7 +572,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> addLabelToThread(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addLabelToThread(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
@@ -580,6 +583,43 @@ class EmailDataSourceImpl extends EmailDataSource {
   ) {
     return Future.sync(() async {
       return await emailAPI.addLabelToThread(
+        session,
+        accountId,
+        emailIds,
+        labelKeyword,
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> removeLabelFromEmail(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return Future.sync(() async {
+      return await emailAPI.removeLabelFromEmail(
+        session,
+        accountId,
+        emailId,
+        labelKeyword,
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> removeLabelFromThread(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return Future.sync(() async {
+      return await emailAPI.removeLabelFromThread(
         session,
         accountId,
         emailIds,

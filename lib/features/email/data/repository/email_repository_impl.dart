@@ -497,13 +497,49 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<void> addLabelToThread(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addLabelToThread(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
     KeyWordIdentifier labelKeyword,
   ) {
     return emailDataSource[DataSourceType.network]!.addLabelToThread(
+      session,
+      accountId,
+      emailIds,
+      labelKeyword,
+    );
+  }
+
+  @override
+  Future<void> removeLabelFromEmail(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return emailDataSource[DataSourceType.network]!.removeLabelFromEmail(
+      session,
+      accountId,
+      emailId,
+      labelKeyword,
+    );
+  }
+
+  @override
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> removeLabelFromThread(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    KeyWordIdentifier labelKeyword,
+  ) {
+    return emailDataSource[DataSourceType.network]!.removeLabelFromThread(
       session,
       accountId,
       emailIds,

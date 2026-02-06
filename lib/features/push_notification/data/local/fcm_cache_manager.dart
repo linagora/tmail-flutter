@@ -89,8 +89,6 @@ class FCMCacheManager extends CacheManagerInteraction {
     ]);
   }
 
-  Future<void> deleteByKey(String key) => _fcmCacheClient.deleteItem(key);
-
   @override
   Future<void> migrateHiveToIsolatedHive() async {
     await Future.wait([

@@ -141,6 +141,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/notify_thread_detail_setting_updated.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/quick_search_emails_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/select_search_filter_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
@@ -620,10 +621,17 @@ class MailboxDashBoardController extends ReloadableController
   @override
   Future<void> onBeforeUnloadBrowserListener(html.Event event) async {
     log('MailboxDashBoardController::onBeforeUnloadBrowserListener:event = ${event.runtimeType} | hasComposer = ${twakeAppManager.hasComposer} | isExecutingBeforeReconnect = ${twakeAppManager.isExecutingBeforeReconnect}');
-    if (event is html.BeforeUnloadEvent &&
+    final shouldPrevent = event is html.BeforeUnloadEvent &&
         twakeAppManager.hasComposer &&
-        !twakeAppManager.isExecutingBeforeReconnect) {
+        !twakeAppManager.isExecutingBeforeReconnect;
+
+    if (shouldPrevent) {
       event.preventDefault();
+      return;
+    }
+
+    if (event is html.BeforeUnloadEvent) {
+      await cachingManager.clearAllEmailAndStateCache();
     }
   }
 

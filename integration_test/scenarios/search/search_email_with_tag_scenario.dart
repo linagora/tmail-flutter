@@ -1,4 +1,3 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
@@ -13,11 +12,6 @@ import '../../robots/thread_robot.dart';
 class SearchEmailWithTagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
   const SearchEmailWithTagScenario(super.$);
-
-  @override
-  Future<void> setupPreLogin() async {
-    PlatformInfo.isIntegrationTesting = true;
-  }
 
   @override
   Future<void> runTestLogic() async {
@@ -83,10 +77,5 @@ class SearchEmailWithTagScenario extends BaseTestScenario
     );
 
     expect(listEmailTileWithTag.length, greaterThanOrEqualTo(emailCount));
-  }
-
-  @override
-  Future<void> disposeAfterTest() async {
-    PlatformInfo.isIntegrationTesting = false;
   }
 }

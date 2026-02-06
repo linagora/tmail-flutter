@@ -131,7 +131,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
 
             final labelSelected = controller.selectedLabel.value;
 
-            if (isLabelAvailable) {
+            if (isLabelAvailable && labels.isNotEmpty) {
               return AdvancedSearchFieldWidget(
                 filterField: FilterField.labels,
                 padding: const EdgeInsets.only(bottom: 12),

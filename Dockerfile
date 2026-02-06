@@ -16,9 +16,9 @@ COPY . .
 RUN ./scripts/prebuild.sh
 # Build flutter for web (use --build-name if APP_VERSION is set)
 RUN if [ -n "$APP_VERSION" ]; then \
-      flutter build web --release --build-name="$APP_VERSION"; \
+      flutter build web --release --source-maps --build-name="$APP_VERSION"; \
     else \
-      flutter build web --release; \
+      flutter build web --release --source-maps; \
     fi
 
 # Stage 2 - Create the run-time image

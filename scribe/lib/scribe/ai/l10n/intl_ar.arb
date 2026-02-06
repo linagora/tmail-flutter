@@ -1,0 +1,129 @@
+{
+  "@@last_modified": "2026-01-26T08:00:00.000000",
+  "categoryCorrectGrammar": "تصحيح",
+  "@categoryCorrectGrammar": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryImprove": "تحسين",
+  "@categoryImprove": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryChangeTone": "تغيير النبرة",
+  "@categoryChangeTone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "categoryTranslate": "ترجمة",
+  "@categoryTranslate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMakeShorter": "اجعله أقصر",
+  "@actionMakeShorter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionExpandContext": "توسيع السياق",
+  "@actionExpandContext": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionEmojify": "إضافة الرموز التعبيرية",
+  "@actionEmojify": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionTransformToBullets": "تحويل إلى نقاط",
+  "@actionTransformToBullets": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMoreProfessional": "أكثر احترافية",
+  "@actionMoreProfessional": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMoreCasual": "أكثر عفوية",
+  "@actionMoreCasual": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionMorePolite": "أكثر تهذيباً",
+  "@actionMorePolite": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageFrench": "الفرنسية",
+  "@languageFrench": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageEnglish": "الإنجليزية",
+  "@languageEnglish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageRussian": "الروسية",
+  "@languageRussian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageVietnamese": "الفيتنامية",
+  "@languageVietnamese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "customPromptAction": "ساعدني في الكتابة",
+  "@customPromptAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "failedToGenerate": "فشل في إنشاء استجابة الذكاء الاصطناعي",
+  "@failedToGenerate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "generatingResponse": "إنشاء الاستجابة",
+  "@generatingResponse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insert": "إدراج",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replace": "استبدال",
+  "@replace": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiAssistant": "مساعد الذكاء الاصطناعي",
+  "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}

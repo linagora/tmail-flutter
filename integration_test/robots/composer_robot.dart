@@ -193,4 +193,8 @@ class ComposerRobot extends CoreRobot {
     );
     controller?.handleSuccessViewState(LocalImagePickerSuccess(fileInfo));
   }
+
+  Future<void> tapDiscardChanges() async {
+    await $(AppLocalizations().discardChanges).tap();
+  }
 }

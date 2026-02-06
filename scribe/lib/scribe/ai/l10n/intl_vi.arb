@@ -1,6 +1,6 @@
 {
   "@@last_modified": "2025-12-09T07:30:00.000000",
-  "categoryCorrectGrammar": "Sửa ngữ pháp",
+  "categoryCorrectGrammar": "Sửa chữa",
   "@categoryCorrectGrammar": {
     "type": "text",
     "placeholders_order": [],
@@ -90,12 +90,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "inputPlaceholder": "Giúp tôi viết",
-  "@inputPlaceholder": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "customPromptAction": "Giúp tôi viết",
   "@customPromptAction": {
     "type": "text",
@@ -108,14 +102,26 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertButton": "Chèn",
-  "@insertButton": {
+  "generatingResponse": "Tạo phản hồi",
+  "@generatingResponse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replaceButton": "Thay thế",
-  "@replaceButton": {
+  "insert": "Chèn",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replace": "Thay thế",
+  "@replace": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiAssistant": "Trợ lý AI",
+  "@aiAssistant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
