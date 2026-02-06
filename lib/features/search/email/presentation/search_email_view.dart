@@ -643,10 +643,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 final mailboxContain = emailPreview
                     .findMailboxContain(controller.mailboxDashBoardController.mapMailboxById);
                 controller.pressEmailAction(
-                    context,
                     EmailActionType.preview,
                     emailPreview,
-                    mailboxContain: mailboxContain);
+                    mailboxContain,
+                );
               },
             ),
           );
@@ -779,10 +779,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           mailboxContain: presentationEmail.mailboxContain,
           emailActionClick: (action, email) {
             controller.pressEmailAction(
-              context,
               action,
               email,
-              mailboxContain: presentationEmail.mailboxContain,
+              presentationEmail.mailboxContain,
             );
           },
           onMoreActionClick: (email, position) =>
@@ -790,6 +789,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             context,
             email,
             position,
+            isLabelAvailable,
+            listLabels,
           ),
         );
       },
