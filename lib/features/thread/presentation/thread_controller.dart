@@ -807,7 +807,7 @@ class ThreadController extends BaseController with EmailActionController {
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
-          useCache: selectedMailbox?.isCacheable ?? false,
+          useCache: (selectedMailbox?.isCacheable ?? false) && !forceEmailQuery,
         )
       ));
     }
