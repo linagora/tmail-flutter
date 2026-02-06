@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
@@ -93,24 +94,47 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         responseStatusCode: err.response?.statusCode,
         tokenOIDC: _token
       )) {
-        log('AuthorizationInterceptors::onError: Perform get New Token');
-        final newTokenOidc = PlatformInfo.isIOS
-          ? await _getNewTokenForIOSPlatform()
-          : await _getNewTokenForOtherPlatform();
+        try {
+          log('AuthorizationInterceptors::onError: Perform get New Token');
+          final newTokenOidc = PlatformInfo.isIOS
+            ? await _getNewTokenForIOSPlatform()
+            : await _getNewTokenForOtherPlatform();
 
-        if (newTokenOidc.token == _token?.token) {
-          log('AuthorizationInterceptors::onError: Token duplicated');
+          if (newTokenOidc.token == _token?.token) {
+            log('AuthorizationInterceptors::onError: Token duplicated');
+            return super.onError(err, handler);
+          }
+          _updateNewToken(newTokenOidc);
+
+          final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
+
+          if (PlatformInfo.isIOS) {
+            await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
+          }
+
+          isRetryRequest = true;
+        } on DioException catch (refreshError, st) {
+          if (refreshError.response?.statusCode == 400) {
+            logError(
+              'AuthorizationInterceptors: Refresh Token Failed 400',
+              exception: refreshError,
+              stackTrace: st,
+            );
+
+            clear();
+
+            final sessionExpiredError = DioException(
+              requestOptions: err.requestOptions,
+              error: RefreshTokenFailedException(),
+              type: DioExceptionType.badResponse,
+              response: refreshError.response,
+            );
+
+            return handler.reject(sessionExpiredError);
+          }
+
           return super.onError(err, handler);
         }
-        _updateNewToken(newTokenOidc);
-
-        final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
-
-        if (PlatformInfo.isIOS) {
-          await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
-        }
-
-        isRetryRequest = true;
       } else if (validateToRetryTheRequestWithNewToken(
         authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
         tokenOIDC: _token
@@ -118,6 +142,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         log('AuthorizationInterceptors::onError: Request using old token');
         isRetryRequest = true;
       } else {
+        logTrace(
+          'AuthorizationInterceptors::onError: '
+          '401 received but refresh skipped. '
+          'statusCode = ${err.response?.statusCode} | '
+          'authType = $_authenticationType | '
+          'hasConfig = ${_configOIDC != null} | '
+          'url = ${err.requestOptions.uri}',
+          webConsoleEnabled: true,
+        );
         return super.onError(err, handler);
       }
 
@@ -193,25 +226,58 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   bool _isRefreshTokenNotEmpty(TokenOIDC? tokenOIDC) => tokenOIDC?.refreshToken.isNotEmpty == true;
 
-  bool validateToRefreshToken({
-    required int? responseStatusCode,
-    required TokenOIDC? tokenOIDC
-  }) {
-    return responseStatusCode == 401
-      && _isAuthenticationOidcValid()
-      && _isTokenNotEmpty(tokenOIDC)
-      && _isRefreshTokenNotEmpty(tokenOIDC)
-      && _isTokenExpired(tokenOIDC);
+  bool validateToRefreshToken(
+      {required int? responseStatusCode, required TokenOIDC? tokenOIDC}) {
+    final isStatusCode401 = responseStatusCode == 401;
+    final isLoginWithOIDC = _isAuthenticationOidcValid();
+    final hasAccessToken = _isTokenNotEmpty(tokenOIDC);
+    final hasRefreshToken = _isRefreshTokenNotEmpty(tokenOIDC);
+    final isExpired = _isTokenExpired(tokenOIDC);
+
+    final canProceedRefresh = isStatusCode401 &&
+        isLoginWithOIDC &&
+        hasAccessToken &&
+        hasRefreshToken &&
+        isExpired;
+
+    logTrace(
+      'AuthorizationInterceptors::validateToRefreshToken: '
+      'isStatusCode401 = $isStatusCode401 | '
+      'isLoginWithOIDC = $isLoginWithOIDC | '
+      'hasAccessToken = $hasAccessToken | '
+      'hasRefreshToken = $hasRefreshToken | '
+      'isExpired = $isExpired | '
+      'expiredTime = ${tokenOIDC?.expiredTime} | '
+      'now = ${DateTime.now()} | '
+      'canProceedRefresh = $canProceedRefresh',
+      webConsoleEnabled: true,
+    );
+
+    return canProceedRefresh;
   }
 
-  bool validateToRetryTheRequestWithNewToken({
-    required String? authHeader,
-    required TokenOIDC? tokenOIDC
-  }) {
-    return authHeader != null
-      && _isTokenNotEmpty(tokenOIDC)
-      && !_isTokenExpired(tokenOIDC)
-      && !authHeader.contains(tokenOIDC!.token);
+  bool validateToRetryTheRequestWithNewToken(
+      {required String? authHeader, required TokenOIDC? tokenOIDC}) {
+    final hasAuthHeader = authHeader != null;
+    final hasAccessToken = _isTokenNotEmpty(tokenOIDC);
+    final isTokenStillValid = !_isTokenExpired(tokenOIDC);
+    final isTokenUpdated =
+        tokenOIDC != null && authHeader?.contains(tokenOIDC.token) != true;
+
+    final shouldRetry =
+        hasAuthHeader && hasAccessToken && isTokenStillValid && isTokenUpdated;
+
+    logTrace(
+      'AuthorizationInterceptors::validateToRetryWithNewToken: '
+      'hasHeader = $hasAuthHeader | '
+      'hasAccessToken = $hasAccessToken | '
+      'isTokenValid = $isTokenStillValid | '
+      'isNewToken = $isTokenUpdated | '
+      'shouldRetry = $shouldRetry',
+      webConsoleEnabled: true,
+    );
+
+    return shouldRetry;
   }
 
   String _getAuthorizationAsBasicHeader(String? authorization) => 'Basic $authorization';

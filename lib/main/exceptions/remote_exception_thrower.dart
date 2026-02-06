@@ -37,6 +37,10 @@ class RemoteExceptionThrower extends ExceptionThrower {
         'RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
       );
 
+      if (error.error is RefreshTokenFailedException) {
+        throw RefreshTokenFailedException();
+      }
+
       final response = error.response;
       final statusCode = response?.statusCode;
 
