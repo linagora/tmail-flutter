@@ -185,6 +185,82 @@ void main() {
         expect(emailCondition.notKeyword, isNull);
       });
 
+      test('SHOULD split multi-word text into AND filter with separate conditions', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          text: SearchQuery('portal access'),
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        expect(result, isA<LogicFilterOperator>());
+        final logicFilter = result as LogicFilterOperator;
+        expect(logicFilter.operator, Operator.AND);
+        expect(logicFilter.conditions.length, equals(2));
+
+        final conditions = logicFilter.conditions.toList();
+        final textValues = conditions
+            .whereType<EmailFilterCondition>()
+            .map((c) => c.text)
+            .toSet();
+        expect(textValues, equals({'portal', 'access'}));
+      });
+
+      test('SHOULD keep quoted phrase as single text condition', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          text: SearchQuery('"portal access"'),
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        expect(result, isA<EmailFilterCondition>());
+        final emailCondition = result as EmailFilterCondition;
+        expect(emailCondition.text, 'portal access');
+      });
+
+      test('SHOULD handle mix of quoted phrase and individual words', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          text: SearchQuery('"portal access" denied'),
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        expect(result, isA<LogicFilterOperator>());
+        final logicFilter = result as LogicFilterOperator;
+        expect(logicFilter.operator, Operator.AND);
+        expect(logicFilter.conditions.length, equals(2));
+
+        final conditions = logicFilter.conditions.toList();
+        final textValues = conditions
+            .whereType<EmailFilterCondition>()
+            .map((c) => c.text)
+            .toSet();
+        expect(textValues, equals({'portal access', 'denied'}));
+      });
+
+      test('SHOULD treat single word text same as before', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          text: SearchQuery('portal'),
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        expect(result, isA<EmailFilterCondition>());
+        final emailCondition = result as EmailFilterCondition;
+        expect(emailCondition.text, 'portal');
+      });
+
       test(
         'SHOULD convert the notKeyword set into a NOT LogicFilterOperator containing multiple EmailFilterCondition instances,\n'
         'each representing a keyword from the set',

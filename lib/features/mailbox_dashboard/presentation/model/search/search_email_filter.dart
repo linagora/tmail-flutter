@@ -111,10 +111,10 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   Filter? mappingToEmailFilterCondition({
     EmailFilterCondition? moreFilterCondition
   }) {
+    final textTokens = text?.toTokens() ?? [];
+
     final emailEmailFilterConditionShared = EmailFilterCondition(
-      text: text?.value.trim().isNotEmpty == true
-        ? text?.value.trim()
-        : null,
+      text: textTokens.length == 1 ? textTokens.first : null,
       inMailbox: mailbox?.mailboxId,
       after: emailReceiveTimeType.getAfterDate(startDate),
       hasAttachment: !hasAttachment ? null : hasAttachment,
@@ -134,6 +134,11 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     final listEmailCondition = {
       if (emailEmailFilterConditionShared.hasCondition)
         emailEmailFilterConditionShared,
+      if (textTokens.length > 1)
+        LogicFilterOperator(
+          Operator.AND,
+          textTokens.map((token) => EmailFilterCondition(text: token)).toSet(),
+        ),
       if (to.isNotEmpty)
         ..._generateFilterFromToField(),
       if (from.length > 1)
