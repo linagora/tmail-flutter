@@ -846,6 +846,7 @@ class HtmlUtils {
     bool removeQuotes = true,
     bool removeStyle = true,
     bool removeScript = true,
+    bool removeTMailSignature = true,
   }) {
     var cleaned = html;
 
@@ -863,6 +864,9 @@ class HtmlUtils {
     }
     if (removeScript) {
       doc.querySelectorAll('script').forEach((e) => e.remove());
+    }
+    if (removeTMailSignature) {
+      doc.querySelectorAll('div.tmail-signature').forEach((e) => e.remove());
     }
 
     cleaned = doc.outerHtml;
