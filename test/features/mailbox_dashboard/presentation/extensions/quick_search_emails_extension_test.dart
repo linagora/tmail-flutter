@@ -51,8 +51,8 @@ void main() {
 
   group('quickSearchEmails', () {
     test(
-      'should invoke quickSearchEmailInteractor.execute() with SearchController\'s sort '
-      'when sortOrderType is null',
+      'should invoke quickSearchEmailInteractor.execute() with default sort '
+      'when sortOrderType is null (defaults to relevance)',
       () async {
         sortOrderType = null;
         when(searchController.searchEmailFilter)
@@ -63,11 +63,16 @@ void main() {
           ownEmailAddress: ownEmailAddress,
           query: query,
         );
+        // When sortOrderType is null, SearchEmailFilter defaults to relevance,
+        // which returns an explicit receivedAt DESC comparator in our fork
+        final expectedSort = SearchEmailFilter.defaultSortOrder
+            .getSortOrder()
+            .toNullable();
         verify(quickSearchEmailInteractor.execute(
           session,
           accountId,
           limit: anyNamed('limit'),
-          sort: sortOrderType?.getSortOrder().toNullable(),
+          sort: expectedSort,
           filter: anyNamed('filter'),
           properties: anyNamed('properties'),
         )).called(1);
