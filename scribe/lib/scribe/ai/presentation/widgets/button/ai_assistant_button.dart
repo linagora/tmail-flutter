@@ -1,7 +1,8 @@
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:scribe/scribe.dart';
+import 'ai_assistant_animated_button.dart';
+import 'ai_assistant_static_button.dart';
 
 typedef OnOpenAiAssistantModal = void Function(
   Offset? position,
@@ -24,17 +25,20 @@ class AiAssistantButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TMailButtonWidget.fromIcon(
-      icon: imagePaths.icGradientSparkle,
-      padding: AIScribeSizes.aiAssistantIconPadding,
-      backgroundColor: Colors.transparent,
-      iconSize: AIScribeSizes.aiAssistantIcon,
-      iconColor: iconColor,
-      margin: margin,
-      borderRadius: AIScribeSizes.aiAssistantIconRadius,
-      tooltipMessage: ScribeLocalizations.of(context).aiAssistant,
-      onTapActionCallback: () => _onTapActionCallback(context),
-    );
+    if (PlatformInfo.isWebDesktop) {
+      return AiAssistantAnimatedButton(
+        imagePaths: imagePaths,
+        onTapActionCallback: () => _onTapActionCallback(context),
+        margin: margin,
+      );
+    } else {
+      return AiAssistantStaticButton(
+        imagePaths: imagePaths,
+        onTapActionCallback: () => _onTapActionCallback(context),
+        iconColor: iconColor,
+        margin: margin,
+      );
+    }
   }
 
   void _onTapActionCallback(BuildContext context) {

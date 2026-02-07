@@ -34,6 +34,8 @@ dependencies:
 
   intl: 0.20.2
 
+  lottie: 3.3.1
+
   json_annotation: 4.8.0
 
   flutter_svg: 2.1.0
