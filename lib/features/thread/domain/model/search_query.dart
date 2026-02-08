@@ -2,8 +2,6 @@
 import 'package:equatable/equatable.dart';
 
 class SearchQuery with EquatableMixin {
-  static final _tokenPattern = RegExp(r'"([^"]+)"|(\S+)');
-
   final String value;
 
   SearchQuery(this.value);
@@ -12,24 +10,22 @@ class SearchQuery with EquatableMixin {
     return SearchQuery('');
   }
 
-  /// Splits the query into tokens for multi-keyword AND search.
+  /// Splits the query into individual word tokens for multi-keyword AND search.
   ///
-  /// - Quoted phrases like `"portal access"` are kept as a single token.
-  /// - Unquoted words are split by whitespace.
+  /// Quotes are stripped and all words are split by whitespace. Stalwart's
+  /// default FTS backend does not support exact phrase matching — it tokenizes
+  /// multi-word text values internally and matches with OR logic. Splitting
+  /// into individual AND-combined tokens gives accurate results regardless
+  /// of server FTS implementation.
   ///
   /// Examples:
-  /// - `"portal access"` → `["portal", "access"]`
-  /// - `'"portal access"'` → `["portal access"]`
-  /// - `'"portal access" denied'` → `["portal access", "denied"]`
+  /// - `'portal access'`          → `["portal", "access"]`
+  /// - `'"portal access"'`        → `["portal", "access"]`
+  /// - `'"portal access" denied'` → `["portal", "access", "denied"]`
   List<String> toTokens() {
-    final trimmed = value.trim();
-    if (trimmed.isEmpty) return [];
-
-    final tokens = <String>[];
-    for (final match in _tokenPattern.allMatches(trimmed)) {
-      tokens.add(match.group(1) ?? match.group(2)!);
-    }
-    return tokens;
+    final stripped = value.replaceAll('"', '').trim();
+    if (stripped.isEmpty) return [];
+    return stripped.split(RegExp(r'\s+'));
   }
 
   @override

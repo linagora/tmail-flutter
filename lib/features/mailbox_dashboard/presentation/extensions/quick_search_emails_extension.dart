@@ -1,6 +1,8 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
+import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
+import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
@@ -12,6 +14,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/quick_sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
 extension QuickSearchEmailsExtension on SearchController {
   Future<List<PresentationEmail>> quickSearchEmails({
@@ -43,8 +46,10 @@ extension QuickSearchEmailsExtension on SearchController {
 
   Filter? _mappingToFilterOnSuggestionForm({required String query, required String currentUserEmail}) {
     log('SearchController::_mappingToFilterOnSuggestionForm():query: $query');
-    final filterCondition = EmailFilterCondition(
-      text: query.isNotEmpty == true ? query : null,
+    final tokens = SearchQuery(query).toTokens();
+
+    final baseCondition = EmailFilterCondition(
+      text: tokens.length == 1 ? tokens.first : null,
       after: listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
         ? EmailReceiveTimeType.last7Days.toOldestUTCDate()
         : null,
@@ -62,8 +67,22 @@ extension QuickSearchEmailsExtension on SearchController {
         : null
     );
 
-    return filterCondition.hasCondition
-      ? filterCondition
-      : null;
+    final conditions = <Filter>{
+      if (baseCondition.hasCondition)
+        baseCondition,
+      if (tokens.length > 1)
+        LogicFilterOperator(
+          Operator.AND,
+          tokens.map((token) => EmailFilterCondition(text: token)).toSet(),
+        ),
+    };
+
+    if (conditions.isEmpty) {
+      return null;
+    } else if (conditions.length == 1) {
+      return conditions.first;
+    } else {
+      return LogicFilterOperator(Operator.AND, conditions);
+    }
   }
 }
