@@ -245,7 +245,7 @@ extension HandleAiScribeInComposerExtension on ComposerController {
 
     final fullText = await _getTextOnlyContentInEditor();
 
-    await AiScribeModalManager.showAIScribeMenuModal(
+    await AiScribeModalManager.showAIScribeModal(
       imagePaths: imagePaths,
       availableCategories: AIScribeMenuCategory.values,
       buttonPosition: position,

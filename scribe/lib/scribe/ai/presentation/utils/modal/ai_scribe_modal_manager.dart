@@ -6,7 +6,7 @@ import 'package:scribe/scribe.dart';
 class AiScribeModalManager {
   AiScribeModalManager._();
 
-  static Future<void> showAIScribeMenuModal({
+  static Future<void> showAIScribeModal({
     required bool isScribeMobile,
     required ImagePaths imagePaths,
     required List<AIScribeMenuCategory> availableCategories,
@@ -17,31 +17,16 @@ class AiScribeModalManager {
     ModalPlacement? preferredPlacement,
     ModalCrossAxisAlignment crossAxisAlignment = ModalCrossAxisAlignment.center,
   }) async {
-    final AIAction? aiAction;
-
-    if (isScribeMobile) {
-      aiAction = await showMobileAIScribeMenuModal(
+    final AIAction? aiAction = await showAIScribeMenuModal(
+        isScribeMobile: isScribeMobile,
         imagePaths: imagePaths,
         content: content,
         availableCategories: availableCategories,
+        buttonPosition: buttonPosition,
+        buttonSize: buttonSize,
+        preferredPlacement: preferredPlacement,
+        crossAxisAlignment: crossAxisAlignment,
       );
-    } else {
-      final ContextSubmenuController submenuController = ContextSubmenuController();
-
-      aiAction = await Get.dialog<AIAction>(
-        AiScribeModalWidget(
-          imagePaths: imagePaths,
-          content: content,
-          availableCategories: availableCategories,
-          buttonPosition: buttonPosition,
-          buttonSize: buttonSize,
-          preferredPlacement: preferredPlacement,
-          crossAxisAlignment: crossAxisAlignment,
-          submenuController: submenuController,
-        ),
-        barrierColor: AIScribeColors.dialogBarrier,
-      ).whenComplete(submenuController.dispose);
-    }
 
     if (aiAction != null) {
       await showAIScribeSuggestionModal(
@@ -54,6 +39,35 @@ class AiScribeModalManager {
         preferredPlacement: preferredPlacement,
         crossAxisAlignment: crossAxisAlignment,
         onSelectAiScribeSuggestionAction: onSelectAiScribeSuggestionAction,
+      );
+    }
+  }
+
+  static Future<AIAction?> showAIScribeMenuModal({
+    required bool isScribeMobile,
+    required ImagePaths imagePaths,
+    required List<AIScribeMenuCategory> availableCategories,
+    String? content,
+    Offset? buttonPosition,
+    Size? buttonSize,
+    ModalPlacement? preferredPlacement,
+    ModalCrossAxisAlignment crossAxisAlignment = ModalCrossAxisAlignment.center,
+  }) async {
+    if (isScribeMobile) {
+      return await showMobileAIScribeMenuModal(
+        imagePaths: imagePaths,
+        content: content,
+        availableCategories: availableCategories,
+      );
+    } else {
+      return await showDesktopAIScribeMenuModal(
+        imagePaths: imagePaths,
+        content: content,
+        availableCategories: availableCategories,
+        buttonPosition: buttonPosition,
+        buttonSize: buttonSize,
+        preferredPlacement: preferredPlacement,
+        crossAxisAlignment: crossAxisAlignment,
       );
     }
   }
@@ -77,20 +91,43 @@ class AiScribeModalManager {
         onSelectAiScribeSuggestionAction: onSelectAiScribeSuggestionAction,
       );
     } else {
-      await Get.dialog<String?>(
-        AiScribeSuggestionWidget(
-          aiAction: aiAction,
+      await showDesktopAIScribeSuggestionModal(
+        aiAction: aiAction,
+        imagePaths: imagePaths,
+        content: content,
+        buttonPosition: buttonPosition,
+        buttonSize: buttonSize,
+        preferredPlacement: preferredPlacement,
+        crossAxisAlignment: crossAxisAlignment,
+        onSelectAiScribeSuggestionAction: onSelectAiScribeSuggestionAction,
+      );
+    }
+  }
+
+  static Future<AIAction?> showDesktopAIScribeMenuModal({
+    required ImagePaths imagePaths,
+    required List<AIScribeMenuCategory> availableCategories,
+    String? content,
+    Offset? buttonPosition,
+    Size? buttonSize,
+    ModalPlacement? preferredPlacement,
+    ModalCrossAxisAlignment crossAxisAlignment = ModalCrossAxisAlignment.center,
+  }) async {
+      final ContextSubmenuController submenuController = ContextSubmenuController();
+
+      return await Get.dialog<AIAction>(
+        AiScribeModalWidget(
           imagePaths: imagePaths,
           content: content,
+          availableCategories: availableCategories,
           buttonPosition: buttonPosition,
           buttonSize: buttonSize,
           preferredPlacement: preferredPlacement,
           crossAxisAlignment: crossAxisAlignment,
-          onSelectAiScribeSuggestionAction: onSelectAiScribeSuggestionAction,
+          submenuController: submenuController,
         ),
         barrierColor: AIScribeColors.dialogBarrier,
-      );
-    }
+      ).whenComplete(submenuController.dispose);
   }
 
   static Future<AIAction?> showMobileAIScribeMenuModal({
@@ -111,6 +148,31 @@ class AiScribeModalManager {
         availableCategories: availableCategories,
         content: content,
       ),
+    );
+  }
+
+  static Future<void> showDesktopAIScribeSuggestionModal({
+    required AIAction aiAction,
+    required ImagePaths imagePaths,
+    required OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction,
+    String? content,
+    Offset? buttonPosition,
+    Size? buttonSize,
+    ModalPlacement? preferredPlacement,
+    ModalCrossAxisAlignment crossAxisAlignment = ModalCrossAxisAlignment.center,
+  }) async {
+    await Get.dialog<void>(
+      AiScribeSuggestionWidget(
+        aiAction: aiAction,
+        imagePaths: imagePaths,
+        content: content,
+        buttonPosition: buttonPosition,
+        buttonSize: buttonSize,
+        preferredPlacement: preferredPlacement,
+        crossAxisAlignment: crossAxisAlignment,
+        onSelectAiScribeSuggestionAction: onSelectAiScribeSuggestionAction,
+      ),
+      barrierColor: AIScribeColors.dialogBarrier,
     );
   }
 
