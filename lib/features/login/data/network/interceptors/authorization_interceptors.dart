@@ -149,7 +149,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       } else {
         logTrace(
           'AuthorizationInterceptors::onError: '
-          '401 received but refresh skipped. '
+          'No retry or refresh applicable. '
           'statusCode = ${err.response?.statusCode} | '
           'authType = $_authenticationType | '
           'hasConfig = ${_configOIDC != null} | '
