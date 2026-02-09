@@ -208,7 +208,7 @@ void main() {
         expect(textValues, equals({'portal', 'access'}));
       });
 
-      test('SHOULD keep quoted phrase as single text condition', () {
+      test('SHOULD split quoted phrase into AND filter same as unquoted', () {
         // Arrange
         final filter = SearchEmailFilter(
           text: SearchQuery('"portal access"'),
@@ -217,13 +217,20 @@ void main() {
         // Act
         final result = filter.mappingToEmailFilterCondition();
 
-        // Assert
-        expect(result, isA<EmailFilterCondition>());
-        final emailCondition = result as EmailFilterCondition;
-        expect(emailCondition.text, 'portal access');
+        // Assert — quotes are stripped, words become AND-combined tokens
+        expect(result, isA<LogicFilterOperator>());
+        final logicFilter = result as LogicFilterOperator;
+        expect(logicFilter.operator, Operator.AND);
+        expect(logicFilter.conditions.length, equals(2));
+
+        final textValues = logicFilter.conditions
+            .whereType<EmailFilterCondition>()
+            .map((c) => c.text)
+            .toSet();
+        expect(textValues, equals({'portal', 'access'}));
       });
 
-      test('SHOULD handle mix of quoted phrase and individual words', () {
+      test('SHOULD split quoted phrase and bare words into individual AND tokens', () {
         // Arrange
         final filter = SearchEmailFilter(
           text: SearchQuery('"portal access" denied'),
@@ -236,14 +243,14 @@ void main() {
         expect(result, isA<LogicFilterOperator>());
         final logicFilter = result as LogicFilterOperator;
         expect(logicFilter.operator, Operator.AND);
-        expect(logicFilter.conditions.length, equals(2));
+        expect(logicFilter.conditions.length, equals(3));
 
         final conditions = logicFilter.conditions.toList();
         final textValues = conditions
             .whereType<EmailFilterCondition>()
             .map((c) => c.text)
             .toSet();
-        expect(textValues, equals({'portal access', 'denied'}));
+        expect(textValues, equals({'portal', 'access', 'denied'}));
       });
 
       test('SHOULD treat single word text same as before', () {
