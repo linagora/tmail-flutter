@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
+  static const String _refreshAttemptedKey = '_authInterceptorRefreshAttempted';
 
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
@@ -90,10 +91,23 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       final extraInRequest = requestOptions.extra;
       bool isRetryRequest = false;
 
-      if (validateToRefreshToken(
+      // Check if this request has already attempted a refresh/retry
+      final hasAttemptedRefresh = extraInRequest[_refreshAttemptedKey] == true;
+
+      // FIRST: Check if token was already updated by another request in the queue
+      // If so, just retry with the new token - no refresh needed
+      // But skip if we've already attempted (to prevent infinite loops)
+      if (!hasAttemptedRefresh && validateToRetryTheRequestWithNewToken(
+        authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
+        tokenOIDC: _token
+      )) {
+        log('AuthorizationInterceptors::onError: Request using old token, retry with updated token');
+        isRetryRequest = true;
+      } else if (!hasAttemptedRefresh && validateToRefreshToken(
         responseStatusCode: err.response?.statusCode,
         tokenOIDC: _token
       )) {
+        // SECOND: Check if we should attempt to refresh the token
         try {
           log('AuthorizationInterceptors::onError: Perform get New Token');
           final newTokenOidc = PlatformInfo.isIOS
@@ -112,6 +126,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
             await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
           }
 
+          // Mark that we've attempted refresh for this request
+          requestOptions.extra[_refreshAttemptedKey] = true;
           isRetryRequest = true;
         } on DioException catch (refreshError, st) {
           if (refreshError.response?.statusCode == 400) {
@@ -135,12 +151,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
           return super.onError(err, handler);
         }
-      } else if (validateToRetryTheRequestWithNewToken(
-        authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
-        tokenOIDC: _token
-      )) {
-        log('AuthorizationInterceptors::onError: Request using old token');
-        isRetryRequest = true;
       } else {
         logTrace(
           'AuthorizationInterceptors::onError: '
@@ -148,6 +158,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           'statusCode = ${err.response?.statusCode} | '
           'authType = $_authenticationType | '
           'hasConfig = ${_configOIDC != null} | '
+          'hasAttemptedRefresh = $hasAttemptedRefresh | '
           'url = ${err.requestOptions.uri}',
           webConsoleEnabled: true,
         );
@@ -160,10 +171,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
           final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
+          // Mark as attempted to prevent infinite retry loops
+          requestOptions.extra[_refreshAttemptedKey] = true;
 
           final newOptions = Options(
             method: requestOptions.method,
             headers: requestOptions.headers,
+            extra: requestOptions.extra,
           );
 
           final response = await _dio.request(
@@ -177,6 +191,8 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         } else {
           log('AuthorizationInterceptors::onError: Retry request with TokenId = ${_token?.tokenIdHash}');
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
+          // Mark as attempted to prevent infinite retry loops
+          requestOptions.extra[_refreshAttemptedKey] = true;
 
           final response = await _dio.fetch(requestOptions);
           return handler.resolve(response);
@@ -232,13 +248,14 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     final isLoginWithOIDC = _isAuthenticationOidcValid();
     final hasAccessToken = _isTokenNotEmpty(tokenOIDC);
     final hasRefreshToken = _isRefreshTokenNotEmpty(tokenOIDC);
-    final isExpired = _isTokenExpired(tokenOIDC);
 
+    // Note: We removed isExpired check. If server returns 401, we trust it
+    // and attempt refresh regardless of local expiry time. This handles cases
+    // where server clock is ahead or token was revoked server-side.
     final canProceedRefresh = isStatusCode401 &&
         isLoginWithOIDC &&
         hasAccessToken &&
-        hasRefreshToken &&
-        isExpired;
+        hasRefreshToken;
 
     logTrace(
       'AuthorizationInterceptors::validateToRefreshToken: '
@@ -246,9 +263,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       'isLoginWithOIDC = $isLoginWithOIDC | '
       'hasAccessToken = $hasAccessToken | '
       'hasRefreshToken = $hasRefreshToken | '
-      'isExpired = $isExpired | '
-      'expiredTime = ${tokenOIDC?.expiredTime} | '
-      'now = ${DateTime.now()} | '
       'canProceedRefresh = $canProceedRefresh',
       webConsoleEnabled: true,
     );
@@ -264,6 +278,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     final isTokenUpdated =
         tokenOIDC != null && authHeader?.contains(tokenOIDC.token) != true;
 
+    // Note: We don't check isTokenExpired here. If another request already
+    // refreshed the token, we should retry with the new token regardless of
+    // its expiry status. The key check is isTokenUpdated.
     final shouldRetry =
         hasAuthHeader && hasAccessToken && isTokenStillValid && isTokenUpdated;
 
