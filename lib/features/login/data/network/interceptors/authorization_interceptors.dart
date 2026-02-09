@@ -144,7 +144,25 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
             return handler.reject(sessionExpiredError);
           }
 
-          return super.onError(err, handler);
+          logError(
+            'AuthorizationInterceptors: Refresh token failed with '
+            'statusCode=${refreshError.response?.statusCode}',
+            exception: refreshError,
+            stackTrace: st,
+          );
+
+          if (refreshError is ServerError ||
+              refreshError is TemporarilyUnavailable) {
+            return super.onError(
+              DioException(
+                requestOptions: err.requestOptions,
+                error: refreshError,
+              ),
+              handler,
+            );
+          } else {
+            return super.onError(err.copyWith(error: refreshError), handler);
+          }
         }
       } else {
         logTrace(
