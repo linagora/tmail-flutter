@@ -63,11 +63,12 @@ extension HandleAiScribeInComposerExtension on ComposerController {
   Future<void> setTextInEditor(String text) async {
     try {
       final escapedText = StringConvert.escapeTextContent(text);
+      final htmlContent = StringConvert.convertTextContentToHtmlContent(escapedText);
       
       if (PlatformInfo.isWeb) {
-        richTextWebController?.editorController.setText(escapedText);
+        richTextWebController?.editorController.setText(htmlContent);
       } else {
-        await richTextMobileTabletController?.htmlEditorApi?.setText(escapedText);
+        await richTextMobileTabletController?.htmlEditorApi?.setText(htmlContent);
       }
     } catch (e) {
       logWarning('$runtimeType::setTextInEditor:Exception = $e');
