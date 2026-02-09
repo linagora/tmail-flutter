@@ -20,7 +20,7 @@ class DefaultCloseButtonWidget extends StatelessWidget {
     return PositionedDirectional(
       top: 4,
       end: isAlignTopEnd ? 4 : null,
-      start: isAlignTopEnd ? 0 : 4,
+      start: isAlignTopEnd ? null : 4,
       child: TMailButtonWidget.fromIcon(
         icon: iconClose,
         iconSize: 24,

@@ -17,6 +17,8 @@ class LabelListItem extends StatefulWidget {
   final bool isDesktop;
   final bool isSelected;
   final bool isMobileResponsive;
+  final bool enableSelectedIcon;
+  final EdgeInsetsGeometry? padding;
   final OnOpenLabelCallback onOpenLabelCallback;
   final OnOpenLabelContextMenuAction? onOpenContextMenu;
   final OnLongPressLabelItemAction? onLongPressLabelItemAction;
@@ -29,6 +31,8 @@ class LabelListItem extends StatefulWidget {
     this.isDesktop = false,
     this.isSelected = false,
     this.isMobileResponsive = false,
+    this.enableSelectedIcon = false,
+    this.padding,
     this.onOpenContextMenu,
     this.onLongPressLabelItemAction,
   });
@@ -60,7 +64,7 @@ class _LabelListItemState extends State<LabelListItem> {
       ),
     );
 
-    _itemPadding = EdgeInsetsDirectional.symmetric(
+    _itemPadding = widget.padding ?? EdgeInsetsDirectional.symmetric(
       horizontal: isDesktop
           ? MailboxItemWidgetStyles.itemPadding
           : MailboxItemWidgetStyles.mobileItemPadding,
@@ -82,8 +86,8 @@ class _LabelListItemState extends State<LabelListItem> {
     return Material(
       type: MaterialType.transparency,
       child: InkWell(
-        borderRadius: _borderRadius,
-        onHover: _handleHoverChanged,
+        borderRadius: widget.enableSelectedIcon ? null : _borderRadius,
+        onHover: widget.enableSelectedIcon ? null : _handleHoverChanged,
         onTap: () => widget.onOpenLabelCallback(widget.label),
         onLongPress: PlatformInfo.isWebTouchDevice || PlatformInfo.isMobile
           ? () => widget.onLongPressLabelItemAction?.call(widget.label)
@@ -92,11 +96,23 @@ class _LabelListItemState extends State<LabelListItem> {
           height: _itemHeight,
           padding: _itemPadding,
           decoration: BoxDecoration(
-            borderRadius: _borderRadius,
+            borderRadius: widget.enableSelectedIcon ? null : _borderRadius,
             color: _backgroundColorItem,
           ),
           child: Row(
             children: [
+              if (widget.enableSelectedIcon)
+                _SelectedIcon(
+                  icon: widget.isSelected
+                      ? widget.imagePaths.icCheckboxSelected
+                      : widget.imagePaths.icCheckboxUnselected,
+                  color:  widget.isSelected
+                      ? AppColor.primaryMain
+                      : AppColor.steelGray200,
+                  onSelectAcion: () => widget.onOpenLabelCallback(
+                    widget.label,
+                  ),
+                ),
               _LabelIcon(
                 icon: widget.imagePaths.icLabel,
                 color: widget.label.backgroundColor,
@@ -122,7 +138,9 @@ class _LabelListItemState extends State<LabelListItem> {
   }
 
   Color get _backgroundColorItem =>
-      widget.isSelected ? AppColor.blue100 : Colors.transparent;
+      widget.isSelected && !widget.enableSelectedIcon
+          ? AppColor.blue100
+          : Colors.transparent;
 
   Color _menuButtonBackgroundColor(BuildContext context) {
     if (_isContextMenuVisible) {
@@ -177,6 +195,30 @@ class _LabelIcon extends StatelessWidget {
       icon: icon,
       color: color,
       padding: EdgeInsetsDirectional.only(end: spacing),
+    );
+  }
+}
+
+class _SelectedIcon extends StatelessWidget {
+  final String icon;
+  final Color? color;
+  final VoidCallback onSelectAcion;
+
+  const _SelectedIcon({
+    required this.icon,
+    required this.color,
+    required this.onSelectAcion,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TMailButtonWidget.fromIcon(
+      icon: icon,
+      iconColor: color,
+      iconSize: 20,
+      padding: const EdgeInsets.all(10),
+      backgroundColor: Colors.transparent,
+      onTapActionCallback: onSelectAcion,
     );
   }
 }
