@@ -82,7 +82,9 @@ void _internalLog(
 
   if (shouldSentry) {
     if (level == Level.trace) {
-      SentryManager.instance.captureMessage(rawMessage, extras: extras);
+      unawaited(
+        SentryManager.instance.captureMessage(rawMessage, extras: extras),
+      );
     } else {
       unawaited(
         SentryManager.instance.captureException(
@@ -208,11 +210,13 @@ void logDebug(
 void logTrace(
   String? message, {
   bool webConsoleEnabled = false,
+  Map<String, dynamic>? extras,
 }) {
   _internalLog(
     message,
     level: Level.trace,
     webConsoleEnabled: webConsoleEnabled,
+    extras: extras,
   );
 }
 
