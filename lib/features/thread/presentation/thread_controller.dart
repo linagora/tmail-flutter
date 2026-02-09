@@ -719,6 +719,7 @@ class ThreadController extends BaseController with EmailActionController {
       _accountId!,
       mailboxDashBoardController.currentEmailState!,
       sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+      limit: limitEmailFetched,
       propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
         _session!,
         _accountId!,
