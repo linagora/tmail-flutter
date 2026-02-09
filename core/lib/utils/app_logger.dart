@@ -82,7 +82,9 @@ void _internalLog(
 
   if (shouldSentry) {
     if (level == Level.trace) {
-      SentryManager.instance.captureMessage(rawMessage, extras: extras);
+      unawaited(
+        SentryManager.instance.captureMessage(rawMessage, extras: extras);
+      );
     } else {
       unawaited(
         SentryManager.instance.captureException(
