@@ -28,6 +28,13 @@ class OIDCFixtures {
     'test456',
     expiredTime: DateTime.now().add(const Duration(days: 1)));
 
+  /// Token that is NOT expired yet - for testing 401 before expiry scenario
+  static final tokenOidcNotExpiredYet = TokenOIDC(
+    'valid_token_123',
+    TokenId('valid_token_123'),
+    'valid_refresh_456',
+    expiredTime: DateTime.now().add(const Duration(hours: 1)));
+
   static final oidcConfiguration = OIDCConfiguration(
     authority: 'https://example.com',
     clientId: 'client-id',
