@@ -719,6 +719,7 @@ class ThreadController extends BaseController with EmailActionController {
       _accountId!,
       mailboxDashBoardController.currentEmailState!,
       sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+      limit: limitEmailFetched,
       propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
         _session!,
         _accountId!,
@@ -807,7 +808,7 @@ class ThreadController extends BaseController with EmailActionController {
           filter: getFilterConditionForLoadMailbox(oldestEmail: oldestEmail),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
-          useCache: (selectedMailbox?.isCacheable ?? false) && !forceEmailQuery,
+          useCache: selectedMailbox?.isCacheable ?? false,
         )
       ));
     }

@@ -83,6 +83,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           session,
           accountId,
           sort: sort,
+          limit: limit,
           position: position,
           mailboxId: emailFilter?.mailboxId,
           propertiesCreated: propertiesCreated,
@@ -187,6 +188,15 @@ class ThreadRepositoryImpl extends ThreadRepository {
       'Server email count = $serverCount',
     );
 
+    if (serverCount > 0) {
+      await _updateEmailCache(
+        accountId,
+        session.username,
+        newCreated: serverResponse.emailList,
+        newDestroyed: serverResponse.notFoundEmailIds,
+      );
+    }
+
     // Combine server list + keep existing state
     yield EmailsResponse(
       emailList: serverResponse.emailList,
@@ -203,6 +213,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     AccountId accountId,
     {
       Set<Comparator>? sort,
+      UnsignedInt? limit,
       int? position,
       MailboxId? mailboxId,
       Properties? propertiesCreated,
@@ -212,7 +223,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       final networkEmailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
         session,
         accountId,
-        limit: ThreadConstants.defaultLimit,
+        limit: limit ?? ThreadConstants.defaultLimit,
         position: position,
         sort: sort,
         filter: filter ?? EmailFilterCondition(inMailbox: mailboxId),
@@ -323,6 +334,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     jmap.State currentState,
     {
       Set<Comparator>? sort,
+      UnsignedInt? limit,
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
@@ -343,19 +355,26 @@ class ThreadRepositoryImpl extends ThreadRepository {
         session.username,
         inMailboxId: emailFilter?.mailboxId,
         sort: sort,
-        filterOption: emailFilter?.filterOption
+        limit: limit,
+        filterOption: emailFilter?.filterOption,
       ),
       stateDataSource.getState(accountId, session.username, StateType.email)
     ]).then((List response) {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
+    final currentLimitEmails =
+        limit?.value ?? ThreadConstants.defaultLimit.value;
+
+    log('ThreadRepositoryImpl::refreshChanges: Current limit emails is $currentLimitEmails');
+
     if (!newEmailResponse.hasEmails()
-        || (newEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value) {
+        || (newEmailResponse.emailList?.length ?? 0) < currentLimitEmails) {
       final networkEmailResponse = await _getFirstPage(
         session,
         accountId,
         sort: sort,
+        limit: limit,
         filter: emailFilter?.filter,
         mailboxId: emailFilter?.mailboxId,
         propertiesCreated: propertiesCreated,
