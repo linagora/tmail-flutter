@@ -822,6 +822,7 @@ void main() {
         any,
         any,
         sort: anyNamed('sort'),
+        limit: anyNamed('limit'),
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated'),
         emailFilter: anyNamed('emailFilter'),
@@ -851,6 +852,7 @@ void main() {
         AccountFixtures.aliceAccountId,
         mailboxDashboardController.currentEmailState!,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+        limit: threadController.limitEmailFetched,
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -986,6 +988,7 @@ void main() {
         any,
         any,
         sort: anyNamed('sort'),
+        limit: anyNamed('limit'),
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated'),
         emailFilter: anyNamed('emailFilter'),
@@ -1015,6 +1018,7 @@ void main() {
         AccountFixtures.aliceAccountId,
         mailboxDashboardController.currentEmailState!,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+        limit: threadController.limitEmailFetched,
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
@@ -1095,6 +1099,7 @@ void main() {
         any,
         any,
         sort: anyNamed('sort'),
+        limit: anyNamed('limit'),
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated'),
         emailFilter: anyNamed('emailFilter'),
@@ -1124,6 +1129,7 @@ void main() {
         AccountFixtures.aliceAccountId,
         mailboxDashboardController.currentEmailState!,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+        limit: threadController.limitEmailFetched,
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,

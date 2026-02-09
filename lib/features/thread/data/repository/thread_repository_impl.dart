@@ -188,7 +188,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
       'Server email count = $serverCount',
     );
 
-    if (serverCount > 0) {
+    if (serverCount > 0 ||
+        (serverResponse.notFoundEmailIds?.isNotEmpty ?? false)) {
       await _updateEmailCache(
         accountId,
         session.username,
