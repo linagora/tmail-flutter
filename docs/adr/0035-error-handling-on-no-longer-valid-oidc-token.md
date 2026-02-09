@@ -21,7 +21,7 @@ Multiple issues drove the evolution of the refresh token logic:
 `AuthorizationInterceptors` extends `QueuedInterceptorsWrapper` (Dio). The `onError` handler processes errors one at a time with the following ordered checks:
 
 1. **`_refreshAttemptedKey` guard** — if the request already attempted a refresh/retry, skip everything and propagate the error. Prevents infinite loops.
-2. **`validateToRetryTheRequestWithNewToken`** (checked first) — if `_token` was already updated by a preceding queued request, retry immediately with the new token. No refresh call needed.
+2. **`validateToRetryTheRequestWithNewToken`** (checked first) — only on **401** responses: if `_token` was already updated by a preceding queued request, retry immediately with the new token. No refresh call needed. Non-401 errors (500, 403, etc.) are never retried here — they are server errors unrelated to authentication.
 3. **`validateToRefreshToken`** — if status is 401, auth type is OIDC, and access/refresh tokens are present, attempt refresh. The local `isExpired` check was **removed**; we trust the server's 401.
    - **Success (different token):** update `_token`, persist to cache, mark `_refreshAttemptedKey`, retry.
    - **Success (same token — duplicate):** propagate original error, no retry.
