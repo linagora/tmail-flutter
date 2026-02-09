@@ -225,10 +225,11 @@ void main() {
   // ============================================================
   group('validateToRetryTheRequestWithNewToken', () {
     test(
-      'should return TRUE when auth header present, token updated, and token not expired',
+      'should return TRUE when 401, auth header present, token updated, and token not expired',
       () {
         final result =
             authorizationInterceptors.validateToRetryTheRequestWithNewToken(
+          responseStatusCode: 401,
           authHeader: 'Bearer old_token',
           tokenOIDC: OIDCFixtures.newTokenOidc,
         );
@@ -237,9 +238,32 @@ void main() {
       },
     );
 
+    test('should return FALSE when status code is not 401 (e.g. 500)', () {
+      final result =
+          authorizationInterceptors.validateToRetryTheRequestWithNewToken(
+        responseStatusCode: 500,
+        authHeader: 'Bearer old_token',
+        tokenOIDC: OIDCFixtures.newTokenOidc,
+      );
+
+      expect(result, false);
+    });
+
+    test('should return FALSE when status code is null', () {
+      final result =
+          authorizationInterceptors.validateToRetryTheRequestWithNewToken(
+        responseStatusCode: null,
+        authHeader: 'Bearer old_token',
+        tokenOIDC: OIDCFixtures.newTokenOidc,
+      );
+
+      expect(result, false);
+    });
+
     test('should return FALSE when auth header is null', () {
       final result =
           authorizationInterceptors.validateToRetryTheRequestWithNewToken(
+        responseStatusCode: 401,
         authHeader: null,
         tokenOIDC: OIDCFixtures.newTokenOidc,
       );
@@ -252,6 +276,7 @@ void main() {
       () {
         final result =
             authorizationInterceptors.validateToRetryTheRequestWithNewToken(
+          responseStatusCode: 401,
           authHeader: 'Bearer ${OIDCFixtures.newTokenOidc.token}',
           tokenOIDC: OIDCFixtures.newTokenOidc,
         );
@@ -263,6 +288,7 @@ void main() {
     test('should return FALSE when token is expired', () {
       final result =
           authorizationInterceptors.validateToRetryTheRequestWithNewToken(
+        responseStatusCode: 401,
         authHeader: 'Bearer some_other_token',
         tokenOIDC: OIDCFixtures.tokenOidcExpiredTime,
       );
@@ -273,6 +299,7 @@ void main() {
     test('should return FALSE when token is empty', () {
       final result =
           authorizationInterceptors.validateToRetryTheRequestWithNewToken(
+        responseStatusCode: 401,
         authHeader: 'Bearer some_token',
         tokenOIDC: OIDCFixtures.tokenOidcExpiredTimeAndTokenEmpty,
       );
@@ -283,6 +310,7 @@ void main() {
     test('should return FALSE when tokenOIDC is null', () {
       final result =
           authorizationInterceptors.validateToRetryTheRequestWithNewToken(
+        responseStatusCode: 401,
         authHeader: 'Bearer some_token',
         tokenOIDC: null,
       );

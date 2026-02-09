@@ -91,13 +91,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       final extraInRequest = requestOptions.extra;
       bool isRetryRequest = false;
 
-      // Check if this request has already attempted a refresh/retry
       final hasAttemptedRefresh = extraInRequest[_refreshAttemptedKey] == true;
 
-      // FIRST: Check if token was already updated by another request in the queue
-      // If so, just retry with the new token - no refresh needed
-      // But skip if we've already attempted (to prevent infinite loops)
       if (!hasAttemptedRefresh && validateToRetryTheRequestWithNewToken(
+        responseStatusCode: err.response?.statusCode,
         authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
         tokenOIDC: _token
       )) {
@@ -107,7 +104,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         responseStatusCode: err.response?.statusCode,
         tokenOIDC: _token
       )) {
-        // SECOND: Check if we should attempt to refresh the token
         try {
           log('AuthorizationInterceptors::onError: Perform get New Token');
           final newTokenOidc = PlatformInfo.isIOS
@@ -126,7 +122,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
             await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
           }
 
-          // Mark that we've attempted refresh for this request
           requestOptions.extra[_refreshAttemptedKey] = true;
           isRetryRequest = true;
         } on DioException catch (refreshError, st) {
@@ -249,9 +244,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     final hasAccessToken = _isTokenNotEmpty(tokenOIDC);
     final hasRefreshToken = _isRefreshTokenNotEmpty(tokenOIDC);
 
-    // Note: We removed isExpired check. If server returns 401, we trust it
-    // and attempt refresh regardless of local expiry time. This handles cases
-    // where server clock is ahead or token was revoked server-side.
     final canProceedRefresh = isStatusCode401 &&
         isLoginWithOIDC &&
         hasAccessToken &&
@@ -271,21 +263,25 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   bool validateToRetryTheRequestWithNewToken(
-      {required String? authHeader, required TokenOIDC? tokenOIDC}) {
+      {required int? responseStatusCode,
+      required String? authHeader,
+      required TokenOIDC? tokenOIDC}) {
+    final isStatusCode401 = responseStatusCode == 401;
     final hasAuthHeader = authHeader != null;
     final hasAccessToken = _isTokenNotEmpty(tokenOIDC);
     final isTokenStillValid = !_isTokenExpired(tokenOIDC);
     final isTokenUpdated =
         tokenOIDC != null && authHeader?.contains(tokenOIDC.token) != true;
 
-    // Note: We don't check isTokenExpired here. If another request already
-    // refreshed the token, we should retry with the new token regardless of
-    // its expiry status. The key check is isTokenUpdated.
-    final shouldRetry =
-        hasAuthHeader && hasAccessToken && isTokenStillValid && isTokenUpdated;
+    final shouldRetry = isStatusCode401 &&
+        hasAuthHeader &&
+        hasAccessToken &&
+        isTokenStillValid &&
+        isTokenUpdated;
 
     logTrace(
       'AuthorizationInterceptors::validateToRetryWithNewToken: '
+      'isStatusCode401 = $isStatusCode401 | '
       'hasHeader = $hasAuthHeader | '
       'hasAccessToken = $hasAccessToken | '
       'isTokenValid = $isTokenStillValid | '
