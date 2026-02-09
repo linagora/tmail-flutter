@@ -225,7 +225,7 @@ extension HandleLabelForEmailExtension on SingleEmailController {
     mailboxDashBoardController.updateEmailFlagByEmailIds(
       [emailId],
       isLabelAdded: !remove,
-      labelKeyword: labelKeyword,
+      labelKeywords: [labelKeyword],
     );
 
     mailboxDashBoardController.labelController.isLabelSettingEnabled.refresh();

@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_a_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/labels/add_list_label_to_list_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_a_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/download/domain/state/parse_email_by_blob_id_state.dart';
@@ -227,6 +228,9 @@ class ToastManager {
           );
     } else if (failure is DeleteALabelFailure) {
       message = message ?? appLocalizations.deleteALabelFailure;
+    } else if (failure is AddListLabelsToListEmailsFailure) {
+      message =
+          message ?? appLocalizations.addListLabelToListEmailFailureMessage;
     }
     log('ToastManager::showMessageFailure: Message: $message');
     if (message?.trim().isNotEmpty == true) {
@@ -318,6 +322,9 @@ class ToastManager {
       message = appLocalizations.deleteLabelSuccessfullyMessage(
         success.deletedLabel.safeDisplayName,
       );
+    } else if (success is AddListLabelsToListEmailsSuccess ||
+        success is AddListLabelsToListEmailsHasSomeFailure) {
+      message = appLocalizations.addListLabelToListEmailSuccessfullyMessage;
     }
     log('ToastManager::showMessageSuccess: Message: $message');
     if (message?.trim().isNotEmpty == true) {

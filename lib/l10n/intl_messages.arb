@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-02-09T14:33:37.731335",
+  "@@last_modified": "2026-02-09T16:11:12.283432",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5462,6 +5462,18 @@
   },
   "selectLabel": "Select label",
   "@selectLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailSuccessfullyMessage": "Labels have been successfully added to these emails.",
+  "@addListLabelToListEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailFailureMessage": "Adding labels to these emails failed",
+  "@addListLabelToListEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

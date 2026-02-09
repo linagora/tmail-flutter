@@ -5783,4 +5783,18 @@ class AppLocalizations {
       name: 'selectLabel',
     );
   }
+
+  String get addListLabelToListEmailSuccessfullyMessage {
+    return Intl.message(
+      'Labels have been successfully added to these emails.',
+      name: 'addListLabelToListEmailSuccessfullyMessage',
+    );
+  }
+
+  String get addListLabelToListEmailFailureMessage {
+    return Intl.message(
+      'Adding labels to these emails failed',
+      name: 'addListLabelToListEmailFailureMessage',
+    );
+  }
 }
