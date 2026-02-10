@@ -40,7 +40,7 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
         child: Row(
           children: [
             const Spacer(),
-            if (onOpenAiAssistantModal != null)
+            if (onOpenAiAssistantModal != null) ...[
               AiAssistantButton(
                 imagePaths: imagePaths,
                 margin: const EdgeInsetsDirectional.only(
@@ -48,7 +48,8 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
                 ),
                 onOpenAiAssistantModal: onOpenAiAssistantModal!,
               ),
-            const SizedBox(width: TabletBottomBarComposerWidgetStyle.space),
+              const SizedBox(width: TabletBottomBarComposerWidgetStyle.space),
+            ],
             TMailButtonWidget.fromIcon(
               icon: imagePaths.icDeleteMailbox,
               borderRadius: TabletBottomBarComposerWidgetStyle.iconRadius,
