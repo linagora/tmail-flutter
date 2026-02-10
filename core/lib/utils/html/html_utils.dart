@@ -220,9 +220,12 @@ class HtmlUtils {
         const selection = window.getSelection();
         if (selection && selection.rangeCount > 0) {
           window._savedRange = selection.getRangeAt(0).cloneRange();
-          return selection.toString();
+          const result = selection.toString()
+          window.parent.postMessage(JSON.stringify({ "type": "toDart: saveSelection", result }), "*");
+          return result;
         }
         delete window._savedRange;
+        window.parent.postMessage(JSON.stringify({ "type": "toDart: saveSelection", result: "" }), "*");
         return "";
       })();''',
     name: 'saveSelection');
@@ -236,9 +239,12 @@ class HtmlUtils {
             selection.removeAllRanges();
             selection.addRange(window._savedRange);
             delete window._savedRange;
-            return selection.toString();
+            const result = selection.toString()
+            window.parent.postMessage(JSON.stringify({ "type": "toDart: restoreSelection", result }), "*");
+            return result;
           }
         }
+        window.parent.postMessage(JSON.stringify({ "type": "toDart: restoreSelection", result: "" }), "*");
         return "";
       })();''',
     name: 'restoreSelection');
@@ -247,8 +253,11 @@ class HtmlUtils {
     script: '''
       (() => {
         if(window._savedRange) {
-          return window._savedRange.toString();
+          const result = window._savedRange.toString();
+          window.parent.postMessage(JSON.stringify({ "type": "toDart: getSavedSelection", result }), "*");
+          return result;
         } else {
+          window.parent.postMessage(JSON.stringify({ "type": "toDart: getSavedSelection", result: "" }), "*");
           return "";
         }
       })();''',

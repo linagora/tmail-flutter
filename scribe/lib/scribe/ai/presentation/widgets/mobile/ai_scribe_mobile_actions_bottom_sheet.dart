@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe.dart';
 
 class AiScribeMobileActionsBottomSheet extends StatefulWidget {
@@ -196,39 +197,41 @@ class _AiScribeMobileActionsBottomSheetState
     
     final hasContent = widget.content?.isNotEmpty ?? false;
 
-    return Container(
-      height: double.infinity,
-      decoration: const BoxDecoration(
-        color: AIScribeColors.background,
-      ),
-      child: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildHeader(context, localizations),
-                  _buildTextCard(context),
-                  if(hasContent)
-                    Flexible(
-                      child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
-                        valueListenable: _selectedCategory,
-                        builder: (context, selectedCategory, _) {
-                          return selectedCategory == null
-                              ? _buildMenuListView(menuActions)
-                              : _buildSubmenuListView();
-                        },
+    return PointerInterceptor(
+      child: Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          color: AIScribeColors.background,
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildHeader(context, localizations),
+                    _buildTextCard(context),
+                    if(hasContent)
+                      Flexible(
+                        child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
+                          valueListenable: _selectedCategory,
+                          builder: (context, selectedCategory, _) {
+                            return selectedCategory == null
+                                ? _buildMenuListView(menuActions)
+                                : _buildSubmenuListView();
+                          },
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            _buildBottomBar(context),
-          ],
+              _buildBottomBar(context),
+            ],
+          ),
         ),
       ),
     );
