@@ -49,7 +49,9 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.sizeOf(context);
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final screenSize = MediaQuery.of(context).size;
+    final availableHeight = screenSize.height - keyboardHeight;
 
     final modalWidth = min(
       screenSize.width * AIScribeSizes.mobileFactor,
@@ -57,7 +59,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
     );
 
     final modalMaxHeight = min(
-      screenSize.height * AIScribeSizes.mobileFactor,
+      availableHeight * AIScribeSizes.mobileFactor,
       AIScribeSizes.suggestionModalMaxHeight,
     );
 
@@ -76,7 +78,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
     }
 
     final layout = AnchoredModalLayoutCalculator.calculateAnchoredSuggestLayout(
-      screenSize: screenSize,
+      screenSize: Size(screenSize.width, availableHeight),
       anchorPosition: widget.buttonPosition!,
       anchorSize: widget.buttonSize!,
       menuSize: Size(modalWidth, modalMaxHeight),
