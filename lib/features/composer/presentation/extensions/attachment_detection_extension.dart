@@ -4,19 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/attachment_text_detector.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/keyword_config_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension AttachmentDetectionExtension on ComposerController {
 
-  List<String> validateAttachmentReminder({
+  Future<List<String>> validateAttachmentReminder({
     required String emailContent,
     required String emailSubject,
-  }) {
+  }) async {
     try {
       final fullContent = '$emailSubject $emailContent';
       final plainText = HtmlUtils.extractPlainText(fullContent);
-      final keywords = AttachmentTextDetector.matchedKeywordsUnique(plainText);
+      final keywordConfig = await KeywordConfigManager().getConfig();
+      final keywords = await AttachmentTextDetector.matchedKeywordsUnique(
+        plainText,
+        includeList: keywordConfig.includeList,
+        excludeList: keywordConfig.excludeList,
+      );
       if (keywords.isEmpty) {
         return [];
       } else {
