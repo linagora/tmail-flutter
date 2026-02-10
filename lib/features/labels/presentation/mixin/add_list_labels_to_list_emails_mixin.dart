@@ -158,13 +158,13 @@ mixin AddListLabelsToListEmailsMixin on EmitStateMixin {
   }
 
   void _handleAddListLabelsToListEmailsHasSomeFailure(
-    AddListLabelsToListEmailsHasSomeFailure success,
+    AddListLabelsToListEmailsHasSomeFailure hasSomeFailure,
   ) {
-    currentToastManager.showMessageSuccess(success);
+    currentToastManager.showMessageSuccess(hasSomeFailure);
 
     onSyncListLabelForListEmail?.call(
-      success.emailIds,
-      success.labelKeywords,
+      hasSomeFailure.emailIds,
+      hasSomeFailure.labelKeywords,
       shouldRemove: false,
     );
   }

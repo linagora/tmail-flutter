@@ -106,10 +106,10 @@ class _LabelListItemState extends State<LabelListItem> {
                   icon: widget.isSelected
                       ? widget.imagePaths.icCheckboxSelected
                       : widget.imagePaths.icCheckboxUnselected,
-                  color:  widget.isSelected
+                  color: widget.isSelected
                       ? AppColor.primaryMain
                       : AppColor.steelGray200,
-                  onSelectAcion: () => widget.onOpenLabelCallback(
+                  onSelectAction: () => widget.onOpenLabelCallback(
                     widget.label,
                   ),
                 ),
@@ -202,12 +202,12 @@ class _LabelIcon extends StatelessWidget {
 class _SelectedIcon extends StatelessWidget {
   final String icon;
   final Color? color;
-  final VoidCallback onSelectAcion;
+  final VoidCallback onSelectAction;
 
   const _SelectedIcon({
     required this.icon,
     required this.color,
-    required this.onSelectAcion,
+    required this.onSelectAction,
   });
 
   @override
@@ -218,7 +218,7 @@ class _SelectedIcon extends StatelessWidget {
       iconSize: 20,
       padding: const EdgeInsets.all(10),
       backgroundColor: Colors.transparent,
-      onTapActionCallback: onSelectAcion,
+      onTapActionCallback: onSelectAction,
     );
   }
 }

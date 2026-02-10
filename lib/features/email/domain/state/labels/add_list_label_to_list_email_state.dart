@@ -27,6 +27,9 @@ class AddListLabelsToListEmailsHasSomeFailure
     super.labelKeywords,
     super.labelDisplays,
   );
+
+  @override
+  List<Object> get props => [...super.props, 'hasSomeFailure'];
 }
 
 class AddListLabelsToListEmailsFailure extends FeatureFailure {

@@ -322,9 +322,10 @@ class ToastManager {
       message = appLocalizations.deleteLabelSuccessfullyMessage(
         success.deletedLabel.safeDisplayName,
       );
-    } else if (success is AddListLabelsToListEmailsSuccess ||
-        success is AddListLabelsToListEmailsHasSomeFailure) {
+    } else if (success is AddListLabelsToListEmailsSuccess) {
       message = appLocalizations.addListLabelToListEmailSuccessfullyMessage;
+    } else if (success is AddListLabelsToListEmailsHasSomeFailure) {
+      message = appLocalizations.addListLabelToListEmailHasSomeFailureMessage;
     }
     log('ToastManager::showMessageSuccess: Message: $message');
     if (message?.trim().isNotEmpty == true) {

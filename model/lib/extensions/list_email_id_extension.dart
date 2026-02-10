@@ -64,13 +64,18 @@ extension ListEmailIdExtension on List<EmailId> {
   }
 
   Map<Id, PatchObject> generateMapUpdateObjectListLabel(
-    List<KeyWordIdentifier> labelKeywords,
-    {bool remove = false}
-  ) {
-    return {
-      for (var emailId in this)
-        for (var key in labelKeywords)
-          emailId.id: key.generateLabelActionPath(remove: remove)
-    };
+    List<KeyWordIdentifier> labelKeywords, {
+    bool remove = false,
+  }) {
+    final result = <Id, PatchObject>{};
+    for (var emailId in this) {
+      final combinedPatches = <String, dynamic>{};
+      for (var key in labelKeywords) {
+        combinedPatches['${PatchObject.keywordsProperty}/${key.value}'] =
+            remove ? null : true;
+      }
+      result[emailId.id] = PatchObject(combinedPatches);
+    }
+    return result;
   }
 }
