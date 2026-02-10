@@ -4,6 +4,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
 import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
@@ -32,6 +33,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
   final VoidCallback saveToTemplateAction;
   final VoidCallback deleteComposerAction;
   final VoidCallback toggleMarkAsImportantAction;
+  final OnOpenAiAssistantModal? onOpenAiAssistantModal;
 
   const MobileResponsiveAppBarComposerWidget({
     super.key,
@@ -55,6 +57,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
     required this.saveToTemplateAction,
     required this.deleteComposerAction,
     required this.toggleMarkAsImportantAction,
+    this.onOpenAiAssistantModal,
   });
 
   @override
@@ -74,6 +77,14 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
             onTapActionCallback: onCloseViewAction
           ),
           const Spacer(),
+          if (onOpenAiAssistantModal != null)
+            AiAssistantButton(
+              imagePaths: imagePaths,
+              margin: const EdgeInsetsDirectional.only(
+                end: MobileAppBarComposerWidgetStyle.space,
+              ),
+              onOpenAiAssistantModal: onOpenAiAssistantModal!,
+            ),
           TMailButtonWidget.fromIcon(
             icon: imagePaths.icRichToolbar,
             padding: MobileAppBarComposerWidgetStyle.richTextIconPadding,

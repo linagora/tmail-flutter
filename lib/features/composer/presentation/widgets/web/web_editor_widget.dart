@@ -206,6 +206,22 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
             script: HtmlUtils.deleteSelectionContent.script,
           ),
           WebScript(
+            name: HtmlUtils.saveSelection.name,
+            script: HtmlUtils.saveSelection.script,
+          ),
+          WebScript(
+            name: HtmlUtils.restoreSelection.name,
+            script: HtmlUtils.restoreSelection.script,
+          ),
+          WebScript(
+            name: HtmlUtils.getSavedSelection.name,
+            script: HtmlUtils.getSavedSelection.script,
+          ),
+          WebScript(
+            name: HtmlUtils.clearSavedSelection.name,
+            script: HtmlUtils.clearSavedSelection.script,
+          ),
+          WebScript(
             name: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).name,
             script: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).script,
           ),
