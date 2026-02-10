@@ -1336,6 +1336,218 @@ void main() {
   });
 
   // ============================================================
+  // onError: retry fails (separate Dio error handling)
+  // ============================================================
+  group('onError: retry fails (separate Dio error handling)', () {
+    test(
+      'WHEN refresh succeeds but retry with new token gets 401\n'
+      'THEN error is propagated via retry catch block\n'
+      'AND no deadlock occurs',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        // Old token → 401
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+        // Retry with new token → also 401
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(
+            responseStatusCode401,
+            makeDioError401(),
+          ),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(isA<DioException>()),
+        );
+
+        // Refresh was called once
+        verify(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).called(1);
+      },
+    );
+
+    test(
+      'WHEN refresh succeeds but retry gets 500\n'
+      'THEN error is propagated\n'
+      'AND OIDC state is preserved',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        final dioError500 = DioException(
+          error: {'message': 'Internal Server Error'},
+          requestOptions: RequestOptions(path: baseUrl, method: 'POST'),
+          response: Response(
+            statusCode: responseStatusCode500,
+            requestOptions: RequestOptions(path: baseUrl),
+          ),
+          type: DioExceptionType.badResponse,
+        );
+
+        // Old token → 401
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode401, makeDioError401()),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+        // Retry with new token → 500
+        dioAdapter.onPost(
+          baseUrl,
+          (server) => server.throws(responseStatusCode500, dioError500),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+
+        await expectLater(
+          () => dio.post(baseUrl),
+          throwsA(isA<DioException>()),
+        );
+
+        // OIDC state should NOT be cleared (only 400 clears state)
+        expect(
+          authorizationInterceptors.authenticationType,
+          AuthenticationType.oidc,
+        );
+      },
+    );
+
+    test(
+      'GIVEN 2 concurrent requests\n'
+      'WHEN Request 1 refreshes and retries successfully\n'
+      'AND Request 2 retries with new token but gets 500\n'
+      'THEN Request 1 succeeds\n'
+      'AND Request 2 error is propagated',
+      () async {
+        authorizationInterceptors.setTokenAndAuthorityOidc(
+          newToken: OIDCFixtures.tokenOidcExpiredTime,
+          newConfig: OIDCFixtures.oidcConfiguration,
+        );
+
+        final dioError500 = DioException(
+          error: {'message': 'Internal Server Error'},
+          requestOptions: RequestOptions(path: '$baseUrl/2', method: 'POST'),
+          response: Response(
+            statusCode: responseStatusCode500,
+            requestOptions: RequestOptions(path: '$baseUrl/2'),
+          ),
+          type: DioExceptionType.badResponse,
+        );
+
+        // Request 1: old token → 401
+        dioAdapter.onPost(
+          '$baseUrl/1',
+          (server) => server.reply(
+            responseStatusCode401,
+            {'error': 'Unauthorized'},
+          ),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+        // Request 1 retry: new token → 200
+        dioAdapter.onPost(
+          '$baseUrl/1',
+          (server) =>
+              server.reply(responseStatusCode200, dataRequestSuccessfully),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        // Request 2: old token → 401
+        dioAdapter.onPost(
+          '$baseUrl/2',
+          (server) => server.reply(
+            responseStatusCode401,
+            {'error': 'Unauthorized'},
+          ),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.tokenOidcExpiredTime.token}',
+          },
+        );
+        // Request 2 retry: new token → 500
+        dioAdapter.onPost(
+          '$baseUrl/2',
+          (server) => server.throws(responseStatusCode500, dioError500),
+          headers: {
+            HttpHeaders.authorizationHeader:
+                'Bearer ${OIDCFixtures.newTokenOidc.token}',
+          },
+        );
+
+        when(authenticationClient.refreshingTokensOIDC(
+          OIDCFixtures.oidcConfiguration.clientId,
+          OIDCFixtures.oidcConfiguration.redirectUrl,
+          OIDCFixtures.oidcConfiguration.discoveryUrl,
+          OIDCFixtures.oidcConfiguration.scopes,
+          OIDCFixtures.tokenOidcExpiredTime.refreshToken,
+        )).thenAnswer((_) async => OIDCFixtures.newTokenOidc);
+        stubAccountCache();
+
+        final future1 = dio.post('$baseUrl/1');
+        final future2 = dio.post('$baseUrl/2');
+
+        final response1 = await future1;
+        expect(response1.statusCode, responseStatusCode200);
+
+        await expectLater(
+          () => future2,
+          throwsA(isA<DioException>()),
+        );
+      },
+    );
+  });
+
+  // ============================================================
   // onError: token duplicate prevents infinite loop
   // ============================================================
   group('onError: token duplicate prevents infinite loop', () {
