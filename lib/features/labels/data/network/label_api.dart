@@ -208,53 +208,53 @@ class LabelApi
     AccountId accountId,
     State sinceState,
   ) async {
-    final changesResult = await getLabelChanges(accountId, sinceState);
+    final changes = await getLabelChanges(accountId, sinceState);
 
-    final List<Id> createdIds = changesResult.created.toList();
-    final List<Id> updatedIds = changesResult.updated.toList();
-    List<Id> destroyedLabelIds = changesResult.destroyed.toList();
-    final State newStateChanges = changesResult.newState;
-    final bool hasMoreChanges = changesResult.hasMoreChanges;
+    log('LabelAPI::getChanges: '
+        'created=${changes.created.length} | '
+        'updated=${changes.updated.length} | '
+        'destroyed=${changes.destroyed.length}');
 
-    log('LabelAPI::getChanges:createdIds = ${createdIds.length} | updatedIds = ${updatedIds.length} | destroyedIds = ${destroyedLabelIds.length}');
+    final [updatedResult, createdResult] = await Future.wait([
+      _fetchLabelsIfNeeded(
+        session: session,
+        accountId: accountId,
+        labelIds: changes.updated.toList(),
+        sinceState: sinceState,
+        logPrefix: 'Updated',
+      ),
+      _fetchLabelsIfNeeded(
+        session: session,
+        accountId: accountId,
+        labelIds: changes.created.toList(),
+        sinceState: sinceState,
+        logPrefix: 'Created',
+      )
+    ]);
 
-    State? newStateLabel;
+    final allDestroyedIds = [
+      ...changes.destroyed,
+      ...updatedResult.notFoundIds,
+      ...createdResult.notFoundIds,
+    ];
 
-    final updatedResult = await _fetchLabelsIfNeeded(
-      session: session,
-      accountId: accountId,
-      labelIds: updatedIds,
-      sinceState: sinceState,
-      logPrefix: 'Updated',
-    );
-    if (updatedResult.notFoundIds.isNotEmpty) {
-      destroyedLabelIds.addAll(updatedResult.notFoundIds);
-    }
-    newStateLabel = updatedResult.state ?? newStateLabel;
+    final newStateLabel = createdResult.state ?? updatedResult.state;
 
-    final createdResult = await _fetchLabelsIfNeeded(
-      session: session,
-      accountId: accountId,
-      labelIds: createdIds,
-      sinceState: sinceState,
-      logPrefix: 'Created',
-    );
-    if (createdResult.notFoundIds.isNotEmpty) {
-      destroyedLabelIds.addAll(createdResult.notFoundIds);
-    }
-    newStateLabel = createdResult.state ?? newStateLabel;
-
-    log('LabelAPI::getChanges:newStateChanges = $newStateChanges | newStateLabel = $newStateLabel | hasMoreChanges = $hasMoreChanges');
-    log('LabelAPI::getChanges:updatedLabelSize = ${updatedResult.labels?.length} | createdLabelSize = ${createdResult.labels?.length}');
-    log('LabelAPI::getChanges:destroyedLabelIds = $destroyedLabelIds');
+    log('LabelAPI::getChanges: '
+        'newStateChanges=${changes.newState} | '
+        'newStateLabel=$newStateLabel | '
+        'hasMore=${changes.hasMoreChanges}'
+        'updatedFetched=${updatedResult.labels?.length} | '
+        'createdFetched=${createdResult.labels?.length} | '
+        'totalDestroyed=${allDestroyedIds.length}');
 
     return LabelChangeResponse(
       updated: updatedResult.labels,
       created: createdResult.labels,
-      destroyed: destroyedLabelIds,
+      destroyed: allDestroyedIds,
       newStateLabel: newStateLabel,
-      newStateChanges: newStateChanges,
-      hasMoreChanges: hasMoreChanges,
+      newStateChanges: changes.newState,
+      hasMoreChanges: changes.hasMoreChanges,
     );
   }
 }
