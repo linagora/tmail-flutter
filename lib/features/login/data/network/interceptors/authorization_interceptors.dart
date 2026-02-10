@@ -179,36 +179,18 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       }
 
       if (isRetryRequest) {
-        if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
-          log('AuthorizationInterceptors::onError: Retry upload request with TokenId = ${_token?.tokenIdHash}');
-          final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
-
-          requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
-          // Mark as attempted to prevent infinite retry loops
-          requestOptions.extra[_refreshAttemptedKey] = true;
-
-          final newOptions = Options(
-            method: requestOptions.method,
-            headers: requestOptions.headers,
-            extra: requestOptions.extra,
-          );
-
-          final response = await _dio.request(
-            requestOptions.path,
-            data: _getDataUploadRequest(uploadExtra),
-            queryParameters: requestOptions.queryParameters,
-            options: newOptions,
-          );
-
+        try {
+          final response = await _retryRequest(requestOptions, extraInRequest);
           return handler.resolve(response);
-        } else {
-          log('AuthorizationInterceptors::onError: Retry request with TokenId = ${_token?.tokenIdHash}');
-          requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
-          // Mark as attempted to prevent infinite retry loops
-          requestOptions.extra[_refreshAttemptedKey] = true;
-
-          final response = await _dio.fetch(requestOptions);
-          return handler.resolve(response);
+        } catch (retryError) {
+          logError(
+            'AuthorizationInterceptors::onError: '
+            'Retry failed with error=$retryError',
+          );
+          return super.onError(
+            err.copyWith(error: retryError),
+            handler,
+          );
         }
       } else {
         return super.onError(err, handler);
@@ -378,6 +360,44 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   Future<TokenOIDC> _getNewTokenForOtherPlatform() {
     return _invokeRefreshTokenFromServer();
   }
+
+  Future<Response> _retryRequest(
+    RequestOptions requestOptions,
+    Map<String, dynamic> extraInRequest,
+  ) {
+    requestOptions.headers[HttpHeaders.authorizationHeader] =
+        _getTokenAsBearerHeader(_token!.token);
+    requestOptions.extra[_refreshAttemptedKey] = true;
+
+    final retryDio = _createRetryDio();
+
+    if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
+      log('AuthorizationInterceptors::_retryRequest: '
+          'Retry upload request with TokenId = ${_token?.tokenIdHash}');
+      final uploadExtra =
+          extraInRequest[FileUploader.uploadAttachmentExtraKey];
+
+      return retryDio.request(
+        requestOptions.path,
+        data: _getDataUploadRequest(uploadExtra),
+        queryParameters: requestOptions.queryParameters,
+        options: Options(
+          method: requestOptions.method,
+          headers: requestOptions.headers,
+          extra: requestOptions.extra,
+        ),
+      );
+    } else {
+      log('AuthorizationInterceptors::_retryRequest: '
+          'Retry request with TokenId = ${_token?.tokenIdHash}');
+      return retryDio.fetch(requestOptions);
+    }
+  }
+
+  /// Creates a separate Dio instance without interceptors for retry requests.
+  /// This avoids deadlock when retrying inside [onError] of [QueuedInterceptorsWrapper].
+  Dio _createRetryDio() => Dio(_dio.options)
+    ..httpClientAdapter = _dio.httpClientAdapter;
 
   void clear() {
     _authorization = null;
