@@ -1,6 +1,5 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -57,8 +56,7 @@ class PreferencesController extends BaseController {
   }
 
   bool get isAIScribeCapabilityAvailable {
-    return accountDashboardController.isAIScribeCapabilityAvailable &&
-        !PlatformInfo.isMobile;
+    return accountDashboardController.isAIScribeCapabilityAvailable;
   }
 
   @override
