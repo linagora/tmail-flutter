@@ -212,7 +212,7 @@ extension AddLabelToThreadExtension on ThreadDetailController {
     mailboxDashBoardController.updateEmailFlagByEmailIds(
       emailIds,
       isLabelAdded: !remove,
-      labelKeyword: labelKeyword,
+      labelKeywords: [labelKeyword],
     );
   }
 

@@ -32,6 +32,7 @@ import 'package:rxdart/transformers.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/ai_scribe_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
@@ -70,6 +71,7 @@ import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_stat
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/labels/add_list_label_to_list_emails_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
@@ -85,6 +87,7 @@ import 'package:tmail_ui_user/features/home/domain/usecases/store_session_intera
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/add_list_labels_to_list_emails_mixin.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
@@ -222,6 +225,7 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
@@ -229,7 +233,8 @@ class MailboxDashBoardController extends ReloadableController
         OwnEmailAddressMixin,
         SaaSPremiumMixin,
         AiScribeMixin,
-        SearchLabelFilterModalMixin {
+        SearchLabelFilterModalMixin,
+        AddListLabelsToListEmailsMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -544,6 +549,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is GetAIScribeConfigSuccess) {
       handleLoadAIScribeConfigSuccess(success.aiScribeConfig);
     } else {
+      subscribeListLabelViewStateSuccess(success);
       super.handleSuccessViewState(success);
     }
   }
@@ -594,6 +600,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (failure is GetAIScribeConfigFailure) {
       handleLoadAIScribeConfigFailure();
     } else {
+      subscribeListLabelViewStateFailure(failure);
       super.handleFailureViewState(failure);
     }
   }
@@ -3453,4 +3460,24 @@ class MailboxDashBoardController extends ReloadableController
     _downloadUIActionWorker = null;
     super.onClose();
   }
+
+  @override
+  AddListLabelToListEmailsInteractor? get addListLabelToListEmailInteractor =>
+      getBinding<AddListLabelToListEmailsInteractor>();
+
+  @override
+  AccountId? get currentAccountId => accountId.value;
+
+  @override
+  BaseController get currentController => this;
+
+  @override
+  Session? get currentSession => sessionCurrent;
+
+  @override
+  ToastManager get currentToastManager => toastManager;
+
+  @override
+  OnSyncListLabelForListEmail? get onSyncListLabelForListEmail =>
+      syncListLabelForListEmail;
 }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-01-26T09:26:54.654131",
+  "@@last_modified": "2026-02-10T12:09:47.772166",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5450,6 +5450,36 @@
   },
   "deleteALabelFailure": "Delete a label failure",
   "@deleteALabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseLabel": "Choose label",
+  "@chooseLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectLabel": "Select label",
+  "@selectLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailSuccessfullyMessage": "Labels have been successfully added to these emails.",
+  "@addListLabelToListEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailHasSomeFailureMessage": "Labels have been successfully added to some emails.",
+  "@addListLabelToListEmailHasSomeFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailFailureMessage": "Adding labels to these emails failed",
+  "@addListLabelToListEmailFailureMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -1194,6 +1194,14 @@ class ThreadController extends BaseController with EmailActionController {
       case EmailActionType.compose:
         mailboxDashBoardController.openComposer(ComposerArguments());
         break;
+      case EmailActionType.labelAs:
+        mailboxDashBoardController.openChooseLabelModal(
+          labels: mailboxDashBoardController.labelController.labels,
+          selectedEmails: selectionEmail,
+          imagePaths: imagePaths,
+          onCallBackAction: cancelSelectEmail,
+        );
+        break;
       default:
         break;
     }
