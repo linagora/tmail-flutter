@@ -243,4 +243,33 @@ class LabelUtils {
       return name;
     }
   }
+
+  /// Applies label changes to [currentLabels] **in place**.
+  ///
+  /// Removes labels matching [destroyedIds], [created], and [updated] IDs,
+  /// then appends [created] and [updated] labels.
+  static void applyLabelChanges({
+    required List<Label> currentLabels,
+    required List<Label> created,
+    required List<Label> updated,
+    required List<Id> destroyedIds,
+  }) {
+    final idsToRemove = {
+      ...destroyedIds,
+      ...created.map((label) => label.id),
+      ...updated.map((label) => label.id),
+    };
+
+    if (idsToRemove.isNotEmpty) {
+      currentLabels.removeWhere((label) => idsToRemove.contains(label.id));
+    }
+
+    if (created.isNotEmpty) {
+      currentLabels.addAll(created);
+    }
+
+    if (updated.isNotEmpty) {
+      currentLabels.addAll(updated);
+    }
+  }
 }

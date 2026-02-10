@@ -15,13 +15,15 @@ import 'package:jmap_dart_client/jmap/mail/email/set/set_email_response.dart';
 import 'package:model/extensions/list_id_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 typedef OnGeneratePatchObjectUpdates = Map<Id, PatchObject> Function(
   List<EmailId> batchIds,
 );
 
-mixin BatchSetEmailProcessingMixin on HandleSetErrorMixin, MailAPIMixin {
+mixin BatchSetEmailProcessingMixin
+    on HandleSetErrorMixin, SessionMixin, MailAPIMixin {
   Future<
       ({
         List<EmailId> emailIdsSuccess,

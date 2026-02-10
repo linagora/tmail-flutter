@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/base/mixin/batch_set_email_processing_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 
 import '../../../fixtures/account_fixtures.dart';
 import '../../../fixtures/session_fixtures.dart';
@@ -55,7 +56,10 @@ class ManualMockHttpClient implements HttpClient {
 }
 
 class TestBatchSetEmailProcessing
-    with HandleSetErrorMixin, MailAPIMixin, BatchSetEmailProcessingMixin {}
+    with HandleSetErrorMixin,
+        SessionMixin,
+        MailAPIMixin,
+        BatchSetEmailProcessingMixin {}
 
 void main() {
   group('BatchSetEmailProcessingMixin test', () {

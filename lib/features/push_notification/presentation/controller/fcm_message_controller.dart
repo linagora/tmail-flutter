@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/controller
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/listener/label_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
@@ -195,6 +196,7 @@ class FcmMessageController extends PushBaseController {
       userName,
       emailChangeListener: EmailChangeListener.instance,
       mailboxChangeListener: MailboxChangeListener.instance,
+      labelChangeListener: LabelChangeListener.instance,
       isForeground: false,
       session: session);
   }
