@@ -150,6 +150,13 @@ class ScribeLocalizations {
     );
   }
 
+  String get improve {
+    return Intl.message(
+      'Improve',
+      name: 'improve',
+    );
+  }
+
   String get aiAssistant {
     return Intl.message(
       'AI assistant',
