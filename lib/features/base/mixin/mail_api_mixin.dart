@@ -4,7 +4,7 @@ import 'dart:math' hide log;
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/request/reference_path.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -57,8 +58,102 @@ mixin MailAPIMixin on HandleSetErrorMixin {
       maxObjectsInSetMethod,
       CapabilityIdentifierExtension.defaultMaxObjectsInSet,
     );
-    log('$runtimeType::_getMaxObjectsInSetMethod:minOfMaxObjectsInSetMethod = $minOfMaxObjectsInSetMethod');
+    log('$runtimeType::getMaxObjectsInSetMethod:minOfMaxObjectsInSetMethod = $minOfMaxObjectsInSetMethod');
     return minOfMaxObjectsInSetMethod;
+  }
+
+  /// Fetches emails by IDs in batches to respect server maxObjectsInGet limits.
+  ///
+  /// This method solves the "too many ids" error that occurs when calling Email/get
+  /// with more IDs than the server allows. It's particularly important for:
+  /// - WebSocket push notifications (which may notify about many emails at once)
+  /// - Initial sync operations
+  /// - Large mailbox changes
+  ///
+  /// Parameters:
+  /// - [emailIds]: The list of email IDs to fetch
+  /// - [properties]: Which email properties to fetch
+  /// - [batchSize]: Override the automatic batch size (defaults to server limit)
+  /// - [maxEmailsToFetch]: Limit total emails to fetch (enables early termination)
+  ///
+  /// Returns a record containing:
+  /// - [emails]: Successfully fetched emails
+  /// - [state]: Latest server state from the responses
+  /// - [notFoundIds]: Email IDs that were not found on the server
+  Future<({List<Email> emails, State? state, List<EmailId> notFoundIds})> getEmailsByIdsBatched({
+    required HttpClient httpClient,
+    required Session session,
+    required AccountId accountId,
+    required List<EmailId> emailIds,
+    required Properties properties,
+    int? batchSize,
+    int? maxEmailsToFetch,
+  }) async {
+    // Ensure batch size is at least 1 to prevent infinite loops or division by zero
+    final maxObjectsInGet = max(
+      1,
+      batchSize ?? session.getMaxObjectsInGet(accountId)?.value.toInt()
+          ?? CapabilityIdentifierExtension.defaultMaxObjectsInGet,
+    );
+    final List<Email> allEmails = [];
+    final List<EmailId> allNotFoundIds = [];
+    State? latestState;
+
+    // If maxEmailsToFetch is specified, clamp it to valid range and only fetch up to that many IDs
+    final idsToFetch = maxEmailsToFetch != null
+        ? emailIds.sublist(0, maxEmailsToFetch.clamp(0, emailIds.length))
+        : emailIds;
+
+    for (int start = 0; start < idsToFetch.length; start += maxObjectsInGet) {
+      final end = (start + maxObjectsInGet < idsToFetch.length)
+          ? start + maxObjectsInGet
+          : idsToFetch.length;
+      final batch = idsToFetch.sublist(start, end);
+
+      log('$runtimeType::getEmailsByIdsBatched:fetching batch ${start ~/ maxObjectsInGet + 1} with ${batch.length} emails (max: $maxEmailsToFetch)');
+
+      final processingInvocation = ProcessingInvocation();
+      final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+
+      final getEmailMethod = GetEmailMethod(accountId)
+        ..addIds(batch.map((id) => id.id).toSet())
+        ..addProperties(properties);
+
+      final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
+
+      final capabilities = getEmailMethod.requiredCapabilities
+          .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+      final result = await (jmapRequestBuilder
+          ..usings(capabilities))
+        .build()
+        .execute();
+
+      final emailResponse = result.parse<GetEmailResponse>(
+        getEmailInvocation.methodCallId,
+        GetEmailResponse.deserialize,
+      );
+
+      if (emailResponse?.list.isNotEmpty == true) {
+        allEmails.addAll(emailResponse!.list);
+      }
+      if (emailResponse?.state != null) {
+        latestState = emailResponse!.state;
+      }
+
+      final notFoundIds = emailResponse?.notFound?.toEmailIds().toList() ?? [];
+      if (notFoundIds.isNotEmpty) {
+        allNotFoundIds.addAll(notFoundIds);
+      }
+
+      // Early termination: stop if we've fetched enough emails
+      if (maxEmailsToFetch != null && allEmails.length >= maxEmailsToFetch) {
+        log('$runtimeType::getEmailsByIdsBatched:early termination - fetched ${allEmails.length} emails (max: $maxEmailsToFetch)');
+        break;
+      }
+    }
+
+    return (emails: allEmails, state: latestState, notFoundIds: allNotFoundIds);
   }
 
   Future<({List<EmailId> emailIdsSuccess, Map<Id, SetError> mapErrors})>
