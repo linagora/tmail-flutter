@@ -39,8 +39,7 @@ mixin BatchGetLabelProcessingMixin on HandleSetErrorMixin, SessionMixin {
     State? latestState;
 
     for (int start = 0; start < totalLabels; start += batchSize) {
-      int end =
-          (start + batchSize < totalLabels) ? start + batchSize : totalLabels;
+      int end = min(start + batchSize, totalLabels);
       final currentListIds = labelIds.sublist(start, end);
 
       log('BatchGetLabelProcessingMixin::$debugLabel: processing batch ${start + 1} to $end');
