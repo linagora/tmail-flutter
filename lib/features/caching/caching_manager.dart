@@ -243,7 +243,7 @@ class CachingManager {
       final sentryConfigurationCache =
           await _sentryConfigurationCacheManager.getSentryConfiguration();
       final sentryConfig = sentryConfigurationCache.toSentryConfig();
-      log('CachingManager::getSentryConfiguration: Sentry configuration: $sentryConfig');
+      log('CachingManager::getSentryConfiguration: Sentry configuration loaded');
       return sentryConfig;
     } catch (e, st) {
       logWarning(

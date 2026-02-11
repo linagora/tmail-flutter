@@ -288,7 +288,7 @@ class EmailChangeListener extends ChangeListener {
     required List<PresentationEmail> emailList,
     required jmap.State currentState,
   }) {
-    logTrace('EmailChangeListener::_handleListEmailToPushNotification(): Count email received to push notification is ${emailList.length} from state ${currentState.value} to new state ${_newStateEmailDelivery?.value}');
+    logTrace('EmailChangeListener::_handleListEmailToPushNotification(): Count email received to push notification is ${emailList.length} ${_stateTransitionLog(currentState)}');
     if (_getMailboxesNotPutNotificationsInteractor != null &&
         _accountId != null &&
         _session != null) {
@@ -307,17 +307,17 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _handleLocalPushNotification({
+  Future<void> _handleLocalPushNotification({
     required UserName userName,
     required List<PresentationEmail> emailList,
     required jmap.State currentState,
     List<MailboxId>? mailboxIdsNotPutNotifications,
   }) async {
-    logTrace('EmailChangeListener::_handleLocalPushNotification(): Count email received to push notification = ${emailList.length} from state ${currentState.value} to new state ${_newStateEmailDelivery?.value}');
+    logTrace('EmailChangeListener::_handleLocalPushNotification(): Count email received to push notification = ${emailList.length} ${_stateTransitionLog(currentState)}');
     final emailsAvailablePushNotification = emailList.toEmailsAvailablePushNotification(
       mailboxIdsNotPutNotifications: mailboxIdsNotPutNotifications,
     );
-    logTrace('EmailChangeListener::_handleLocalPushNotification(): Count email available to push notification = ${emailsAvailablePushNotification.length} from state ${currentState.value} to new state ${_newStateEmailDelivery?.value}');
+    logTrace('EmailChangeListener::_handleLocalPushNotification(): Count email available to push notification = ${emailsAvailablePushNotification.length} ${_stateTransitionLog(currentState)}');
     if (emailsAvailablePushNotification.isEmpty) return;
 
     for (var presentationEmail in emailsAvailablePushNotification) {
@@ -337,7 +337,7 @@ class EmailChangeListener extends ChangeListener {
         countNotifications: countNotifications);
     }
 
-    logTrace('EmailChangeListener::_handleLocalPushNotification(): Count email push success = ${emailsAvailablePushNotification.length} from state ${currentState.value} to new state ${_newStateEmailDelivery?.value}');
+    logTrace('EmailChangeListener::_handleLocalPushNotification(): Count email push success = ${emailsAvailablePushNotification.length} ${_stateTransitionLog(currentState)}');
   }
 
   void _handleRemoveNotificationWhenEmailMarkAsRead(jmap.State newState, AccountId accountId, Session? session) {
@@ -405,4 +405,7 @@ class EmailChangeListener extends ChangeListener {
       ));
     }
   }
+
+  String _stateTransitionLog(jmap.State currentState) =>
+      'from state ${currentState.value} to new state ${_newStateEmailDelivery?.value}';
 }
