@@ -1499,4 +1499,9 @@ class ThreadController extends BaseController with EmailActionController {
       _loadMoreEmails();
     }
   }
+
+  @visibleForTesting
+  void setOriginalDisplayedEmailsCount(int count) {
+    _originalDisplayedEmailsCount = count;
+  }
 }
