@@ -15,6 +15,7 @@ abstract class FeatureFailure extends Failure {
 
   FeatureFailure({this.exception, this.stackTrace, this.onRetry});
 
+  // Including stackTrace in props may break Equatable equality semantics.
   @override
-  List<Object?> get props => [exception, stackTrace, onRetry];
+  List<Object?> get props => [exception, onRetry];
 }
