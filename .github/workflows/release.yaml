@@ -89,3 +89,43 @@ jobs:
           APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
         run: ../scripts/build-release.sh
         working-directory: ${{ matrix.os }}
+
+      # --- UPLOAD SENTRY MAPPING FOR ANDROID ---
+      - name: Upload Android ProGuard Mapping to Sentry
+        if: matrix.os == 'android'
+        # Reset working directory to root to access pubspec.yaml and the build output folder easily
+        working-directory: .
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          # 1. Install Sentry CLI
+          curl -sL https://sentry.io/get-cli/ | bash
+
+          # 2. Extract version from pubspec.yaml
+          SENTRY_RELEASE=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          echo "Processing Sentry Release: $SENTRY_RELEASE"
+
+          # 3. Create new Release in Sentry
+          sentry-cli releases new "$SENTRY_RELEASE" --org "$SENTRY_ORG" --project "$SENTRY_PROJECT"
+
+          # 4. Upload ProGuard Mapping (mapping.txt)
+          # Note: Flutter usually outputs the mapping file at build/app/outputs/mapping/release/mapping.txt
+          MAPPING_FILE="build/app/outputs/mapping/release/mapping.txt"
+          
+          if [ -f "$MAPPING_FILE" ]; then
+            echo "Found mapping.txt, uploading..."
+            sentry-cli upload-proguard "$MAPPING_FILE" \
+              --org "$SENTRY_ORG" \
+              --project "$SENTRY_PROJECT" \
+              --release "$SENTRY_RELEASE" \
+              --dist "$GITHUB_SHA" \
+              --log-level info
+          else
+            echo "::warning::Could not find mapping.txt at $MAPPING_FILE. Ensure your build script does not clean the build folder after deployment."
+          fi
+          
+          # 5. Finalize Release
+          sentry-cli releases finalize "$SENTRY_RELEASE" --org "$SENTRY_ORG" --project "$SENTRY_PROJECT"
