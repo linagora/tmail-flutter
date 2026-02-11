@@ -50,11 +50,28 @@ platform :ios do
     increment_version_number(
       version_number: last_git_tag.gsub("v", "")
     )
+    # Step 1. Build Archive using Flutter CLI
+    # Reason: The --obfuscate and --split-debug-info parameters are needed, which the default build_app doesn't provide.
+    # This command will create Runner.xcarchive at build/ios/archive/Runner.xcarchive
+    sh "flutter", "build", "ipa",
+       "--release",
+       "--obfuscate",
+       "--split-debug-info=../build/ios/outputs/symbols",
+       "--export-method=app-store"
+       # Note: --export-options-plist is not needed if we use gym to export in the next step,
+       # but to ensure Flutter builds in the correct mode, we still run this command; it will stop at the Archive step if the plist is missing.
+
+    # Step 2. Export IPA from Archive using Fastlane (Gym)
+    # Reason: Gym handles signing and packaging IPA more accurately/easily than writing the script yourself.
     build_app(
       scheme: "Runner",
-      configuration: "Release",
-      workspace: "Runner.xcworkspace",
-      export_method: "app-store"
+      archive_path: "../build/ios/archive/Runner.xcarchive", # Get the result from step 1.
+      skip_build_archive: true, # Important: Do not rebuild, only export.
+      export_method: "app-store",
+      export_options: {
+        uploadBitcode: false, # The new iOS has removed Bitcode.
+        compileBitcode: false
+      }
     )
     upload_to_testflight(
       skip_waiting_for_build_processing: true,

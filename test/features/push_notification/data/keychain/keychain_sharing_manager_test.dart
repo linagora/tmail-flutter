@@ -36,7 +36,7 @@ void main() {
       });
 
       // act
-      await keychainSharingManager.save(keychainSharingSession);
+      await keychainSharingManager.saveSharingSession(keychainSharingSession);
 
       // assert
       final keychainSession = await keychainSharingManager.getSharingSession(AccountId(Id(
@@ -79,7 +79,7 @@ void main() {
       );
 
       // act
-      await keychainSharingManager.save(keychainSharingSession2);
+      await keychainSharingManager.saveSharingSession(keychainSharingSession2);
 
       // assert
       final keychainSession = await keychainSharingManager.getSharingSession(AccountId(Id(
