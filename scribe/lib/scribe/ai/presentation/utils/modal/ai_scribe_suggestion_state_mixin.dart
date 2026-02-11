@@ -107,6 +107,7 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
       suggestionText: suggestionText,
       hasContent: hasContent,
       onSelectAction: onSelectAction,
+      onLoadSuggestion: loadSuggestion,
     );
   }
 

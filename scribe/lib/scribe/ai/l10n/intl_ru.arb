@@ -125,5 +125,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "copy": "Копировать",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "Повторить",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
