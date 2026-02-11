@@ -73,15 +73,16 @@ class AiScribeModalWidget extends StatelessWidget {
 
     if (buttonPosition != null && buttonSize != null) {
       final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+      final keyboardHeightWithSpacing = keyboardHeight > 0 ? keyboardHeight + AIScribeSizes.keyboardSpacing : 0; 
       final screenSize = MediaQuery.of(context).size;
-      final availableHeight = screenSize.height - keyboardHeight;
-      
+      final availableHeight = screenSize.height - keyboardHeightWithSpacing;
+
       final maxHeightModal = hasContent
-          ? AIScribeSizes.searchBarMinHeight +
+          ? AIScribeSizes.searchBarMaxHeight +
               AIScribeSizes.fieldSpacing +
               min(menuActions.length * AIScribeSizes.menuItemHeight,
                   AIScribeSizes.submenuMaxHeight)
-          : AIScribeSizes.searchBarMinHeight;
+          : AIScribeSizes.searchBarMaxHeight;
 
       final layoutResult = AnchoredModalLayoutCalculator.calculate(
         input: AnchoredModalLayoutInput(

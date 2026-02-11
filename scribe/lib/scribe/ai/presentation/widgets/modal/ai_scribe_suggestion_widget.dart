@@ -50,8 +50,9 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
   @override
   Widget build(BuildContext context) {
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final keyboardHeightWithSpacing = keyboardHeight > 0 ? keyboardHeight + AIScribeSizes.keyboardSpacing : 0; 
     final screenSize = MediaQuery.of(context).size;
-    final availableHeight = screenSize.height - keyboardHeight;
+    final availableHeight = screenSize.height - keyboardHeightWithSpacing;
 
     final modalWidth = min(
       screenSize.width * AIScribeSizes.mobileFactor,
@@ -97,7 +98,10 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
           ),
           PositionedDirectional(
             start: layout.left,
-            bottom: layout.bottom,
+            // layout.bottom is calculated by taking keyboard into account
+            // but positionned without taking keyboard into account
+            // that's why we need to add keyboard height here
+            bottom: layout.bottom + keyboardHeightWithSpacing,
             child: _buildModalContainer(
               width: modalWidth,
               maxHeight: layout.availableHeight,
