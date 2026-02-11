@@ -25,12 +25,20 @@ class AIScribeBar extends StatefulWidget {
 class _AIScribeBarState extends State<AIScribeBar> {
   final TextEditingController _controller = TextEditingController();
   final ValueNotifier<bool> _isButtonEnabled = ValueNotifier(false);
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _textFieldFocusNode = FocusNode();
+  final FocusNode _keyboardListenerFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _controller.addListener(_onTextChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          _textFieldFocusNode.requestFocus();
+        }
+      });
+    });
   }
 
   @override
@@ -38,7 +46,8 @@ class _AIScribeBarState extends State<AIScribeBar> {
     _controller.removeListener(_onTextChanged);
     _controller.dispose();
     _isButtonEnabled.dispose();
-    _focusNode.dispose();
+    _textFieldFocusNode.dispose();
+    _keyboardListenerFocusNode.dispose();
     super.dispose();
   }
 
@@ -73,26 +82,23 @@ class _AIScribeBarState extends State<AIScribeBar> {
       child: Row(
         children: [
           Expanded(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: _focusNode.requestFocus,
-              child: KeyboardListener(
-                focusNode: _focusNode,
-                onKeyEvent: _handleKeyboardEvent,
-                child: TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    hintText: ScribeLocalizations.of(context).customPromptAction,
-                    hintStyle: AIScribeTextStyles.searchBarHint,
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                    isDense: true,
-                  ),
-                  style: AIScribeTextStyles.searchBar,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  cursorHeight: 16,
+            child: KeyboardListener(
+              focusNode: _keyboardListenerFocusNode,
+              onKeyEvent: _handleKeyboardEvent,
+              child: TextField(
+                controller: _controller,
+                focusNode: _textFieldFocusNode,
+                decoration: InputDecoration(
+                  hintText: ScribeLocalizations.of(context).customPromptAction,
+                  hintStyle: AIScribeTextStyles.searchBarHint,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  isDense: true,
                 ),
+                style: AIScribeTextStyles.searchBar,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                cursorHeight: 16,
               ),
             ),
           ),
