@@ -60,6 +60,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multipl
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
@@ -165,13 +166,19 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   void handleSuccessViewState(Success success) async {
     if (success is GetAllMailboxSuccess) {
       currentMailboxState = success.currentMailboxState;
-      await buildTree(success.mailboxList);
+      await buildTree(
+        success.mailboxList,
+        onUpdateMailboxCollectionCallback: updateMailboxCollection,
+      );
       if (currentContext != null) {
         syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is RefreshChangesAllMailboxSuccess) {
       currentMailboxState = success.currentMailboxState;
-      await refreshTree(success.mailboxList);
+      await refreshTree(
+        success.mailboxList,
+        onUpdateMailboxCollectionCallback: updateMailboxCollection,
+      );
       if (currentContext != null) {
         syncAllMailboxWithDisplayName(currentContext!);
       }
@@ -213,18 +220,24 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     super.onDone();
     viewState.value.fold((failure) {
       if (failure is GetAllMailboxFailure) {
-        autoCreateVirtualFolder(
-          dashboardController.isAINeedsActionEnabled,
+        final newMailboxCollection = updateMailboxCollection(
+          MailboxCollection(
+            allMailboxes: allMailboxes,
+            defaultTree: defaultMailboxTree.value,
+            personalTree: personalMailboxTree.value,
+            teamTree: teamMailboxesTree.value,
+          ),
+        );
+        updateMailboxTree(
+          mailboxCollection: newMailboxCollection,
+          isRefreshTrigger: false,
         );
       }
-    }, (success) {
-      if (success is GetAllMailboxSuccess) {
-        autoCreateVirtualFolder(
-          dashboardController.isAINeedsActionEnabled,
-        );
-      }
-    });
+    }, (success) {});
   }
+
+  @override
+  bool get isAINeedsActionEnabled => dashboardController.isAINeedsActionEnabled;
 
   void _initializeDebounceTimeTextSearchChange() {
     _deBouncerTime = Debouncer<String>(

@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentat
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -62,6 +63,7 @@ typedef OnMoveFolderContentActionCallback = void Function(
 );
 typedef DeleteMailboxActionCallback = void Function(PresentationMailbox mailbox);
 typedef AllowSubaddressingActionCallback = void Function(MailboxId, Map<String, List<String>?>?, MailboxActions);
+typedef OnUpdateMailboxCollectionCallback = MailboxCollection Function(MailboxCollection);
 
 abstract class BaseMailboxController extends BaseController
     with ExpandFolderTriggerScrollableMixin {
@@ -88,39 +90,58 @@ abstract class BaseMailboxController extends BaseController
   List<PresentationMailbox> allMailboxes = <PresentationMailbox>[];
 
   Future<void> buildTree(
-      List<PresentationMailbox> allMailbox,
-      {MailboxId? mailboxIdSelected}
-  ) async {
-    final recordTree = await _treeBuilder.generateMailboxTreeInUI(
+    List<PresentationMailbox> allMailbox, {
+    MailboxId? mailboxIdSelected,
+    OnUpdateMailboxCollectionCallback? onUpdateMailboxCollectionCallback,
+  }) async {
+    MailboxCollection mailboxCollection =
+        await _treeBuilder.generateMailboxTreeInUI(
       allMailboxes: allMailbox,
       currentDefaultTree: defaultMailboxTree.value,
       currentPersonalTree: personalMailboxTree.value,
       currentTeamMailboxTree: teamMailboxesTree.value,
       mailboxIdSelected: mailboxIdSelected,
     );
-    defaultMailboxTree.firstRebuild = true;
-    personalMailboxTree.firstRebuild = true;
-    teamMailboxesTree.firstRebuild = true;
-    defaultMailboxTree.value = recordTree.defaultTree;
-    personalMailboxTree.value = recordTree.personalTree;
-    teamMailboxesTree.value = recordTree.teamMailboxTree;
-    allMailboxes = recordTree.allMailboxes;
+
+    if (onUpdateMailboxCollectionCallback != null) {
+      mailboxCollection = onUpdateMailboxCollectionCallback(mailboxCollection);
+    }
+
+    updateMailboxTree(mailboxCollection: mailboxCollection);
   }
 
-  Future<void> refreshTree(List<PresentationMailbox> allMailbox) async {
-    final recordTree = await _treeBuilder.generateMailboxTreeInUIAfterRefreshChanges(
+  Future<void> refreshTree(
+    List<PresentationMailbox> allMailbox, {
+    OnUpdateMailboxCollectionCallback? onUpdateMailboxCollectionCallback,
+  }) async {
+    MailboxCollection mailboxCollection =
+        await _treeBuilder.generateMailboxTreeInUIAfterRefreshChanges(
       allMailboxes: allMailbox,
       currentDefaultTree: defaultMailboxTree.value,
       currentPersonalTree: personalMailboxTree.value,
       currentTeamMailboxTree: teamMailboxesTree.value,
     );
-    defaultMailboxTree.firstRebuild = true;
-    personalMailboxTree.firstRebuild = true;
-    teamMailboxesTree.firstRebuild = true;
-    defaultMailboxTree.value = recordTree.defaultTree;
-    personalMailboxTree.value = recordTree.personalTree;
-    teamMailboxesTree.value = recordTree.teamMailboxTree;
-    allMailboxes = allMailbox;
+
+    if (onUpdateMailboxCollectionCallback != null) {
+      mailboxCollection = onUpdateMailboxCollectionCallback(mailboxCollection);
+    }
+
+    updateMailboxTree(mailboxCollection: mailboxCollection);
+  }
+
+  void updateMailboxTree({
+    required MailboxCollection mailboxCollection,
+    bool isRefreshTrigger = true,
+  }) {
+    if (isRefreshTrigger) {
+      defaultMailboxTree.firstRebuild = true;
+      personalMailboxTree.firstRebuild = true;
+      teamMailboxesTree.firstRebuild = true;
+    }
+    defaultMailboxTree.value = mailboxCollection.defaultTree;
+    personalMailboxTree.value = mailboxCollection.personalTree;
+    teamMailboxesTree.value = mailboxCollection.teamTree;
+    allMailboxes = mailboxCollection.allMailboxes;
   }
 
   void syncAllMailboxWithDisplayName(BuildContext context) {
@@ -675,10 +696,26 @@ abstract class BaseMailboxController extends BaseController
     }
   }
 
-  void autoCreateVirtualFolder(bool isAINeedsActionEnabled) {
-    addFavoriteFolderToMailboxList();
+  bool get isAINeedsActionEnabled => false;
+
+  MailboxCollection autoCreateVirtualFolder({
+    required MailboxCollection mailboxCollection,
+  }) {
+    MailboxCollection newMailboxCollection = addFavoriteFolderToMailboxList(
+      mailboxCollection: mailboxCollection,
+    );
     if (isAINeedsActionEnabled) {
-      addActionRequiredFolder();
+      newMailboxCollection = addActionRequiredFolder(
+        mailboxCollection: newMailboxCollection,
+      );
     }
+
+    return newMailboxCollection;
+  }
+
+  MailboxCollection updateMailboxCollection(
+    MailboxCollection mailboxCollection,
+  ) {
+    return autoCreateVirtualFolder(mailboxCollection: mailboxCollection);
   }
 }
