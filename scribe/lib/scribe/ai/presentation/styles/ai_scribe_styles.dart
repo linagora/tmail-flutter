@@ -161,6 +161,7 @@ abstract final class AIScribeSizes {
   static const double submenuSpacing = 6;
   static const double modalSpacing = 26;
   static const double modalWithoutContentSpacing = 12;
+  static const double keyboardSpacing = 12;
 
   // Elevation
   static const double dialogElevation = 8;

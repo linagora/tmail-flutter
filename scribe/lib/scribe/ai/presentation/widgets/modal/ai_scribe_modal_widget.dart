@@ -73,15 +73,21 @@ class AiScribeModalWidget extends StatelessWidget {
 
     if (buttonPosition != null && buttonSize != null) {
       final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+      final keyboardHeightWithSpacing = keyboardHeight > 0 ? keyboardHeight + AIScribeSizes.keyboardSpacing : 0; 
       final screenSize = MediaQuery.of(context).size;
-      final availableHeight = screenSize.height - keyboardHeight;
-      
+      final availableHeight = screenSize.height - keyboardHeightWithSpacing;
+
+      // in tablet mode where we can encounter keyboard and modal we have issues 
+      // with calculating the modal height and the search bar is frequently behind the keyboard
+      // that's why we take more space here
+      final searchBarHeight = keyboardHeight > 0 ? AIScribeSizes.searchBarMaxHeight : AIScribeSizes.searchBarMinHeight;
+
       final maxHeightModal = hasContent
-          ? AIScribeSizes.searchBarMinHeight +
+          ? searchBarHeight +
               AIScribeSizes.fieldSpacing +
               min(menuActions.length * AIScribeSizes.menuItemHeight,
                   AIScribeSizes.submenuMaxHeight)
-          : AIScribeSizes.searchBarMinHeight;
+          : searchBarHeight;
 
       final layoutResult = AnchoredModalLayoutCalculator.calculate(
         input: AnchoredModalLayoutInput(
