@@ -31,7 +31,9 @@ platform :android do
       json_key_data: ENV["PLAY_STORE_CONFIG_JSON"]
     )[0].to_i
     build_name = last_git_tag.gsub("v", "")
-    sh "flutter build appbundle --verbose --release --dart-define=SERVER_URL=$SERVER_URL --build-number=#{latest_build_number+1} --build-name=#{build_name}"
+    # Add: --obfuscate --split-debug-info=../build/app/outputs/symbols
+    # Note: The path starts with ../ because Fastlane runs in the android/ directory.
+    sh "flutter build appbundle --verbose --release --obfuscate --split-debug-info=../build/app/outputs/symbols --dart-define=SERVER_URL=$SERVER_URL --build-number=#{latest_build_number+1} --build-name=#{build_name}"
     upload_to_play_store(
       json_key_data: ENV["PLAY_STORE_CONFIG_JSON"],
       track: track,
