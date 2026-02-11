@@ -132,9 +132,11 @@ class FcmTokenController extends PushBaseController {
         )
       );
     } else {
-      logError(
-        'UpdateFirebaseRegistrationTokenInteractor is null or firebaseRegistration.id is null',
-      );
+      if (_updateFirebaseRegistrationTokenInteractor == null) {
+        logError('UpdateFirebaseRegistrationTokenInteractor is null');
+      } else {
+        logError('firebaseRegistration.id is null');
+      }
     }
   }
 

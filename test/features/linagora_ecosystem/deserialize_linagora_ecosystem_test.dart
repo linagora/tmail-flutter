@@ -350,10 +350,13 @@ void main() {
 
       final parsed = LinagoraEcosystem.deserialize(json.decode(jsonString));
 
-      expect(
-        parsed.properties![LinagoraEcosystemIdentifier.sentryConfig],
-        isA<SentryConfigLinagoraEcosystem>(),
-      );
+      final sentryConfig =
+          parsed.properties![LinagoraEcosystemIdentifier.sentryConfig];
+      expect(sentryConfig, isA<SentryConfigLinagoraEcosystem>());
+      final config = sentryConfig as SentryConfigLinagoraEcosystem;
+      expect(config.enabled, isFalse);
+      expect(config.dsn, isNull);
+      expect(config.environment, isNull);
     });
 
     test('Should treat unknown object with app-like properties as AppLinagoraEcosystem', () {

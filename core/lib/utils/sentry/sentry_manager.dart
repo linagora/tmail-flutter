@@ -79,12 +79,17 @@ class SentryManager {
     Map<String, dynamic>? extras,
   ) async {
     try {
-      // Only open a Scope if we actually have extras to add.
-      if (extras != null && extras.isNotEmpty) {
+      final hasExtras = extras != null && extras.isNotEmpty;
+      final hasMessage = message != null && message.isNotEmpty;
+
+      if (hasExtras || hasMessage) {
         await Sentry.captureException(
           exception,
           stackTrace: stackTrace,
-          withScope: (scope) => scope.setContexts('extras', extras),
+          withScope: (scope) {
+            if (hasExtras) scope.setContexts('extras', extras);
+            if (hasMessage) scope.setTag('message', message);
+          },
         );
       } else {
         await Sentry.captureException(
