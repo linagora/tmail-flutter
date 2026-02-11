@@ -1,13 +1,11 @@
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
