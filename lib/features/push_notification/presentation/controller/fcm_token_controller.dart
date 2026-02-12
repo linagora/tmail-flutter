@@ -83,12 +83,20 @@ class FcmTokenController extends PushBaseController {
   void _getStoredFirebaseRegistrationFromCache() {
     if (_getStoredFirebaseRegistrationInteractor != null) {
       consumeState(_getStoredFirebaseRegistrationInteractor!.execute());
+    } else {
+      logError(
+        'GetStoredFirebaseRegistrationInteractor is null',
+      );
     }
   }
 
   void _storeFirebaseRegistrationToCache(FirebaseRegistration firebaseRegistration){
     if (_storeFirebaseRegistrationInteractor != null) {
       consumeState(_storeFirebaseRegistrationInteractor!.execute(firebaseRegistration));
+    } else {
+      logError(
+        'StoreFirebaseRegistrationInteractor is null',
+      );
     }
   }
 
@@ -123,6 +131,12 @@ class FcmTokenController extends PushBaseController {
           )
         )
       );
+    } else {
+      if (_updateFirebaseRegistrationTokenInteractor == null) {
+        logError('UpdateFirebaseRegistrationTokenInteractor is null');
+      } else {
+        logError('firebaseRegistration.id is null');
+      }
     }
   }
 
@@ -143,20 +157,32 @@ class FcmTokenController extends PushBaseController {
           )
         )
       );
+    } else {
+      logError(
+        'RegisterNewFirebaseRegistrationTokenInteractor is null',
+      );
     }
   }
   
   void _deleteFirebaseRegistrationInCache() {
     if (_deleteFirebaseRegistrationCacheInteractor != null) {
       consumeState(_deleteFirebaseRegistrationCacheInteractor!.execute());
+    } else {
+      logError(
+        'DeleteFirebaseRegistrationCacheInteractor is null',
+      );
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
     log('FcmTokenController::_handleFailureViewState(): $failure');
-    if (failure is GetFirebaseRegistrationByDeviceIdFailure && failure.newFcmToken != null) {
-      _registerNewFirebaseRegistrationToken(failure.newFcmToken!);
+    if (failure is GetFirebaseRegistrationByDeviceIdFailure) {
+      if (failure.newFcmToken != null) {
+        _registerNewFirebaseRegistrationToken(failure.newFcmToken!);
+      } else {
+        logError('FcmTokenController::GetFirebaseRegistrationByDeviceIdFailure: newFcmToken is null');
+      }
     } else if (failure is RegisterNewFirebaseRegistrationTokenFailure) {
       _deleteFirebaseRegistrationInCache();
     }

@@ -109,6 +109,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_e
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/download/presentation/bindings/download_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/linagora_ecosystem_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
@@ -411,6 +412,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetIdentityCacheOnWebInteractor(
       Get.find<IdentityCreatorRepository>()
     ));
+    LinagoraEcosystemInteractorBindings().dependencies();
+
     PaywallBindings().dependencies();
 
     DownloadInteractorBindings().dependencies();

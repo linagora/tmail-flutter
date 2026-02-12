@@ -1,8 +1,15 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/sentry/sentry_config.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/extensions/sentry_config_extension.dart';
+import 'package:tmail_ui_user/features/caching/extensions/sentry_configuration_cache_extension.dart';
+import 'package:tmail_ui_user/features/caching/extensions/sentry_user_cache_extension.dart';
+import 'package:tmail_ui_user/features/caching/extensions/sentry_user_extension.dart';
+import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/caching/manager/session_cache_manger.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
@@ -42,6 +49,7 @@ class CachingManager {
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
   final EncryptionKeyCacheManager _encryptionKeyCacheManager;
   final AuthenticationInfoCacheManager _authenticationInfoCacheManager;
+  final SentryConfigurationCacheManager _sentryConfigurationCacheManager;
 
   CachingManager(
     this._mailboxCacheManager,
@@ -63,6 +71,7 @@ class CachingManager {
     this._oidcConfigurationCacheManager,
     this._encryptionKeyCacheManager,
     this._authenticationInfoCacheManager,
+    this._sentryConfigurationCacheManager,
   );
 
   Future<void> clearAll() async {
@@ -212,5 +221,76 @@ class CachingManager {
           _sendingEmailCacheManager.migrateHiveToIsolatedHive(),
         ]
     ]);
+  }
+
+  Future<void> saveSentryConfiguration(SentryConfig sentryConfig) async {
+    try {
+      await _sentryConfigurationCacheManager.saveSentryConfiguration(
+        sentryConfig.toSentryConfigurationCache(),
+      );
+      log('CachingManager::saveSentryConfiguration: Sentry configuration saved successfully');
+    } catch (e, st) {
+      logError(
+        'CachingManager::saveSentryConfiguration: Cannot save sentry configuration',
+        exception: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  Future<SentryConfig?> getSentryConfiguration() async {
+    try {
+      final sentryConfigurationCache =
+          await _sentryConfigurationCacheManager.getSentryConfiguration();
+      final sentryConfig = sentryConfigurationCache.toSentryConfig();
+      log('CachingManager::getSentryConfiguration: Sentry configuration loaded');
+      return sentryConfig;
+    } catch (e, st) {
+      logWarning(
+        'CachingManager::getSentryConfiguration: Cannot get sentry configuration, error: $e | stackTrace: $st',
+      );
+      return null;
+    }
+  }
+
+  Future<void> saveSentryUser(SentryUser sentryUser) async {
+    try {
+      await _sentryConfigurationCacheManager.saveSentryUser(
+        sentryUser.toSentryUserCache(),
+      );
+      log('CachingManager::saveSentryUser: Sentry user saved successfully');
+    } catch (e, st) {
+      logError(
+        'CachingManager::saveSentryUser: Cannot save sentry user',
+        exception: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  Future<SentryUser?> getSentryUser() async {
+    try {
+      final sentryUserCache =
+          await _sentryConfigurationCacheManager.getSentryUser();
+      final sentryUser = sentryUserCache.toSentryUser();
+      log('CachingManager::getSentryUser: Sentry user loaded');
+      return sentryUser;
+    } catch (e, st) {
+      logWarning(
+        'CachingManager::getSentryUser: Cannot get sentry user, error: $e | stackTrace: $st',
+      );
+      return null;
+    }
+  }
+
+  Future<void> clearSentryConfiguration() async {
+    try {
+      await _sentryConfigurationCacheManager.clearSentryConfiguration();
+      log('CachingManager::clearSentryConfiguration: Sentry configuration cleared successfully');
+    } catch (e, st) {
+      logWarning(
+        'CachingManager::clearSentryConfiguration: throw exception, error: $e | stackTrace: $st',
+      );
+    }
   }
 }

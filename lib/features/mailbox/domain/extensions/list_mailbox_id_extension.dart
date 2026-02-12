@@ -15,4 +15,8 @@ extension ListMailboxIdExtension on List<MailboxId> {
     };
     return maps;
   }
+
+  List<String> toListString() {
+    return map((mailboxId) => mailboxId.id.value).toList();
+  }
 }
