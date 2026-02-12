@@ -492,62 +492,108 @@ void main() {
     group('limitEmailFetched::test', () {
       late RxList<PresentationEmail> emailsRxList;
 
-      PresentationEmail createEmail(String id) => PresentationEmail(
-        id: EmailId(Id(id)),
-      );
-
-      List<PresentationEmail> createEmails(int count) =>
-          List.generate(count, (i) => createEmail('email-$i'));
-
       setUp(() {
         emailsRxList = RxList<PresentationEmail>();
-        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(emailsRxList);
         when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
         when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
         when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn());
         when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
         when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(emailsRxList);
         when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
         when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
         when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
+
         threadController.onInit();
+        emailsRxList.refresh();
       });
 
-      test('returns defaultLimit when no emails loaded', () {
+      List<PresentationEmail> generateEmails(int count, {String prefix = 'email'}) {
+        return List.generate(
+          count,
+          (i) => PresentationEmail(id: EmailId(Id('$prefix$i'))),
+        );
+      }
+
+      test(
+        'SHOULD return defaultLimit\n'
+        'WHEN no emails loaded',
+      () {
+        // Assert
         expect(threadController.limitEmailFetched, ThreadConstants.defaultLimit);
       });
 
-      test('returns email count after emails loaded', () {
-        emailsRxList.addAll(createEmails(40));
+      test(
+        'SHOULD return email count\n'
+        'WHEN emails are loaded into the list',
+      () {
+        // Act
+        emailsRxList.addAll(generateEmails(40));
+
+        // Assert
         expect(threadController.limitEmailFetched, UnsignedInt(40));
       });
 
-      test('retains peak count after bulk delete', () {
-        emailsRxList.addAll(createEmails(40));
+      test(
+        'SHOULD retain peak count\n'
+        'WHEN emails are bulk deleted from the list',
+      () {
+        // Arrange
+        emailsRxList.addAll(generateEmails(40));
+
+        // Act - simulate bulk delete (removeWhere)
         emailsRxList.removeRange(0, 20);
+
+        // Assert - peak should still be 40, not 20
         expect(threadController.limitEmailFetched, UnsignedInt(40));
       });
 
-      test('resets after resetToOriginalValue', () {
-        emailsRxList.addAll(createEmails(40));
+      test(
+        'SHOULD reset to defaultLimit\n'
+        'WHEN resetToOriginalValue is called (mailbox switch)',
+      () {
+        // Arrange
+        emailsRxList.addAll(generateEmails(40));
+        expect(threadController.limitEmailFetched, UnsignedInt(40));
+
+        // Act
         threadController.resetToOriginalValue();
+
+        // Assert
         expect(threadController.limitEmailFetched, ThreadConstants.defaultLimit);
       });
 
-      test('tracks peak across load-more then delete', () {
-        emailsRxList.addAll(createEmails(20));
-        emailsRxList.addAll(createEmails(20));
-        emailsRxList.addAll(createEmails(20));
+      test(
+        'SHOULD track peak across load-more then delete\n'
+        'WHEN emails are loaded incrementally and then partially deleted',
+      () {
+        // Arrange - simulate initial load + 2 load-mores
+        emailsRxList.addAll(generateEmails(20, prefix: 'init'));
+        emailsRxList.addAll(generateEmails(20, prefix: 'more1'));
+        emailsRxList.addAll(generateEmails(20, prefix: 'more2'));
         expect(threadController.limitEmailFetched, UnsignedInt(60));
+
+        // Act - delete 30 emails
         emailsRxList.removeRange(0, 30);
+
+        // Assert - peak was 60
         expect(threadController.limitEmailFetched, UnsignedInt(60));
       });
 
-      test('resets between mailbox switches', () {
-        emailsRxList.addAll(createEmails(40));
+      test(
+        'SHOULD reset between mailbox switches\n'
+        'WHEN switching to a mailbox with fewer emails',
+      () {
+        // Arrange - first mailbox has 40 emails
+        emailsRxList.addAll(generateEmails(40));
+        expect(threadController.limitEmailFetched, UnsignedInt(40));
+
+        // Act - switch mailbox (reset) then load fewer emails
         threadController.resetToOriginalValue();
-        emailsRxList.addAll(createEmails(15));
+        emailsRxList.addAll(generateEmails(15, prefix: 'new'));
+
+        // Assert - peak should be 15, not stale 40
         expect(threadController.limitEmailFetched, UnsignedInt(15));
       });
     });

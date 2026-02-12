@@ -417,11 +417,10 @@ class ThreadController extends BaseController with EmailActionController {
         'Count emails is $countEmails, '
         '_peakEmailCount is $_peakEmailCount',
       );
-      if (countEmails > _peakEmailCount) {
-        _peakEmailCount = emails.length;
-      }
-      if (countEmails <= 0) {
+      if (emails.isEmpty) {
         _peakEmailCount = 0;
+      } else if (countEmails > _peakEmailCount) {
+        _peakEmailCount = countEmails;
       }
     });
   }
