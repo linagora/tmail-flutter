@@ -1,3 +1,17 @@
+## [0.24.10] - 2026-02-12
+### Fixed
+- Fix email list does not automatically refill after bulk delete (#4323)
+- TF-4329 Fix rogue mailbox set request for favorite
+- Fix infinitive loop when 401 before expired token
+- Handle 400 error during token refresh flow
+- TF-4314 Fix unread emails disappear blink (#4316)
+- Fix Scribe translations by using multiple_localization package
+- Fix create identity memory leak (#4295)
+
+### Added
+- Sentry integration & upload source map (#4311)
+- TF-4306 Update icon for Label in left menu
+
 ## [0.24.8] - 2026-01-30
 ### Fixed 
 - #4283 fix: normalize "$needs-action" keyword to "needs-action"
