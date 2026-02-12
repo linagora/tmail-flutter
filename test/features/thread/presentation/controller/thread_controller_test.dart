@@ -327,7 +327,7 @@ void main() {
 
         // Act
         threadController.onInit();
-        threadController.setOriginalDisplayedEmailsCount(emailList.length);
+        mockMailboxDashBoardController.emailsInCurrentMailbox.refresh();
 
         mockMailboxDashBoardController.emailUIAction.value =
             RefreshChangeEmailAction(newState: State('new-state'));

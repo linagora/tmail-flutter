@@ -203,7 +203,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (failure is SearchEmailFailure) {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
       canSearchMore = false;
-      _resetCurrentEmailList();
+      mailboxDashBoardController.emailsInCurrentMailbox.clear();
       showRetryToast(failure);
     } else if (failure is SearchMoreEmailFailure) {
       loadingMoreStatus.value = LoadingMoreStatus.completed;
@@ -342,7 +342,7 @@ class ThreadController extends BaseController with EmailActionController {
           listEmailController.jumpTo(0);
         }
         canSearchMore = true;
-        _resetCurrentEmailList();
+        mailboxDashBoardController.emailsInCurrentMailbox.clear();
       } else if (action is ReclaimMailListKeyboardShortcutFocusAction) {
         refocusMailShortcutFocus();
         mailboxDashBoardController.clearDashBoardAction();
@@ -411,13 +411,17 @@ class ThreadController extends BaseController with EmailActionController {
     });
 
     ever(mailboxDashBoardController.emailsInCurrentMailbox, (emails) {
+      final countEmails = emails.length;
       log(
         'ThreadController::Ever(mailboxDashBoardController.emailsInCurrentMailbox): '
-        'Count emails is ${emails.length}, '
+        'Count emails is $countEmails, '
         '_peakEmailCount is $_peakEmailCount',
       );
-      if (emails.length > _peakEmailCount) {
+      if (countEmails > _peakEmailCount) {
         _peakEmailCount = emails.length;
+      }
+      if (countEmails <= 0) {
+        _peakEmailCount = 0;
       }
     });
   }
@@ -507,7 +511,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void resetToOriginalValue() {
     log('ThreadController::resetToOriginalValue');
-    _resetCurrentEmailList();
+    mailboxDashBoardController.emailsInCurrentMailbox.clear();
     mailboxDashBoardController.listEmailSelected.clear();
     mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
     canLoadMore = true;
@@ -720,8 +724,7 @@ class ThreadController extends BaseController with EmailActionController {
       mailboxDashBoardController.updateRefreshAllEmailState(
           Left(RefreshAllEmailFailure()));
       canSearchMore = false;
-      _resetCurrentEmailList();
-
+      mailboxDashBoardController.emailsInCurrentMailbox.clear();
       if (searchState != null) {
         onDataFailureViewState(searchState);
       }
@@ -1026,7 +1029,7 @@ class ThreadController extends BaseController with EmailActionController {
         listEmailController.jumpTo(0);
       }
       if (!needRefreshSearchState) {
-        _resetCurrentEmailList();
+        mailboxDashBoardController.emailsInCurrentMailbox.clear();
       }
       canSearchMore = false;
 
@@ -1507,15 +1510,5 @@ class ThreadController extends BaseController with EmailActionController {
     } else  {
       _loadMoreEmails();
     }
-  }
-
-  @visibleForTesting
-  void setOriginalDisplayedEmailsCount(int count) {
-    _peakEmailCount = count;
-  }
-
-  void _resetCurrentEmailList() {
-    mailboxDashBoardController.emailsInCurrentMailbox.clear();
-    _peakEmailCount = 0;
   }
 }

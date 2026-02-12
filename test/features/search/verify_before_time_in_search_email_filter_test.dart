@@ -1090,7 +1090,7 @@ void main() {
 
       // Act
       mailboxDashboardController.updateEmailList(emailList);
-      threadController.setOriginalDisplayedEmailsCount(emailList.length);
+      mailboxDashboardController.emailsInCurrentMailbox.refresh();
       searchController.synchronizeSearchFilter(searchEmailFilter);
 
       mailboxDashboardController.setCurrentEmailState(State('current-state'));
