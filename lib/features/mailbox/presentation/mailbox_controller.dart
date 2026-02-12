@@ -594,7 +594,9 @@ class MailboxController extends BaseMailboxController
         await _handleRefreshChangeMailboxSuccess(refreshState);
       } else {
         _clearNewFolderId();
-        onDataFailureViewState(refreshState);
+        if (refreshState != null) {
+          onDataFailureViewState(refreshState);
+        }
       }
     } catch (e, stackTrace) {
       logWarning('MailboxController::_processMailboxStateQueue:Error processing state: $e');
