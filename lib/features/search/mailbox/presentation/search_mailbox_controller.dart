@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/list_presentation_mailbox_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
@@ -824,7 +825,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
 
   void goToCreateNewMailboxView(BuildContext context, {PresentationMailbox? parentMailbox}) async {
     if (session != null && accountId != null) {
-      final arguments = MailboxCreatorArguments(allMailboxes, parentMailbox);
+      final arguments = MailboxCreatorArguments(
+        allMailboxes.withoutVirtualMailbox,
+        parentMailbox,
+      );
 
       final result = PlatformInfo.isWeb
         ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.mailboxCreator, arguments: arguments)
