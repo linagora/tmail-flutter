@@ -4,10 +4,10 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/default_close_button_widget.dart';
-import 'package:core/presentation/views/dialog/modal_list_action_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:labels/labels.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/labels/label_list_item.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/list_label_with_action_modal.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/no_label_yet_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -30,10 +30,6 @@ class ChooseLabelModal extends StatefulWidget {
 }
 
 class _ChooseLabelModalState extends State<ChooseLabelModal> {
-  final ValueNotifier<bool> _addLabelStateNotifier = ValueNotifier(false);
-  final ValueNotifier<List<Label>> _selectedLabelStateNotifier =
-      ValueNotifier([]);
-
   @override
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
@@ -41,6 +37,8 @@ class _ChooseLabelModalState extends State<ChooseLabelModal> {
     return LayoutBuilder(builder: (_, constraints) {
       final currentScreenWidth = constraints.maxWidth;
       final currentScreenHeight = constraints.maxHeight;
+      double height = math.min(currentScreenHeight - 100, 645);
+      double width = math.min(currentScreenWidth - 32, 536);
 
       Widget bodyWidget = Container(
         decoration: BoxDecoration(
@@ -58,11 +56,8 @@ class _ChooseLabelModalState extends State<ChooseLabelModal> {
             ),
           ],
         ),
-        width: math.min(
-          currentScreenWidth - 32,
-          554,
-        ),
-        constraints: BoxConstraints(maxHeight: currentScreenHeight - 100),
+        width: width,
+        height: height,
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
@@ -73,23 +68,21 @@ class _ChooseLabelModalState extends State<ChooseLabelModal> {
                 _buildTitle(appLocalizations),
                 const Divider(height: 1, color: Colors.black12),
                 _buildSubtitle(appLocalizations),
-                Flexible(child: _buildLabelListView()),
-                ValueListenableBuilder(
-                  valueListenable: _addLabelStateNotifier,
-                  builder: (_, value, __) {
-                    return ModalListActionButtonWidget(
-                      positiveLabel: appLocalizations.addLabel,
-                      negativeLabel: appLocalizations.cancel,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 25,
-                        horizontal: 25,
-                      ),
-                      isPositiveActionEnabled: value,
-                      onPositiveAction: _onAddLabel,
-                      onNegativeAction: _onCloseModal,
-                    );
-                  },
-                ),
+                if (widget.labels.isNotEmpty)
+                  Expanded(
+                    child: ListLabelWithActionModal(
+                      labels: widget.labels,
+                      imagePaths: widget.imagePaths,
+                      onLabelAsToEmailsAction: widget.onLabelAsToEmailsAction,
+                      onCloseModal: _onCloseModal,
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: Center(
+                      child: NoLabelYetWidget(imagePaths: widget.imagePaths),
+                    ),
+                  ),
               ],
             ),
             DefaultCloseButtonWidget(
@@ -137,62 +130,7 @@ class _ChooseLabelModalState extends State<ChooseLabelModal> {
     );
   }
 
-  Widget _buildLabelListView() {
-    final labelList = widget.labels;
-    return ListView.builder(
-      shrinkWrap: true,
-      padding: EdgeInsets.zero,
-      itemCount: labelList.length,
-      itemBuilder: (context, index) {
-        final label = labelList[index];
-        return ValueListenableBuilder(
-          valueListenable: _selectedLabelStateNotifier,
-          builder: (_, selectedLabels, __) {
-            final isSelected = selectedLabels.contains(label);
-            return LabelListItem(
-              label: label,
-              imagePaths: widget.imagePaths,
-              padding: const EdgeInsetsDirectional.only(
-                start: 4,
-                end: 16,
-              ),
-              enableSelectedIcon: true,
-              isSelected: isSelected,
-              onOpenLabelCallback: _onToggleLabel,
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _onToggleLabel(Label selectedLabel) {
-    final currentLabels = _selectedLabelStateNotifier.value;
-
-    if (currentLabels.contains(selectedLabel)) {
-      _selectedLabelStateNotifier.value =
-          currentLabels.where((label) => label.id != selectedLabel.id).toList();
-    } else {
-      _selectedLabelStateNotifier.value = [...currentLabels, selectedLabel];
-    }
-
-    _addLabelStateNotifier.value = _selectedLabelStateNotifier.value.isNotEmpty;
-  }
-
-  void _onAddLabel() {
-    widget.onLabelAsToEmailsAction(_selectedLabelStateNotifier.value);
-
-    popBack();
-  }
-
   void _onCloseModal() {
     popBack();
-  }
-
-  @override
-  void dispose() {
-    _addLabelStateNotifier.dispose();
-    _selectedLabelStateNotifier.dispose();
-    super.dispose();
   }
 }
