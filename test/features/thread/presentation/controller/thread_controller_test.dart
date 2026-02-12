@@ -488,5 +488,68 @@ void main() {
         ));
       });
     });
+
+    group('limitEmailFetched::test', () {
+      late RxList<PresentationEmail> emailsRxList;
+
+      PresentationEmail createEmail(String id) => PresentationEmail(
+        id: EmailId(Id(id)),
+      );
+
+      List<PresentationEmail> createEmails(int count) =>
+          List.generate(count, (i) => createEmail('email-$i'));
+
+      setUp(() {
+        emailsRxList = RxList<PresentationEmail>();
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(emailsRxList);
+        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
+        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
+        when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
+        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+        when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
+        threadController.onInit();
+      });
+
+      test('returns defaultLimit when no emails loaded', () {
+        expect(threadController.limitEmailFetched, ThreadConstants.defaultLimit);
+      });
+
+      test('returns email count after emails loaded', () {
+        emailsRxList.addAll(createEmails(40));
+        expect(threadController.limitEmailFetched, UnsignedInt(40));
+      });
+
+      test('retains peak count after bulk delete', () {
+        emailsRxList.addAll(createEmails(40));
+        emailsRxList.removeRange(0, 20);
+        expect(threadController.limitEmailFetched, UnsignedInt(40));
+      });
+
+      test('resets after resetToOriginalValue', () {
+        emailsRxList.addAll(createEmails(40));
+        threadController.resetToOriginalValue();
+        expect(threadController.limitEmailFetched, ThreadConstants.defaultLimit);
+      });
+
+      test('tracks peak across load-more then delete', () {
+        emailsRxList.addAll(createEmails(20));
+        emailsRxList.addAll(createEmails(20));
+        emailsRxList.addAll(createEmails(20));
+        expect(threadController.limitEmailFetched, UnsignedInt(60));
+        emailsRxList.removeRange(0, 30);
+        expect(threadController.limitEmailFetched, UnsignedInt(60));
+      });
+
+      test('resets between mailbox switches', () {
+        emailsRxList.addAll(createEmails(40));
+        threadController.resetToOriginalValue();
+        emailsRxList.addAll(createEmails(15));
+        expect(threadController.limitEmailFetched, UnsignedInt(15));
+      });
+    });
   });
 }

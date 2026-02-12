@@ -406,6 +406,7 @@ void main() {
       mockGetEmailByIdInteractor,
       mockCleanAndGetEmailsInMailboxInteractor,
     );
+    threadController.onInit();
 
     mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;
     mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
@@ -1090,7 +1091,6 @@ void main() {
 
       // Act
       mailboxDashboardController.updateEmailList(emailList);
-      mailboxDashboardController.emailsInCurrentMailbox.refresh();
       searchController.synchronizeSearchFilter(searchEmailFilter);
 
       mailboxDashboardController.setCurrentEmailState(State('current-state'));
