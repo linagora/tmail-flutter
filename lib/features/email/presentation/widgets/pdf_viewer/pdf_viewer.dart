@@ -48,6 +48,8 @@ class PDFViewer extends StatefulWidget {
 }
 
 class _PDFViewerState extends State<PDFViewer> {
+  static final Uint8List _emptyBytes = Uint8List(0);
+
   late DownloadAttachmentForWebInteractor? _downloadAttachmentForWebInteractor;
   late StreamController<dartz.Either<Failure, Success>> _downloadAttachmentStreamController;
   late StreamSubscription<dartz.Either<Failure, Success>> _downloadAttachmentStreamSubscription;
@@ -155,9 +157,12 @@ class _PDFViewerState extends State<PDFViewer> {
               DownloadAttachmentForWebSuccess(attachment: final attachment) => attachment.generateFileName(),
               _ => '',
             };
+
+            // Avoid copying potentially huge attachment bytes on rebuilds.
+            final pdfBytes = bytes ?? _emptyBytes;
             
             return TwakePdfPreviewer(
-              bytes: Uint8List.fromList(bytes ?? []),
+              bytes: pdfBytes,
               previewerOptions: PreviewerOptions(
                 previewerState: previewerState,
                 onError: (error) {
