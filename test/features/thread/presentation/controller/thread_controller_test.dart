@@ -266,6 +266,24 @@ void main() {
     });
 
     group('_refreshEmailChanges::test', () {
+      late ThreadController refreshChangesController;
+
+      setUp(() {
+        refreshChangesController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockSearchEmailInteractor,
+          mockSearchMoreEmailInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+      });
+
+      tearDown(() {
+        refreshChangesController.onClose();
+      });
+
       test(
         'WHEN thread controller in searching\n'
         'AND `MarkAsStarEmailSuccess` is coming\n'
@@ -310,23 +328,23 @@ void main() {
           properties: anyNamed('properties'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-        
+
         when(mockRefreshChangesEmailsInMailboxInteractor.execute(
-          any, 
-          any, 
+          any,
+          any,
           any,
           sort: anyNamed('sort'),
           limit: anyNamed('limit'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
-          emailFilter: anyNamed('emailFilter'), 
+          emailFilter: anyNamed('emailFilter'),
         )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(
-          emailList: emailList, 
+          emailList: emailList,
           currentEmailState: State('old-state'))))
         );
 
         // Act
-        threadController.onInit();
+        refreshChangesController.onInit();
         mockMailboxDashBoardController.emailsInCurrentMailbox.refresh();
 
         mockMailboxDashBoardController.emailUIAction.value =
@@ -358,7 +376,7 @@ void main() {
         )).called(1);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty, isTrue);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.length, emailList.length);
-        expect(threadController.isListEmailScrollViewJumping, isFalse);
+        expect(refreshChangesController.isListEmailScrollViewJumping, isFalse);
         PlatformInfo.isTestingForWeb = false;
       });
 
@@ -407,7 +425,7 @@ void main() {
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
         // Act
-        threadController.onInit();
+        refreshChangesController.onInit();
         mockMailboxDashBoardController.dashBoardAction.value = StartSearchEmailAction();
 
         await untilCalled(mockSearchEmailInteractor.execute(
@@ -440,6 +458,24 @@ void main() {
     });
 
     group('_registerObxStreamListener test:', () {
+      late ThreadController obxListenerController;
+
+      setUp(() {
+        obxListenerController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockSearchEmailInteractor,
+          mockSearchMoreEmailInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+      });
+
+      tearDown(() {
+        obxListenerController.onClose();
+      });
+
       test(
         'should call _getEmailsInMailboxInteractor.execute with getLatestChanges is false '
         'when mailboxDashBoardController.selectedMailbox updated',
@@ -460,9 +496,9 @@ void main() {
         when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
         when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
-        
+
         // act
-        threadController.onInit();
+        obxListenerController.onInit();
         mockMailboxDashBoardController.selectedMailbox.value = mailboxAfter;
         await untilCalled(mockGetEmailsInMailboxInteractor.execute(
           any,
@@ -518,6 +554,10 @@ void main() {
         when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
 
         limitEmailFetchedController.onInit();
+      });
+
+      tearDown(() {
+        limitEmailFetchedController.onClose();
       });
 
       List<PresentationEmail> generateEmails(int count, {String prefix = 'email'}) {
