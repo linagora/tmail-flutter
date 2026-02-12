@@ -406,6 +406,7 @@ void main() {
       mockGetEmailByIdInteractor,
       mockCleanAndGetEmailsInMailboxInteractor,
     );
+    threadController.onInit();
 
     mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;
     mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;

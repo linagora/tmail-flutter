@@ -266,6 +266,24 @@ void main() {
     });
 
     group('_refreshEmailChanges::test', () {
+      late ThreadController refreshChangesController;
+
+      setUp(() {
+        refreshChangesController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockSearchEmailInteractor,
+          mockSearchMoreEmailInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+      });
+
+      tearDown(() {
+        refreshChangesController.onClose();
+      });
+
       test(
         'WHEN thread controller in searching\n'
         'AND `MarkAsStarEmailSuccess` is coming\n'
@@ -310,23 +328,24 @@ void main() {
           properties: anyNamed('properties'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
-        
+
         when(mockRefreshChangesEmailsInMailboxInteractor.execute(
-          any, 
-          any, 
+          any,
+          any,
           any,
           sort: anyNamed('sort'),
           limit: anyNamed('limit'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
-          emailFilter: anyNamed('emailFilter'), 
+          emailFilter: anyNamed('emailFilter'),
         )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(
-          emailList: emailList, 
+          emailList: emailList,
           currentEmailState: State('old-state'))))
         );
 
         // Act
-        threadController.onInit();
+        refreshChangesController.onInit();
+        mockMailboxDashBoardController.emailsInCurrentMailbox.refresh();
 
         mockMailboxDashBoardController.emailUIAction.value =
             RefreshChangeEmailAction(newState: State('new-state'));
@@ -357,7 +376,7 @@ void main() {
         )).called(1);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty, isTrue);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.length, emailList.length);
-        expect(threadController.isListEmailScrollViewJumping, isFalse);
+        expect(refreshChangesController.isListEmailScrollViewJumping, isFalse);
         PlatformInfo.isTestingForWeb = false;
       });
 
@@ -406,7 +425,7 @@ void main() {
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
         // Act
-        threadController.onInit();
+        refreshChangesController.onInit();
         mockMailboxDashBoardController.dashBoardAction.value = StartSearchEmailAction();
 
         await untilCalled(mockSearchEmailInteractor.execute(
@@ -439,6 +458,24 @@ void main() {
     });
 
     group('_registerObxStreamListener test:', () {
+      late ThreadController obxListenerController;
+
+      setUp(() {
+        obxListenerController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockSearchEmailInteractor,
+          mockSearchMoreEmailInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+      });
+
+      tearDown(() {
+        obxListenerController.onClose();
+      });
+
       test(
         'should call _getEmailsInMailboxInteractor.execute with getLatestChanges is false '
         'when mailboxDashBoardController.selectedMailbox updated',
@@ -459,9 +496,9 @@ void main() {
         when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
         when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
-        
+
         // act
-        threadController.onInit();
+        obxListenerController.onInit();
         mockMailboxDashBoardController.selectedMailbox.value = mailboxAfter;
         await untilCalled(mockGetEmailsInMailboxInteractor.execute(
           any,
@@ -485,6 +522,130 @@ void main() {
           propertiesUpdated: anyNamed('propertiesUpdated'),
           getLatestChanges: false,
         ));
+      });
+    });
+
+    group('limitEmailFetched::test', () {
+      late RxList<PresentationEmail> emailsRxList;
+      late ThreadController limitEmailFetchedController;
+
+      setUp(() {
+        emailsRxList = RxList<PresentationEmail>();
+
+        limitEmailFetchedController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockSearchEmailInteractor,
+          mockSearchMoreEmailInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+
+        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
+        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(emailsRxList);
+        when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
+        when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
+        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+        when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
+
+        limitEmailFetchedController.onInit();
+      });
+
+      tearDown(() {
+        limitEmailFetchedController.onClose();
+      });
+
+      List<PresentationEmail> generateEmails(int count, {String prefix = 'email'}) {
+        return List.generate(
+          count,
+          (i) => PresentationEmail(id: EmailId(Id('$prefix$i'))),
+        );
+      }
+
+      test(
+        'SHOULD return defaultLimit\n'
+        'WHEN no emails loaded',
+      () {
+        // Assert
+        expect(limitEmailFetchedController.limitEmailFetched, ThreadConstants.defaultLimit);
+      });
+
+      test(
+        'SHOULD return email count\n'
+        'WHEN emails are loaded into the list',
+      () {
+        // Act
+        emailsRxList.addAll(generateEmails(40));
+
+        // Assert
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
+      });
+
+      test(
+        'SHOULD retain peak count\n'
+        'WHEN emails are bulk deleted from the list',
+      () {
+        // Arrange
+        emailsRxList.addAll(generateEmails(40));
+
+        // Act - simulate bulk delete (removeWhere)
+        emailsRxList.removeRange(0, 20);
+
+        // Assert - peak should still be 40, not 20
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
+      });
+
+      test(
+        'SHOULD reset to defaultLimit\n'
+        'WHEN resetToOriginalValue is called (mailbox switch)',
+      () {
+        // Arrange
+        emailsRxList.addAll(generateEmails(40));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
+
+        // Act
+        limitEmailFetchedController.resetToOriginalValue();
+
+        // Assert
+        expect(limitEmailFetchedController.limitEmailFetched, ThreadConstants.defaultLimit);
+      });
+
+      test(
+        'SHOULD track peak across load-more then delete\n'
+        'WHEN emails are loaded incrementally and then partially deleted',
+      () {
+        // Arrange - simulate initial load + 2 load-mores
+        emailsRxList.addAll(generateEmails(20, prefix: 'init'));
+        emailsRxList.addAll(generateEmails(20, prefix: 'more1'));
+        emailsRxList.addAll(generateEmails(20, prefix: 'more2'));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(60));
+
+        // Act - delete 30 emails
+        emailsRxList.removeRange(0, 30);
+
+        // Assert - peak was 60
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(60));
+      });
+
+      test(
+        'SHOULD reset between mailbox switches\n'
+        'WHEN switching to a mailbox with fewer emails',
+      () {
+        // Arrange - first mailbox has 40 emails
+        emailsRxList.addAll(generateEmails(40));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
+
+        // Act - switch mailbox (reset) then load fewer emails
+        limitEmailFetchedController.resetToOriginalValue();
+        emailsRxList.addAll(generateEmails(15, prefix: 'new'));
+
+        // Assert - peak should be 15, not stale 40
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(15));
       });
     });
   });
