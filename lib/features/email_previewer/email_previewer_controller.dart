@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:flutter/foundation.dart';
 
 class EmailPreviewerController extends ReloadableController {
 
@@ -423,5 +424,13 @@ class EmailPreviewerController extends ReloadableController {
     _downloadManager.createAnchorElementDownloadFileWeb(
         success.bytes,
         success.attachment.generateFileName());
+
+    // Don't retain large attachment bytes in controller state once the browser download is triggered.
+    downloadAttachmentState.value = Right(IdleDownloadAttachmentForWeb());
+  }
+
+  @visibleForTesting
+  void handleDownloadAttachmentSuccessForTest(DownloadAttachmentForWebSuccess success) {
+    _handleDownloadAttachmentSuccess(success);
   }
 }
