@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -124,6 +125,11 @@ class ThreadController extends BaseController with EmailActionController {
   SearchEmailFilter get _searchEmailFilter => searchController.searchEmailFilter.value;
 
   SearchQuery? get searchQuery => _searchEmailFilter.text;
+
+  AccountId? get accountId => _accountId;
+
+  LabelController get labelController =>
+      mailboxDashBoardController.labelController;
 
   ThreadController(
     this._getEmailsInMailboxInteractor,
@@ -1199,6 +1205,8 @@ class ThreadController extends BaseController with EmailActionController {
           selectedEmails: selectionEmail,
           imagePaths: imagePaths,
           onCallBackAction: cancelSelectEmail,
+          onCreateALabelAction: () =>
+              labelController.openCreateNewLabelModal(accountId),
         );
         break;
       default:

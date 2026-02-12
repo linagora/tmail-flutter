@@ -15,6 +15,7 @@ class ConfirmDialogButton extends StatelessWidget {
   final double? radius;
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onTapAction;
+  final Widget? child;
 
   const ConfirmDialogButton({
     super.key,
@@ -28,6 +29,7 @@ class ConfirmDialogButton extends StatelessWidget {
     this.textStyle,
     this.radius,
     this.padding,
+    this.child,
     this.onTapAction,
   });
 
@@ -50,7 +52,7 @@ class ConfirmDialogButton extends StatelessWidget {
         padding: padding ?? const EdgeInsets.symmetric(horizontal: 10),
       ),
       onPressed: onTapAction,
-      child: icon == null
+      child: child ?? (icon == null
           ? Text(
               label,
               style: textStyle ?? ThemeUtils.textStyleM3LabelLarge(color: textColor),
@@ -79,7 +81,7 @@ class ConfirmDialogButton extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
+            )),
     );
   }
 }

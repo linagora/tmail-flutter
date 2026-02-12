@@ -79,6 +79,7 @@ extension HandleLabelActionTypeExtension on LabelController {
     required Label selectedLabel,
     required Label newLabel,
   }) {
+    popBack();
     log('LabelController::editLabel:selectedLabel: $selectedLabel, newLabel: $newLabel');
     if (accountId == null) {
       consumeState(

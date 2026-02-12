@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-02-10T12:09:47.772166",
+  "@@last_modified": "2026-02-11T16:24:23.403679",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5480,6 +5480,24 @@
   },
   "addListLabelToListEmailFailureMessage": "Adding labels to these emails failed",
   "@addListLabelToListEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLabelsYet": "No Labels yet",
+  "@noLabelsYet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLabelsYetMessageDescriptions": "Create your first label to organize your emails more efficiently.",
+  "@noLabelsYetMessageDescriptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createALabel": "Create a label",
+  "@createALabel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -109,7 +109,7 @@ class TopBarThreadSelection extends StatelessWidget{
           EmailActionType.moveToMailbox,
         ),
       ),
-      if (isLabelAvailable && labels.isNotEmpty)
+      if (isLabelAvailable)
         TMailButtonWidget.fromIcon(
           icon: imagePaths.icTag,
           iconSize: TopBarThreadSelectionStyle.iconSize,

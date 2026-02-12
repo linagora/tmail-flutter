@@ -5804,4 +5804,25 @@ class AppLocalizations {
       name: 'addListLabelToListEmailFailureMessage',
     );
   }
+
+  String get noLabelsYet {
+    return Intl.message(
+      'No Labels yet',
+      name: 'noLabelsYet',
+    );
+  }
+
+  String get noLabelsYetMessageDescriptions {
+    return Intl.message(
+      'Create your first label to organize your emails more efficiently.',
+      name: 'noLabelsYetMessageDescriptions',
+    );
+  }
+
+  String get createALabel {
+    return Intl.message(
+      'Create a label',
+      name: 'createALabel',
+    );
+  }
 }
