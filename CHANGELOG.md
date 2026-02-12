@@ -1,4 +1,4 @@
-## [0.24.10] - 2026-02-12
+## [0.24.11] - 2026-02-12
 ### Fixed
 - Fix email list does not automatically refill after bulk delete (#4323)
 - TF-4329 Fix rogue mailbox set request for favorite
