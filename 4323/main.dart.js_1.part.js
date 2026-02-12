@@ -31,7 +31,7 @@ _.at=r
 _.ax=s
 _.ay=t
 _.ch=u},
-d0x:function d0x(){},
+d0y:function d0y(){},
 bzK:function bzK(){},
 bzL:function bzL(){},
 bzH:function bzH(d,e){this.a=d
@@ -48,8 +48,8 @@ a7t:function a7t(d,e,f){this.f=d
 this.b=e
 this.a=f},
 bbv:function bbv(){},
-dnH:function dnH(d){this.a=d},
-cWq:function cWq(d,e){this.jP$=d
+dnI:function dnI(d){this.a=d},
+cWr:function cWr(d,e){this.jP$=d
 this.a=e},
 btj:function btj(){},
 RV:function RV(d,e,f,g){var _=this
@@ -65,7 +65,7 @@ bAb:function bAb(){},
 bAc:function bAc(){},
 bAa:function bAa(d,e){this.a=d
 this.b=e},
-eg1(){return new B.Qe(null)},
+eg2(){return new B.Qe(null)},
 Qe:function Qe(d){this.a=d},
 cd7:function cd7(d){this.a=d},
 cd8:function cd8(d,e){this.a=d
@@ -83,7 +83,7 @@ aZH:function aZH(d){this.a=d},
 ctV:function ctV(d){this.a=d},
 aSu:function aSu(){var _=this
 _.Q=_.z=_.y=_.x=_.w=_.r=_.f=_.e=_.c=_.a=null},
-dKL(d,e){return new B.a1s(d,e,A.d0(null,y.S),null)},
+dKM(d,e){return new B.a1s(d,e,A.d0(null,y.S),null)},
 a1s:function a1s(d,e,f,g){var _=this
 _.c=d
 _.d=e
@@ -108,12 +108,12 @@ biH:function biH(d){var _=this
 _.d=d
 _.f=_.e=$
 _.c=_.a=null},
+daV:function daV(d){this.a=d},
 daU:function daU(d){this.a=d},
-daT:function daT(d){this.a=d},
 asp:function asp(d,e,f){this.c=d
 this.d=e
 this.a=f},
-eyX(d){var x,w,v,u,t
+eyY(d){var x,w,v,u,t
 for(x=$.fR(),w=x.b,w=A.fe(w,w.r,A.t(w).c),v=y.H,u=w.$ti.c;w.F();){t=w.d
 if(t==null)u.a(t)
 t=x.c
@@ -137,13 +137,13 @@ return A.cg(C.C,!0,w,A.ce(!1,v,!0,new A.a1(C.L,A.ap(u,C.o,w,C.l,C.p,0,w),w),w,!0
 B.bqD.prototype={}
 B.bbw.prototype={
 ab(){var x=this.b1F(),w=this.CW
-w=A.h6(w,new B.d0x(),w.$ti.h("H.E"),y.P)
+w=A.h6(w,new B.d0y(),w.$ti.h("H.E"),y.P)
 w=A.A(w,A.t(w).h("H.E"))
 w.$flags=1
 x.n(0,"fields",w)
 return x}}
 B.bzK.prototype={
-a0f(d,e){var x=this.gbK2(),w=A.dzs(d)
+a0f(d,e){var x=this.gbK2(),w=A.dzt(d)
 $.fR().Wn(w,new B.bbw(new A.cG(x,new B.bzL(),x.$ti.h("cG<1,vA>")),e.a,e.b,!1,e.d,e.e,e.f,e.r,e.w,!0,!0,e.z,e.Q,e.as,e.at,!0,C.cw,!1))
 return w}}
 B.bzH.prototype={
@@ -159,17 +159,17 @@ amb(d,e){this.d.L(0,e)},
 cS(){this.f6()
 var x=this.c
 x.toString
-this.e=A.dFm(x)==null},
+this.e=A.dFn(x)==null},
 t(d){return new B.a7t(this,this.a.c,null)},
 p(){this.aG()
 if(!this.e)return
 this.a.toString
-switch(0){case 0:B.eyX(!0)
+switch(0){case 0:B.eyY(!0)
 break}}}
 B.a7t.prototype={
 fq(d){return this.f!==d.f}}
 B.bbv.prototype={}
-B.cWq.prototype={
+B.cWr.prototype={
 aoU(d,e){return d}}
 B.btj.prototype={
 vb(d){this.apE(d)
@@ -177,7 +177,7 @@ this.jP$.L(0,d)},
 a0D(d,e){var x
 this.apD(d,e)
 x=this.jP$.j(0,e)
-if(x!=null)C.c.hx(x.a,new B.dnH(d))}}
+if(x!=null)C.c.hx(x.a,new B.dnI(d))}}
 B.RV.prototype={
 t(d){var x=null
 return new A.a1(C.cV,A.ap(A.c([A.bg("assets/images/ic_clock_sb.svg",C.t,x,C.aE,x,x,x,x),C.a6,A.aB(A.aj(this.bhD(this.c),x,x,x,x,x,$.aQ().bf(C.n,15,C.D),x,x,x),1)],y.p),C.o,x,C.l,C.p,0,x),x)},
@@ -189,8 +189,8 @@ A.t(w).h("S.S").a(u.a.get(w)).toString
 u=A.P(d,C.v,y.w).w
 x=A.Zh(v,v,C.I,v,v,v,v,v,v,v,C.m,v,v,v,v,new A.ed(A.f3(10),D.a7j),v,v,v,v,v)
 A.z(d,C.e,y.J).toString
-return A.a9(v,A.Zg(!1,A.aj(A.u("Sign In",v,"signIn",v,v),v,v,v,v,v,$.aQ().eJ(C.m,16),v,v,v),v,v,D.b5V,v,v,v,new B.bA9(w,d),v,x),C.k,v,v,v,v,48,v,G.tt,v,v,v,u.a.a)},
-aGA(d){return new B.abz(new A.a1(C.jo,A.ZU(A.aE(A.c([this.bKC(d),C.h0,this.bKy(d),D.aWy],y.p),C.o,C.l,C.p,0,C.u),new B.cWq(A.I(y.j,y.C),A.dV6())),null),D.b5k)},
+return A.a9(v,A.Zg(!1,A.aj(A.u("Sign In",v,"signIn",v,v),v,v,v,v,v,$.aQ().eJ(C.m,16),v,v,v),v,v,D.b5V,v,v,v,new B.bA9(w,d),v,x),C.k,v,v,v,v,48,v,G.tu,v,v,v,u.a.a)},
+aGA(d){return new B.abz(new A.a1(C.jo,A.ZU(A.aE(A.c([this.bKC(d),C.h0,this.bKy(d),D.aWy],y.p),C.o,C.l,C.p,0,C.u),new B.cWr(A.I(y.j,y.C),A.dV7())),null),D.b5k)},
 bKC(d){var x,w,v,u,t,s,r=this,q=null,p="email",o=$.aa()
 A.w(r)
 o=o.a
@@ -208,7 +208,7 @@ A.z(d,C.e,s).toString
 t.e=A.u(p,q,p,q,q)
 t=t.cu()
 A.w(r)
-return A.dzI(!1,D.aC0,w,C.b9,t,u,!0,!0,!0,new B.bAb(),D.b5Y,C.qD,new B.bAc(),x.a(o.get(r)).gaWO(),v,new B.bAd(r),C.ie,q,y.t)},
+return A.dzJ(!1,D.aC0,w,C.b9,t,u,!0,!0,!0,new B.bAb(),D.b5Y,C.qE,new B.bAc(),x.a(o.get(r)).gaWO(),v,new B.bAd(r),C.ie,q,y.t)},
 bKy(d){var x,w,v,u,t=this,s="password",r=$.aa()
 A.w(t)
 r=r.a
@@ -229,7 +229,7 @@ return A.lt(v,C.m,A.cW(A.fa(A.Aq(w.b9_(d),v,v,x,u,v,v),v,v,v,v,v,C.O),v,v),v,v,!
 b8i(d){var x,w,v=this,u=null,t=F.byN(u,u)
 A.z(d,C.e,y.J).toString
 x=y.p
-t=A.aE(A.c([new A.a1(D.zc,t,u),new A.a1(D.zc,A.aj(A.u("Sign In",u,"signIn",u,u),u,u,u,u,u,$.aQ().bf(C.n,32,C.pn),u,u,u),u),new A.ay(new B.cd7(v),u),new A.ay(new B.cd8(v,d),u),v.arV(d),D.XQ,D.EJ],x),C.o,C.l,C.p,0,C.u)
+t=A.aE(A.c([new A.a1(D.zc,t,u),new A.a1(D.zc,A.aj(A.u("Sign In",u,"signIn",u,u),u,u,u,u,u,$.aQ().bf(C.n,32,C.pn),u,u,u),u),new A.ax(new B.cd7(v),u),new A.ax(new B.cd8(v,d),u),v.arV(d),D.XQ,D.EJ],x),C.o,C.l,C.p,0,C.u)
 w=$.aa()
 A.w(v)
 A.t(v).h("S.S").a(w.a.get(v)).toString
@@ -262,11 +262,11 @@ q=y.p
 r=A.aE(A.c([x,new A.a1(D.ap2,u,o),new A.a1(C.hY,t,o),new A.a1(C.hY,s,o),new A.a1(C.hY,r,o),new A.a1(D.ap9,A.bg("assets/images/ic_login_graphic.svg",C.t,o,C.P,o,o,o,o),o)],q),C.E,C.aU,C.p,0,C.u)
 s=F.byN(o,o)
 A.z(d,C.e,n).toString
-s=A.a9(o,A.aE(A.c([new A.a1(D.apk,s,o),new A.a1(D.zc,A.aj(A.u("Sign In",o,"signIn",o,o),o,o,o,o,o,$.aQ().bf(C.n,32,C.pn),o,o,o),o),new A.ay(new B.cd9(p),o),new A.ay(new B.cda(p,d),o),p.arV(d),D.XQ,D.EJ],q),C.o,C.l,C.p,0,C.u),C.ak,o,o,D.aUK,o,684,o,o,D.apK,o,o,458)
+s=A.a9(o,A.aE(A.c([new A.a1(D.apk,s,o),new A.a1(D.zc,A.aj(A.u("Sign In",o,"signIn",o,o),o,o,o,o,o,$.aQ().bf(C.n,32,C.pn),o,o,o),o),new A.ax(new B.cd9(p),o),new A.ax(new B.cda(p,d),o),p.arV(d),D.XQ,D.EJ],q),C.o,C.l,C.p,0,C.u),C.ak,o,o,D.aUK,o,684,o,o,D.apK,o,o,458)
 A.w(p)
 v.a(w.get(p)).toString
 return new A.a1(D.apj,A.ap(A.c([new A.a1(D.aoW,r,o),A.aE(A.c([s,new A.a1(D.apa,A.bg("assets/images/power_by_linagora.svg",C.t,o,C.P,44,o,o,97),o)],q),C.o,C.l,C.p,0,C.u)],q),C.E,o,C.aU,C.p,0,o),o)},
-arV(d){return new A.ay(new B.cd6(this,d),null)}}
+arV(d){return new A.ax(new B.cd6(this,d),null)}}
 B.aZH.prototype={
 t(d){var x,w,v,u=null,t=y.J
 A.z(d,C.e,t).toString
@@ -326,33 +326,33 @@ s.Q=$.aQ().bf(C.dJ,13,C.D)
 s.y=C.vG
 s.w=D.XM
 s.x=C.nm
-v=A.c([A.dPV(!1,p,w,s.cu(),t,q,m,n,o,x,v)],y.p)
+v=A.c([A.dPW(!1,p,w,s.cu(),t,q,m,n,o,x,v)],y.p)
 r.a.toString
 p=r.f?"assets/images/ic_eye.svg":"assets/images/ic_eye_off.svg"
-v.push(A.bQ(C.r,q,20,q,q,q,p,q,18,q,C.oV,1/0,q,new B.daU(r),q,q,q))
+v.push(A.bQ(C.r,q,20,q,q,q,p,q,18,q,C.oV,1/0,q,new B.daV(r),q,q,q))
 return new A.cu(C.hJ,q,C.a0,C.F,v,q)},
 p(){this.a.toString
 this.aG()}}
 B.asp.prototype={
 t(d){var x=null
 A.z(d,C.e,y.J).toString
-return A.io(x,C.I,10,x,G.tt,1/0,x,1/0,0,x,this.c,C.ky,A.u("Try again",x,"tryAgain",x,x),C.af,$.aQ().eJ(C.m,16),x,A.P(d,C.v,y.w).w.a.a)}}
+return A.io(x,C.I,10,x,G.tu,1/0,x,1/0,0,x,this.c,C.ky,A.u("Try again",x,"tryAgain",x,x),C.af,$.aQ().eJ(C.m,16),x,A.P(d,C.v,y.w).w.a.a)}}
 var z=a.updateTypes(["a1s()","RV<il>(Y,il)"])
-B.d0x.prototype={
+B.d0y.prototype={
 $1(d){return d.ab()},
-$S:2171}
+$S:2172}
 B.bzL.prototype={
 $1(d){return d.gpE()},
-$S:2172}
+$S:2173}
 B.bzI.prototype={
 $1(d){return d.gpE().f.a},
-$S:2173}
+$S:2174}
 B.bzJ.prototype={
 $0(){return this.a},
-$S:2174}
-B.dnH.prototype={
+$S:2175}
+B.dnI.prototype={
 $1(d){return d.b===this.a},
-$S:592}
+$S:745}
 B.bA9.prototype={
 $0(){var x=this.a,w=$.aa()
 A.w(x)
@@ -362,7 +362,7 @@ B.bAd.prototype={
 $1(d){var x=this.a,w=$.aa()
 A.w(x)
 return A.t(x).h("S.S").a(w.a.get(x)).Ui(d)},
-$S:2175}
+$S:2176}
 B.bAb.prototype={
 $2(d,e){var x
 $.q()
@@ -372,7 +372,7 @@ return new B.RV(e,x.k(0,null,y.q),null,y.Y)},
 $S:z+1}
 B.bAc.prototype={
 $1(d){return C.h1},
-$S:393}
+$S:414}
 B.bAa.prototype={
 $1(d){var x=this.a,w=$.aa()
 A.w(x)
@@ -385,7 +385,7 @@ u=u.a
 x=A.t(v).h("S.S")
 w=x.a(u.get(v)).fC.gi(0)
 A.w(v)
-return B.dKL(w,x.a(u.get(v)).p2.gi(0))},
+return B.dKM(w,x.a(u.get(v)).p2.gi(0))},
 $S:z+0}
 B.cd8.prototype={
 $0(){var x,w,v=this.a,u=$.aa()
@@ -406,7 +406,7 @@ u=u.a
 x=A.t(v).h("S.S")
 w=x.a(u.get(v)).fC.gi(0)
 A.w(v)
-return B.dKL(w,x.a(u.get(v)).p2.gi(0))},
+return B.dKM(w,x.a(u.get(v)).p2.gi(0))},
 $S:z+0}
 B.cda.prototype={
 $0(){var x,w,v=this.a,u=$.aa()
@@ -440,7 +440,7 @@ w=$.aa()
 A.w(x)
 switch(A.t(x).h("S.S").a(w.a.get(x)).fC.gi(0)){case C.kY:return x.aGC(this.b)
 default:return C.x}}},
-$S:77}
+$S:75}
 B.ctV.prototype={
 $0(){return A.yF("https://github.com/linagora/tmail-flutter/blob/master/privacy.md")},
 $S:0}
@@ -452,7 +452,7 @@ else if(d instanceof A.r1&&d.a instanceof A.a2n)return A.u("No suitable browser 
 else if(u){u=this.a.e
 u=u==null?x:u.a6D(this.b,d.a,!0)
 return u==null?A.u(w,x,v,x,x):u}else return A.u(w,x,v,x,x)},
-$S:2176}
+$S:2177}
 B.cd1.prototype={
 $1(d){var x=null,w=this.a.c
 if(w===C.kY)return A.u("Enter your credentials to sign in",x,"loginInputCredentialMessage",x,x)
@@ -460,18 +460,18 @@ else if(w===C.Wf)return A.u("To login and access your message please enter your 
 else if(w===C.We)return A.u("Enter your password to sign in",x,"enterYourPasswordToSignIn",x,x)
 else if(w===C.Wd)return A.u("To login and access your message please connect to your JMAP server",x,"loginInputUrlMessage",x,x)
 else return""},
-$S:2177}
+$S:2178}
 B.cd2.prototype={
 $1(d){return C.dJ},
-$S:2178}
+$S:2179}
 B.cd3.prototype={
 $1(d){return C.n},
-$S:2179}
-B.daU.prototype={
+$S:2180}
+B.daV.prototype={
 $0(){var x=this.a
-x.V(new B.daT(x))},
+x.V(new B.daU(x))},
 $S:0}
-B.daT.prototype={
+B.daU.prototype={
 $0(){var x=this.a,w=x.f
 w===$&&A.d()
 return x.f=!w},
@@ -479,16 +479,16 @@ $S:0};(function inheritance(){var x=a.mixin,w=a.mixinHard,v=a.inheritMany,u=a.in
 v(A.a_,[B.bqD,B.RV,B.aZH,B.a1s,B.asp])
 u(B.b4D,B.bqD)
 u(B.bbw,A.vA)
-v(A.pF,[B.d0x,B.bzL,B.bzI,B.dnH,B.bAd,B.bAc,B.bAa,B.cd4,B.cd5,B.cd0,B.cd1,B.cd2,B.cd3])
+v(A.pF,[B.d0y,B.bzL,B.bzI,B.dnI,B.bAd,B.bAc,B.bAa,B.cd4,B.cd5,B.cd0,B.cd1,B.cd2,B.cd3])
 u(B.bzK,A.a3)
 u(B.bzH,A.UI)
 v(A.ai,[B.abz,B.ajF])
 v(A.af,[B.bbv,B.biH])
 u(B.aEe,B.bbv)
-v(A.wp,[B.bzJ,B.bA9,B.cd7,B.cd8,B.cd9,B.cda,B.cd6,B.ctV,B.daU,B.daT])
+v(A.wp,[B.bzJ,B.bA9,B.cd7,B.cd8,B.cd9,B.cda,B.cd6,B.ctV,B.daV,B.daU])
 u(B.a7t,A.cq)
 u(B.btj,A.agm)
-u(B.cWq,B.btj)
+u(B.cWr,B.btj)
 u(B.aEs,A.S)
 u(B.bAb,A.wq)
 u(B.Qe,B.aEs)
@@ -501,7 +501,7 @@ var y=(function rtii(){var x=A.ar
 return{J:x("pC"),e:x("BN"),j:x("oW"),q:x("Da"),s:x("O<f>"),p:x("O<j>"),P:x("ae<f,@>"),w:x("o8"),Y:x("RV<il>"),t:x("il"),N:x("f"),S:x("as4"),O:x("b6<f>"),C:x("auJ"),H:x("~")}})();(function constants(){var x=a.makeConstList
 D.EJ=new H.Wg(I.jq,null,null,null)
 D.baz=new B.bzH(0,"commit")
-D.a7j=new A.c3(C.I,0,C.S,-1)
+D.a7j=new A.c4(C.I,0,C.S,-1)
 D.a7Q=new A.at(200,720,720,1/0)
 D.aoe=new A.aD(25,15,25,15)
 D.aof=new A.aD(25,15,40,15)
@@ -516,15 +516,15 @@ D.zc=new A.aH(0,67,0,0)
 D.apK=new A.aH(31,0,31,0)
 D.aC0=A.c(x(["email"]),y.s)
 D.aEo=A.c(x(["password"]),y.s)
-D.a7d=new A.c3(C.fa,1,C.S,-1)
+D.a7d=new A.c4(C.fa,1,C.S,-1)
 D.XM=new A.fW(4,C.aD,D.a7d)
-D.a7a=new A.c3(C.I,2,C.S,-1)
+D.a7a=new A.c4(C.I,2,C.S,-1)
 D.aNX=new A.fW(4,C.aD,D.a7a)
 D.aRE=new B.aZH(null)
 D.XQ=new A.a1(C.hY,D.aRE,null)
 D.ahR=new A.C(0.23921568627450981,0.7372549019607844,0.7372549019607844,0.7372549019607844,C.j)
-D.a92=new A.c4(2,C.T,D.ahR,C.eY,40)
-D.awb=A.c(x([D.a92]),A.ar("O<c4>"))
+D.a92=new A.c5(2,C.T,D.ahR,C.eY,40)
+D.awb=A.c(x([D.a92]),A.ar("O<c5>"))
 D.aSG=new A.ed(C.k9,C.K)
 D.aUK=new A.jG(C.m,null,null,D.awb,D.aSG)
 D.b5W=new A.b6("login_loading_icon",y.O)
@@ -535,4 +535,4 @@ D.b5V=new A.b6("loginSubmitForm",y.O)
 D.b5X=new A.b6("login_password_input",y.O)
 D.b5Y=new A.b6("login_username_input",y.O)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"ghdKrNL2Rdl5wBwCMTTEf+ep4Lo=");
+a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"dTwhHKMGPRvrJcL33EUU03G2dUA=");
