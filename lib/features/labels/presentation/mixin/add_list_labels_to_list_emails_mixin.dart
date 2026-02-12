@@ -46,6 +46,7 @@ mixin AddListLabelsToListEmailsMixin on EmitStateMixin {
     required List<PresentationEmail> selectedEmails,
     required ImagePaths imagePaths,
     required VoidCallback onCallBackAction,
+    required OnCreateALabelAction onCreateALabelAction,
   }) async {
     await DialogRouter().openDialogModal(
       child: ChooseLabelModal(
@@ -62,6 +63,7 @@ mixin AddListLabelsToListEmailsMixin on EmitStateMixin {
           );
         },
         imagePaths: imagePaths,
+        onCreateALabelAction: onCreateALabelAction,
       ),
       dialogLabel: 'choose-label-modal',
     );

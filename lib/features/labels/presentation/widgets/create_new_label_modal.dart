@@ -27,6 +27,12 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef OnLabelActionCallback = Function(Label label);
 
+enum LabelPositiveButtonState {
+  enabled,
+  disabled,
+  progressing;
+}
+
 class CreateNewLabelModal extends StatefulWidget {
   final List<Label> labels;
   final LabelActionType actionType;
@@ -52,7 +58,8 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   final ValueNotifier<String?> _labelNameErrorTextNotifier =
       ValueNotifier(null);
   final ValueNotifier<Color?> _labelSelectedColorNotifier = ValueNotifier(null);
-  final ValueNotifier<bool> _createLabelStateNotifier = ValueNotifier(false);
+  final ValueNotifier<LabelPositiveButtonState> _createLabelStateNotifier =
+      ValueNotifier(LabelPositiveButtonState.disabled);
   final TextEditingController _nameInputController = TextEditingController();
   final FocusNode _nameInputFocusNode = FocusNode();
 
@@ -75,7 +82,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       if (selectedLabel != null) {
         _nameInputController.text = selectedLabel.safeDisplayName;
         _nameInputFocusNode.requestFocus();
-        _createLabelStateNotifier.value = true;
+        _createLabelStateNotifier.value = LabelPositiveButtonState.enabled;
         _labelSelectedColorNotifier.value = _selectedColor;
       }
     });
@@ -172,14 +179,17 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                           ),
                           ValueListenableBuilder(
                             valueListenable: _createLabelStateNotifier,
-                            builder: (_, value, __) {
+                            builder: (_, state, __) {
                               return ModalListActionButtonWidget(
                                 positiveLabel: widget.actionType.getModalPositiveAction(appLocalizations),
                                 negativeLabel: appLocalizations.cancel,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 25,
                                 ),
-                                isPositiveActionEnabled: value,
+                                isPositiveActionEnabled:
+                                  state == LabelPositiveButtonState.enabled,
+                                isProgressing:
+                                  state == LabelPositiveButtonState.progressing,
                                 onPositiveAction: _onCreateNewLabel,
                                 onNegativeAction: _onCloseModal,
                                 positiveKey: widget.actionType.getModalPositiveActionKey(),
@@ -303,7 +313,9 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   ) {
     final errorText = _verifyLabelName(appLocalizations, value);
     _labelNameErrorTextNotifier.value = errorText;
-    _createLabelStateNotifier.value = errorText == null;
+    _createLabelStateNotifier.value = errorText == null
+        ? LabelPositiveButtonState.enabled
+        : LabelPositiveButtonState.disabled;
   }
 
   String? _verifyLabelName(AppLocalizations appLocalizations, String value) {
@@ -333,6 +345,8 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   void _onCreateNewLabel() {
     _clearInputFocus();
 
+    _createLabelStateNotifier.value = LabelPositiveButtonState.progressing;
+
     final newLabel = Label(
       displayName: _nameInputController.text,
       color: _selectedColor != null
@@ -340,8 +354,6 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
           : null,
     );
     widget.onLabelActionCallback(newLabel);
-
-    popBack();
   }
 
   void _onCloseModal() {
