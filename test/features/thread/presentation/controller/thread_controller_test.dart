@@ -491,9 +491,21 @@ void main() {
 
     group('limitEmailFetched::test', () {
       late RxList<PresentationEmail> emailsRxList;
+      late ThreadController limitEmailFetchedController;
 
       setUp(() {
         emailsRxList = RxList<PresentationEmail>();
+
+        limitEmailFetchedController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockSearchEmailInteractor,
+          mockSearchMoreEmailInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+
         when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
         when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
         when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn());
@@ -505,8 +517,7 @@ void main() {
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
         when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
 
-        threadController.onInit();
-        emailsRxList.refresh();
+        limitEmailFetchedController.onInit();
       });
 
       List<PresentationEmail> generateEmails(int count, {String prefix = 'email'}) {
@@ -521,7 +532,7 @@ void main() {
         'WHEN no emails loaded',
       () {
         // Assert
-        expect(threadController.limitEmailFetched, ThreadConstants.defaultLimit);
+        expect(limitEmailFetchedController.limitEmailFetched, ThreadConstants.defaultLimit);
       });
 
       test(
@@ -532,7 +543,7 @@ void main() {
         emailsRxList.addAll(generateEmails(40));
 
         // Assert
-        expect(threadController.limitEmailFetched, UnsignedInt(40));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
       });
 
       test(
@@ -546,7 +557,7 @@ void main() {
         emailsRxList.removeRange(0, 20);
 
         // Assert - peak should still be 40, not 20
-        expect(threadController.limitEmailFetched, UnsignedInt(40));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
       });
 
       test(
@@ -555,13 +566,13 @@ void main() {
       () {
         // Arrange
         emailsRxList.addAll(generateEmails(40));
-        expect(threadController.limitEmailFetched, UnsignedInt(40));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
 
         // Act
-        threadController.resetToOriginalValue();
+        limitEmailFetchedController.resetToOriginalValue();
 
         // Assert
-        expect(threadController.limitEmailFetched, ThreadConstants.defaultLimit);
+        expect(limitEmailFetchedController.limitEmailFetched, ThreadConstants.defaultLimit);
       });
 
       test(
@@ -572,13 +583,13 @@ void main() {
         emailsRxList.addAll(generateEmails(20, prefix: 'init'));
         emailsRxList.addAll(generateEmails(20, prefix: 'more1'));
         emailsRxList.addAll(generateEmails(20, prefix: 'more2'));
-        expect(threadController.limitEmailFetched, UnsignedInt(60));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(60));
 
         // Act - delete 30 emails
         emailsRxList.removeRange(0, 30);
 
         // Assert - peak was 60
-        expect(threadController.limitEmailFetched, UnsignedInt(60));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(60));
       });
 
       test(
@@ -587,14 +598,14 @@ void main() {
       () {
         // Arrange - first mailbox has 40 emails
         emailsRxList.addAll(generateEmails(40));
-        expect(threadController.limitEmailFetched, UnsignedInt(40));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(40));
 
         // Act - switch mailbox (reset) then load fewer emails
-        threadController.resetToOriginalValue();
+        limitEmailFetchedController.resetToOriginalValue();
         emailsRxList.addAll(generateEmails(15, prefix: 'new'));
 
         // Assert - peak should be 15, not stale 40
-        expect(threadController.limitEmailFetched, UnsignedInt(15));
+        expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(15));
       });
     });
   });
