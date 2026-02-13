@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wra
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
@@ -757,6 +758,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
         final listLabels = dashboardController.labelController.labels;
 
+        final isLabelMailboxOpened =
+            dashboardController.selectedMailbox.value?.isLabelMailbox == true;
+
         List<Label>? emailLabels;
 
         if (isLabelAvailable) {
@@ -770,6 +774,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           isShowingEmailContent: isShowingEmailContent,
           isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
           isSearchEmailRunning: true,
+          isLabelMailboxOpened: isLabelMailboxOpened,
           isAINeedsActionEnabled: isAINeedsActionEnabled,
           labels: emailLabels,
           padding: SearchEmailViewStyle.getPaddingSearchResultList(
