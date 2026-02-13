@@ -1,6 +1,7 @@
-import 'dart:math';
+import 'dart:math' hide log;
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe.dart';
@@ -87,6 +88,11 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
       padding: AIScribeSizes.screenEdgePadding,
     );
 
+    final modalStartOffset = layout.left;
+    final modalBottomOffset =
+        _isMobileView ? null : layout.bottom + keyboardHeightWithSpacing;
+    final modalTopOffset = _isMobileView ? widget.buttonPosition!.dy : null;
+
     return PointerInterceptor(
       child: Stack(
         children: [
@@ -97,11 +103,12 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
             ),
           ),
           PositionedDirectional(
-            start: layout.left,
+            start: modalStartOffset,
             // layout.bottom is calculated by taking keyboard into account
-            // but positionned without taking keyboard into account
+            // but positioned without taking keyboard into account
             // that's why we need to add keyboard height here
-            bottom: layout.bottom + keyboardHeightWithSpacing,
+            top: modalTopOffset,
+            bottom: modalBottomOffset,
             child: _buildModalContainer(
               width: modalWidth,
               maxHeight: layout.availableHeight,
@@ -159,6 +166,9 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
 
   bool get _hasAnchor =>
       widget.buttonPosition != null && widget.buttonSize != null;
+
+  bool get _isMobileView =>
+      PlatformInfo.isMobile || PlatformInfo.isWebTouchDevice;
 
   void _handleClickOutside() {
     final shouldDismiss = suggestionState.value.fold(
