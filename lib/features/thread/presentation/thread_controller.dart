@@ -309,7 +309,7 @@ class ThreadController extends BaseController with EmailActionController {
         handleEmailActionType(
           EmailActionType.preview,
           newEmail,
-          mailboxContain: mailboxContain,
+          mailboxContain,
         );
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is StartSearchEmailAction
@@ -1223,9 +1223,7 @@ class ThreadController extends BaseController with EmailActionController {
   void handleEmailActionType(
     EmailActionType actionType,
     PresentationEmail selectedEmail,
-    {
-      required PresentationMailbox? mailboxContain,
-    }
+    PresentationMailbox? mailboxContain,
   ) {
     switch(actionType) {
       case EmailActionType.preview:
@@ -1367,7 +1365,7 @@ class ThreadController extends BaseController with EmailActionController {
     handleEmailActionType(
       EmailActionType.preview,
       presentationEmailWithRouter,
-      mailboxContain: mailboxContain
+      mailboxContain,
     );
   }
 
@@ -1386,7 +1384,7 @@ class ThreadController extends BaseController with EmailActionController {
       handleEmailActionType(
         EmailActionType.preview,
         presentationEmailWithRouter,
-        mailboxContain: mailboxContain
+        mailboxContain,
       );
     } else {
       searchController.enableSearch();
@@ -1402,7 +1400,7 @@ class ThreadController extends BaseController with EmailActionController {
       handleEmailActionType(
         EmailActionType.preview,
         presentationEmailWithRouter,
-        mailboxContain: mailboxContain
+        mailboxContain,
       );
     }
   }
@@ -1422,7 +1420,7 @@ class ThreadController extends BaseController with EmailActionController {
     handleEmailActionType(
       EmailActionType.preview,
       presentationEmailWithRouter,
-      mailboxContain: email.findMailboxContain(mailboxDashBoardController.mapMailboxById)
+      email.findMailboxContain(mailboxDashBoardController.mapMailboxById),
     );
   }
 

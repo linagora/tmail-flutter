@@ -1,87 +1,43 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:model/email/email_action_type.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/features/thread/presentation/mixin/email_more_action_context_menu_mixin.dart';
 
 extension HandleEmailMoreActionExtension on SearchEmailController {
   Future<void> handleEmailMoreAction(
     BuildContext context,
     PresentationEmail presentationEmail,
     RelativeRect? position,
-  ) {
-    final mailboxContain = presentationEmail.mailboxContain;
-    final isDrafts = mailboxContain?.isDrafts ?? false;
-    final isSpam = mailboxContain?.isSpam ?? false;
-    final isRead = presentationEmail.hasRead;
-    final isTrash = mailboxContain?.isTrash ?? false;
-    final canPermanentlyDelete = isDrafts || isSpam || isTrash;
-
-    final listEmailActions = [
-      isRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
-      EmailActionType.moveToMailbox,
-      canPermanentlyDelete ? EmailActionType.deletePermanently : EmailActionType.moveToTrash,
-      isSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,
-      if (!isDrafts) EmailActionType.editAsNewEmail,
-    ];
-
-    if (listEmailActions.isEmpty) return Future.value();
-
-    if (position == null) {
-      final contextMenuActions = listEmailActions
-          .map((action) => ContextItemEmailAction(
-                action,
-                AppLocalizations.of(context),
-                imagePaths,
-                category: action.category,
-              ))
-          .toList();
-
-      return openBottomSheetContextMenuAction(
+    bool isLabelAvailable,
+    List<Label>? listLabels,
+  ) async {
+    await openMoreActionContextMenu(
+      EmailContextMenuParams(
         context: context,
-        itemActions: contextMenuActions,
-        onContextMenuActionClick: (menuAction) {
-          popBack();
-          pressEmailAction(
-            context,
-            menuAction.action,
-            presentationEmail,
-            mailboxContain: mailboxContain,
+        email: presentationEmail,
+        imagePaths: imagePaths,
+        isLabelAvailable: isLabelAvailable,
+        labels: listLabels,
+        position: position,
+        openBottomSheetContextMenu: openBottomSheetContextMenuAction,
+        openPopupMenu: (context, position, popupMenuWidget) =>
+            popupMenuWidget.show(context, position),
+        onHandleEmailByActionType: pressEmailAction,
+        onSelectLabelAction: (label, isSelected) {
+          final emailId = presentationEmail.id;
+          if (emailId == null) {
+            logWarning('HandleEmailMoreActionExtension::onSelectLabelAction: Email id is null');
+            return;
+          }
+          mailboxDashBoardController.toggleLabelToEmail(
+            emailId,
+            label,
+            isSelected,
           );
         },
-        useGroupedActions: true,
-      );
-    } else {
-      final popupMenuItemEmailActions = listEmailActions.map((actionType) {
-        return PopupMenuItemEmailAction(
-          actionType,
-          AppLocalizations.of(context),
-          imagePaths,
-          category: actionType.category,
-        );
-      }).toList();
-
-      final popupMenuWidget = PopupMenuActionGroupWidget(
-        actions: popupMenuItemEmailActions,
-        onActionSelected: (action) {
-          pressEmailAction(
-            context,
-            action.action,
-            presentationEmail,
-            mailboxContain: mailboxContain,
-          );
-        },
-      );
-
-      return popupMenuWidget.show(
-        context,
-        position,
-      );
-    }
+      ),
+    );
   }
 }
