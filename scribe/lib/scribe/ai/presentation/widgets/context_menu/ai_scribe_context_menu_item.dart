@@ -6,7 +6,7 @@ class AiScribeContextMenuItem extends StatefulWidget {
   final AiScribeContextMenuAction menuAction;
   final ImagePaths imagePaths;
   final ValueChanged<AiScribeContextMenuAction> onSelectAction;
-  final OnHoverShowSubmenu? onHoverShowSubmenu;
+  final OnHoverShowSubmenu onSelectCategory;
   final VoidCallback? onHoverOtherItem;
 
   const AiScribeContextMenuItem({
@@ -14,7 +14,7 @@ class AiScribeContextMenuItem extends StatefulWidget {
     required this.menuAction,
     required this.imagePaths,
     required this.onSelectAction,
-    this.onHoverShowSubmenu,
+    required this.onSelectCategory,
     this.onHoverOtherItem,
   });
 
@@ -44,7 +44,7 @@ class _AiScribeContextMenuItemState extends State<AiScribeContextMenuItem> {
           _hoverController?.enter();
 
           if (_itemKey != null) {
-            widget.onHoverShowSubmenu?.call(_itemKey!);
+            widget.onSelectCategory.call(_itemKey!);
           } else {
             widget.onHoverOtherItem?.call();
           }
@@ -55,7 +55,15 @@ class _AiScribeContextMenuItemState extends State<AiScribeContextMenuItem> {
         child: AiScribeMenuItem(
           itemKey: _itemKey,
           menuAction: widget.menuAction,
-          onSelectAction: widget.onSelectAction,
+          onSelectAction: (menuAction) {
+            if (menuAction.submenuActions?.isNotEmpty == true) {
+              if (_itemKey != null) {
+                widget.onSelectCategory.call(_itemKey!);
+              }
+            } else {
+              widget.onSelectAction(menuAction);
+            }
+          },
           imagePaths: widget.imagePaths,
         )
       );

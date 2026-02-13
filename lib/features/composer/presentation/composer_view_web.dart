@@ -134,6 +134,9 @@ class ComposerView extends GetWidget<ComposerController> {
                       saveToDraftsAction: () => controller.handleClickSaveAsDraftsButton(context),
                       saveToTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                       deleteComposerAction: controller.handleClickDeleteComposer,
+                      onOpenAiAssistantModal: controller.isAIScribeAvailable
+                        ? controller.openAIAssistantModal
+                        : null,
                     )),
                     ConstrainedBox(
                       constraints: BoxConstraints(

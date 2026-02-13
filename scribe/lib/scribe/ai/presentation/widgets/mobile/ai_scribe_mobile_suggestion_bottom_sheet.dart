@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe.dart';
 
 class AiScribeMobileSuggestionBottomSheet extends StatefulWidget {
@@ -41,27 +42,29 @@ class _AiScribeMobileSuggestionBottomSheetState
   Widget build(BuildContext context) {
     final localizations = ScribeLocalizations.of(context);
 
-    return Container(
-      height: double.infinity,
-      decoration: const BoxDecoration(
-        color: AIScribeColors.background,
-      ),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: AIScribeSizes.suggestionHeaderPadding,
-              child: AiScribeSuggestionHeader(
-                title: aiAction.getLabel(localizations),
-                imagePaths: imagePaths,
+    return PointerInterceptor(
+      child: Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          color: AIScribeColors.background,
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: AIScribeSizes.suggestionHeaderPadding,
+                child: AiScribeSuggestionHeader(
+                  title: aiAction.getLabel(localizations),
+                  imagePaths: imagePaths,
+                ),
               ),
-            ),
-            Flexible(
-              child: buildStateContent(context),
-            ),
-          ],
+              Flexible(
+                child: buildStateContent(context),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
-import 'dart:math';
+import 'dart:math' hide log;
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe.dart';
@@ -34,6 +35,8 @@ class AiScribeSuggestionWidget extends StatefulWidget {
 
 class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
     with AiScribeSuggestionStateMixin {
+  static const double _defaultPadding = 32.0;
+
   @override
   AIAction get aiAction => widget.aiAction;
 
@@ -47,9 +50,24 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
   OnSelectAiScribeSuggestionAction get onSelectAction =>
       widget.onSelectAiScribeSuggestionAction;
 
+  bool get _hasAnchor =>
+      widget.buttonPosition != null && widget.buttonSize != null;
+
+  bool get _isMobileView =>
+      PlatformInfo.isMobile || PlatformInfo.isWebTouchDevice;
+
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.sizeOf(context);
+    // Cache MediaQuery data to avoid multiple lookups
+    final mediaQuery = MediaQuery.of(context);
+    final screenSize = mediaQuery.size;
+    final viewInsetsBottom = mediaQuery.viewInsets.bottom;
+
+    final keyboardHeightWithSpacing = viewInsetsBottom > 0
+        ? viewInsetsBottom + AIScribeSizes.keyboardSpacing
+        : 0.0;
+
+    final availableHeight = screenSize.height - keyboardHeightWithSpacing;
 
     final modalWidth = min(
       screenSize.width * AIScribeSizes.mobileFactor,
@@ -57,32 +75,97 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
     );
 
     final modalMaxHeight = min(
-      screenSize.height * AIScribeSizes.mobileFactor,
+      availableHeight * AIScribeSizes.mobileFactor,
       AIScribeSizes.suggestionModalMaxHeight,
     );
 
-    final hasContent = widget.content?.trim().isNotEmpty == true;
+    final dialogContent = _buildDialogContent(context);
 
-    final dialogContent = _buildDialogContent(context, hasContent);
-
+    // No Anchor - Center the modal
     if (!_hasAnchor) {
-      return Center(
-        child: _buildModalContainer(
-          width: modalWidth,
-          maxHeight: modalMaxHeight,
-          child: dialogContent,
-        ),
+      return _buildCenteredLayout(
+        modalWidth: modalWidth,
+        modalMaxHeight: modalMaxHeight,
+        child: dialogContent,
       );
     }
 
-    final layout = AnchoredModalLayoutCalculator.calculateAnchoredSuggestLayout(
+    // Anchored Modal
+    return _buildAnchoredLayout(
       screenSize: screenSize,
-      anchorPosition: widget.buttonPosition!,
-      anchorSize: widget.buttonSize!,
+      availableHeight: availableHeight,
+      keyboardHeightWithSpacing: keyboardHeightWithSpacing,
+      modalWidth: modalWidth,
+      modalMaxHeight: modalMaxHeight,
+      child: dialogContent,
+    );
+  }
+
+  Widget _buildCenteredLayout({
+    required double modalWidth,
+    required double modalMaxHeight,
+    required Widget child,
+  }) {
+    return Center(
+      child: _buildModalContainer(
+        width: modalWidth,
+        maxHeight: modalMaxHeight,
+        child: child,
+      ),
+    );
+  }
+
+  Widget _buildAnchoredLayout({
+    required Size screenSize,
+    required double availableHeight,
+    required double keyboardHeightWithSpacing,
+    required double modalWidth,
+    required double modalMaxHeight,
+    required Widget child,
+  }) {
+    // Safe unwrap because we checked _hasAnchor before calling this
+    final anchorPos = widget.buttonPosition!;
+    final anchorSize = widget.buttonSize!;
+
+    // Calculate layout using the helper
+    final layout = AnchoredModalLayoutCalculator.calculateAnchoredSuggestLayout(
+      screenSize: Size(screenSize.width, availableHeight),
+      anchorPosition: anchorPos,
+      anchorSize: anchorSize,
       menuSize: Size(modalWidth, modalMaxHeight),
       preferredPlacement: widget.preferredPlacement,
       padding: AIScribeSizes.screenEdgePadding,
     );
+
+    // Calculate specific dimensions based on platform logic
+    final double? top;
+    final double? bottom;
+    final double height;
+    final double width;
+
+    if (_isMobileView) {
+      // Mobile logic: Anchor usually relates to top position
+      top = anchorPos.dy;
+      bottom = null;
+
+      height = min(
+        layout.availableHeight,
+        screenSize.height - anchorPos.dy - anchorSize.height - _defaultPadding,
+      );
+
+      width = min(
+        modalWidth,
+        screenSize.width - anchorPos.dx - anchorSize.width - _defaultPadding,
+      );
+    } else {
+      // Desktop/Web logic: Uses calculated bottom offset
+      top = null;
+      // Layout bottom doesn't account for keyboard in calculation usually, so we add it back
+      bottom = layout.bottom + keyboardHeightWithSpacing;
+
+      height = layout.availableHeight;
+      width = modalWidth;
+    }
 
     return PointerInterceptor(
       child: Stack(
@@ -93,13 +176,15 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
               onTap: _handleClickOutside,
             ),
           ),
+          // The Modal
           PositionedDirectional(
             start: layout.left,
-            bottom: layout.bottom,
+            top: top,
+            bottom: bottom,
             child: _buildModalContainer(
-              width: modalWidth,
-              maxHeight: layout.availableHeight,
-              child: dialogContent,
+              width: width,
+              maxHeight: height,
+              child: child,
             ),
           ),
         ],
@@ -107,7 +192,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
     );
   }
 
-  Widget _buildDialogContent(BuildContext context, bool hasContent) {
+  Widget _buildDialogContent(BuildContext context) {
     final localizations = ScribeLocalizations.of(context);
 
     return Column(
@@ -141,8 +226,8 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
         padding: AIScribeSizes.suggestionContentPadding,
         decoration: BoxDecoration(
           color: AIScribeColors.background,
-          borderRadius: BorderRadius.circular(
-            AIScribeSizes.menuRadius,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(AIScribeSizes.menuRadius),
           ),
           boxShadow: AIScribeShadows.modal,
         ),
@@ -151,14 +236,13 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget>
     );
   }
 
-  bool get _hasAnchor =>
-      widget.buttonPosition != null && widget.buttonSize != null;
-
   void _handleClickOutside() {
-    final shouldDismiss = suggestionState.value.fold(
+    final state = suggestionState.value;
+    final shouldDismiss = state.fold(
       (failure) => failure is GenerateAITextFailure,
       (success) => success is GenerateAITextSuccess,
     );
+
     if (shouldDismiss) {
       Navigator.of(context).pop();
     }
