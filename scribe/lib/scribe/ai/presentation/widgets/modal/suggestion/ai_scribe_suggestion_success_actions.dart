@@ -1,33 +1,50 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe.dart';
 
 class AiScribeSuggestionSuccessActions extends StatelessWidget {
+  final ImagePaths imagePaths;
   final String suggestionText;
   final bool hasContent;
   final OnSelectAiScribeSuggestionAction onSelectAction;
+  final Future<void> Function([AIAction? aiAction, String? content]) onLoadSuggestion;
 
   const AiScribeSuggestionSuccessActions({
     super.key,
+    required this.imagePaths,
     required this.suggestionText,
     required this.onSelectAction,
+    required this.onLoadSuggestion,
     this.hasContent = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      spacing: 8,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (hasContent) _buildReplaceButton(context),
-        _buildInsertButton(context),
+        AiScribeImproveButton(
+          imagePaths: imagePaths,
+          suggestionText: suggestionText,
+          onLoadSuggestion: onLoadSuggestion,
+        ),
+        Flexible(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (hasContent) _buildReplaceButton(context),
+              _buildInsertButton(context),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-    Widget _buildReplaceButton(BuildContext context) {
+  Widget _buildReplaceButton(BuildContext context) {
     final localizations = ScribeLocalizations.of(context);
     return Flexible(
       child: Container(

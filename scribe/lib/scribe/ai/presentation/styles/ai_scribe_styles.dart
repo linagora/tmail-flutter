@@ -130,6 +130,7 @@ abstract final class AIScribeSizes {
   static const double scribeButtonRadius = 100;
   static const double aiAssistantIconRadius = 8;
   static const double contentCardRadius = 16;
+  static const double improveButtonBorderRadius = 4;
 
   // Width / height
   static const double menuItemHeight = 40;
@@ -162,6 +163,7 @@ abstract final class AIScribeSizes {
   static const double modalSpacing = 26;
   static const double modalWithoutContentSpacing = 12;
   static const double keyboardSpacing = 12;
+  static const double successSpacing = 12;
 
   // Elevation
   static const double dialogElevation = 8;
@@ -222,4 +224,7 @@ abstract final class AIScribeSizes {
 
   static const EdgeInsetsGeometry contentCardPadding =
       EdgeInsetsDirectional.all(16);
+
+  static const EdgeInsetsGeometry improveButtonPadding =
+      EdgeInsetsDirectional.only(start: 14, top: 6, end: 10, bottom: 6);
 }

@@ -40,6 +40,7 @@ export 'scribe/ai/presentation/widgets/items/ai_scribe_menu_submenu_icon.dart';
 export 'scribe/ai/presentation/widgets/items/ai_scribe_menu_text.dart';
 export 'scribe/ai/presentation/widgets/modal/ai_scribe_modal_widget.dart';
 export 'scribe/ai/presentation/widgets/modal/ai_scribe_suggestion_widget.dart';
+export 'scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_improve_button.dart';
 export 'scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_error.dart';
 export 'scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_header.dart';
 export 'scribe/ai/presentation/widgets/modal/suggestion/ai_scribe_suggestion_loading.dart';

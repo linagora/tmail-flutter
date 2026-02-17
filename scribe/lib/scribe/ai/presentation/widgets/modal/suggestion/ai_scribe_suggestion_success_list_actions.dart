@@ -12,7 +12,7 @@ class AiScribeSuggestionSuccessListActions extends StatelessWidget {
   final String suggestionText;
   final bool hasContent;
   final OnSelectAiScribeSuggestionAction onSelectAction;
-  final VoidCallback onLoadSuggestion;
+  final Future<void> Function([AIAction? aiAction, String? content]) onLoadSuggestion;
 
   const AiScribeSuggestionSuccessListActions({
     super.key,
@@ -26,10 +26,13 @@ class AiScribeSuggestionSuccessListActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: AIScribeSizes.successSpacing,
       children: [
         AiScribeSuggestionSuccessToolbar(suggestionText: suggestionText, onLoadSuggestion: onLoadSuggestion, imagePaths: imagePaths),
         AiScribeSuggestionSuccessActions(
           suggestionText: suggestionText,
+          onLoadSuggestion: onLoadSuggestion,
+          imagePaths: imagePaths,
           hasContent: hasContent,
           onSelectAction: onSelectAction,
         ),
