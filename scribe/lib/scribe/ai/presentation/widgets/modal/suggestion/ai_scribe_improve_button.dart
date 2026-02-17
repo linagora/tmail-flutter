@@ -51,6 +51,7 @@ class _AiScribeImproveButtonState extends State<AiScribeImproveButton> {
           content: widget.suggestionText,
           buttonPosition: position,
           buttonSize: size,
+          showCustomPromptBar: false,
         );
 
         if (!mounted) {

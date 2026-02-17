@@ -52,12 +52,14 @@ class AiScribeModalManager {
     Size? buttonSize,
     ModalPlacement? preferredPlacement,
     ModalCrossAxisAlignment crossAxisAlignment = ModalCrossAxisAlignment.center,
+    bool showCustomPromptBar = true,
   }) async {
     if (isScribeMobile) {
       return await showMobileAIScribeMenuModal(
         imagePaths: imagePaths,
         content: content,
         availableCategories: availableCategories,
+        showCustomPromptBar: showCustomPromptBar,
       );
     } else {
       return await showDesktopAIScribeMenuModal(
@@ -68,6 +70,7 @@ class AiScribeModalManager {
         buttonSize: buttonSize,
         preferredPlacement: preferredPlacement,
         crossAxisAlignment: crossAxisAlignment,
+        showCustomPromptBar: showCustomPromptBar,
       );
     }
   }
@@ -112,6 +115,7 @@ class AiScribeModalManager {
     Size? buttonSize,
     ModalPlacement? preferredPlacement,
     ModalCrossAxisAlignment crossAxisAlignment = ModalCrossAxisAlignment.center,
+    bool showCustomPromptBar = true,
   }) async {
       final ContextSubmenuController submenuController = ContextSubmenuController();
 
@@ -125,6 +129,7 @@ class AiScribeModalManager {
           preferredPlacement: preferredPlacement,
           crossAxisAlignment: crossAxisAlignment,
           submenuController: submenuController,
+          showCustomPromptBar: showCustomPromptBar,
         ),
         barrierColor: AIScribeColors.dialogBarrier,
       ).whenComplete(submenuController.dispose);
@@ -134,6 +139,7 @@ class AiScribeModalManager {
     required ImagePaths imagePaths,
     required List<AIScribeMenuCategory> availableCategories,
     String? content,
+    bool showCustomPromptBar = true,
   }) async {
     final context = Get.context;
 
@@ -147,6 +153,7 @@ class AiScribeModalManager {
         imagePaths: imagePaths,
         availableCategories: availableCategories,
         content: content,
+        showCustomPromptBar: showCustomPromptBar,
       ),
     );
   }
