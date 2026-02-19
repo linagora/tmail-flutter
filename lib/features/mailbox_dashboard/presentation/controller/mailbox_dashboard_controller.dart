@@ -106,6 +106,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_scribe_prompt_url_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_stored_email_sort_order_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_text_formatting_menu_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
@@ -124,6 +125,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_ai_needs_action_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_cached_ai_scribe_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/ai_scribe/setup_scribe_prompt_url_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/cleanup_recent_search_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_type_for_email_selection.dart';
@@ -542,6 +544,8 @@ class MailboxDashBoardController extends ReloadableController
       updateTextFormattingMenuState(success.isDisplayed);
     } else if (success is GetAIScribeConfigSuccess) {
       handleLoadAIScribeConfigSuccess(success.aiScribeConfig);
+    } else if (success is GetScribePromptUrlSuccess) {
+      handleGetScribePromptUrlSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -592,6 +596,8 @@ class MailboxDashBoardController extends ReloadableController
       updateTextFormattingMenuState(false);
     } else if (failure is GetAIScribeConfigFailure) {
       handleLoadAIScribeConfigFailure();
+    } else if (failure is GetScribePromptUrlFailure) {
+      handleGetScribePromptUrlFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -922,6 +928,8 @@ class MailboxDashBoardController extends ReloadableController
     } else {
       injectWebSocket(session: session, accountId: currentAccountId);
     }
+
+    loadScribePromptUrl();
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
