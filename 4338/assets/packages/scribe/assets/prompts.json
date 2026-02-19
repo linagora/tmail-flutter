@@ -72,7 +72,7 @@
         },
         {
           "role": "user",
-          "content": "INSTRUCTION:\n{{ task }}\n\nTEXT:\n{{input}}"
+          "content": "INSTRUCTION:\n{{task}}\n\nTEXT:\n{{input}}"
         }
       ]
     },
