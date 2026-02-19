@@ -58,4 +58,23 @@ class LinagoraEcosystemApi {
       }
     }
   }
+
+  Future<String?> getScribePromptUrl(String baseUrl) async {
+    LinagoraEcosystem? linagoraEcosystem;
+    
+    try {
+      linagoraEcosystem = await getLinagoraEcosystem(baseUrl);
+    } catch (exception) {
+      if (exception is NotFoundLinagoraEcosystem) {
+        return null;
+      }
+      rethrow;
+    }
+
+    final scribePromptProperty =
+        linagoraEcosystem.properties?[LinagoraEcosystemIdentifier.scribePromptUrl] as ApiUrlLinagoraEcosystem?;
+    log('LinagoraEcosystemApi::getScribePromptUrl: scribePromptProperty = $scribePromptProperty');
+
+    return scribePromptProperty?.value;
+  }
 }
