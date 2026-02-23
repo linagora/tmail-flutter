@@ -253,6 +253,10 @@ class MailboxController extends BaseMailboxController
         dashboardController: mailboxDashBoardController,
         toastManager: toastManager,
       );
+    } else if (failure is CreateDefaultMailboxFailure) {
+      autoCreateVirtualFolder(
+        mailboxDashBoardController.isAINeedsActionEnabled,
+      );
     } else {
       super.handleFailureViewState(failure);
     }
@@ -273,9 +277,6 @@ class MailboxController extends BaseMailboxController
       },
       (success) {
         if (success is GetAllMailboxSuccess) {
-          autoCreateVirtualFolder(
-            mailboxDashBoardController.isAINeedsActionEnabled,
-          );
           mailboxDashBoardController.updateRefreshAllMailboxState(Right(RefreshAllMailboxSuccess()));
           _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
           _handleDataFromNavigationRouter();
@@ -283,10 +284,6 @@ class MailboxController extends BaseMailboxController
           if (PlatformInfo.isIOS) {
             _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
           }
-        } else if (success is CreateDefaultMailboxAllSuccess) {
-          autoCreateVirtualFolder(
-            mailboxDashBoardController.isAINeedsActionEnabled,
-          );
         }
       });
   }
@@ -705,22 +702,32 @@ class MailboxController extends BaseMailboxController
       .whereNot((role) => mapDefaultMailboxRole.containsKey(role) || findNodeByNameOnFirstLevel(role.value) != null)
       .toList();
 
+    if (listRoleMissing.isEmpty || accountId == null || session == null) {
+      autoCreateVirtualFolder(
+        mailboxDashBoardController.isAINeedsActionEnabled,
+      );
+      return;
+    }
+
     final mapRoles = {
       for (var role in listRoleMissing)
         Id(uuid.v1()) : role
     };
     log('MailboxController::_handleCreateDefaultFolderIfMissing():mapRoles: $mapRoles');
-    if (mapRoles.isNotEmpty && accountId != null && session != null) {
-      consumeState(_createDefaultMailboxInteractor.execute(
-        session!,
-        accountId!,
-        mapRoles,
-      ));
-    }
+    consumeState(_createDefaultMailboxInteractor.execute(
+      session!,
+      accountId!,
+      mapRoles,
+    ));
   }
 
   Future<void> _handleCreateDefaultFolderIfMissingSuccess(CreateDefaultMailboxAllSuccess success) async {
-    if (success.listMailbox.isEmpty) return;
+    if (success.listMailbox.isEmpty) {
+      autoCreateVirtualFolder(
+        mailboxDashBoardController.isAINeedsActionEnabled,
+      );
+      return;
+    }
 
     Set<Role?> existingRoles = {};
     Set<MailboxName> existingNamesWithoutParent = {};
@@ -737,6 +744,9 @@ class MailboxController extends BaseMailboxController
     if (currentContext != null) {
       syncAllMailboxWithDisplayName(currentContext!);
     }
+    autoCreateVirtualFolder(
+      mailboxDashBoardController.isAINeedsActionEnabled,
+    );
     _setMapMailbox();
     _setOutboxMailbox();
   }
