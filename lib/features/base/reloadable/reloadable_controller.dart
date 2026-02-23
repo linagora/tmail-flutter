@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -23,6 +24,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cach
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 abstract class ReloadableController extends BaseController {
   final GetSessionInteractor getSessionInteractor = Get.find<GetSessionInteractor>();
@@ -127,9 +129,14 @@ abstract class ReloadableController extends BaseController {
       authorizationInterceptors.setTokenAndAuthorityOidc(newToken: tokenOIDC, newConfig: oidcConfiguration);
       authorizationIsolateInterceptors.setTokenAndAuthorityOidc(newToken: tokenOIDC, newConfig: oidcConfiguration);
 
-      getOidcUserInfo(oidcConfiguration);
+      if (_shouldCallUserInfo) {
+        getOidcUserInfo(oidcConfiguration);
+      }
     }
   }
+
+  bool get _shouldCallUserInfo =>
+      (PlatformInfo.isWeb && AppConfig.isSaasPlatForm) || PlatformInfo.isMobile;
 
   void getSessionAction() {
     consumeState(getSessionInteractor.execute());
