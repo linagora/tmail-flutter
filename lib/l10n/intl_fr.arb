@@ -4096,7 +4096,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "closeAnyway": "messages",
+  "closeAnyway": "Ignorer et fermer",
   "@closeAnyway": {
     "type": "text",
     "placeholders_order": [],
