@@ -54,9 +54,9 @@ class Prompt {
   List<AIMessage> buildPrompt(String inputText, {String? task}) {
     final messages = <AIMessage>[];
     for (final message in this.messages) {
-      if (message.role == 'system') {
+      if (message.role == AIRole.system) {
         messages.add(AIMessage.ofSystem(message.content));
-      } else if (message.role == 'user') {
+      } else if (message.role == AIRole.user) {
         final userContent = _replacePlaceholders(message.content, inputText, task);
         messages.add(AIMessage.ofUser(userContent));
       }
