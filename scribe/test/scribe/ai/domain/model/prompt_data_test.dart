@@ -85,17 +85,17 @@ void main() {
       // Assert
       expect(prompt.name, 'test-prompt');
       expect(prompt.messages.length, 2);
-      expect(prompt.messages.first.role, 'system');
+      expect(prompt.messages.first.role, AIRole.system);
       expect(prompt.messages.first.content, 'System message');
-      expect(prompt.messages.last.role, 'user');
+      expect(prompt.messages.last.role, AIRole.user);
       expect(prompt.messages.last.content, 'User message with {{input}} placeholder');
     });
 
     test('buildPrompt should replace input placeholder correctly', () {
       // Arrange
       final messages = [
-        const AIMessage(role: 'system', content: 'System message'),
-        const AIMessage(role: 'user', content: 'User message with {{input}} placeholder')
+        const AIMessage(role: AIRole.system, content: 'System message'),
+        const AIMessage(role: AIRole.user, content: 'User message with {{input}} placeholder')
       ];
       final prompt = Prompt(name: 'test-prompt', messages: messages);
 
@@ -104,17 +104,17 @@ void main() {
 
       // Assert
       expect(result.length, 2);
-      expect(result.first.role, 'system');
+      expect(result.first.role, AIRole.system);
       expect(result.first.content, 'System message');
-      expect(result.last.role, 'user');
+      expect(result.last.role, AIRole.user);
       expect(result.last.content, 'User message with test input value placeholder');
     });
 
     test('buildPrompt should replace task placeholder when provided', () {
       // Arrange
       final messages = [
-        const AIMessage(role: 'system', content: 'System message'),
-        const AIMessage(role: 'user', content: 'Task: {{task}}, Input: {{input}}')
+        const AIMessage(role: AIRole.system, content: 'System message'),
+        const AIMessage(role: AIRole.user, content: 'Task: {{task}}, Input: {{input}}')
       ];
       final prompt = Prompt(name: 'test-prompt', messages: messages);
 
@@ -123,17 +123,17 @@ void main() {
 
       // Assert
       expect(result.length, 2);
-      expect(result.first.role, 'system');
+      expect(result.first.role, AIRole.system);
       expect(result.first.content, 'System message');
-      expect(result.last.role, 'user');
+      expect(result.last.role, AIRole.user);
       expect(result.last.content, 'Task: test task value, Input: test input value');
     });
 
     test('buildPrompt should not replace task placeholder when not provided', () {
       // Arrange
       final messages = [
-        const AIMessage(role: 'system', content: 'System message'),
-        const AIMessage(role: 'user', content: 'Task: {{task}}, Input: {{input}}')
+        const AIMessage(role: AIRole.system, content: 'System message'),
+        const AIMessage(role: AIRole.user, content: 'Task: {{task}}, Input: {{input}}')
       ];
       final prompt = Prompt(name: 'test-prompt', messages: messages);
 
@@ -142,17 +142,17 @@ void main() {
 
       // Assert
       expect(result.length, 2);
-      expect(result.first.role, 'system');
+      expect(result.first.role, AIRole.system);
       expect(result.first.content, 'System message');
-      expect(result.last.role, 'user');
+      expect(result.last.role, AIRole.user);
       expect(result.last.content, 'Task: {{task}}, Input: test input value');
     });
 
     test('buildPrompt should handle messages without placeholders', () {
       // Arrange
       final messages = [
-        const AIMessage(role: 'system', content: 'System message'),
-        const AIMessage(role: 'user', content: 'User message without placeholders')
+        const AIMessage(role: AIRole.system, content: 'System message'),
+        const AIMessage(role: AIRole.user, content: 'User message without placeholders')
       ];
       final prompt = Prompt(name: 'test-prompt', messages: messages);
 
