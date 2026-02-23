@@ -611,7 +611,7 @@ class MailboxController extends BaseMailboxController
         .mailboxList
         .listSubscribedMailboxesAndDefaultMailboxes;
 
-    await refreshTree(listMailboxDisplayed);
+    await refreshTree(listMailboxDisplayed.withoutVirtualMailbox);
 
     if (currentContext != null) {
       syncAllMailboxWithDisplayName(currentContext!);
@@ -740,7 +740,7 @@ class MailboxController extends BaseMailboxController
       allMailboxes.add(mailbox.toPresentationMailbox());
     }
 
-    await buildTree(allMailboxes);
+    await buildTree(allMailboxes.withoutVirtualMailbox);
     if (currentContext != null) {
       syncAllMailboxWithDisplayName(currentContext!);
     }
@@ -1330,7 +1330,7 @@ class MailboxController extends BaseMailboxController
     currentMailboxState = success.currentMailboxState;
     log('MailboxController::_handleGetAllMailboxSuccess:currentMailboxState: $currentMailboxState');
     final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
-    await buildTree(listMailboxDisplayed);
+    await buildTree(listMailboxDisplayed.withoutVirtualMailbox);
     if (currentContext != null) {
       syncAllMailboxWithDisplayName(currentContext!);
     }
