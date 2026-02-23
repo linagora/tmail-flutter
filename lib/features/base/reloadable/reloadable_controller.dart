@@ -136,7 +136,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   bool get _shouldCallUserInfo =>
-      (PlatformInfo.isWeb && AppConfig.isSaasPlatForm) || PlatformInfo.isMobile;
+      !PlatformInfo.isWeb || AppConfig.isSaasPlatForm;
 
   void getSessionAction() {
     consumeState(getSessionInteractor.execute());
