@@ -27,8 +27,8 @@ void main() {
 
       // Assert
       expect(messages.length, 2);
-      expect(messages.first.role, 'system');
-      expect(messages.last.role, 'user');
+      expect(messages.first.role, AIRole.system);
+      expect(messages.last.role, AIRole.user);
       expect(messages.last.content, contains('Hello, how are you?'));
     });
 
@@ -41,8 +41,8 @@ void main() {
 
       // Assert
       expect(messages.length, 2);
-      expect(messages.first.role, 'system');
-      expect(messages.last.role, 'user');
+      expect(messages.first.role, AIRole.system);
+      expect(messages.last.role, AIRole.user);
       expect(messages.last.content, contains('Hello, how are you?'));
       expect(messages.last.content, contains('Make it more casual'));
     });
@@ -56,8 +56,8 @@ void main() {
           Prompt(
             name: 'test-prompt',
             messages: [
-              const AIMessage(role: 'system', content: 'System message'),
-              const AIMessage(role: 'user', content: 'User message with {{input}}')
+              const AIMessage(role: AIRole.system, content: 'System message'),
+              const AIMessage(role: AIRole.user, content: 'User message with {{input}}')
             ]
           )
         ]
@@ -81,8 +81,8 @@ void main() {
           Prompt(
             name: 'test-prompt',
             messages: [
-              const AIMessage(role: 'system', content: 'System message'),
-              const AIMessage(role: 'user', content: 'User message')
+              const AIMessage(role: AIRole.system, content: 'System message'),
+              const AIMessage(role: AIRole.user, content: 'User message')
             ]
           )
         ]
