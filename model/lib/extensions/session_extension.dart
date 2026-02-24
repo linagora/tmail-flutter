@@ -30,7 +30,7 @@ extension SessionExtension on Session {
     } else if (downloadUrl.hasOrigin) {
       downloadUrlValid = downloadUrl;
     } else {
-      throw UnknownUriException();
+      throw const UnknownUriException();
     }
 
     var baseUrl = '${downloadUrlValid.origin}${downloadUrlValid.path}?${downloadUrlValid.query}';
@@ -56,7 +56,7 @@ extension SessionExtension on Session {
     } else if (uploadUrl.hasOrigin) {
       uploadUrlValid = uploadUrl;
     } else {
-      throw UnknownUriException();
+      throw const UnknownUriException();
     }
 
     final baseUrl = '${uploadUrlValid.origin}${uploadUrlValid.path}';
@@ -109,7 +109,7 @@ extension SessionExtension on Session {
     return username.value.isEmail ? username.value
         : _getOwnEmailAddressFromPersonalAccount()
         ?? _getOwnEmailAddressFromPrincipalsCapability()
-        ?? (throw UnknownAddressException());
+        ?? (throw const UnknownAddressException());
   }
 
   String? _getOwnEmailAddressFromPersonalAccount() {
@@ -168,7 +168,7 @@ extension SessionExtension on Session {
         return listPersonalAccount.first;
       }
     }
-    throw NotFoundPersonalAccountException();
+    throw const NotFoundPersonalAccountException();
   }
 
   AccountId get accountId => personalAccount.accountId;

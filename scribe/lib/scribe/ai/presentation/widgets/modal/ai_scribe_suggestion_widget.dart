@@ -50,7 +50,7 @@ class _AiScribeSuggestionWidgetState extends State<AiScribeSuggestionWidget> {
     if (!Get.isRegistered<GenerateAITextInteractor>()) {
       _state.value = dartz.Left(
         GenerateAITextFailure(
-          GenerateAITextInteractorIsNotRegisteredException(),
+          const GenerateAITextInteractorIsNotRegisteredException(),
         ),
       );
       return;

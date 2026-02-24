@@ -168,7 +168,7 @@ abstract class BaseController extends GetxController
     } else if (PlatformInfo.isMobile) {
       handleUrgentExceptionOnMobile(failure: failure, exception: exception);
     } else {
-      throw NoSupportPlatformException();
+      throw const NoSupportPlatformException();
     }
   }
 

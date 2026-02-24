@@ -1,9 +1,10 @@
+import 'package:core/domain/exceptions/app_base_exception.dart';
 
-class InvalidMailFormatException implements Exception {
+class InvalidMailFormatException extends AppBaseException {
   final String mail;
 
-  InvalidMailFormatException(this.mail);
+  InvalidMailFormatException(this.mail) : super('Email: $mail');
 
   @override
-  String toString() => 'InvalidMailFormatException: $mail';
+  String get exceptionName => 'InvalidMailFormatException';
 }

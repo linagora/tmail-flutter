@@ -39,7 +39,7 @@ class FileUtils {
 
       return fileDirectory;
     } else {
-      throw DeviceNotSupportedException();
+      throw const DeviceNotSupportedException();
     }
   }
 
