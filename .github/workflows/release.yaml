@@ -119,9 +119,9 @@ jobs:
           
           if [ -f "$MAPPING_FILE" ]; then
             echo "Found mapping.txt, uploading ProGuard mapping..."
-            sentry-cli releases files "$SENTRY_RELEASE" upload-proguard "$MAPPING_FILE" \
+            sentry-cli upload-proguard "$MAPPING_FILE" \
               --org "$SENTRY_ORG" \
-              --project "$SENTRY_PROJECT" \
+              --project "$SENTRY_PROJECT"
           else
             echo "::warning::Could not find mapping.txt at $MAPPING_FILE. Ensure your build script does not clean the build folder after deployment."
           fi
