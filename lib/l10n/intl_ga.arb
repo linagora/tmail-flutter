@@ -1771,7 +1771,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_forward_email": "FWD:",
+  "prefix_forward_email": "Ar Aghaidh:",
   "@prefix_forward_email": {
     "type": "text",
     "placeholders_order": [],
@@ -3163,7 +3163,7 @@
       "emailAddress": {}
     }
   },
-  "createTwakeIdFailed": "Theip ar Cruthaigh Twake ID. Seiceáil arís le do thoil.",
+  "createTwakeIdFailed": "Theip ar chruthú Twake Aitheantais. Seiceáil arís le do thoil.",
   "@createTwakeIdFailed": {
     "type": "text",
     "placeholders_order": [],
@@ -5235,6 +5235,18 @@
   },
   "manageYourTwakeAccount": "Bainistigh do chuntas Twake",
   "@manageYourTwakeAccount": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToAddFavoritesEmails": "Tosaigh ag cur ríomhphoist is fearr leat leis",
+  "@startToAddFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyFavoritesEmails": "Níl aon ríomhphoist is fearr leat.",
+  "@youDoNotHaveAnyFavoritesEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
