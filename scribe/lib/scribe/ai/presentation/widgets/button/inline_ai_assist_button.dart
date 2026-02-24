@@ -43,11 +43,9 @@ class InlineAiAssistButton extends StatelessWidget {
       size = renderBox.size;
     }
 
-    await onTapFallback?.call();
-
-    if (!context.mounted) return;
-
     final isScribeMobile = AiScribeMobileUtils.isScribeInMobileMode(context);
+
+    await onTapFallback?.call();
 
     await AiScribeModalManager.showAIScribeModal(
       isScribeMobile: isScribeMobile,
