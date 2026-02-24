@@ -297,7 +297,7 @@ void main() {
           MailboxId(Id("team_root")),
           parentId: null,
           name: MailboxName('Team Folder'),
-          namespace: Namespace('Personal'),
+          namespace: Namespace('Team'),
         ),
         virtualStarred,
         virtualActionRequired,
