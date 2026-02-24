@@ -1,14 +1,19 @@
+import 'package:core/domain/exceptions/app_base_exception.dart';
 import 'package:equatable/equatable.dart';
 
-class PlatformException with EquatableMixin implements Exception {
-  final String message;
-
-  PlatformException(this.message);
+class PlatformException extends AppBaseException with EquatableMixin {
+  const PlatformException(super.message);
 
   @override
-  List<Object> get props => [message];
+  String get exceptionName => 'PlatformException';
+
+  @override
+  List<Object?> get props => [message, exceptionName];
 }
 
 class NoSupportPlatformException extends PlatformException {
-  NoSupportPlatformException() : super('This platform is not supported');
+  const NoSupportPlatformException() : super('This platform is not supported');
+
+  @override
+  String get exceptionName => 'NoSupportPlatformException';
 }

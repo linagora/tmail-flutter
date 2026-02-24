@@ -1,28 +1,44 @@
+import 'package:core/domain/exceptions/app_base_exception.dart';
 import 'package:equatable/equatable.dart';
 
-class NotFoundInWebSessionException with EquatableMixin implements Exception {
-  final String? errorMessage;
-
-  NotFoundInWebSessionException({this.errorMessage});
-
-  @override
-  List<Object> get props => [];
-}
-
-class NotMatchInWebSessionException with EquatableMixin implements Exception {
-  const NotMatchInWebSessionException();
+class NotFoundInWebSessionException extends AppBaseException
+    with EquatableMixin {
+  const NotFoundInWebSessionException({String? errorMessage})
+      : super(errorMessage);
 
   @override
-  List<Object> get props => [];
-}
-
-class SaveToWebSessionFailException with EquatableMixin implements Exception {
-  final String? errorMessage;
-
-  SaveToWebSessionFailException({this.errorMessage});
+  String get exceptionName => 'NotFoundInWebSessionException';
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [message, exceptionName];
 }
 
-class CannotOpenNewWindowException implements Exception {}
+class NotMatchInWebSessionException extends AppBaseException
+    with EquatableMixin {
+  const NotMatchInWebSessionException() : super('Session data does not match');
+
+  @override
+  String get exceptionName => 'NotMatchInWebSessionException';
+
+  @override
+  List<Object?> get props => [message, exceptionName];
+}
+
+class SaveToWebSessionFailException extends AppBaseException
+    with EquatableMixin {
+  const SaveToWebSessionFailException({String? errorMessage})
+      : super(errorMessage);
+
+  @override
+  String get exceptionName => 'SaveToWebSessionFailException';
+
+  @override
+  List<Object?> get props => [message, exceptionName];
+}
+
+class CannotOpenNewWindowException extends AppBaseException {
+  const CannotOpenNewWindowException([super.message]);
+
+  @override
+  String get exceptionName => 'CannotOpenNewWindowException';
+}

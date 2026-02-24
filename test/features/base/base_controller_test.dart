@@ -54,7 +54,10 @@ class MockBaseController extends BaseController {
   }
 }
 
-class SomeOtherException extends RemoteException {}
+class SomeOtherException extends RemoteException {
+  @override
+  String get exceptionName => 'SomeOtherException';
+}
 
 @GenerateNiceMocks([
   MockSpec<CachingManager>(),
