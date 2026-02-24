@@ -536,7 +536,7 @@ extension PreviewAttachmentDownloadControllerExtension on DownloadController {
 
       if (!isOpen) {
         toastManager.showMessageFailure(
-          PreviewEmailFromEmlFileFailure(CannotOpenNewWindowException()),
+          PreviewEmailFromEmlFileFailure(const CannotOpenNewWindowException()),
         );
       }
     } else if (PlatformInfo.isMobile) {

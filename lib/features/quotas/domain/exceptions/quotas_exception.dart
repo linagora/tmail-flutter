@@ -1,3 +1,15 @@
-class NotFoundQuotasException implements Exception {}
+import 'package:core/domain/exceptions/app_base_exception.dart';
 
-class QuotasNotSupportedException implements Exception {}
+class NotFoundQuotasException extends AppBaseException {
+  NotFoundQuotasException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundQuotasException';
+}
+
+class QuotasNotSupportedException extends AppBaseException {
+  QuotasNotSupportedException([super.message]);
+
+  @override
+  String get exceptionName => 'QuotasNotSupportedException';
+}

@@ -130,7 +130,7 @@ class LogTracking {
 
       return fileDirectory;
     } else {
-      throw DeviceNotSupportedException();
+      throw const DeviceNotSupportedException();
     }
   }
 

@@ -25,6 +25,7 @@ export 'domain/exceptions/download_file_exception.dart';
 export 'data/extensions/options_extensions.dart';
 export 'domain/exceptions/web_session_exception.dart';
 export 'domain/exceptions/platform_exception.dart';
+export 'domain/exceptions/app_base_exception.dart';
 
 // Utils
 export 'presentation/utils/theme_utils.dart';

@@ -1,15 +1,34 @@
-
 import 'package:flutter/services.dart';
+import 'package:core/domain/exceptions/app_base_exception.dart';
 
-class NotFoundDataResourceRecordException implements Exception {}
+class NotFoundDataResourceRecordException extends AppBaseException {
+  NotFoundDataResourceRecordException([super.message]);
 
-class NotFoundUrlException implements Exception {}
+  @override
+  String get exceptionName => 'NotFoundDataResourceRecordException';
+}
 
-class InvalidOIDCResponseException implements Exception {}
+class NotFoundUrlException extends AppBaseException {
+  NotFoundUrlException([super.message]);
 
-class NoSuitableBrowserForOIDCException implements Exception {
+  @override
+  String get exceptionName => 'NotFoundUrlException';
+}
 
+class InvalidOIDCResponseException extends AppBaseException {
+  InvalidOIDCResponseException([super.message]);
+
+  @override
+  String get exceptionName => 'InvalidOIDCResponseException';
+}
+
+class NoSuitableBrowserForOIDCException extends AppBaseException {
   static const noBrowserAvailableCode = 'no_browser_available';
+
+  NoSuitableBrowserForOIDCException([super.message]);
+
+  @override
+  String get exceptionName => 'NoSuitableBrowserForOIDCException';
 
   static bool verifyException(dynamic exception) {
     if (exception is PlatformException) {
@@ -21,5 +40,9 @@ class NoSuitableBrowserForOIDCException implements Exception {
   }
 }
 
-class NotFoundCompanyServerLoginInfoException implements Exception {}
+class NotFoundCompanyServerLoginInfoException extends AppBaseException {
+  NotFoundCompanyServerLoginInfoException([super.message]);
 
+  @override
+  String get exceptionName => 'NotFoundCompanyServerLoginInfoException';
+}
