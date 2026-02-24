@@ -81,7 +81,7 @@ class SentryConfig {
       environment: sentryEnvironment,
       release: appVersion,
       isAvailable: isAvailable,
-      dist: sentryDist.isNotEmpty ? sentryDist : 'cd0ef018226c405b160c55ad4a28b0e4f4e733d7',
+      dist: sentryDist.isNotEmpty ? sentryDist : null,
     );
   }
 }

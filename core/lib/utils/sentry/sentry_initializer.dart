@@ -76,6 +76,15 @@ class SentryInitializer {
 
     event.request = sanitizedRequest;
 
+    final modifiedExceptions = event.exceptions?.map((e) {
+      if (e.type != null && e.type!.startsWith('minified:')) {
+        final realType = e.value?.split(':').first.trim() ?? 'UnknownException';
+        e.type = realType;
+      }
+      return e;
+    }).toList();
+
+    event.exceptions = modifiedExceptions;
     return event;
   }
 }
