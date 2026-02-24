@@ -4096,7 +4096,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "closeAnyway": "Ignorer et fermer",
+  "closeAnyway": "messages",
   "@closeAnyway": {
     "type": "text",
     "placeholders_order": [],
@@ -4840,7 +4840,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "threadToggleDescription": "Activité les fil de discussion",
+  "threadToggleDescription": "Activer les fils de discussion",
   "@threadToggleDescription": {
     "type": "text",
     "placeholders_order": [],
@@ -5390,7 +5390,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailboxListWithSelectedMail": "Boite mail (mail sélectionné)",
+  "mailboxListWithSelectedMail": "Liste des boîtes aux lettres (e-mail sélectionné)",
   "@mailboxListWithSelectedMail": {
     "type": "text",
     "placeholders_order": [],
