@@ -1,31 +1,32 @@
+import 'package:core/domain/exceptions/app_base_exception.dart';
 import 'package:equatable/equatable.dart';
 
-abstract class DownloadFileException with EquatableMixin implements Exception {
-  final String message;
-
-  DownloadFileException(this.message);
-
-  @override
-  String toString() => message;
+abstract class DownloadFileException extends AppBaseException
+    with EquatableMixin {
+  const DownloadFileException(super.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message, exceptionName];
 }
 
 class CommonDownloadFileException extends DownloadFileException {
-  CommonDownloadFileException(message) : super(message);
+  const CommonDownloadFileException(super.message);
 
   @override
-  List<Object> get props => [message];
+  String get exceptionName => 'CommonDownloadFileException';
 }
 
 class CancelDownloadFileException extends DownloadFileException {
-  CancelDownloadFileException(cancelMessage) : super(cancelMessage);
+  const CancelDownloadFileException(super.message);
 
   @override
-  List<Object> get props => [message];
+  String get exceptionName => 'CancelDownloadFileException';
 }
 
 class DeviceNotSupportedException extends DownloadFileException {
-  DeviceNotSupportedException() : super('This device is not supported, please try on Android or iOS');
+  const DeviceNotSupportedException()
+      : super('This device is not supported, please try on Android or iOS');
+
+  @override
+  String get exceptionName => 'DeviceNotSupportedException';
 }

@@ -1,26 +1,39 @@
-class AIApiException implements Exception {
-  final String message;
+import 'package:core/domain/exceptions/app_base_exception.dart';
+
+class AIApiException extends AppBaseException {
   final int? statusCode;
 
-  AIApiException(this.message, {this.statusCode});
+  const AIApiException(super.message, {this.statusCode});
+
+  @override
+  String get exceptionName => 'AIApiException';
 
   @override
   String toString() {
-    if (statusCode != null) {
-      return 'AIApiException: $message (status code: $statusCode)';
-    }
-    return 'AIApiException: $message';
+    final statusPart = statusCode != null ? ' (status code: $statusCode)' : '';
+    return '$exceptionName: $message$statusPart';
   }
 }
 
 class AIApiNotAvailableException extends AIApiException {
-  AIApiNotAvailableException() : super('AI API is not available');
+  const AIApiNotAvailableException() : super('AI API is not available');
+
+  @override
+  String get exceptionName => 'AIApiNotAvailableException';
 }
 
 class AIApiEmptyResponseException extends AIApiException {
-  AIApiEmptyResponseException() : super('AI API returned empty response');
+  const AIApiEmptyResponseException() : super('AI API returned empty response');
+
+  @override
+  String get exceptionName => 'AIApiEmptyResponseException';
 }
 
 class GenerateAITextInteractorIsNotRegisteredException extends AIApiException {
-  GenerateAITextInteractorIsNotRegisteredException() : super('GenerateAITextInteractor is not registered');
+  const GenerateAITextInteractorIsNotRegisteredException()
+      : super('GenerateAITextInteractor is not registered');
+
+  @override
+  String get exceptionName =>
+      'GenerateAITextInteractorIsNotRegisteredException';
 }
