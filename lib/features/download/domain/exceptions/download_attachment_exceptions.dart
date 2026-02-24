@@ -1,5 +1,22 @@
-class DownloadAttachmentInteractorIsNull implements Exception {}
+import 'package:core/domain/exceptions/app_base_exception.dart';
 
-class CapabilityDownloadAllNotSupportedException implements Exception {}
+class DownloadAttachmentInteractorIsNull extends AppBaseException {
+  DownloadAttachmentInteractorIsNull([super.message]);
 
-class DownloadUrlIsNullException implements Exception {}
+  @override
+  String get exceptionName => 'DownloadAttachmentInteractorIsNull';
+}
+
+class CapabilityDownloadAllNotSupportedException extends AppBaseException {
+  CapabilityDownloadAllNotSupportedException([super.message]);
+
+  @override
+  String get exceptionName => 'CapabilityDownloadAllNotSupportedException';
+}
+
+class DownloadUrlIsNullException extends AppBaseException {
+  DownloadUrlIsNullException([super.message]);
+
+  @override
+  String get exceptionName => 'DownloadUrlIsNullException';
+}

@@ -60,7 +60,7 @@ class MailboxIsolateWorker {
     } else {
       final rootIsolateToken = RootIsolateToken.instance;
       if (rootIsolateToken == null) {
-        throw CanNotGetRootIsolateToken();
+        throw const CanNotGetRootIsolateToken();
       }
 
       final result = await _isolateExecutor.execute(
@@ -227,7 +227,7 @@ class MailboxIsolateWorker {
   }) async {
     final rootIsolateToken = RootIsolateToken.instance;
     if (rootIsolateToken == null) {
-      throw CanNotGetRootIsolateToken();
+      throw const CanNotGetRootIsolateToken();
     }
 
     final countEmailsCompleted = await _isolateExecutor.execute(

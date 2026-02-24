@@ -20,21 +20,21 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
+import 'package:tmail_ui_user/features/download/domain/state/parse_email_by_blob_id_state.dart';
+import 'package:tmail_ui_user/features/download/domain/state/preview_email_from_eml_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
-import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_a_thread_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_an_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/labels/remove_a_label_from_a_thread_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
-import 'package:tmail_ui_user/features/download/domain/state/parse_email_by_blob_id_state.dart';
-import 'package:tmail_ui_user/features/download/domain/state/preview_email_from_eml_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/remove_a_label_from_an_email_state.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
-import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
@@ -133,9 +133,9 @@ class ToastManager {
         return '[${firstError.type.value}] ${firstError.description}';
       }
     } else if (exception is ServerError) {
-      return '[${exception.error}] ${exception.errorDescription}';
+      return '[${exception.error}] ${exception.message}';
     } else if (exception is TemporarilyUnavailable) {
-      return '[${exception.error}] ${exception.errorDescription}';
+      return '[${exception.error}] ${exception.message}';
     } else if (exception is AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException) {
       return '';
     }
