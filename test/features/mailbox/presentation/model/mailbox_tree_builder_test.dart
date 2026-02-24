@@ -491,8 +491,18 @@ void main() {
 
       expect(result.defaultTree.root.childrenItems?.length, equals(1));
       expect(
+        result.personalTree.root.childrenItems,
+        isNotEmpty,
+        reason: 'Personal tree must have at least one mailbox',
+      );
+      expect(
         result.personalTree.root.childrenItems?.first.item.name?.name,
         equals('Personal'),
+      );
+      expect(
+        result.teamMailboxTree.root.childrenItems,
+        isNotEmpty,
+        reason: 'Team tree must have at least one mailbox',
       );
       expect(
         result.teamMailboxTree.root.childrenItems?.first.item.name?.name,
