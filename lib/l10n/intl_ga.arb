@@ -5250,5 +5250,329 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "aiScribe": "Scríbhneoir Intleacht Shaorga",
+  "@aiScribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeSettingExplanation": "Bain úsáid as AI chun cabhrú le do ríomhphoist a scríobh agus a fheabhsú",
+  "@aiScribeSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeToggleDescription": "Cumasaigh Scríbhneoir Intleacht Shaorga",
+  "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequired": "Gníomh Riachtanach",
+  "@actionRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequiredMailboxDisplayName": "Gníomh riachtanach",
+  "@actionRequiredMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyActionRequiredEmails": "Níl aon ríomhphoist agat a bhfuil gá le gníomhú leo.",
+  "@youDoNotHaveAnyActionRequiredEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsAction": "Tá gá le gníomhú in AI",
+  "@aiNeedsAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionToggleDescription": "Cumasaigh gníomh riachtanach intleachta saorga",
+  "@aiNeedsActionToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionSettingExplanation": "Braith ríomhphoist a bhfuil d’aird ag teastáil uathu ag baint úsáide as an Intleacht Shaorga. Nuair a bhíonn sé múchta, ní phróiseálfaidh an Intleacht Shaorga aon ríomhphoist.",
+  "@aiNeedsActionSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labels": "Lipéid",
+  "@labels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newLabel": "Lipéad nua",
+  "@newLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelName": "Ainm lipéid",
+  "@labelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseEnterNameYourNewLabel": "Cuir isteach ainm do lipéid nua le do thoil",
+  "@pleaseEnterNameYourNewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseALabelColor": "Roghnaigh dath lipéid",
+  "@chooseALabelColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabel": "Cruthaigh lipéad",
+  "@createLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewLabel": "Cruthaigh lipéad nua",
+  "@createANewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizeYourInboxWithACustomCategory": "Eagraigh do bhosca isteach le catagóir saincheaptha",
+  "@organizeYourInboxWithACustomCategory": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tagNameAlreadyExists": "Tá clib leis an ainm seo ann cheana féin. Roghnaigh ainm eile le do thoil.",
+  "@tagNameAlreadyExists": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseCustomColour": "Roghnaigh dath saincheaptha",
+  "@chooseCustomColour": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColourForThisLabel": "Roghnaigh dath don lipéad seo",
+  "@chooseAColourForThisLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabelSuccessfullyMessage": "Chruthaigh tú an lipéad {labelName} go rathúil",
+  "@createLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "createNewLabelFailure": "Teip ar lipéad nua a chruthú",
+  "@createNewLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibility": "Infheictheacht lipéid",
+  "@labelVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilitySettingExplanation": "Taispeáin lipéid atá sannta do ríomhphoist go díreach i do liosta teachtaireachtaí le go mbeidh sé níos fusa iad a chatagóiriú.",
+  "@labelVisibilitySettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilityToggleDescription": "Lipéid taispeána",
+  "@labelVisibilityToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "theLabelFeatureIsNowAvailable": "Tá an ghné lipéid ar fáil anois.",
+  "@theLabelFeatureIsNowAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelAs": "Lipéadaigh mar",
+  "@labelAs": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addLabelToEmailSuccessfullyMessage": "Seoladh ríomhphoist curtha leis an lipéad \"{labelName}\"",
+  "@addLabelToEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToEmailFailureMessage": "Ní féidir ríomhphost a chur leis an lipéad \"{labelName}\"",
+  "@addLabelToEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabel": "Cuir lipéad leis",
+  "@addLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addLabelToThreadSuccessfullyMessage": "Cuireadh gach ríomhphost sa snáithe leis an lipéad \"{labelName}\"",
+  "@addLabelToThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToThreadFailureMessage": "Ní féidir gach ríomhphost sa snáithe a chur leis an lipéad \"{labelName}\"",
+  "@addLabelToThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "youDoNotHaveAnyEmailTaggedWithThis": "Níl aon ríomhphoist agat atá clibáilte leis seo.",
+  "@youDoNotHaveAnyEmailTaggedWithThis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allLabels": "Gach lipéad",
+  "@allLabels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLabel": "Cuir lipéad in eagar",
+  "@editLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateTheLabelName": "Nuashonraigh ainm an lipéid",
+  "@updateTheLabelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLabelSuccessfullyMessage": "D'éirigh leat an lipéad {labelName} a chur in eagar",
+  "@editLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "editLabelFailure": "Theip ar an lipéad a chur in eagar",
+  "@editLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeLabelFromEmailSuccessfullyMessage": "Baineadh an ríomhphost ón lipéad \"{labelName}\"",
+  "@removeLabelFromEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromEmailFailureMessage": "Ní féidir ríomhphost a bhaint den lipéad \"{labelName}\"",
+  "@removeLabelFromEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadSuccessfullyMessage": "Baineadh gach ríomhphost sa snáithe den lipéad \"{labelName}\"",
+  "@removeLabelFromThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadFailureMessage": "Ní féidir gach ríomhphost sa snáithe a bhaint den lipéad \"{labelName}\"",
+  "@removeLabelFromThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteLabel": "Scrios lipéad",
+  "@deleteLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "areYouSureYouWantToDeleteTheLabel": "An bhfuil tú cinnte gur mian leat an lipéad \"{labelName}\" a scriosadh?",
+  "@areYouSureYouWantToDeleteTheLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteLabelSuccessfullyMessage": "Scrios tú an lipéad {labelName} go rathúil",
+  "@deleteLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteALabelFailure": "Theip ar lipéad a scriosadh",
+  "@deleteALabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
