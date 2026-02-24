@@ -399,6 +399,12 @@ void main() {
 
       final children = generatedTree.defaultTree.root.childrenItems ?? [];
       expect(
+        children,
+        isNotEmpty,
+        reason:
+            'Default tree must have at least one mailbox after filtering virtual folders',
+      );
+      expect(
         children.first.item.id.id.value,
         equals('1'),
         reason:
@@ -437,6 +443,11 @@ void main() {
       );
 
       final children = generatedTree.defaultTree.root.childrenItems ?? [];
+      expect(
+        children,
+        isNotEmpty,
+        reason: 'Virtual folder must have been routed to the default tree',
+      );
       expect(
         children.first.item.id,
         equals(virtualStarred.id),
