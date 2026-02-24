@@ -5170,5 +5170,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "noEmailMatchYourCurrentFilter": "",
+  "@noEmailMatchYourCurrentFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noEmailInYourCurrentFolder": "",
+  "@noEmailInYourCurrentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
