@@ -1,3 +1,9 @@
+## [0.24.12] - 2026-02-24
+### Fixed
+- TF-4336 Inbox should be above Favorite folder
+- TF-4337 Translate in Fr
+- TF-4339 CORS issue with open-configuration
+
 ## [0.24.11] - 2026-02-12
 ### Fixed
 - Fix email list does not automatically refill after bulk delete (#4323)
