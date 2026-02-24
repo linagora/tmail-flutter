@@ -97,7 +97,7 @@ class MailboxMenuRobot extends CoreRobot {
       .toInt();
 
     if (inboxCount == null) {
-      throw NullInboxUnreadCountException();
+      throw const NullInboxUnreadCountException();
     }
 
     return inboxCount;

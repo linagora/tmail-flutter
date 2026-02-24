@@ -60,7 +60,7 @@ class FileUploader {
     } else {
       final rootIsolateToken = RootIsolateToken.instance;
       if (rootIsolateToken == null) {
-        throw CanNotGetRootIsolateToken();
+        throw const CanNotGetRootIsolateToken();
       }
 
       return await _isolateExecutor.execute(

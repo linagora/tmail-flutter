@@ -1,27 +1,70 @@
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:core/domain/exceptions/app_base_exception.dart';
 
-class NotFoundEmailException implements Exception {}
+class NotFoundEmailException extends AppBaseException {
+  NotFoundEmailException([super.message]);
 
-class NotFoundEmailContentException implements Exception {}
+  @override
+  String get exceptionName => 'NotFoundEmailException';
+}
 
-class EmptyEmailContentException implements Exception {}
+class NotFoundEmailContentException extends AppBaseException {
+  NotFoundEmailContentException([super.message]);
 
-class NotFoundEmailRecoveryActionException implements Exception {}
+  @override
+  String get exceptionName => 'NotFoundEmailContentException';
+}
 
-class NotFoundEmailBlobIdException implements Exception {}
+class EmptyEmailContentException extends AppBaseException {
+  EmptyEmailContentException([super.message]);
 
-class CannotCreateEmailObjectException implements Exception {}
+  @override
+  String get exceptionName => 'EmptyEmailContentException';
+}
 
-class NotFoundBlobIdException implements Exception {
+class NotFoundEmailRecoveryActionException extends AppBaseException {
+  NotFoundEmailRecoveryActionException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundEmailRecoveryActionException';
+}
+
+class NotFoundEmailBlobIdException extends AppBaseException {
+  NotFoundEmailBlobIdException([super.message]);
+
+  @override
+  String get exceptionName => 'NotFoundEmailBlobIdException';
+}
+
+class CannotCreateEmailObjectException extends AppBaseException {
+  CannotCreateEmailObjectException([super.message]);
+
+  @override
+  String get exceptionName => 'CannotCreateEmailObjectException';
+}
+
+class NotFoundBlobIdException extends AppBaseException {
   final List<Id> ids;
 
-  NotFoundBlobIdException(this.ids);
+  NotFoundBlobIdException(this.ids) : super('Blob IDs: $ids');
+
+  @override
+  String get exceptionName => 'NotFoundBlobIdException';
 }
 
-class NotParsableBlobIdToEmailException implements Exception {
+class NotParsableBlobIdToEmailException extends AppBaseException {
   final List<Id>? ids;
 
-  NotParsableBlobIdToEmailException({this.ids});
+  NotParsableBlobIdToEmailException({this.ids})
+      : super(ids != null ? 'Blob IDs: $ids' : null);
+
+  @override
+  String get exceptionName => 'NotParsableBlobIdToEmailException';
 }
 
-class EmailIdsSuccessIsEmptyException implements Exception {}
+class EmailIdsSuccessIsEmptyException extends AppBaseException {
+  EmailIdsSuccessIsEmptyException([super.message]);
+
+  @override
+  String get exceptionName => 'EmailIdsSuccessIsEmptyException';
+}

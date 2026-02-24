@@ -105,7 +105,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     log('LabelController::_createNewLabel:Label: $label');
     if (_createNewLabelInteractor == null) {
       consumeState(
-        Stream.value(Left(CreateNewLabelFailure(InteractorNotInitialized()))),
+        Stream.value(Left(CreateNewLabelFailure(const InteractorNotInitialized()))),
       );
     } else {
       consumeState(_createNewLabelInteractor!.execute(accountId, label));

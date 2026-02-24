@@ -1,7 +1,29 @@
-class WebSocketPushNotSupportedException implements Exception {}
+import 'package:core/domain/exceptions/app_base_exception.dart';
 
-class WebSocketUriUnavailableException implements Exception {}
+class WebSocketPushNotSupportedException extends AppBaseException {
+  WebSocketPushNotSupportedException([super.message]);
 
-class WebSocketTicketUnavailableException implements Exception {}
+  @override
+  String get exceptionName => 'WebSocketPushNotSupportedException';
+}
 
-class WebSocketClosedException implements Exception {}
+class WebSocketUriUnavailableException extends AppBaseException {
+  WebSocketUriUnavailableException([super.message]);
+
+  @override
+  String get exceptionName => 'WebSocketUriUnavailableException';
+}
+
+class WebSocketTicketUnavailableException extends AppBaseException {
+  WebSocketTicketUnavailableException([super.message]);
+
+  @override
+  String get exceptionName => 'WebSocketTicketUnavailableException';
+}
+
+class WebSocketClosedException extends AppBaseException {
+  WebSocketClosedException([super.message]);
+
+  @override
+  String get exceptionName => 'WebSocketClosedException';
+}
