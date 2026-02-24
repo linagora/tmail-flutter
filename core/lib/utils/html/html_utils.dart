@@ -155,7 +155,7 @@ class HtmlUtils {
 
           // Avoid native selection marks in mobile
           // Offset has been arbitrary determined to avoid selection marks on Android and iOS
-          const buttonOffset = isWebPlatform ? { x: 0, y: 0 } : { x: 22, y: -20 };
+          const buttonOffset = isWebPlatform ? { x: 0, y: 0 } : { x: 24, y: -24 };
 
           let x = lastRect.right - editableRect.left + buttonOffset.x;
           let y = lastRect.bottom - editableRect.top + buttonOffset.y;

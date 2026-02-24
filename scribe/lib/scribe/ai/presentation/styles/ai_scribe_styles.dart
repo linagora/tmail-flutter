@@ -172,6 +172,7 @@ abstract final class AIScribeSizes {
   static const double icon = 18;
   static const double sendIcon = 16;
   static const double scribeIcon = 12;
+  static const double scribeMobileIcon = 16;
   static const double aiAssistantIcon = 24;
   static const double bottomsheetIcon = 20;
 
