@@ -1,6 +1,7 @@
 import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/config/env_loader.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Holds configuration values for initializing Sentry.
@@ -69,13 +70,18 @@ class SentryConfig {
     final appVersion = await ApplicationManager().getAppVersion();
 
     const sentryDist = String.fromEnvironment('SENTRY_DIST');
+    logTrace(
+      'SentryConfig::load: sentryDist is $sentryDist,'
+      'appVersion is $appVersion',
+      webConsoleEnabled: true,
+    );
 
     return SentryConfig(
       dsn: sentryDSN,
       environment: sentryEnvironment,
       release: appVersion,
       isAvailable: isAvailable,
-      dist: sentryDist.isNotEmpty ? sentryDist : null,
+      dist: sentryDist.isNotEmpty ? sentryDist : 'cd0ef018226c405b160c55ad4a28b0e4f4e733d7',
     );
   }
 }
