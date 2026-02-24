@@ -30,6 +30,7 @@ class SentryInitializer {
         options.dsn = config.dsn;
         options.environment = config.environment;
         options.release = config.release;
+        options.dist = config.dist;
         options.tracesSampleRate = config.tracesSampleRate;
         options.profilesSampleRate = config.profilesSampleRate;
         options.enableLogs = config.enableLogs;
