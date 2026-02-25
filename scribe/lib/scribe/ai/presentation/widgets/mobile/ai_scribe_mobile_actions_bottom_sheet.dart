@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -154,33 +153,16 @@ class _AiScribeMobileActionsBottomSheetState
     );
   }
 
-  Widget _buildBottomBar(BuildContext context) {
+  Widget _buildBottomBarContent(BuildContext context) {
     if (!widget.showCustomPromptBar) {
       return const SizedBox.shrink();
     }
     
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Divider(
-          height: 1,
-          thickness: 1,
-          color: AppColor.colorDividerComposer,
-        ),
-        Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 8.0,
-            left: 16.0,
-            right: 16.0,
-            top: 8.0,
-          ),
-          child: AIScribeBar(
-            onCustomPrompt: _onCustomPromptSubmit,
-            imagePaths: widget.imagePaths,
-            boxShadow: const [],
-          ),
-        ),
-      ],
+    return AIScribeBar(
+      onCustomPrompt: _onCustomPromptSubmit,
+      imagePaths: widget.imagePaths,
+      borderRadius: AIScribeSizes.bottomBarRadius,
+      hintStyle: AIScribeTextStyles.searchBar,
     );
   }
 
@@ -203,6 +185,9 @@ class _AiScribeMobileActionsBottomSheetState
     
     final hasContent = widget.content?.isNotEmpty ?? false;
 
+    final bottomBarPadding = MediaQuery.of(context).viewInsets.bottom + 16.0;
+    final bottomBarInset = bottomBarPadding + (widget.showCustomPromptBar ? AIScribeSizes.searchBarMaxHeight : 0.0);
+
     return PointerInterceptor(
       child: Container(
         height: double.infinity,
@@ -210,32 +195,44 @@ class _AiScribeMobileActionsBottomSheetState
           color: AIScribeColors.background,
         ),
         child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Stack(
             children: [
-              Expanded(
+              Padding(
+                padding: EdgeInsets.only(bottom: bottomBarInset),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildHeader(context, localizations),
-                    _buildTextCard(context),
-                    if(hasContent)
-                      Flexible(
-                        child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
-                          valueListenable: _selectedCategory,
-                          builder: (context, selectedCategory, _) {
-                            return selectedCategory == null
-                                ? _buildMenuListView(menuActions)
-                                : _buildSubmenuListView();
-                          },
-                        ),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildHeader(context, localizations),
+                          _buildTextCard(context),
+                          if(hasContent)
+                            Flexible(
+                              child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
+                                valueListenable: _selectedCategory,
+                                builder: (context, selectedCategory, _) {
+                                  return selectedCategory == null
+                                      ? _buildMenuListView(menuActions)
+                                      : _buildSubmenuListView();
+                                },
+                              ),
+                            ),
+                        ],
                       ),
+                    ),
                   ],
                 ),
               ),
-              _buildBottomBar(context),
+              Positioned(
+                bottom: bottomBarPadding,
+                left: 16.0,
+                right: 16.0,
+                child: _buildBottomBarContent(context),
+              ),
             ],
           ),
         ),
