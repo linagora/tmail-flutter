@@ -16,6 +16,18 @@ abstract final class AIScribeColors {
 
   // Overlays
   static final Color dialogBarrier = Colors.black.withValues(alpha: 0.12);
+
+  // Gradients
+  static const LinearGradient barGradient = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [
+      Color.fromRGBO(0, 183, 255, 0.90),
+      Color.fromRGBO(224, 109, 209, 0.90),
+      Color.fromRGBO(232, 167, 138, 0.90),
+    ],
+    stops: [0.0, 0.75, 1.0],
+  );
 }
 
 abstract final class AIScribeShadows {
@@ -131,6 +143,7 @@ abstract final class AIScribeSizes {
   static const double aiAssistantIconRadius = 8;
   static const double contentCardRadius = 16;
   static const double improveButtonBorderRadius = 4;
+  static const double bottomBarRadius = 28;
 
   // Width / height
   static const double menuItemHeight = 40;
