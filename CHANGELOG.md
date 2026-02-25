@@ -1,3 +1,7 @@
+## [0.24.13] - 2026-02-25
+### Fixed
+- TF-4344 Selected language not reflect current language
+
 ## [0.24.12] - 2026-02-24
 ### Fixed
 - TF-4336 Inbox should be above Favorite folder
