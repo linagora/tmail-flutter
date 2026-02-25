@@ -67,14 +67,15 @@ class AiScribeSuggestionSuccessActions extends StatelessWidget {
 
   Widget _buildInsertButton(BuildContext context) {
     final localizations = ScribeLocalizations.of(context);
+    final isMobileScribe = AiScribeMobileUtils.isScribeInMobileMode(context);
     return Flexible(
       child: Container(
-        constraints: const BoxConstraints(minWidth: AIScribeSizes.minButtonWidth),
-        height: AIScribeSizes.buttonHeight,
+        constraints: BoxConstraints(minWidth: isMobileScribe ? AIScribeSizes.minButtonMobileWidth : AIScribeSizes.minButtonWidth),
+        height: isMobileScribe ? AIScribeSizes.buttonMobileHeight : AIScribeSizes.buttonHeight,
         child: ConfirmDialogButton(
           label: AiScribeSuggestionActions.insert.getLabel(localizations),
-          backgroundColor: AppColor.blueD2E9FF,
-          textColor: AppColor.primaryMain,
+          backgroundColor: AppColor.primaryMain,
+          textColor: Colors.white,
           onTapAction: () {
             Navigator.of(context).pop();
             onSelectAction(
