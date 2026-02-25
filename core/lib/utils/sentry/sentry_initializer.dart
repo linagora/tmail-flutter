@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
+import 'package:core/utils/sentry/sentry_web_interop.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class SentryInitializer {
@@ -25,6 +27,16 @@ class SentryInitializer {
 
     if (config == null) return false;
 
+    if (PlatformInfo.isWeb) {
+      initSentryWeb(
+        config.dsn,
+        config.environment,
+        config.release,
+        config.tracesSampleRate,
+        config.isDebug,
+      );
+    }
+
     await SentryFlutter.init(
       (options) {
         options.dsn = config.dsn;
@@ -42,6 +54,11 @@ class SentryInitializer {
 
         // Assign the callback to process events before sending them to Sentry
         options.beforeSend = _beforeSendHandler;
+
+        // To prevent Sentry from automatically injecting scripts from the CDN on the web.
+        if (PlatformInfo.isWeb) {
+          options.autoInitializeNativeSdk = false;
+        }
       },
       appRunner: appRunner,
     );
