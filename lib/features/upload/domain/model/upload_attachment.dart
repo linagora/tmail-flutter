@@ -38,7 +38,7 @@ class UploadAttachment with EquatableMixin {
     _progressStateController.add(flowUploadState);
   }
 
-  void upload() async {
+  Future<void> upload() async {
     try {
       log('UploadFile::upload(): $uploadTaskId');
       _updateEvent(Right(PendingAttachmentUploadState(uploadTaskId, 0, fileInfo.fileSize)));

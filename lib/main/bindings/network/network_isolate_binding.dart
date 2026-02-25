@@ -103,11 +103,6 @@ class NetworkIsolateBindings extends Bindings {
       Get.find<EmailAPI>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
       Get.find<Executor>(),
     ));
-    Get.put(FileUploader(
-      Get.find<DioClient>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
-      Get.find<Executor>(),
-      Get.find<FileUtils>(),
-    ));
   }
 
   void _bindingSharing() {
