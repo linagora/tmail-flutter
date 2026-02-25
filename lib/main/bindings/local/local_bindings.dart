@@ -1,5 +1,6 @@
 
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,6 +32,7 @@ import 'package:tmail_ui_user/features/login/data/local/authentication_info_cach
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/web_token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_sort_order_manager.dart';
@@ -67,7 +69,11 @@ class LocalBindings extends Bindings {
     Get.put(RecentSearchCacheClient());
     Get.put(RecentSearchCacheManager(Get.find<RecentSearchCacheClient>()));
     Get.put(TokenOidcCacheClient());
-    Get.put(TokenOidcCacheManager(Get.find<TokenOidcCacheClient>()));
+    if (PlatformInfo.isWeb) {
+      Get.put<TokenOidcCacheManager>(WebTokenOidcCacheManager(Get.find<TokenOidcCacheClient>()));
+    } else {
+      Get.put(TokenOidcCacheManager(Get.find<TokenOidcCacheClient>()));
+    }
     Get.put(AccountCacheClient());
     Get.put(AccountCacheManager(Get.find<AccountCacheClient>()));
     Get.put(EncryptionKeyCacheClient());
