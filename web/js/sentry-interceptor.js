@@ -7,11 +7,18 @@
       }
       try {
         const parsed = new URL(urlString, document.baseURI);
-        const hostname = parsed.hostname || '';
+        const hostname = (parsed.hostname || '').toLowerCase();
         return hostname === 'sentry-cdn.com' || hostname.endsWith('.sentry-cdn.com');
       } catch (e) {
-        // Fallback for non-standard or non-parseable URLs: keep previous broad behavior
-        return String(urlString).includes('sentry-cdn.com');
+       // Fallback for non-standard or non-parseable URLs:
+       // treat plain host-like strings consistently with the hostname check above.
+       const str = String(urlString).trim().toLowerCase();
+       // Only apply the check to host-like values (no spaces and no obvious path/query fragments).
+       const isHostLike = str !== '' && !/\s/.test(str) && !/[\/?#]/.test(str);
+       if (!isHostLike) {
+         return false;
+       }
+       return str === 'sentry-cdn.com' || str.endsWith('.sentry-cdn.com');
       }
     }
 
