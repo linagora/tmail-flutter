@@ -191,7 +191,9 @@ abstract final class AIScribeSizes {
 
   // Button sizes
   static const double minButtonWidth = 72;
+  static const double minButtonMobileWidth = 90;
   static const double buttonHeight = 36;
+  static const double buttonMobileHeight = 48;
 
   // Padding
   static const EdgeInsetsGeometry menuItemPadding =
