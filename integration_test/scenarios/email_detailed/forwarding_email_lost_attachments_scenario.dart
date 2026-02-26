@@ -17,7 +17,7 @@ class ForwardingEmailLostAttachmentsScenario extends BaseTestScenario {
   @override
   Future<void> runTestLogic() async {
     const subject = 'Forwarding email lost attachments';
-    final List<String> attachmentContents = ['file1', 'file2'];
+    final List<String> attachmentContents = ['file1', 'file2', 'file3'];
     const emailUser = String.fromEnvironment('BASIC_AUTH_EMAIL');
 
     final threadRobot = ThreadRobot($);
