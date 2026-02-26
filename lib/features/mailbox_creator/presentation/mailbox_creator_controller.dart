@@ -54,6 +54,11 @@ class MailboxCreatorController extends BaseController
     if (arguments != null) {
       _buildMailboxTree(arguments);
     }
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
     if (PlatformInfo.isWeb) {
       nameInputFocusNode.requestFocus();
     }
