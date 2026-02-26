@@ -546,4 +546,22 @@ class EmailRepositoryImpl extends EmailRepository {
       labelKeyword,
     );
   }
+
+  @override
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addListLabelToListEmail(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    List<KeyWordIdentifier> labelKeywords,
+  ) {
+    return emailDataSource[DataSourceType.network]!.addListLabelToListEmail(
+      session,
+      accountId,
+      emailIds,
+      labelKeywords,
+    );
+  }
 }

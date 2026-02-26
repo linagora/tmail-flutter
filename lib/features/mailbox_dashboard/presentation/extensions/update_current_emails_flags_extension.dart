@@ -15,13 +15,13 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
     bool markAsAnswered = false,
     bool markAsForwarded = false,
     bool isLabelAdded = false,
-    KeyWordIdentifier? labelKeyword,
+    List<KeyWordIdentifier>? labelKeywords,
   }) {
     if (readAction == null &&
         markStarAction == null &&
         !markAsAnswered &&
         !markAsForwarded &&
-        labelKeyword == null) {
+        labelKeywords?.isNotEmpty != true) {
       return;
     }
 
@@ -64,8 +64,8 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
         _updateKeyword(email, KeyWordIdentifier.emailForwarded, true);
       }
 
-      if (labelKeyword != null) {
-        _updateKeyword(email, labelKeyword, isLabelAdded);
+      if (labelKeywords?.isNotEmpty == true) {
+        _updateListKeywords(email, labelKeywords!, isLabelAdded);
       }
     }
 
@@ -81,6 +81,16 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       presentationEmail.keywords?[keyword] = true;
     } else {
       presentationEmail.keywords?.remove(keyword);
+    }
+  }
+
+  void _updateListKeywords(
+    PresentationEmail presentationEmail,
+    List<KeyWordIdentifier> keywords,
+    bool value,
+  ) {
+    for (var keyword in keywords) {
+      _updateKeyword(presentationEmail, keyword, value);
     }
   }
 

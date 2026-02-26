@@ -627,4 +627,24 @@ class EmailDataSourceImpl extends EmailDataSource {
       );
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addListLabelToListEmail(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    List<KeyWordIdentifier> labelKeywords,
+  ) {
+    return Future.sync(() async {
+      return await emailAPI.addListLabelToListEmail(
+        session,
+        accountId,
+        emailIds,
+        labelKeywords,
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

@@ -238,4 +238,14 @@ abstract class EmailDataSource {
     List<EmailId> emailIds,
     KeyWordIdentifier labelKeyword,
   );
+
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addListLabelToListEmail(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    List<KeyWordIdentifier> labelKeywords,
+  );
 }
