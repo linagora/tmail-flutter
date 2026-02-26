@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -52,6 +53,9 @@ class MailboxCreatorController extends BaseController
     MailboxCreatorArguments? arguments = Get.arguments;
     if (arguments != null) {
       _buildMailboxTree(arguments);
+    }
+    if (PlatformInfo.isWeb) {
+      nameInputFocusNode.requestFocus();
     }
   }
 
