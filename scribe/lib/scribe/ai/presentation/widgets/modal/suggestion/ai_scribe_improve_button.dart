@@ -34,35 +34,36 @@ class _AiScribeImproveButtonState extends State<AiScribeImproveButton> {
       icon: widget.imagePaths.icChevronDown,
       iconColor: AppColor.colorTextButtonHeaderThread,
       iconAlignment: TextDirection.rtl,
-      onTapActionCallback: () async {
-        final renderBox = _improveButtonKey.currentContext?.findRenderObject();
-        Offset? position;
-        Size? size;
-
-        if (renderBox != null && renderBox is RenderBox) {
-          position = renderBox.localToGlobal(Offset.zero);
-          size = renderBox.size;
-        }
-
-        final AIAction? aiAction = await AiScribeModalManager.showAIScribeMenuModal(
-          isScribeMobile: AiScribeMobileUtils.isScribeInMobileMode(context),
-          imagePaths: widget.imagePaths,
-          availableCategories: AIScribeMenuCategory.values,
-          content: widget.suggestionText,
-          buttonPosition: position,
-          buttonSize: size,
-          showCustomPromptBar: false,
-        );
-
-        if (!mounted) {
-          return;
-        }
-
-        if (aiAction != null) {
-          widget.onLoadSuggestion(aiAction, widget.suggestionText);
-        }
-      },
-
+      onTapActionCallback: _handleImproveButtonTap,
     );
+  }
+
+  Future<void> _handleImproveButtonTap() async {
+    final renderBox = _improveButtonKey.currentContext?.findRenderObject();
+    Offset? position;
+    Size? size;
+
+    if (renderBox != null && renderBox is RenderBox) {
+      position = renderBox.localToGlobal(Offset.zero);
+      size = renderBox.size;
+    }
+
+    final AIAction? aiAction = await AiScribeModalManager.showAIScribeMenuModal(
+      isScribeMobile: AiScribeMobileUtils.isScribeInMobileMode(context),
+      imagePaths: widget.imagePaths,
+      availableCategories: AIScribeMenuCategory.values,
+      content: widget.suggestionText,
+      buttonPosition: position,
+      buttonSize: size,
+      showCustomPromptBar: false,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (aiAction != null) {
+      widget.onLoadSuggestion(aiAction, widget.suggestionText);
+    }
   }
 }
