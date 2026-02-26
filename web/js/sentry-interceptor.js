@@ -28,7 +28,13 @@
     if (tagName === 'script' || tagName === 'SCRIPT') {
       const originalSetAttribute = element.setAttribute;
 
+      const nativeSrcDescriptor = Object.getOwnPropertyDescriptor(
+        HTMLScriptElement.prototype,
+       'src'
+      );
+
       Object.defineProperty(element, 'src', {
+        configurable: true,
         set: function(val) {
           const urlString = val ? String(val) : '';
 
@@ -36,11 +42,11 @@
             console.log('[Sentry Interceptor] 🛑 Blocked CDN request (Property):', urlString);
             setTimeout(() => this.dispatchEvent(new Event('load')), 10);
           } else {
-            originalSetAttribute.call(this, 'src', val);
+            nativeSrcDescriptor?.set?.call(this, val);
           }
         },
         get: function() {
-          return this.getAttribute('src') || '';
+          return nativeSrcDescriptor?.get?.call(this) ?? '';
         }
       });
 
