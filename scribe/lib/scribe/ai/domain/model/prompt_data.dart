@@ -7,17 +7,15 @@ class PromptData {
     required this.prompts,
   });
 
-  factory PromptData.fromJson(Map<String, dynamic> json) {
-    final promptsJson = json['prompts'];
-    if (promptsJson is! List<dynamic>) {
-      return PromptData(prompts: []);
-    }
+factory PromptData.fromJson(Map<String, dynamic> json) {
+    final promptsJson = json['prompts'] as List?;
     
     return PromptData(
       prompts: promptsJson
-          .whereType<Map<String, dynamic>>()
-          .map((promptJson) => Prompt.fromJson(promptJson))
-          .toList(),
+            ?.whereType<Map<String, dynamic>>()
+            .map(Prompt.fromJson) 
+            .toList() ??
+          const [], 
     );
   }
 }
@@ -37,41 +35,35 @@ class Prompt {
       throw const FormatException('Prompt name must be a non-null String');
     }
     
-    final messagesJson = json['messages'];
-    if (messagesJson is! List<dynamic>) {
-      return Prompt(name: name, messages: []);
-    }
-    
+    final messagesJson = json['messages'] as List?;
+        
     return Prompt(
       name: name,
       messages: messagesJson
-          .whereType<Map<String, dynamic>>()
-          .map((messageJson) => AIMessage.fromJson(messageJson))
-          .toList(),
+              ?.whereType<Map<String, dynamic>>()
+              .map(AIMessage.fromJson)
+              .toList() ?? 
+          const [],
     );
   }
 
   List<AIMessage> buildPrompt(String inputText, {String? task}) {
-    final messages = <AIMessage>[];
-    for (final message in this.messages) {
-      if (message.role == AIRole.system) {
-        messages.add(AIMessage.ofSystem(message.content));
-      } else if (message.role == AIRole.user) {
-        final userContent = _replacePlaceholders(message.content, inputText, task);
-        messages.add(AIMessage.ofUser(userContent));
-      }
-    }
-    return messages;
+    return [
+      for (final message in messages)
+        if (message.role == AIRole.system)
+          AIMessage.ofSystem(message.content)
+        else if (message.role == AIRole.user)
+          AIMessage.ofUser(_replacePlaceholders(message.content, inputText, task))
+    ];
   }
 
   String _replacePlaceholders(String content, String inputText, String? task) {
-    String result = content;
-    if (result.contains('{{input}}')) {
-      result = result.replaceAll('{{input}}', inputText);
-    }
-    if (task != null && result.contains('{{task}}')) {
+    var result = content.replaceAll('{{input}}', inputText);
+    
+    if (task != null) {
       result = result.replaceAll('{{task}}', task);
     }
+    
     return result;
   }
 }
