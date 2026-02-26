@@ -1,10 +1,11 @@
 import 'package:scribe/scribe/ai/data/model/ai_message.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_action.dart';
 import 'package:scribe/scribe/ai/presentation/model/ai_scribe_menu_action.dart';
-import 'package:scribe/scribe/ai/domain/service/prompt_service.dart';
+import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
+import 'package:get/get.dart';
 
 class AIPrompts {
-  static final PromptService _promptService = PromptService();
+  static final PromptService _promptService = Get.find<PromptService>();
 
   static Future<List<AIMessage>> buildPrompt(AIAction action, String? text) async {
     return switch (action) {
