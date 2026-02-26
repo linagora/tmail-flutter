@@ -1,5 +1,5 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:scribe/scribe/ai/domain/service/prompt_service.dart';
+import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_scribe_prompt_url_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_scribe_prompt_url_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -22,11 +22,23 @@ extension SetupScribePromptUrlExtension on MailboxDashBoardController {
   }
 
   void handleGetScribePromptUrlSuccess(GetScribePromptUrlSuccess success) {
-    PromptService().setPromptUrl(success.promptUrl);
+    final promptService = getBinding<PromptService>();
+    
+    if (promptService != null) {
+      promptService.setPromptUrl(success.promptUrl);
+    } else {
+      logWarning('SetupScribePromptUrlExtension::handleGetScribePromptUrlFailure: PromptService not found');
+    }
   }
 
   void handleGetScribePromptUrlFailure(GetScribePromptUrlFailure failure) {
     logError('SetupScribePromptUrlExtension::handleGetScribePromptUrlFailure: GetScribePromptUrl failed - ${failure.exception}');
-    PromptService().setPromptUrl(null);
+    final promptService = getBinding<PromptService>();
+
+    if (promptService != null) {
+      promptService.setPromptUrl(null);
+    } else {
+      logWarning('SetupScribePromptUrlExtension::handleGetScribePromptUrlFailure: PromptService not found');
+    }
   }
 }
