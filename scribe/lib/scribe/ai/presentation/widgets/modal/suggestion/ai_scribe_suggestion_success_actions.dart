@@ -9,7 +9,7 @@ class AiScribeSuggestionSuccessActions extends StatelessWidget {
   final String suggestionText;
   final bool hasContent;
   final OnSelectAiScribeSuggestionAction onSelectAction;
-  final Future<void> Function([AIAction? aiAction, String? content]) onLoadSuggestion;
+  final OnLoadSuggestion onLoadSuggestion;
 
   const AiScribeSuggestionSuccessActions({
     super.key,

@@ -7,7 +7,7 @@ import 'package:scribe/scribe.dart';
 class AiScribeImproveButton extends StatefulWidget {
   final ImagePaths imagePaths;
   final String suggestionText;
-  final Future<void> Function([AIAction? aiAction, String? content]) onLoadSuggestion;
+  final OnLoadSuggestion onLoadSuggestion;
 
   const AiScribeImproveButton({
     super.key,

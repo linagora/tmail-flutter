@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:scribe/scribe.dart';
 import 'package:scribe/scribe/ai/data/network/ai_api_exception.dart';
 
+typedef OnLoadSuggestion = Future<void> Function([AIAction? aiAction, String? content]);
+
 mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
   GenerateAITextInteractor? get interactor => _interactor;
   GenerateAITextInteractor? _interactor;

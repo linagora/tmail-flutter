@@ -7,7 +7,7 @@ class AiScribeSuggestionSuccess extends StatelessWidget {
   final String suggestionText;
   final bool hasContent;
   final OnSelectAiScribeSuggestionAction onSelectAction;
-  final Future<void> Function([AIAction? aiAction, String? content]) onLoadSuggestion;
+  final OnLoadSuggestion onLoadSuggestion;
 
   const AiScribeSuggestionSuccess({
     super.key,
