@@ -24,6 +24,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 🧰 Setup SSH (needed for private git@ dependencies inside Docker build)
+      - name: Set up SSH for private Git dependencies
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      # ⚙️ Add GitHub to known hosts (avoid host verification errors)
+      - name: Add GitHub to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -63,6 +75,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          ssh: default
           platforms: linux/amd64,linux/arm64
           cache-from: |
             type=gha

@@ -14,8 +14,9 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/ai_scrib
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_edit_recipient_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_insert_link_composer_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_insert_emoji_to_editor_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_recipients_collapsed_extensions.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_keyboard_shortcut_actions_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/preview_upload_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/remove_draggable_email_address_between_recipient_fields_extension.dart';
@@ -543,6 +544,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             ),
                             Obx(() => BottomBarComposerWidget(
                               imagePaths: controller.imagePaths,
+                              responsiveUtils: controller.responsiveUtils,
                               isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                               isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
                               hasReadReceipt: controller.hasRequestReadReceipt.value,
@@ -565,6 +567,9 @@ class ComposerView extends GetWidget<ComposerController> {
                               onOpenAiAssistantModal: controller.isAIScribeAvailable
                                   ? controller.openAIAssistantModal
                                   : null,
+                              onEmojiSelected: controller.insertEmojiToEditor,
+                              onPickerOpen: controller.handleOpenEmojiPicker,
+                              onRecentEmojiSelected: controller.getRecentReactions,
                             )),
                           ],
                         ),
@@ -820,6 +825,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             ),
                             Obx(() => BottomBarComposerWidget(
                               imagePaths: controller.imagePaths,
+                              responsiveUtils: controller.responsiveUtils,
                               isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                               isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
                               hasReadReceipt: controller.hasRequestReadReceipt.value,
@@ -842,6 +848,9 @@ class ComposerView extends GetWidget<ComposerController> {
                               onOpenAiAssistantModal: controller.isAIScribeAvailable
                                   ? controller.openAIAssistantModal
                                   : null,
+                              onEmojiSelected: controller.insertEmojiToEditor,
+                              onPickerOpen: controller.handleOpenEmojiPicker,
+                              onRecentEmojiSelected: controller.getRecentReactions,
                             )),
                           ],
                         ),

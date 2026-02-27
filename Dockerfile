@@ -19,6 +19,16 @@ ENV GITHUB_SHA=$GITHUB_SHA \
     SENTRY_URL=$SENTRY_URL \
     SENTRY_RELEASE=$SENTRY_RELEASE
 
+# Fetch pub dependencies for all modules defined in prebuild.sh
+# The SSH mount allows access to private repos during flutter pub get
+RUN --mount=type=ssh \
+    mkdir -p /root/.ssh && \
+    ssh-keyscan github.com >> /root/.ssh/known_hosts && \
+    for mod in core model contact forward rule_filter fcm email_recovery server_settings cozy scribe labels; do \
+      cd /app/$mod && flutter pub get; \
+    done && \
+    cd /app && flutter pub get \
+
 RUN ./scripts/prebuild.sh && \
     flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE && \
     if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT" ] && [ -n "$SENTRY_RELEASE" ]; then \

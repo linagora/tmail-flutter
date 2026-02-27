@@ -77,8 +77,15 @@ class HtmlTemplate {
       font-style: bold;
     }
     
-    body {
-      font-family: 'Inter', sans-serif;
+    @font-face {
+      font-family: 'NotoColorEmoji';
+      src: url('/assets/fonts/fallback/NotoColorEmoji-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    
+    body, [contenteditable="true"], textarea, input {
+      font-family: 'Inter', 'NotoColorEmoji', sans-serif;
     }
   ''';
 
