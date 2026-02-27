@@ -16,8 +16,7 @@ class StoreRecentReactionsInteractor {
 
       final reactions = await _repository.getRecentReactions();
 
-      final updatedReactions =
-          List<String>.from(reactions).combineRecentReactions(emojiId);
+      final updatedReactions = reactions.combineRecentReactions(emojiId);
 
       await _repository.storeRecentReactions(updatedReactions);
 

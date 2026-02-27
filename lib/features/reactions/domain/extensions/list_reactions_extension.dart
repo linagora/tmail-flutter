@@ -4,7 +4,7 @@ extension ListReactionsExtension on List<String> {
   List<String> combineRecentReactions(String emojiId) {
     final result = List<String>.from(this);
 
-    result.remove(emojiId);
+    result.removeWhere((id) => id == emojiId);
     result.insert(0, emojiId);
 
     if (result.length > maxRecentReactionsSize) {

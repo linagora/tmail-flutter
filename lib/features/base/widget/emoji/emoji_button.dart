@@ -62,14 +62,12 @@ class _EmojiButtonState extends State<EmojiButton>
       Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
 
   Future<void> _loadRecentEmoji() async {
-    if (widget.onRecentEmojiSelected != null) {
-      final category = await widget.onRecentEmojiSelected!();
-      if (category != null) {
-        _recentEmoji = Future.value(category);
-        return;
-      }
+    try {
+      final category = await widget.onRecentEmojiSelected?.call();
+      _recentEmoji = Future.value(category);
+    } catch (_) {
+      _recentEmoji = Future.value(null);
     }
-    _recentEmoji = Future.value(null);
   }
 
   void _toggleEmojiDialog() {
@@ -81,8 +79,6 @@ class _EmojiButtonState extends State<EmojiButton>
   }
 
   Future<void> _openDialog() async {
-    widget.onPickerOpen();
-
     if (!mounted || _isDialogVisible) return;
 
     final ctx = _buttonKey.currentContext;
@@ -114,6 +110,7 @@ class _EmojiButtonState extends State<EmojiButton>
     }
 
     await _loadRecentEmoji();
+    if (!mounted || _isDialogVisible) return;
 
     _overlayEntry = OverlayEntry(
       builder: (context) {
@@ -220,10 +217,16 @@ class _EmojiButtonState extends State<EmojiButton>
       },
     );
 
-    if (mounted) {
-      Overlay.maybeOf(context, rootOverlay: true)?.insert(_overlayEntry!);
-    }
-    _animationController.forward(from: 0);
+    final overlay = Overlay.maybeOf(context, rootOverlay: true);
+
+    if (!mounted || overlay == null) return;
+
+    overlay.insert(_overlayEntry!);
+
+    widget.onPickerOpen();
+
+    await _animationController.forward(from: 0);
+
     if (mounted) setState(() => _isDialogVisible = true);
   }
 

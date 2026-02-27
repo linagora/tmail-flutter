@@ -22,7 +22,9 @@ extension HandleInsertEmojiToEditorExtension on ComposerController {
   }
 
   Future<void> storeRecentReactions(String emoji) async {
-    final emojiId = AssetManager().emojiData?.getIdByEmoji(emoji);
+    final assetManager = AssetManager();
+    await assetManager.loadEmojiData();
+    final emojiId = assetManager.emojiData?.getIdByEmoji(emoji);
     log('$runtimeType::storeRecentReactions: EmojiId is $emojiId');
     if (emojiId?.trim().isNotEmpty == true) {
       final interactor = getBinding<StoreRecentReactionsInteractor>(

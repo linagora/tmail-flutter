@@ -75,6 +75,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          ssh: default
           platforms: linux/amd64,linux/arm64
           cache-from: |
             type=gha
