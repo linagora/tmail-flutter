@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter_emoji_mart/flutter_emoji_mart.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -11,7 +13,7 @@ extension HandleInsertEmojiToEditorExtension on ComposerController {
   void insertEmojiToEditor(String emoji) {
     log('$runtimeType::insertEmojiToEditor: Emoji is $emoji');
     richTextWebController?.insertEmoji(emoji);
-    storeRecentReactions(emoji);
+    unawaited(storeRecentReactions(emoji));
   }
 
   void handleOpenEmojiPicker() {
@@ -22,17 +24,21 @@ extension HandleInsertEmojiToEditorExtension on ComposerController {
   }
 
   Future<void> storeRecentReactions(String emoji) async {
-    final assetManager = AssetManager();
-    await assetManager.loadEmojiData();
-    final emojiId = assetManager.emojiData?.getIdByEmoji(emoji);
-    log('$runtimeType::storeRecentReactions: EmojiId is $emojiId');
-    if (emojiId?.trim().isNotEmpty == true) {
-      final interactor = getBinding<StoreRecentReactionsInteractor>(
-        tag: composerId,
-      );
-      if (interactor != null) {
-        consumeState(interactor.execute(emojiId: emojiId!));
+    try {
+      final assetManager = AssetManager();
+      await assetManager.loadEmojiData();
+      final emojiId = assetManager.emojiData?.getIdByEmoji(emoji);
+      log('$runtimeType::storeRecentReactions: EmojiId is $emojiId');
+      if (emojiId?.trim().isNotEmpty == true) {
+        final interactor = getBinding<StoreRecentReactionsInteractor>(
+          tag: composerId,
+        );
+        if (interactor != null) {
+          consumeState(interactor.execute(emojiId: emojiId!));
+        }
       }
+    } catch (e) {
+      log('$runtimeType::storeRecentReactions: failed: $e');
     }
   }
 

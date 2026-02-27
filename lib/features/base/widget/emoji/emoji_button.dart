@@ -92,9 +92,7 @@ class _EmojiButtonState extends State<EmojiButton>
     final screenSize = MediaQuery.sizeOf(context);
 
     final double availableHeight = screenSize.height - 32;
-    final double dialogHeight =
-        availableHeight < _dialogHeight ? availableHeight : _dialogHeight;
-
+    final double dialogHeight = math.min(_dialogHeight, availableHeight);
     final availableWidth = screenSize.width - 16;
     final dialogWidth = math.min(_dialogWidth, availableWidth);
     double start = buttonPosition.dx + buttonSize.width / 2 - dialogWidth / 2;
@@ -223,7 +221,13 @@ class _EmojiButtonState extends State<EmojiButton>
 
     overlay.insert(_overlayEntry!);
 
-    widget.onPickerOpen();
+    try {
+      widget.onPickerOpen();
+    } catch (_) {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+      return;
+    }
 
     await _animationController.forward(from: 0);
 
@@ -231,8 +235,10 @@ class _EmojiButtonState extends State<EmojiButton>
   }
 
   Future<void> _closeDialog() async {
-    if (!_isDialogVisible) return;
-    await _animationController.reverse();
+    if (_overlayEntry == null) return;
+    if (_isDialogVisible) {
+      await _animationController.reverse();
+    }
     _overlayEntry?.remove();
     _overlayEntry = null;
     if (mounted) setState(() => _isDialogVisible = false);
