@@ -9,12 +9,14 @@ class AiScribeMobileActionsBottomSheet extends StatefulWidget {
   final ImagePaths imagePaths;
   final List<AIScribeMenuCategory> availableCategories;
   final String? content;
+  final bool showCustomPromptBar;
 
   const AiScribeMobileActionsBottomSheet({
     super.key,
     required this.imagePaths,
     required this.availableCategories,
     this.content,
+    this.showCustomPromptBar = true,
   });
 
   @override
@@ -153,6 +155,10 @@ class _AiScribeMobileActionsBottomSheetState
   }
 
   Widget _buildBottomBar(BuildContext context) {
+    if (!widget.showCustomPromptBar) {
+      return const SizedBox.shrink();
+    }
+    
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

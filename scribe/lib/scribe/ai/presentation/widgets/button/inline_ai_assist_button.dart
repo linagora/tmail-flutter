@@ -49,7 +49,7 @@ class InlineAiAssistButton extends StatelessWidget {
 
     final isScribeMobile = AiScribeMobileUtils.isScribeInMobileMode(context);
 
-    await AiScribeModalManager.showAIScribeMenuModal(
+    await AiScribeModalManager.showAIScribeModal(
       isScribeMobile: isScribeMobile,
       imagePaths: imagePaths,
       availableCategories: AIScribeMenuCategory.values,

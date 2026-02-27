@@ -1,6 +1,4 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe.dart';
 
@@ -14,7 +12,7 @@ class AiScribeSuggestionSuccessListActions extends StatelessWidget {
   final String suggestionText;
   final bool hasContent;
   final OnSelectAiScribeSuggestionAction onSelectAction;
-  final VoidCallback onLoadSuggestion;
+  final OnLoadSuggestion onLoadSuggestion;
 
   const AiScribeSuggestionSuccessListActions({
     super.key,
@@ -27,52 +25,16 @@ class AiScribeSuggestionSuccessListActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = ScribeLocalizations.of(context);
-
     return Column(
+      spacing: AIScribeSizes.successSpacing,
       children: [
         AiScribeSuggestionSuccessToolbar(suggestionText: suggestionText, onLoadSuggestion: onLoadSuggestion, imagePaths: imagePaths),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          spacing: 8,
-          children: [
-            if (hasContent)
-              Flexible(
-                child: Container(
-                  constraints: const BoxConstraints(minWidth: 67),
-                  height: 36,
-                  child: ConfirmDialogButton(
-                    label: AiScribeSuggestionActions.replace.getLabel(localizations),
-                    textColor: AppColor.primaryMain,
-                    onTapAction: () {
-                      Navigator.of(context).pop();
-                      onSelectAction(
-                        AiScribeSuggestionActions.replace,
-                        suggestionText,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            Flexible(
-              child: Container(
-                constraints: const BoxConstraints(minWidth: 72),
-                height: 36,
-                child: ConfirmDialogButton(
-                  label: AiScribeSuggestionActions.insert.getLabel(localizations),
-                  backgroundColor: AppColor.blueD2E9FF,
-                  textColor: AppColor.primaryMain,
-                  onTapAction: () {
-                    Navigator.of(context).pop();
-                    onSelectAction(
-                      AiScribeSuggestionActions.insert,
-                      suggestionText,
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
+        AiScribeSuggestionSuccessActions(
+          suggestionText: suggestionText,
+          onLoadSuggestion: onLoadSuggestion,
+          imagePaths: imagePaths,
+          hasContent: hasContent,
+          onSelectAction: onSelectAction,
         ),
       ],
     );
