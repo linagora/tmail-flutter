@@ -1,3 +1,7 @@
+## [0.24.14] - 2026-02-27
+### Fixed
+- TF-4350 cannot focus in folder creator modal and create rule modal in Safari when email open
+
 ## [0.24.13] - 2026-02-25
 ### Fixed
 - TF-4344 Selected language not reflect current language
