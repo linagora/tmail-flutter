@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:scribe/scribe.dart';
 import 'package:scribe/scribe/ai/data/network/ai_api_exception.dart';
 
+typedef OnLoadSuggestion = Future<void> Function([AIAction? aiAction, String? content]);
+
 mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
   GenerateAITextInteractor? get interactor => _interactor;
   GenerateAITextInteractor? _interactor;
@@ -37,7 +39,10 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
     loadSuggestion();
   }
 
-  Future<void> loadSuggestion() async {
+  Future<void> loadSuggestion([AIAction? newAiAction, String? newContent]) async {
+    final aiActionToSend = newAiAction ?? aiAction;
+    final contentToSend = newContent ?? content;
+
     _suggestionState.value = dartz.Right(GenerateAITextLoading());
 
     if (_interactor == null) {
@@ -50,8 +55,8 @@ mixin AiScribeSuggestionStateMixin<T extends StatefulWidget> on State<T> {
     }
 
     final result = await _interactor!.execute(
-      aiAction,
-      content,
+      aiActionToSend,
+      contentToSend,
     );
 
     if (!mounted) return;
