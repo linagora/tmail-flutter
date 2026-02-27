@@ -49,6 +49,7 @@ class _EmojiButtonState extends State<EmojiButton>
   final GlobalKey _buttonKey = GlobalKey();
   OverlayEntry? _overlayEntry;
   bool _isDialogVisible = false;
+  bool _isOpeningDialog = false;
   Future<Category?>? _recentEmoji;
 
   late final AnimationController _animationController = AnimationController(
@@ -79,159 +80,173 @@ class _EmojiButtonState extends State<EmojiButton>
   }
 
   Future<void> _openDialog() async {
-    if (!mounted || _isDialogVisible) return;
-
-    final ctx = _buttonKey.currentContext;
-    if (ctx == null) return;
-
-    final renderBox = ctx.findRenderObject() as RenderBox?;
-    if (renderBox == null || !renderBox.hasSize) return;
-
-    final buttonSize = renderBox.size;
-    final buttonPosition = renderBox.localToGlobal(Offset.zero);
-    final screenSize = MediaQuery.sizeOf(context);
-
-    final double availableHeight = screenSize.height - 32;
-    final double dialogHeight = math.min(_dialogHeight, availableHeight);
-    final availableWidth = screenSize.width - 16;
-    final dialogWidth = math.min(_dialogWidth, availableWidth);
-    double start = buttonPosition.dx + buttonSize.width / 2 - dialogWidth / 2;
-    double top = buttonPosition.dy - dialogHeight - 8;
-
-    start = start.clamp(8.0, math.max(8.0, screenSize.width - dialogWidth - 8));
-    if (top < 8) {
-      top = buttonPosition.dy + buttonSize.height + 8;
-
-      if (top + dialogHeight > screenSize.height - 8) {
-        top = 8;
-      }
+    if (!mounted ||
+        _isDialogVisible ||
+        _isOpeningDialog ||
+        _overlayEntry != null) {
+      return;
     }
+    _isOpeningDialog = true;
 
-    await _loadRecentEmoji();
-    if (!mounted || _isDialogVisible) return;
+    try {
+      final ctx = _buttonKey.currentContext;
+      if (ctx == null) return;
 
-    _overlayEntry = OverlayEntry(
-      builder: (context) {
-        return PointerInterceptor(
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: GestureDetector(
-                  onTap: _closeDialog,
-                  behavior: HitTestBehavior.translucent,
-                  child: const SizedBox.expand(),
+      final renderBox = ctx.findRenderObject() as RenderBox?;
+      if (renderBox == null || !renderBox.hasSize) return;
+
+      final buttonSize = renderBox.size;
+      final buttonPosition = renderBox.localToGlobal(Offset.zero);
+      final screenSize = MediaQuery.sizeOf(context);
+
+      final double availableHeight = math.max(0.0, screenSize.height - 32);
+      final double dialogHeight = math.min(_dialogHeight, availableHeight);
+      final double availableWidth = math.max(0.0, screenSize.width - 16);
+      final dialogWidth = math.min(_dialogWidth, availableWidth);
+
+      if (dialogWidth == 0 || dialogHeight == 0) return;
+
+      double start = buttonPosition.dx + buttonSize.width / 2 - dialogWidth / 2;
+      double top = buttonPosition.dy - dialogHeight - 8;
+
+      start =
+          start.clamp(8.0, math.max(8.0, screenSize.width - dialogWidth - 8));
+      if (top < 8) {
+        top = buttonPosition.dy + buttonSize.height + 8;
+
+        if (top + dialogHeight > screenSize.height - 8) {
+          top = 8;
+        }
+      }
+
+      await _loadRecentEmoji();
+      if (!mounted || _isDialogVisible || _overlayEntry != null) return;
+
+      _overlayEntry = OverlayEntry(
+        builder: (context) {
+          return PointerInterceptor(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: GestureDetector(
+                    onTap: _closeDialog,
+                    behavior: HitTestBehavior.translucent,
+                    child: const SizedBox.expand(),
+                  ),
                 ),
-              ),
-              PositionedDirectional(
-                start: start,
-                top: top,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: ScaleTransition(
-                    scale: _scaleAnimation,
-                    alignment: Alignment.topCenter,
-                    child: Container(
-                      width: dialogWidth,
-                      height: dialogHeight,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(24)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.16),
-                            blurRadius: 24,
-                          ),
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 2,
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      child: EmojiPicker(
-                        emojiData: widget.emojiData,
-                        configuration: EmojiPickerConfiguration(
-                          showRecentTab: true,
-                          emojiStyle: ThemeUtils.textStyleInter600().copyWith(
-                            fontSize: 32,
-                            height: 1,
-                          ),
-                          mainAxisSpacing: 4,
-                          crossAxisSpacing: 4,
-                          perLine: 8,
-                          stickyHeaderTextStyle:
-                              ThemeUtils.textStyleM3LabelMedium,
-                          searchEmptyTextStyle:
-                              ThemeUtils.textStyleM3BodyMedium.copyWith(
-                            color: AppColor.m3Tertiary30,
-                          ),
-                          searchEmptyWidget:
-                              widget.emojiSearchEmptySvgAssetPath != null
-                                  ? SvgPicture.asset(
-                                      widget.emojiSearchEmptySvgAssetPath!,
-                                    )
-                                  : null,
-                        ),
-                        itemBuilder: (context, emojiId, emoji, callback) {
-                          return Material(
-                            type: MaterialType.transparency,
-                            child: InkWell(
-                              onTap: () => callback(emojiId, emoji),
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(4),
-                              ),
-                              hoverColor: AppColor.m3LightSurfaceTint
-                                  .withValues(alpha: 0.08),
-                              child: Padding(
-                                padding: const EdgeInsetsDirectional.only(
-                                  top: 6,
-                                ),
-                                child: Text(
-                                  emoji,
-                                  style:
-                                      ThemeUtils.textStyleInter600().copyWith(
-                                    fontSize: 32,
-                                    height: 1,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
+                PositionedDirectional(
+                  start: start,
+                  top: top,
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: ScaleTransition(
+                      scale: _scaleAnimation,
+                      alignment: Alignment.topCenter,
+                      child: Container(
+                        width: dialogWidth,
+                        height: dialogHeight,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(24)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.16),
+                              blurRadius: 24,
                             ),
-                          );
-                        },
-                        onEmojiSelected: (emojiId, emoji) {
-                          widget.onEmojiSelected(emoji);
-                        },
-                        recentEmoji: _recentEmoji,
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.08),
+                              blurRadius: 2,
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        child: EmojiPicker(
+                          emojiData: widget.emojiData,
+                          configuration: EmojiPickerConfiguration(
+                            showRecentTab: true,
+                            emojiStyle: ThemeUtils.textStyleInter600().copyWith(
+                              fontSize: 32,
+                              height: 1,
+                            ),
+                            mainAxisSpacing: 4,
+                            crossAxisSpacing: 4,
+                            perLine: 8,
+                            stickyHeaderTextStyle:
+                                ThemeUtils.textStyleM3LabelMedium,
+                            searchEmptyTextStyle:
+                                ThemeUtils.textStyleM3BodyMedium.copyWith(
+                              color: AppColor.m3Tertiary30,
+                            ),
+                            searchEmptyWidget:
+                                widget.emojiSearchEmptySvgAssetPath != null
+                                    ? SvgPicture.asset(
+                                        widget.emojiSearchEmptySvgAssetPath!,
+                                      )
+                                    : null,
+                          ),
+                          itemBuilder: (context, emojiId, emoji, callback) {
+                            return Material(
+                              type: MaterialType.transparency,
+                              child: InkWell(
+                                onTap: () => callback(emojiId, emoji),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(4),
+                                ),
+                                hoverColor: AppColor.m3LightSurfaceTint
+                                    .withValues(alpha: 0.08),
+                                child: Padding(
+                                  padding: const EdgeInsetsDirectional.only(
+                                    top: 6,
+                                  ),
+                                  child: Text(
+                                    emoji,
+                                    style:
+                                        ThemeUtils.textStyleInter600().copyWith(
+                                      fontSize: 32,
+                                      height: 1,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          onEmojiSelected: (emojiId, emoji) {
+                            widget.onEmojiSelected(emoji);
+                          },
+                          recentEmoji: _recentEmoji,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+              ],
+            ),
+          );
+        },
+      );
 
-    final overlay = Overlay.maybeOf(context, rootOverlay: true);
+      final overlay = Overlay.maybeOf(context, rootOverlay: true);
 
-    if (!mounted || overlay == null) return;
+      if (!mounted || overlay == null) return;
 
-    overlay.insert(_overlayEntry!);
+      overlay.insert(_overlayEntry!);
 
-    try {
-      widget.onPickerOpen();
-    } catch (_) {
-      _overlayEntry?.remove();
-      _overlayEntry = null;
-      return;
+      try {
+        widget.onPickerOpen();
+      } catch (_) {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+        return;
+      }
+
+      await _animationController.forward(from: 0);
+
+      if (mounted) setState(() => _isDialogVisible = true);
+    } finally {
+      _isOpeningDialog = false;
     }
-
-    await _animationController.forward(from: 0);
-
-    if (mounted) setState(() => _isDialogVisible = true);
   }
 
   Future<void> _closeDialog() async {
