@@ -56,7 +56,7 @@ class ContextSubmenuController {
     final clampedLeft = finalLeft
         .clamp(0.0, math.max(0.0, screenWidth - submenuWidth))
         .toDouble();
-    final availableHeight = math.max(0.0, screenHeight - anchor.top);
+    final availableHeight = math.max(0.0, screenHeight - bottom);
     final finalHeight = math.min(submenuMaxHeight, availableHeight);
 
     _submenuEntry = OverlayEntry(

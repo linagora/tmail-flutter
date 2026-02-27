@@ -6,7 +6,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 
 class AiScribeSuggestionSuccessToolbar extends StatelessWidget {
   final String suggestionText;
-  final VoidCallback onLoadSuggestion;
+  final OnLoadSuggestion onLoadSuggestion;
   final ImagePaths imagePaths;
 
   const AiScribeSuggestionSuccessToolbar({

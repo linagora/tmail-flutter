@@ -14,6 +14,7 @@ class AiScribeModalWidget extends StatelessWidget {
   final ModalPlacement? preferredPlacement;
   final ModalCrossAxisAlignment crossAxisAlignment;
   final ContextSubmenuController? submenuController;
+  final bool showCustomPromptBar;
 
   const AiScribeModalWidget({
     super.key,
@@ -25,6 +26,7 @@ class AiScribeModalWidget extends StatelessWidget {
     this.preferredPlacement,
     this.crossAxisAlignment = ModalCrossAxisAlignment.center,
     this.submenuController,
+    this.showCustomPromptBar = true,
   });
 
   @override
@@ -57,16 +59,17 @@ class AiScribeModalWidget extends StatelessWidget {
                 ),
               ),
             ),
-          MouseRegion(
-            onEnter: (_) => submenuController?.hide(),
-            child: AIScribeBar(
-              imagePaths: imagePaths,
-              onCustomPrompt: (customPrompt) {
-                Navigator.of(context).pop(CustomPromptAction(customPrompt));
-                submenuController?.hide();
-              },
+          if (showCustomPromptBar)
+            MouseRegion(
+              onEnter: (_) => submenuController?.hide(),
+              child: AIScribeBar(
+                imagePaths: imagePaths,
+                onCustomPrompt: (customPrompt) {
+                  Navigator.of(context).pop(CustomPromptAction(customPrompt));
+                  submenuController?.hide();
+                },
+              ),
             ),
-          ),
         ],
       ),
     );
