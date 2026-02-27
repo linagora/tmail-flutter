@@ -81,7 +81,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "next": "下一步",
+  "next": "继续",
   "@next": {
     "type": "text",
     "placeholders_order": [],
@@ -5241,6 +5241,330 @@
   },
   "youDoNotHaveAnyFavoritesEmails": "您没有任何星标邮件。",
   "@youDoNotHaveAnyFavoritesEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribe": "AI Scribe",
+  "@aiScribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeSettingExplanation": "使用 AI 帮助您撰写和改进邮件",
+  "@aiScribeSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeToggleDescription": "启用 AI Scribe",
+  "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequired": "需要处理",
+  "@actionRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequiredMailboxDisplayName": "需要处理",
+  "@actionRequiredMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyActionRequiredEmails": "您目前没有任何需要处理的邮件。",
+  "@youDoNotHaveAnyActionRequiredEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsAction": "AI 需要处理",
+  "@aiNeedsAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionToggleDescription": "启用 AI 需要处理",
+  "@aiNeedsActionToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionSettingExplanation": "使用 AI 检测需要您关注的邮件。关闭后，AI 将不会处理任何邮件。",
+  "@aiNeedsActionSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labels": "标签",
+  "@labels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newLabel": "新标签",
+  "@newLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelName": "标签名称",
+  "@labelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseEnterNameYourNewLabel": "请输入新标签的名称",
+  "@pleaseEnterNameYourNewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseALabelColor": "选择标签颜色",
+  "@chooseALabelColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabel": "创建标签",
+  "@createLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewLabel": "创建新标签",
+  "@createANewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizeYourInboxWithACustomCategory": "使用自定义类别整理您的收件箱",
+  "@organizeYourInboxWithACustomCategory": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tagNameAlreadyExists": "已存在同名标签。请选择其他名称。",
+  "@tagNameAlreadyExists": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseCustomColour": "选择自定义颜色",
+  "@chooseCustomColour": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColourForThisLabel": "为此标签选择颜色",
+  "@chooseAColourForThisLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabelSuccessfullyMessage": "您已成功创建 {labelName} 标签",
+  "@createLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "createNewLabelFailure": "创建新标签失败",
+  "@createNewLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibility": "标签可见性",
+  "@labelVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilitySettingExplanation": "在邮件列表中直接显示分配给邮件的标签，以便于分类。",
+  "@labelVisibilitySettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilityToggleDescription": "显示标签",
+  "@labelVisibilityToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "theLabelFeatureIsNowAvailable": "标签功能现已可用。",
+  "@theLabelFeatureIsNowAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelAs": "标签为",
+  "@labelAs": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addLabelToEmailSuccessfullyMessage": "邮件已添加至“{labelName}”标签",
+  "@addLabelToEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToEmailFailureMessage": "无法将邮件添加至“{labelName}”标签",
+  "@addLabelToEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabel": "添加标签",
+  "@addLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addLabelToThreadSuccessfullyMessage": "线程中的所有邮件已添加至“{labelName}”标签",
+  "@addLabelToThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToThreadFailureMessage": "无法将线程中的所有邮件添加至“{labelName}”标签",
+  "@addLabelToThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "youDoNotHaveAnyEmailTaggedWithThis": "您没有使用此标签标记的邮件。",
+  "@youDoNotHaveAnyEmailTaggedWithThis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allLabels": "所有标签",
+  "@allLabels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLabel": "编辑标签",
+  "@editLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateTheLabelName": "更新标签名称",
+  "@updateTheLabelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLabelSuccessfullyMessage": "您已成功编辑 {labelName} 标签",
+  "@editLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "editLabelFailure": "编辑标签失败",
+  "@editLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeLabelFromEmailSuccessfullyMessage": "邮件已从“{labelName}”标签移除",
+  "@removeLabelFromEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromEmailFailureMessage": "无法从“{labelName}”标签移除邮件",
+  "@removeLabelFromEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadSuccessfullyMessage": "线程中的所有邮件已从“{labelName}”标签移除",
+  "@removeLabelFromThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadFailureMessage": "无法从“{labelName}”标签移除线程中的所有邮件",
+  "@removeLabelFromThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteLabel": "删除标签",
+  "@deleteLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "areYouSureYouWantToDeleteTheLabel": "是否确定要删除标签“{labelName}”？",
+  "@areYouSureYouWantToDeleteTheLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteLabelSuccessfullyMessage": "您已成功删除 {labelName} 标签",
+  "@deleteLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteALabelFailure": "删除标签失败",
+  "@deleteALabelFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
