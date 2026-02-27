@@ -14,6 +14,7 @@ class AssetManager {
 
   EmojiData? _emojiData;
   bool _isEmojiDataLoaded = false;
+  double? _emojiDataVersion;
 
   Future<void> preloadAllAssets() async {
     await Future.wait([
@@ -42,7 +43,9 @@ class AssetManager {
   /// Loads emoji data once and caches it in memory.
   /// If data has already been loaded, returns immediately.
   Future<void> loadEmojiData({double version = 13.5}) async {
-    if (_isEmojiDataLoaded && _emojiData != null) {
+    if (_isEmojiDataLoaded &&
+        _emojiData != null &&
+        _emojiDataVersion == version) {
       return;
     }
 
@@ -50,6 +53,7 @@ class AssetManager {
       final rawData = await EmojiData.builtIn();
       _emojiData = rawData.filterByVersion(version);
       _isEmojiDataLoaded = true;
+      _emojiDataVersion = version;
       log('AssetManager::loadEmojiData:✅ EmojiData (v$version) loaded successfully.');
     } catch (e, s) {
       logError('AssetManager::loadEmojiData: failed + $e, $s');

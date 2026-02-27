@@ -1,7 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
-import 'package:tmail_ui_user/features/reactions/domain/extensions/list_reactions_extesion.dart';
+import 'package:tmail_ui_user/features/reactions/domain/extensions/list_reactions_extension.dart';
 import 'package:tmail_ui_user/features/reactions/domain/repository/reactions_repository.dart';
 import 'package:tmail_ui_user/features/reactions/domain/state/store_recent_reactions_state.dart';
 

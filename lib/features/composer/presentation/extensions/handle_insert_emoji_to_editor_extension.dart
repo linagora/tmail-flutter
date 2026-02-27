@@ -21,7 +21,7 @@ extension HandleInsertEmojiToEditorExtension on ComposerController {
     richTextWebController?.editorController.setFocus();
   }
 
-  void storeRecentReactions(String emoji) async {
+  Future<void> storeRecentReactions(String emoji) async {
     final emojiId = AssetManager().emojiData?.getIdByEmoji(emoji);
     log('$runtimeType::storeRecentReactions: EmojiId is $emojiId');
     if (emojiId?.trim().isNotEmpty == true) {

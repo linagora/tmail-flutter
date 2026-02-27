@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
@@ -98,13 +99,12 @@ class _EmojiButtonState extends State<EmojiButton>
     final double dialogHeight =
         availableHeight < _dialogHeight ? availableHeight : _dialogHeight;
 
-    double start = buttonPosition.dx + buttonSize.width / 2 - _dialogWidth / 2;
+    final availableWidth = screenSize.width - 16;
+    final dialogWidth = math.min(_dialogWidth, availableWidth);
+    double start = buttonPosition.dx + buttonSize.width / 2 - dialogWidth / 2;
     double top = buttonPosition.dy - dialogHeight - 8;
 
-    if (start < 8) start = 8;
-    if (start + _dialogWidth > screenSize.width - 8) {
-      start = screenSize.width - _dialogWidth - 8;
-    }
+    start = start.clamp(8.0, math.max(8.0, screenSize.width - dialogWidth - 8));
     if (top < 8) {
       top = buttonPosition.dy + buttonSize.height + 8;
 
@@ -136,7 +136,7 @@ class _EmojiButtonState extends State<EmojiButton>
                     scale: _scaleAnimation,
                     alignment: Alignment.topCenter,
                     child: Container(
-                      width: _dialogWidth,
+                      width: dialogWidth,
                       height: dialogHeight,
                       decoration: BoxDecoration(
                         color: Colors.white,

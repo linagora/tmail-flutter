@@ -14,9 +14,12 @@ jobs:
     environment: dev
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       # 🧰 Setup SSH (needed for private git@ dependencies inside Docker build)
       - name: Set up SSH for private Git dependencies
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
@@ -78,9 +81,12 @@ jobs:
     environment: prod
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       # 🧰 Setup SSH (needed for private git@ dependencies inside Docker build)
       - name: Set up SSH for private Git dependencies
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
