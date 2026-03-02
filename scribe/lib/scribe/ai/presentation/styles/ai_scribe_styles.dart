@@ -205,6 +205,9 @@ abstract final class AIScribeSizes {
   static const EdgeInsetsGeometry searchBarPadding =
       EdgeInsetsDirectional.symmetric(horizontal: 16);
 
+  static const EdgeInsetsGeometry searchBarMobilePadding =
+      EdgeInsetsDirectional.all(16);
+
   static const EdgeInsetsGeometry suggestionContentPadding =
       EdgeInsetsDirectional.all(16);
 
