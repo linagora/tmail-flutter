@@ -153,16 +153,18 @@ class _AiScribeMobileActionsBottomSheetState
     );
   }
 
-  Widget _buildBottomBarContent(BuildContext context) {
+  Widget _buildBottomBar(BuildContext context) {
     if (!widget.showCustomPromptBar) {
       return const SizedBox.shrink();
     }
     
-    return AIScribeBar(
-      onCustomPrompt: _onCustomPromptSubmit,
-      imagePaths: widget.imagePaths,
-      borderRadius: AIScribeSizes.bottomBarRadius,
-      hintStyle: AIScribeTextStyles.searchBar,
+    return Padding(
+      padding: AIScribeSizes.searchBarMobilePadding,
+      child: AIScribeBar(
+        onCustomPrompt: _onCustomPromptSubmit,
+        imagePaths: widget.imagePaths,
+        borderRadius: AIScribeSizes.bottomBarRadius,
+      )
     );
   }
 
@@ -185,8 +187,7 @@ class _AiScribeMobileActionsBottomSheetState
     
     final hasContent = widget.content?.isNotEmpty ?? false;
 
-    final bottomBarPadding = MediaQuery.of(context).viewInsets.bottom + 16.0;
-    final bottomBarInset = bottomBarPadding + (widget.showCustomPromptBar ? AIScribeSizes.searchBarMaxHeight : 0.0);
+    final bottomBarPadding = MediaQuery.of(context).viewInsets.bottom;
 
     return PointerInterceptor(
       child: Container(
@@ -198,7 +199,7 @@ class _AiScribeMobileActionsBottomSheetState
           child: Stack(
             children: [
               Padding(
-                padding: EdgeInsets.only(bottom: bottomBarInset),
+                padding: EdgeInsets.only(bottom: bottomBarPadding),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -221,17 +222,13 @@ class _AiScribeMobileActionsBottomSheetState
                                 },
                               ),
                             ),
+          
                         ],
                       ),
                     ),
+                    _buildBottomBar(context)
                   ],
                 ),
-              ),
-              Positioned(
-                bottom: bottomBarPadding,
-                left: 16.0,
-                right: 16.0,
-                child: _buildBottomBarContent(context),
               ),
             ],
           ),

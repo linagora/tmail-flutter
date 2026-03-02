@@ -10,14 +10,12 @@ class AIScribeBar extends StatefulWidget {
   final OnCustomPromptCallback onCustomPrompt;
   final ImagePaths imagePaths;
   final double? borderRadius;
-  final TextStyle? hintStyle;
 
   const AIScribeBar({
     super.key,
     required this.onCustomPrompt,
     required this.imagePaths,
-    this.borderRadius,
-    this.hintStyle,
+    this.borderRadius
   });
 
   @override
@@ -75,59 +73,57 @@ class _AIScribeBarState extends State<AIScribeBar> {
         borderRadius: borderRadius,
         gradient: AIScribeColors.barGradient,
       ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: Container(
-          width: AIScribeSizes.searchBarWidth,
-          padding: AIScribeSizes.searchBarPadding,
-          decoration: const BoxDecoration(
-            color: AIScribeColors.background,
-          ),
-          constraints: const BoxConstraints(
-            maxHeight: AIScribeSizes.searchBarMaxHeight,
-            minHeight: AIScribeSizes.searchBarMinHeight,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: KeyboardListener(
-                  focusNode: _keyboardListenerFocusNode,
-                  onKeyEvent: _handleKeyboardEvent,
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _textFieldFocusNode,
-                    decoration: InputDecoration(
-                      hintText: ScribeLocalizations.of(context).customPromptAction,
-                      hintStyle: widget.hintStyle ?? AIScribeTextStyles.searchBarHint,
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                      isDense: true,
-                    ),
-                    style: AIScribeTextStyles.searchBar,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    cursorHeight: 16,
+      child: Container(
+        width: AIScribeSizes.searchBarWidth,
+        padding: AIScribeSizes.searchBarPadding,
+        decoration: BoxDecoration(
+          color: AIScribeColors.background,
+          borderRadius: borderRadius,
+        ),
+        constraints: const BoxConstraints(
+          maxHeight: AIScribeSizes.searchBarMaxHeight,
+          minHeight: AIScribeSizes.searchBarMinHeight,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: KeyboardListener(
+                focusNode: _keyboardListenerFocusNode,
+                onKeyEvent: _handleKeyboardEvent,
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _textFieldFocusNode,
+                  decoration: InputDecoration(
+                    hintText: ScribeLocalizations.of(context).customPromptAction,
+                    hintStyle: AIScribeTextStyles.searchBarHint,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    isDense: true,
                   ),
+                  style: AIScribeTextStyles.searchBar,
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  cursorHeight: 16,
                 ),
               ),
-              const SizedBox(width: AIScribeSizes.fieldSpacing),
-              ValueListenableBuilder<bool>(
-                valueListenable: _isButtonEnabled,
-                builder: (_, isEnabled, __) {
-                  return TMailButtonWidget.fromIcon(
-                    icon: widget.imagePaths.icSend,
-                    iconSize: AIScribeSizes.sendIcon,
-                    padding: AIScribeSizes.sendIconPadding,
-                    iconColor: AIScribeColors.background,
-                    backgroundColor: isEnabled
-                        ? AIScribeColors.sendPromptBackground
-                        : AIScribeColors.sendPromptBackgroundDisabled,
-                    onTapActionCallback: isEnabled ? _onSendPressed : null,
-                  );
-                },
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(width: AIScribeSizes.fieldSpacing),
+            ValueListenableBuilder<bool>(
+              valueListenable: _isButtonEnabled,
+              builder: (_, isEnabled, __) {
+                return TMailButtonWidget.fromIcon(
+                  icon: widget.imagePaths.icSend,
+                  iconSize: AIScribeSizes.sendIcon,
+                  padding: AIScribeSizes.sendIconPadding,
+                  iconColor: AIScribeColors.background,
+                  backgroundColor: isEnabled
+                      ? AIScribeColors.sendPromptBackground
+                      : AIScribeColors.sendPromptBackgroundDisabled,
+                  onTapActionCallback: isEnabled ? _onSendPressed : null,
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
