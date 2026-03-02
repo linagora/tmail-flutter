@@ -100,7 +100,7 @@ void main() {
     dioAdapter = DioAdapter(dio: dio);
     dioAdapter.reset();
 
-    dotenv.testLoad(mergeWith: {'PLATFORM': 'other'});
+    dotenv.loadFromString(envString: 'PLATFORM=other');
   });
 
   void stubAccountCache() {

@@ -177,12 +177,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
             stackTrace: st,
           );
 
-          if (refreshError is ServerError ||
-              refreshError is TemporarilyUnavailable) {
+          final refreshInnerError = refreshError.error;
+          if (refreshInnerError is ServerError ||
+              refreshInnerError is TemporarilyUnavailable) {
             return super.onError(
               DioException(
                 requestOptions: err.requestOptions,
-                error: refreshError,
+                error: refreshInnerError,
               ),
               handler,
             );
