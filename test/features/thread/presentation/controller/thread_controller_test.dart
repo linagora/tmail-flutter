@@ -5,6 +5,7 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' hide State;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -491,6 +492,7 @@ void main() {
           any,
           any,
           sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
           emailFilter: anyNamed('emailFilter'),
@@ -516,6 +518,7 @@ void main() {
           any,
           any,
           sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
           emailFilter: anyNamed('emailFilter'),
@@ -548,6 +551,8 @@ void main() {
         'should call _getEmailsInMailboxInteractor.execute with getLatestChanges is false '
         'when mailboxDashBoardController.selectedMailbox updated',
       () async {
+        dotenv.loadFromString(envString: 'FORCE_EMAIL_QUERY=false');
+
         // arrange
         final mailboxBefore = PresentationMailbox(MailboxId(Id('mailbox-before-id')));
         final mailboxAfter = PresentationMailbox(MailboxId(Id('mailbox-after-id')));
