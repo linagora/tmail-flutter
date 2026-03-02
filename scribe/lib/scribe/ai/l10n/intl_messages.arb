@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-02-09T16:58:15.727654",
+  "@@last_modified": "2026-03-02T09:20:40.561113",
   "categoryCorrectGrammar": "Correct",
   "@categoryCorrectGrammar": {
     "type": "text",
@@ -140,6 +140,12 @@
   },
   "retry": "Retry",
   "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copiedToClipboard": "Result copied to clipboard",
+  "@copiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
