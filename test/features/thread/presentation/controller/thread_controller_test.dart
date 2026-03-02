@@ -491,6 +491,7 @@ void main() {
           any,
           any,
           sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
           emailFilter: anyNamed('emailFilter'),
@@ -516,6 +517,7 @@ void main() {
           any,
           any,
           sort: anyNamed('sort'),
+          limit: anyNamed('limit'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
           emailFilter: anyNamed('emailFilter'),
@@ -529,6 +531,8 @@ void main() {
       late ThreadController obxListenerController;
 
       setUp(() {
+        // Ensure PlatformInfo state from other tests does not bleed in
+        PlatformInfo.isTestingForWeb = false;
         obxListenerController = ThreadController(
           mockGetEmailsInMailboxInteractor,
           mockRefreshChangesEmailsInMailboxInteractor,
@@ -714,6 +718,87 @@ void main() {
 
         // Assert - peak should be 15, not stale 40
         expect(limitEmailFetchedController.limitEmailFetched, UnsignedInt(15));
+      });
+
+      test(
+        'SHOULD cap at maxRefreshLimit\n'
+        'WHEN peakEmailCount grows beyond the maximum\n'
+        'SO THAT a single refresh never over-fetches for heavy scrollers',
+      () {
+        // Arrange - load more emails than the cap allows
+        emailsRxList.addAll(generateEmails(ThreadConstants.maxRefreshLimit + 50));
+
+        // Assert - limitEmailFetched must not exceed the cap
+        expect(
+          limitEmailFetchedController.limitEmailFetched,
+          UnsignedInt(ThreadConstants.maxRefreshLimit),
+          reason: 'limitEmailFetched grew past maxRefreshLimit — '
+              'unbounded refresh will over-fetch and inflate emailsInCurrentMailbox',
+        );
+      });
+    });
+
+    group('ever() worker disposal::test', () {
+      late RxList<PresentationEmail> workerEmailsRxList;
+      late ThreadController workerController;
+
+      List<PresentationEmail> generateEmails(int count, {String prefix = 'email'}) {
+        return List.generate(
+          count,
+          (i) => PresentationEmail(id: EmailId(Id('$prefix$i'))),
+        );
+      }
+
+      setUp(() {
+        workerEmailsRxList = RxList();
+
+        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(Rxn(null));
+        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(workerEmailsRxList);
+        when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
+        when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
+        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+        when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
+
+        workerController = ThreadController(
+          mockGetEmailsInMailboxInteractor,
+          mockRefreshChangesEmailsInMailboxInteractor,
+          mockLoadMoreEmailsInMailboxInteractor,
+          mockSearchEmailInteractor,
+          mockSearchMoreEmailInteractor,
+          mockGetEmailByIdInteractor,
+          mockCleanAndGetEmailsInMailboxInteractor,
+        );
+
+        workerController.onInit();
+      });
+
+      test(
+        'SHOULD NOT update peakEmailCount via ever() worker\n'
+        'WHEN emails are added after onClose is called\n'
+        'SO THAT disposed workers do not execute stale callbacks',
+      () {
+        // Arrange - establish a peak count before closing
+        workerEmailsRxList.addAll(generateEmails(30));
+        expect(workerController.limitEmailFetched, UnsignedInt(30),
+            reason: 'Baseline: peakEmailCount must be tracked while controller is open');
+
+        // Act - close the controller (should dispose all ever() workers)
+        workerController.onClose();
+
+        // Add more emails that would push peakEmailCount from 30 to 130
+        workerEmailsRxList.addAll(generateEmails(100, prefix: 'after'));
+
+        // Assert - limitEmailFetched must remain at 30
+        // Any increase proves the ever() worker callback fired post-close
+        expect(
+          workerController.limitEmailFetched,
+          UnsignedInt(30),
+          reason: 'ever() worker callback fired after onClose — worker was not disposed',
+        );
       });
     });
   });
