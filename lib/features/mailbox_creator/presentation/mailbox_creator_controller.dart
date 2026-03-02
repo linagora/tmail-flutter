@@ -13,7 +13,6 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/special_character_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/bottom_modal_folder_tree_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
@@ -25,7 +24,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class MailboxCreatorController extends BaseController
     with ExpandFolderTriggerScrollableMixin {
 
-  final VerifyNameInteractor _verifyNameInteractor;
   final TreeBuilder _treeBuilder;
 
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -42,7 +40,7 @@ class MailboxCreatorController extends BaseController
 
   List<String> listMailboxNameAsStringExist = <String>[];
 
-  MailboxCreatorController(this._verifyNameInteractor, this._treeBuilder);
+  MailboxCreatorController(this._treeBuilder);
 
   void setNewNameMailbox(String newName) => newNameMailbox.value = newName;
 
@@ -114,7 +112,7 @@ class MailboxCreatorController extends BaseController
     final nameMailbox = newNameMailbox.value;
     final canCheckNameString = _createdMailbox && nameInputFocusNode.hasFocus == false;
 
-    return _verifyNameInteractor.execute(
+    return verifyNameInteractor.execute(
         nameMailbox,
         [
           if (canCheckNameString)

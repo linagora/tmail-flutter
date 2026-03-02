@@ -1,5 +1,4 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -8,16 +7,12 @@ import 'package:labels/extensions/list_label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
-import 'package:tmail_ui_user/features/labels/domain/model/edit_label_request.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
-import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
 import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleLabelActionTypeExtension on LabelController {
@@ -29,11 +24,11 @@ extension HandleLabelActionTypeExtension on LabelController {
   }) {
     switch (actionType) {
       case LabelActionType.create:
-        openCreateNewLabelModal(accountId);
+        onCreateALabelAction(accountId);
         break;
       case LabelActionType.edit:
         if (label == null) return;
-        openEditLabelModal(accountId: accountId, label: label);
+        onEditLabelAction(accountId: accountId, label: label);
         break;
       case LabelActionType.delete:
         if (label == null) return;
@@ -46,75 +41,43 @@ extension HandleLabelActionTypeExtension on LabelController {
     }
   }
 
-  Future<void> openEditLabelModal({
+  Future<void> onEditLabelAction({
     required AccountId? accountId,
     required Label label,
   }) async {
-    if (accountId == null) {
-      consumeState(
-        Stream.value(Left(EditLabelFailure(NotFoundAccountIdException()))),
-      );
+    if (createNewLabelInteractor == null || editLabelInteractor == null) {
+      _handleEditLabelFailure(EditLabelFailure(InteractorNotInitialized()));
       return;
     }
 
-    await DialogRouter().openDialogModal(
-      child: CreateNewLabelModal(
-        key: const Key('edit_label_modal'),
-        labels: labels,
-        selectedLabel: label,
-        actionType: LabelActionType.edit,
-        onLabelActionCallback: (newLabel) =>
-          editLabel(
-            accountId: accountId,
-            selectedLabel: label,
-            newLabel: newLabel,
-          ),
-      ),
-      dialogLabel: 'edit-label-modal',
-    );
-  }
-
-  void editLabel({
-    required AccountId? accountId,
-    required Label selectedLabel,
-    required Label newLabel,
-  }) {
-    popBack();
-    log('LabelController::editLabel:selectedLabel: $selectedLabel, newLabel: $newLabel');
     if (accountId == null) {
-      consumeState(
-        Stream.value(Left(EditLabelFailure(NotFoundAccountIdException()))),
-      );
-    } else if (editLabelInteractor == null) {
-      consumeState(
-        Stream.value(Left(EditLabelFailure(InteractorNotInitialized()))),
-      );
-    } else {
-      final labelId = selectedLabel.id;
+      _handleEditLabelFailure(EditLabelFailure(NotFoundAccountIdException()));
+      return;
+    }
 
-      if (labelId == null) {
-        consumeState(
-          Stream.value(Left(EditLabelFailure(LabelIdIsNull()))),
-        );
-        return;
-      }
+    final resultState = await openEditLabelModal(
+      labels: labels,
+      accountId: accountId,
+      imagePaths: imagePaths,
+      selectedLabel: label,
+      verifyNameInteractor: verifyNameInteractor,
+      createNewLabelInteractor: createNewLabelInteractor!,
+      editLabelInteractor: editLabelInteractor!,
+    );
 
-      final labelRequest = EditLabelRequest(
-        labelId: labelId,
-        labelKeyword: selectedLabel.keyword,
-        newLabel: newLabel,
-      );
-
-      consumeState(editLabelInteractor!.execute(accountId, labelRequest));
+    if (resultState is EditLabelSuccess) {
+      _handleEditLabelSuccess(resultState);
+    } else if (resultState is EditLabelFailure) {
+      _handleEditLabelFailure(resultState);
     }
   }
 
-  void handleEditLabelSuccess(EditLabelSuccess success) {
+  void _handleEditLabelSuccess(EditLabelSuccess success) {
     toastManager.showMessageSuccess(success);
     syncListLabels(success.newLabel);
   }
 
-  void handleEditLabelFailure(EditLabelFailure failure) {
+  void _handleEditLabelFailure(EditLabelFailure failure) {
     toastManager.showMessageFailure(failure);
   }
 

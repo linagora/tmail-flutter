@@ -145,8 +145,7 @@ void main() {
 
     rulesFilterCreatorController = RulesFilterCreatorController(
       mockGetAllMailboxInteractor,
-      mockTreeBuilder,
-      mockVerifyNameInteractor);
+      mockTreeBuilder);
 
     Get.put<RulesFilterCreatorController>(rulesFilterCreatorController);
   });

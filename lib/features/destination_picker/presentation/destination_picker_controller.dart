@@ -32,7 +32,6 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/special_character_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
@@ -69,12 +68,10 @@ class DestinationPickerController extends BaseMailboxController {
     this._searchMailboxInteractor,
     this._createNewMailboxInteractor,
     TreeBuilder treeBuilder,
-    VerifyNameInteractor verifyNameInteractor,
     GetAllMailboxInteractor getAllMailboxInteractor,
     RefreshAllMailboxInteractor refreshAllMailboxInteractor
   ) : super(
     treeBuilder,
-    verifyNameInteractor,
     getAllMailboxInteractor : getAllMailboxInteractor,
     refreshAllMailboxInteractor : refreshAllMailboxInteractor
   );

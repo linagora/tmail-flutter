@@ -15,7 +15,7 @@ extension ListLabelExtension on List<Label> {
       .where((name) => name.trim().isNotEmpty)
       .toList();
 
-  String get displayNameAsString => displayNameNotNullList.join(',');
+  String get displayNameAsString => displayNameNotNullList.join(', ');
 
   List<KeyWordIdentifier> get keywords =>
       map((label) => label.keyword).nonNulls.toList();

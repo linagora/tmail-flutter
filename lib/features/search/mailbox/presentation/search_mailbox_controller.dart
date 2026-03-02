@@ -63,7 +63,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -118,12 +117,10 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     this._subAddressingInteractor,
     this._moveFolderContentInteractor,
     TreeBuilder treeBuilder,
-    VerifyNameInteractor verifyNameInteractor,
     GetAllMailboxInteractor getAllMailboxInteractor,
     RefreshAllMailboxInteractor refreshAllMailboxInteractor
   ) : super(
     treeBuilder,
-    verifyNameInteractor,
     getAllMailboxInteractor: getAllMailboxInteractor,
     refreshAllMailboxInteractor: refreshAllMailboxInteractor
   );

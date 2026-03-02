@@ -342,9 +342,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         final isForwardTo =
                             action.action?.isForwardTo == true;
 
-                        final errorValue = action is ForwardActionArguments
-                          ? controller.errorForwardEmailValue.value
-                          : controller.errorMailboxSelectedValue.value;
+                        final errorValue = controller.errorMessageValue.value;
 
                         final listLabelSelected =
                             action is LabelMessageActionArguments
@@ -391,7 +389,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           actionSelected: action.action,
                           onSelectRuleAction: (filterAction) =>
                             controller.onSelectRuleAction(
-                              context: context,
+                              appLocalizations: AppLocalizations.of(context),
                               actionIndex: index,
                               filerAction: filterAction,
                             ),

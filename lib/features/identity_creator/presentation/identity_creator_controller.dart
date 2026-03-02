@@ -40,16 +40,15 @@ import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/model/identity_cache.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_identity_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
@@ -75,7 +74,6 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html hide
 
 class IdentityCreatorController extends BaseController with DragDropFileMixin implements BeforeReconnectHandler {
 
-  final VerifyNameInteractor _verifyNameInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final SaveIdentityCacheOnWebInteractor _saveIdentityCacheOnWebInteractor;
   final IdentityUtils _identityUtils;
@@ -151,7 +149,6 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   }
 
   IdentityCreatorController(
-      this._verifyNameInteractor,
       this._getAllIdentitiesInteractor,
       this._saveIdentityCacheOnWebInteractor,
       this._identityUtils
@@ -564,7 +561,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   }
 
   String? _getErrorInputNameString(BuildContext context) {
-    return _verifyNameInteractor.execute(
+    return verifyNameInteractor.execute(
         _nameIdentity,
         [
           EmptyNameValidator(),
@@ -587,7 +584,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     if (emailAddress.trim().isEmpty) {
       return null;
     }
-    return _verifyNameInteractor.execute(
+    return verifyNameInteractor.execute(
       emailAddress,
       [
         EmailAddressValidator(),

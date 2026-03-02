@@ -43,6 +43,9 @@ extension HandleCreateNewRuleFilter on MailboxDashBoardController {
       mailboxDestination: presentationMailbox,
       emailAddress: emailAddress,
       isLabelAvailable: isLabelAvailable,
+      allLabels: labelController.labels,
+      createNewLabelInteractor: labelController.createNewLabelInteractor,
+      editLabelInteractor: labelController.editLabelInteractor,
     );
 
     final newRuleFilterRequest = PlatformInfo.isWeb

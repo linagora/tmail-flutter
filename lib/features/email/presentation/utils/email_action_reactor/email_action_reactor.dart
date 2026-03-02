@@ -53,6 +53,8 @@ import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_context_menu.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_list_context_menu.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -89,6 +91,8 @@ class EmailActionReactor {
     this._createNewEmailRuleFilterInteractor,
     this._printEmailInteractor,
     this._getEmailContentInteractor,
+    this._createNewLabelInteractor,
+    this._editLabelInteractor,
   );
 
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -96,6 +100,8 @@ class EmailActionReactor {
   final CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   final PrintEmailInteractor _printEmailInteractor;
   final GetEmailContentInteractor _getEmailContentInteractor;
+  final CreateNewLabelInteractor? _createNewLabelInteractor;
+  final EditLabelInteractor? _editLabelInteractor;
 
   static final _isEmailAddressDialogOpened = false.obs;
   static bool get isDialogOpened => _isEmailAddressDialogOpened.value;
@@ -289,6 +295,7 @@ class EmailActionReactor {
     AccountId accountId, {
     required EmailAddress? emailAddress,
     required bool isLabelAvailable,
+    required List<Label>? allLabels,
   }) async* {
     Get.back();
     final arguments = RulesFilterCreatorArguments(
@@ -296,6 +303,9 @@ class EmailActionReactor {
       session,
       emailAddress: emailAddress,
       isLabelAvailable: isLabelAvailable,
+      allLabels: allLabels,
+      createNewLabelInteractor: _createNewLabelInteractor,
+      editLabelInteractor: _editLabelInteractor,
     );
 
     final newRuleFilterRequest = PlatformInfo.isWeb
@@ -654,6 +664,7 @@ class EmailActionReactor {
     Session session,
     AccountId accountId, {
     required bool isLabelAvailable,
+    required List<Label>? allLabels,
     required EmailAddress emailAddress,
     required ResponsiveUtils responsiveUtils,
     required ImagePaths imagePaths,
@@ -683,6 +694,7 @@ class EmailActionReactor {
                   accountId,
                   emailAddress: emailAddress,
                   isLabelAvailable: isLabelAvailable,
+                  allLabels: allLabels,
                 ),
               ),
         ),
@@ -714,6 +726,7 @@ class EmailActionReactor {
                   accountId,
                   emailAddress: emailAddress,
                   isLabelAvailable: isLabelAvailable,
+                  allLabels: allLabels,
                 ),
               ),
         ),

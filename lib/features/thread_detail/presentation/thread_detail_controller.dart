@@ -174,6 +174,8 @@ class ThreadDetailController extends BaseController {
         _createNewEmailRuleFilterInteractor,
         _printEmailInteractor,
         _getEmailContentInteractor,
+        mailboxDashBoardController.labelController.createNewLabelInteractor,
+        mailboxDashBoardController.labelController.editLabelInteractor,
       );
     });
     ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {

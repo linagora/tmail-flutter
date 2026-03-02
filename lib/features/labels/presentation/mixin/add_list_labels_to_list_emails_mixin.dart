@@ -17,8 +17,11 @@ import 'package:tmail_ui_user/features/email/domain/state/labels/add_list_label_
 import 'package:tmail_ui_user/features/email/domain/usecases/labels/add_list_label_to_list_emails_interactor.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/create_new_label_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_modal_mixin.dart';
-import 'package:tmail_ui_user/features/labels/presentation/widgets/choose_label_modal.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 
@@ -28,7 +31,8 @@ typedef OnSyncListLabelForListEmail = void Function(
   {bool shouldRemove}
 );
 
-mixin AddListLabelsToListEmailsMixin on EmitStateMixin, LabelModalMixin {
+mixin AddListLabelsToListEmailsMixin
+    on EmitStateMixin, LabelModalMixin, CreateNewLabelMixin {
   AccountId? get currentAccountId;
 
   Session? get currentSession;
@@ -46,7 +50,9 @@ mixin AddListLabelsToListEmailsMixin on EmitStateMixin, LabelModalMixin {
     required List<PresentationEmail> selectedEmails,
     required ImagePaths imagePaths,
     required VoidCallback onCallBackAction,
-    required OnCreateALabelAction onCreateALabelAction,
+    required VerifyNameInteractor verifyNameInteractor,
+    required CreateNewLabelInteractor? createNewLabelInteractor,
+    required EditLabelInteractor? editLabelInteractor,
   }) async {
     await openChooseLabelModal(
       labels: labels,
@@ -62,7 +68,14 @@ mixin AddListLabelsToListEmailsMixin on EmitStateMixin, LabelModalMixin {
           emailIds: selectedEmails.listEmailIds,
         );
       },
-      onCreateALabelAction: onCreateALabelAction,
+      onCreateALabelAction: () => createNewLabelWithResultAction(
+        allLabels: labels,
+        imagePaths: imagePaths,
+        accountId: currentAccountId,
+        verifyNameInteractor: verifyNameInteractor,
+        createNewLabelInteractor: createNewLabelInteractor,
+        editLabelInteractor: editLabelInteractor,
+      ),
     );
   }
 

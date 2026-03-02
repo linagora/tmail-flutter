@@ -344,6 +344,7 @@ void main() {
       Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
       Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
       Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
+      Get.put<VerifyNameInteractor>(verifyNameInteractor);
       Get.put<AppToast>(appToast);
       Get.put<ToastManager>(toastManager);
       Get.put<TwakeAppManager>(mockTwakeAppManager);
@@ -418,7 +419,6 @@ void main() {
         createDefaultMailboxInteractor,
         moveFolderContentInteractor,
         treeBuilder,
-        verifyNameInteractor,
         getAllMailboxInteractor,
         refreshAllMailboxInteractor
       );

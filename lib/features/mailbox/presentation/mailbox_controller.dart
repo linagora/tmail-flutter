@@ -79,7 +79,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_b
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
@@ -157,12 +156,10 @@ class MailboxController extends BaseMailboxController
     this._createDefaultMailboxInteractor,
     this._moveFolderContentInteractor,
     TreeBuilder treeBuilder,
-    VerifyNameInteractor verifyNameInteractor,
     GetAllMailboxInteractor getAllMailboxInteractor,
     RefreshAllMailboxInteractor  refreshAllMailboxInteractor,
   ) : super(
     treeBuilder,
-    verifyNameInteractor,
     getAllMailboxInteractor: getAllMailboxInteractor,
     refreshAllMailboxInteractor: refreshAllMailboxInteractor
   );

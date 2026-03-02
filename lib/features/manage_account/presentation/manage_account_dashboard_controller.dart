@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_pi
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_modal_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
@@ -75,6 +76,8 @@ class ManageAccountDashBoardController extends ReloadableController
   SaveLabelVisibilityInteractor? saveLabelVisibilityInteractor;
   GetLabelVisibilityInteractor? getLabelVisibilityInteractor;
 
+  final labelController = Get.find<LabelController>();
+
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
   final settingsPageLevel = SettingsPageLevel.universal.obs;
@@ -82,7 +85,6 @@ class ManageAccountDashBoardController extends ReloadableController
   final dashboardSettingAction = Rxn<UIAction>();
   final octetsQuota = Rxn<Quota>();
   final isLabelVisibilityEnabled = RxBool(PlatformInfo.isIntegrationTesting);
-  final isLabelAvailable = RxBool(false);
 
   Uri? previousUri;
   AccountMenuItem? selectedMenu;

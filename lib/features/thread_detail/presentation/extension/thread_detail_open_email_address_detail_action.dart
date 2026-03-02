@@ -12,6 +12,7 @@ extension ThreadDetailOpenEmailAddressDetailAction on ThreadDetailController {
       session!,
       accountId!,
       isLabelAvailable: isLabelAvailable,
+      allLabels: mailboxDashBoardController.labelController.labels,
       emailAddress: emailAddress,
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,

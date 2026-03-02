@@ -354,6 +354,7 @@ void main() {
     Get.put<RemoveComposerCacheByIdOnWebInteractor>(removeComposerCacheByIdOnWebInteractor);
     Get.put<ComposerManager>(composerManager);
     Get.put<GetAuthenticationInfoInteractor>(getAuthenticationInfoInteractor);
+    Get.put<VerifyNameInteractor>(verifyNameInteractor);
     Get.put<GetStoredOidcConfigurationInteractor>(getStoredOidcConfigurationInteractor);
     Get.put<GetTokenOIDCInteractor>(getTokenOIDCInteractor);
 
@@ -419,7 +420,6 @@ void main() {
         createDefaultMailboxInteractor,
         moveFolderContentInteractor,
         treeBuilder,
-        verifyNameInteractor,
         getAllMailboxInteractor,
         refreshAllMailboxInteractor);
       mailboxController.onReady();
@@ -650,7 +650,6 @@ void main() {
           createDefaultMailboxInteractor,
           moveFolderContentInteractor,
           treeBuilder,
-          verifyNameInteractor,
           getAllMailboxInteractor,
           refreshAllMailboxInteractor);
       mailboxController.onReady();

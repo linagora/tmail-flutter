@@ -41,9 +41,11 @@ import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/download/presentation/controllers/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -79,6 +81,7 @@ const fallbackGenerators = {
   MockSpec<RemoveALabelFromAnEmailInteractor>(),
   MockSpec<MailboxDashBoardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<DownloadController>(fallbackGenerators: fallbackGenerators),
+  MockSpec<LabelController>(fallbackGenerators: fallbackGenerators),
   MockSpec<DownloadManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CachingManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<LanguageCacheManager>(fallbackGenerators: fallbackGenerators),
@@ -87,6 +90,7 @@ const fallbackGenerators = {
   MockSpec<DeleteCredentialInteractor>(),
   MockSpec<LogoutOidcInteractor>(),
   MockSpec<DeleteAuthorityOidcInteractor>(),
+  MockSpec<VerifyNameInteractor>(),
   MockSpec<AppToast>(),
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
@@ -114,6 +118,7 @@ void main() {
   final removeALabelFromAnEmailInteractor = MockRemoveALabelFromAnEmailInteractor();
   final mailboxDashboardController = MockMailboxDashBoardController();
   final downloadController = MockDownloadController();
+  final labelController = MockLabelController();
   final downloadManager = MockDownloadManager();
   final cachingManager = MockCachingManager();
   final languageCacheManager = MockLanguageCacheManager();
@@ -122,6 +127,7 @@ void main() {
   final deleteCredentialInteractor = MockDeleteCredentialInteractor();
   final logoutOidcInteractor = MockLogoutOidcInteractor();
   final deleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
+  final verifyNameInteractor = MockVerifyNameInteractor();
   final appToast = MockAppToast();
   final imagePaths = MockImagePaths();
   final responsiveUtils = MockResponsiveUtils();
@@ -145,6 +151,7 @@ void main() {
 
   setUpAll(() {
     Get.put<DownloadController>(downloadController);
+    Get.put<LabelController>(labelController);
     Get.put<MailboxDashBoardController>(mailboxDashboardController);
     Get.put<DownloadManager>(downloadManager);
     Get.put<CachingManager>(cachingManager);
@@ -158,6 +165,7 @@ void main() {
     Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
     Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
     Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
+    Get.put<VerifyNameInteractor>(verifyNameInteractor);
     Get.put<AppToast>(appToast);
     Get.put<ImagePaths>(imagePaths);
     Get.put<ResponsiveUtils>(responsiveUtils);
@@ -205,6 +213,7 @@ void main() {
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
         when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+        when(mailboxDashboardController.labelController).thenReturn(labelController);
         when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
         Get.put<AcceptCalendarEventInteractor>(acceptCalendarEventInteractor);
         singleEmailController.onInit();
@@ -235,6 +244,7 @@ void main() {
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
         when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+        when(mailboxDashboardController.labelController).thenReturn(labelController);
         when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
         Get.put<MaybeCalendarEventInteractor>(maybeCalendarEventInteractor);
         singleEmailController.onInit();
@@ -265,6 +275,7 @@ void main() {
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
         when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+        when(mailboxDashboardController.labelController).thenReturn(labelController);
         when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
         Get.put<RejectCalendarEventInteractor>(rejectCalendarEventInteractor);
         singleEmailController.onInit();
@@ -343,6 +354,7 @@ void main() {
       when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
       when(mailboxDashboardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
       when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+      when(mailboxDashboardController.labelController).thenReturn(labelController);
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
 
       singleEmailController.onInit();
@@ -402,6 +414,7 @@ void main() {
       when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
       when(mailboxDashboardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
       when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+      when(mailboxDashboardController.labelController).thenReturn(labelController);
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
 
       singleEmailController.onInit();
@@ -448,6 +461,7 @@ void main() {
       when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(EmailUIAction()));
       when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
       when(mailboxDashboardController.downloadController).thenReturn(downloadController);
+      when(mailboxDashboardController.labelController).thenReturn(labelController);
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
       when(appToast.showToastMessageWithMultipleActions(
         any, 

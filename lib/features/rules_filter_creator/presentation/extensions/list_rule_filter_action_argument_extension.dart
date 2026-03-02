@@ -15,7 +15,7 @@ extension ListRuleFilterActionArgumentExtension on List<RuleFilterActionArgument
       if (arguments is MoveMessageActionArguments) {
         return '${arguments.action!.getTitle(appLocalizations)} ${appLocalizations.toFolder.toLowerCase()} "${arguments.mailbox?.getDisplayName(context) ?? ''}"';
       } else if (arguments is LabelMessageActionArguments) {
-        return '${arguments.action!.getTitle(appLocalizations)} ${appLocalizations.as.toLowerCase()} "${arguments.labels?.displayNameAsString ?? ''}"';
+        return '${arguments.action!.getTitle(appLocalizations)} ${appLocalizations.as.toLowerCase()}: "${arguments.labels?.displayNameAsString ?? ''}"';
       } else {
         return arguments.action!.getTitle(appLocalizations);
       }

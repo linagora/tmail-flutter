@@ -27,7 +27,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/state/mailbox_visibility_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -42,12 +41,10 @@ class MailboxVisibilityController extends BaseMailboxController {
 
   MailboxVisibilityController(
     TreeBuilder treeBuilder,
-    VerifyNameInteractor verifyNameInteractor,
     GetAllMailboxInteractor getAllMailboxInteractor,
     RefreshAllMailboxInteractor refreshAllMailboxInteractor
   ) : super(
     treeBuilder,
-    verifyNameInteractor,
     getAllMailboxInteractor: getAllMailboxInteractor,
     refreshAllMailboxInteractor: refreshAllMailboxInteractor
   );

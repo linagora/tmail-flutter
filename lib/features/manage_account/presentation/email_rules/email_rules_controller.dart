@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_email_rule_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_setup_label_visibility_in_setting_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/context_item_email_rule_type_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/email_rule_action_type.dart';
@@ -98,7 +99,12 @@ class EmailRulesController extends BaseController {
       final arguments = RulesFilterCreatorArguments(
         accountId,
         session,
-        isLabelAvailable: _accountDashBoardController.isLabelAvailable.value,
+        isLabelAvailable: _accountDashBoardController.isLabelAvailable,
+        allLabels: _accountDashBoardController.labelController.labels,
+        createNewLabelInteractor: _accountDashBoardController
+            .labelController.createNewLabelInteractor,
+        editLabelInteractor:
+            _accountDashBoardController.labelController.editLabelInteractor,
       );
 
       final newRuleFilterRequest = PlatformInfo.isWeb
@@ -141,7 +147,12 @@ class EmailRulesController extends BaseController {
         session,
         actionType: CreatorActionType.edit,
         tMailRule: rule,
-        isLabelAvailable: _accountDashBoardController.isLabelAvailable.value,
+        isLabelAvailable: _accountDashBoardController.isLabelAvailable,
+        allLabels: _accountDashBoardController.labelController.labels,
+        createNewLabelInteractor: _accountDashBoardController
+            .labelController.createNewLabelInteractor,
+        editLabelInteractor:
+            _accountDashBoardController.labelController.editLabelInteractor,
       );
 
       final newRuleFilterRequest = PlatformInfo.isWeb
