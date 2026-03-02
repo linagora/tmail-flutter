@@ -87,7 +87,12 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         ),
       );
     } else {
-      bodyWidget = Center(child: bodyWidget);
+      bodyWidget = Center(
+        child: GestureDetector(
+          onTap: controller.clearAllFocus,
+          child: bodyWidget,
+        ),
+      );
     }
 
     return bodyWidget;

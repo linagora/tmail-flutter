@@ -63,3 +63,17 @@ class CannotCalculateChangesMethodResponseException extends MethodLevelErrors {
 class NoNetworkError extends RemoteException {
   const NoNetworkError() : super(message: RemoteException.noNetworkError);
 }
+
+class RefreshTokenFailedException extends RemoteException {
+  final int? statusCode;
+
+  RefreshTokenFailedException({
+    super.message =
+        'Refresh Token failed with 400 Bad Request. The session is invalid/revoked.',
+    this.statusCode = 400,
+  });
+
+  @override
+  String toString() =>
+      "RefreshTokenFailedException(status: $statusCode): $message";
+}

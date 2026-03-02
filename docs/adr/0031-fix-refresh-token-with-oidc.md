@@ -4,9 +4,9 @@ Date: 2023-09-11
 
 ## Status
 
-- Issue: 
+Superseded by [ADR-0035](0035-error-handling-on-no-longer-valid-oidc-token.md)
 
-[1974](https://github.com/linagora/tmail-flutter/issues/1974)
+- Issue: [1974](https://github.com/linagora/tmail-flutter/issues/1974)
 
 ## Context
 
