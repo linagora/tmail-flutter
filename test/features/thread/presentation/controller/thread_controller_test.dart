@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
@@ -459,15 +460,22 @@ void main() {
       test(
         'WHEN currentEmailState is null\n'
         'AND RefreshChangeEmailAction is coming with a new state\n'
-        'THEN should still process the refresh\n'
-        'to handle the case when WebSocket update arrives before initial email fetch',
+        'THEN should fallback to full mailbox reload\n'
+        'to avoid null-state crash in refreshChanges flow',
       () async {
         // Arrange
         PlatformInfo.isTestingForWeb = true;
+        reset(mockRefreshChangesEmailsInMailboxInteractor);
+        reset(mockGetEmailsInMailboxInteractor);
         final emailList = [
           PresentationEmail(
             id: EmailId(Id('email1')),
             subject: 'hello'),
+        ];
+        final reloadedEmails = [
+          PresentationEmail(
+            id: EmailId(Id('email-reloaded-1')),
+            subject: 'reloaded'),
         ];
 
         when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
@@ -485,6 +493,22 @@ void main() {
         when(mockSearchController.isAdvancedSearchViewOpen).thenReturn(RxBool(false));
         when(mockSearchController.isSearchEmailRunning).thenReturn(false);
         when(mockSearchController.searchEmailFilter).thenReturn(Rx(SearchEmailFilter.initial()));
+
+        when(mockGetEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          emailFilter: anyNamed('emailFilter'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: anyNamed('getLatestChanges'),
+          useCache: anyNamed('useCache'),
+          forceEmailQuery: anyNamed('forceEmailQuery'),
+        )).thenAnswer((_) => Stream.value(Right(GetAllEmailSuccess(
+          emailList: reloadedEmails,
+          currentEmailState: State('new-state'))))
+        );
 
         when(mockRefreshChangesEmailsInMailboxInteractor.execute(
           any,
@@ -511,8 +535,7 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 100));
 
         // Assert
-        // The refresh should be triggered even when currentEmailState is null
-        verify(mockRefreshChangesEmailsInMailboxInteractor.execute(
+        verifyNever(mockRefreshChangesEmailsInMailboxInteractor.execute(
           any,
           any,
           any,
@@ -521,6 +544,18 @@ void main() {
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
           emailFilter: anyNamed('emailFilter'),
+        ));
+        verify(mockGetEmailsInMailboxInteractor.execute(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          emailFilter: anyNamed('emailFilter'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: false,
+          useCache: false,
+          forceEmailQuery: anyNamed('forceEmailQuery'),
         )).called(1);
 
         PlatformInfo.isTestingForWeb = false;

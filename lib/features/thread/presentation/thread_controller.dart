@@ -696,7 +696,11 @@ class ThreadController extends BaseController with EmailActionController {
   Future<void> refreshChangeSearchEmail() => _refreshChangeSearchEmail();
 
   Future<void> _refreshChangeSearchEmail() async {
-    await _refreshChangeListEmailCache();
+    if (mailboxDashBoardController.currentEmailState != null) {
+      await _refreshChangeListEmailCache();
+    } else {
+      logWarning('ThreadController::_refreshChangeSearchEmail: skip refreshChanges because currentEmailState is null');
+    }
 
     log('ThreadController::_refreshChangeSearchEmail:');
     canSearchMore = false;
@@ -775,6 +779,12 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
+    if (mailboxDashBoardController.currentEmailState == null) {
+      logWarning('ThreadController::_refreshChangeListEmail: currentEmailState is null, fallback to full reload');
+      await _reloadAllEmailsFromServer();
+      return;
+    }
+
     final refreshViewState = await _refreshChangeListEmailCache();
 
     final refreshState = refreshViewState
@@ -792,8 +802,16 @@ class ThreadController extends BaseController with EmailActionController {
   Future<void> _refreshChangeListEmailsInVirtualFolder() async {
     log('ThreadController::_refreshChangeListEmailsInVirtualFolder:');
 
-    await _refreshChangeListEmailCache();
+    if (mailboxDashBoardController.currentEmailState != null) {
+      await _refreshChangeListEmailCache();
+    } else {
+      logWarning('ThreadController::_refreshChangeListEmailsInVirtualFolder: skip refreshChanges because currentEmailState is null');
+    }
 
+    await _reloadAllEmailsFromServer();
+  }
+
+  Future<void> _reloadAllEmailsFromServer() async {
     final viewState = await _getEmailsInMailboxInteractor
         .execute(
           _session!,
@@ -809,6 +827,7 @@ class ThreadController extends BaseController with EmailActionController {
             _session!,
             _accountId!,
           ),
+          getLatestChanges: false,
           useCache: false,
         )
         .last;
