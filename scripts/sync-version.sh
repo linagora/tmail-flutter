@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
-# Sync pubspec.yaml version with the latest git tag
-# This ensures all build methods use the correct version
+# Sync pubspec.yaml version using the shared version resolver.
+# This ensures all build methods use the same version source.
 
-set -e
+set -euo pipefail
 
-# Get highest semver-like version tag.
-LATEST_TAG=$(git tag --list "v*.*.*" --sort=-version:refname | head -n 1)
-GIT_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//' || echo "")
-
-if [ -z "$GIT_VERSION" ]; then
-    echo "No git tags found, keeping pubspec.yaml version unchanged"
-    exit 0
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if ! GIT_VERSION="$("$SCRIPT_DIR/resolve-version.sh" 2>/dev/null)"; then
+  echo "No valid git tag version found, keeping pubspec.yaml version unchanged"
+  exit 0
 fi
 
 PUBSPEC_FILE="pubspec.yaml"

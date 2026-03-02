@@ -17,10 +17,10 @@
 opt_out_usage # Opt out of telemetry
 default_platform(:android)
 
-# Get version from git tag, with fallback to pubspec.yaml version
+# Get version from shared resolver script.
 def get_git_version
   begin
-    version = `git describe --tags --abbrev=0 2>/dev/null`.strip.gsub("v", "")
+    version = `../scripts/resolve-version.sh 2>/dev/null`.strip
     version.empty? ? nil : version
   rescue
     nil
