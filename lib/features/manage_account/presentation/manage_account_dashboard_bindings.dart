@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/bindings/setting_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -12,6 +13,7 @@ class ManageAccountDashBoardBindings extends Bindings {
   void dependencies() {
     SettingInteractorBindings().dependencies();
     PaywallBindings().dependencies();
+    Get.put(LabelController());
     Get.put(ManageAccountDashBoardController());
     SettingsBindings().dependencies();
     ManageAccountMenuBindings().dependencies();

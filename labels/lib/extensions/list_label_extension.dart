@@ -15,13 +15,22 @@ extension ListLabelExtension on List<Label> {
       .where((name) => name.trim().isNotEmpty)
       .toList();
 
+  String get displayNameAsString => displayNameNotNullList.join(', ');
+
   List<KeyWordIdentifier> get keywords =>
       map((label) => label.keyword).nonNulls.toList();
+
+  List<String> get keywordListString =>
+      map((label) => label.keyword?.value).nonNulls.toList();
 
   List<String> getDisplayNameListWithoutSelectedLabel(Label selectedLabel) {
     return map((label) => label.safeDisplayName)
         .where((name) =>
             name.trim().isNotEmpty && name != selectedLabel.safeDisplayName)
         .toList();
+  }
+
+  List<Label> getLabelsByKeywords(List<String> keywords) {
+    return where((label) => keywords.contains(label.keyword?.value)).toList();
   }
 }

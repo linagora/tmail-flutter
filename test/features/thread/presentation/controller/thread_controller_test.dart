@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
@@ -70,6 +71,7 @@ const fallbackGenerators = {
   MockSpec<DeleteCredentialInteractor>(),
   MockSpec<LogoutOidcInteractor>(),
   MockSpec<DeleteAuthorityOidcInteractor>(),
+  MockSpec<VerifyNameInteractor>(),
   MockSpec<AppToast>(),
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
@@ -112,6 +114,7 @@ void main() {
   late MockDeleteCredentialInteractor mockDeleteCredentialInteractor;
   late MockLogoutOidcInteractor mockLogoutOidcInteractor;
   late MockDeleteAuthorityOidcInteractor mockDeleteAuthorityOidcInteractor;
+  late MockVerifyNameInteractor mockVerifyNameInteractor;
   late MockAppToast mockAppToast;
   late MockImagePaths mockImagePaths;
   late MockResponsiveUtils mockResponsiveUtils;
@@ -129,6 +132,7 @@ void main() {
     mockDeleteCredentialInteractor = MockDeleteCredentialInteractor();
     mockLogoutOidcInteractor = MockLogoutOidcInteractor();
     mockDeleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
+    mockVerifyNameInteractor = MockVerifyNameInteractor();
     mockAppToast = MockAppToast();
     mockImagePaths = MockImagePaths();
     mockResponsiveUtils = MockResponsiveUtils();
@@ -147,6 +151,7 @@ void main() {
     Get.put<DeleteCredentialInteractor>(mockDeleteCredentialInteractor);
     Get.put<LogoutOidcInteractor>(mockLogoutOidcInteractor);
     Get.put<DeleteAuthorityOidcInteractor>(mockDeleteAuthorityOidcInteractor);
+    Get.put<VerifyNameInteractor>(mockVerifyNameInteractor);
     Get.put<AppToast>(mockAppToast);
     Get.put<ImagePaths>(mockImagePaths);
     Get.put<ResponsiveUtils>(mockResponsiveUtils);

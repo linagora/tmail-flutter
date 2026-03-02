@@ -1,10 +1,12 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_detailed_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_row_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -12,11 +14,12 @@ class RuleFilterActionRowMobile extends StatelessWidget {
   final ImagePaths imagePaths;
   final EmailRuleFilterAction? actionSelected;
   final PresentationMailbox? mailboxSelected;
+  final List<Label>? listLabelSelected;
   final String? errorValue;
   final TextEditingController? forwardEmailEditingController;
   final FocusNode? forwardEmailFocusNode;
   final OnTextChange? onChangeForwardEmail;
-  final VoidCallback? onTapActionDetailedCallback;
+  final OnSelectRuleAction? onSelectRuleAction;
   final VoidCallback? onTapActionCallback;
 
   const RuleFilterActionRowMobile({
@@ -24,16 +27,18 @@ class RuleFilterActionRowMobile extends StatelessWidget {
     required this.imagePaths,
     this.actionSelected,
     this.mailboxSelected,
+    this.listLabelSelected,
     this.errorValue,
     this.forwardEmailEditingController,
     this.forwardEmailFocusNode,
     this.onChangeForwardEmail,
-    this.onTapActionDetailedCallback,
+    this.onSelectRuleAction,
     this.onTapActionCallback,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -41,14 +46,17 @@ class RuleFilterActionRowMobile extends StatelessWidget {
           value: actionSelected,
           imagePaths: imagePaths,
           onTapActionCallback: (_) => onTapActionCallback?.call(),
-          hintText: AppLocalizations.of(context).selectAction,
+          hintText: appLocalizations.selectAction,
         ),
-        actionSelected == EmailRuleFilterAction.moveMessage
+        actionSelected == EmailRuleFilterAction.moveMessage ||
+            actionSelected == EmailRuleFilterAction.labelMessage
           ? Container(
               alignment: AlignmentDirectional.centerStart,
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
-                AppLocalizations.of(context).toFolder,
+                actionSelected == EmailRuleFilterAction.moveMessage
+                    ? appLocalizations.toFolder
+                    : appLocalizations.as,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: ThemeUtils.textStyleInter400.copyWith(
@@ -65,11 +73,12 @@ class RuleFilterActionRowMobile extends StatelessWidget {
           imagePaths: imagePaths,
           actionType: actionSelected,
           mailboxSelected: mailboxSelected,
+          listLabelSelected: listLabelSelected,
           errorValue: errorValue,
           forwardEmailEditingController: forwardEmailEditingController,
           forwardEmailFocusNode: forwardEmailFocusNode,
           forwardEmailOnChangeAction: onChangeForwardEmail,
-          onTapActionDetailedCallback: onTapActionDetailedCallback,
+          onSelectRuleAction: onSelectRuleAction,
         ),
       ],
     );

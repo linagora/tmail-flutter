@@ -14,7 +14,6 @@ import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repositor
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
@@ -37,7 +36,6 @@ class RulesFilterCreatorBindings extends BaseBindings {
     Get.lazyPut(() => RulesFilterCreatorController(
       Get.find<GetAllMailboxInteractor>(),
       Get.find<TreeBuilder>(),
-      Get.find<VerifyNameInteractor>()
     ));
   }
 
@@ -65,7 +63,6 @@ class RulesFilterCreatorBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => VerifyNameInteractor());
     Get.lazyPut(() => GetAllMailboxInteractor(Get.find<MailboxRepository>()));
   }
 

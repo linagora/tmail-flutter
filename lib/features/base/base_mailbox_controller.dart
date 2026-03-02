@@ -45,7 +45,6 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/special_character_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -66,7 +65,6 @@ typedef AllowSubaddressingActionCallback = void Function(MailboxId, Map<String, 
 abstract class BaseMailboxController extends BaseController
     with ExpandFolderTriggerScrollableMixin {
   final TreeBuilder _treeBuilder;
-  final VerifyNameInteractor verifyNameInteractor;
   final GetAllMailboxInteractor? getAllMailboxInteractor;
   final RefreshAllMailboxInteractor? refreshAllMailboxInteractor;
   jmap.State? currentMailboxState;
@@ -74,7 +72,6 @@ abstract class BaseMailboxController extends BaseController
 
   BaseMailboxController(
     this._treeBuilder,
-    this.verifyNameInteractor,
     {
       this.getAllMailboxInteractor,
       this.refreshAllMailboxInteractor

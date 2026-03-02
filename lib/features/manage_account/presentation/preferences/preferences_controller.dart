@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_set
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_local_settings_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_setup_label_visibility_in_setting_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences_option_type.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
@@ -127,6 +128,8 @@ class PreferencesController extends BaseController {
 
   void _updateLocalSettingOptionValue(PreferencesSetting preferencesSetting) {
     localSettings.value = preferencesSetting;
+    accountDashboardController
+        .updateLabelSettingEnabled(preferencesSetting.labelConfig.isEnabled);
   }
 
   void _getSettingOption() {

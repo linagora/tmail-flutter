@@ -11,6 +11,8 @@ extension ThreadDetailOpenEmailAddressDetailAction on ThreadDetailController {
     emailActionReactor.openEmailAddressDialog(
       session!,
       accountId!,
+      isLabelAvailable: isLabelAvailable,
+      allLabels: mailboxDashBoardController.labelController.labels,
       emailAddress: emailAddress,
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,

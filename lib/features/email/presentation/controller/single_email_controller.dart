@@ -211,6 +211,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _createNewEmailRuleFilterInteractor,
       _printEmailInteractor,
       _getEmailContentInteractor,
+      mailboxDashBoardController.labelController.createNewLabelInteractor,
+      mailboxDashBoardController.labelController.editLabelInteractor,
     );
     super.onInit();
   }
@@ -926,6 +928,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     emailActionReactor.openEmailAddressDialog(
       session!,
       accountId!,
+      isLabelAvailable: isLabelAvailable,
+      allLabels: mailboxDashBoardController.labelController.labels,
       emailAddress: emailAddress,
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,
@@ -1156,6 +1160,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         session!,
         accountId!,
         emailAddress: emailAddress,
+        isLabelAvailable: isLabelAvailable,
+        allLabels: mailboxDashBoardController.labelController.labels,
       ));
     }
   }

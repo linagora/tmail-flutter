@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 
@@ -19,6 +20,8 @@ abstract class RuleFilterActionArguments with EquatableMixin {
         return ForwardActionArguments();
       case EmailRuleFilterAction.moveMessage:
         return MoveMessageActionArguments();
+      case EmailRuleFilterAction.labelMessage:
+        return LabelMessageActionArguments();
       case EmailRuleFilterAction.rejectIt:
         return RejectItActionArguments();
       case EmailRuleFilterAction.starIt:
@@ -76,6 +79,19 @@ class MoveMessageActionArguments extends RuleFilterActionArguments {
   List<Object?> get props => [
     mailbox,
   ];
+}
+
+class LabelMessageActionArguments extends RuleFilterActionArguments {
+  final List<Label>? labels;
+
+  LabelMessageActionArguments({
+    this.labels,
+  }) : super(
+          action: EmailRuleFilterAction.labelMessage,
+        );
+
+  @override
+  List<Object?> get props => [labels];
 }
 
 class RejectItActionArguments extends RuleFilterActionArguments {

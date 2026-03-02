@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_i
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
@@ -48,7 +47,6 @@ class DestinationPickerBindings extends BaseBindings {
       Get.find<SearchMailboxInteractor>(),
       Get.find<CreateNewMailboxInteractor>(),
       Get.find<TreeBuilder>(),
-      Get.find<VerifyNameInteractor>(),
       Get.find<GetAllMailboxInteractor>(),
       Get.find<RefreshAllMailboxInteractor>(),
     ));
@@ -91,7 +89,6 @@ class DestinationPickerBindings extends BaseBindings {
     Get.lazyPut(() => SearchMailboxInteractor());
     Get.lazyPut(() => CreateNewMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
-    Get.lazyPut(() => VerifyNameInteractor());
   }
 
   @override

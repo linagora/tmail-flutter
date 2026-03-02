@@ -5825,4 +5825,22 @@ class AppLocalizations {
       name: 'createALabel',
     );
   }
+
+  String get labelMessage {
+    return Intl.message(
+      'Label message',
+      name: 'labelMessage',
+    );
+  }
+
+  String get as {
+    return Intl.message('as', name: 'as');
+  }
+
+  String get pleaseSelectALabelToAddLabelTheMessage {
+    return Intl.message(
+      'Please select a label to add label to the message',
+      name: 'pleaseSelectALabelToAddLabelTheMessage',
+    );
+  }
 }

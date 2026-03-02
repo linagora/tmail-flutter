@@ -171,11 +171,11 @@ void main() {
     Get.put<CreatePublicAssetInteractor>(MockCreatePublicAssetInteractor());
     Get.put<HtmlDataSourceImpl>(MockHtmlDataSourceImpl(), tag: BindingTag.publicAssetBindingsTag);
     Get.put<BeforeReconnectManager>(MockBeforeReconnectManager());
+    Get.put<VerifyNameInteractor>(mockVerifyNameInteractor);
 
     Get.testMode = true;
 
     identityCreatorController = IdentityCreatorController(
-      mockVerifyNameInteractor,
       mockGetAllIdentitiesInteractor,
       mockSaveIdentityCacheOnWebInteractor,
       mockIdentityUtils);

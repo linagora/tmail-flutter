@@ -25,7 +25,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_int
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
@@ -56,7 +55,6 @@ class SearchMailboxBindings extends BaseBindings {
       Get.find<SubaddressingInteractor>(),
       Get.find<MoveFolderContentInteractor>(),
       Get.find<TreeBuilder>(),
-      Get.find<VerifyNameInteractor>(),
       Get.find<GetAllMailboxInteractor>(),
       Get.find<RefreshAllMailboxInteractor>(),
     ));
@@ -93,7 +91,6 @@ class SearchMailboxBindings extends BaseBindings {
     Get.lazyPut(() => RenameMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => MoveMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => DeleteMultipleMailboxInteractor(Get.find<MailboxRepository>()));
-    Get.lazyPut(() => VerifyNameInteractor());
     Get.lazyPut(() => SearchMailboxInteractor());
     Get.lazyPut(() => SubscribeMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => SubscribeMultipleMailboxInteractor(Get.find<MailboxRepository>()));

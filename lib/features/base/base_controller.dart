@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_i
 import 'package:tmail_ui_user/features/login/domain/usecases/get_company_server_login_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/contact_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/tmail_autocomplete_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -77,6 +78,7 @@ abstract class BaseController extends GetxController
   final DeleteCredentialInteractor deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
   final LogoutOidcInteractor logoutOidcInteractor = Get.find<LogoutOidcInteractor>();
   final DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor = Get.find<DeleteAuthorityOidcInteractor>();
+  final VerifyNameInteractor verifyNameInteractor = Get.find<VerifyNameInteractor>();
   final AppToast appToast = Get.find<AppToast>();
   final ImagePaths imagePaths = Get.find<ImagePaths>();
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();

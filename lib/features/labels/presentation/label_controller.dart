@@ -1,7 +1,5 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -12,25 +10,25 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
-import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
-import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/delete_a_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_context_menu_mixin.dart';
-import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/label_modal_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_setting_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
-import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class LabelController extends BaseController with LabelContextMenuMixin {
+class LabelController extends BaseController
+    with LabelContextMenuMixin,
+        LabelModalMixin {
   final labels = <Label>[].obs;
   final labelListExpandMode = Rx(ExpandMode.EXPAND);
   final isLabelSettingEnabled = RxBool(false);
@@ -51,14 +49,16 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     if (_getLabelSettingStateInteractor != null) {
       consumeState(_getLabelSettingStateInteractor!.execute(accountId));
     } else {
-      isLabelSettingEnabled.value = false;
       _clearLabelData();
     }
   }
 
   void _clearLabelData() {
+    isLabelSettingEnabled.value = false;
     labels.clear();
   }
+
+  void clearLabelData() => _clearLabelData();
 
   void injectLabelsBindings() {
     LabelInteractorBindings().dependencies();
@@ -67,6 +67,8 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     _editLabelInteractor = getBinding<EditLabelInteractor>();
     _deleteALabelInteractor = getBinding<DeleteALabelInteractor>();
   }
+
+  CreateNewLabelInteractor? get createNewLabelInteractor => _createNewLabelInteractor;
 
   EditLabelInteractor? get editLabelInteractor => _editLabelInteractor;
 
@@ -84,33 +86,35 @@ class LabelController extends BaseController with LabelContextMenuMixin {
         : ExpandMode.COLLAPSE;
   }
 
-  Future<Label?> openCreateNewLabelModal(AccountId? accountId) async {
-    return await DialogRouter().openDialogModal(
-      child: CreateNewLabelModal(
-        labels: labels,
-        onLabelActionCallback: (label) => _createNewLabel(accountId, label),
-      ),
-      dialogLabel: 'create-new-label-modal',
-    );
-  }
+  Future<void> onCreateALabelAction(AccountId? accountId) async {
+    if (_createNewLabelInteractor == null || _editLabelInteractor == null) {
+      _handleCreateNewLabelFailure(
+        CreateNewLabelFailure(InteractorNotInitialized()),
+      );
+      return;
+    }
 
-  void _createNewLabel(AccountId? accountId, Label label) {
-    log('LabelController::_createNewLabel:Label: $label');
     if (accountId == null) {
-      consumeState(
-        Stream.value(Left(CreateNewLabelFailure(NotFoundAccountIdException()))),
+      _handleCreateNewLabelFailure(
+        CreateNewLabelFailure(NotFoundAccountIdException()),
       );
       return;
     }
 
-    if (_createNewLabelInteractor == null) {
-      consumeState(
-        Stream.value(Left(CreateNewLabelFailure(InteractorNotInitialized()))),
-      );
-      return;
-    }
+    final resultState = await openCreateNewLabelModal(
+      labels: labels,
+      accountId: accountId,
+      imagePaths: imagePaths,
+      verifyNameInteractor: verifyNameInteractor,
+      createNewLabelInteractor: _createNewLabelInteractor!,
+      editLabelInteractor: _editLabelInteractor!,
+    );
 
-    consumeState(_createNewLabelInteractor!.execute(accountId, label));
+    if (resultState is CreateNewLabelSuccess) {
+      _handleCreateNewLabelSuccess(resultState);
+    } else if (resultState is CreateNewLabelFailure) {
+      _handleCreateNewLabelFailure(resultState);
+    }
   }
 
   void _handleCreateNewLabelSuccess(CreateNewLabelSuccess success) {
@@ -130,11 +134,17 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   }
 
   void _handleGetLabelSettingStateSuccess(bool isEnabled, AccountId accountId) {
+    updateLabelSettingEnabled(isEnabled, accountId);
+  }
+
+  void updateLabelSettingEnabled(bool isEnabled, AccountId accountId) {
     isLabelSettingEnabled.value = isEnabled;
 
     if (isEnabled) {
       injectLabelsBindings();
       getAllLabels(accountId);
+    } else {
+      clearLabelData();
     }
   }
 
@@ -142,12 +152,8 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void handleSuccessViewState(Success success) {
     if (success is GetAllLabelSuccess) {
       labels.value = success.labels..sortByAlphabetically();
-    } else if (success is CreateNewLabelSuccess) {
-      _handleCreateNewLabelSuccess(success);
     } else if (success is GetLabelSettingStateSuccess) {
       _handleGetLabelSettingStateSuccess(success.isEnabled, success.accountId);
-    } else if (success is EditLabelSuccess) {
-      handleEditLabelSuccess(success);
     } else if (success is DeleteALabelSuccess) {
       handleDeleteLabelSuccess(success);
     } else {
@@ -159,13 +165,8 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void handleFailureViewState(Failure failure) {
     if (failure is GetAllLabelFailure) {
       labels.value = [];
-    } else if (failure is CreateNewLabelFailure) {
-      _handleCreateNewLabelFailure(failure);
     } else if (failure is GetLabelSettingStateFailure) {
-      isLabelSettingEnabled.value = false;
       _clearLabelData();
-    } else if (failure is EditLabelFailure) {
-      handleEditLabelFailure(failure);
     } else if (failure is DeleteALabelFailure) {
       handleDeleteLabelFailure(failure);
     } else {
