@@ -4,8 +4,9 @@
 
 set -e
 
-# Get version from git tag
-GIT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "")
+# Get highest semver-like version tag.
+LATEST_TAG=$(git tag --list "v*.*.*" --sort=-version:refname | head -n 1)
+GIT_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//' || echo "")
 
 if [ -z "$GIT_VERSION" ]; then
     echo "No git tags found, keeping pubspec.yaml version unchanged"

@@ -1,12 +1,15 @@
 name: Auto Release
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - master
     paths-ignore:
       - "**.md"
       - ".github/workflows/auto-release.yaml"
+  workflow_dispatch:
 
 # Cancel previous runs when new commits are pushed to master
 concurrency:
@@ -19,6 +22,7 @@ permissions:
 jobs:
   release:
     name: Tag and Release
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -26,12 +30,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: master
 
       - name: Get latest tag
         id: get_latest_tag
         run: |
-          # Get the latest tag, or default to v0.0.0 if none exists
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          # Get the highest semver-like tag, not the nearest reachable tag.
+          LATEST_TAG=$(git tag --list "v*.*.*" --sort=-version:refname | head -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG="v0.0.0"
+          fi
           echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
           echo "Latest tag: $LATEST_TAG"
 
