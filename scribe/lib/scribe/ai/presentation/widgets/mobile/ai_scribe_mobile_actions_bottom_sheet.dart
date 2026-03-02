@@ -204,16 +204,16 @@ class _AiScribeMobileActionsBottomSheetState
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    _buildHeader(context, localizations),
                     Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildHeader(context, localizations),
-                          _buildTextCard(context),
-                          if(hasContent)
-                            Flexible(
-                              child: ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildTextCard(context),
+                            if(hasContent)
+                              ValueListenableBuilder<AiScribeCategoryContextMenuAction?>(
                                 valueListenable: _selectedCategory,
                                 builder: (context, selectedCategory, _) {
                                   return selectedCategory == null
@@ -221,9 +221,8 @@ class _AiScribeMobileActionsBottomSheetState
                                       : _buildSubmenuListView();
                                 },
                               ),
-                            ),
-          
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     _buildBottomBar(context)
