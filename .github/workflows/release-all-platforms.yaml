@@ -44,7 +44,7 @@ jobs:
     name: Prebuild & Generate Code
     runs-on: ubuntu-latest
     outputs:
-      cache-key: ${{ steps.cache-key.outputs.key }}
+      cache_key: ${{ steps.cache-key.outputs.key }}
       version: ${{ steps.version.outputs.version }}
       build_android: ${{ steps.flags.outputs.build_android }}
       build_ios: ${{ steps.flags.outputs.build_ios }}
@@ -153,7 +153,7 @@ jobs:
             lib/**/*.freezed.dart
             **/lib/**/*.g.dart
             **/lib/**/*.freezed.dart
-          key: ${{ needs.prebuild.outputs.cache-key }}
+          key: ${{ needs.prebuild.outputs.cache_key }}
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -249,7 +249,7 @@ jobs:
             lib/**/*.freezed.dart
             **/lib/**/*.g.dart
             **/lib/**/*.freezed.dart
-          key: ${{ needs.prebuild.outputs.cache-key }}
+          key: ${{ needs.prebuild.outputs.cache_key }}
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -376,9 +376,9 @@ jobs:
     if: |
       always() &&
       (startsWith(github.ref, 'refs/tags/v') || needs.prebuild.outputs.create_release == 'true') &&
-      (needs.build-android.result == 'success' || needs.build-android.result == 'skipped') &&
-      (needs.build-ios.result == 'success' || needs.build-ios.result == 'skipped') &&
-      (needs.build-docker.result == 'success' || needs.build-docker.result == 'skipped')
+      (needs['build-android'].result == 'success' || needs['build-android'].result == 'skipped') &&
+      (needs['build-ios'].result == 'success' || needs['build-ios'].result == 'skipped') &&
+      (needs['build-docker'].result == 'success' || needs['build-docker'].result == 'skipped')
     permissions:
       contents: write
 
