@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/drop_down_button_widget.dart';
@@ -11,6 +12,7 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnActionChanged = Function(EmailRuleFilterAction? action);
+typedef OnSelectRuleAction = Function(EmailRuleFilterAction action);
 
 class RuleFilterActionRow extends StatelessWidget {
   final List<EmailRuleFilterAction> actionList;
@@ -19,11 +21,12 @@ class RuleFilterActionRow extends StatelessWidget {
   final EmailRuleFilterAction? actionSelected;
   final OnActionChanged? onActionChanged;
   final PresentationMailbox? mailboxSelected;
+  final List<Label>? listLabelSelected;
   final String? errorValue;
   final TextEditingController? forwardEmailEditingController;
   final FocusNode? forwardEmailFocusNode;
   final OnTextChange? onChangeForwardEmail;
-  final VoidCallback? onTapActionDetailedCallback;
+  final OnSelectRuleAction? onSelectRuleAction;
 
   const RuleFilterActionRow({
     Key? key,
@@ -33,8 +36,9 @@ class RuleFilterActionRow extends StatelessWidget {
     this.actionSelected,
     this.onActionChanged,
     this.mailboxSelected,
+    this.listLabelSelected,
     this.errorValue,
-    this.onTapActionDetailedCallback,
+    this.onSelectRuleAction,
     this.forwardEmailEditingController,
     this.forwardEmailFocusNode,
     this.onChangeForwardEmail,
@@ -42,6 +46,8 @@ class RuleFilterActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+
     return Row(
       children: [
         Expanded(
@@ -58,7 +64,7 @@ class RuleFilterActionRow extends StatelessWidget {
             hintTextStyle: ThemeUtils.textStyleBodyBody3(
               color: AppColor.steelGray400,
             ),
-            hintText: AppLocalizations.of(context).selectAction,
+            hintText: appLocalizations.selectAction,
           ),
         ),
         if (actionSelected == EmailRuleFilterAction.moveMessage)
@@ -66,7 +72,7 @@ class RuleFilterActionRow extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                AppLocalizations.of(context).toFolder,
+                appLocalizations.toFolder,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: ThemeUtils.textStyleInter400.copyWith(
@@ -83,7 +89,36 @@ class RuleFilterActionRow extends StatelessWidget {
                 borderColor: errorValue?.isNotEmpty == true
                   ? AppColor.redFF3347
                   : AppColor.m3Neutral90,
-                onTapActionCallback: (_) => onTapActionDetailedCallback?.call(),
+                onTapActionCallback: (_) =>
+                    onSelectRuleAction?.call(EmailRuleFilterAction.moveMessage),
+              ),
+            ),
+          ]
+        else if (actionSelected == EmailRuleFilterAction.labelMessage)
+          ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                appLocalizations.as,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: ThemeUtils.textStyleInter400.copyWith(
+                  fontSize: 14,
+                  height: 18 / 14,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            Expanded(
+              child: RuleFilterButtonField<List<Label>>(
+                value: listLabelSelected,
+                imagePaths: imagePaths,
+                hintText: appLocalizations.chooseLabel,
+                borderColor: errorValue?.isNotEmpty == true
+                  ? AppColor.redFF3347
+                  : AppColor.m3Neutral90,
+                onTapActionCallback: (_) =>
+                    onSelectRuleAction?.call(EmailRuleFilterAction.labelMessage),
               ),
             ),
           ]
@@ -91,7 +126,7 @@ class RuleFilterActionRow extends StatelessWidget {
           Expanded(
             child: DefaultInputFieldWidget(
               errorText: errorValue,
-              hintText: AppLocalizations.of(context).forwardEmailHintText,
+              hintText: appLocalizations.forwardEmailHintText,
               textEditingController: forwardEmailEditingController!,
               focusNode: forwardEmailFocusNode,
               inputColor: Colors.black,

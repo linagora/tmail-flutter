@@ -13,7 +13,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class ListLabelWithActionModal extends StatefulWidget {
   final List<Label> labels;
   final ImagePaths imagePaths;
-  final OnLabelAsToEmailsAction onLabelAsToEmailsAction;
+  final OnSelectLabelsAction onSelectLabelsAction;
   final VoidCallback onCloseModal;
   final VoidCallback onCreateALabelAction;
 
@@ -21,7 +21,7 @@ class ListLabelWithActionModal extends StatefulWidget {
     super.key,
     required this.labels,
     required this.imagePaths,
-    required this.onLabelAsToEmailsAction,
+    required this.onSelectLabelsAction,
     required this.onCloseModal,
     required this.onCreateALabelAction,
   });
@@ -133,7 +133,7 @@ class _ListLabelWithActionModalState extends State<ListLabelWithActionModal> {
         .where((label) => _selectedIdsNotifier.value.contains(label.id))
         .toList();
 
-    widget.onLabelAsToEmailsAction(selectedLabels);
+    widget.onSelectLabelsAction(selectedLabels);
     popBack();
   }
 }

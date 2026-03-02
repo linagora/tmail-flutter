@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
@@ -10,19 +11,23 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/c
 class RulesFilterCreatorArguments with EquatableMixin {
   final AccountId accountId;
   final Session session;
+  final bool isLabelAvailable;
   final CreatorActionType actionType;
   final TMailRule? tMailRule;
   final EmailAddress? emailAddress;
   final PresentationMailbox? mailboxDestination;
+  final List<Label>? allLabels;
 
   RulesFilterCreatorArguments(
     this.accountId,
     this.session,
     {
       this.actionType = CreatorActionType.create,
+      this.isLabelAvailable = false,
       this.tMailRule,
       this.emailAddress,
       this.mailboxDestination,
+      this.allLabels,
     }
   );
 
@@ -31,8 +36,10 @@ class RulesFilterCreatorArguments with EquatableMixin {
     accountId,
     actionType,
     session,
+    isLabelAvailable,
     tMailRule,
     emailAddress,
     mailboxDestination,
+    allLabels,
   ];
 }

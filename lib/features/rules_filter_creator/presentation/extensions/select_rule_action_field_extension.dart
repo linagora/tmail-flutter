@@ -111,7 +111,7 @@ extension SelectRuleActionFieldExtension on RulesFilterCreatorController {
     int index,
   ) {
     final contextMenuActions = EmailRuleFilterAction.values.map((filterAction) {
-      if (filterAction.isSupported) {
+      if (filterAction.isSupported(isLabelAvailable: isLabelAvailable)) {
         return ContextItemRuleFilterAction(
           filterAction,
           selectedFilterAction,
@@ -138,5 +138,23 @@ extension SelectRuleActionFieldExtension on RulesFilterCreatorController {
         }
       },
     );
+  }
+
+  void onSelectRuleAction({
+    required BuildContext context,
+    required int actionIndex,
+    required EmailRuleFilterAction filerAction,
+  }) {
+    FocusScope.of(context).unfocus();
+
+    switch (filerAction) {
+      case EmailRuleFilterAction.moveMessage:
+        selectMailbox(context, actionIndex);
+        break;
+      case EmailRuleFilterAction.labelMessage:
+        throw UnimplementedError();
+      default:
+        break;
+    }
   }
 }

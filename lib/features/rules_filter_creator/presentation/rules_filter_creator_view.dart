@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dar
 import 'package:tmail_ui_user/features/base/widget/pop_back_barrier_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/handle_toggle_preview_rule_filter_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/select_rule_action_field_extension.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_action_arguments.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_widget.dart';
@@ -326,6 +327,11 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                     final listActions = controller
                         .listEmailRuleFilterActionSelected;
 
+                    final listRuleActions = EmailRuleFilterAction.values
+                        .where((action) => action.isSupported(
+                            isLabelAvailable: controller.isLabelAvailable))
+                        .toList();
+
                     return ListView.builder(
                       shrinkWrap: true,
                       primary: false,
@@ -340,11 +346,18 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           ? controller.errorForwardEmailValue.value
                           : controller.errorMailboxSelectedValue.value;
 
+                        final listLabelSelected =
+                            action is LabelMessageActionArguments
+                                ? action.labels
+                                : null;
+
                         return RuleFilterActionWidget(
                           isMobile: isMobile,
+                          listRuleActions: listRuleActions,
                           mailboxSelected: action is MoveMessageActionArguments
                               ? action.mailbox
                               : null,
+                          listLabelSelected: listLabelSelected,
                           errorValue: errorValue,
                           onActionChangeMobile: () {
                             controller.selectRuleFilterAction(
@@ -376,10 +389,12 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                             );
                           },
                           actionSelected: action.action,
-                          onTapActionDetailedCallback: () {
-                            FocusScope.of(context).unfocus();
-                            controller.selectMailbox(context, index);
-                          },
+                          onSelectRuleAction: (filterAction) =>
+                            controller.onSelectRuleAction(
+                              context: context,
+                              actionIndex: index,
+                              filerAction: filterAction,
+                            ),
                           onDeleteRuleConditionAction: () {
                             controller.tapRemoveAction(index);
                           },

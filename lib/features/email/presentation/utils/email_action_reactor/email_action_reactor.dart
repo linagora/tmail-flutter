@@ -288,12 +288,14 @@ class EmailActionReactor {
     Session session,
     AccountId accountId, {
     required EmailAddress? emailAddress,
+    required bool isLabelAvailable,
   }) async* {
     Get.back();
     final arguments = RulesFilterCreatorArguments(
       accountId,
       session,
       emailAddress: emailAddress,
+      isLabelAvailable: isLabelAvailable,
     );
 
     final newRuleFilterRequest = PlatformInfo.isWeb
@@ -651,6 +653,7 @@ class EmailActionReactor {
   Future<void> openEmailAddressDialog(
     Session session,
     AccountId accountId, {
+    required bool isLabelAvailable,
     required EmailAddress emailAddress,
     required ResponsiveUtils responsiveUtils,
     required ImagePaths imagePaths,
@@ -675,8 +678,13 @@ class EmailActionReactor {
               onComposeEmailFromEmailAddressRequest(emailAddress),
           onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
               onQuickCreateRuleRequest(
-            quickCreateRule(session, accountId, emailAddress: emailAddress),
-          ),
+                quickCreateRule(
+                  session,
+                  accountId,
+                  emailAddress: emailAddress,
+                  isLabelAvailable: isLabelAvailable,
+                ),
+              ),
         ),
         useRootNavigator: true,
         shape: const RoundedRectangleBorder(
@@ -701,8 +709,13 @@ class EmailActionReactor {
               onComposeEmailFromEmailAddressRequest(emailAddress),
           onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
               onQuickCreateRuleRequest(
-            quickCreateRule(session, accountId, emailAddress: emailAddress),
-          ),
+                quickCreateRule(
+                  session,
+                  accountId,
+                  emailAddress: emailAddress,
+                  isLabelAvailable: isLabelAvailable,
+                ),
+              ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );

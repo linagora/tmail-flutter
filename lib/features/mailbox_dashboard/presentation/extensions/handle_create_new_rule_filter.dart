@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/exceptions/rule_filter_exception.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
@@ -41,6 +42,7 @@ extension HandleCreateNewRuleFilter on MailboxDashBoardController {
       session,
       mailboxDestination: presentationMailbox,
       emailAddress: emailAddress,
+      isLabelAvailable: isLabelAvailable,
     );
 
     final newRuleFilterRequest = PlatformInfo.isWeb

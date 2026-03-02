@@ -926,6 +926,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     emailActionReactor.openEmailAddressDialog(
       session!,
       accountId!,
+      isLabelAvailable: isLabelAvailable,
       emailAddress: emailAddress,
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,
@@ -1156,6 +1157,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         session!,
         accountId!,
         emailAddress: emailAddress,
+        isLabelAvailable: isLabelAvailable,
       ));
     }
   }

@@ -1,4 +1,3 @@
-import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
@@ -24,6 +23,7 @@ import 'package:tmail_ui_user/features/base/widget/dialog_picker/color_dialog_pi
 import 'package:tmail_ui_user/features/base/widget/dialog_picker/date_time_dialog_picker.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/label_modal_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_visibility_state.dart';
@@ -60,10 +60,13 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ManageAccountDashBoardController extends ReloadableController
-  with OwnEmailAddressMixin, AiScribeMixin {
+  with OwnEmailAddressMixin,
+      AiScribeMixin,
+      LabelModalMixin {
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -79,6 +82,7 @@ class ManageAccountDashBoardController extends ReloadableController
   final dashboardSettingAction = Rxn<UIAction>();
   final octetsQuota = Rxn<Quota>();
   final isLabelVisibilityEnabled = RxBool(PlatformInfo.isIntegrationTesting);
+  final isLabelAvailable = RxBool(false);
 
   Uri? previousUri;
   AccountMenuItem? selectedMenu;

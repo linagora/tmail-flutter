@@ -11,20 +11,20 @@ import 'package:tmail_ui_user/features/labels/presentation/widgets/no_label_yet_
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-typedef OnLabelAsToEmailsAction = Function(List<Label> labels);
+typedef OnSelectLabelsAction = Function(List<Label> labels);
 typedef OnCreateALabelAction = Future<Label?> Function();
 
 class ChooseLabelModal extends StatefulWidget {
   final List<Label> labels;
   final ImagePaths imagePaths;
-  final OnLabelAsToEmailsAction onLabelAsToEmailsAction;
+  final OnSelectLabelsAction onSelectLabelsAction;
   final OnCreateALabelAction onCreateALabelAction;
 
   const ChooseLabelModal({
     super.key,
     required this.labels,
     required this.imagePaths,
-    required this.onLabelAsToEmailsAction,
+    required this.onSelectLabelsAction,
     required this.onCreateALabelAction,
   });
 
@@ -150,7 +150,7 @@ class _ChooseLabelModalState extends State<ChooseLabelModal> {
         return ListLabelWithActionModal(
           labels: labels,
           imagePaths: widget.imagePaths,
-          onLabelAsToEmailsAction: widget.onLabelAsToEmailsAction,
+          onSelectLabelsAction: widget.onSelectLabelsAction,
           onCloseModal: _onCloseModal,
           onCreateALabelAction: _onCreateNewLabel,
         );

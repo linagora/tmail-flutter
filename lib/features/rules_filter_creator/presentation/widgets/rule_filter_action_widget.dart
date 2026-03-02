@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
@@ -11,12 +12,14 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets
 
 class RuleFilterActionWidget extends StatelessWidget {
   final ImagePaths imagePaths;
+  final List<EmailRuleFilterAction> listRuleActions;
   final bool isMobile;
   final OnDeleteRuleConditionAction onDeleteRuleConditionAction;
   final EmailRuleFilterAction? actionSelected;
   final PresentationMailbox? mailboxSelected;
+  final List<Label>? listLabelSelected;
   final String? errorValue;
-  final VoidCallback? onTapActionDetailedCallback;
+  final OnSelectRuleAction? onSelectRuleAction;
   final TextEditingController? forwardEmailEditingController;
   final FocusNode? forwardEmailFocusNode;
   final OnTextChange? onChangeForwardEmail;
@@ -27,15 +30,17 @@ class RuleFilterActionWidget extends StatelessWidget {
     Key? key,
     required this.imagePaths,
     required this.isMobile,
+    required this.listRuleActions,
     required this.onDeleteRuleConditionAction,
     this.actionSelected,
     this.mailboxSelected,
+    this.listLabelSelected,
     this.errorValue,
     this.forwardEmailEditingController,
     this.forwardEmailFocusNode,
     this.onChangeForwardEmail,
     this.onActionChangeMobile,
-    this.onTapActionDetailedCallback,
+    this.onSelectRuleAction,
     this.onActionChanged,
   }) : super(key: key);
 
@@ -52,19 +57,18 @@ class RuleFilterActionWidget extends StatelessWidget {
         height: 72,
         alignment: Alignment.center,
         child: RuleFilterActionRow(
-          actionList: EmailRuleFilterAction.values
-              .where((action) => action.isSupported)
-              .toList(),
+          actionList: listRuleActions,
           actionSelected: actionSelected,
           onActionChanged: onActionChanged,
           mailboxSelected: mailboxSelected,
+          listLabelSelected: listLabelSelected,
           errorValue: errorValue,
           imagePaths: imagePaths,
           onDeleteRuleConditionAction: onDeleteRuleConditionAction,
           forwardEmailEditingController: forwardEmailEditingController,
           forwardEmailFocusNode: forwardEmailFocusNode,
           onChangeForwardEmail: onChangeForwardEmail,
-          onTapActionDetailedCallback: onTapActionDetailedCallback,
+          onSelectRuleAction: onSelectRuleAction,
         ),
       );
     } else {
@@ -117,7 +121,7 @@ class RuleFilterActionWidget extends StatelessWidget {
                       forwardEmailFocusNode: forwardEmailFocusNode,
                       onChangeForwardEmail: onChangeForwardEmail,
                       onTapActionCallback: onActionChangeMobile,
-                      onTapActionDetailedCallback: onTapActionDetailedCallback,
+                      onSelectRuleAction: onSelectRuleAction,
                     ),
                   );
                 },

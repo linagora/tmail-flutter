@@ -95,7 +95,11 @@ class EmailRulesController extends BaseController {
     final accountId = _accountDashBoardController.accountId.value;
     final session = _accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
-      final arguments = RulesFilterCreatorArguments(accountId, session);
+      final arguments = RulesFilterCreatorArguments(
+        accountId,
+        session,
+        isLabelAvailable: _accountDashBoardController.isLabelAvailable.value,
+      );
 
       final newRuleFilterRequest = PlatformInfo.isWeb
         ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
@@ -136,7 +140,9 @@ class EmailRulesController extends BaseController {
         accountId,
         session,
         actionType: CreatorActionType.edit,
-        tMailRule: rule);
+        tMailRule: rule,
+        isLabelAvailable: _accountDashBoardController.isLabelAvailable.value,
+      );
 
       final newRuleFilterRequest = PlatformInfo.isWeb
         ? await DialogRouter().pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)

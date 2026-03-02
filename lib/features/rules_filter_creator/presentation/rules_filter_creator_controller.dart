@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/rule_action.dart';
 import 'package:rule_filter/rule_filter/rule_append_in.dart';
@@ -68,7 +69,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final TextEditingController forwardEmailController = TextEditingController();
   final FocusNode forwardEmailFocusNode = FocusNode();
   final listEmailRuleFilterActionSelected = RxList<RuleFilterActionArguments>();
-  int maxCountAction = EmailRuleFilterAction.values.where((action) => action.isSupported).length - 1;
   final isShowAddAction = Rxn<bool>();
 
   String? _newRuleName;
@@ -80,6 +80,18 @@ class RulesFilterCreatorController extends BaseMailboxController {
   EmailAddress? _emailAddress;
   List<TMailRule>? _listEmailRule;
   PresentationMailbox? _mailboxDestination;
+  List<Label>? _labelsSelected;
+  bool _isLabelAvailable = false;
+
+  bool get isLabelAvailable => _isLabelAvailable;
+
+  int get maxCountAction {
+    final countActionSupported = EmailRuleFilterAction.values
+        .where(
+            (action) => action.isSupported(isLabelAvailable: _isLabelAvailable))
+        .length;
+    return countActionSupported - 1;
+  }
 
   RulesFilterCreatorController(
     this._getAllMailboxInteractor,
@@ -103,6 +115,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
       _emailAddress = arguments!.emailAddress;
       _mailboxDestination = arguments!.mailboxDestination;
       actionType.value = arguments!.actionType;
+      _isLabelAvailable = arguments!.isLabelAvailable;
       injectRuleFilterBindings(_session, _accountId);
       _setUpDefaultValueRuleFilter();
       _getAllRules();
@@ -120,6 +133,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
     forwardEmailFocusNode.dispose();
     forwardEmailController.dispose();
+    _cleanDataOnMemory();
     super.onClose();
   }
 
@@ -146,6 +160,19 @@ class RulesFilterCreatorController extends BaseMailboxController {
         _setUpRuleFilterActions();
       }
     });
+  }
+
+  void _cleanDataOnMemory() {
+    arguments = null;
+    _accountId = null;
+    _session = null;
+    _newRuleName = null;
+    _currentTMailRule = null;
+    _listEmailRule = null;
+    _emailAddress = null;
+    _mailboxDestination = null;
+    _labelsSelected = null;
+    _isLabelAvailable = false;
   }
 
   void _getAllRules() {
@@ -194,6 +221,10 @@ class RulesFilterCreatorController extends BaseMailboxController {
               MoveMessageActionArguments(mailbox: _mailboxDestination)
             );
           }
+        } else if (_labelsSelected != null) {
+          listEmailRuleFilterActionSelected.add(
+            LabelMessageActionArguments(labels: _labelsSelected),
+          );
         } else {
           listEmailRuleFilterActionSelected.add(RuleFilterActionArguments.emptyAction());
         }

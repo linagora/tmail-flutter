@@ -17,9 +17,9 @@ import 'package:tmail_ui_user/features/email/domain/state/labels/add_list_label_
 import 'package:tmail_ui_user/features/email/domain/usecases/labels/add_list_label_to_list_emails_interactor.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/label_modal_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/choose_label_modal.dart';
 import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
-import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 
 typedef OnSyncListLabelForListEmail = void Function(
@@ -28,7 +28,7 @@ typedef OnSyncListLabelForListEmail = void Function(
   {bool shouldRemove}
 );
 
-mixin AddListLabelsToListEmailsMixin on EmitStateMixin {
+mixin AddListLabelsToListEmailsMixin on EmitStateMixin, LabelModalMixin {
   AccountId? get currentAccountId;
 
   Session? get currentSession;
@@ -41,31 +41,28 @@ mixin AddListLabelsToListEmailsMixin on EmitStateMixin {
 
   OnSyncListLabelForListEmail? get onSyncListLabelForListEmail;
 
-  Future<void> openChooseLabelModal({
+  Future<void> addLabelsToEmailsAction({
     required List<Label> labels,
     required List<PresentationEmail> selectedEmails,
     required ImagePaths imagePaths,
     required VoidCallback onCallBackAction,
     required OnCreateALabelAction onCreateALabelAction,
   }) async {
-    await DialogRouter().openDialogModal(
-      child: ChooseLabelModal(
-        labels: labels,
-        onLabelAsToEmailsAction: (labels) {
-          onCallBackAction();
-          log(
-            'AddLabelToListEmailsActionMixin::ChooseLabelModal::onLabelAsToEmailsAction: '
-            'Selected labels is $labels',
-          );
-          _addLabelsToAnEmails(
-            labels: labels,
-            emailIds: selectedEmails.listEmailIds,
-          );
-        },
-        imagePaths: imagePaths,
-        onCreateALabelAction: onCreateALabelAction,
-      ),
-      dialogLabel: 'choose-label-modal',
+    await openChooseLabelModal(
+      labels: labels,
+      imagePaths: imagePaths,
+      onSelectLabelsAction: (selectedLabels) {
+        onCallBackAction();
+        log(
+          'AddLabelToListEmailsActionMixin::addLabelsToEmailsAction:onSelectLabelsAction: '
+          'Selected labels is $selectedLabels',
+        );
+        _addLabelsToAnEmails(
+          labels: selectedLabels,
+          emailIds: selectedEmails.listEmailIds,
+        );
+      },
+      onCreateALabelAction: onCreateALabelAction,
     );
   }
 

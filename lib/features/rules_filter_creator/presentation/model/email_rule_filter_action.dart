@@ -2,6 +2,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum EmailRuleFilterAction {
   moveMessage,
+  labelMessage,
   maskAsSeen,
   starIt,
   rejectIt,
@@ -22,10 +23,21 @@ enum EmailRuleFilterAction {
         return appLocalizations.markAsSpam;
       case EmailRuleFilterAction.forwardTo:
         return appLocalizations.forwardTo;
+      case EmailRuleFilterAction.labelMessage:
+        return appLocalizations.labelMessage;
     }
   }
 
-  bool get isSupported => this != EmailRuleFilterAction.forwardTo;
+  bool isSupported({
+    bool isLabelAvailable = false,
+  }) {
+    if (isLabelAvailable) {
+      return this != EmailRuleFilterAction.forwardTo;
+    } else {
+      return this != EmailRuleFilterAction.labelMessage &&
+          this != EmailRuleFilterAction.forwardTo;
+    }
+  }
 
   bool get isForwardTo => this == EmailRuleFilterAction.forwardTo;
 }

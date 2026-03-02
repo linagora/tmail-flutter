@@ -4,6 +4,8 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:labels/extensions/list_label_extension.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:rule_filter/rule_filter/rule_condition_group.dart';
@@ -84,6 +86,9 @@ class RuleFilterButtonField<T> extends StatelessWidget {
     }
     if (value is ConditionCombiner) {
       return value.getTitle(appLocalizations);
+    }
+    if (value is List<Label>) {
+      return value.displayNameAsString;
     }
     return hintText ?? '';
   }

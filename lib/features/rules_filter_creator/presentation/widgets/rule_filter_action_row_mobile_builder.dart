@@ -5,6 +5,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_detailed_builder.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_row_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -16,7 +17,7 @@ class RuleFilterActionRowMobile extends StatelessWidget {
   final TextEditingController? forwardEmailEditingController;
   final FocusNode? forwardEmailFocusNode;
   final OnTextChange? onChangeForwardEmail;
-  final VoidCallback? onTapActionDetailedCallback;
+  final OnSelectRuleAction? onSelectRuleAction;
   final VoidCallback? onTapActionCallback;
 
   const RuleFilterActionRowMobile({
@@ -28,7 +29,7 @@ class RuleFilterActionRowMobile extends StatelessWidget {
     this.forwardEmailEditingController,
     this.forwardEmailFocusNode,
     this.onChangeForwardEmail,
-    this.onTapActionDetailedCallback,
+    this.onSelectRuleAction,
     this.onTapActionCallback,
   }) : super(key: key);
 
@@ -69,7 +70,7 @@ class RuleFilterActionRowMobile extends StatelessWidget {
           forwardEmailEditingController: forwardEmailEditingController,
           forwardEmailFocusNode: forwardEmailFocusNode,
           forwardEmailOnChangeAction: onChangeForwardEmail,
-          onTapActionDetailedCallback: onTapActionDetailedCallback,
+          onSelectRuleAction: onSelectRuleAction,
         ),
       ],
     );

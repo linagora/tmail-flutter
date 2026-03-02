@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_row_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_button_field.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -15,7 +16,7 @@ class RuleFilterActionDetailed extends StatelessWidget {
   final TextEditingController? forwardEmailEditingController;
   final FocusNode? forwardEmailFocusNode;
   final OnTextChange? forwardEmailOnChangeAction;
-  final VoidCallback? onTapActionDetailedCallback;
+  final OnSelectRuleAction? onSelectRuleAction;
 
   const RuleFilterActionDetailed({
     Key? key,
@@ -26,7 +27,7 @@ class RuleFilterActionDetailed extends StatelessWidget {
     this.forwardEmailEditingController,
     this.forwardEmailFocusNode,
     this.forwardEmailOnChangeAction,
-    this.onTapActionDetailedCallback,
+    this.onSelectRuleAction,
   }) : super(key: key);
 
   @override
@@ -39,7 +40,9 @@ class RuleFilterActionDetailed extends StatelessWidget {
           borderColor: errorValue?.isNotEmpty == true
             ? AppColor.redFF3347
             : AppColor.m3Neutral90,
-          onTapActionCallback: (_) => onTapActionDetailedCallback?.call(),
+          onTapActionCallback: (_) => onSelectRuleAction?.call(
+            EmailRuleFilterAction.moveMessage,
+          ),
         );
       case EmailRuleFilterAction.forwardTo:
         return DefaultInputFieldWidget(

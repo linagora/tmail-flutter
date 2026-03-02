@@ -5825,4 +5825,15 @@ class AppLocalizations {
       name: 'createALabel',
     );
   }
+
+  String get labelMessage {
+    return Intl.message(
+      'Label message',
+      name: 'labelMessage',
+    );
+  }
+
+  String get as {
+    return Intl.message('as', name: 'as');
+  }
 }
