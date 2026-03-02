@@ -29,4 +29,8 @@ extension ListLabelExtension on List<Label> {
             name.trim().isNotEmpty && name != selectedLabel.safeDisplayName)
         .toList();
   }
+
+  List<Label> getLabelsByKeywords(List<String> keywords) {
+    return where((label) => keywords.contains(label.keyword?.value)).toList();
+  }
 }

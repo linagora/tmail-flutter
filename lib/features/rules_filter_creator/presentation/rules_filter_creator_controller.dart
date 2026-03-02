@@ -284,6 +284,10 @@ class RulesFilterCreatorController extends BaseMailboxController
 
         _newRuleName = _currentTMailRule!.name;
         _setValueInputField(inputRuleNameController, _newRuleName ?? '');
+
+        if (_isLabelAvailable) {
+          setUpLabelMessageWhenEditRule(_currentTMailRule!);
+        }
         break;
     }
     inputRuleNameFocusNode.requestFocus();

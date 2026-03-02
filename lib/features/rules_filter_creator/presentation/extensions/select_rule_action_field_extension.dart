@@ -3,6 +3,7 @@ import 'package:labels/extensions/list_label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart';
 import 'package:rule_filter/rule_filter/rule_condition_group.dart';
+import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/context_menu/context_item_condition_combiner_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/context_menu/context_item_rule_condition_comparator_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/context_menu/context_item_rule_condition_field_action.dart';
@@ -196,5 +197,18 @@ extension SelectRuleActionFieldExtension on RulesFilterCreatorController {
     setLabelSelected(selectedLabels);
     listEmailRuleFilterActionSelected[actionIndex] =
         LabelMessageActionArguments(labels: selectedLabels);
+  }
+
+  void setUpLabelMessageWhenEditRule(TMailRule? tmailRule) {
+    final listKeywords = tmailRule?.action.withKeywords ?? [];
+    if (listKeywords.isEmpty) return;
+
+    final labels = allLabels.getLabelsByKeywords(listKeywords);
+
+    if (labels.isNotEmpty) {
+      setLabelSelected(labels);
+      listEmailRuleFilterActionSelected
+          .add(LabelMessageActionArguments(labels: labels));
+    }
   }
 }
