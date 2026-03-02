@@ -14,7 +14,7 @@ permissions:
 jobs:
   build-release-image-with-sentry:
     name: Build release image with Sentry
-    if: github.event_name == 'workflow_dispatch' || (github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v'))
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     environment: prod
 
