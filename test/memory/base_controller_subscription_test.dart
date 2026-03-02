@@ -91,6 +91,32 @@ void main() {
 
   group('BaseController::consumeState::subscription lifecycle', () {
     test(
+      'SHOULD untrack completed subscriptions\n'
+      'WHEN a short-lived stream finishes\n'
+      'SO THAT active-subscription tracking does not grow indefinitely',
+    () async {
+      // Arrange
+      final controller = _SubscriptionAwareController();
+      final streamCtrl = StreamController<Either<Failure, Success>>();
+
+      // Act
+      controller.consumeState(streamCtrl.stream);
+      expect(controller.trackedStateSubscriptionCount, 1);
+
+      streamCtrl.add(Left<Failure, Success>(_FakeFailure()));
+      await Future.microtask(() {});
+      await streamCtrl.close();
+      await Future.microtask(() {});
+
+      // Assert
+      expect(
+        controller.trackedStateSubscriptionCount,
+        0,
+        reason: 'Completed one-shot stream is still tracked as active',
+      );
+    });
+
+    test(
       'SHOULD cancel the stream subscription\n'
       'WHEN onClose is called\n'
       'SO THAT events from long-lived streams are no longer delivered to onData',
@@ -100,6 +126,7 @@ void main() {
       final streamCtrl = StreamController<Either<Failure, Success>>();
 
       controller.consumeState(streamCtrl.stream);
+      expect(controller.trackedStateSubscriptionCount, 1);
 
       // Verify subscription is live before close
       streamCtrl.add(Left<Failure, Success>(_FakeFailure()));

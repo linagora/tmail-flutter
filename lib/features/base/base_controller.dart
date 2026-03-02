@@ -94,10 +94,10 @@ abstract class BaseController extends GetxController
   StreamSubscription<html.Event>? _onBeforeUnloadBrowserSubscription;
   StreamSubscription<html.Event>? _onUnloadBrowserSubscription;
 
-  // Tracks every subscription created by consumeState() so they can all be
-  // cancelled in onClose(), preventing callbacks from firing on a disposed
-  // controller and keeping the controller eligible for garbage collection.
-  final _stateSubscriptions = <StreamSubscription<Either<Failure, Success>>>[];
+  // Tracks active subscriptions created by consumeState() so they can all be
+  // cancelled in onClose(). Entries are removed automatically when a stream
+  // completes, avoiding accumulation for short-lived request streams.
+  final _stateSubscriptions = <Object, StreamSubscription<Either<Failure, Success>>>{};
 
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
@@ -123,7 +123,7 @@ abstract class BaseController extends GetxController
 
   @override
   void onClose() {
-    for (final sub in _stateSubscriptions) {
+    for (final sub in _stateSubscriptions.values.toList()) {
       sub.cancel();
     }
     _stateSubscriptions.clear();
@@ -135,10 +135,22 @@ abstract class BaseController extends GetxController
   }
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) {
-    _stateSubscriptions.add(
-      newStateStream.listen(onData, onError: onError, onDone: onDone),
+    final subscriptionKey = Object();
+    final subscription = newStateStream.listen(
+      onData,
+      onError: onError,
+      onDone: () {
+        // Remove in a microtask so synchronous streams are also cleaned up
+        // after the subscription has been inserted into the tracking map.
+        scheduleMicrotask(() => _stateSubscriptions.remove(subscriptionKey));
+        onDone();
+      },
     );
+    _stateSubscriptions[subscriptionKey] = subscription;
   }
+
+  @visibleForTesting
+  int get trackedStateSubscriptionCount => _stateSubscriptions.length;
 
   void dispatchState(Either<Failure, Success> newState) {
     viewState.value = newState;
