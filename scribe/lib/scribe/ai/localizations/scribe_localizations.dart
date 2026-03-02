@@ -199,6 +199,13 @@ class ScribeLocalizations {
       name: 'retry',
     );
   }
+
+  String get copiedToClipboard {
+    return Intl.message(
+      'Result copied to clipboard',
+      name: 'copiedToClipboard',
+    );
+  }
 }
 
 class _ScribeLocalizationsDelegate
