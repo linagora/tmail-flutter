@@ -143,5 +143,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "copiedToClipboard": "Результат скопирован в буфер обмена",
+  "@copiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
