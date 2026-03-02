@@ -6,6 +6,9 @@ import 'package:model/email/email_property.dart';
 class ThreadConstants {
   static const maxCountEmails = 20;
   static final defaultLimit = UnsignedInt(maxCountEmails);
+  // Upper bound for limitEmailFetched: caps the number of emails fetched on
+  // refresh so that heavy scrollers do not trigger unbounded JMAP requests.
+  static const int maxRefreshLimit = 100;
   static final propertiesDefault = Properties({
     EmailProperty.id,
     EmailProperty.blobId,

@@ -101,6 +101,9 @@ class ThreadController extends BaseController with EmailActionController {
   bool canSearchMore = false;
   MailboxId? _currentMemoryMailboxId;
   int _peakEmailCount = 0;
+  // Holds every Worker returned by ever() so they can be explicitly disposed
+  // in onClose(), preventing stale callbacks from running on a closed controller.
+  final _workers = <Worker>[];
   final ScrollController listEmailController = ScrollController();
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
   @visibleForTesting
@@ -156,6 +159,10 @@ class ThreadController extends BaseController with EmailActionController {
   @override
   void onClose() {
     _currentMemoryMailboxId = null;
+    for (final w in _workers) {
+      w.dispose();
+    }
+    _workers.clear();
     listEmailController.dispose();
     if (PlatformInfo.isWeb) {
       _resizeBrowserStreamSubscription?.cancel();
@@ -266,7 +273,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _registerObxStreamListener() {
-    ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
+    _workers.add(ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
       log('ThreadController::_registerObxStreamListener:SelectedMailbox: ${mailbox?.id} - ${mailbox?.name} | CurrentMemoryMailboxId: $_currentMemoryMailboxId');
       if (mailbox is PresentationMailbox
           && mailbox.mailboxId != _currentMemoryMailboxId) {
@@ -282,15 +289,15 @@ class ThreadController extends BaseController with EmailActionController {
         _currentMemoryMailboxId = null;
         resetToOriginalValue();
       }
-    });
+    }));
 
-    ever(searchController.searchState, (searchState) {
+    _workers.add(ever(searchController.searchState, (searchState) {
       if (searchState.searchStatus == SearchStatus.ACTIVE) {
         cancelSelectEmail();
       }
-    });
+    }));
 
-    ever(mailboxDashBoardController.dashBoardAction, (action) {
+    _workers.add(ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is SelectionAllEmailAction) {
         setSelectAllEmailAction();
         mailboxDashBoardController.clearDashBoardAction();
@@ -350,18 +357,18 @@ class ThreadController extends BaseController with EmailActionController {
         clearMailShortcutFocus();
         mailboxDashBoardController.clearDashBoardAction();
       }
-    });
+    }));
 
-    ever(mailboxDashBoardController.emailUIAction, (action) {
+    _workers.add(ever(mailboxDashBoardController.emailUIAction, (action) {
       if (action is RefreshChangeEmailAction) {
         _refreshEmailChanges(newState: action.newState);
       } else if (action is RefreshAllEmailAction) {
         refreshAllEmail(shouldClearCache: PlatformInfo.isWeb);
         mailboxDashBoardController.clearEmailUIAction();
       }
-    });
+    }));
 
-    ever(mailboxDashBoardController.viewState, (viewState) {
+    _workers.add(ever(mailboxDashBoardController.viewState, (viewState) {
       if (isSearchActive) return;
       final reactionState = viewState.getOrElse(() => UIState.idle);
       if (reactionState is MarkAsMailboxReadAllSuccess) {
@@ -408,9 +415,9 @@ class ThreadController extends BaseController with EmailActionController {
         );
         _checkIfCurrentMailboxCanLoadMore();
       }
-    });
+    }));
 
-    ever(mailboxDashBoardController.emailsInCurrentMailbox, (emails) {
+    _workers.add(ever(mailboxDashBoardController.emailsInCurrentMailbox, (emails) {
       final countEmails = emails.length;
       log(
         'ThreadController::Ever(mailboxDashBoardController.emailsInCurrentMailbox): '
@@ -422,7 +429,7 @@ class ThreadController extends BaseController with EmailActionController {
       } else if (countEmails > _peakEmailCount) {
         _peakEmailCount = countEmails;
       }
-    });
+    }));
   }
 
   void _handleMarkEmailsAsReadByMailboxId(MailboxId mailboxId) {
@@ -642,9 +649,8 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   UnsignedInt get limitEmailFetched {
-    return _peakEmailCount == 0
-        ? ThreadConstants.defaultLimit
-        : UnsignedInt(_peakEmailCount);
+    if (_peakEmailCount == 0) return ThreadConstants.defaultLimit;
+    return UnsignedInt(_peakEmailCount.clamp(1, ThreadConstants.maxRefreshLimit));
   }
 
   void _refreshEmailChanges({required jmap.State newState}) {
@@ -690,7 +696,11 @@ class ThreadController extends BaseController with EmailActionController {
   Future<void> refreshChangeSearchEmail() => _refreshChangeSearchEmail();
 
   Future<void> _refreshChangeSearchEmail() async {
-    await _refreshChangeListEmailCache();
+    if (mailboxDashBoardController.currentEmailState != null) {
+      await _refreshChangeListEmailCache();
+    } else {
+      logWarning('ThreadController::_refreshChangeSearchEmail: skip refreshChanges because currentEmailState is null');
+    }
 
     log('ThreadController::_refreshChangeSearchEmail:');
     canSearchMore = false;
@@ -769,6 +779,12 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _refreshChangeListEmail() async {
     log('ThreadController::_refreshChangeListEmail:');
+    if (mailboxDashBoardController.currentEmailState == null) {
+      logWarning('ThreadController::_refreshChangeListEmail: currentEmailState is null, fallback to full reload');
+      await _reloadAllEmailsFromServer();
+      return;
+    }
+
     final refreshViewState = await _refreshChangeListEmailCache();
 
     final refreshState = refreshViewState
@@ -786,8 +802,16 @@ class ThreadController extends BaseController with EmailActionController {
   Future<void> _refreshChangeListEmailsInVirtualFolder() async {
     log('ThreadController::_refreshChangeListEmailsInVirtualFolder:');
 
-    await _refreshChangeListEmailCache();
+    if (mailboxDashBoardController.currentEmailState != null) {
+      await _refreshChangeListEmailCache();
+    } else {
+      logWarning('ThreadController::_refreshChangeListEmailsInVirtualFolder: skip refreshChanges because currentEmailState is null');
+    }
 
+    await _reloadAllEmailsFromServer();
+  }
+
+  Future<void> _reloadAllEmailsFromServer() async {
     final viewState = await _getEmailsInMailboxInteractor
         .execute(
           _session!,
@@ -803,6 +827,7 @@ class ThreadController extends BaseController with EmailActionController {
             _session!,
             _accountId!,
           ),
+          getLatestChanges: false,
           useCache: false,
         )
         .last;
