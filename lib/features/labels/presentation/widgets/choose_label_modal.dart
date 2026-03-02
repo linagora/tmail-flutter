@@ -159,14 +159,10 @@ class _ChooseLabelModalState extends State<ChooseLabelModal> {
   }
 
   Widget _buildCloseButton() {
-    return Positioned(
-      top: 0,
-      right: 0,
-      child: DefaultCloseButtonWidget(
-        iconClose: widget.imagePaths.icCloseDialog,
-        isAlignTopEnd: false,
-        onTapActionCallback: _onCloseModal,
-      ),
+    return DefaultCloseButtonWidget(
+      iconClose: widget.imagePaths.icCloseDialog,
+      isAlignTopEnd: false,
+      onTapActionCallback: _onCloseModal,
     );
   }
 

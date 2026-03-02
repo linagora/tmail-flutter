@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-03-02T10:14:05.567273",
+  "@@last_modified": "2026-03-02T16:18:41.780261",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5510,6 +5510,12 @@
   },
   "as": "as",
   "@as": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseSelectALabelToAddLabelTheMessage": "Please select a label to add label to the message",
+  "@pleaseSelectALabelToAddLabelTheMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

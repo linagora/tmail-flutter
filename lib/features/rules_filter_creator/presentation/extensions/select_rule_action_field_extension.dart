@@ -193,6 +193,7 @@ extension SelectRuleActionFieldExtension on RulesFilterCreatorController {
       appLocalizations,
       selectedLabels.displayNameAsString,
     );
+    setLabelSelected(selectedLabels);
     listEmailRuleFilterActionSelected[actionIndex] =
         LabelMessageActionArguments(labels: selectedLabels);
   }
