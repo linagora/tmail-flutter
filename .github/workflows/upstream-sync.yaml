@@ -65,10 +65,10 @@ jobs:
           BRANCH_NAME="sync-upstream-$(date +%Y%m%d-%H%M%S)"
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-          git checkout -b "$BRANCH_NAME"
-          git merge upstream/master --no-edit
-
-          git push origin "$BRANCH_NAME"
+          # Create the branch from upstream/master directly to avoid merge-conflict
+          # failures in automation. Any conflicts are handled in the PR itself.
+          git checkout -B "$BRANCH_NAME" upstream/master
+          git push --force-with-lease origin "$BRANCH_NAME"
 
       - name: Check for existing sync PR
         if: steps.check_changes.outputs.has_changes == 'true' || github.event.inputs.force_sync == 'true'

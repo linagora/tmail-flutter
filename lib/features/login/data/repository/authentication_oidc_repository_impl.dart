@@ -66,22 +66,6 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   }
 
   @override
-  Future<TokenOIDC> refreshingTokensOIDC(
-      String clientId,
-      String redirectUrl,
-      String discoveryUrl,
-      List<String> scopes,
-      String refreshToken
-  ) {
-    return _oidcDataSource.refreshingTokensOIDC(
-        clientId,
-        redirectUrl,
-        discoveryUrl,
-        scopes,
-        refreshToken);
-  }
-
-  @override
   Future<bool> logout(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery) {
     return _oidcDataSource.logout(tokenId, config, oidcRescovery);
   }

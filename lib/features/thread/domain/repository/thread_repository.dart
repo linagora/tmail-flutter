@@ -59,6 +59,7 @@ abstract class ThreadRepository {
     jmap.State currentState,
     {
       Set<Comparator>? sort,
+      UnsignedInt? limit,
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,

@@ -694,4 +694,14 @@ class RulesFilterCreatorController extends BaseMailboxController {
         ForwardActionArguments(forwardEmail: value);
     listEmailRuleFilterActionSelected.refresh();
   }
+
+  void clearAllFocus() {
+    inputRuleNameFocusNode.unfocus();
+    if (listRuleConditionValueArguments.isNotEmpty) {
+      for (var ruleConditionValueArguments in listRuleConditionValueArguments) {
+        ruleConditionValueArguments.focusNode.unfocus();
+      }
+    }
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
 }

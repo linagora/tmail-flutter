@@ -1,3 +1,31 @@
+## [0.24.14] - 2026-02-27
+### Fixed
+- TF-4350 cannot focus in folder creator modal and create rule modal in Safari when email open
+
+## [0.24.13] - 2026-02-25
+### Fixed
+- TF-4344 Selected language not reflect current language
+
+## [0.24.12] - 2026-02-24
+### Fixed
+- TF-4336 Inbox should be above Favorite folder
+- TF-4337 Translate in Fr
+- TF-4339 CORS issue with open-configuration
+
+## [0.24.11] - 2026-02-12
+### Fixed
+- Fix email list does not automatically refill after bulk delete (#4323)
+- TF-4329 Fix rogue mailbox set request for favorite
+- Fix infinitive loop when 401 before expired token
+- Handle 400 error during token refresh flow
+- TF-4314 Fix unread emails disappear blink (#4316)
+- Fix Scribe translations by using multiple_localization package
+- Fix create identity memory leak (#4295)
+
+### Added
+- Sentry integration & upload source map (#4311)
+- TF-4306 Update icon for Label in left menu
+
 ## [0.24.8] - 2026-01-30
 ### Fixed 
 - #4283 fix: normalize "$needs-action" keyword to "needs-action"

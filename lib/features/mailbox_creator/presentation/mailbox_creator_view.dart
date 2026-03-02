@@ -256,17 +256,17 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
         ),
       );
 
-      bodyWidget = Center(child: bodyWidget);
+      bodyWidget = GestureDetector(
+        onTap: controller.nameInputFocusNode.unfocus,
+        child: Center(child: bodyWidget),
+      );
 
       if (PlatformInfo.isMobile) {
         bodyWidget = GestureDetector(
           onTap: controller.closeView,
           child: Scaffold(
             backgroundColor: AppColor.blackAlpha20,
-            body: GestureDetector(
-              onTap: controller.nameInputFocusNode.unfocus,
-              child: bodyWidget,
-            ),
+            body: bodyWidget,
           ),
         );
       }

@@ -12,6 +12,9 @@ class DioClient {
 
   Map<String, dynamic> getHeaders() => Map.from(_dio.options.headers);
 
+  Dio _createNewDio() => Dio()
+    ..httpClientAdapter = _dio.httpClientAdapter;
+
   Future<dynamic> get(
     String path, {
     Map<String, dynamic>? queryParameters,
@@ -30,6 +33,25 @@ class DioClient {
         onReceiveProgress: onReceiveProgress)
       .then((value) => value.data)
       .catchError((error) => throw error);
+  }
+
+  Future<dynamic> getWithNewDio(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    return await _createNewDio()
+        .get(
+          path,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onReceiveProgress: onReceiveProgress,
+        )
+        .then((value) => value.data)
+        .catchError((error) => throw error);
   }
 
   Future<dynamic> post(

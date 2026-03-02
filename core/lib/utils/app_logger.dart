@@ -81,14 +81,20 @@ void _internalLog(
   }
 
   if (shouldSentry) {
-    unawaited(
-      SentryManager.instance.captureException(
-        exception ?? rawMessage,
-        stackTrace: stackTrace,
-        message: rawMessage,
-        extras: extras,
-      ),
-    );
+    if (level == Level.trace) {
+      unawaited(
+        SentryManager.instance.captureMessage(rawMessage, extras: extras),
+      );
+    } else {
+      unawaited(
+        SentryManager.instance.captureException(
+          exception ?? rawMessage,
+          stackTrace: stackTrace,
+          message: rawMessage,
+          extras: extras,
+        ),
+      );
+    }
   }
 }
 
@@ -132,7 +138,9 @@ void _printWebConsole(Level level, String value) {
 }
 
 bool _shouldReportToSentry(Level level) {
-  return level == Level.error || level == Level.critical;
+  return level == Level.error ||
+      level == Level.critical ||
+      level == Level.trace;
 }
 
 void logError(
@@ -202,11 +210,13 @@ void logDebug(
 void logTrace(
   String? message, {
   bool webConsoleEnabled = false,
+  Map<String, dynamic>? extras,
 }) {
   _internalLog(
     message,
     level: Level.trace,
     webConsoleEnabled: webConsoleEnabled,
+    extras: extras,
   );
 }
 

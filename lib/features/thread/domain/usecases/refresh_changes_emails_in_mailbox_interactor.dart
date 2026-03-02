@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
@@ -23,6 +24,7 @@ class RefreshChangesEmailsInMailboxInteractor {
     jmap.State currentState,
     {
       Set<Comparator>? sort,
+      UnsignedInt? limit,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
       EmailFilter? emailFilter,
@@ -37,6 +39,7 @@ class RefreshChangesEmailsInMailboxInteractor {
           accountId,
           currentState,
           sort: sort,
+          limit: limit,
           propertiesCreated: propertiesCreated,
           propertiesUpdated: propertiesUpdated,
           emailFilter: emailFilter)

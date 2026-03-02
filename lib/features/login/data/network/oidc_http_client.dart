@@ -77,7 +77,7 @@ class OIDCHttpClient {
   }
 
   Future<OIDCDiscoveryResponse> discoverOIDC(OIDCConfiguration configuration) async {
-    final result = await _dioClient.get(configuration.discoveryUrl);
+    final result = await _dioClient.getWithNewDio(configuration.discoveryUrl);
     log('OIDCHttpClient::discoverOIDC(): RESULT: $result');
     if (result is Map<String, dynamic>) {
       return OIDCDiscoveryResponse.fromJson(result);

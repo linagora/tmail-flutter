@@ -157,7 +157,8 @@ abstract class BaseController extends GetxController
   bool validateUrgentException(dynamic exception) {
     return exception is NoNetworkError
       || exception is BadCredentialsException
-      || exception is ConnectionError;
+      || exception is ConnectionError
+      || exception is RefreshTokenFailedException;
   }
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
@@ -178,6 +179,8 @@ abstract class BaseController extends GetxController
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       handleBadCredentialsException();
+    } else if (exception is RefreshTokenFailedException) {
+      handleRefreshTokenFailedException();
     }
   }
 
@@ -189,6 +192,8 @@ abstract class BaseController extends GetxController
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       handleBadCredentialsException();
+    } else if (exception is RefreshTokenFailedException) {
+      handleRefreshTokenFailedException();
     }
   }
 
@@ -241,6 +246,15 @@ abstract class BaseController extends GetxController
 
   void _performReconnection() {
     clearDataAndGoToLoginPage();
+  }
+
+  void handleRefreshTokenFailedException() {
+    log('$runtimeType::handleRefreshTokenFailedException:');
+    if (twakeAppManager.hasComposer) {
+      _performSaveAndReconnection();
+    } else {
+      _performReconnection();
+    }
   }
 
   void onDataFailureViewState(Failure failure) {

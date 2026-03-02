@@ -28,13 +28,6 @@ abstract class AuthenticationOIDCRepository {
 
   Future<OIDCConfiguration> getStoredOidcConfiguration();
 
-  Future<TokenOIDC> refreshingTokensOIDC(
-      String clientId,
-      String redirectUrl,
-      String discoveryUrl,
-      List<String> scopes,
-      String refreshToken);
-
   Future<bool> logout(TokenId tokenId, OIDCConfiguration config, OIDCDiscoveryResponse oidcRescovery);
 
   Future<void> authenticateOidcOnBrowser(

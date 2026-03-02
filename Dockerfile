@@ -1,34 +1,60 @@
 ARG FLUTTER_VERSION=3.38.7
 ARG APP_VERSION
+
 # Stage 1 - Install dependencies and build the app
 # This matches the flutter version on our CI/CD pipeline on Github
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
 
 # Pass version into build stage
 ARG APP_VERSION
+ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ARG SENTRY_URL
+ARG SENTRY_RELEASE
+ARG VCS_REF
+ARG GITHUB_SHA
 
 # Set directory to Copy App
 WORKDIR /app
-
 COPY . .
+
+ENV GITHUB_SHA=$GITHUB_SHA \
+    SENTRY_ORG=$SENTRY_ORG \
+    SENTRY_PROJECT=$SENTRY_PROJECT \
+    SENTRY_URL=$SENTRY_URL \
+    SENTRY_RELEASE=$SENTRY_RELEASE
 
 # Precompile tmail flutter
 RUN ./scripts/prebuild.sh
 # Build flutter for web (use --build-name if APP_VERSION is set)
 RUN if [ -n "$APP_VERSION" ]; then \
-      flutter build web --release --source-maps --build-name="$APP_VERSION"; \
+      flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE --build-name="$APP_VERSION"; \
     else \
-      flutter build web --release --source-maps; \
+      flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE; \
+    fi && \
+    if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT" ] && [ -n "$SENTRY_RELEASE" ]; then \
+        echo "Sentry configuration detected, uploading sourcemaps..." && \
+        curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=2.20.7 bash && \
+        sentry-cli releases new "$SENTRY_RELEASE" && \
+        sentry-cli sourcemaps upload build/web \
+            --org "$SENTRY_ORG" \
+            --project "$SENTRY_PROJECT" \
+            --auth-token "$SENTRY_AUTH_TOKEN" \
+            --release "$SENTRY_RELEASE" \
+            --dist "$GITHUB_SHA" \
+            --url-prefix "~/" \
+            --validate \
+            --wait && \
+        sentry-cli releases finalize "$SENTRY_RELEASE" && \
+        echo "Sentry sourcemaps uploaded successfully"; \
+    else \
+        echo "Sentry configuration not complete, skipping sourcemap upload"; \
     fi
 
-# Stage 2 - Create the run-time image
 FROM nginx:alpine
 RUN apk add gzip
 COPY --from=build-env /app/server/nginx.conf /etc/nginx
 COPY --from=build-env /app/build/web /usr/share/nginx/html
-
-# Record the exposed port
 EXPOSE 80
-
-# Before stating NGinx, re-zip all the content to ensure customizations are propagated
 CMD gzip -k -r -f /usr/share/nginx/html/ && nginx -g 'daemon off;'

@@ -113,7 +113,7 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
               },
             ),
             visible: isVisible,
-            child: TMailDropDownWidget(
+            child: Obx(() => TMailDropDownWidget(
               text: _languageAndRegionController
                 .languageSelected
                 .value
@@ -123,7 +123,7 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
                 ? AppColor.lightGrayEBEDF0.withValues(alpha: 0.6)
                 : null,
               onTap: () => _toggleLanguageMenuOverlay(true),
-            )
+            ))
           )
         );
       }
