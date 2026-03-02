@@ -94,6 +94,11 @@ abstract class BaseController extends GetxController
   StreamSubscription<html.Event>? _onBeforeUnloadBrowserSubscription;
   StreamSubscription<html.Event>? _onUnloadBrowserSubscription;
 
+  // Tracks every subscription created by consumeState() so they can all be
+  // cancelled in onClose(), preventing callbacks from firing on a disposed
+  // controller and keeping the controller eligible for garbage collection.
+  final _stateSubscriptions = <StreamSubscription<Either<Failure, Success>>>[];
+
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
 
@@ -118,6 +123,10 @@ abstract class BaseController extends GetxController
 
   @override
   void onClose() {
+    for (final sub in _stateSubscriptions) {
+      sub.cancel();
+    }
+    _stateSubscriptions.clear();
     if (PlatformInfo.isWeb) {
       _onBeforeUnloadBrowserSubscription?.cancel();
       _onUnloadBrowserSubscription?.cancel();
@@ -125,8 +134,10 @@ abstract class BaseController extends GetxController
     super.onClose();
   }
 
-  void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
-    newStateStream.listen(onData, onError: onError, onDone: onDone);
+  void consumeState(Stream<Either<Failure, Success>> newStateStream) {
+    _stateSubscriptions.add(
+      newStateStream.listen(onData, onError: onError, onDone: onDone),
+    );
   }
 
   void dispatchState(Either<Failure, Success> newState) {
