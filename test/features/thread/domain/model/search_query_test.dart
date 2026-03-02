@@ -26,32 +26,36 @@ void main() {
       );
     });
 
-    test('SHOULD keep quoted phrase as single token', () {
+    test('SHOULD split quoted phrase into individual words', () {
       expect(
         SearchQuery('"portal access"').toTokens(),
-        equals(['portal access']),
+        equals(['portal', 'access']),
       );
     });
 
-    test('SHOULD handle mix of quoted phrase and bare words', () {
+    test('SHOULD split quoted phrase and bare words into individual tokens', () {
       expect(
         SearchQuery('"portal access" denied').toTokens(),
-        equals(['portal access', 'denied']),
+        equals(['portal', 'access', 'denied']),
       );
     });
 
-    test('SHOULD handle multiple quoted phrases', () {
+    test('SHOULD split multiple quoted phrases into individual words', () {
       expect(
         SearchQuery('"portal access" "user login"').toTokens(),
-        equals(['portal access', 'user login']),
+        equals(['portal', 'access', 'user', 'login']),
       );
     });
 
-    test('SHOULD handle bare word before quoted phrase', () {
+    test('SHOULD split bare word and quoted phrase into individual tokens', () {
       expect(
         SearchQuery('error "portal access"').toTokens(),
-        equals(['error', 'portal access']),
+        equals(['error', 'portal', 'access']),
       );
+    });
+
+    test('SHOULD return empty list WHEN query is only quotes', () {
+      expect(SearchQuery('""').toTokens(), isEmpty);
     });
 
     test('SHOULD trim leading and trailing whitespace', () {
