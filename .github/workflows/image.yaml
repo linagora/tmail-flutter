@@ -28,10 +28,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract version from git tag
+      - name: Resolve app version
         id: version
         run: |
-          VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "")
+          VERSION=$(./scripts/resolve-version.sh)
           echo "app_version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
