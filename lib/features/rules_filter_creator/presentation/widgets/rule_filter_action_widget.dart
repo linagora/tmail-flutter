@@ -116,6 +116,7 @@ class RuleFilterActionWidget extends StatelessWidget {
                       imagePaths: imagePaths,
                       actionSelected: actionSelected,
                       mailboxSelected: mailboxSelected,
+                      listLabelSelected: listLabelSelected,
                       errorValue: errorValue,
                       forwardEmailEditingController: forwardEmailEditingController,
                       forwardEmailFocusNode: forwardEmailFocusNode,

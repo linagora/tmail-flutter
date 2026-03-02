@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/default_field/default_input_field_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
@@ -12,6 +13,7 @@ class RuleFilterActionDetailed extends StatelessWidget {
   final ImagePaths imagePaths;
   final EmailRuleFilterAction? actionType;
   final PresentationMailbox? mailboxSelected;
+  final List<Label>? listLabelSelected;
   final String? errorValue;
   final TextEditingController? forwardEmailEditingController;
   final FocusNode? forwardEmailFocusNode;
@@ -23,6 +25,7 @@ class RuleFilterActionDetailed extends StatelessWidget {
     required this.imagePaths,
     this.actionType,
     this.mailboxSelected,
+    this.listLabelSelected,
     this.errorValue,
     this.forwardEmailEditingController,
     this.forwardEmailFocusNode,
@@ -52,6 +55,17 @@ class RuleFilterActionDetailed extends StatelessWidget {
           focusNode: forwardEmailFocusNode,
           inputColor: Colors.black,
           onTextChange: forwardEmailOnChangeAction,
+        );
+      case EmailRuleFilterAction.labelMessage:
+        return RuleFilterButtonField<List<Label>>(
+          value: listLabelSelected,
+          imagePaths: imagePaths,
+          borderColor: errorValue?.isNotEmpty == true
+              ? AppColor.redFF3347
+              : AppColor.m3Neutral90,
+          onTapActionCallback: (_) => onSelectRuleAction?.call(
+            EmailRuleFilterAction.labelMessage,
+          ),
         );
       case EmailRuleFilterAction.maskAsSeen:
       case EmailRuleFilterAction.starIt:
