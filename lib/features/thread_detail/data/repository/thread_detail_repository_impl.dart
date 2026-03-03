@@ -32,7 +32,7 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
       .getThreadById(threadId, accountId);
 
     if (originalEmailIds.isEmpty) {
-      throw EmptyThreadDetailException();
+      throw const EmptyThreadDetailException();
     }
     
     final filteredEmailIds = await Future.wait(

@@ -29,7 +29,7 @@ class LocalFilePickerInteractor {
           .toList();
         yield Right<Failure, Success>(LocalFilePickerSuccess(listFileInfo));
       } else {
-        yield Left<Failure, Success>(LocalFilePickerFailure(PickFileCanceledException()));
+        yield Left<Failure, Success>(LocalFilePickerFailure(const PickFileCanceledException()));
       }
     } catch (exception) {
       yield Left<Failure, Success>(LocalFilePickerFailure(exception));

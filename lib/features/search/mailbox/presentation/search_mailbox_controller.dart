@@ -494,7 +494,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       ));
     } else {
       handleSubAddressingFailure(
-        SubaddressingFailure.withException(NullSessionOrAccountIdException()),
+        SubaddressingFailure.withException(const NullSessionOrAccountIdException()),
       );
     }
 

@@ -28,7 +28,7 @@ class QuotasAPI {
     if (getQuotaResponse?.list.isNotEmpty == true) {
       return getQuotaResponse!.list;
     } else {
-      throw NotFoundQuotasException();
+      throw const NotFoundQuotasException();
     }
   }
 }

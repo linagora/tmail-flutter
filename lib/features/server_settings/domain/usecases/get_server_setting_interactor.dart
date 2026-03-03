@@ -17,7 +17,7 @@ class GetServerSettingInteractor {
       final serverSetting = await _serverSettingsRepository.getServerSettings(accountId);
       final settingOption = serverSetting.settings;
       if (settingOption == null) {
-        yield Left(GetServerSettingFailure(NotFoundSettingOptionException()));
+        yield Left(GetServerSettingFailure(const NotFoundSettingOptionException()));
       } else {
         yield Right(GetServerSettingSuccess(settingOption));
       }

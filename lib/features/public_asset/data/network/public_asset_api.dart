@@ -101,7 +101,7 @@ class PublicAssetApi {
     if (notCreatedError == null && publicAsset != null) return publicAsset;
 
     if (notCreatedError?.type == ErrorMethodResponse.overQuota) {
-      throw PublicAssetQuotaExceededException(message: notCreatedError?.description);
+      throw PublicAssetQuotaExceededException(notCreatedError?.description);
     }
 
     throw const CannotCreatePublicAssetException();

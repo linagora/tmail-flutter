@@ -112,7 +112,7 @@ extension AddLabelToThreadExtension on ThreadDetailController {
       consumeState(
         Stream.value(Left(
           AddALabelToAThreadFailure(
-            exception: LabelKeywordIsNull(),
+            exception: const LabelKeywordIsNull(),
             labelDisplay: labelDisplay,
           ),
         )),

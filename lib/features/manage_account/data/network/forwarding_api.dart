@@ -37,7 +37,7 @@ class ForwardingAPI with HandleSetErrorMixin {
 
     final tMailForwardResult = result?.list.firstOrNull;
     if (tMailForwardResult == null) {
-      throw NotFoundForwardException();
+      throw const NotFoundForwardException();
     }
 
     return tMailForwardResult;
@@ -86,6 +86,6 @@ class ForwardingAPI with HandleSetErrorMixin {
       return (newForward, methodException);
     }
 
-    throw methodException ?? NotFoundForwardException();
+    throw methodException ?? const NotFoundForwardException();
   }
 }

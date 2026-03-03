@@ -1,7 +1,7 @@
 import 'package:core/domain/exceptions/app_base_exception.dart';
 
 class NotFoundDataWithThisKeyException extends AppBaseException {
-  NotFoundDataWithThisKeyException([super.message]);
+  const NotFoundDataWithThisKeyException([super.message]);
 
   @override
   String get exceptionName => 'NotFoundDataWithThisKeyException';

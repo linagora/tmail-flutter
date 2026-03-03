@@ -82,7 +82,7 @@ extension HandleLabelForEmailExtension on SingleEmailController {
       emitFailure(
         controller: this,
         failure: AddALabelToAnEmailFailure(
-          exception: LabelKeywordIsNull(),
+          exception: const LabelKeywordIsNull(),
           labelDisplay: labelDisplay,
         ),
       );
@@ -290,7 +290,7 @@ extension HandleLabelForEmailExtension on SingleEmailController {
       emitFailure(
         controller: this,
         failure: RemoveALabelFromAnEmailFailure(
-          exception: LabelKeywordIsNull(),
+          exception: const LabelKeywordIsNull(),
           labelDisplay: labelDisplay,
         ),
       );
