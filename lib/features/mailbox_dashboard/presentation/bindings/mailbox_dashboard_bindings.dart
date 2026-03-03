@@ -96,7 +96,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app_dashboard_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app_grid_linagra_ecosystem_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_scribe_prompt_url_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_linagora_system_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_mailbox_cached_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
@@ -384,7 +384,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => EmptySpamFolderInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => GetAppDashboardConfigurationInteractor(Get.find<AppGridRepository>()));
     Get.lazyPut(() => GetAppGridLinagraEcosystemInteractor(Get.find<AppGridRepository>()));
-    Get.lazyPut(() => GetScribePromptUrlInteractor(Get.find<LinagoraEcosystemRepository>()));
+    Get.lazyPut(() => GetLinagoraEcosystemInteractor(Get.find<LinagoraEcosystemRepository>()));
     Get.lazyPut(() => GetEmailByIdInteractor(
       Get.find<ThreadRepository>(),
       Get.find<EmailRepository>()));

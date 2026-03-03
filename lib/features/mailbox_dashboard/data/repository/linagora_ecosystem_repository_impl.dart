@@ -1,4 +1,5 @@
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/linagora_ecosystem_api.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/linagora_ecosystem_repository.dart';
 
 class LinagoraEcosystemRepositoryImpl extends LinagoraEcosystemRepository {
@@ -7,7 +8,8 @@ class LinagoraEcosystemRepositoryImpl extends LinagoraEcosystemRepository {
   LinagoraEcosystemRepositoryImpl(this._linagoraEcosystemApi);
 
   @override
-  Future<String?> getScribePromptUrl(String baseUrl) {
-    return _linagoraEcosystemApi.getScribePromptUrl(baseUrl);
+  Future<LinagoraEcosystem> getLinagoraEcosystem(String baseUrl) {
+    return _linagoraEcosystemApi.getLinagoraEcosystem(baseUrl);
   }
+
 }
