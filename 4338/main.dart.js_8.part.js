@@ -28,7 +28,7 @@ _.fr=x
 _.fx=a0
 _.fy=a1
 _.a=a2},
-auC:function auC(d){var _=this
+auB:function auB(d){var _=this
 _.f=_.e=_.d=$
 _.w=_.r=null
 _.x=!0
@@ -45,14 +45,14 @@ this.b=e},
 d6v:function d6v(d){this.a=d},
 d6r:function d6r(d){this.a=d},
 d6q:function d6q(d){this.a=d},
-azy:function azy(){},
+azx:function azx(){},
 a0e:function a0e(d,e,f){this.a=d
 this.b=e
 this.c=f},
 bg9:function bg9(){},
 c3I(d){return new C.c3H(d)},
 c3H:function c3H(d){this.e=d},
-aOD:function aOD(d){this.a=null
+aOC:function aOC(d){this.a=null
 this.b=d},
 c3K:function c3K(d,e,f,g){var _=this
 _.a=d
@@ -67,8 +67,8 @@ _.d=g
 _.e=h
 _.f=i},
 c3J:function c3J(d){this.a=d},
-e9g(d){var x,w,v,u,t,s,r,q,p="text/html"
-if(!(B.d.q(d,$.dV9())&&B.d.q(d,$.dV8())))return d
+e9e(d){var x,w,v,u,t,s,r,q,p="text/html"
+if(!(B.d.q(d,$.dV7())&&B.d.q(d,$.dV6())))return d
 try{new DOMParser().parseFromString(d,p).toString}catch(x){return d}w=new DOMParser().parseFromString('<div class="quote-toggle-container" >'+d+"</div>",p)
 v=w.querySelectorAll(".quote-toggle-container > blockquote")
 v.toString
@@ -82,7 +82,7 @@ q=new DOMParser().parseFromString('      <button class="quote-toggle-button coll
 v=r.parentNode
 if(v!=null&&q!=null)v.insertBefore(q,r).toString
 v=w.documentElement
-v=v==null?null:J.e0y(v)
+v=v==null?null:J.e0w(v)
 return v==null?d:v}},D
 J=c[1]
 A=c[0]
@@ -90,8 +90,8 @@ B=c[2]
 C=a.updateHolder(c[12],C)
 D=c[22]
 C.OE.prototype={
-X(){return new C.auC(null)}}
-C.auC.prototype={
+X(){return new C.auB(null)}}
+C.auB.prototype={
 ar(){var x,w=this
 w.b1y()
 x=w.a
@@ -99,14 +99,14 @@ w.e=x.e
 w.f=x.d
 w.y=x.cy
 if(!A.I6()&&!A.I7()){x=w.a.fy
-w.as=new C.aOD(x)}w.avt()
+w.as=new C.aOC(x)}w.avt()
 x=window
 x.toString
 x=A.jc(x,"message",w.gbiw(),!1,y._)
 w.z!==$&&A.cJ()
 w.z=x},
 bix(d){var x,w,v,u,t,s,r,q,p,o,n=this,m=null
-try{x=B.aw.h3(0,new A.TK([],[]).Po(d.data,!0))
+try{x=B.av.h3(0,new A.TK([],[]).Pn(d.data,!0))
 w=J.ae(x,"view")
 t=n.d
 t===$&&A.d()
@@ -122,7 +122,7 @@ t=(t==null?m:B.d.q(t,"toDart: onScrollEnd"))===!0}else t=!1
 if(t){t=n.a.ay
 t.toString
 s=J.ae(x,"velocity")
-r=J.dBq(s==null?0:s,800)
+r=J.dBr(s==null?0:s,800)
 q=t.f
 p=B.c.gbs(q).at
 p.toString
@@ -178,7 +178,7 @@ if(d==null){x=r.e
 x===$&&A.d()
 w=x}else w=d
 x=r.c
-if(x!=null){v=J.aBg(w,r.a.dx)
+if(x!=null){v=J.aBf(w,r.a.dx)
 A.y(A.I(r).l(0)+"::_handleContentHeightEvent: ScrollHeightWithBuffer = "+A.e(v),null,null,B.f,null,!1)
 x=r.a.fr
 u=J.a98(v)
@@ -190,7 +190,7 @@ bgb(d){var x,w,v=this
 if(d==null){x=v.f
 x===$&&A.d()
 w=x}else w=d
-if(v.c!=null&&J.dBp(w,v.a.db)&&v.a.at)v.V(new C.d6u(v,w))},
+if(v.c!=null&&J.dBq(w,v.a.db)&&v.a.at)v.V(new C.d6u(v,w))},
 bjc(d){var x,w,v,u,t=null
 try{v=J.an(d)
 x=new C.a0e(A.aM(v.j(d,"key")),A.aM(v.j(d,"code")),J.v(v.j(d,"shift"),!0))
@@ -242,11 +242,11 @@ w=x.e
 if(w!==d.e)v.e=w
 x=x.d
 if(x!==d.d)v.f=x},
-avt(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.dFR(10),r=u.a,q=r.c,p=!r.fr,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
+avt(){var x,w,v,u=this,t="\n          \n          ",s=u.d=A.dFS(10),r=u.a,q=r.c,p=!r.fr,o=p?'          const resizeObserver = new ResizeObserver((entries) => {\n            var height = document.body.scrollHeight;\n            window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: htmlHeight", "height": height}), "*");\n          });\n        ':"",n=r.y!=null,m=n?'                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':"",l=r.z!=null,k=l?'                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "'+s+'", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ':""
 l=l?"                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                ":""
 n=n?"                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                ":""
 p=p?"resizeObserver.observe(document.body);":""
-if(r.ch)q=C.e9g(q)
+if(r.ch)q=C.e9e(q)
 r=y.s
 x=A.c([],r)
 if(u.a.ch)x.push("    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 20px;\n        height: 20px;\n        gap: 2px;\n        background-color: #d7e2f5;\n        padding: 0;\n        margin: 8px 0;\n        border-radius: 50%;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 3.75px;\n        height: 3.75px;\n        background-color: #55687d;\n        border-radius: 50%;\n      }\n    </style>")
@@ -298,7 +298,7 @@ if(!A.I6()&&!A.I7()){x=w.as
 if(x!=null)x.eB()
 w.as=null}w.aE()},
 gtl(){return this.a.cx}}
-C.azy.prototype={
+C.azx.prototype={
 ar(){this.aM()
 if(this.a.cx)this.vr()},
 iO(){var x=this.iQ$
@@ -311,7 +311,7 @@ AO(d,e){return this.aKw(0,e,!1)},
 gu(){return[this.a,this.b,this.c]}}
 C.bg9.prototype={}
 C.c3H.prototype={}
-C.aOD.prototype={
+C.aOC.prototype={
 an6(d,e,f,g){var x,w,v,u,t,s,r,q,p,o,n=this,m={}
 if(n.a!=null){n.eB()
 A.afI(new C.c3K(n,e,f,g),y.P)
@@ -355,7 +355,7 @@ $S:100}
 C.d6r.prototype={
 $2(d,e){var x,w,v,u,t=null
 if(e.b!=null){x=this.a
-w=A.dFN(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.d6q(x),"iframe")
+w=A.dFO(!0,new A.b6(A.e(x.w)+"-"+A.e(x.a.a),y.O),new C.d6q(x),"iframe")
 v=x.a.dy
 u=x.e
 x=x.f
@@ -394,32 +394,32 @@ C.c3L.prototype={
 $1(d){var x=this,w=null,v=x.b,u=A.j3(0,A.cT(B.bU,w,B.N,!1,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,v.gqS(),w,w,w,w,w,w,w,w,!1,B.a3),w),t=x.a.a,s=A.c([new A.c2(0,B.T,B.n.au(0.15),B.r,20)],y.V)
 v=v.b.e
 if(v==null)v=D.aZX
-return A.dwB(new C.c3J(x.c),new A.cs(B.a5,w,B.a0,B.F,A.c([u,A.k6(w,A.cO(A.ch(B.D,!0,B.k3,A.a8(w,A.ah(x.f,w,1,B.B,w,w,v,w,w,w),B.k,w,new A.as(0,x.e,28,1/0),new A.b7(B.n,w,w,B.k3,s,w,w,B.A),w,w,w,w,B.mo,w,w,w),B.k,w,0,w,w,w,w,w,B.ax)),w,t,x.d,w)],y.p),w),B.hN,B.yD,new A.bK(0,1,y.t),y.i)},
+return A.dwC(new C.c3J(x.c),new A.cs(B.a5,w,B.a0,B.F,A.c([u,A.k6(w,A.cO(A.ch(B.D,!0,B.k3,A.a8(w,A.ah(x.f,w,1,B.B,w,w,v,w,w,w),B.k,w,new A.as(0,x.e,28,1/0),new A.b7(B.n,w,w,B.k3,s,w,w,B.A),w,w,w,w,B.mo,w,w,w),B.k,w,0,w,w,w,w,w,B.ax)),w,t,x.d,w)],y.p),w),B.hN,B.yD,new A.bK(0,1,y.t),y.i)},
 $S:451}
 C.c3J.prototype={
 $3(d,e,f){var x=this.a?-1:1
 return A.mY(A.b4W(f,new A.K(0,x*(1-e)*8)),null,e)},
-$S:450};(function aliases(){var x=C.azy.prototype
+$S:450};(function aliases(){var x=C.azx.prototype
 x.b1y=x.ar})();(function installTearOffs(){var x=a._instance_1u,w=a._instance_0u
-x(C.auC.prototype,"gbiw","bix",0)
-w(C.aOD.prototype,"gqS","eB",1)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
+x(C.auB.prototype,"gbiw","bix",0)
+w(C.aOC.prototype,"gqS","eB",1)})();(function inheritance(){var x=a.mixinHard,w=a.mixin,v=a.inherit,u=a.inheritMany
 v(C.OE,A.ai)
-v(C.azy,A.af)
-v(C.auC,C.azy)
+v(C.azx,A.af)
+v(C.auB,C.azx)
 u(A.vV,[C.d6s,C.d6t,C.d6u,C.c3K])
 u(A.vW,[C.d6v,C.d6r])
 u(A.pk,[C.d6q,C.c3L,C.c3J])
-u(A.a3,[C.bg9,C.c3H,C.aOD])
+u(A.a3,[C.bg9,C.c3H,C.aOC])
 v(C.a0e,C.bg9)
-x(C.azy,A.ry)
+x(C.azx,A.ry)
 w(C.bg9,A.p)})()
-A.F_(b.typeUniverse,JSON.parse('{"OE":{"ai":[],"j":[],"o":[]},"auC":{"af":["OE"]},"a0e":{"p":[]}}'))
+A.F_(b.typeUniverse,JSON.parse('{"OE":{"ai":[],"j":[],"o":[]},"auB":{"af":["OE"]},"a0e":{"p":[]}}'))
 var y=(function rtii(){var x=A.ar
 return{v:x("GK"),V:x("P<c2>"),s:x("P<h>"),p:x("P<j>"),w:x("nO"),_:x("wv"),P:x("b1"),u:x("HS"),t:x("bK<at>"),O:x("b6<h>"),N:x("a7b<ii>"),y:x("B"),i:x("at")}})();(function constants(){D.aVf=new A.b2(30,30,B.rP,null)
 D.aN2=new A.Z(B.cq,D.aVf,null)
 D.a52=new A.dW(B.cY,null,null,D.aN2,null)
 D.aZX=new A.am(!0,B.m,null,null,null,null,13,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)})();(function lazyInitializers(){var x=a.lazyFinal
-x($,"eZq","dV9",()=>A.b5("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
-x($,"eZp","dV8",()=>A.b5("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
+x($,"eZo","dV7",()=>A.b5("<[a-zA-Z][^>\\s]*[^>]*>",!0,!1,!1,!1))
+x($,"eZn","dV6",()=>A.b5("</[a-zA-Z][^>]{0,128}>",!0,!1,!1,!1))})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"MBv3Tw5ef4yN6aoVt9skv9B6gbI=");
+a.eventLog.push({p:"main.dart.js_8",e:"endPart",h:b})})($__dart_deferred_initializers__,"/8UbklVoA/mG8iZVD6P51gOV3xk=");
