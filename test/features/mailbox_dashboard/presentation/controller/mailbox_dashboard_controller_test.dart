@@ -404,6 +404,7 @@ void main() {
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenAnswer((_) => RxBool(false));
 
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();
@@ -451,6 +452,7 @@ void main() {
       when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
       when(context.mounted).thenReturn(true);
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenAnswer((_) => RxBool(false));
       
       // expect query in search controller update as expected
       mailboxDashboardController.searchEmailByQueryString(queryString);
@@ -635,6 +637,7 @@ void main() {
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenAnswer((_) => RxBool(false));
 
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();

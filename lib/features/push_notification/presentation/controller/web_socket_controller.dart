@@ -41,8 +41,19 @@ class WebSocketController extends PushBaseController {
   NetworkConnectionController? _networkConnectionController;
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
+  static final List<TypeName> _mailTypePushSupported = [
+    TypeName.emailType,
+    TypeName.mailboxType,
+  ];
+  static final List<TypeName> _labelTypePushSupported = [
+    TypeName.emailType,
+    TypeName.mailboxType,
+    TypeName.labelType,
+  ];
+
   int _retryRemained = 3;
   bool _isConnecting = false;
+  bool _isLabelAvailable = false;
   WebSocketChannel? _webSocketChannel;
   Timer? _webSocketPingTimer;
   StreamSubscription? _webSocketSubscription;
@@ -72,10 +83,14 @@ class WebSocketController extends PushBaseController {
   }
 
   @override
-  void initialize({AccountId? accountId, Session? session}) {
-    log('WebSocketController::initialize:AccountId = ${accountId?.asString}');
+  void initialize({
+    AccountId? accountId,
+    Session? session,
+    bool isLabelAvailable = false,
+  }) {
+    log('WebSocketController::initialize:AccountId = ${accountId?.asString}, isLabelAvailable = $isLabelAvailable');
     super.initialize(accountId: accountId, session: session);
-
+    _isLabelAvailable = isLabelAvailable;
     _connectWebSocket();
     _listenToAppLifeCycle();
     if (PlatformInfo.isWeb) {
@@ -184,9 +199,12 @@ class WebSocketController extends PushBaseController {
   }
 
   void _enableWebSocketPush() {
-    log('WebSocketController::_enableWebSocketPush:');
+    final dataTypes = _isLabelAvailable
+        ? _labelTypePushSupported
+        : _mailTypePushSupported;
+    log('WebSocketController::_enableWebSocketPush: DataType is $dataTypes');
     _webSocketChannel?.sink.add(jsonEncode(WebSocketPushEnableRequest.toJson(
-      dataTypes: [TypeName.emailType, TypeName.mailboxType, TypeName.labelType]
+      dataTypes: dataTypes,
     )));
   }
 

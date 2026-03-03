@@ -337,9 +337,7 @@ class MailboxDashBoardController extends ReloadableController
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailSortOrderType currentSortOrder = SearchEmailFilter.defaultSortOrder;
   PaywallController? paywallController;
-  Worker? advancedSearchVisibleWorker;
-  Worker? searchInputFocusWorker;
-  Worker? _downloadUIActionWorker;
+  final workerObxVariables = <Worker>[];
 
   final StreamController<Either<Failure, Success>> progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -394,6 +392,7 @@ class MailboxDashBoardController extends ReloadableController
       _registerDeepLinks();
     }
     _registerStreamListener();
+    registerLabelReactiveObxListener();
     BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ApplicationManager().initUserAgent();
@@ -804,7 +803,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _registerDownloadUIActionListener() {
-    _downloadUIActionWorker = ever(
+    workerObxVariables.add(ever(
       downloadController.downloadUIAction,
       (action) {
         if (action is OpenComposerFromMailtoLinkAction) {
@@ -812,7 +811,7 @@ class MailboxDashBoardController extends ReloadableController
           downloadController.clearDownloadUIAction();
         }
       },
-    );
+    ));
   }
 
   Future<void> _handleClickNotificationOnAndroidInTerminated() async {
@@ -895,7 +894,6 @@ class MailboxDashBoardController extends ReloadableController
     injectAutoCompleteBindings(session, currentAccountId);
     injectRuleFilterBindings(session, currentAccountId);
     injectVacationBindings(session, currentAccountId);
-    injectWebSocket(session, currentAccountId);
     injectPreferencesBindings();
     injectAIScribeBindings(session, currentAccountId);
     if (PlatformInfo.isMobile) {
@@ -921,6 +919,8 @@ class MailboxDashBoardController extends ReloadableController
 
     if (isLabelCapabilitySupported) {
       labelController.checkLabelSettingState(session, currentAccountId);
+    } else {
+      injectWebSocket(session: session, accountId: currentAccountId);
     }
   }
 
@@ -3420,11 +3420,17 @@ class MailboxDashBoardController extends ReloadableController
   bool get isEmailListDisplayed =>
       dashboardRoute.value == DashboardRoutes.thread;
 
+  void _disposeWorkerObxVariables() {
+    for (var worker in workerObxVariables) {
+      worker.dispose();
+    }
+    workerObxVariables.clear();
+  }
+
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController?.dispose();
-      disposeReactiveObxVariableListener();
     }
     if (PlatformInfo.isIOS) {
       _iosNotificationManager?.dispose();
@@ -3453,8 +3459,7 @@ class MailboxDashBoardController extends ReloadableController
     twakeAppManager.setHasComposer(false);
     paywallController?.onClose();
     paywallController = null;
-    _downloadUIActionWorker?.dispose();
-    _downloadUIActionWorker = null;
+    _disposeWorkerObxVariables();
     super.onClose();
   }
 }
