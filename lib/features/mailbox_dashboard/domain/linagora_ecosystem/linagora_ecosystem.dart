@@ -1,5 +1,6 @@
 
 import 'package:equatable/equatable.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/api_url_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/app_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/converters/linagora_ecosystem_converter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_identifier.dart';
@@ -44,4 +45,7 @@ extension LinagoraEcosystemExtension on LinagoraEcosystem {
   List<AppLinagoraEcosystem> get listAppLinagoraEcosystemOnAndroid {
     return listAppLinagoraEcosystem.where((app) => app.isAppAndroidEnabled).toList();
   }
+
+  String? get scribePromptUrl =>
+      (properties?[LinagoraEcosystemIdentifier.scribePromptUrl] as ApiUrlLinagoraEcosystem?)?.value;
 }
