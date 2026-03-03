@@ -379,9 +379,13 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void injectWebSocket(Session? session, AccountId? accountId) {
+  void injectWebSocket({
+    Session? session,
+    AccountId? accountId,
+    bool isLabelAvailable = false,
+  }) {
     try {
-      log('$runtimeType::injectWebSocket:');
+      log('$runtimeType::injectWebSocket: isLabelAvailable is $isLabelAvailable');
       requireCapability(
         session!,
         accountId!,
@@ -397,7 +401,11 @@ abstract class BaseController extends GetxController
         throw WebSocketPushNotSupportedException();
       }
       WebSocketInteractorBindings().dependencies();
-      WebSocketController.instance.initialize(accountId: accountId, session: session);
+      WebSocketController.instance.initialize(
+        accountId: accountId,
+        session: session,
+        isLabelAvailable: isLabelAvailable,
+      );
     } catch(e) {
       logWarning('$runtimeType::injectWebSocket(): exception: $e');
     }
