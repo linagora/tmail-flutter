@@ -70,6 +70,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
       consumeState(_getLabelSettingStateInteractor!.execute(accountId));
     } else {
       isLabelSettingEnabled.value = false;
+      isLabelSettingEnabled.refresh();
       _clearLabelData();
     }
   }
@@ -168,7 +169,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
 
   void _handleGetLabelSettingStateSuccess(bool isEnabled, AccountId accountId) {
     isLabelSettingEnabled.value = isEnabled;
-
+    isLabelSettingEnabled.refresh();
     if (isEnabled) {
       injectLabelsBindings();
       getAllLabels(accountId);
@@ -201,6 +202,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
       _handleCreateNewLabelFailure(failure);
     } else if (failure is GetLabelSettingStateFailure) {
       isLabelSettingEnabled.value = false;
+      isLabelSettingEnabled.refresh();
       _clearLabelData();
     } else if (failure is EditLabelFailure) {
       handleEditLabelFailure(failure);
