@@ -10,17 +10,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class LabelChangeListener extends ChangeListener {
   LabelController? _labelController;
 
-  LabelChangeListener._internal() {
-    try {
-      _labelController = getBinding<LabelController>();
-      if (_labelController == null) {
-        logWarning(
-            'LabelChangeListener::_internal(): LabelController IS NOT REGISTERED');
-      }
-    } catch (e) {
-      logWarning('LabelChangeListener::_internal(): $e');
-    }
-  }
+  LabelChangeListener._internal();
 
   static final LabelChangeListener _instance = LabelChangeListener._internal();
 
@@ -36,6 +26,13 @@ class LabelChangeListener extends ChangeListener {
   }
 
   void _synchronizeLabelOnForegroundAction(jmap.State newState) {
-    _labelController?.refreshLabelChanges(newState: newState);
+    _labelController ??= getBinding<LabelController>();
+    if (_labelController == null) {
+      logWarning(
+        'LabelChangeListener::_synchronizeLabelOnForegroundAction(): LabelController IS NOT REGISTERED',
+      );
+      return;
+    }
+    _labelController!.refreshLabelChanges(newState: newState);
   }
 }

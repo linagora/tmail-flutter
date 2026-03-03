@@ -28,10 +28,11 @@ extension HandleLogicLabelExtension on MailboxDashBoardController {
 
   void _onLabelSettingEnabledChanged(bool isEnabled) {
     log('$runtimeType::_onLabelSettingEnabledChanged: isEnabled is $isEnabled');
+    final isLabelAvailable = isEnabled && isLabelCapabilitySupported;
     injectWebSocket(
       session: sessionCurrent,
       accountId: accountId.value,
-      isLabelAvailable: isEnabled,
+      isLabelAvailable: isLabelAvailable,
     );
   }
 }
