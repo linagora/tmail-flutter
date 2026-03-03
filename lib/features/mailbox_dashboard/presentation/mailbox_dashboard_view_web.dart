@@ -6,6 +6,7 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
@@ -838,13 +839,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         controller.selectFolderSearchFilter();
         break;
       case QuickSearchFilter.starred:
-        controller.selectStarredSearchFilter();
+        controller.selectKeywordSearchFilter(KeyWordIdentifier.emailFlagged);
         break;
       case QuickSearchFilter.unread:
         controller.selectUnreadSearchFilter();
         break;
       case QuickSearchFilter.events:
-        controller.selectEventsSearchFilter();
+        controller.selectKeywordSearchFilter(
+          KeyWordIdentifierExtension.eventsMail,
+        );
         break;
       case QuickSearchFilter.labels:
         final listLabels = controller.labelController.labels;

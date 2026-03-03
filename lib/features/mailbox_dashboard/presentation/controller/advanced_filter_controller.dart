@@ -133,7 +133,6 @@ class AdvancedFilterController extends BaseController {
     Option<int>? positionOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
-    Option<Set<String>>? headerOption,
   }) {
     _memorySearchFilter = _memorySearchFilter.copyWith(
       fromOption: fromOption,
@@ -152,7 +151,6 @@ class AdvancedFilterController extends BaseController {
       positionOption: positionOption,
       sortOrderTypeOption: sortOrderTypeOption,
       labelOption: labelOption,
-      headerOption: headerOption,
     );
   }
 
@@ -191,15 +189,12 @@ class AdvancedFilterController extends BaseController {
 
     final unreadOption = Some(isUnread.value);
 
-    final hasKeywordOption = option(
-      isStarred.isTrue,
-      {KeyWordIdentifier.emailFlagged.value},
-    );
-
-    final hasEventsOption = option(
-      hasEvents.isTrue,
-      {SearchEmailFilter.eventsHeaderKey},
-    );
+    final listKeywords = {
+      if(isStarred.isTrue) KeyWordIdentifier.emailFlagged.value,
+      if(hasEvents.isTrue) KeyWordIdentifierExtension.eventsMail.value,
+    };
+    final hasKeywordOption =
+        optionOf(listKeywords.isNotEmpty ? listKeywords : null);
 
     final labelOption = optionOf(selectedLabel.value);
 
@@ -218,7 +213,6 @@ class AdvancedFilterController extends BaseController {
       startDateOption: startDateOption,
       endDateOption: endDateOption,
       labelOption: labelOption,
-      headerOption: hasEventsOption,
     );
 
     searchController.synchronizeSearchFilter(_memorySearchFilter);
@@ -305,8 +299,8 @@ class AdvancedFilterController extends BaseController {
     isStarred.value = _memorySearchFilter.hasKeyword
         .contains(KeyWordIdentifier.emailFlagged.value);
 
-    hasEvents.value = _memorySearchFilter.header
-        .contains(SearchEmailFilter.eventsHeaderKey);
+    hasEvents.value = _memorySearchFilter.hasKeyword
+        .contains(KeyWordIdentifierExtension.eventsMail.value);
 
     if (_memorySearchFilter.from.isEmpty) {
       listFromEmailAddress.clear();
@@ -581,14 +575,9 @@ class AdvancedFilterController extends BaseController {
 
   void onStarredCheckboxChanged(bool? isChecked) {
     isStarred.value = isChecked ?? false;
-    final listHasKeywordFiltered = _memorySearchFilter.hasKeyword;
-    if (isStarred.isTrue) {
-      listHasKeywordFiltered.add(KeyWordIdentifier.emailFlagged.value);
-    } else {
-      listHasKeywordFiltered.remove(KeyWordIdentifier.emailFlagged.value);
-    }
-    _updateMemorySearchFilter(
-      hasKeywordOption: Some(listHasKeywordFiltered),
+    _updateKeywordsSearchFilter(
+      isStarred.isTrue,
+      KeyWordIdentifier.emailFlagged,
     );
   }
 
@@ -599,12 +588,23 @@ class AdvancedFilterController extends BaseController {
     );
   }
 
+  void _updateKeywordsSearchFilter(bool isChecked, KeyWordIdentifier keyword) {
+    final listHasKeywordFiltered = _memorySearchFilter.hasKeyword;
+    if (isChecked) {
+      listHasKeywordFiltered.add(keyword.value);
+    } else {
+      listHasKeywordFiltered.remove(keyword.value);
+    }
+    _updateMemorySearchFilter(
+      hasKeywordOption: Some(listHasKeywordFiltered),
+    );
+  }
+
   void onEventsCheckboxChanged(bool? isChecked) {
     hasEvents.value = isChecked ?? false;
-    _updateMemorySearchFilter(
-      headerOption: hasEvents.isTrue
-          ? const Some(<String>{SearchEmailFilter.eventsHeaderKey})
-          : const None(),
+    _updateKeywordsSearchFilter(
+      hasEvents.isTrue,
+      KeyWordIdentifierExtension.eventsMail,
     );
   }
 

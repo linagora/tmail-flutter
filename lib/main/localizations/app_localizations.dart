@@ -5776,11 +5776,4 @@ class AppLocalizations {
       name: 'events',
     );
   }
-
-  String get hasEvents {
-    return Intl.message(
-      'Has events',
-      name: 'hasEvents',
-    );
-  }
 }

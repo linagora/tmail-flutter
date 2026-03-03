@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
@@ -414,13 +415,15 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         controller.selectMailboxForSearchFilter(controller.mailboxFiltered);
         break;
       case QuickSearchFilter.starred:
-        controller.selectStarredSearchFilter();
+        controller.selectKeywordsSearchFilter(KeyWordIdentifier.emailFlagged);
         break;
       case QuickSearchFilter.unread:
         controller.selectUnreadSearchFilter();
         break;
       case QuickSearchFilter.events:
-        controller.selectUnreadSearchFilter();
+        controller.selectKeywordsSearchFilter(
+          KeyWordIdentifierExtension.eventsMail,
+        );
         break;
       case QuickSearchFilter.labels:
         final listLabels = controller.mailboxDashBoardController.labelController.labels;
