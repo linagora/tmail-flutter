@@ -5,7 +5,6 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/cache/linagora_ecosystem_cache.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/linagora_ecosystem_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/api_url_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
@@ -18,51 +17,45 @@ class LinagoraEcosystemApi {
   LinagoraEcosystemApi(this._dioClient);
 
   Future<LinagoraEcosystem> getLinagoraEcosystem(String baseUrl) async {
-    final cachedEcosystem = LinagoraEcosystemCache().getCachedEcosystem(baseUrl);
-    if (cachedEcosystem != null) {
-      log('LinagoraEcosystemApi::getLinagoraEcosystem: Using cached data');
-      return cachedEcosystem;
-    }
-
     final result = await _dioClient.get(
       Endpoint.linagoraEcosystem.usingBaseUrl(baseUrl).generateEndpointPath(),
     );
     log('LinagoraEcosystemApi::getLinagoraEcosystem: $result');
-    
-    LinagoraEcosystem ecosystem;
     if (result is Map<String, dynamic>) {
-      ecosystem = LinagoraEcosystem.deserialize(result);
+      return LinagoraEcosystem.deserialize(result);
     } else if (result is String) {
-      ecosystem = LinagoraEcosystem.deserialize(jsonDecode(result));
+      return LinagoraEcosystem.deserialize(jsonDecode(result));
     } else {
       throw NotFoundLinagoraEcosystem();
     }
-
-    LinagoraEcosystemCache().cacheEcosystem(ecosystem, baseUrl);
-    
-    return ecosystem;
   }
 
   Future<PaywallUrlPattern> getPaywallUrl(String baseUrl) async {
+    final result = await _dioClient.get(
+      Endpoint.linagoraEcosystem.usingBaseUrl(baseUrl).generateEndpointPath(),
+    );
+    log('LinagoraEcosystemApi::getPaywallUrl: $result');
+
     LinagoraEcosystem? linagoraEcosystem;
 
-    try {
-      linagoraEcosystem = await getLinagoraEcosystem(baseUrl);
-    } catch (exception) {
-      if (exception is NotFoundLinagoraEcosystem) {
-         throw NotFoundPaywallUrl();
-      }
-      rethrow;
+    if (result is Map<String, dynamic>) {
+      linagoraEcosystem = LinagoraEcosystem.deserialize(result);
+    } else if (result is String) {
+      linagoraEcosystem = LinagoraEcosystem.deserialize(jsonDecode(result));
     }
 
-    final paywallProperty =
-        linagoraEcosystem.properties?[LinagoraEcosystemIdentifier.paywallURL] as ApiUrlLinagoraEcosystem?;
-    log('LinagoraEcosystemApi::getPaywallUrl: paywallProperty = $paywallProperty');
-
-    if (paywallProperty == null) {
-      throw NotFoundPaywallUrl();
+    if (linagoraEcosystem == null) {
+      throw NotFoundLinagoraEcosystem();
     } else {
-      return PaywallUrlPattern(paywallProperty.value);
+      final paywallProperty =
+          linagoraEcosystem.properties?[LinagoraEcosystemIdentifier.paywallURL] as ApiUrlLinagoraEcosystem?;
+      log('LinagoraEcosystemApi::getPaywallUrl: paywallProperty = $paywallProperty');
+
+      if (paywallProperty == null) {
+        throw NotFoundPaywallUrl();
+      } else {
+        return PaywallUrlPattern(paywallProperty.value);
+      }
     }
   }
 

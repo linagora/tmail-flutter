@@ -48,7 +48,6 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_sto
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/web_socket_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/cache/linagora_ecosystem_cache.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
@@ -597,7 +596,6 @@ abstract class BaseController extends GetxController
       authorizationInterceptors.clear();
       authorizationIsolateInterceptors.clear();
       await cachingManager.closeHive();
-      LinagoraEcosystemCache().clearCache();
     } catch (e) {
       logWarning('BaseController::clearAllData: Cannot clear all data: $e');
     }
