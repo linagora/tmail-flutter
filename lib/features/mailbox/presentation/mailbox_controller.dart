@@ -1507,7 +1507,7 @@ class MailboxController extends BaseMailboxController
       consumeState(_subaddressingInteractor.execute(session, accountId, allowSubaddressingRequest));
     } else {
       handleSubAddressingFailure(
-        SubaddressingFailure.withException(NullSessionOrAccountIdException()),
+        SubaddressingFailure.withException(const NullSessionOrAccountIdException()),
       );
     }
 

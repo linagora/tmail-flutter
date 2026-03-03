@@ -27,7 +27,7 @@ class UpdateServerSettingInteractor {
       );
       final settingOption = serverSetting.settings;
       if (settingOption == null) {
-        yield Left(UpdateServerSettingFailure(NotFoundServerSettingsException()));
+        yield Left(UpdateServerSettingFailure(const NotFoundServerSettingsException()));
       } else {
         yield Right(UpdateServerSettingSuccess(settingOption));
       }

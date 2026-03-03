@@ -8,7 +8,7 @@ class CannotCreatePublicAssetException extends AppBaseException {
 }
 
 class PublicAssetQuotaExceededException extends AppBaseException {
-  const PublicAssetQuotaExceededException({String? message}) : super(message);
+  const PublicAssetQuotaExceededException([super.message]);
 
   @override
   String get exceptionName => 'PublicAssetQuotaExceededException';

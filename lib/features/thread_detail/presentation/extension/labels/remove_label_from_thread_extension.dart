@@ -44,7 +44,7 @@ extension RemoveLabelFromThreadExtension on ThreadDetailController {
       emitFailure(
         controller: this,
         failure: RemoveALabelFromAThreadFailure(
-          exception: LabelKeywordIsNull(),
+          exception: const LabelKeywordIsNull(),
           labelDisplay: labelDisplay,
         ),
       );

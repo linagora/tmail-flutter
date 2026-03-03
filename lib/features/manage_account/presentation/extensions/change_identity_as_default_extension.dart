@@ -37,7 +37,7 @@ extension VerifyDefaultIdentitySupportedExtension on IdentitiesController {
     } else {
       consumeState(
         Stream.value(
-          Left(EditDefaultIdentityFailure(NullSessionOrAccountIdException())),
+          Left(EditDefaultIdentityFailure(const NullSessionOrAccountIdException())),
         ),
       );
     }

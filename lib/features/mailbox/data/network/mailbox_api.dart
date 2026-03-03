@@ -438,7 +438,7 @@ class MailboxAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
     if (setMailboxResponse?.updated?.containsKey(request.mailboxId.id) ?? false) {
       return true;
     } else {
-      throw SetMailboxRightsException();
+      throw const SetMailboxRightsException();
     }
   }
 

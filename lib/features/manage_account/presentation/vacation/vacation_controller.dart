@@ -238,7 +238,7 @@ class VacationController extends BaseController {
       consumeState(_updateVacationInteractor.execute(accountId, vacationResponse));
     } else {
       consumeState(
-        Stream.value(Left(UpdateVacationFailure(NullSessionOrAccountIdException()))),
+        Stream.value(Left(UpdateVacationFailure(const NullSessionOrAccountIdException()))),
       );
     }
   }

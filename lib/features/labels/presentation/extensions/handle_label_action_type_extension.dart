@@ -93,7 +93,7 @@ extension HandleLabelActionTypeExtension on LabelController {
 
       if (labelId == null) {
         consumeState(
-          Stream.value(Left(EditLabelFailure(LabelIdIsNull()))),
+          Stream.value(Left(EditLabelFailure(const LabelIdIsNull()))),
         );
         return;
       }
