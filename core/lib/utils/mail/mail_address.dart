@@ -88,7 +88,7 @@ class MailAddress with EquatableMixin {
         if (postChar == '.') {
           var lastChar = address[pos - 1];
           if (lastChar == '@' || lastChar == '.') {
-            throw const AddressException('Subdomain expected before "." or duplicate "." in "address"');
+            throw AddressException('Subdomain expected before "." or duplicate "." in "$address"');
           }
           domainSB.write('.');
           pos++;

@@ -110,17 +110,16 @@ class NoNetworkError extends RemoteException {
 }
 
 class RefreshTokenFailedException extends RemoteException {
-  final int? statusCode;
 
   RefreshTokenFailedException({
     super.message =
         'Refresh Token failed with 400 Bad Request. The session is invalid/revoked.',
-    this.statusCode = 400,
+    super.code = 400,
   });
 
   @override
   String get exceptionName => 'RefreshTokenFailedException';
 
   @override
-  String toString() => "$exceptionName(status: $statusCode): $message";
+  String toString() => "$exceptionName(status: $code): $message";
 }

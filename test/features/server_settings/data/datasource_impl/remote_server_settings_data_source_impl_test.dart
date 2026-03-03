@@ -45,7 +45,7 @@ void main() {
       test('should rethrow exception when ServerSettingsAPI throws exception',() async {
         // arrange
         when(serverSettingsAPI.getServerSettings(any))
-          .thenThrow(NotFoundServerSettingsException());
+          .thenThrow(const NotFoundServerSettingsException());
 
         // assert
         expect(
@@ -71,7 +71,7 @@ void main() {
       test('should rethrow exception when ServerSettingsAPI throws exception',() async {
         // arrange
         when(serverSettingsAPI.updateServerSettings(any, any, any))
-          .thenThrow(CanNotUpdateServerSettingsException());
+          .thenThrow(const CanNotUpdateServerSettingsException());
 
         // assert
         expect(

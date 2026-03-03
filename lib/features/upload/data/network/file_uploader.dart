@@ -226,7 +226,7 @@ class FileUploader {
         charset: fileCharset);
     } else {
       logWarning('FileUploader::_parsingResponse(): DataResponseIsNullException');
-      throw DataResponseIsNullException();
+      throw const DataResponseIsNullException();
     }
   }
 }

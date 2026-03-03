@@ -1,8 +1,6 @@
-import 'package:equatable/equatable.dart';
 import 'package:core/domain/exceptions/app_base_exception.dart';
 
-abstract class VerifyNameException extends AppBaseException
-    with EquatableMixin {
+abstract class VerifyNameException extends AppBaseException {
   static const emptyName = 'The name cannot be empty!';
   static const duplicatedName = 'The name already exists!';
   static const nameContainSpecialCharacter =

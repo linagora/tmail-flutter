@@ -8,6 +8,9 @@ abstract class PermissionException with EquatableMixin implements Exception {
   String get exceptionName;
 
   @override
+  List<Object?> get props => [message];
+
+  @override
   String toString() {
     if (message != null) {
       return '$exceptionName: $message';

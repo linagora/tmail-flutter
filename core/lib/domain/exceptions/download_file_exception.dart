@@ -1,12 +1,7 @@
 import 'package:core/domain/exceptions/app_base_exception.dart';
-import 'package:equatable/equatable.dart';
 
-abstract class DownloadFileException extends AppBaseException
-    with EquatableMixin {
+abstract class DownloadFileException extends AppBaseException {
   const DownloadFileException(super.message);
-
-  @override
-  List<Object?> get props => [message, exceptionName];
 }
 
 class CommonDownloadFileException extends DownloadFileException {
