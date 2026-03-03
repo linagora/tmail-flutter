@@ -83,7 +83,7 @@ aXU:function aXU(d){this.a=d},
 crm:function crm(d){this.a=d},
 aQS:function aQS(){var _=this
 _.Q=_.z=_.y=_.x=_.w=_.r=_.f=_.e=_.c=_.a=null},
-dHo(d,e){return new B.a0G(d,e,A.cU(null,y.S),null)},
+dHp(d,e){return new B.a0G(d,e,A.cU(null,y.S),null)},
 a0G:function a0G(d,e,f,g){var _=this
 _.c=d
 _.d=e
@@ -131,19 +131,19 @@ I=c[18]
 E=c[17]
 B.b2K.prototype={
 t(d){var x=this,w=null,v=A.iI(new A.bo(8,8)),u=A.c([],y.p)
-u.push(x.ael(x.r,x.w))
+u.push(x.aem(x.r,x.w))
 u.push(new A.Z(x.y,A.ah(x.d,w,w,w,w,w,x.e,w,w,w),w))
 return A.ch(C.D,!0,w,A.cg(!1,v,!0,new A.Z(C.I,A.ap(u,C.o,w,C.l,C.p,0,w),w),w,!0,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,8,w,w,w),C.k,w,0,w,w,w,w,w,C.aK)}}
 B.boC.prototype={}
 B.b9z.prototype={
-ab(){var x=this.b_v(),w=this.CW
+ab(){var x=this.b_w(),w=this.CW
 w=A.fI(w,new B.cYN(),w.$ti.h("F.E"),y.P)
 w=A.A(w,A.r(w).h("F.E"))
 w.$flags=1
 x.n(0,"fields",w)
 return x}}
 B.bxR.prototype={
-a_5(d,e){var x=this.gbH2(),w=A.dwo(d)
+a_5(d,e){var x=this.gbH3(),w=A.dwp(d)
 $.fL().Vh(w,new B.b9z(new A.cE(x,new B.bxS(),x.$ti.h("cE<1,v9>")),e.a,e.b,!1,e.d,e.e,e.f,e.r,e.w,!0,!0,e.z,e.Q,e.as,e.at,!0,C.ct,!1))
 return w}}
 B.bxO.prototype={
@@ -151,15 +151,15 @@ K(){return"AutofillContextAction."+this.b}}
 B.aaL.prototype={
 X(){return new B.aCW(A.H(y.N,y.e))}}
 B.aCW.prototype={
-aR4(d){return this.d.j(0,d)},
-gbH2(){var x=this.d,w=A.r(x).h("ba<2>")
+aR5(d){return this.d.j(0,d)},
+gbH3(){var x=this.d,w=A.r(x).h("ba<2>")
 return new A.aT(new A.ba(x,w),new B.bxP(),w.h("aT<F.E>"))},
 aME(d,e){this.d.dQ(0,e.gaEh(),new B.bxQ(e))},
-akI(d,e){this.d.L(0,e)},
+akJ(d,e){this.d.L(0,e)},
 cQ(){this.f0()
 var x=this.c
 x.toString
-this.e=A.dCb(x)==null},
+this.e=A.dCc(x)==null},
 t(d){return new B.a6D(this,this.a.c,null)},
 p(){this.aE()
 if(!this.e)return
@@ -180,8 +180,8 @@ x=this.ju$.j(0,e)
 if(x!=null)C.c.hj(x.a,new B.dkT(d))}}
 B.Rh.prototype={
 t(d){var x=null
-return new A.Z(C.cQ,A.ap(A.c([A.be("assets/images/ic_clock_sb.svg",C.u,x,C.aC,x,x,x,x),C.a6,A.aB(A.ah(this.bf1(this.c),x,x,x,x,x,$.aP().be(C.n,15,C.C),x,x,x),1)],y.p),C.o,x,C.l,C.p,0,x),x)},
-bf1(d){return d.a}}
+return new A.Z(C.cQ,A.ap(A.c([A.be("assets/images/ic_clock_sb.svg",C.u,x,C.aC,x,x,x,x),C.a6,A.aB(A.ah(this.bf2(this.c),x,x,x,x,x,$.aP().be(C.n,15,C.C),x,x,x),1)],y.p),C.o,x,C.l,C.p,0,x),x)},
+bf2(d){return d.a}}
 B.aD8.prototype={
 aEC(d){var x,w=this,v=null,u=$.a9()
 A.w(w)
@@ -190,14 +190,14 @@ u=A.O(d,C.v,y.w).w
 x=A.Yw(v,v,C.H,v,v,v,v,v,v,v,C.m,v,v,v,v,new A.e9(A.f0(10),D.a6G),v,v,v,v,v)
 A.z(d,C.e,y.J).toString
 return A.a8(v,A.Yv(!1,A.ah(A.t("Sign In",v,"signIn",v,v),v,v,v,v,v,$.aP().eF(C.m,16),v,v,v),v,v,D.b4L,v,v,v,new B.byb(w,d),v,x),C.k,v,v,v,v,48,v,G.td,v,v,v,u.a.a)},
-aEA(d){return new B.aaL(new A.Z(C.jk,A.Z8(A.aD(A.c([this.bHF(d),C.h0,this.bHy(d),D.aVr],y.p),C.o,C.l,C.p,0,C.t),new B.cTK(A.H(y.j,y.C),A.dRE())),null),D.b4a)},
-bHF(d){var x,w,v,u,t,s,r=this,q=null,p="email",o=$.a9()
+aEA(d){return new B.aaL(new A.Z(C.jk,A.Z8(A.aD(A.c([this.bHG(d),C.h0,this.bHz(d),D.aVr],y.p),C.o,C.l,C.p,0,C.t),new B.cTK(A.H(y.j,y.C),A.dRF())),null),D.b4a)},
+bHG(d){var x,w,v,u,t,s,r=this,q=null,p="email",o=$.a9()
 A.w(r)
 o=o.a
 x=A.r(r).h("U.S")
 w=x.a(o.get(r)).ev
 A.w(r)
-v=x.a(o.get(r)).gc_m()
+v=x.a(o.get(r)).gc_n()
 A.w(r)
 u=x.a(o.get(r)).ed
 t=new B.aQS()
@@ -208,8 +208,8 @@ A.z(d,C.e,s).toString
 t.e=A.t(p,q,p,q,q)
 t=t.cu()
 A.w(r)
-return A.dwE(!1,D.aB6,w,C.b5,t,u,!0,!0,!0,new B.byd(),D.b4O,C.qq,new B.bye(),x.a(o.get(r)).gaUC(),v,new B.byf(r),C.ib,q,y.t)},
-bHy(d){var x,w,v,u,t=this,s="password",r=$.a9()
+return A.dwF(!1,D.aB6,w,C.b5,t,u,!0,!0,!0,new B.byd(),D.b4O,C.qq,new B.bye(),x.a(o.get(r)).gaUD(),v,new B.byf(r),C.ib,q,y.t)},
+bHz(d){var x,w,v,u,t=this,s="password",r=$.a9()
 A.w(t)
 r=r.a
 x=A.r(t).h("U.S")
@@ -219,14 +219,14 @@ v=A.t(s,null,s,null,null)
 A.w(t)
 u=x.a(r.get(t)).fI
 A.w(t)
-return new B.aiH(v,C.du,w,u,D.aDt,x.a(r.get(t)).gbZ_(),new B.byc(t,d),D.b4N)}}
+return new B.aiH(v,C.du,w,u,D.aDt,x.a(r.get(t)).gbZ0(),new B.byc(t,d),D.b4N)}}
 B.PC.prototype={
 t(d){var x,w=this,v=null,u=$.a9()
 A.w(w)
 u=A.r(w).h("U.S").a(u.a.get(w)).fx
-x=w.b62(d)
-return A.lh(v,C.m,A.cV(A.f2(A.zW(w.b6N(d),v,v,x,u,v,v),v,v,v,v,v,C.M),v,v),v,v,!0,v,v,v,v)},
-b62(d){var x,w,v=this,u=null,t=F.bwV(u,u)
+x=w.b63(d)
+return A.lh(v,C.m,A.cV(A.f2(A.zX(w.b6O(d),v,v,x,u,v,v),v,v,v,v,v,C.M),v,v),v,v,!0,v,v,v,v)},
+b63(d){var x,w,v=this,u=null,t=F.bwV(u,u)
 A.z(d,C.e,y.J).toString
 x=y.p
 t=A.aD(A.c([new A.Z(D.yW,t,u),new A.Z(D.yW,A.ah(A.t("Sign In",u,"signIn",u,u),u,u,u,u,u,$.aP().be(C.n,32,C.pd),u,u,u),u),new A.aw(new B.caQ(v),u),new A.aw(new B.caR(v,d),u),v.aqg(d),D.X_,D.Ep],x),C.o,C.l,C.p,0,C.t)
@@ -234,7 +234,7 @@ w=$.a9()
 A.w(v)
 A.r(v).h("U.S").a(w.a.get(v)).toString
 return new A.cs(C.a5,u,C.a0,C.F,A.c([new A.fk(D.a7b,t,u),A.j3(24,new A.dW(C.dg,u,u,A.be("assets/images/power_by_linagora.svg",C.u,u,C.O,44,u,u,97),u),u)],x),u)},
-b6N(d){var x,w,v,u,t,s,r,q,p=this,o=null,n=y.J
+b6O(d){var x,w,v,u,t,s,r,q,p=this,o=null,n=y.J
 A.z(d,C.e,n).toString
 x=A.ah(A.t("JMAP-based\ncollaborative team mail solution",o,"jmapBasedMailSolution",o,o),o,o,o,o,o,$.aP().be(C.n,36,C.pd),o,o,o)
 w=$.a9()
@@ -326,7 +326,7 @@ s.Q=$.aP().be(C.dA,13,C.C)
 s.y=C.vr
 s.w=D.WW
 s.x=C.ng
-v=A.c([A.dMs(!1,p,w,s.cu(),t,q,m,n,o,x,v)],y.p)
+v=A.c([A.dMt(!1,p,w,s.cu(),t,q,m,n,o,x,v)],y.p)
 r.a.toString
 p=r.f?"assets/images/ic_eye.svg":"assets/images/ic_eye_off.svg"
 v.push(A.bL(C.q,q,20,q,q,q,p,q,18,q,C.mf,1/0,q,new B.d89(r),q,q,q))
@@ -385,7 +385,7 @@ u=u.a
 x=A.r(v).h("U.S")
 w=x.a(u.get(v)).ft.gi(0)
 A.w(v)
-return B.dHo(w,x.a(u.get(v)).p2.gi(0))},
+return B.dHp(w,x.a(u.get(v)).p2.gi(0))},
 $S:z+0}
 B.caR.prototype={
 $0(){var x,w,v=this.a,u=$.a9()
@@ -406,7 +406,7 @@ u=u.a
 x=A.r(v).h("U.S")
 w=x.a(u.get(v)).ft.gi(0)
 A.w(v)
-return B.dHo(w,x.a(u.get(v)).p2.gi(0))},
+return B.dHp(w,x.a(u.get(v)).p2.gi(0))},
 $S:z+0}
 B.caT.prototype={
 $0(){var x,w,v=this.a,u=$.a9()
@@ -446,11 +446,11 @@ $0(){return A.ye("https://github.com/linagora/tmail-flutter/blob/master/privacy.
 $S:0}
 B.caJ.prototype={
 $1(d){var x=null,w="Unknown error occurred, please try again",v="unknownError",u=d instanceof A.aX
-if(u&&d.a instanceof A.D_)return A.t("You are offline. It looks like you are not connected.",x,"youAreOffline",x,x)
+if(u&&d.a instanceof A.D0)return A.t("You are offline. It looks like you are not connected.",x,"youAreOffline",x,x)
 if(d instanceof A.z4)return A.t("Can not verify SSO configuration, please check with your system administrator",x,"canNotVerifySSOConfiguration",x,x)
 else if(d instanceof A.qH&&d.a instanceof A.a1z)return A.t("No suitable browser for OIDC, please check with your system administrator",x,"noSuitableBrowserForOIDC",x,x)
 else if(u){u=this.a.e
-u=u==null?x:u.a5n(this.b,d.a,!0)
+u=u==null?x:u.a5o(this.b,d.a,!0)
 return u==null?A.t(w,x,v,x,x):u}else return A.t(w,x,v,x,x)},
 $S:2169}
 B.caK.prototype={
@@ -498,7 +498,7 @@ x(B.b9y,B.bxR)
 w(B.brh,A.aJw)})()
 A.F_(b.typeUniverse,JSON.parse('{"b2K":{"a_":[],"j":[],"o":[]},"b9z":{"v9":[]},"aaL":{"ai":[],"j":[],"o":[]},"aCW":{"af":["aaL"]},"a6D":{"cp":[],"ca":[],"j":[],"o":[]},"Rh":{"a_":[],"j":[],"o":[]},"aD8":{"U":["ta"],"j":[],"o":[]},"PC":{"U":["ta"],"j":[],"o":[],"U.S":"ta"},"aXU":{"a_":[],"j":[],"o":[]},"a0G":{"a_":[],"j":[],"o":[]},"aiH":{"ai":[],"j":[],"o":[]},"bgI":{"af":["aiH"]},"arf":{"a_":[],"j":[],"o":[]}}'))
 var y=(function rtii(){var x=A.ar
-return{J:x("pf"),e:x("Bj"),j:x("oz"),q:x("CD"),s:x("P<h>"),p:x("P<j>"),P:x("ac<h,@>"),w:x("nO"),Y:x("Rh<ic>"),t:x("ic"),N:x("h"),S:x("aqV"),O:x("b6<h>"),C:x("atA"),H:x("~")}})();(function constants(){var x=a.makeConstList
+return{J:x("pf"),e:x("Bk"),j:x("oz"),q:x("CE"),s:x("P<h>"),p:x("P<j>"),P:x("ac<h,@>"),w:x("nO"),Y:x("Rh<ic>"),t:x("ic"),N:x("h"),S:x("aqV"),O:x("b6<h>"),C:x("atA"),H:x("~")}})();(function constants(){var x=a.makeConstList
 D.Ep=new H.Vw(I.jn,null,null,null)
 D.b9p=new B.bxO(0,"commit")
 D.a6G=new A.c1(C.H,0,C.S,-1)
@@ -535,4 +535,4 @@ D.b4L=new A.b6("loginSubmitForm",y.O)
 D.b4N=new A.b6("login_password_input",y.O)
 D.b4O=new A.b6("login_username_input",y.O)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"U1sUvCiouL06MjN8gHAzioXlINs=");
+a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"r71oFWGjdbJlXzzCTkUjaOTf07s=");
