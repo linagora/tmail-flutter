@@ -5,7 +5,6 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
-import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/base/mixin/batch_get_label_processing_mixin.dart';
@@ -18,8 +17,6 @@ import 'package:uuid/uuid.dart';
 
 class LabelApi
     with HandleSetErrorMixin, SessionMixin, BatchGetLabelProcessingMixin {
-
-  static const int _defaultMaxChanges = 128;
 
   final HttpClient _httpClient;
   final Uuid _uuid;
@@ -178,11 +175,7 @@ class LabelApi
       processingInvocation,
     );
 
-    final changesLabelMethod = ChangesLabelMethod(
-      accountId,
-      sinceState,
-      maxChanges: UnsignedInt(_defaultMaxChanges),
-    );
+    final changesLabelMethod = ChangesLabelMethod(accountId, sinceState);
     final changesLabelInvocation =
         jmapRequestBuilder.invocation(changesLabelMethod);
 
