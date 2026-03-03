@@ -8,15 +8,15 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_
 extension HandleReactiveObxVariableExtension on MailboxDashBoardController {
 
   void registerReactiveObxVariableListener() {
-    advancedSearchVisibleWorker = ever(
+    workerObxVariables.add(ever(
       searchController.isAdvancedSearchViewOpen,
       _onAdvancedSearchVisibleChanged
-    );
+    ));
 
-    searchInputFocusWorker = ever(
+    workerObxVariables.add(ever(
       searchController.isSearchInputFocused,
       onSearchInputFocusChanged
-    );
+    ));
   }
 
   void _onAdvancedSearchVisibleChanged(bool visible) {
@@ -51,12 +51,5 @@ extension HandleReactiveObxVariableExtension on MailboxDashBoardController {
         : ReclaimMailListKeyboardShortcutFocusAction();
 
     dispatchAction(dashboardAction);
-  }
-
-  void disposeReactiveObxVariableListener() {
-    advancedSearchVisibleWorker?.dispose();
-    advancedSearchVisibleWorker = null;
-    searchInputFocusWorker?.dispose();
-    searchInputFocusWorker = null;
   }
 }

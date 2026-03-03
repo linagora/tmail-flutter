@@ -15,6 +15,7 @@ extension HandleLabelWebsocketExtension on LabelController {
         currentLabelState == null ||
         currentLabelState == newState ||
         isLabelSettingEnabled.isFalse) {
+      logWarning('HandleLabelWebsocketExtension::refreshLabelChanges: accountId or session or currentLabelState or newState or isLabelSettingEnabled is null');
       return;
     }
 

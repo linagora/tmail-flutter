@@ -365,6 +365,7 @@ void main() {
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
+      when(labelController.isLabelSettingEnabled).thenAnswer((_) => RxBool(false));
 
       searchController = SearchController(
         quickSearchEmailInteractor,
