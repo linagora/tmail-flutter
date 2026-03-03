@@ -72,6 +72,7 @@ class NetworkBindings extends Bindings {
     Get.put(AppAuthWebPlugin());
     Get.put(OIDCHttpClient(Get.find<DioClient>()));
     Get.put(AuthenticationClientBase());
+    Get.put(Dio(), tag: 'prompt');
   }
 
   void _bindingSharing() {
@@ -147,6 +148,6 @@ class NetworkBindings extends Bindings {
 
   void _bindingServices() {
     Get.put(DnsLookupManager());
-    Get.put(PromptService(Get.find<DioClient>()));
+    Get.put(PromptService(Get.find<Dio>(tag: 'prompt')));
   }
 }
