@@ -37,6 +37,7 @@ class AdvancedFilterController extends BaseController {
   final hasAttachment = false.obs;
   final isStarred = false.obs;
   final isUnread = false.obs;
+  final hasEvents = false.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
   final sortOrderType = SearchEmailFilter.defaultSortOrder.obs;
@@ -584,6 +585,10 @@ class AdvancedFilterController extends BaseController {
     _updateMemorySearchFilter(
       unreadOption: isStarred.isTrue ? const Some(true) : const None(),
     );
+  }
+
+  void onEventsCheckboxChanged(bool? isChecked) {
+    hasEvents.value = isChecked ?? false;
   }
 
   void onTextChanged(FilterField filterField, String value) {

@@ -5769,4 +5769,11 @@ class AppLocalizations {
       name: 'deleteALabelFailure',
     );
   }
+
+  String get events {
+    return Intl.message(
+      'Events',
+      name: 'events',
+    );
+  }
 }

@@ -12,6 +12,7 @@ class InputFieldFocusManager {
   late FocusNode attachmentCheckboxFocusNode;
   late FocusNode starredCheckboxFocusNode;
   late FocusNode unreadCheckboxFocusNode;
+  late FocusNode eventsCheckboxFocusNode;
 
   InputFieldFocusManager() {
     fromFieldFocusNode = FocusNode();
@@ -23,6 +24,7 @@ class InputFieldFocusManager {
     attachmentCheckboxFocusNode = FocusNode();
     starredCheckboxFocusNode = FocusNode();
     unreadCheckboxFocusNode = FocusNode();
+    eventsCheckboxFocusNode = FocusNode();
   }
 
   factory InputFieldFocusManager.initial() {
@@ -39,5 +41,6 @@ class InputFieldFocusManager {
     attachmentCheckboxFocusNode.dispose();
     starredCheckboxFocusNode.dispose();
     unreadCheckboxFocusNode.dispose();
+    eventsCheckboxFocusNode.dispose();
   }
 }

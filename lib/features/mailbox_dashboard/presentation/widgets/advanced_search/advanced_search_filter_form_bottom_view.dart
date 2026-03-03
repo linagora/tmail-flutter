@@ -39,6 +39,10 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
               context,
               focusManager.starredCheckboxFocusNode,
             ),
+            _buildCheckboxEvents(
+              context,
+              focusManager.eventsCheckboxFocusNode,
+            ),
           ],
         ),
         const SizedBox(height: 25),
@@ -134,6 +138,23 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
         gap: 8.0,
         value: controller.isUnread.value,
         onChanged: controller.onUnreadCheckboxChanged,
+      ),
+    );
+  }
+
+  Widget _buildCheckboxEvents(
+    BuildContext context,
+    FocusNode currentFocusNode,
+  ) {
+    return Obx(
+      () => CustomIconLabeledCheckbox(
+        label: AppLocalizations.of(context).events,
+        svgIconPath: controller.imagePaths.icCheckboxUnselected,
+        selectedSvgIconPath: controller.imagePaths.icCheckboxSelected,
+        focusNode: currentFocusNode,
+        gap: 8.0,
+        value: controller.hasEvents.value,
+        onChanged: controller.onEventsCheckboxChanged,
       ),
     );
   }
