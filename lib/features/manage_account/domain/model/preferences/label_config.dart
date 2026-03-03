@@ -1,4 +1,3 @@
-import 'package:core/utils/platform_info.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_config.dart';
 
@@ -8,10 +7,9 @@ part 'label_config.g.dart';
 class LabelConfig extends PreferencesConfig {
   final bool isEnabled;
 
-  LabelConfig({this.isEnabled = false});
+  LabelConfig({this.isEnabled = true});
 
-  factory LabelConfig.initial() =>
-      LabelConfig(isEnabled: PlatformInfo.isIntegrationTesting);
+  factory LabelConfig.initial() => LabelConfig();
 
   factory LabelConfig.fromJson(Map<String, dynamic> json) =>
       _$LabelConfigFromJson(json);
