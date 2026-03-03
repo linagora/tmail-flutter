@@ -20,6 +20,7 @@ enum QuickSearchFilter {
   fromMe,
   starred,
   unread,
+  events,
   sortBy,
   dateTime,
   from,
@@ -67,6 +68,8 @@ enum QuickSearchFilter {
         return AppLocalizations.of(context).unread;
       case QuickSearchFilter.labels:
         return label?.safeDisplayName ?? AppLocalizations.of(context).allLabels;
+      case QuickSearchFilter.events:
+        return AppLocalizations.of(context).hasEvents;
     }
   }
 
@@ -94,6 +97,8 @@ enum QuickSearchFilter {
         return isSelected ? imagePaths.icSelectedSB : imagePaths.icUnread;
       case QuickSearchFilter.labels:
         return imagePaths.icTag;
+      case QuickSearchFilter.events:
+        return imagePaths.icCalendarEvent;
     }
   }
 
@@ -162,6 +167,8 @@ enum QuickSearchFilter {
         return searchFilter.unread;
       case QuickSearchFilter.labels:
         return searchFilter.label != null;
+      case QuickSearchFilter.events:
+        return searchFilter.header.isNotEmpty;
     }
   }
 

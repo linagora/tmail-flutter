@@ -649,6 +649,13 @@ class SearchEmailController extends BaseController
     _searchEmailAction();
   }
 
+  void selectEventsSearchFilter() {
+    _updateSimpleSearchFilter(
+      headerOption: const Some(<String>{SearchEmailFilter.eventsHeaderKey}),
+    );
+    _searchEmailAction();
+  }
+
   bool checkQuickSearchFilterSelected(QuickSearchFilter filter) {
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
@@ -797,6 +804,7 @@ class SearchEmailController extends BaseController
     Option<Set<String>>? hasKeywordOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
+    Option<Set<String>>? headerOption,
   }) => _updateSimpleSearchFilter(
     fromOption: fromOption,
     toOption: toOption,
@@ -812,6 +820,7 @@ class SearchEmailController extends BaseController
     hasKeywordOption: hasKeywordOption,
     sortOrderTypeOption: sortOrderTypeOption,
     labelOption: labelOption,
+    headerOption: headerOption,
   );
 
   void _updateSimpleSearchFilter({
@@ -829,6 +838,7 @@ class SearchEmailController extends BaseController
     Option<Set<String>>? hasKeywordOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
+    Option<Set<String>>? headerOption,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
@@ -845,6 +855,7 @@ class SearchEmailController extends BaseController
       hasKeywordOption: hasKeywordOption,
       sortOrderTypeOption: sortOrderTypeOption,
       labelOption: labelOption,
+      headerOption: headerOption,
     );
     searchEmailFilter.refresh();
   }
@@ -1077,6 +1088,9 @@ class SearchEmailController extends BaseController
       case QuickSearchFilter.unread:
         _deleteUnreadSearchFilter();
         break;
+      case QuickSearchFilter.events:
+        _deleteEventsSearchFilter();
+        break;
       case QuickSearchFilter.labels:
         deleteQuickSearchFilter(filter: QuickSearchFilter.labels);
         break;
@@ -1133,6 +1147,11 @@ class SearchEmailController extends BaseController
 
   void _deleteUnreadSearchFilter() {
     _updateSimpleSearchFilter(unreadOption: const None());
+    _searchEmailAction();
+  }
+
+  void _deleteEventsSearchFilter() {
+    _updateSimpleSearchFilter(headerOption: const None());
     _searchEmailAction();
   }
 

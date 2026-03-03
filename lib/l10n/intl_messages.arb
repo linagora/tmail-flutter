@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-03-03T12:12:48.953431",
+  "@@last_modified": "2026-03-03T13:14:32.381917",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5456,6 +5456,12 @@
   },
   "events": "Events",
   "@events": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hasEvents": "Has events",
+  "@hasEvents": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

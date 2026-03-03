@@ -17,6 +17,9 @@ extension UpdateSearchFilterExtension on SearchEmailController {
       case QuickSearchFilter.unread:
         updateSimpleSearchFilter(unreadOption: const None());
         break;
+      case QuickSearchFilter.events:
+        updateSimpleSearchFilter(headerOption: const None());
+        break;
       case QuickSearchFilter.sortBy:
         updateSimpleSearchFilter(
           sortOrderTypeOption: const Some(SearchEmailFilter.defaultSortOrder),

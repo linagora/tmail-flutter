@@ -4,6 +4,7 @@ import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 
 extension SelectSearchFilterActionExtension on MailboxDashBoardController {
   void selectStarredSearchFilter() {
@@ -17,6 +18,13 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
 
   void selectUnreadSearchFilter() {
     searchController.updateFilterEmail(unreadOption: const Some(true));
+    dispatchAction(StartSearchEmailAction());
+  }
+
+  void selectEventsSearchFilter() {
+    searchController.updateFilterEmail(
+      headerOption: const Some(<String>{SearchEmailFilter.eventsHeaderKey}),
+    );
     dispatchAction(StartSearchEmailAction());
   }
 
@@ -34,6 +42,11 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
     dispatchAction(StartSearchEmailAction());
   }
 
+  void deleteEventsSearchFilter() {
+    searchController.updateFilterEmail(headerOption: const None());
+    dispatchAction(StartSearchEmailAction());
+  }
+
   void deleteQuickSearchFilter({required QuickSearchFilter filter}) {
     switch (filter) {
       case QuickSearchFilter.labels:
@@ -44,6 +57,9 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
         break;
       case QuickSearchFilter.unread:
         deleteUnreadSearchFilter();
+        break;
+      case QuickSearchFilter.events:
+        deleteEventsSearchFilter();
         break;
       default:
         break;

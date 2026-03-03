@@ -147,6 +147,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     Option<int>? positionOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
+    Option<Set<String>>? headerOption,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
@@ -165,6 +166,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       positionOption: positionOption,
       sortOrderTypeOption: sortOrderTypeOption,
       labelOption: labelOption,
+      headerOption: headerOption,
     );
     searchEmailFilter.refresh();
   }
