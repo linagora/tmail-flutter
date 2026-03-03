@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:dio/dio.dart';
 import 'package:scribe/scribe/ai/data/model/ai_message.dart';
 import 'package:scribe/scribe/ai/domain/model/prompt_data.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 class PromptService {
   static const String _defaultAssetPath = 'packages/scribe/assets/prompts.json';
-  
-  final DioClient _dioClient;
-  
+
+  final Dio _dio;
+
   String? _promptUrl;
   PromptData? _promptData;
   Future<PromptData>? _loadingFuture;
-  
-  PromptService(this._dioClient);
+
+  PromptService(this._dio);
 
   void setPromptUrl(String? url) {
     if (_promptUrl == url) return;
@@ -62,10 +62,11 @@ class PromptService {
     log('PromptService::_fetchPromptsFromUrl: Fetching from $url');
     
     try {
-      final data = await _dioClient.get(url);
-      
-      final promptsMap = data is String 
-          ? jsonDecode(data) as Map<String, dynamic> 
+      final response = await _dio.get(url);
+      final data = response.data;
+
+      final promptsMap = data is String
+          ? jsonDecode(data) as Map<String, dynamic>
           : data as Map<String, dynamic>;
       
       return PromptData.fromJson(promptsMap);
