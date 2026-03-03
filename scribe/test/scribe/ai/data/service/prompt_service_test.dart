@@ -1,36 +1,26 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:core/data/network/dio_client.dart';
 import 'package:dio/dio.dart';
 import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
 import 'package:scribe/scribe/ai/domain/model/prompt_data.dart';
 import 'package:scribe/scribe/ai/data/model/ai_message.dart';
 
-class TestDioClient implements DioClient {
+class _ThrowingAdapter implements HttpClientAdapter {
   @override
-  Future<dynamic> get(String path, {Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress}) {
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
     throw Exception('Not found');
   }
 
   @override
-  Future<dynamic> post(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress, bool useJMAPHeader = true}) {
-    throw UnsupportedError('post not implemented');
-  }
-
-  @override
-  Future<dynamic> delete(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken}) {
-    throw UnsupportedError('delete not implemented');
-  }
-
-  @override
-  Future<dynamic> put(String path, {data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) {
-    throw UnsupportedError('put not implemented');
-  }
-
-  @override
-  Map<String, dynamic> getHeaders() {
-    return {};
-  }
+  void close({bool force = false}) {}
 }
+
+Dio _throwingDio() => Dio()..httpClientAdapter = _ThrowingAdapter();
 
 void main() {
   setUpAll(() {
@@ -38,17 +28,11 @@ void main() {
   });
 
   group('PromptService', () {
-    late TestDioClient testDioClient;
-    
-    setUp(() {
-      testDioClient = TestDioClient();
-    });
-
     test('buildPromptByName should build prompt with input text', () async {
       // Arrange
-      final service = PromptService(testDioClient);
-      
-      // Act - this will use the real prompts.json file since the test client throws
+      final service = PromptService(_throwingDio());
+
+      // Act - this will use the real prompts.json file since the adapter throws
       final messages = await service.buildPromptByName('change-tone-casual', 'Hello, how are you?');
 
       // Assert
@@ -60,7 +44,7 @@ void main() {
 
     test('buildPromptByName should build prompt with input text and task', () async {
       // Arrange
-      final service = PromptService(testDioClient);
+      final service = PromptService(_throwingDio());
       
       // Act - this will use the real prompts.json file since the test client throws
       final messages = await service.buildPromptByName('custom-prompt-mail', 'Hello, how are you?', task: 'Make it more casual');
