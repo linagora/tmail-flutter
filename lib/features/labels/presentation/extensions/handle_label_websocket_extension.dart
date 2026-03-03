@@ -10,12 +10,17 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 
 extension HandleLabelWebsocketExtension on LabelController {
   void refreshLabelChanges({required jmap.State newState}) {
-    if (accountId == null ||
-        session == null ||
-        currentLabelState == null ||
-        currentLabelState == newState ||
-        isLabelSettingEnabled.isFalse) {
-      logWarning('HandleLabelWebsocketExtension::refreshLabelChanges: accountId or session or currentLabelState or newState or isLabelSettingEnabled is null');
+    final skipReasons = <String>[
+      if (accountId == null) 'accountId is null',
+      if (session == null) 'session is null',
+      if (currentLabelState == null) 'currentLabelState is null',
+      if (currentLabelState == newState) 'state unchanged',
+      if (isLabelSettingEnabled.isFalse) 'label setting disabled',
+    ];
+    if (skipReasons.isNotEmpty) {
+      logWarning(
+        'HandleLabelWebsocketExtension::refreshLabelChanges: skip (${skipReasons.join(', ')})',
+      );
       return;
     }
 

@@ -236,7 +236,7 @@ class LabelApi
     log('LabelAPI::getChanges: '
         'newStateChanges=${changes.newState} | '
         'newStateLabel=$newStateLabel | '
-        'hasMore=${changes.hasMoreChanges}'
+        'hasMore=${changes.hasMoreChanges} | '
         'updatedFetched=${updatedResult.labels?.length} | '
         'createdFetched=${createdResult.labels?.length} | '
         'totalDestroyed=${allDestroyedIds.length}');
