@@ -1,11 +1,7 @@
 import 'package:core/domain/exceptions/app_base_exception.dart';
-import 'package:equatable/equatable.dart';
 
-abstract class FileException extends AppBaseException with EquatableMixin {
+abstract class FileException extends AppBaseException {
   const FileException(super.message);
-
-  @override
-  List<Object?> get props => [message, exceptionName];
 }
 
 class NotFoundFileInFolderException extends FileException {

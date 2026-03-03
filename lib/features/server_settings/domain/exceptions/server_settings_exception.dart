@@ -1,21 +1,21 @@
 import 'package:core/domain/exceptions/app_base_exception.dart';
 
 class NotFoundServerSettingsException extends AppBaseException {
-  NotFoundServerSettingsException([super.message]);
+  const NotFoundServerSettingsException([super.message]);
 
   @override
   String get exceptionName => 'NotFoundServerSettingsException';
 }
 
 class NotFoundSettingOptionException extends AppBaseException {
-  NotFoundSettingOptionException([super.message]);
+  const NotFoundSettingOptionException([super.message]);
 
   @override
   String get exceptionName => 'NotFoundSettingOptionException';
 }
 
 class CanNotUpdateServerSettingsException extends AppBaseException {
-  CanNotUpdateServerSettingsException([super.message]);
+  const CanNotUpdateServerSettingsException([super.message]);
 
   @override
   String get exceptionName => 'CanNotUpdateServerSettingsException';

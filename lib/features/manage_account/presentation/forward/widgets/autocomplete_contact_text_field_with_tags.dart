@@ -301,7 +301,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       final emailAddress = EmailAddress(null, inputText);
 
       if (!_validateEmailAddressIsValid(emailAddress)) {
-        widget.onExceptionCallback?.call(RecipientListWithInvalidEmailsException());
+        widget.onExceptionCallback?.call(const RecipientListWithInvalidEmailsException());
         _resetInputText();
         return;
       }
@@ -350,12 +350,12 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     }
 
     if (listEmailAddress.isEmpty) {
-      widget.onExceptionCallback?.call(RecipientListIsEmptyException());
+      widget.onExceptionCallback?.call(const RecipientListIsEmptyException());
       return;
     }
 
     if (!_validateListEmailAddressIsValid(listEmailAddress)) {
-      widget.onExceptionCallback?.call(RecipientListWithInvalidEmailsException());
+      widget.onExceptionCallback?.call(const RecipientListWithInvalidEmailsException());
       return;
     }
 
@@ -414,7 +414,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   }) {
     log('_AutocompleteContactTextFieldWithTagsState::_addEmailAddressToInputFieldAction:emailAddress = $emailAddress');
     if (!_validateEmailAddressIsValid(emailAddress)) {
-      widget.onExceptionCallback?.call(RecipientListWithInvalidEmailsException());
+      widget.onExceptionCallback?.call(const RecipientListWithInvalidEmailsException());
       if (isClearInput) {
         _resetInputText();
       }

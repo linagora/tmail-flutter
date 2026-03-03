@@ -26,7 +26,7 @@ class LocalImagePickerInteractor {
         final fileInfo = filePickerResult!.files.first.toFileInfo();
         yield Right<Failure, Success>(LocalImagePickerSuccess(fileInfo));
       } else {
-        yield Left<Failure, Success>(LocalImagePickerFailure(PickFileCanceledException()));
+        yield Left<Failure, Success>(LocalImagePickerFailure(const PickFileCanceledException()));
       }
     } catch (exception) {
       yield Left<Failure, Success>(LocalImagePickerFailure(exception));

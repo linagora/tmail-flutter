@@ -55,27 +55,54 @@ class SentryInitializer {
     SentryEvent event,
     Hint? hint,
   ) async {
-    final req = event.request;
-    if (req == null) return event;
+    event.request = _sanitizeRequest(event.request);
+    event.exceptions = _deminifyExceptions(event.exceptions);
 
-    final sanitizedHeaders = Map<String, String>.from(req.headers)
-      ..removeWhere(
-        (k, _) => _blockedHeaderPatterns.any(
-          (p) => k.toLowerCase().contains(p),
-        ),
-      );
+    return event;
+  }
 
-    final sanitizedRequest = SentryRequest(
+  static SentryRequest? _sanitizeRequest(SentryRequest? req) {
+    if (req == null) return null;
+
+    return SentryRequest(
       url: req.url,
       method: req.method,
-      headers: sanitizedHeaders,
+      headers: _sanitizeHeaders(req.headers),
       queryString: req.queryString,
       cookies: null,
       data: null,
     );
+  }
 
-    event.request = sanitizedRequest;
+  static Map<String, String> _sanitizeHeaders(Map<String, String> headers) {
+    return Map<String, String>.from(headers)
+      ..removeWhere(
+        (key, _) => _blockedHeaderPatterns.any(
+          (pattern) => key.toLowerCase().contains(pattern),
+        ),
+      );
+  }
 
-    return event;
+  static List<SentryException>? _deminifyExceptions(
+    List<SentryException>? exceptions,
+  ) {
+    if (exceptions == null) return null;
+
+    return exceptions.map((e) {
+      if (e.type?.startsWith('minified:') == true) {
+        final rawValue = e.value?.trim() ?? '';
+        final extractedType = RegExp(r'^([A-Za-z_][A-Za-z0-9_]*)\s*:')
+                .firstMatch(rawValue)
+                ?.group(1) ??
+            RegExp(r"Instance of '([^']+)'").firstMatch(rawValue)?.group(1);
+        if (extractedType != null &&
+            extractedType.isNotEmpty &&
+            extractedType != 'minified' &&
+            !extractedType.startsWith('minified:')) {
+          e.type = extractedType;
+        }
+      }
+      return e;
+    }).toList();
   }
 }

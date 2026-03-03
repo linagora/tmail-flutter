@@ -38,7 +38,7 @@ void main() {
       test('should rethrow exception when ServerSettingsDataSource throws exception', () async {
         // arrange
         when(serverSettingsDataSource.getServerSettings(accountId))
-          .thenThrow(NotFoundServerSettingsException());
+          .thenThrow(const NotFoundServerSettingsException());
 
         // assert
         expect(
@@ -64,7 +64,7 @@ void main() {
       test('should rethrow exception when ServerSettingsDataSource throws exception', () async {
         // arrange
         when(serverSettingsDataSource.updateServerSettings(session, accountId, serverSettings))
-          .thenThrow(NotFoundServerSettingsException());
+          .thenThrow(const NotFoundServerSettingsException());
 
         // assert
         expect(

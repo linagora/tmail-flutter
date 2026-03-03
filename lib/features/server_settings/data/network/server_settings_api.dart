@@ -39,7 +39,7 @@ class ServerSettingsAPI with HandleSetErrorMixin {
     )?.list.firstOrNull;
 
     if (serverSettings == null) {
-      throw NotFoundServerSettingsException();
+      throw const NotFoundServerSettingsException();
     }
 
     return serverSettings;
@@ -81,10 +81,10 @@ class ServerSettingsAPI with HandleSetErrorMixin {
       )?.updated ?? {};
 
       if (updateServerSettingsResult.isEmpty) {
-        throw CanNotUpdateServerSettingsException();
+        throw const CanNotUpdateServerSettingsException();
       }
     } on ErrorMethodResponseException catch (_) {
-      throw CanNotUpdateServerSettingsException();
+      throw const CanNotUpdateServerSettingsException();
     }
 
     try {
@@ -94,12 +94,12 @@ class ServerSettingsAPI with HandleSetErrorMixin {
       )?.list.firstOrNull;
 
       if (updatedServerSettings == null) {
-        throw CanNotUpdateServerSettingsException();
+        throw const CanNotUpdateServerSettingsException();
       }
 
       return updatedServerSettings;
     } on ErrorMethodResponseException catch (_) {
-      throw CanNotUpdateServerSettingsException();
+      throw const CanNotUpdateServerSettingsException();
     }
   }
 }

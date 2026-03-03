@@ -55,7 +55,7 @@ class DownloadAttachmentHasTokenExpiredException extends AppBaseException {
   final String refreshToken;
 
   DownloadAttachmentHasTokenExpiredException(this.refreshToken)
-      : super('Token expired for refresh token: $refreshToken');
+      : super('Token expired for refresh token');
 
   @override
   String get exceptionName => 'DownloadAttachmentHasTokenExpiredException';
@@ -101,4 +101,11 @@ class SaasServerUriIsNull extends AppBaseException {
 
   @override
   String get exceptionName => 'SaasServerUriIsNull';
+}
+
+class AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException extends AppBaseException {
+  AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException([super.message]);
+
+  @override
+  String get exceptionName => 'AutoRedirectToAppAfterStoreAuthorizeDestinationUrlException';
 }

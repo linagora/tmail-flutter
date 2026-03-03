@@ -110,7 +110,7 @@ class LabelApi
     final labelId = label.id;
 
     if (labelId == null) {
-      throw LabelIdIsNull();
+      throw const LabelIdIsNull();
     }
 
     final method = SetLabelMethod(accountId)..addDestroy({labelId});
