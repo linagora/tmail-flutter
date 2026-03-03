@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 class SearchEmailFilter with EquatableMixin, OptionParamMixin {
 
   static const EmailSortOrderType defaultSortOrder = EmailSortOrderType.relevance;
+  static const String eventsHeaderKey = 'X-MEETING-UID';
 
   final Set<String> from;
   final Set<String> to;
@@ -37,6 +38,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final int? position;
   final EmailSortOrderType sortOrderType;
   final Label? label;
+  final Set<String> header;
 
   factory SearchEmailFilter.initial() => SearchEmailFilter();
 
@@ -60,10 +62,12 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Set<String>? notKeyword,
     Set<String>? hasKeyword,
     EmailSortOrderType? sortOrderType,
+    Set<String>? header,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         notKeyword = notKeyword ?? <String>{},
         hasKeyword = hasKeyword ?? <String>{},
+        header = header ?? <String>{},
         hasAttachment = hasAttachment ?? false,
         unread = unread ?? false,
         emailReceiveTimeType =
@@ -87,6 +91,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Option<int>? positionOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
+    Option<Set<String>>? headerOption,
   }) {
     return SearchEmailFilter(
       from: getOptionParam(fromOption, from),
@@ -105,6 +110,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       position: getOptionParam(positionOption, position),
       sortOrderType: getOptionParam(sortOrderTypeOption, sortOrderType),
       label: getOptionParam(labelOption, label),
+      header: getOptionParam(headerOption, header),
     );
   }
 
@@ -129,6 +135,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         ? hasKeyword.first
         : null,
       notKeyword: unread ? KeyWordIdentifier.emailSeen.value : null,
+      header: header.isNotEmpty ? {eventsHeaderKey, 'd0666a66-7fe9-4dae-b569-a225e218edab'} : null,
     );
 
     final listEmailCondition = {
@@ -212,7 +219,8 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     (mailbox != null && mailbox?.id != PresentationMailbox.unifiedMailbox.id) ||
     label != null ||
     hasAttachment ||
-    unread;
+    unread ||
+    header.isNotEmpty;
 
   bool get isContainFlagged => hasKeyword.contains(KeyWordIdentifier.emailFlagged.value);
 
@@ -227,7 +235,8 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     (mailbox == null || mailbox?.id == PresentationMailbox.unifiedMailbox.id) &&
     label == null &&
     !hasAttachment &&
-    !unread;
+    !unread &&
+    header.isEmpty;
 
   @override
   List<Object?> get props => [
@@ -247,5 +256,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     position,
     sortOrderType,
     label,
+    header,
   ];
 }

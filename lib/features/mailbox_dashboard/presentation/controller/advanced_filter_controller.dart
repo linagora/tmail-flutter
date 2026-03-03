@@ -133,6 +133,7 @@ class AdvancedFilterController extends BaseController {
     Option<int>? positionOption,
     Option<EmailSortOrderType>? sortOrderTypeOption,
     Option<Label>? labelOption,
+    Option<Set<String>>? headerOption,
   }) {
     _memorySearchFilter = _memorySearchFilter.copyWith(
       fromOption: fromOption,
@@ -151,6 +152,7 @@ class AdvancedFilterController extends BaseController {
       positionOption: positionOption,
       sortOrderTypeOption: sortOrderTypeOption,
       labelOption: labelOption,
+      headerOption: headerOption,
     );
   }
 
@@ -194,6 +196,11 @@ class AdvancedFilterController extends BaseController {
       {KeyWordIdentifier.emailFlagged.value},
     );
 
+    final hasEventsOption = option(
+      hasEvents.isTrue,
+      {SearchEmailFilter.eventsHeaderKey},
+    );
+
     final labelOption = optionOf(selectedLabel.value);
 
     _updateMemorySearchFilter(
@@ -211,6 +218,7 @@ class AdvancedFilterController extends BaseController {
       startDateOption: startDateOption,
       endDateOption: endDateOption,
       labelOption: labelOption,
+      headerOption: hasEventsOption,
     );
 
     searchController.synchronizeSearchFilter(_memorySearchFilter);
@@ -296,6 +304,9 @@ class AdvancedFilterController extends BaseController {
 
     isStarred.value = _memorySearchFilter.hasKeyword
         .contains(KeyWordIdentifier.emailFlagged.value);
+
+    hasEvents.value = _memorySearchFilter.header
+        .contains(SearchEmailFilter.eventsHeaderKey);
 
     if (_memorySearchFilter.from.isEmpty) {
       listFromEmailAddress.clear();
@@ -487,6 +498,7 @@ class AdvancedFilterController extends BaseController {
     hasAttachment.value = false;
     isUnread.value = false;
     isStarred.value = false;
+    hasEvents.value = false;
     selectedFolderName.value = null;
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
@@ -583,12 +595,17 @@ class AdvancedFilterController extends BaseController {
   void onUnreadCheckboxChanged(bool? isChecked) {
     isUnread.value = isChecked ?? false;
     _updateMemorySearchFilter(
-      unreadOption: isStarred.isTrue ? const Some(true) : const None(),
+      unreadOption: isUnread.isTrue ? const Some(true) : const None(),
     );
   }
 
   void onEventsCheckboxChanged(bool? isChecked) {
     hasEvents.value = isChecked ?? false;
+    _updateMemorySearchFilter(
+      headerOption: hasEvents.isTrue
+          ? const Some(<String>{SearchEmailFilter.eventsHeaderKey})
+          : const None(),
+    );
   }
 
   void onTextChanged(FilterField filterField, String value) {
