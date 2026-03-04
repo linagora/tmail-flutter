@@ -59,7 +59,7 @@ class IOSSharingManager {
     log('IOSSharingManager::saveKeyChainSharingSession: START');
     try {
       if (!_validateToSaveKeychain(personalAccount)) {
-        logWarning('IOSSharingManager::saveKeyChainSharingSession: AccountId | Username | ApiUrl is NULL');
+        logTrace('IOSSharingManager::saveKeyChainSharingSession: AccountId | Username | ApiUrl is NULL');
         return;
       }
 
@@ -106,8 +106,12 @@ class IOSSharingManager {
       await _keychainSharingManager.save(keychainSharingSession);
 
       log('IOSSharingManager::_saveKeyChainSharingSession: COMPLETED');
-    } catch (e) {
-      logWarning('IOSSharingManager::_saveKeyChainSharingSession: Exception: $e');
+    } catch (e, st) {
+      logError(
+        'IOSSharingManager::_saveKeyChainSharingSession: Exception',
+        exception: e,
+        stackTrace: st,
+      );
     }
   }
 

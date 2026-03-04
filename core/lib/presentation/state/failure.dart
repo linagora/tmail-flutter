@@ -10,10 +10,12 @@ abstract class Failure with EquatableMixin {
 
 abstract class FeatureFailure extends Failure {
   final dynamic exception;
+  final StackTrace? stackTrace;
   final Stream<Either<Failure, Success>>? onRetry;
 
-  FeatureFailure({this.exception, this.onRetry});
+  FeatureFailure({this.exception, this.stackTrace, this.onRetry});
 
+  // Including stackTrace in props may break Equatable equality semantics.
   @override
   List<Object?> get props => [exception, onRetry];
 }

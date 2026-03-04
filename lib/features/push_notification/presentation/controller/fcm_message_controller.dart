@@ -6,12 +6,14 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:model/model.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
@@ -47,10 +49,18 @@ class FcmMessageController extends PushBaseController {
 
   @override
   void initialize({AccountId? accountId, Session? session}) {
-    super.initialize(accountId: accountId, session: session);
+    try {
+      super.initialize(accountId: accountId, session: session);
 
-    _listenTokenStream();
-    _listenBackgroundMessageStream();
+      _listenTokenStream();
+      _listenBackgroundMessageStream();
+    } catch (e, st) {
+      logError(
+        'FcmMessageController::initialize: throw exception',
+        exception: e,
+        stackTrace: st,
+      );
+    }
   }
 
   void _listenBackgroundMessageStream() {
@@ -58,36 +68,104 @@ class FcmMessageController extends PushBaseController {
         .debounceTime(const Duration(
           milliseconds: FcmUtils.durationBackgroundMessageComing,
         ))
-        .listen(_handleBackgroundMessageAction);
+        .listen(
+          _handleBackgroundMessageAction,
+          onError: (e, st) {
+            logError(
+              'FcmMessageController::_listenBackgroundMessageStream',
+              exception: e,
+              stackTrace: st,
+            );
+          },
+        );
   }
 
   void _listenTokenStream() {
     FcmService.instance.fcmTokenStreamController
       ?.stream
       .debounceTime(const Duration(milliseconds: FcmUtils.durationRefreshToken))
-      .listen(FcmTokenController.instance.onFcmTokenChanged);
+      .listen(
+        FcmTokenController.instance.onFcmTokenChanged,
+        onError: (e, st) {
+          logError(
+            'FcmMessageController::_listenTokenStream',
+            exception: e,
+            stackTrace: st,
+          );
+        },
+      );
   }
 
   void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
-    log('FcmMessageController::_handleBackgroundMessageAction():payloadData: $payloadData');
+    logTrace('FcmMessageController::_handleBackgroundMessageAction():payloadData keys: ${payloadData.keys.toList()}');
     final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
-    await _initialAppConfig();
+    if (stateChange == null) {
+      logTrace('FcmMessageController::_handleBackgroundMessageAction(): stateChange is null');
+      return;
+    } else {
+      logTrace('FcmMessageController::_handleBackgroundMessageAction(): stateChange: ${stateChange.toString()}');
+    }
     _getAuthenticatedAccount(stateChange: stateChange);
   }
 
-  Future<void> _initialAppConfig() async {
-    await Future.wait([
-      MainBindings().dependencies(),
-      HiveCacheConfig.instance.setUp()
-    ]);
+  Future<void> initialAppConfig() async {
+    try {
+      await Future.wait([
+        MainBindings().dependencies(),
+        HiveCacheConfig.instance.setUp()
+      ]);
 
-    await Future.sync(() {
-      HomeBindings().dependencies();
-      MailboxDashBoardBindings().dependencies();
-      FcmInteractorBindings().dependencies();
-    });
+      await Future.sync(() {
+        HomeBindings().dependencies();
+        MailboxDashBoardBindings().dependencies();
+        FcmInteractorBindings().dependencies();
+      });
 
-    _getInteractorBindings();
+      _getInteractorBindings();
+    } catch (e, st) {
+      logError(
+        'FcmMessageController::initialAppConfig: throw exception',
+        exception: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  Future<void> setUpSentryConfiguration() async {
+    try {
+      final cachingManager = getBinding<CachingManager>();
+      if (cachingManager == null) {
+        logWarning('FcmMessageController::setUpSentryConfiguration: CachingManager is null');
+        return;
+      }
+
+      final sentryConfig = await cachingManager.getSentryConfiguration();
+      if (sentryConfig == null) {
+        logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfiguration is null');
+        return;
+      }
+
+      if (!sentryConfig.isAvailable) {
+        logWarning('FcmMessageController::setUpSentryConfiguration: SentryConfiguration is not available');
+        return;
+      }
+
+      await SentryManager.instance.initializeWithSentryConfig(sentryConfig);
+
+      final sentryUser = await cachingManager.getSentryUser();
+      if (sentryUser == null) {
+        logTrace('FcmMessageController::setUpSentryConfiguration: Sentry user is null');
+        // Sentry initialized without user context - this is acceptable
+      } else {
+        SentryManager.instance.setUser(sentryUser);
+      }
+    } catch (e, st) {
+      logError(
+        'FcmMessageController::setUpSentryConfiguration: throw exception',
+        exception: e,
+        stackTrace: st,
+      );
+    }
   }
 
   void _getInteractorBindings() {
@@ -99,9 +177,13 @@ class FcmMessageController extends PushBaseController {
     FcmTokenController.instance.initialBindingInteractor();
   }
 
-  void _getAuthenticatedAccount({StateChange? stateChange}) {
+  void _getAuthenticatedAccount({required StateChange stateChange}) {
     if (_getAuthenticatedAccountInteractor != null) {
       consumeState(_getAuthenticatedAccountInteractor!.execute(stateChange: stateChange));
+    } else {
+      logTrace(
+        'GetAuthenticatedAccountInteractor is null',
+      );
     }
   }
 
@@ -127,6 +209,8 @@ class FcmMessageController extends PushBaseController {
           accountId: accountId,
           userName: username,
           stateChange: stateChange);
+      } else {
+        logTrace('FcmMessageController::_handleGetAccountByOidcSuccess: accountId or username or stateChange is null');
       }
     }
   }
@@ -152,6 +236,8 @@ class FcmMessageController extends PushBaseController {
           accountId: accountId,
           userName: username,
           stateChange: stateChange);
+      } else {
+        logTrace('FcmMessageController::_handleGetAccountByBasicAuthSuccess: accountId or username or stateChange is null');
       }
     }
   }
@@ -159,6 +245,8 @@ class FcmMessageController extends PushBaseController {
   void _getSessionAction({StateChange? stateChange}) {
     if (_getSessionInteractor != null) {
       consumeState(_getSessionInteractor!.execute(stateChange: stateChange));
+    } else {
+      logTrace('FcmMessageController::_getSessionAction: _getSessionInteractor is null');
     }
   }
 
@@ -175,9 +263,17 @@ class FcmMessageController extends PushBaseController {
           userName: success.session.username,
           stateChange: stateChange,
           session: success.session);
+      } else {
+        logTrace(
+          'FcmMessageController::_handleGetSessionSuccess: Api url or state change is null',
+        );
       }
-    } catch (e) {
-      logWarning('FcmMessageController::_handleGetSessionSuccess: Exception $e');
+    } catch (e, st) {
+      logError(
+        'FcmMessageController::_handleGetSessionSuccess:',
+        exception: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -188,7 +284,7 @@ class FcmMessageController extends PushBaseController {
     Session? session
   }) {
     final mapTypeState = stateChange.getMapTypeState(accountId);
-
+    logTrace('FcmMessageController::_pushActionFromRemoteMessageBackground: Mapping type state to action ${mapTypeState.toString()}');
     mappingTypeStateToAction(
       mapTypeState,
       accountId,
@@ -202,6 +298,11 @@ class FcmMessageController extends PushBaseController {
   @override
   void handleFailureViewState(Failure failure) {
     log('FcmMessageController::_handleFailureViewState(): $failure');
+    if (failure is GetStoredTokenOidcFailure) {
+      logTrace('FcmMessageController::GetStoredTokenOidcFailure: Get stored token oidc is failed');
+    } else if (failure is GetSessionFailure) {
+      logTrace('FcmMessageController::GetSessionFailure: Get session is failed');
+    }
   }
 
   @override

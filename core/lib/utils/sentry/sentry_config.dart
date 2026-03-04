@@ -1,6 +1,5 @@
 import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/build_utils.dart';
-import 'package:core/utils/config/env_loader.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -15,7 +14,7 @@ class SentryConfig {
   // Current app release version
   final String release;
 
-  // // Performance monitoring: Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing
+  // Performance monitoring: Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing
   final double tracesSampleRate;
 
   // Optional profiling
@@ -38,23 +37,34 @@ class SentryConfig {
   // This must match the `--dist` parameter used when uploading source maps to Sentry.
   final String? dist;
 
+  // Release Health: The sampling rate for sessions (0.0 to 1.0). Defines the percentage of sessions to send.
+  final double sessionSampleRate;
+
+  // Error tracking: The sampling rate for errors (0.0 to 1.0). If set to 0.1, only 10% of errors are sent.
+  final double onErrorSampleRate;
+
+  // Performance: Tracks UI rendering performance (slow and frozen frames).
+  final bool enableFramesTracking;
+
   SentryConfig({
     required this.dsn,
     required this.environment,
     required this.release,
     this.tracesSampleRate = 1.0,
     this.profilesSampleRate = 1.0,
+    this.sessionSampleRate = 1.0,
+    this.onErrorSampleRate = 1.0,
     this.enableLogs = true,
+    this.enableFramesTracking = true,
     this.isDebug = BuildUtils.isDebugMode,
     this.attachScreenshot = false,
     this.isAvailable = false,
     this.dist,
   });
 
-  /// Load configuration from an env file.
+  /// Loads configuration from loaded environment variables.
   static Future<SentryConfig?> load() async {
-    await EnvLoader.loadConfigFromEnv();
-
+    // Note: Ensure EnvLoader.loadEnvFile() is called in main.dart before this.
     final sentryAvailable = dotenv.get('SENTRY_ENABLED', fallback: 'false');
 
     final isAvailable = sentryAvailable == 'true';
