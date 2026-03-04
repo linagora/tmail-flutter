@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-01-26T09:26:54.654131",
+  "@@last_modified": "2026-03-04T11:35:04.572137",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5280,12 +5280,6 @@
   },
   "labelVisibilityToggleDescription": "Display labels",
   "@labelVisibilityToggleDescription": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "theLabelFeatureIsNowAvailable": "The label feature is now available.",
-  "@theLabelFeatureIsNowAvailable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -5613,13 +5613,6 @@ class AppLocalizations {
     );
   }
 
-  String get theLabelFeatureIsNowAvailable {
-    return Intl.message(
-      'The label feature is now available.',
-      name: 'theLabelFeatureIsNowAvailable',
-    );
-  }
-
   String get labelAs {
     return Intl.message(
       'Label as',
