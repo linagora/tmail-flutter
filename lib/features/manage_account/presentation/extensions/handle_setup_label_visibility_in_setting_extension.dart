@@ -37,6 +37,8 @@ extension HandleSetupLabelVisibilityInSettingExtension
     getLabelVisibilityInteractor = getBinding<GetLabelVisibilityInteractor>();
     if (getLabelVisibilityInteractor != null) {
       consumeState(getLabelVisibilityInteractor!.execute());
+    } else {
+      isLabelVisibilityEnabled.value = false;
     }
   }
 

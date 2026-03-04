@@ -78,7 +78,7 @@ class ManageAccountDashBoardController extends ReloadableController
   final vacationResponse = Rxn<VacationResponse>();
   final dashboardSettingAction = Rxn<UIAction>();
   final octetsQuota = Rxn<Quota>();
-  final isLabelVisibilityEnabled = RxBool(true);
+  final isLabelVisibilityEnabled = RxBool(PlatformInfo.isIntegrationTesting);
 
   Uri? previousUri;
   AccountMenuItem? selectedMenu;
@@ -195,9 +195,7 @@ class ManageAccountDashBoardController extends ReloadableController
       getQuotas(accountId.value);
     }
 
-    if (isLabelCapabilitySupported) {
-      setUpLabelVisibility();
-    }
+    isLabelVisibilityEnabled.value = isLabelCapabilitySupported;
   }
 
   void _getParametersRouter() {
