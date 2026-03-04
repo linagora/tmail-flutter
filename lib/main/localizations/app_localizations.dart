@@ -5776,4 +5776,11 @@ class AppLocalizations {
       name: 'allEmail',
     );
   }
+
+  String get allEmailTrashAndSpam {
+    return Intl.message(
+      'All Email, trash & spam',
+      name: 'allEmailTrashAndSpam',
+    );
+  }
 }

@@ -32,6 +32,8 @@ class PresentationMailbox with EquatableMixin {
     name: MailboxName('Action required'),
     role: roleActionRequired,
   );
+  static final PresentationMailbox allEmailTrashAndSpamFolder =
+      PresentationMailbox(MailboxId(Id('all-email-trash-and-spam')));
 
   static final roleInbox = Role(inboxRole);
   static final roleTrash = Role(trashRole);

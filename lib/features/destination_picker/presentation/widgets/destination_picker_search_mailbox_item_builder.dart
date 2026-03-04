@@ -156,7 +156,7 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
 
   bool get _isSelectActionNoValid => _presentationMailbox.id == mailboxIdAlreadySelected &&
     (
-      mailboxActions == MailboxActions.select ||
+      mailboxActions == MailboxActions.selectForSearch ||
       mailboxActions == MailboxActions.create ||
       mailboxActions == MailboxActions.moveEmail ||
       mailboxActions == MailboxActions.moveFolderContent

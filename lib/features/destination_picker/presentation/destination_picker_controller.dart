@@ -332,7 +332,8 @@ class DestinationPickerController extends BaseMailboxController {
     }
     mailboxDestination.value = presentationMailbox;
     if (presentationMailbox == null ||
-        presentationMailbox.id == PresentationMailbox.unifiedMailbox.id) {
+        presentationMailbox.id == PresentationMailbox.unifiedMailbox.id ||
+        presentationMailbox.id == PresentationMailbox.allEmailTrashAndSpamFolder.id) {
       unAllSelectedMailboxNode();
     } else {
       if (mailboxNode != null) {
@@ -348,13 +349,13 @@ class DestinationPickerController extends BaseMailboxController {
     }
   }
 
-  void dispatchSelectMailboxDestination(BuildContext context) {
-    KeyboardUtils.hideKeyboard(context);
+  void dispatchSelectMailboxDestination(AppLocalizations appLocalizations) {
+    FocusManager.instance.primaryFocus?.unfocus();
 
     if (mailboxDestination.value == null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
-        AppLocalizations.of(context).toastMessageErrorNotSelectedFolderWhenCreateNewMailbox);
+        appLocalizations.toastMessageErrorNotSelectedFolderWhenCreateNewMailbox);
       return;
     }
     popBack(result: mailboxDestination.value);

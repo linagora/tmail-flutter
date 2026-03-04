@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-03-04T14:13:47.978315",
+  "@@last_modified": "2026-03-04T14:33:39.445973",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5456,6 +5456,12 @@
   },
   "allEmail": "All email",
   "@allEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allEmailTrashAndSpam": "All Email, trash & spam",
+  "@allEmailTrashAndSpam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

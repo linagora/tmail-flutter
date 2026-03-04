@@ -705,7 +705,7 @@ class SearchEmailController extends BaseController
   void selectMailboxForSearchFilter(PresentationMailbox? mailbox) async {
     final arguments = DestinationPickerArguments(
       mailboxDashBoardController.accountId.value!,
-      MailboxActions.select,
+      MailboxActions.selectForSearch,
       mailboxDashBoardController.sessionCurrent,
       mailboxIdSelected: mailbox?.id);
 
@@ -715,11 +715,7 @@ class SearchEmailController extends BaseController
 
     if (destinationMailbox is! PresentationMailbox) return;
 
-    _updateSimpleSearchFilter(
-      mailboxOption: destinationMailbox.id == PresentationMailbox.unifiedMailbox.id
-        ? const None()
-        : Some(destinationMailbox)
-    );
+    _updateSimpleSearchFilter(mailboxOption: Some(destinationMailbox));
 
     _searchEmailAction();
   }

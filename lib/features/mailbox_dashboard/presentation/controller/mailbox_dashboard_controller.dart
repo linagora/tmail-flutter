@@ -2252,7 +2252,7 @@ class MailboxDashBoardController extends ReloadableController
 
     final destinationArgument = DestinationPickerArguments(
       accountId.value!,
-      MailboxActions.select,
+      MailboxActions.selectForSearch,
       sessionCurrent!,
       mailboxIdSelected: mailboxIdSelected);
 
@@ -2266,12 +2266,7 @@ class MailboxDashBoardController extends ReloadableController
 
     if (destinationMailbox is! PresentationMailbox) return;
 
-    searchController.updateFilterEmail(
-      mailboxOption: destinationMailbox.id == PresentationMailbox.unifiedMailbox.id
-        ? const None()
-        : Some(destinationMailbox)
-    );
-
+    searchController.updateFilterEmail(mailboxOption: Some(destinationMailbox));
     dispatchAction(StartSearchEmailAction());
   }
 

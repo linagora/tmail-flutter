@@ -28,7 +28,7 @@ enum QuickSearchFilter {
   labels;
 
   String getTitle(
-    BuildContext context, {
+    AppLocalizations appLocalizations, {
     EmailReceiveTimeType? receiveTimeType,
     EmailSortOrderType? sortOrderType,
     DateTime? startDate,
@@ -41,32 +41,33 @@ enum QuickSearchFilter {
   }) {
     switch(this) {
       case QuickSearchFilter.hasAttachment:
-        return AppLocalizations.of(context).hasAttachment;
+        return appLocalizations.hasAttachment;
       case QuickSearchFilter.last7Days:
-        return AppLocalizations.of(context).last7Days;
+        return appLocalizations.last7Days;
       case QuickSearchFilter.fromMe:
-        return AppLocalizations.of(context).fromMe;
+        return appLocalizations.fromMe;
       case QuickSearchFilter.sortBy:
-        return sortOrderType?.getTitle(context)
-          ?? SearchEmailFilter.defaultSortOrder.getTitle(context);
+        return sortOrderType?.getTitleByAppLocalizations(appLocalizations)
+          ?? SearchEmailFilter.defaultSortOrder.getTitleByAppLocalizations(appLocalizations);
       case QuickSearchFilter.dateTime:
-        return receiveTimeType?.getTitle(
-          context,
+        return receiveTimeType?.getTitleByAppLocalizations(
+            appLocalizations,
           startDate: startDate,
           endDate: endDate
-        ) ?? AppLocalizations.of(context).allTime;
+        ) ?? appLocalizations.allTime;
       case QuickSearchFilter.from:
-        return AppLocalizations.of(context).from_email_address_prefix;
+        return appLocalizations.from_email_address_prefix;
       case QuickSearchFilter.folder:
-        return mailbox?.getDisplayName(context) ?? AppLocalizations.of(context).all;
+        return mailbox?.getFolderNameForQuickSearch(appLocalizations)
+            ?? appLocalizations.allEmail;
       case QuickSearchFilter.to:
-        return AppLocalizations.of(context).to_email_address_prefix;
+        return appLocalizations.to_email_address_prefix;
       case QuickSearchFilter.starred:
-        return AppLocalizations.of(context).starred;
+        return appLocalizations.starred;
       case QuickSearchFilter.unread:
-        return AppLocalizations.of(context).unread;
+        return appLocalizations.unread;
       case QuickSearchFilter.labels:
-        return label?.safeDisplayName ?? AppLocalizations.of(context).allLabels;
+        return label?.safeDisplayName ?? appLocalizations.allLabels;
     }
   }
 

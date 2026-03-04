@@ -215,7 +215,7 @@ class AdvancedFilterController extends BaseController {
     searchController.synchronizeSearchFilter(_memorySearchFilter);
   }
 
-  void selectedMailBox(BuildContext context) async {
+  Future<void> selectedMailBox(AppLocalizations appLocalizations) async {
     final accountId = _mailboxDashBoardController.accountId.value;
     final session = _mailboxDashBoardController.sessionCurrent;
 
@@ -223,7 +223,7 @@ class AdvancedFilterController extends BaseController {
 
     final arguments = DestinationPickerArguments(
       accountId,
-      MailboxActions.select,
+      MailboxActions.selectForSearch,
       session,
       mailboxIdSelected: _destinationMailboxSelected?.id
     );
@@ -237,11 +237,24 @@ class AdvancedFilterController extends BaseController {
     if (destinationMailbox is! PresentationMailbox) return;
 
     _destinationMailboxSelected = destinationMailbox;
-    final mailboxName = context.mounted
-      ? _destinationMailboxSelected?.getDisplayName(context)
-      : _destinationMailboxSelected?.name?.name;
-    selectedFolderName.value = StringConvert.writeNullToEmpty(mailboxName);
-    _updateMemorySearchFilter(mailboxOption: optionOf(_destinationMailboxSelected));
+    selectedFolderName.value = _getMailboxName(
+      appLocalizations: appLocalizations,
+      destinationMailbox: destinationMailbox,
+    );
+    _updateMemorySearchFilter(mailboxOption: optionOf(destinationMailbox));
+  }
+
+  String _getMailboxName({
+    required AppLocalizations appLocalizations,
+    required PresentationMailbox destinationMailbox,
+  }) {
+    if (destinationMailbox.isAllEmail) {
+      return appLocalizations.allEmail;
+    } else if (destinationMailbox.isAllEmailTrashAndSpamFolder) {
+      return appLocalizations.allEmailTrashAndSpam;
+    } else {
+      return destinationMailbox.getDisplayNameWithoutContext(appLocalizations);
+    }
   }
 
   void applyAdvancedSearchFilter() {
@@ -315,10 +328,9 @@ class AdvancedFilterController extends BaseController {
     }
 
     if (context != null) {
-      selectedFolderName.value = _memorySearchFilter.mailbox == null
-        ? AppLocalizations.of(context).allEmail
-        : StringConvert.writeNullToEmpty(
-            _memorySearchFilter.mailbox?.getDisplayName(context));
+      selectedFolderName.value = _memorySearchFilter.getMailboxName(
+        AppLocalizations.of(context),
+      );
     }
 
     selectedLabel.value = _memorySearchFilter.label;
