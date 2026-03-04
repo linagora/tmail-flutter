@@ -37,6 +37,7 @@ class AdvancedFilterController extends BaseController {
   final hasAttachment = false.obs;
   final isStarred = false.obs;
   final isUnread = false.obs;
+  final hasEvents = false.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
   final sortOrderType = SearchEmailFilter.defaultSortOrder.obs;
@@ -188,10 +189,12 @@ class AdvancedFilterController extends BaseController {
 
     final unreadOption = Some(isUnread.value);
 
-    final hasKeywordOption = option(
-      isStarred.isTrue,
-      {KeyWordIdentifier.emailFlagged.value},
-    );
+    final listKeywords = {
+      if(isStarred.isTrue) KeyWordIdentifier.emailFlagged.value,
+      if(hasEvents.isTrue) KeyWordIdentifierExtension.eventsMail.value,
+    };
+    final hasKeywordOption =
+        optionOf(listKeywords.isNotEmpty ? listKeywords : null);
 
     final labelOption = optionOf(selectedLabel.value);
 
@@ -295,6 +298,9 @@ class AdvancedFilterController extends BaseController {
 
     isStarred.value = _memorySearchFilter.hasKeyword
         .contains(KeyWordIdentifier.emailFlagged.value);
+
+    hasEvents.value = _memorySearchFilter.hasKeyword
+        .contains(KeyWordIdentifierExtension.eventsMail.value);
 
     if (_memorySearchFilter.from.isEmpty) {
       listFromEmailAddress.clear();
@@ -486,6 +492,7 @@ class AdvancedFilterController extends BaseController {
     hasAttachment.value = false;
     isUnread.value = false;
     isStarred.value = false;
+    hasEvents.value = false;
     selectedFolderName.value = null;
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
@@ -568,21 +575,36 @@ class AdvancedFilterController extends BaseController {
 
   void onStarredCheckboxChanged(bool? isChecked) {
     isStarred.value = isChecked ?? false;
-    final listHasKeywordFiltered = _memorySearchFilter.hasKeyword;
-    if (isStarred.isTrue) {
-      listHasKeywordFiltered.add(KeyWordIdentifier.emailFlagged.value);
-    } else {
-      listHasKeywordFiltered.remove(KeyWordIdentifier.emailFlagged.value);
-    }
-    _updateMemorySearchFilter(
-      hasKeywordOption: Some(listHasKeywordFiltered),
+    _updateKeywordsSearchFilter(
+      isStarred.isTrue,
+      KeyWordIdentifier.emailFlagged,
     );
   }
 
   void onUnreadCheckboxChanged(bool? isChecked) {
     isUnread.value = isChecked ?? false;
     _updateMemorySearchFilter(
-      unreadOption: isStarred.isTrue ? const Some(true) : const None(),
+      unreadOption: isUnread.isTrue ? const Some(true) : const None(),
+    );
+  }
+
+  void _updateKeywordsSearchFilter(bool isChecked, KeyWordIdentifier keyword) {
+    final listHasKeywordFiltered = _memorySearchFilter.hasKeyword;
+    if (isChecked) {
+      listHasKeywordFiltered.add(keyword.value);
+    } else {
+      listHasKeywordFiltered.remove(keyword.value);
+    }
+    _updateMemorySearchFilter(
+      hasKeywordOption: Some(listHasKeywordFiltered),
+    );
+  }
+
+  void onEventsCheckboxChanged(bool? isChecked) {
+    hasEvents.value = isChecked ?? false;
+    _updateKeywordsSearchFilter(
+      hasEvents.isTrue,
+      KeyWordIdentifierExtension.eventsMail,
     );
   }
 

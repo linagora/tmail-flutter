@@ -1,14 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 
 extension SelectSearchFilterActionExtension on MailboxDashBoardController {
-  void selectStarredSearchFilter() {
+  void selectKeywordSearchFilter(KeyWordIdentifier keyword) {
     final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
-    listHasKeywordFiltered.add(KeyWordIdentifier.emailFlagged.value);
+    listHasKeywordFiltered.add(keyword.value);
     searchController.updateFilterEmail(
       hasKeywordOption: Some(listHasKeywordFiltered),
     );
@@ -34,6 +35,15 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
     dispatchAction(StartSearchEmailAction());
   }
 
+  void deleteEventsSearchFilter() {
+    final listHasKeywordFiltered = searchController.listHasKeywordFiltered;
+    listHasKeywordFiltered.remove(KeyWordIdentifierExtension.eventsMail.value);
+    searchController.updateFilterEmail(
+      hasKeywordOption: Some(listHasKeywordFiltered),
+    );
+    dispatchAction(StartSearchEmailAction());
+  }
+
   void deleteQuickSearchFilter({required QuickSearchFilter filter}) {
     switch (filter) {
       case QuickSearchFilter.labels:
@@ -44,6 +54,9 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
         break;
       case QuickSearchFilter.unread:
         deleteUnreadSearchFilter();
+        break;
+      case QuickSearchFilter.events:
+        deleteEventsSearchFilter();
         break;
       default:
         break;

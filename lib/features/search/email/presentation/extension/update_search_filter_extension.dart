@@ -12,6 +12,7 @@ extension UpdateSearchFilterExtension on SearchEmailController {
         updateSimpleSearchFilter(hasAttachmentOption: const None());
         break;
       case QuickSearchFilter.starred:
+      case QuickSearchFilter.events:
         updateSimpleSearchFilter(hasKeywordOption: const None());
         break;
       case QuickSearchFilter.unread:

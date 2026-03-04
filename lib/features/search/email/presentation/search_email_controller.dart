@@ -635,10 +635,10 @@ class SearchEmailController extends BaseController
     _searchEmailAction();
   }
 
-  void selectStarredSearchFilter() {
+  void selectKeywordsSearchFilter(KeyWordIdentifier keyword) {
     final listKeyword = listHasKeywordFiltered;
-    if (!listKeyword.contains(KeyWordIdentifier.emailFlagged.value)) {
-      listKeyword.add(KeyWordIdentifier.emailFlagged.value);
+    if (!listKeyword.contains(keyword.value)) {
+      listKeyword.add(keyword.value);
     }
     _updateSimpleSearchFilter(hasKeywordOption: Some(listKeyword));
     _searchEmailAction();
@@ -1077,6 +1077,9 @@ class SearchEmailController extends BaseController
       case QuickSearchFilter.unread:
         _deleteUnreadSearchFilter();
         break;
+      case QuickSearchFilter.events:
+        _deleteEventsSearchFilter();
+        break;
       case QuickSearchFilter.labels:
         deleteQuickSearchFilter(filter: QuickSearchFilter.labels);
         break;
@@ -1133,6 +1136,11 @@ class SearchEmailController extends BaseController
 
   void _deleteUnreadSearchFilter() {
     _updateSimpleSearchFilter(unreadOption: const None());
+    _searchEmailAction();
+  }
+
+  void _deleteEventsSearchFilter() {
+    _updateSimpleSearchFilter(hasKeywordOption: const None());
     _searchEmailAction();
   }
 
