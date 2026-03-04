@@ -13,9 +13,5 @@ abstract class ManageAccountDataSource {
 
   Future<AIScribeConfig> getAiScribeConfigLocalSettings();
 
-  Future<bool> getLabelVisibility();
-
-  Future<void> saveLabelVisibility(bool visible);
-
   Future<bool> getLabelSettingState();
 }

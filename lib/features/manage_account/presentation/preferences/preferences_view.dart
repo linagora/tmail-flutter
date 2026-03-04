@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_setup_label_visibility_in_setting_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/preferences_option_type.dart';
@@ -52,27 +51,9 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (controller.responsiveUtils.isWebDesktop(context))
-                    Obx(
-                      () {
-                        final labelVisibility = controller
-                            .accountDashboardController.isLabelVisibilityEnabled.value;
-
-                        final isLabelCapabilitySupported = controller
-                            .accountDashboardController
-                            .isLabelCapabilitySupported;
-
-                        final disableMultiClick =
-                            labelVisibility || !isLabelCapabilitySupported;
-
-                        return SettingHeaderWidget(
-                          menuItem: AccountMenuItem.preferences,
-                          padding: const EdgeInsets.only(bottom: 21),
-                          onMultiClickAction: disableMultiClick
-                              ? null
-                              : controller.accountDashboardController
-                                  .enableLabelVisibility,
-                        );
-                      },
+                    const SettingHeaderWidget(
+                      menuItem: AccountMenuItem.preferences,
+                      padding: EdgeInsets.only(bottom: 21),
                     ),
                   Obx(() {
                     final settingOption = controller.settingOption.value;
