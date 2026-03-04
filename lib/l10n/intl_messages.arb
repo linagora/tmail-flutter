@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-01-26T09:26:54.654131",
+  "@@last_modified": "2026-03-04T14:13:47.978315",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5450,6 +5450,12 @@
   },
   "deleteALabelFailure": "Delete a label failure",
   "@deleteALabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allEmail": "All email",
+  "@allEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

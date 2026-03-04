@@ -536,7 +536,9 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 width: MailboxItemWidgetStyles.labelIconSpace,
               ),
               Expanded(child: Text(
-                AppLocalizations.of(context).allFolders,
+                actions == MailboxActions.select
+                  ? AppLocalizations.of(context).allEmail
+                  : AppLocalizations.of(context).allFolders,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: ThemeUtils.textStyleInter500(),

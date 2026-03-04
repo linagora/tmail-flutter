@@ -5769,4 +5769,11 @@ class AppLocalizations {
       name: 'deleteALabelFailure',
     );
   }
+
+  String get allEmail {
+    return Intl.message(
+      'All email',
+      name: 'allEmail',
+    );
+  }
 }

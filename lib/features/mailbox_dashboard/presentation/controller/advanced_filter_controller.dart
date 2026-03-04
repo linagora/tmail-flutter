@@ -316,7 +316,7 @@ class AdvancedFilterController extends BaseController {
 
     if (context != null) {
       selectedFolderName.value = _memorySearchFilter.mailbox == null
-        ? AppLocalizations.of(context).allFolders
+        ? AppLocalizations.of(context).allEmail
         : StringConvert.writeNullToEmpty(
             _memorySearchFilter.mailbox?.getDisplayName(context));
     }
