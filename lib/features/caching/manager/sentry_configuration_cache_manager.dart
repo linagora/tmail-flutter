@@ -21,7 +21,7 @@ class SentryConfigurationCacheManager {
     final sentryConfigCache =
         await _configurationCacheClient.getItem(_configurationCacheKey);
     if (sentryConfigCache == null) {
-      throw NotFoundSentryConfigurationException();
+      throw const NotFoundSentryConfigurationException();
     } else {
       return sentryConfigCache;
     }
@@ -39,7 +39,7 @@ class SentryConfigurationCacheManager {
   Future<SentryUserCache> getSentryUser() async {
     final sentryUserCache = await _userCacheClient.getItem(_userCacheKey);
     if (sentryUserCache == null) {
-      throw NotFoundSentryUserException();
+      throw const NotFoundSentryUserException();
     } else {
       return sentryUserCache;
     }
