@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_setup_label_visibility_in_setting_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/validate_setting_capability_supported_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
@@ -30,17 +29,6 @@ class SettingsView extends GetWidget<SettingsController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Obx(() {
-          final labelVisibility = controller
-              .manageAccountDashboardController
-              .isLabelVisibilityEnabled
-              .value;
-          final isLabelCapabilitySupported = controller
-              .manageAccountDashboardController
-              .isLabelCapabilitySupported;
-
-          final disableMultiClick =
-              labelVisibility || !isLabelCapabilitySupported;
-
           return SettingAppBar(
             pageLevel: controller
                 .manageAccountDashboardController
@@ -55,9 +43,6 @@ class SettingsView extends GetWidget<SettingsController> {
             onBackAction: () => controller.onBackSettingAction(context),
             onExportTraceLogAction: () =>
                 controller.showExportTraceLogConfirmDialog(context),
-            onMultiClickAction: disableMultiClick
-              ? null
-              : controller.manageAccountDashboardController.enableLabelVisibility,
           );
         }),
         Obx(() {
