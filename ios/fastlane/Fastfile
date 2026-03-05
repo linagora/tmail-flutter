@@ -48,7 +48,7 @@ platform :ios do
       build_number: latest_testflight_build_number + 1
     )
     increment_version_number(
-      version_number: last_git_tag.gsub("v", "")
+      version_number: last_git_tag.gsub("v", "").split("-").first
     )
     build_app(
       scheme: "Runner",
