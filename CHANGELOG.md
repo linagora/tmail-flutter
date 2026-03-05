@@ -1,4 +1,4 @@
-## [0.25.0] - 2026-03-05
+## [0.26.0] - 2026-03-05
 ### Added
 - TF-4303 Change order for label action
 - Implement auto sync label changes from websocket
