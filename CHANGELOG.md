@@ -1,3 +1,11 @@
+## [0.25.0] - 2026-03-05
+### Added
+- TF-4303 Change order for label action
+- Implement auto sync label changes from websocket
+
+### Fixed
+- TF-4354 Activate Label by default for all users
+
 ## [0.24.14] - 2026-02-27
 ### Fixed
 - TF-4350 cannot focus in folder creator modal and create rule modal in Safari when email open
