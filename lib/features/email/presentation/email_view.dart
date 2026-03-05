@@ -109,8 +109,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                         openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
                         openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
                         onSelectLabelAction: (label, isSelected) =>
-                            controller.toggleLabelToEmail(
-                              presentationEmail.id!,
+                            controller.onToggleLabelAction(
+                              presentationEmail.id,
                               label,
                               isSelected,
                             ),
@@ -275,8 +275,8 @@ class EmailView extends GetWidget<SingleEmailController> {
               imagePaths: controller.imagePaths,
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,
-              onDeleteLabelAction: (label) => controller.toggleLabelToEmail(
-                presentationEmail.id!,
+              onDeleteLabelAction: (label) => controller.onToggleLabelAction(
+                presentationEmail.id,
                 label,
                 false,
               ),
@@ -320,8 +320,8 @@ class EmailView extends GetWidget<SingleEmailController> {
             openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
             onSelectLabelAction: (label, isSelected) =>
-                controller.toggleLabelToEmail(
-                  presentationEmail.id!,
+                controller.onToggleLabelAction(
+                  presentationEmail.id,
                   label,
                   isSelected,
                 ),

@@ -26,12 +26,14 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:jmap_dart_client/jmap/quotas/quota.dart';
+import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/ai_scribe_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
@@ -67,12 +69,14 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/state/restore_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_sending_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/remove_a_label_from_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -85,6 +89,7 @@ import 'package:tmail_ui_user/features/home/domain/usecases/store_session_intera
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/add_label_to_email_mixin.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
@@ -222,6 +227,7 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
@@ -229,7 +235,8 @@ class MailboxDashBoardController extends ReloadableController
         OwnEmailAddressMixin,
         SaaSPremiumMixin,
         AiScribeMixin,
-        SearchLabelFilterModalMixin {
+        SearchLabelFilterModalMixin,
+        AddLabelToEmailMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -544,6 +551,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is GetAIScribeConfigSuccess) {
       handleLoadAIScribeConfigSuccess(success.aiScribeConfig);
     } else {
+      subscribeLabelViewStateSuccess(success);
       super.handleSuccessViewState(success);
     }
   }
@@ -594,6 +602,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (failure is GetAIScribeConfigFailure) {
       handleLoadAIScribeConfigFailure();
     } else {
+      subscribeLabelViewStateFailure(failure);
       super.handleFailureViewState(failure);
     }
   }
@@ -3453,4 +3462,33 @@ class MailboxDashBoardController extends ReloadableController
     _downloadUIActionWorker = null;
     super.onClose();
   }
+
+  @override
+  AddALabelToAnEmailInteractor? get addALabelToAnEmailInteractor =>
+      getBinding<AddALabelToAnEmailInteractor>();
+
+  @override
+  AccountId? get currentAccountId => accountId.value;
+
+  @override
+  BaseController get currentController => this;
+
+  @override
+  List<Label> get currentLabelList => labelController.labels;
+
+  @override
+  Session? get currentSession => sessionCurrent;
+
+  @override
+  ToastManager get currentToastManager => toastManager;
+
+  @override
+  bool get isCurrentLabelAvailable => isLabelAvailable;
+
+  @override
+  RemoveALabelFromAnEmailInteractor? get removeALabelFromAnEmailInteractor =>
+      getBinding<RemoveALabelFromAnEmailInteractor>();
+
+  @override
+  OnSyncLabelForEmail? get onSyncLabelForEmail => syncLabelForEmail;
 }

@@ -1,6 +1,7 @@
 
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -126,4 +127,23 @@ class RemoveLabelFromEmailAction extends EmailUIAction {
 
   @override
   List<Object?> get props => [emailId, label];
+}
+
+class SyncUpdateLabelForEmailOnMemory extends EmailUIAction {
+  final EmailId emailId;
+  final KeyWordIdentifier labelKeyword;
+  final bool shouldRemove;
+
+  SyncUpdateLabelForEmailOnMemory({
+    required this.emailId,
+    required this.labelKeyword,
+    required this.shouldRemove,
+  });
+
+  @override
+  List<Object?> get props => [
+        emailId,
+        labelKeyword,
+        shouldRemove,
+      ];
 }

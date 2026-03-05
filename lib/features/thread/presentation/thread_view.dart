@@ -12,12 +12,10 @@ import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_action_group_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
+import 'package:tmail_ui_user/features/labels/presentation/mixin/label_sub_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
@@ -44,6 +42,7 @@ import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pre
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pull_to_refresh_list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_select_message_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_shift_selection_email_extension.dart';
+import 'package:tmail_ui_user/features/thread/presentation/mixin/email_more_action_context_menu_mixin.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -57,10 +56,12 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadView extends GetWidget<ThreadController>
-  with AppLoaderMixin, PopupMenuWidgetMixin {
+  with AppLoaderMixin,
+      PopupMenuWidgetMixin,
+      LabelSubMenuMixin,
+      EmailMoreActionContextMenu {
 
   ThreadView({Key? key}) : super(key: key);
 
@@ -656,8 +657,33 @@ class ThreadView extends GetWidget<ThreadController>
           isAINeedsActionEnabled: isAINeedsActionEnabled,
           labels: emailLabels,
           emailActionClick: _handleEmailActionClicked,
-          onMoreActionClick: (email, position) =>
-              _handleEmailContextMenuAction(context, email, position),
+          onMoreActionClick: (email, position) async {
+            await openMoreActionContextMenu(
+              EmailContextMenuParams(
+                context: context,
+                email: email,
+                imagePaths: controller.imagePaths,
+                isLabelAvailable: isLabelAvailable,
+                labels: listLabels,
+                position: position,
+                openBottomSheetContextMenu: dashboardController.openBottomSheetContextMenu,
+                openPopupMenu: dashboardController.openPopupMenuActionGroup,
+                onHandleEmailByActionType: controller.handleEmailActionType,
+                onSelectLabelAction: (label, isSelected) {
+                  final emailId = presentationEmail.id;
+                  if (emailId == null) {
+                    logWarning('ThreadView::onSelectLabelAction: Email id is null');
+                    return;
+                  }
+                  dashboardController.toggleLabelToEmail(
+                    emailId,
+                    label,
+                    isSelected,
+                  );
+                },
+              ),
+            );
+          }
         ),
       );
     });
@@ -670,87 +696,8 @@ class ThreadView extends GetWidget<ThreadController>
     controller.handleEmailActionType(
       actionType,
       presentationEmail,
-      mailboxContain: presentationEmail.mailboxContain,
+      presentationEmail.mailboxContain,
     );
-  }
-
-  Future<void> _handleEmailContextMenuAction(
-    BuildContext context,
-    PresentationEmail presentationEmail,
-    RelativeRect? position
-  ) {
-    final mailboxContain = presentationEmail.mailboxContain;
-    final isDrafts = mailboxContain?.isDrafts ?? false;
-    final isChildOfTeamMailboxes =
-        mailboxContain?.isChildOfTeamMailboxes ?? false;
-    final isSpam = mailboxContain?.isSpam ?? false;
-    final isArchive = mailboxContain?.isArchive ?? false;
-    final isTemplates = mailboxContain?.isTemplates ?? false;
-    final isRead = presentationEmail.hasRead;
-    final isTrash = mailboxContain?.isTrash ?? false;
-    final canPermanentlyDelete = isDrafts || isSpam || isTrash;
-
-    final listEmailActions = [
-      isRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead,
-      EmailActionType.moveToMailbox,
-      canPermanentlyDelete ? EmailActionType.deletePermanently : EmailActionType.moveToTrash,
-      EmailActionType.openInNewTab,
-      if (!isDrafts && !isChildOfTeamMailboxes)
-        isSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,
-      if (!isArchive) EmailActionType.archiveMessage,
-      if (!isDrafts && !isTemplates) EmailActionType.editAsNewEmail,
-    ];
-
-    if (position == null) {
-      final contextMenuActions = listEmailActions
-          .map((action) => ContextItemEmailAction(
-                action,
-                AppLocalizations.of(context),
-                controller.imagePaths,
-                category: action.category,
-              ))
-          .toList();
-
-      return controller.mailboxDashBoardController.openBottomSheetContextMenu(
-        context: context,
-        itemActions: contextMenuActions,
-        onContextMenuActionClick: (menuAction) {
-          popBack();
-          controller.handleEmailActionType(
-            menuAction.action,
-            presentationEmail,
-            mailboxContain: presentationEmail.mailboxContain,
-          );
-        },
-        useGroupedActions: true,
-      );
-    } else {
-      final popupMenuItemEmailActions = listEmailActions.map((actionType) {
-        return PopupMenuItemEmailAction(
-          actionType,
-          AppLocalizations.of(context),
-          controller.imagePaths,
-          category: actionType.category,
-        );
-      }).toList();
-
-      final popupMenuWidget = PopupMenuActionGroupWidget(
-        actions: popupMenuItemEmailActions,
-        onActionSelected: (action) {
-          controller.handleEmailActionType(
-            action.action,
-            presentationEmail,
-            mailboxContain: mailboxContain,
-          );
-        },
-      );
-
-      return controller.mailboxDashBoardController.openPopupMenuActionGroup(
-        context,
-        position,
-        popupMenuWidget,
-      );
-    }
   }
 
   Widget _buildFeedBackWidget(BuildContext context) {
