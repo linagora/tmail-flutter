@@ -19,6 +19,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/count_emails_in_thread_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnPressEmailActionClick = void Function(EmailActionType, PresentationEmail);
@@ -85,10 +86,13 @@ mixin BaseEmailItemTile {
     PresentationEmail email,
     PresentationMailbox? mailbox,
     bool isSearchEmailRunning,
-    SearchQuery? query
+    SearchQuery? query,
+    {bool isThreadDetailEnabled = false}
   ) {
+    late Widget informationSenderWidget;
+
     if (isSearchEnabled(isSearchEmailRunning, query)) {
-      return RichTextBuilder(
+      informationSenderWidget = RichTextBuilder(
         textOrigin: informationSender(email, mailbox),
         wordToStyle: query?.value ?? '',
         styleOrigin: !email.hasRead
@@ -105,13 +109,42 @@ mixin BaseEmailItemTile {
             ),
       );
     } else {
-      return TextOverflowBuilder(
+      informationSenderWidget = TextOverflowBuilder(
         informationSender(email, mailbox),
         style: !email.hasRead
           ? ThemeUtils.textStyleBodyContact(color: Colors.black)
           : ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400)
       );
     }
+
+    final countEmailIdsInThread = email.countEmailIdsInThread;
+
+    if (isThreadDetailEnabled && countEmailIdsInThread > 0) {
+      return Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: Row(
+              spacing: 4,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(child: informationSenderWidget),
+                CountEmailsInThreadWidget(count: countEmailIdsInThread),
+              ],
+            ),
+          ),
+          SvgPicture.asset(
+            imagePaths.icDropDown,
+            fit: BoxFit.fill,
+            colorFilter: AppColor.steelGray200.asFilter(),
+            width: 20,
+            height: 20,
+          ),
+        ],
+      );
+    }
+
+    return informationSenderWidget;
   }
 
   Widget buildEmailTitle(

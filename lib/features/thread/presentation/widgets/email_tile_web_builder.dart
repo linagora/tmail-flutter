@@ -31,6 +31,7 @@ class EmailTileBuilder extends StatefulWidget {
   final bool isSenderImportantFlagEnabled;
   final bool isAINeedsActionEnabled;
   final bool autoWrapTagsByMaxWidth;
+  final bool isThreadDetailEnabled;
   final List<Label>? labels;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
@@ -49,6 +50,7 @@ class EmailTileBuilder extends StatefulWidget {
     this.padding,
     this.isDrag = false,
     this.isAINeedsActionEnabled = false,
+    this.isThreadDetailEnabled = false,
     this.emailActionClick,
     this.onMoreActionClick,
   });
@@ -117,7 +119,8 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                             widget.presentationEmail,
                             widget.mailboxContain,
                             widget.isSearchEmailRunning,
-                            widget.searchQuery
+                            widget.searchQuery,
+                            isThreadDetailEnabled: widget.isThreadDetailEnabled,
                           )
                         ),
                         buildIconAnsweredOrForwarded(
@@ -190,6 +193,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
         isSenderImportantFlagEnabled: widget.isSenderImportantFlagEnabled,
         shouldShowAIAction: _shouldShowAIAction,
         autoWrapTagsByMaxWidth: widget.autoWrapTagsByMaxWidth,
+        isThreadDetailEnabled: widget.isThreadDetailEnabled,
         labels: widget.labels,
         padding: widget.padding,
         searchQuery: widget.searchQuery,
@@ -310,8 +314,9 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                     widget.presentationEmail,
                     widget.mailboxContain,
                     widget.isSearchEmailRunning,
-                    widget.searchQuery
-                  )
+                    widget.searchQuery,
+                    isThreadDetailEnabled: widget.isThreadDetailEnabled,
+                  ),
                 ),
                 const SizedBox(width: 24),
                 Expanded(child: _buildSubjectAndContent(context)),

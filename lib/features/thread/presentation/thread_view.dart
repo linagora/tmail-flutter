@@ -522,6 +522,7 @@ class ThreadView extends GetWidget<ThreadController>
           controller.searchController.isSearchEmailRunning;
 
       final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
+      final isThreadDetailEnabled = dashboardController.isThreadDetailEnabled;
 
       return EmailTileBuilder(
         key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
@@ -531,6 +532,7 @@ class ThreadView extends GetWidget<ThreadController>
         searchQuery: controller.searchQuery,
         mailboxContain: presentationEmail.mailboxContain,
         isSearchEmailRunning: isSearchEmailRunning,
+        isThreadDetailEnabled: isThreadDetailEnabled,
         isDrag: true,
         isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
         isAINeedsActionEnabled: isAINeedsActionEnabled,
@@ -622,14 +624,16 @@ class ThreadView extends GetWidget<ThreadController>
       final isLabelAvailable = controller
           .mailboxDashBoardController.isLabelAvailable;
 
-        final listLabels =
-            controller.mailboxDashBoardController.labelController.labels;
+      final listLabels =
+          controller.mailboxDashBoardController.labelController.labels;
 
-        List<Label>? emailLabels;
+      List<Label>? emailLabels;
 
-        if (isLabelAvailable) {
-          emailLabels = presentationEmail.getLabelList(listLabels);
-        }
+      if (isLabelAvailable) {
+        emailLabels = presentationEmail.getLabelList(listLabels);
+      }
+
+      final isThreadDetailEnabled = dashboardController.isThreadDetailEnabled;
 
       return Dismissible(
         key: ValueKey<EmailId?>(presentationEmail.id),
@@ -654,6 +658,7 @@ class ThreadView extends GetWidget<ThreadController>
           mailboxContain: presentationEmail.mailboxContain,
           isSearchEmailRunning: isSearchEmailRunning,
           isAINeedsActionEnabled: isAINeedsActionEnabled,
+          isThreadDetailEnabled: isThreadDetailEnabled,
           labels: emailLabels,
           emailActionClick: _handleEmailActionClicked,
           onMoreActionClick: (email, position) =>
