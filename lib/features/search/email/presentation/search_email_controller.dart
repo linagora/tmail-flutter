@@ -47,6 +47,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/generate_mailboxes_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_emails_with_new_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -361,7 +362,9 @@ class SearchEmailController extends BaseController
         limit: limit,
         position: searchEmailFilter.value.position,
         sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+        filter: searchEmailFilter.value.mappingToEmailFilterCondition(
+          trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+        ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
       ).last;
 
@@ -433,7 +436,9 @@ class SearchEmailController extends BaseController
           accountId,
           limit: UnsignedInt(5),
           sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-          filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+          filter: searchEmailFilter.value.mappingToEmailFilterCondition(
+            trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+          ),
           properties: EmailUtils.getPropertiesForEmailGetMethod(session, accountId))
         .then((result) => result.fold(
             (failure) => <PresentationEmail>[],
@@ -499,7 +504,9 @@ class SearchEmailController extends BaseController
       limit: ThreadConstants.defaultLimit,
       position: searchEmailFilter.value.position,
       sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-      filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+      filter: searchEmailFilter.value.mappingToEmailFilterCondition(
+        trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+      ),
       properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
     ));
   }
@@ -557,7 +564,9 @@ class SearchEmailController extends BaseController
         limit: ThreadConstants.defaultLimit,
         sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         position: searchEmailFilter.value.position,
-        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+        filter: searchEmailFilter.value.mappingToEmailFilterCondition(
+          trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+        ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
         lastEmailId: lastEmail.id
       ));
@@ -705,7 +714,7 @@ class SearchEmailController extends BaseController
   void selectMailboxForSearchFilter(PresentationMailbox? mailbox) async {
     final arguments = DestinationPickerArguments(
       mailboxDashBoardController.accountId.value!,
-      MailboxActions.select,
+      MailboxActions.selectForSearch,
       mailboxDashBoardController.sessionCurrent,
       mailboxIdSelected: mailbox?.id);
 
@@ -715,11 +724,7 @@ class SearchEmailController extends BaseController
 
     if (destinationMailbox is! PresentationMailbox) return;
 
-    _updateSimpleSearchFilter(
-      mailboxOption: destinationMailbox.id == PresentationMailbox.unifiedMailbox.id
-        ? const None()
-        : Some(destinationMailbox)
-    );
+    _updateSimpleSearchFilter(mailboxOption: Some(destinationMailbox));
 
     _searchEmailAction();
   }

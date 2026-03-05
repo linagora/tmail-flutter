@@ -346,7 +346,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
   bool get isSelectedFolderInModal {
     final isDestinationPickerActive =
         widget.mailboxDisplayed == MailboxDisplayed.destinationPicker &&
-            (widget.mailboxActions == MailboxActions.select ||
+            (widget.mailboxActions == MailboxActions.selectForSearch ||
                 widget.mailboxActions == MailboxActions.create ||
                 widget.mailboxActions == MailboxActions.moveEmail);
 

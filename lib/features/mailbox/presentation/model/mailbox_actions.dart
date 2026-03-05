@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 enum MailboxActions {
   create,
   moveEmail,
-  select,
+  selectForSearch,
   delete,
   rename,
   move,
@@ -39,7 +39,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.move:
       case MailboxActions.moveFolderContent:
         return AppLocalizations.of(context).moveTo;
-      case MailboxActions.select:
+      case MailboxActions.selectForSearch:
       case MailboxActions.selectForRuleAction:
         return AppLocalizations.of(context).selectFolder;
       default:
@@ -179,7 +179,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.moveEmail:
       case MailboxActions.move:
       case MailboxActions.moveFolderContent:
-      case MailboxActions.select:
+      case MailboxActions.selectForSearch:
       case MailboxActions.selectForRuleAction:
         return true;
       default:
@@ -191,7 +191,7 @@ extension MailboxActionsExtension on MailboxActions {
     switch(this) {
       case MailboxActions.create:
       case MailboxActions.move:
-      case MailboxActions.select:
+      case MailboxActions.selectForSearch:
         return true;
       default:
         return false;

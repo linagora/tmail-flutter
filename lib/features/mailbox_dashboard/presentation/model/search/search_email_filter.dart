@@ -8,14 +8,16 @@ import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchEmailFilter with EquatableMixin, OptionParamMixin {
 
@@ -109,13 +111,15 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   }
 
   Filter? mappingToEmailFilterCondition({
-    EmailFilterCondition? moreFilterCondition
+    EmailFilterCondition? moreFilterCondition,
+    Set<MailboxId>? trashSpamMailboxIds,
   }) {
     final emailEmailFilterConditionShared = EmailFilterCondition(
       text: text?.value.trim().isNotEmpty == true
         ? text?.value.trim()
         : null,
-      inMailbox: mailbox?.mailboxId,
+      inMailbox: _getInMailboxField(),
+      inMailboxOtherThan: _getInMailboxOtherThanField(trashSpamMailboxIds),
       after: emailReceiveTimeType.getAfterDate(startDate),
       hasAttachment: !hasAttachment ? null : hasAttachment,
       subject: subject?.trim().isNotEmpty == true
@@ -209,7 +213,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     notKeyword.isNotEmpty ||
     emailReceiveTimeType != EmailReceiveTimeType.allTime ||
     sortOrderType != SearchEmailFilter.defaultSortOrder ||
-    (mailbox != null && mailbox?.id != PresentationMailbox.unifiedMailbox.id) ||
+    (mailbox != null && mailbox?.isUnifiedMailbox != true) ||
     label != null ||
     hasAttachment ||
     unread;
@@ -224,10 +228,36 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     notKeyword.isEmpty &&
     emailReceiveTimeType == EmailReceiveTimeType.allTime &&
     sortOrderType == SearchEmailFilter.defaultSortOrder &&
-    (mailbox == null || mailbox?.id == PresentationMailbox.unifiedMailbox.id) &&
+    (mailbox == null || mailbox?.isUnifiedMailbox == true) &&
     label == null &&
     !hasAttachment &&
     !unread;
+
+  String getMailboxName(AppLocalizations appLocalizations) {
+    if (mailbox == null || mailbox?.isAllEmail == true) {
+      return appLocalizations.allEmail;
+    } else if (mailbox?.isAllEmailTrashAndSpamFolder == true) {
+      return appLocalizations.allEmailTrashAndSpam;
+    } else {
+      return mailbox?.getDisplayNameWithoutContext(appLocalizations) ?? '';
+    }
+  }
+
+  MailboxId? _getInMailboxField() {
+    if (mailbox != null && mailbox?.isUnifiedMailbox != true) {
+      return mailbox?.id;
+    }
+    return null;
+  }
+
+  Set<MailboxId>? _getInMailboxOtherThanField(
+    Set<MailboxId>? trashSpamMailboxIds,
+  ) {
+    if (mailbox == null || mailbox?.isAllEmail == true) {
+      return trashSpamMailboxIds;
+    }
+    return null;
+  }
 
   @override
   List<Object?> get props => [

@@ -2,7 +2,6 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -31,6 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -61,7 +61,6 @@ const fallbackGenerators = {
   // Advanced filter controller mock specs
   MockSpec<MailboxDashBoardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<GetAutoCompleteInteractor>(),
-  MockSpec<BuildContext>(),
   // Search controller mock specs
   MockSpec<QuickSearchEmailInteractor>(),
   MockSpec<SaveRecentSearchInteractor>(),
@@ -73,7 +72,6 @@ void main() {
   late AdvancedFilterController advancedFilterController;
   late MockMailboxDashBoardController mockMailboxDashBoardController;
   late MockGetAutoCompleteInteractor mockGetAutoCompleteInteractor;
-  late MockBuildContext mockBuildContext;
 
   // Declaration search controller
   late SearchController searchController;
@@ -147,7 +145,6 @@ void main() {
     // Mock advanced filter controller
     mockMailboxDashBoardController = MockMailboxDashBoardController();
     mockGetAutoCompleteInteractor = MockGetAutoCompleteInteractor();
-    mockBuildContext = MockBuildContext();
 
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<GetAutoCompleteInteractor>(mockGetAutoCompleteInteractor);
@@ -208,7 +205,7 @@ void main() {
         advancedFilterController.setMemorySearchFilter(memorySearchFilter);
 
         // Act
-        advancedFilterController.initSearchFilterField(mockBuildContext);
+        advancedFilterController.initSearchFilterField(AppLocalizations());
 
         // Assert
         expect(advancedFilterController.subjectFilterInputController.text, equals('subject'));

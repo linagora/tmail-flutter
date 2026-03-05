@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/generate_mailboxes_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
@@ -704,6 +705,7 @@ class ThreadController extends BaseController with EmailActionController {
       sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
       filter: _searchEmailFilter.mappingToEmailFilterCondition(
         moreFilterCondition: getFilterCondition(),
+        trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
       ),
       properties: EmailUtils.getPropertiesForEmailGetMethod(
         _session!,
@@ -1048,7 +1050,8 @@ class ThreadController extends BaseController with EmailActionController {
         position: _searchEmailFilter.position,
         sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          moreFilterCondition: getFilterCondition()
+          moreFilterCondition: getFilterCondition(),
+          trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         needRefreshSearchState: needRefreshSearchState
@@ -1128,7 +1131,8 @@ class ThreadController extends BaseController with EmailActionController {
         sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         position: _searchEmailFilter.position,
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          moreFilterCondition: getFilterCondition()
+          moreFilterCondition: getFilterCondition(),
+          trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         lastEmailId: lastEmail?.id

@@ -113,12 +113,11 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController> {
           AdvancedSearchFieldWidget(
             filterField: FilterField.mailBox,
             child: Obx(() => DefaultButtonArrowDownFieldWithTabKeyWidget(
-              text: controller.selectedFolderName.value ??
-                  AppLocalizations.of(context).allFolders,
+              text: controller.selectedFolderName.value ?? appLocalizations.allEmail,
               iconArrowDown: controller.imagePaths.icDropDown,
               currentFocusNode: controller.focusManager.mailboxFieldFocusNode,
               nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,
-              onTap: () => controller.selectedMailBox(context),
+              onTap: () => controller.selectedMailBox(appLocalizations),
             )),
           ),
           const SizedBox(height: 12),

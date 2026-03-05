@@ -21,18 +21,18 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_screen_type.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/destination_picker_folder_item.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/destination_picker_search_mailbox_item_builder.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/top_bar_destination_picker_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_icon_widget_styles.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
-import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -52,6 +52,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   Widget build(BuildContext context) {
     MailboxActions? actions = controller.arguments?.mailboxAction;
     MailboxId? mailboxIdSelected = controller.arguments?.mailboxIdSelected;
+    final appLocalizations = AppLocalizations.of(context);
+    final isDesktop = controller.responsiveUtils.isDesktop(context);
 
     return PointerInterceptor(
       child: GestureDetector(
@@ -105,7 +107,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                   onBackToAction: () =>
                                     controller.backToDestinationScreen(context),
                                   onSelectedMailboxDestinationAction: () =>
-                                    controller.dispatchSelectMailboxDestination(context),
+                                    controller.dispatchSelectMailboxDestination(AppLocalizations.of(context)),
                                   onCreateNewMailboxAction: () =>
                                     controller.createNewMailboxAction(context),
                                   onOpenCreateNewMailboxScreenAction: () =>
@@ -147,7 +149,11 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                           return RefreshIndicator(
                                             color: AppColor.primaryColor,
                                             onRefresh: () async => controller.getAllMailboxAction(),
-                                            child: _buildListMailboxSearched(context, actions, mailboxIdSelected)
+                                            child: _buildListMailboxSearched(
+                                              appLocalizations,
+                                              actions,
+                                              mailboxIdSelected,
+                                            ),
                                           );
                                         } else {
                                           return ScrollbarListView(
@@ -164,7 +170,11 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                             child: RefreshIndicator(
                                               color: AppColor.primaryColor,
                                               onRefresh: () async => controller.getAllMailboxAction(),
-                                              child: _buildListMailboxSearched(context, actions, mailboxIdSelected)
+                                              child: _buildListMailboxSearched(
+                                                appLocalizations,
+                                                actions,
+                                                mailboxIdSelected,
+                                              ),
                                             )
                                           );
                                         }
@@ -173,7 +183,12 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                           return RefreshIndicator(
                                             color: AppColor.primaryColor,
                                             onRefresh: () async => controller.getAllMailboxAction(),
-                                            child: _buildListMailbox(context, actions, mailboxIdSelected)
+                                            child: _buildListMailbox(
+                                              appLocalizations,
+                                              isDesktop,
+                                              actions,
+                                              mailboxIdSelected,
+                                            ),
                                           );
                                         } else {
                                           return ScrollbarListView(
@@ -190,7 +205,12 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                                             child: RefreshIndicator(
                                               color: AppColor.primaryColor,
                                               onRefresh: () async => controller.getAllMailboxAction(),
-                                              child: _buildListMailbox(context, actions, mailboxIdSelected)
+                                              child: _buildListMailbox(
+                                                appLocalizations,
+                                                isDesktop,
+                                                actions,
+                                                mailboxIdSelected,
+                                              ),
                                             )
                                           );
                                         }
@@ -244,7 +264,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   Widget _buildListMailbox(
-      BuildContext context,
+      AppLocalizations appLocalizations,
+      bool isDesktop,
       MailboxActions? actions,
       MailboxId? mailboxIdSelected
   ) {
@@ -258,32 +279,71 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 key: const Key('folder_search_bar_view'),
                 imagePaths: controller.imagePaths,
                 margin: const EdgeInsets.all(16),
-                hintTextSearch: AppLocalizations.of(context).hintSearchFolders,
+                hintTextSearch: appLocalizations.hintSearchFolders,
                 onOpenSearchViewAction: controller.enableSearch
               ),
           _buildLoadingView(),
           if (actions?.hasAllMailboxDefault() == true)
-            _buildAllMailboxes(context, actions, mailboxIdSelected),
+            _buildAllMailboxes(
+              appLocalizations,
+              isDesktop,
+              actions,
+              mailboxIdSelected,
+            ),
           Obx(() => controller.defaultMailboxIsNotEmpty
             ? _buildMailboxCategory(
-                context,
+                appLocalizations,
                 MailboxCategories.exchange,
                 controller.defaultRootNode,
                 actions,
                 mailboxIdSelected)
             : const SizedBox.shrink()),
+          if (actions == MailboxActions.selectForSearch)
+            ...[
+              const Padding(
+                padding: EdgeInsetsDirectional.only(
+                  start: 16,
+                  end: 16,
+                  bottom: 8,
+                ),
+                child: Divider(
+                  color: AppColor.colorDividerMailbox,
+                  height: 1,
+                ),
+              ),
+              _buildAllEmailTrashAndSpamFolderWidget(
+                appLocalizations,
+                isDesktop,
+                mailboxIdSelected,
+              ),
+              const Padding(
+                padding: EdgeInsetsDirectional.only(
+                  start: 16,
+                  end: 16,
+                  top: 8,
+                  bottom: 8,
+                ),
+                child: Divider(
+                  color: AppColor.colorDividerMailbox,
+                  height: 1,
+                ),
+              ),
+            ],
           Obx(() {
             if (controller.personalMailboxIsNotEmpty) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Divider(
-                    color: AppColor.colorDividerMailbox,
-                    height: 1,
-                  ),
-                  const SizedBox(height: 8),
+                  if (actions != MailboxActions.selectForSearch)
+                    const Padding(
+                      padding: EdgeInsetsDirectional.only(bottom: 8),
+                      child: Divider(
+                        color: AppColor.colorDividerMailbox,
+                        height: 1,
+                      ),
+                    ),
                   _buildMailboxCategory(
-                    context,
+                    appLocalizations,
                     MailboxCategories.personalFolders,
                     controller.personalRootNode,
                     actions,
@@ -309,7 +369,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                   ),
                   const SizedBox(height: 8),
                   _buildMailboxCategory(
-                    context,
+                    appLocalizations,
                     MailboxCategories.teamMailboxes,
                     controller.teamMailboxesRootNode,
                     actions,
@@ -327,7 +387,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   Widget _buildMailboxCategory(
-      BuildContext context,
+      AppLocalizations appLocalizations,
       MailboxCategories categories,
       MailboxNode mailboxNode,
       MailboxActions? actions,
@@ -337,7 +397,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       return Padding(
         padding: const EdgeInsets.only(bottom: 8),
         child: _buildBodyMailboxCategory(
-          context,
+          appLocalizations,
           categories,
           mailboxNode,
           actions,
@@ -365,7 +425,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             duration: const Duration(milliseconds: 400),
             child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
               ? _buildBodyMailboxCategory(
-                  context,
+                  appLocalizations,
                   categories,
                   mailboxNode,
                   actions,
@@ -380,7 +440,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   Widget _buildBodyMailboxCategory(
-    BuildContext context,
+    AppLocalizations appLocalizations,
     MailboxCategories categories,
     MailboxNode mailboxNode,
     MailboxActions? actions,
@@ -392,7 +452,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       child: TreeView(
         key: Key('${categories.keyValue}_mailbox_list'),
         children: _buildListChildTileWidget(
-          context,
+          appLocalizations,
           mailboxNode,
           mailboxIdSelected,
           lastNode: mailboxNode.childrenItems?.last,
@@ -403,7 +463,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   List<Widget> _buildListChildTileWidget(
-      BuildContext context,
+      AppLocalizations appLocalizations,
       MailboxNode parentNode,
       MailboxId? mailboxIdSelected,
       {
@@ -424,7 +484,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               mailboxIdAlreadySelected: mailboxIdSelected,
               mailboxDisplayed: MailboxDisplayed.destinationPicker,
               onOpenMailboxFolderClick: (node) => node != null
-                  ? _pickMailboxNode(context, node)
+                  ? _pickMailboxNode(appLocalizations, node)
                   : null,
               onExpandFolderActionClick: (mailboxNode, itemKey) =>
                   controller.toggleMailboxFolder(
@@ -434,7 +494,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                   ),
             ),
             children: _buildListChildTileWidget(
-              context,
+              appLocalizations,
               mailboxNode,
               mailboxIdSelected,
               actions: actions
@@ -447,20 +507,23 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             mailboxIdAlreadySelected: mailboxIdSelected,
             mailboxActions: actions,
             onOpenMailboxFolderClick: (node) => node != null
-                ? _pickMailboxNode(context, node)
+                ? _pickMailboxNode(appLocalizations, node)
                 : null,
           );
         }})
       .toList() ?? <Widget>[];
   }
 
-  void _pickMailboxNode(BuildContext context, MailboxNode mailboxNode) {
+  void _pickMailboxNode(
+    AppLocalizations appLocalizations,
+    MailboxNode mailboxNode,
+  ) {
     _handleOpenMailboxNodeClick(mailboxNode);
-    controller.dispatchSelectMailboxDestination(context);
+    controller.dispatchSelectMailboxDestination(appLocalizations);
   }
 
   Widget _buildListMailboxSearched(
-      BuildContext context,
+      AppLocalizations appLocalizations,
       MailboxActions? actions,
       MailboxId? mailboxIdSelected
   ) {
@@ -471,104 +534,97 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         controller: controller.destinationListScrollController,
         primary: false,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemBuilder: (context, index) {
+        itemBuilder: (_, index) {
           return Obx(() => DestinationPickerSearchMailboxItemBuilder(
             controller.imagePaths,
             controller.responsiveUtils,
             controller.listMailboxSearched[index],
             mailboxActions: actions,
             mailboxIdAlreadySelected: mailboxIdSelected,
-            onClickOpenMailboxAction: (mailbox) => _pickPresentationMailbox(context, mailbox),
+            onClickOpenMailboxAction: (mailbox) =>
+                _pickPresentationMailbox(appLocalizations, mailbox),
           ));
         }
     ));
   }
 
-  void _pickPresentationMailbox(BuildContext context, PresentationMailbox mailbox) {
-    _handleOpenPresentationMailboxClick(context, mailbox);
-    controller.dispatchSelectMailboxDestination(context);
+  void _pickPresentationMailbox(
+    AppLocalizations appLocalizations,
+    PresentationMailbox mailbox,
+  ) {
+    _handleOpenPresentationMailboxClick(appLocalizations, mailbox);
+    controller.dispatchSelectMailboxDestination(appLocalizations);
   }
 
   Widget _buildAllMailboxes(
-      BuildContext context,
-      MailboxActions? actions,
-      MailboxId? mailboxIdSelected
+    AppLocalizations appLocalizations,
+    bool isDesktop,
+    MailboxActions? actions,
+    MailboxId? mailboxIdSelected,
   ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
+    final isAllEmailIdSelected = mailboxIdSelected == null ||
+        mailboxIdSelected == PresentationMailbox.unifiedMailbox.id;
+
+    return Obx(
+      () {
+        final isSelected =
+            controller.mailboxDestination.value?.isAllEmail == true ||
+                isAllEmailIdSelected;
+
+        return DestinationPickerFolderItem(
+          text: actions == MailboxActions.selectForSearch
+              ? appLocalizations.allEmail
+              : appLocalizations.allFolders,
+          folderIcon: actions == MailboxActions.selectForSearch
+            ? controller.imagePaths.icAllEmail
+            : controller.imagePaths.icFolderMailbox,
+          selectedIcon: controller.imagePaths.icSelectedSB,
+          isDesktop: isDesktop,
+          isSelected: isSelected,
+          margin: const EdgeInsets.symmetric(horizontal: 16),
           onTap: () {
-            if (mailboxIdSelected != null
-                && mailboxIdSelected != PresentationMailbox.unifiedMailbox.id
-            ) {
+            if (!isSelected) {
               controller.selectMailboxAction(PresentationMailbox.unifiedMailbox);
-              controller.dispatchSelectMailboxDestination(context);
+              controller.dispatchSelectMailboxDestination(appLocalizations);
             }
           },
-          customBorder: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(
-              PlatformInfo.isWeb
-                  ? MailboxItemWidgetStyles.borderRadius
-                  : MailboxItemWidgetStyles.mobileBorderRadius,
-            )),
-          ),
-          hoverColor: AppColor.colorMailboxHovered,
-          child: Obx(() => Container(
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: MailboxItemWidgetStyles.itemPadding,
-            ),
-            color: controller.mailboxDestination.value == PresentationMailbox.unifiedMailbox
-              ? AppColor.colorItemSelected
-              : Colors.transparent,
-            height: PlatformInfo.isWeb
-                ? MailboxItemWidgetStyles.height
-                : MailboxItemWidgetStyles.mobileHeight,
-            child: Row(children: [
-              SvgPicture.asset(
-                controller.imagePaths.icFolderMailbox,
-                width: MailboxIconWidgetStyles.iconSize,
-                height: MailboxIconWidgetStyles.iconSize,
-                fit: BoxFit.fill
-              ),
-              const SizedBox(
-                width: MailboxItemWidgetStyles.labelIconSpace,
-              ),
-              Expanded(child: Text(
-                AppLocalizations.of(context).allFolders,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: ThemeUtils.textStyleInter500(),
-              )),
-              const SizedBox(
-                width: MailboxItemWidgetStyles.labelIconSpace,
-              ),
-              if (_validateDisplaySelectedIcon(
-                actions: actions,
-                mailboxIdSelected: mailboxIdSelected
-              ))
-                SvgPicture.asset(
-                  actions == MailboxActions.create
-                    ? controller.imagePaths.icSelectedSB
-                    : controller.imagePaths.icFilterSelected,
-                  width: MailboxIconWidgetStyles.iconSize,
-                  height: MailboxIconWidgetStyles.iconSize,
-                  fit: BoxFit.fill
-                )
-            ])
-          )),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  bool _validateDisplaySelectedIcon({
-    MailboxActions? actions,
-    MailboxId? mailboxIdSelected
-  }) {
-    return (actions == MailboxActions.select || actions == MailboxActions.create)
-      && (mailboxIdSelected == null || mailboxIdSelected == PresentationMailbox.unifiedMailbox.id);
+  Widget _buildAllEmailTrashAndSpamFolderWidget(
+    AppLocalizations appLocalizations,
+    bool isDesktop,
+    MailboxId? mailboxIdSelected,
+  ) {
+    final isMailboxIdSelected =
+        mailboxIdSelected == PresentationMailbox.allEmailTrashAndSpamFolder.id;
+
+    return Obx(
+      () {
+        final isSelected =
+            controller.mailboxDestination.value?.isAllEmailTrashAndSpamFolder ==
+                true || isMailboxIdSelected;
+
+        return DestinationPickerFolderItem(
+          text: appLocalizations.allEmailTrashAndSpam,
+          folderIcon: controller.imagePaths.icMoveFolderContent,
+          selectedIcon: controller.imagePaths.icSelectedSB,
+          isSelected: isSelected,
+          isDesktop: isDesktop,
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          onTap: () {
+            if (!isSelected) {
+              controller.selectMailboxAction(
+                PresentationMailbox.allEmailTrashAndSpamFolder,
+              );
+              controller.dispatchSelectMailboxDestination(appLocalizations);
+            }
+          },
+        );
+      },
+    );
   }
 
   void _handleOpenMailboxNodeClick(MailboxNode mailboxNode) {
@@ -585,13 +641,13 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
   }
 
   void _handleOpenPresentationMailboxClick(
-      BuildContext context,
+      AppLocalizations appLocalizations,
       PresentationMailbox presentationMailbox
   ) {
     PresentationMailbox newPresentationMailbox;
     if (presentationMailbox.id == PresentationMailbox.unifiedMailbox.id) {
       newPresentationMailbox = presentationMailbox
-          .toPresentationMailboxWithMailboxPath(AppLocalizations.of(context).allFolders);
+          .toPresentationMailboxWithMailboxPath(appLocalizations.allFolders);
     } else {
       final path = controller.findNodePath(presentationMailbox.id)
           ?? presentationMailbox.name?.name;

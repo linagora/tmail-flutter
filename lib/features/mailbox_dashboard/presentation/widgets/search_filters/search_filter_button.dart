@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/search_filter_button_style.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSelectSearchFilterAction = Function(
     BuildContext context, QuickSearchFilter searchFilter,
@@ -69,7 +70,7 @@ class _SearchFilterButtonState extends State<SearchFilterButton> {
   @override
   Widget build(BuildContext context) {
     final filterTitle = widget.searchFilter.getTitle(
-      context,
+      AppLocalizations.of(context),
       receiveTimeType: widget.receiveTimeType,
       startDate: widget.startDate,
       endDate: widget.startDate,
