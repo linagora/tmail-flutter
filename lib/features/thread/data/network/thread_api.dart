@@ -20,13 +20,21 @@ import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
+import 'package:jmap_dart_client/jmap/thread/get/get_thread_method.dart';
+import 'package:jmap_dart_client/jmap/thread/get/get_thread_response.dart';
+import 'package:jmap_dart_client/jmap/thread/thread.dart';
+import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_id_extension.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mail_api_mixin.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_response.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/get_email_method_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/query_email_method_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/reference_path_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/search_snippet_get_method_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
@@ -63,80 +71,115 @@ class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
 
   Future<SearchEmailsResponse> searchEmails(
     Session session,
-    AccountId accountId,
-    {
-      UnsignedInt? limit,
-      int? position,
-      Set<Comparator>? sort,
-      Filter? filter,
-      Properties? properties
-    }
-  ) async {
+    AccountId accountId, {
+    UnsignedInt? limit,
+    int? position,
+    Set<Comparator>? sort,
+    Filter? filter,
+    bool? collapseThreads,
+    Properties? properties,
+  }) async {
     final processingInvocation = ProcessingInvocation();
+    final requestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
 
-    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+    /// QueryEmail
+    final queryEmail = QueryEmailMethod(accountId)
+      ..addLimitIfNotNull(limit)
+      ..addPositionIfValid(position)
+      ..addSortsIfNotNull(sort)
+      ..addFiltersIfNotNull(filter)
+      ..addCollapseThreadsIfNotNull(collapseThreads);
 
-    // Email/query
-    final queryEmailMethod = QueryEmailMethod(accountId);
+    final queryInvocation = requestBuilder.invocation(queryEmail);
 
-    if (limit != null) queryEmailMethod.addLimit(limit);
+    /// SearchSnippet/get
+    final searchSnippetMethod = SearchSnippetGetMethod(accountId)
+      ..addFiltersIfNotNull(filter)
+      ..addReferenceEmailIds(
+        processingInvocation.createResultReference(
+          queryInvocation.methodCallId,
+          ReferencePath.idsPath,
+        ),
+      );
 
-    if (position != null && position > 0) queryEmailMethod.addPosition(position);
+    final searchSnippetInvocation =
+        requestBuilder.invocation(searchSnippetMethod);
 
-    if (sort != null) queryEmailMethod.addSorts(sort);
+    /// Email/get
+    if (collapseThreads == true) {
+      properties ??= Properties({EmailProperty.threadId});
+      properties.value.add(EmailProperty.threadId);
+    }
 
-    if (filter != null) queryEmailMethod.addFilters(filter);
+    final getEmail = GetEmailMethod(accountId)
+      ..addPropertiesIfNotNull(properties)
+      ..addReferenceIds(
+        processingInvocation.createResultReference(
+          queryInvocation.methodCallId,
+          ReferencePath.idsPath,
+        ),
+      );
 
-    final queryEmailInvocation = jmapRequestBuilder.invocation(queryEmailMethod);
+    final getEmailInvocation = requestBuilder.invocation(getEmail);
 
-    // SearchSnippet/get
-    final getSearchSnippetMethod = SearchSnippetGetMethod(accountId);
-    if (filter != null) getSearchSnippetMethod.addFilters(filter);
-    getSearchSnippetMethod.addReferenceEmailIds(
-      processingInvocation.createResultReference(
-        queryEmailInvocation.methodCallId,
-        ReferencePath.idsPath));
-    final getSearchSnippetInvocation = jmapRequestBuilder.invocation(
-      getSearchSnippetMethod);
+    /// Optional Thread/get
+    MethodCallId? getThreadMethodCallId;
 
-    // Email/get
-    final getEmailMethod = GetEmailMethod(accountId);
+    if (collapseThreads == true) {
+      final getThread = GetThreadMethod(accountId)
+        ..addReferenceIds(
+          processingInvocation.createResultReference(
+            getEmailInvocation.methodCallId,
+            ReferencePathExtension.listThreadIdsPath,
+          ),
+        );
 
-    if (properties != null) getEmailMethod.addProperties(properties);
+      getThreadMethodCallId = requestBuilder.invocation(getThread).methodCallId;
+    }
 
-    getEmailMethod.addReferenceIds(processingInvocation.createResultReference(
-      queryEmailInvocation.methodCallId,
-      ReferencePath.idsPath));
+    /// Execute request
+    final capabilities = getEmail.requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
-    final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
+    final result =
+        await (requestBuilder..usings(capabilities)).build().execute();
 
-    final capabilities = getEmailMethod.requiredCapabilities
-      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+    /// Parse Email + Query
+    final getEmailResponse = result.parse<GetEmailResponse>(
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize,
+    );
 
-    final result = await (jmapRequestBuilder
-        ..usings(capabilities))
-      .build()
-      .execute();
-
-    final responseOfGetEmailMethod = result.parse<GetEmailResponse>(
-        getEmailInvocation.methodCallId, GetEmailResponse.deserialize);
-    final responseOfQueryEmailMethod = result.parse<QueryEmailResponse>(
-      queryEmailInvocation.methodCallId,
-      QueryEmailResponse.deserialize);
+    final queryEmailResponse = result.parse<QueryEmailResponse>(
+      queryInvocation.methodCallId,
+      QueryEmailResponse.deserialize,
+    );
 
     final sortedEmailList = sortEmails(
-      getEmailResponse: responseOfGetEmailMethod,
-      queryEmailResponse: responseOfQueryEmailMethod,
+      getEmailResponse: getEmailResponse,
+      queryEmailResponse: queryEmailResponse,
     );
 
+    /// Parse snippets
     final searchSnippets = _getSearchSnippetsFromResponse(
       result,
-      getSearchSnippetMethodCallId: getSearchSnippetInvocation.methodCallId,
+      getSearchSnippetMethodCallId: searchSnippetInvocation.methodCallId,
     );
+
+    /// Parse threads (optional)
+    final threadLists = getThreadMethodCallId != null
+        ? _parseThreadListFromResponse(
+            response: result,
+            methodCallId: getThreadMethodCallId,
+          )
+        : null;
+
     return SearchEmailsResponse(
-        emailList: sortedEmailList,
-        state: responseOfGetEmailMethod?.state,
-        searchSnippets: searchSnippets);
+      emailList: sortedEmailList,
+      state: getEmailResponse?.state,
+      searchSnippets: searchSnippets,
+      threadLists: threadLists,
+    );
   }
 
   List<SearchSnippet>? _getSearchSnippetsFromResponse(
@@ -149,6 +192,21 @@ class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
           SearchSnippetGetResponse.fromJson)?.list;
     } catch (e) {
       logWarning('ThreadAPI::searchEmails:getSearchSnippetsFromResponse: Exception = $e');
+      return null;
+    }
+  }
+
+  List<Thread>? _parseThreadListFromResponse({
+    required ResponseObject response,
+    required MethodCallId methodCallId,
+  }) {
+    try {
+      return response.parse<GetThreadResponse>(
+        methodCallId,
+        GetThreadResponse.deserialize,
+      )?.list;
+    } catch (e) {
+      logWarning('ThreadAPI::_parseThreadListFromResponse: Exception = $e');
       return null;
     }
   }

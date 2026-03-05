@@ -177,6 +177,7 @@ extension PresentationEmailExtension on PresentationEmail {
           : keywords.withKeyword(keyword),
     )
       ..searchSnippetSubject = searchSnippetSubject
-      ..searchSnippetPreview = searchSnippetPreview;
+      ..searchSnippetPreview = searchSnippetPreview
+      ..emailIdsInThread = emailIdsInThread;
   }
 }

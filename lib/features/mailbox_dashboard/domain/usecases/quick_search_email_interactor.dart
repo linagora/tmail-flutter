@@ -24,6 +24,7 @@ class QuickSearchEmailInteractor {
       UnsignedInt? limit,
       Set<Comparator>? sort,
       Filter? filter,
+      bool? collapseThreads,
       Properties? properties,
     }
   ) async {
@@ -34,12 +35,14 @@ class QuickSearchEmailInteractor {
         limit: limit,
         sort: sort,
         filter: filter,
+        collapseThreads: collapseThreads,
         properties: properties);
 
       final presentationEmailList = emailList
         .map((email) => email.toPresentationEmail(
           searchSnippetSubject: email.searchSnippetSubject,
           searchSnippetPreview: email.searchSnippetPreview,
+          emailIdsInThread: email.emailIdsInThread,
         ))
         .toList();
 

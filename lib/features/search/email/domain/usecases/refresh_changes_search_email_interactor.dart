@@ -26,6 +26,7 @@ class RefreshChangesSearchEmailInteractor {
       int? position,
       Set<Comparator>? sort,
       Filter? filter,
+      bool? collapseThreads,
       Properties? properties,
     }
   ) async* {
@@ -39,12 +40,14 @@ class RefreshChangesSearchEmailInteractor {
         position: position,
         sort: sort,
         filter: filter,
+        collapseThreads: collapseThreads,
         properties: properties);
 
       final presentationEmailList = emailList
           .map((email) => email.toPresentationEmail(
             searchSnippetSubject: email.searchSnippetSubject,
             searchSnippetPreview: email.searchSnippetPreview,
+            emailIdsInThread: email.emailIdsInThread,
           ))
           .toList();
 

@@ -89,3 +89,5 @@ export 'upload/upload_response.dart';
 export 'support/contact_support_capability.dart';
 // SaaS
 export 'saas/saas_account_capability.dart';
+// Mixin
+export 'mixin/thread_mixin.dart';

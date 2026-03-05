@@ -709,6 +709,7 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
       ),
+      collapseThreads: mailboxDashBoardController.isThreadDetailEnabled,
       needRefreshSearchState: true,
     ).last;
 
@@ -1051,6 +1052,7 @@ class ThreadController extends BaseController with EmailActionController {
           moreFilterCondition: getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
+        collapseThreads: mailboxDashBoardController.isThreadDetailEnabled,
         needRefreshSearchState: needRefreshSearchState
       ));
     } else {
@@ -1131,6 +1133,7 @@ class ThreadController extends BaseController with EmailActionController {
           moreFilterCondition: getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
+        collapseThreads: mailboxDashBoardController.isThreadDetailEnabled,
         lastEmailId: lastEmail?.id
       ));
     }

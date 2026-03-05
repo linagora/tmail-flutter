@@ -80,13 +80,15 @@ extension PresentationEmailExtension on PresentationEmail {
           : SelectMode.INACTIVE,
       )
       ..searchSnippetSubject = searchSnippetSubject
-      ..searchSnippetPreview = searchSnippetPreview;
+      ..searchSnippetPreview = searchSnippetPreview
+      ..emailIdsInThread = emailIdsInThread;
   }
 
   PresentationEmail toSelectedEmail({required SelectMode selectMode}) {
     return copyWith(selectMode: selectMode)
       ..searchSnippetSubject = searchSnippetSubject
-      ..searchSnippetPreview = searchSnippetPreview;
+      ..searchSnippetPreview = searchSnippetPreview
+      ..emailIdsInThread = emailIdsInThread;
   }
 
   Email toEmail() {
@@ -133,7 +135,8 @@ extension PresentationEmailExtension on PresentationEmail {
 
     return copyWith(mailboxContain: matchedMailbox)
       ..searchSnippetSubject = searchSnippetSubject
-      ..searchSnippetPreview = searchSnippetPreview;
+      ..searchSnippetPreview = searchSnippetPreview
+      ..emailIdsInThread = emailIdsInThread;
   }
 
   PresentationMailbox? findMailboxContain(Map<MailboxId, PresentationMailbox> mapMailbox) {
@@ -152,7 +155,8 @@ extension PresentationEmailExtension on PresentationEmail {
   PresentationEmail withRouteWeb(Uri routeWeb) {
     return copyWith(routeWeb: routeWeb)
       ..searchSnippetSubject = searchSnippetSubject
-      ..searchSnippetPreview = searchSnippetPreview;
+      ..searchSnippetPreview = searchSnippetPreview
+      ..emailIdsInThread = emailIdsInThread;
   }
 
   PresentationEmail updateKeywords(Map<KeyWordIdentifier, bool> newKeywords) {
@@ -161,13 +165,15 @@ extension PresentationEmailExtension on PresentationEmail {
     log('PresentationEmailExtension::updateKeywords:combinedMap = $combinedMap');
     return copyWith(keywords: combinedMap)
       ..searchSnippetSubject = searchSnippetSubject
-      ..searchSnippetPreview = searchSnippetPreview;
+      ..searchSnippetPreview = searchSnippetPreview
+      ..emailIdsInThread = emailIdsInThread;
   }
 
   PresentationEmail syncPresentationEmail({PresentationMailbox? mailboxContain, Uri? routeWeb}) {
     return copyWith(routeWeb: routeWeb, mailboxContain: mailboxContain)
       ..searchSnippetSubject = searchSnippetSubject
-      ..searchSnippetPreview = searchSnippetPreview;
+      ..searchSnippetPreview = searchSnippetPreview
+      ..emailIdsInThread = emailIdsInThread;
   }
 
   bool isBelongToOneOfTheMailboxes(List<MailboxId> mailboxIdsSource) {

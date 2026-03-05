@@ -27,6 +27,7 @@ class SearchMoreEmailInteractor {
       int? position,
       Filter? filter,
       Properties? properties,
+      bool? collapseThreads,
       EmailId? lastEmailId
     }
   ) async* {
@@ -40,6 +41,7 @@ class SearchMoreEmailInteractor {
         position: position,
         sort: sort,
         filter: filter,
+        collapseThreads: collapseThreads,
         properties: properties);
 
       final presentationEmailList = emailList
@@ -47,6 +49,7 @@ class SearchMoreEmailInteractor {
         .map((email) => email.toPresentationEmail(
           searchSnippetSubject: email.searchSnippetSubject,
           searchSnippetPreview: email.searchSnippetPreview,
+          emailIdsInThread: email.emailIdsInThread,
         ))
         .toList();
 
