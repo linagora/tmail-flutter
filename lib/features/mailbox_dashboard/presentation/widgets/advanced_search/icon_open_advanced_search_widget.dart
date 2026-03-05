@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart'  as search;
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class IconOpenAdvancedSearchWidget extends StatelessWidget {
   IconOpenAdvancedSearchWidget({Key? key}) : super(key: key);
@@ -37,7 +38,7 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
 
   void _onClickOpenAdvancedSearchView(BuildContext context) {
     log('IconOpenAdvancedSearchWidget::_onClickOpenAdvancedSearchView:');
-    advancedFilterController.initSearchFilterField(context);
+    advancedFilterController.initSearchFilterField(AppLocalizations.of(context));
     searchController.openAdvanceSearch();
   }
 }
