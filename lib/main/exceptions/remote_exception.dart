@@ -1,4 +1,3 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/error/error_type.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
@@ -16,64 +15,111 @@ abstract class RemoteException with EquatableMixin implements Exception {
 
   const RemoteException({this.code, this.message});
 
+  String get exceptionName;
+
+  @override
+  String toString() {
+    if (code != null) {
+      return '$exceptionName(code: $code): $message';
+    }
+    return '$exceptionName: $message';
+  }
+
   @override
   List<Object?> get props => [message, code];
 }
 
 class BadCredentialsException extends RemoteException {
-  const BadCredentialsException() : super(message: RemoteException.badCredentials);
+  const BadCredentialsException()
+      : super(message: RemoteException.badCredentials);
+
+  @override
+  String get exceptionName => 'BadCredentialsException';
 }
 
 class UnknownError extends RemoteException {
-  const UnknownError({int? code, Object? message}) : super(code: code, message: message);
+  const UnknownError({int? code, Object? message})
+      : super(code: code, message: message);
+
+  @override
+  String get exceptionName => 'UnknownError';
 }
 
 class ConnectionError extends RemoteException {
-  const ConnectionError({String? message}) : super(message: message ?? RemoteException.connectionError);
+  const ConnectionError({String? message})
+      : super(message: message ?? RemoteException.connectionError);
+
+  @override
+  String get exceptionName => 'ConnectionError';
 }
 
 class ConnectionTimeout extends RemoteException {
-  const ConnectionTimeout({String? message}) : super(message: message ?? RemoteException.connectionTimeout);
+  const ConnectionTimeout({String? message})
+      : super(message: message ?? RemoteException.connectionTimeout);
+
+  @override
+  String get exceptionName => 'ConnectionTimeout';
 }
 
 class SocketError extends RemoteException {
   const SocketError() : super(message: RemoteException.socketException);
+
+  @override
+  String get exceptionName => 'SocketError';
 }
 
 class InternalServerError extends RemoteException {
-  const InternalServerError() : super(message: RemoteException.internalServerError);
+  const InternalServerError()
+      : super(message: RemoteException.internalServerError);
+
+  @override
+  String get exceptionName => 'InternalServerError';
 }
 
 class MethodLevelErrors extends RemoteException {
   final ErrorType type;
 
-  const MethodLevelErrors(
-    this.type,
-    {String? message}
-  ) : super(message: message);
+  const MethodLevelErrors(this.type, {String? message})
+      : super(message: message);
+
+  @override
+  String get exceptionName => 'MethodLevelErrors';
+
+  @override
+  String toString() {
+    return '$exceptionName(type: $type): $message';
+  }
 
   @override
   List<Object?> get props => [type, ...super.props];
 }
 
 class CannotCalculateChangesMethodResponseException extends MethodLevelErrors {
-  CannotCalculateChangesMethodResponseException({String? message}) : super(ErrorMethodResponse.cannotCalculateChanges, message: message);
+  CannotCalculateChangesMethodResponseException({String? message})
+      : super(ErrorMethodResponse.cannotCalculateChanges, message: message);
+
+  @override
+  String get exceptionName => 'CannotCalculateChangesMethodResponseException';
 }
 
 class NoNetworkError extends RemoteException {
   const NoNetworkError() : super(message: RemoteException.noNetworkError);
+
+  @override
+  String get exceptionName => 'NoNetworkError';
 }
 
 class RefreshTokenFailedException extends RemoteException {
-  final int? statusCode;
 
   RefreshTokenFailedException({
     super.message =
         'Refresh Token failed with 400 Bad Request. The session is invalid/revoked.',
-    this.statusCode = 400,
+    super.code = 400,
   });
 
   @override
-  String toString() =>
-      "RefreshTokenFailedException(status: $statusCode): $message";
+  String get exceptionName => 'RefreshTokenFailedException';
+
+  @override
+  String toString() => "$exceptionName(status: $code): $message";
 }

@@ -40,7 +40,7 @@ class MailAddress with EquatableMixin {
 
     address = address.trim();
     if (address.isEmpty) {
-      throw AddressException('Addresses should not be empty');
+      throw const AddressException('Addresses should not be empty');
     }
     int pos = 0;
 
@@ -88,7 +88,7 @@ class MailAddress with EquatableMixin {
         if (postChar == '.') {
           var lastChar = address[pos - 1];
           if (lastChar == '@' || lastChar == '.') {
-            throw AddressException('Subdomain expected before "." or duplicate "." in "address"');
+            throw AddressException('Subdomain expected before "." or duplicate "." in "$address"');
           }
           domainSB.write('.');
           pos++;
@@ -113,7 +113,7 @@ class MailAddress with EquatableMixin {
     if (localPart.startsWith('.') ||
         localPart.endsWith('.') ||
         _haveDoubleDot(localPart)) {
-      throw AddressException('Addresses cannot start end with "." or contain two consecutive dots');
+      throw const AddressException('Addresses cannot start end with "." or contain two consecutive dots');
     }
 
     domain = _createDomain(domainSB.toString());
@@ -409,7 +409,7 @@ class MailAddress with EquatableMixin {
         lastCharDot = false;
       } else if (postChar == '.') {
         if (pos == 0) {
-          throw AddressException('Local part must not start with a "."');
+          throw const AddressException('Local part must not start with a "."');
         }
         lpSB.write('.');
         pos++;
@@ -530,14 +530,14 @@ class MailAddress with EquatableMixin {
 
     String localPartDetails = localPartDetailsSB.toString();
     if (localPartDetails.isEmpty || localPartDetails.trim().isEmpty) {
-      throw AddressException("target mailbox name should not be empty");
+      throw const AddressException("target mailbox name should not be empty");
     }
     if (localPartDetails.startsWith('#')) {
-      throw AddressException("target mailbox name should not start with #");
+      throw const AddressException("target mailbox name should not start with #");
     }
     final forbiddenChars = RegExp(r'[*\r\n]');
     if (forbiddenChars.hasMatch(localPartDetails)) {
-      throw AddressException("target mailbox name should not contain special characters");
+      throw const AddressException("target mailbox name should not contain special characters");
     }
 
     localPartSB.write(localPartDetails);

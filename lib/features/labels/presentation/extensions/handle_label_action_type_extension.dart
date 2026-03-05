@@ -86,14 +86,14 @@ extension HandleLabelActionTypeExtension on LabelController {
       );
     } else if (editLabelInteractor == null) {
       consumeState(
-        Stream.value(Left(EditLabelFailure(InteractorNotInitialized()))),
+        Stream.value(Left(EditLabelFailure(const InteractorNotInitialized()))),
       );
     } else {
       final labelId = selectedLabel.id;
 
       if (labelId == null) {
         consumeState(
-          Stream.value(Left(EditLabelFailure(LabelIdIsNull()))),
+          Stream.value(Left(EditLabelFailure(const LabelIdIsNull()))),
         );
         return;
       }
@@ -159,7 +159,7 @@ extension HandleLabelActionTypeExtension on LabelController {
     } else if (deleteALabelInteractor == null) {
       emitFailure(
         controller: this,
-        failure: DeleteALabelFailure(InteractorNotInitialized()),
+        failure: DeleteALabelFailure(const InteractorNotInitialized()),
       );
     } else {
       consumeState(deleteALabelInteractor!.execute(accountId, label));

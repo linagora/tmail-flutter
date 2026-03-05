@@ -1,15 +1,31 @@
 import 'package:equatable/equatable.dart';
 
 abstract class PermissionException with EquatableMixin implements Exception {
-
   final String? message;
 
   const PermissionException({this.message});
+
+  String get exceptionName;
+
+  @override
+  List<Object?> get props => [message];
+
+  @override
+  String toString() {
+    if (message != null) {
+      return '$exceptionName: $message';
+    }
+    return exceptionName;
+  }
 }
 
 class NotGrantedPermissionStorageException extends PermissionException {
-  const NotGrantedPermissionStorageException() : super(message: 'Permission Storage has not been granted access');
+  const NotGrantedPermissionStorageException()
+      : super(message: 'Permission Storage has not been granted access');
 
   @override
-  List<Object?> get props => [super.message];
+  String get exceptionName => 'NotGrantedPermissionStorageException';
+
+  @override
+  List<Object?> get props => [message];
 }

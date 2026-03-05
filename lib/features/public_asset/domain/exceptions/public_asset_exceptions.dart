@@ -1,17 +1,29 @@
-class CannotCreatePublicAssetException implements Exception {
-  const CannotCreatePublicAssetException();
+import 'package:core/domain/exceptions/app_base_exception.dart';
+
+class CannotCreatePublicAssetException extends AppBaseException {
+  const CannotCreatePublicAssetException([super.message]);
+
+  @override
+  String get exceptionName => 'CannotCreatePublicAssetException';
 }
 
-class PublicAssetQuotaExceededException implements Exception {
-  const PublicAssetQuotaExceededException({required this.message});
+class PublicAssetQuotaExceededException extends AppBaseException {
+  const PublicAssetQuotaExceededException([super.message]);
 
-  final String? message;
+  @override
+  String get exceptionName => 'PublicAssetQuotaExceededException';
 }
 
-class CannotDestroyPublicAssetException implements Exception {
-  const CannotDestroyPublicAssetException();
+class CannotDestroyPublicAssetException extends AppBaseException {
+  const CannotDestroyPublicAssetException([super.message]);
+
+  @override
+  String get exceptionName => 'CannotDestroyPublicAssetException';
 }
 
-class CannotUpdatePublicAssetException implements Exception {
-  const CannotUpdatePublicAssetException();
+class CannotUpdatePublicAssetException extends AppBaseException {
+  const CannotUpdatePublicAssetException([super.message]);
+
+  @override
+  String get exceptionName => 'CannotUpdatePublicAssetException';
 }

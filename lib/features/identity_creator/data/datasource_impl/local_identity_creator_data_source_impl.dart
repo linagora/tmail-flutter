@@ -46,7 +46,7 @@ class LocalIdentityCreatorDataSourceImpl implements IdentityCreatorDataSource {
       if (result != null) {
         return IdentityCacheModel.fromJson(jsonDecode(result.value));
       } else {
-        throw NotFoundInWebSessionException();
+        throw const NotFoundInWebSessionException();
       }
     }).catchError(_exceptionThrower.throwException);
   }

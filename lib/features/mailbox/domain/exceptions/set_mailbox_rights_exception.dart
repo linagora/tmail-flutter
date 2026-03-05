@@ -1,8 +1,9 @@
+import 'package:core/domain/exceptions/app_base_exception.dart';
 
-class SetMailboxRightsException implements Exception {
-
-  SetMailboxRightsException();
+class SetMailboxRightsException extends AppBaseException {
+  const SetMailboxRightsException(
+      [super.message = 'Failed to update mailbox rights.']);
 
   @override
-  String toString() => 'Failed to update mailbox rights.';
+  String get exceptionName => 'SetMailboxRightsException';
 }

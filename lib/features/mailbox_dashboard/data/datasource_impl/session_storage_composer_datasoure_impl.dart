@@ -39,7 +39,7 @@ class SessionStorageComposerDatasourceImpl
           .map((entry) => ComposerCache.fromJson(jsonDecode(entry.value)))
           .toList();
       } else {
-        throw NotFoundInWebSessionException();
+        throw const NotFoundInWebSessionException();
       }
     }).catchError(_exceptionThrower.throwException);
   }

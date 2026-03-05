@@ -1,9 +1,15 @@
-class LabelKeywordIsNull implements Exception {
+import 'package:core/domain/exceptions/app_base_exception.dart';
+
+class LabelKeywordIsNull extends AppBaseException {
+  const LabelKeywordIsNull([super.message = 'Label keyword is null']);
+
   @override
-  String toString() => 'Label keyword is null';
+  String get exceptionName => 'LabelKeywordIsNull';
 }
 
-class LabelIdIsNull implements Exception {
+class LabelIdIsNull extends AppBaseException {
+  const LabelIdIsNull([super.message = 'Label id is null']);
+
   @override
-  String toString() => 'Label id is null';
+  String get exceptionName => 'LabelIdIsNull';
 }

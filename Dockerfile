@@ -20,8 +20,11 @@ ENV GITHUB_SHA=$GITHUB_SHA \
     SENTRY_RELEASE=$SENTRY_RELEASE
 
 RUN ./scripts/prebuild.sh && \
-    flutter build web --release --source-maps --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE && \
-    if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT" ] && [ -n "$SENTRY_RELEASE" ]; then \
+    if [ -z "$GITHUB_SHA" ]; then echo "GITHUB_SHA is required for SENTRY_DIST"; exit 1; fi && \
+    flutter build web --release --source-maps  \
+    --dart-define=SENTRY_RELEASE=$SENTRY_RELEASE \
+    --dart-define=SENTRY_DIST=$GITHUB_SHA && \
+    if [ -n "$SENTRY_AUTH_TOKEN" ] && [ -n "$SENTRY_ORG" ] && [ -n "$SENTRY_PROJECT" ] && [ -n "$SENTRY_RELEASE" ] && [ -n "$GITHUB_SHA" ]; then \
         echo "Sentry configuration detected, uploading sourcemaps..." && \
         curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION=2.20.7 bash && \
         sentry-cli releases new "$SENTRY_RELEASE" && \

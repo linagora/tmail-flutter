@@ -1,6 +1,7 @@
 import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/config/env_loader.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Holds configuration values for initializing Sentry.
@@ -32,6 +33,11 @@ class SentryConfig {
   // Check if Sentry is available
   final bool isAvailable;
 
+  // The distribution version of the release.
+  // In this project, it represents the Git SHA passed via `--dart-define=SENTRY_DIST`.
+  // This must match the `--dist` parameter used when uploading source maps to Sentry.
+  final String? dist;
+
   SentryConfig({
     required this.dsn,
     required this.environment,
@@ -42,6 +48,7 @@ class SentryConfig {
     this.isDebug = BuildUtils.isDebugMode,
     this.attachScreenshot = false,
     this.isAvailable = false,
+    this.dist,
   });
 
   /// Load configuration from an env file.
@@ -62,11 +69,19 @@ class SentryConfig {
 
     final appVersion = await ApplicationManager().getAppVersion();
 
+    const sentryDist = String.fromEnvironment('SENTRY_DIST');
+    logTrace(
+      'SentryConfig::load: sentryDist is $sentryDist,'
+      'appVersion is $appVersion',
+      webConsoleEnabled: true,
+    );
+
     return SentryConfig(
       dsn: sentryDSN,
       environment: sentryEnvironment,
       release: appVersion,
       isAvailable: isAvailable,
+      dist: sentryDist.isNotEmpty ? sentryDist : null,
     );
   }
 }

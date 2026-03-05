@@ -17,7 +17,7 @@ class LocalStorageManager {
     if (entry != null) {
       return entry.value;
     } else {
-      throw NotFoundDataWithThisKeyException();
+      throw const NotFoundDataWithThisKeyException();
     }
   }
 

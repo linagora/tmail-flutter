@@ -1,9 +1,11 @@
+import 'package:core/domain/exceptions/app_base_exception.dart';
 
-class EmptyFolderNameException implements Exception {
+class EmptyFolderNameException extends AppBaseException {
   final String folderName;
 
-  EmptyFolderNameException(this.folderName);
+  EmptyFolderNameException(this.folderName)
+      : super('Folder name should not be empty: $folderName');
 
   @override
-  String toString() => 'EmptyFolderNameException: Folder name should not be empty: $folderName';
+  String get exceptionName => 'EmptyFolderNameException';
 }

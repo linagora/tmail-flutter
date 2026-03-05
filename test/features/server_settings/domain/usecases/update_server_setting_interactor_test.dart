@@ -45,7 +45,7 @@ void main() {
 
     test('should return left with exception returned from repository', () {
       // arrange
-      final exception = NotFoundServerSettingsException();
+      const exception = NotFoundServerSettingsException();
       when(serverSettingsRepository.updateServerSettings(any, any, any))
         .thenThrow(exception);
       

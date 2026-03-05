@@ -1,13 +1,8 @@
-import 'package:equatable/equatable.dart';
+import 'package:core/domain/exceptions/app_base_exception.dart';
 
-class AddressException with EquatableMixin implements Exception {
-  final String message;
-
-  AddressException(this.message);
+class AddressException extends AppBaseException {
+  const AddressException(super.message);
 
   @override
-  String toString() => message;
-
-  @override
-  List<Object> get props => [message];
+  String get exceptionName => 'AddressException';
 }
