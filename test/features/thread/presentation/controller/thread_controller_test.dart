@@ -326,6 +326,7 @@ void main() {
           sort:anyNamed('sort'),
           filter: anyNamed('filter'),
           properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
@@ -358,6 +359,7 @@ void main() {
           sort:anyNamed('sort'),
           filter: anyNamed('filter'),
           properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         ));
 
@@ -421,6 +423,7 @@ void main() {
           sort:anyNamed('sort'),
           filter: anyNamed('filter'),
           properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
@@ -436,6 +439,7 @@ void main() {
           sort:anyNamed('sort'),
           filter: anyNamed('filter'),
           properties: anyNamed('properties'),
+          collapseThreads: anyNamed('collapseThreads'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         ));
 

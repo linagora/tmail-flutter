@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 class SearchEmail extends Email {
   final String? searchSnippetSubject;
   final String? searchSnippetPreview;
+  final List<EmailId>? emailIdsInThread;
 
   SearchEmail({
     super.id,
@@ -41,7 +42,8 @@ class SearchEmail extends Email {
     super.sMimeStatusHeader,
     super.identityHeader,
     required this.searchSnippetSubject,
-    required this.searchSnippetPreview
+    required this.searchSnippetPreview,
+    this.emailIdsInThread,
   });
 
   @override
@@ -49,12 +51,14 @@ class SearchEmail extends Email {
     ...super.props,
     searchSnippetSubject,
     searchSnippetPreview,
+    emailIdsInThread,
   ];
   
   factory SearchEmail.fromEmail(
     Email email, {
     String? searchSnippetSubject,
     String? searchSnippetPreview,
+    List<EmailId>? emailIdsInThread,
   }) {
     return SearchEmail(
       id: email.id,
@@ -94,6 +98,7 @@ class SearchEmail extends Email {
       identityHeader: email.identityHeader,
       searchSnippetSubject: searchSnippetSubject,
       searchSnippetPreview: searchSnippetPreview,
+      emailIdsInThread: emailIdsInThread,
     );
   }
 }

@@ -762,6 +762,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         if (isLabelAvailable) {
           emailLabels = presentationEmail.getLabelList(listLabels);
         }
+        final isThreadDetailEnabled =
+            dashboardController.isThreadDetailEnabled == true;
 
         return EmailTileBuilder(
           presentationEmail: presentationEmail,
@@ -771,6 +773,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
           isSearchEmailRunning: true,
           isAINeedsActionEnabled: isAINeedsActionEnabled,
+          isThreadDetailEnabled: isThreadDetailEnabled,
           labels: emailLabels,
           padding: SearchEmailViewStyle.getPaddingSearchResultList(
             context,

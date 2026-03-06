@@ -29,6 +29,7 @@ void main() {
   setUp(() {
     threadDetailController = MockThreadDetailController();
     mailboxDashboardController = MockMailboxDashBoardController();
+    when(mailboxDashboardController.isEmailOpened).thenReturn(true);
     when(threadDetailController.session)
       .thenReturn(SessionFixtures.aliceSession);
     when(threadDetailController.accountId)
@@ -46,7 +47,6 @@ void main() {
     () {
       // act
       threadDetailController.onSelectedEmailUpdated(
-        null,
         null,
       );
       
@@ -71,7 +71,6 @@ void main() {
       // act
       threadDetailController.onSelectedEmailUpdated(
         selectedEmail,
-        null,
       );
       
       // assert

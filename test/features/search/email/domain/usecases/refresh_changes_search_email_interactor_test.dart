@@ -36,6 +36,7 @@ void main() {
           limit: anyNamed('limit'),
           sort: anyNamed('sort'),
           filter: anyNamed('filter'),
+          collapseThreads: anyNamed('collapseThreads'),
           properties: anyNamed('properties'),
         ),
       ).thenAnswer((_) async => [searchEmail]);
@@ -73,6 +74,7 @@ void main() {
             limit: anyNamed('limit'),
             sort: anyNamed('sort'),
             filter: anyNamed('filter'),
+            collapseThreads: anyNamed('collapseThreads'),
             properties: anyNamed('properties'),
           ),
         ).thenThrow(exception);

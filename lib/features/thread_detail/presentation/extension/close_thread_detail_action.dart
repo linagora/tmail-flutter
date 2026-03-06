@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_mail_shortcut_actions_extension.dart';
@@ -5,6 +6,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 
 extension CloseThreadDetailAction on ThreadDetailController {
   void closeThreadDetailAction() {
+    log('CloseThreadDetailAction::closeThreadDetailAction');
     if (isSearchRunning) {
       mailboxDashBoardController.dispatchRoute(DashboardRoutes.searchEmail);
     } else {

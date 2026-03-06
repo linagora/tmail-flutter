@@ -32,6 +32,7 @@ import 'package:rxdart/transformers.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/ai_scribe_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
@@ -145,6 +146,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/setup_preferences_setting_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -159,6 +161,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_ru
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_ai_scribe_config_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_ai_scribe_config_interactor.dart';
@@ -229,7 +232,8 @@ class MailboxDashBoardController extends ReloadableController
         OwnEmailAddressMixin,
         SaaSPremiumMixin,
         AiScribeMixin,
-        SearchLabelFilterModalMixin {
+        SearchLabelFilterModalMixin,
+        SetupPreferencesSettingMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -415,6 +419,7 @@ class MailboxDashBoardController extends ReloadableController
     _handleArguments();
     _loadAppGrid();
     loadAIScribeConfig();
+    loadPreferencesSetting();
     super.onReady();
   }
 
@@ -543,6 +548,8 @@ class MailboxDashBoardController extends ReloadableController
       updateTextFormattingMenuState(success.isDisplayed);
     } else if (success is GetAIScribeConfigSuccess) {
       handleLoadAIScribeConfigSuccess(success.aiScribeConfig);
+    } else if (success is GetLocalSettingsSuccess) {
+      scribeLoadPreferencesSettingSuccess(success);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -593,6 +600,8 @@ class MailboxDashBoardController extends ReloadableController
       updateTextFormattingMenuState(false);
     } else if (failure is GetAIScribeConfigFailure) {
       handleLoadAIScribeConfigFailure();
+    } else if (failure is GetLocalSettingsFailure) {
+      scribeLoadPreferencesSettingFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -2097,6 +2106,7 @@ class MailboxDashBoardController extends ReloadableController
     if (isLabelCapabilitySupported && accountId.value != null) {
       labelController.checkLabelSettingState(accountId.value!);
     }
+    loadPreferencesSetting();
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
@@ -2177,6 +2187,7 @@ class MailboxDashBoardController extends ReloadableController
     if (isLabelCapabilitySupported && accountId.value != null) {
       labelController.checkLabelSettingState(accountId.value!);
     }
+    loadPreferencesSetting();
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
@@ -3417,6 +3428,17 @@ class MailboxDashBoardController extends ReloadableController
       dashboardRoute.value == DashboardRoutes.thread;
 
   @override
+  BaseController get controller => this;
+
+  @override
+  OnPreferencesSettingChanged get onPreferencesSettingChanged => ({bool isThreadStateChanged = false}) {
+    log('MailboxDashBoardController::onPreferencesSettingChanged: isThreadStateChanged = $isThreadStateChanged');
+    if (isThreadStateChanged && searchController.isSearchEmailRunning) {
+      dispatchEmailUIAction(RefreshSearchEmailListAction());
+    }
+  };
+
+  @override
   void onClose() {
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController?.dispose();
@@ -3451,6 +3473,7 @@ class MailboxDashBoardController extends ReloadableController
     paywallController = null;
     _downloadUIActionWorker?.dispose();
     _downloadUIActionWorker = null;
+    clearPreferencesSetting();
     super.onClose();
   }
 }

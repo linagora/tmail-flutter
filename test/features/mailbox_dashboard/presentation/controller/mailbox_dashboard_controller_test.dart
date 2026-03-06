@@ -569,6 +569,8 @@ void main() {
       position: anyNamed('position'),
       sort: anyNamed('sort'),
       filter: anyNamed('filter'),
+      collapseThreads: anyNamed('collapseThreads'),
+      needRefreshSearchState: anyNamed('needRefreshSearchState'),
       properties: anyNamed('properties')));
 
     // assert

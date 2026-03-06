@@ -435,6 +435,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       int? position,
       Set<Comparator>? sort,
       Filter? filter,
+      bool? collapseThreads,
       Properties? properties
     }
   ) async {
@@ -445,9 +446,10 @@ class ThreadRepositoryImpl extends ThreadRepository {
       position: position,
       sort: sort,
       filter: filter,
+      collapseThreads: collapseThreads,
       properties: properties);
 
-    return searchEmailsResponse.toSearchEmails ?? [];
+    return searchEmailsResponse.toSearchEmails;
   }
 
   @override

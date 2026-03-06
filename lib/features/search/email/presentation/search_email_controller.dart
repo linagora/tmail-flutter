@@ -362,6 +362,7 @@ class SearchEmailController extends BaseController
         position: searchEmailFilter.value.position,
         sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+        collapseThreads: mailboxDashBoardController.isThreadDetailEnabled,
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
       ).last;
 
@@ -500,6 +501,7 @@ class SearchEmailController extends BaseController
       position: searchEmailFilter.value.position,
       sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
       filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+      collapseThreads: mailboxDashBoardController.isThreadDetailEnabled,
       properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
     ));
   }
@@ -559,6 +561,7 @@ class SearchEmailController extends BaseController
         position: searchEmailFilter.value.position,
         filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
+        collapseThreads: mailboxDashBoardController.isThreadDetailEnabled,
         lastEmailId: lastEmail.id
       ));
     }

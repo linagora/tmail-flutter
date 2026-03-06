@@ -127,3 +127,5 @@ class RemoveLabelFromEmailAction extends EmailUIAction {
   @override
   List<Object?> get props => [emailId, label];
 }
+
+class RefreshSearchEmailListAction extends EmailUIAction {}

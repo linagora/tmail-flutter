@@ -174,12 +174,7 @@ class ThreadDetailController extends BaseController {
         _getEmailContentInteractor,
       );
     });
-    ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {
-      onSelectedEmailUpdated(
-        presentationEmail,
-        currentContext,
-      );
-    });
+    ever(mailboxDashBoardController.selectedEmail, onSelectedEmailUpdated);
     ever(mailboxDashBoardController.threadDetailUIAction, (action) {
       if (action is UpdatedEmailKeywordsAction) {
         emailIdsPresentation

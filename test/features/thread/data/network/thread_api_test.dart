@@ -4,6 +4,7 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -16,6 +17,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/email_property.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
@@ -73,6 +75,133 @@ void main() {
     httpClient = HttpClient(dio);
     threadApi = ThreadAPI(httpClient);
   });
+
+  Map<String, dynamic> generateCollapseThreadsRequest({
+    required Filter filter,
+  }) =>
+      {
+        "using": [
+          "urn:ietf:params:jmap:core",
+          "urn:ietf:params:jmap:mail",
+          "urn:apache:james:params:jmap:mail:shares",
+        ],
+        "methodCalls": [
+          [
+            "Email/query",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "collapseThreads": true,
+              "filter": filter.toJson(),
+            },
+            "c0"
+          ],
+          [
+            "SearchSnippet/get",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "filter": filter.toJson(),
+              "#emailIds": {
+                "resultOf": "c0",
+                "name": "Email/query",
+                "path": "/ids/*"
+              },
+            },
+            "c1"
+          ],
+          [
+            "Email/get",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "#ids": {
+                "resultOf": "c0",
+                "name": "Email/query",
+                "path": "/ids/*"
+              },
+              "properties": ["threadId"],
+            },
+            "c2"
+          ],
+          [
+            "Thread/get",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "#ids": {
+                "resultOf": "c2",
+                "name": "Email/get",
+                "path": "/list/*/threadId"
+              },
+            },
+            "c3"
+          ]
+        ]
+      };
+
+  Map<String, dynamic> generateCollapseThreadsResponse({
+    required List<SearchEmail> foundSearchEmails,
+  }) =>
+      {
+        "sessionState": sessionState.value,
+        "methodResponses": [
+          [
+            "Email/query",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "ids": foundSearchEmails.map((e) => e.id!.id.value).toList(),
+              "queryState": queryState.value,
+              "canCalculateChanges": true,
+              "position": 0,
+            },
+            "c0"
+          ],
+          [
+            "SearchSnippet/get",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "state": state.value,
+              "list": foundSearchEmails
+                  .map((e) => SearchSnippet(
+                        emailId: e.id!,
+                        subject: e.searchSnippetSubject,
+                        preview: e.searchSnippetPreview,
+                      ).toJson())
+                  .toList(),
+            },
+            "c1"
+          ],
+          [
+            "Email/get",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "state": state.value,
+              "list": foundSearchEmails
+                  .map((e) => Email(id: e.id!, threadId: e.threadId).toJson())
+                  .toList(),
+            },
+            "c2"
+          ],
+          [
+            "Thread/get",
+            {
+              "accountId": AccountFixtures.aliceAccountId.id.value,
+              "state": state.value,
+              "list": foundSearchEmails.isNotEmpty &&
+                      foundSearchEmails.every((searchEmail) =>
+                          searchEmail.threadId?.id.value == 'thread1')
+                  ? [
+                      {
+                        "id": "thread1",
+                        "emailIds": foundSearchEmails
+                            .map((e) => e.id!.id.value)
+                            .toList(),
+                      }
+                    ]
+                  : [],
+              "notFound": []
+            },
+            "c3"
+          ]
+        ]
+      };
 
   group('thread api test:', () {
     group('searchEmails:', () {
@@ -395,6 +524,258 @@ void main() {
             ),
           ),
         );
+      });
+
+      test(
+        'should return thread lists when collapseThreads is true',
+        () async {
+          final searchEmail = SearchEmail(
+            id: EmailId(Id('email1')),
+            threadId: ThreadId(Id('thread1')),
+            searchSnippetSubject: 'subject',
+            searchSnippetPreview: 'preview',
+          );
+
+          dioAdapter.onPost(
+            '',
+            (server) => server.reply(
+              200,
+              generateCollapseThreadsResponse(
+                foundSearchEmails: [searchEmail],
+              ),
+            ),
+            data: generateCollapseThreadsRequest(filter: filter),
+          );
+
+          final result = await threadApi.searchEmails(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            filter: filter,
+            collapseThreads: true,
+            properties: Properties({EmailProperty.threadId}),
+          );
+
+          expect(result.threadLists?.length, 1);
+          expect(result.emailList?.first.id, searchEmail.id);
+        },
+      );
+
+      test(
+        'should return null threadLists when Thread/get returns error',
+        () async {
+          final searchEmail = SearchEmail(
+            id: EmailId(Id('email1')),
+            searchSnippetSubject: 'subject',
+            searchSnippetPreview: 'preview',
+          );
+
+          final response = generateCollapseThreadsResponse(
+            foundSearchEmails: [searchEmail],
+          );
+
+          response["methodResponses"][3] = [
+            "error",
+            {"type": "unknownMethod"},
+            "c3"
+          ];
+
+          dioAdapter.onPost(
+            '',
+            (server) => server.reply(200, response),
+            data: generateCollapseThreadsRequest(filter: filter),
+          );
+
+          final result = await threadApi.searchEmails(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            filter: filter,
+            collapseThreads: true,
+            properties: Properties({EmailProperty.threadId}),
+          );
+
+          expect(result.threadLists, isNull);
+        },
+      );
+
+      test(
+        'should automatically add threadId property when collapseThreads=true',
+        () async {
+          final searchEmail = SearchEmail(
+            id: EmailId(Id('email1')),
+            searchSnippetSubject: '',
+            searchSnippetPreview: '',
+          );
+
+          dioAdapter.onPost(
+            '',
+            (server) => server.reply(
+              200,
+              generateCollapseThreadsResponse(
+                foundSearchEmails: [searchEmail],
+              ),
+            ),
+            data: generateCollapseThreadsRequest(filter: filter),
+          );
+
+          final result = await threadApi.searchEmails(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            filter: filter,
+            collapseThreads: true,
+            properties: Properties({}),
+          );
+
+          expect(result.emailList?.first.id, searchEmail.id);
+        },
+      );
+
+      test('should not request Thread/get when collapseThreads=false',
+          () async {
+        final searchEmail = SearchEmail(
+          id: EmailId(Id('email1')),
+          searchSnippetSubject: 'subject',
+          searchSnippetPreview: 'preview',
+        );
+
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              foundSearchEmails: [searchEmail],
+              notFoundEmailIds: [],
+            ),
+          ),
+          data: generateRequest(filter: filter),
+        );
+
+        final result = await threadApi.searchEmails(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          filter: filter,
+          collapseThreads: false,
+        );
+
+        expect(result.threadLists, isNull);
+        expect(result.emailList?.length, 1);
+      });
+
+      test('should return empty emailList when query returns no ids', () async {
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateCollapseThreadsResponse(foundSearchEmails: []),
+          ),
+          data: generateCollapseThreadsRequest(filter: filter),
+        );
+
+        final result = await threadApi.searchEmails(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          filter: filter,
+          collapseThreads: true,
+        );
+
+        expect(result.emailList, isEmpty);
+        expect(result.threadLists, isEmpty);
+      });
+
+      test('should handle Email/get error', () async {
+        final response = generateCollapseThreadsResponse(
+          foundSearchEmails: [],
+        );
+
+        response["methodResponses"][2] = [
+          "error",
+          {"type": "serverFail"},
+          "c2"
+        ];
+
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(200, response),
+          data: generateCollapseThreadsRequest(filter: filter),
+        );
+
+        expect(
+          () => threadApi.searchEmails(
+            SessionFixtures.aliceSession,
+            AccountFixtures.aliceAccountId,
+            filter: filter,
+            collapseThreads: true,
+          ),
+          throwsA(isA<ErrorMethodResponseException>()),
+        );
+      });
+
+      test('should return emails even if snippet request fails', () async {
+        final searchEmail = SearchEmail(
+          id: EmailId(Id('email1')),
+          searchSnippetSubject: '',
+          searchSnippetPreview: '',
+        );
+
+        final response = generateCollapseThreadsResponse(
+          foundSearchEmails: [searchEmail],
+        );
+
+        response["methodResponses"][1] = [
+          "error",
+          {"type": "serverFail"},
+          "c1"
+        ];
+
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(200, response),
+          data: generateCollapseThreadsRequest(filter: filter),
+        );
+
+        final result = await threadApi.searchEmails(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          filter: filter,
+          collapseThreads: true,
+        );
+
+        expect(result.emailList?.length, 1);
+      });
+
+      test('should ignore threadIds not matching emails', () async {
+        final response = generateCollapseThreadsResponse(
+          foundSearchEmails: [
+            SearchEmail(
+              id: EmailId(Id('email1')),
+              threadId: ThreadId(Id('thread1')),
+              searchSnippetSubject: '',
+              searchSnippetPreview: '',
+            ),
+          ],
+        );
+
+        response["methodResponses"][3][1]["list"] = [
+          {
+            "id": "threadX",
+            "emailIds": ["emailX"]
+          }
+        ];
+
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(200, response),
+          data: generateCollapseThreadsRequest(filter: filter),
+        );
+
+        final result = await threadApi.searchEmails(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          filter: filter,
+          collapseThreads: true,
+        );
+
+        expect(result.threadLists?.length, 1);
+        expect(result.threadLists?.first.id.id.value, 'threadX');
       });
     });
 

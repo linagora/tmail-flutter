@@ -103,6 +103,7 @@ extension EmailExtension on Email {
     String? searchSnippetSubject,
     String? searchSnippetPreview,
     EmailId? emailId,
+    List<EmailId>? emailIdsInThread,
   }) {
     return PresentationEmail(
       id: emailId ?? id,
@@ -135,7 +136,8 @@ extension EmailExtension on Email {
       references: references,
     )
       ..searchSnippetSubject = searchSnippetSubject
-      ..searchSnippetPreview = searchSnippetPreview;
+      ..searchSnippetPreview = searchSnippetPreview
+      ..emailIdsInThread = emailIdsInThread;
   }
 
   Email combineEmail(Email newEmail, Properties updatedProperties) {

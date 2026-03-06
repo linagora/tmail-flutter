@@ -27,6 +27,7 @@ class WebTabletBodyEmailItemWidget extends StatefulWidget {
   final bool isSenderImportantFlagEnabled;
   final bool shouldShowAIAction;
   final bool autoWrapTagsByMaxWidth;
+  final bool isThreadDetailEnabled;
   final List<Label>? labels;
   final EdgeInsetsGeometry? padding;
   final SearchQuery? searchQuery;
@@ -44,6 +45,7 @@ class WebTabletBodyEmailItemWidget extends StatefulWidget {
     required this.isDrag,
     required this.isSenderImportantFlagEnabled,
     required this.autoWrapTagsByMaxWidth,
+    required this.isThreadDetailEnabled,
     required this.labels,
     required this.padding,
     required this.searchQuery,
@@ -123,6 +125,7 @@ class _WebTabletBodyEmailItemWidgetState
                               widget.mailboxContain,
                               widget.isSearchEmailRunning,
                               widget.searchQuery,
+                              isThreadDetailEnabled: widget.isThreadDetailEnabled,
                             ),
                           ),
                           if (_shouldShowPopupMenu)

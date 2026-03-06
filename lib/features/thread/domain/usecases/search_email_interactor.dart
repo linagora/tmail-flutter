@@ -27,6 +27,7 @@ class SearchEmailInteractor {
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties,
+      bool? collapseThreads,
       bool needRefreshSearchState = false,
     }
   ) async* {
@@ -44,12 +45,14 @@ class SearchEmailInteractor {
         position: position,
         sort: sort,
         filter: filter,
+        collapseThreads: collapseThreads,
         properties: properties);
 
       final presentationEmailList = emailList
         .map((email) => email.toPresentationEmail(
           searchSnippetSubject: email.searchSnippetSubject,
           searchSnippetPreview: email.searchSnippetPreview,
+          emailIdsInThread: email.emailIdsInThread,
         ))
         .toList();
 
@@ -65,6 +68,7 @@ class SearchEmailInteractor {
           position: position,
           sort: sort,
           properties: properties,
+          collapseThreads: collapseThreads,
           needRefreshSearchState: true,
         ),
       ));
