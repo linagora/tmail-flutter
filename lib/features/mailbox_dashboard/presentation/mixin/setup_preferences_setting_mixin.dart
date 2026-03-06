@@ -13,7 +13,7 @@ mixin SetupPreferencesSettingMixin on EmitStateMixin {
 
   BaseController get controller;
 
-  bool get isThreadDetailEnabled =>
+  bool? get isThreadDetailEnabled =>
       _preferencesSetting?.threadConfig.isEnabled == true;
 
   void setPreferencesSetting(PreferencesSetting setting) =>

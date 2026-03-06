@@ -519,6 +519,7 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
         ),
+        collapseThreads: false,
         needRefreshSearchState: false,
       )).called(1);
 
@@ -572,6 +573,7 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
         ),
+        collapseThreads: false,
         lastEmailId: emailList.last.id,
       )).called(1);
 
@@ -624,6 +626,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
@@ -640,6 +643,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       ));
 
@@ -655,6 +659,7 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
         ),
+        collapseThreads: false,
         needRefreshSearchState: false,
       )).called(1);
 
@@ -691,6 +696,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         lastEmailId: anyNamed('lastEmailId'),
       ));
 
@@ -711,6 +717,7 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
         ),
+        collapseThreads: false,
         lastEmailId: emailList.last.id,
       )).called(1);
 
@@ -766,6 +773,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
@@ -782,6 +790,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       ));
 
@@ -797,6 +806,7 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
         ),
+        collapseThreads: false,
         needRefreshSearchState: false,
       )).called(1);
 
@@ -840,6 +850,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
@@ -876,6 +887,7 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
         ),
+        collapseThreads: false,
         needRefreshSearchState: true,
       )).called(1);
 
@@ -928,6 +940,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
@@ -944,6 +957,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       ));
 
@@ -959,6 +973,7 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
         ),
+        collapseThreads: false,
         needRefreshSearchState: false
       )).called(1);
 
@@ -1006,6 +1021,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
@@ -1042,6 +1058,7 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
         ),
+        collapseThreads: false,
         needRefreshSearchState: true,
       )).called(1);
 
@@ -1117,6 +1134,7 @@ void main() {
         sort: anyNamed('sort'),
         filter: anyNamed('filter'),
         properties: anyNamed('properties'),
+        collapseThreads: anyNamed('collapseThreads'),
         needRefreshSearchState: anyNamed('needRefreshSearchState'),
       )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
 
@@ -1153,6 +1171,7 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
         ),
+        collapseThreads: false,
         needRefreshSearchState: true,
       )).called(1);
 

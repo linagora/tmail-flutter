@@ -522,7 +522,8 @@ class ThreadView extends GetWidget<ThreadController>
           controller.searchController.isSearchEmailRunning;
 
       final isAINeedsActionEnabled = dashboardController.isAINeedsActionEnabled;
-      final isThreadDetailEnabled = dashboardController.isThreadDetailEnabled;
+      final isThreadDetailEnabled =
+          dashboardController.isThreadDetailEnabled == true;
 
       return EmailTileBuilder(
         key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
@@ -633,7 +634,8 @@ class ThreadView extends GetWidget<ThreadController>
         emailLabels = presentationEmail.getLabelList(listLabels);
       }
 
-      final isThreadDetailEnabled = dashboardController.isThreadDetailEnabled;
+      final isThreadDetailEnabled =
+          dashboardController.isThreadDetailEnabled == true;
 
       return Dismissible(
         key: ValueKey<EmailId?>(presentationEmail.id),

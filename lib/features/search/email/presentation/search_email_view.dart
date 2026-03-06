@@ -762,7 +762,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         if (isLabelAvailable) {
           emailLabels = presentationEmail.getLabelList(listLabels);
         }
-        final isThreadDetailEnabled = dashboardController.isThreadDetailEnabled;
+        final isThreadDetailEnabled =
+            dashboardController.isThreadDetailEnabled == true;
 
         return EmailTileBuilder(
           presentationEmail: presentationEmail,
