@@ -88,7 +88,7 @@ class ThreadAPI with HandleSetErrorMixin, MailAPIMixin {
       ..addPositionIfValid(position)
       ..addSortsIfNotNull(sort)
       ..addFiltersIfNotNull(filter)
-      ..addCollapseThreadsIfNotNull(collapseThreads);
+      ..addCollapseThreadsIfValid(collapseThreads);
 
     final queryInvocation = requestBuilder.invocation(queryEmail);
 

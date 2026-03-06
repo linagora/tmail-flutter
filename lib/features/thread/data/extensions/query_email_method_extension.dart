@@ -20,7 +20,9 @@ extension QueryEmailMethodExtension on QueryEmailMethod {
     if (filter != null) addFilters(filter);
   }
 
-  void addCollapseThreadsIfNotNull(bool? collapseThreads) {
-    if (collapseThreads != null) addCollapseThreads(collapseThreads);
+  void addCollapseThreadsIfValid(bool? collapseThreads) {
+    if (collapseThreads != null && collapseThreads) {
+      addCollapseThreads(collapseThreads);
+    }
   }
 }
