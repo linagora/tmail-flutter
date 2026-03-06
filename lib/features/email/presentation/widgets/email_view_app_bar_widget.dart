@@ -176,7 +176,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     margin: iconMargin,
   );
 
-  Widget _getMarkStarButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
+  Widget _getMarkStarButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
     icon: presentationEmail.hasStarred
       ? _imagePaths.icStar
       : _imagePaths.icUnStar,
@@ -186,8 +186,8 @@ class EmailViewAppBarWidget extends StatelessWidget {
       : EmailViewAppBarWidgetStyles.iconColor,
     backgroundColor: Colors.transparent,
     tooltipMessage: presentationEmail.hasStarred
-      ? applocalizations.not_starred
-      : applocalizations.mark_as_starred,
+      ? appLocalizations.not_starred
+      : appLocalizations.mark_as_starred,
     onTapActionCallback: () => onEmailActionClick?.call(
       presentationEmail,
       presentationEmail.hasStarred
@@ -198,14 +198,14 @@ class EmailViewAppBarWidget extends StatelessWidget {
     margin: iconMargin,
   );
 
-  Widget _getDeleteButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
+  Widget _getDeleteButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
     icon: _imagePaths.icDeleteComposer,
     iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
     backgroundColor: Colors.transparent,
     tooltipMessage: canDeletePermanently
-      ? applocalizations.delete_permanently
-      : applocalizations.move_to_trash,
+      ? appLocalizations.delete_permanently
+      : appLocalizations.move_to_trash,
     onTapActionCallback: () {
       if (canDeletePermanently) {
         onEmailActionClick?.call(presentationEmail, EmailActionType.deletePermanently);
@@ -218,7 +218,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
   );
 
   Widget _getMoreButton(
-    AppLocalizations applocalizations,
+    AppLocalizations appLocalizations,
     bool isScreenWithShortestSide,
   ) => TMailButtonWidget.fromIcon(
     key: const Key('email_detailed_more_button'),
@@ -226,7 +226,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
     backgroundColor: Colors.transparent,
-    tooltipMessage: applocalizations.more,
+    tooltipMessage: appLocalizations.more,
     onTapActionCallback: isScreenWithShortestSide
       ? () => onMoreActionClick?.call(presentationEmail, null)
       : null,

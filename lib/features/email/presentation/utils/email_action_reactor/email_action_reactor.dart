@@ -491,6 +491,7 @@ class EmailActionReactor {
     required bool isLabelAvailable,
     required OpenBottomSheetContextMenuAction openBottomSheetContextMenu,
     required OpenPopupMenuActionGroup openPopupMenu,
+    required OnCreateANewLabelAction onCreateANewLabelAction,
     List<Label>? labels,
     OnSelectLabelAction? onSelectLabelAction,
   }) {
@@ -513,7 +514,7 @@ class EmailActionReactor {
         EmailActionType.printAll,
       if (additionalActions.contains(EmailActionType.moveToMailbox))
         EmailActionType.moveToMailbox,
-      if (isLabelAvailable && labels?.isNotEmpty == true)
+      if (isLabelAvailable)
         EmailActionType.labelAs,
       if (additionalActions.contains(EmailActionType.markAsStarred) &&
           additionalActions.contains(EmailActionType.unMarkAsStarred))
@@ -585,6 +586,11 @@ class EmailActionReactor {
               submenuController.hide();
               popBack();
             },
+            onCreateANewLabelAction: () {
+              submenuController.hide();
+              popBack();
+              onCreateANewLabelAction();
+            }
           ),
         );
       }).toList();
@@ -620,9 +626,10 @@ class EmailActionReactor {
     required ImagePaths imagePaths,
     required PresentationEmail presentationEmail,
     required List<Label>? labels,
-    OnSelectLabelAction? onSelectLabelAction,
+    required OnSelectLabelAction onSelectLabelAction,
+    required OnCreateANewLabelAction onCreateANewLabelAction,
   }) {
-    if (actionType == EmailActionType.labelAs && labels?.isNotEmpty == true) {
+    if (actionType == EmailActionType.labelAs) {
       final listLabels = labels ?? [];
       final emailLabels = presentationEmail.getLabelList(listLabels);
 
@@ -630,8 +637,8 @@ class EmailActionReactor {
         labelList: listLabels,
         emailLabels: emailLabels,
         imagePaths: imagePaths,
-        onSelectLabelAction: (label, isSelected) =>
-            onSelectLabelAction?.call(label, isSelected),
+        onSelectLabelAction: onSelectLabelAction,
+        onCreateANewLabelAction: onCreateANewLabelAction,
       );
     }
     return null;

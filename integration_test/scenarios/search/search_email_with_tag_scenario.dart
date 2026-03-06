@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 
 import '../../base/base_test_scenario.dart';
 import '../../mixin/provisioning_label_scenario_mixin.dart';
-import '../../robots/label_list_context_menu_robot.dart';
+import '../../robots/labels/label_list_context_menu_robot.dart';
 import '../../robots/search_robot.dart';
 import '../../robots/thread_robot.dart';
 

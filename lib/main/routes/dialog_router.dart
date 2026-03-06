@@ -28,7 +28,7 @@ class DialogRouter {
     required Object? arguments
   }) async {
     if (PlatformInfo.isWeb) {
-      _isDialogOpened.value = true;
+      _isMapDialogOpened[routeName] = true;
     }
     _bindingDI(routeName);
 
@@ -40,18 +40,15 @@ class DialogRouter {
     );
 
     if (PlatformInfo.isWeb) {
-      _isDialogOpened.value = false;
-      if (routeName == AppRoutes.rulesFilterCreator) {
-        isRuleFilterDialogOpened.value = false;
-      }
+      _isMapDialogOpened.remove(routeName);
     }
     return returnedValue;
   }
 
-  final RxBool _isDialogOpened = false.obs;
-  final RxBool isRuleFilterDialogOpened = false.obs;
+  final RxMap<String, bool> _isMapDialogOpened = RxMap<String, bool>();
 
-  bool get isDialogOpened => _isDialogOpened.value;
+  bool get isDialogOpened =>
+      _isMapDialogOpened.values.any((isOpened) => isOpened == true);
 
   void _bindingDI(String routeName) {
     log('DialogRouter::_bindingDI():routeName: $routeName');
@@ -60,9 +57,6 @@ class DialogRouter {
         MailboxCreatorBindings().dependencies();
         break;
       case AppRoutes.rulesFilterCreator:
-        if (PlatformInfo.isWeb) {
-         isRuleFilterDialogOpened.value = true;
-        }
         RulesFilterCreatorBindings().dependencies();
         break;
       case AppRoutes.identityCreator:
@@ -101,20 +95,18 @@ class DialogRouter {
 
   Future<void> openDialogModal({
     required Widget child,
-    String? dialogLabel,
+    required String dialogLabel,
   }) async {
     if (PlatformInfo.isWeb) {
-      _isDialogOpened.value = true;
+      _isMapDialogOpened[dialogLabel] = true;
     }
-
     await Get.generalDialog(
       barrierDismissible: true,
-      barrierLabel: dialogLabel ?? 'dialog-modal',
+      barrierLabel: dialogLabel,
       pageBuilder: (_, __, ___) => child,
-    ).whenComplete(() {
-      if (PlatformInfo.isWeb) {
-        _isDialogOpened.value = false;
-      }
-    });
+    );
+    if (PlatformInfo.isWeb) {
+      _isMapDialogOpened.remove(dialogLabel);
+    }
   }
 }
