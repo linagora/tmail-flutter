@@ -514,7 +514,7 @@ class EmailActionReactor {
         EmailActionType.printAll,
       if (additionalActions.contains(EmailActionType.moveToMailbox))
         EmailActionType.moveToMailbox,
-      if (isLabelAvailable && labels?.isNotEmpty == true)
+      if (isLabelAvailable)
         EmailActionType.labelAs,
       if (additionalActions.contains(EmailActionType.markAsStarred) &&
           additionalActions.contains(EmailActionType.unMarkAsStarred))

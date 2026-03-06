@@ -145,8 +145,7 @@ extension OnThreadDetailActionClick on ThreadDetailController {
           ? EmailActionType.unMarkAsStarred
           : EmailActionType.markAsStarred,
       EmailActionType.moveToMailbox,
-      if (mailboxDashBoardController.isLabelAvailable &&
-          mailboxDashBoardController.labelController.labels.isNotEmpty)
+      if (mailboxDashBoardController.isLabelAvailable)
         EmailActionType.labelAs,
       if (!threadDetailIsArchived) EmailActionType.archiveMessage,
       threadDetailIsSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,

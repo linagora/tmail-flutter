@@ -2,6 +2,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' hide State;
+import 'package:flutter/material.dart' hide State;
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -135,6 +136,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
 
     await DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
+        key: const Key('create_new_label_modal'),
         labels: labels,
         onLabelActionCallback: (label) => _createNewLabel(accountId, label),
       ),

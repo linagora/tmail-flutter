@@ -1,5 +1,6 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -245,6 +246,7 @@ extension HandleLabelForEmailExtension on SingleEmailController {
 
     await DialogRouter().openDialogModal(
       child: AddLabelToEmailModal(
+        key: const Key('add_label_modal'),
         labels: labels,
         emailLabels: emailLabels,
         emailIds: [emailId],
@@ -265,7 +267,7 @@ extension HandleLabelForEmailExtension on SingleEmailController {
           );
         },
       ),
-      dialogLabel: 'add-label-to-email-modal',
+      dialogLabel: 'add-label-modal',
     );
   }
 

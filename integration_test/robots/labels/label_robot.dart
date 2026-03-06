@@ -11,4 +11,10 @@ class LabelRobot extends CoreRobot {
     await $.scrollUntilVisible(finder: item);
     await item.longPress();
   }
+
+  Future<void> openLabelByName(String name) async {
+    final item = $(LabelListItem).$(name);
+    await $.scrollUntilVisible(finder: item);
+    await item.tap();
+  }
 }
