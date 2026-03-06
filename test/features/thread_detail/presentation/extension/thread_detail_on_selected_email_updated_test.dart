@@ -47,7 +47,6 @@ void main() {
       // act
       threadDetailController.onSelectedEmailUpdated(
         null,
-        null,
       );
       
       // assert
@@ -71,7 +70,6 @@ void main() {
       // act
       threadDetailController.onSelectedEmailUpdated(
         selectedEmail,
-        null,
       );
       
       // assert

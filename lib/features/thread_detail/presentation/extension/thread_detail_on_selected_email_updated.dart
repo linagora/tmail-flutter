@@ -1,7 +1,9 @@
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -14,10 +16,12 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
 extension ThreadDetailOnSelectedEmailUpdated on ThreadDetailController {
-  void onSelectedEmailUpdated(
-    PresentationEmail? selectedEmail,
-    BuildContext? context,
-  ) {
+  void onSelectedEmailUpdated(PresentationEmail? selectedEmail) {
+    log('ThreadDetailOnSelectedEmailUpdated::onSelectedEmailUpdated: Email selected id = ${selectedEmail?.id?.asString}');
+    if (!mailboxDashBoardController.isEmailOpened) {
+      log('ThreadDetailOnSelectedEmailUpdated::onSelectedEmailUpdated: Email is closed');
+      return;
+    }
     if (selectedEmail?.id == null) {
       closeThreadDetailAction();
       return;
