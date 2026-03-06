@@ -358,6 +358,9 @@ class ThreadController extends BaseController with EmailActionController {
       } else if (action is RefreshAllEmailAction) {
         refreshAllEmail(shouldClearCache: PlatformInfo.isWeb);
         mailboxDashBoardController.clearEmailUIAction();
+      } else if (action is RefreshSearchEmailListAction) {
+        _refreshChangeSearchEmail();
+        mailboxDashBoardController.clearEmailUIAction();
       }
     });
 

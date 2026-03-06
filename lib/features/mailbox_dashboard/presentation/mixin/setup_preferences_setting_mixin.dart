@@ -6,6 +6,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_set
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+typedef OnPreferencesSettingChanged = void Function({bool isThreadStateChanged});
+
 mixin SetupPreferencesSettingMixin on EmitStateMixin {
   PreferencesSetting? _preferencesSetting;
 
@@ -13,8 +15,10 @@ mixin SetupPreferencesSettingMixin on EmitStateMixin {
 
   BaseController get controller;
 
+  OnPreferencesSettingChanged get onPreferencesSettingChanged;
+
   bool? get isThreadDetailEnabled =>
-      _preferencesSetting?.threadConfig.isEnabled == true;
+      _preferencesSetting?.isThreadDetailEnabled == true;
 
   void setPreferencesSetting(PreferencesSetting setting) =>
       _preferencesSetting = setting;
@@ -34,10 +38,32 @@ mixin SetupPreferencesSettingMixin on EmitStateMixin {
   }
 
   void scribeLoadPreferencesSettingSuccess(GetLocalSettingsSuccess success) {
-    setPreferencesSetting(success.preferencesSetting);
+    final currentPreferencesSetting = _preferencesSetting;
+    final newPreferencesSetting = success.preferencesSetting;
+
+    if (currentPreferencesSetting != null) {
+      _verifyThreadSettingStateChanged(
+        currentSetting: currentPreferencesSetting,
+        newSetting: newPreferencesSetting,
+      );
+    }
+
+    setPreferencesSetting(newPreferencesSetting);
   }
 
   void scribeLoadPreferencesSettingFailure(GetLocalSettingsFailure failure) {
     clearPreferencesSetting();
+  }
+
+  void _verifyThreadSettingStateChanged({
+    required PreferencesSetting currentSetting,
+    required PreferencesSetting newSetting,
+  }) {
+    final isChanged = currentSetting.isThreadDetailEnabled !=
+        newSetting.isThreadDetailEnabled;
+    log('SetupPreferencesSettingMixin::_verifyThreadSettingStateChanged: isChanged = $isChanged');
+    if (isChanged) {
+      onPreferencesSettingChanged(isThreadStateChanged: isChanged);
+    }
   }
 }

@@ -29,6 +29,7 @@ void main() {
   setUp(() {
     threadDetailController = MockThreadDetailController();
     mailboxDashboardController = MockMailboxDashBoardController();
+    when(mailboxDashboardController.isEmailOpened).thenReturn(true);
     when(threadDetailController.session)
       .thenReturn(SessionFixtures.aliceSession);
     when(threadDetailController.accountId)

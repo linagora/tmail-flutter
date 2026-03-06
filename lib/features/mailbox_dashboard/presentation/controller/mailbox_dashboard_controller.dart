@@ -3431,6 +3431,14 @@ class MailboxDashBoardController extends ReloadableController
   BaseController get controller => this;
 
   @override
+  OnPreferencesSettingChanged get onPreferencesSettingChanged => ({bool isThreadStateChanged = false}) {
+    log('MailboxDashBoardController::onPreferencesSettingChanged: isThreadStateChanged = $isThreadStateChanged');
+    if (isThreadStateChanged && searchController.isSearchEmailRunning) {
+      dispatchEmailUIAction(RefreshSearchEmailListAction());
+    }
+  };
+
+  @override
   void onClose() {
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController?.dispose();
