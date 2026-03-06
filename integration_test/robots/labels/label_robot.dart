@@ -15,4 +15,10 @@ class LabelRobot extends CoreRobot {
   Future<void> tapCreateNewLabelButton() async {
     await $(#labels_bar_widget_add_new_label_button).tap();
   }
+
+  Future<void> openLabelByName(String name) async {
+    final item = $(LabelListItem).$(name);
+    await $.scrollUntilVisible(finder: item);
+    await item.tap();
+  }
 }

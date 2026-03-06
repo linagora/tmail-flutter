@@ -51,6 +51,10 @@ class EmailRobot extends CoreRobot {
     await $(AppLocalizations().starred).tap();
   }
 
+  Future<void> tapEmailDetailedLabelAsOptionInContextMenu() async {
+    await $(#labelAs_action).tap();
+  }
+
   Future<void> tapEmailDetailedUnstarButton() async {
     await $(AppLocalizations().not_starred).tap();
   }

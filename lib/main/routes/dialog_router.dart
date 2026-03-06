@@ -27,22 +27,27 @@ class DialogRouter {
     required String routeName,
     required Object? arguments
   }) async {
-    if (PlatformInfo.isWeb) {
-      _isMapDialogOpened[routeName] = true;
-    }
-    _bindingDI(routeName);
+    try {
+      if (PlatformInfo.isWeb) {
+        _isMapDialogOpened[routeName] = true;
+      }
+      _bindingDI(routeName);
 
-    final returnedValue = await Get.generalDialog(
-      barrierDismissible: true,
-      barrierLabel: routeName,
-      routeSettings: RouteSettings(arguments: arguments),
-      pageBuilder: (_, __, ___) => _generateView(routeName: routeName)
-    );
+      final returnedValue = await Get.generalDialog(
+        barrierDismissible: true,
+        barrierLabel: routeName,
+        routeSettings: RouteSettings(arguments: arguments),
+        pageBuilder: (_, __, ___) => _generateView(routeName: routeName),
+      );
 
-    if (PlatformInfo.isWeb) {
-      _isMapDialogOpened.remove(routeName);
+      return returnedValue;
+    } catch (e) {
+      logWarning('DialogRouter::pushGeneralDialog: Exception = $e');
+    } finally {
+      if (PlatformInfo.isWeb) {
+        _isMapDialogOpened.remove(routeName);
+      }
     }
-    return returnedValue;
   }
 
   final RxMap<String, bool> _isMapDialogOpened = RxMap<String, bool>();
@@ -95,10 +100,10 @@ class DialogRouter {
 
   Future<dynamic> openDialogModal({
     required Widget child,
-    required String dialogLabel,
+    String? dialogLabel,
   }) async {
     try {
-      if (PlatformInfo.isWeb) {
+      if (PlatformInfo.isWeb && dialogLabel != null) {
         _isMapDialogOpened[dialogLabel] = true;
       }
 
@@ -110,7 +115,7 @@ class DialogRouter {
     } catch (e) {
       logWarning('DialogRouter::openDialogModal: Exception = $e');
     } finally {
-      if (PlatformInfo.isWeb) {
+      if (PlatformInfo.isWeb && dialogLabel != null) {
         _isMapDialogOpened.remove(dialogLabel);
       }
     }

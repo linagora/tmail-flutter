@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import '../../base/base_test_scenario.dart';
 import '../../mixin/provisioning_label_scenario_mixin.dart';
 import '../../robots/email_robot.dart';
-import '../../robots/label_robot.dart';
+import '../../robots/labels/label_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class RemoveALabelFromEmailScenario extends BaseTestScenario

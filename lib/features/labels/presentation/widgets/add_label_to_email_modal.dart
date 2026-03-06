@@ -124,6 +124,7 @@ class _AddLabelToEmailModalState extends State<AddLabelToEmailModal> {
                     ),
                   ),
                 TMailButtonWidget(
+                  key: const Key('create_a_new_label_button'),
                   text: appLocalizations.createANewLabel,
                   icon: _imagePaths.icAddNewFolder,
                   iconColor: AppColor.primaryMain,
