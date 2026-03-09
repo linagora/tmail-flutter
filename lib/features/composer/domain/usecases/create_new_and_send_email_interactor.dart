@@ -66,7 +66,7 @@ class CreateNewAndSendEmailInteractor {
       }
     } catch (e) {
       logWarning('CreateNewAndSendEmailInteractor::execute: Exception: $e');
-      if (e is UnknownRemoteException && e.message is List<SendingEmailCanceledException>) {
+      if (e is UnknownRemoteException && e.error is List<SendingEmailCanceledException>) {
         yield dartz.Left<Failure, Success>(SendEmailFailure(
           exception: SendingEmailCanceledException(),
           session: sendingEmailArguments?.session,

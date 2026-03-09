@@ -97,7 +97,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
         } else if (underlyingError is OAuthAuthorizationError) {
           throw underlyingError;
         } else if (underlyingError != null) {
-          throw UnknownRemoteException(message: underlyingError.toString());
+          throw UnknownRemoteException(error: underlyingError);
         } else {
           throw const UnknownRemoteException();
         }
