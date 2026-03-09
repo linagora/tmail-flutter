@@ -1,9 +1,12 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -162,8 +165,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                           ),
                           buildMailboxContain(
                             context,
-                            widget.isSearchEmailRunning,
-                            widget.isLabelMailboxOpened,
+                            widget.isSearchEmailRunning || widget.isLabelMailboxOpened,
                             widget.presentationEmail
                           ),
                           if (widget.presentationEmail.hasStarred)
@@ -626,4 +628,10 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
     _hoverNotifier.dispose();
     super.dispose();
   }
+
+  @override
+  ImagePaths get imagePaths => Get.find<ImagePaths>();
+
+  @override
+  ResponsiveUtils get responsiveUtils => Get.find<ResponsiveUtils>();
 }

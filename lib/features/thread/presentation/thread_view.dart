@@ -550,70 +550,6 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   Widget _buildEmailItemNotDraggable(BuildContext context, PresentationEmail presentationEmail) {
-    final backgroundWidget = Container(
-      color: AppColor.colorItemRecipientSelected,
-      padding: const EdgeInsetsDirectional.only(start: 16),
-      alignment: AlignmentDirectional.centerStart,
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: AppColor.colorSpamReportBannerBackground,
-            radius: 24,
-            child: !presentationEmail.hasRead
-                ? SvgPicture.asset(
-                    controller.imagePaths.icMarkAsRead,
-                    fit: BoxFit.fill,
-                  )
-                : SvgPicture.asset(
-                    controller.imagePaths.icUnreadEmail,
-                    fit: BoxFit.fill,
-                    colorFilter: AppColor.primaryColor.asFilter(),
-                  ),
-          ),
-          const SizedBox(width: 11),
-          Text(
-            !presentationEmail.hasRead
-                ? AppLocalizations.of(context).mark_as_read
-                : AppLocalizations.of(context).mark_as_unread,
-            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-              fontSize: 15,
-              color: AppColor.primaryColor,
-            ),
-          ),
-        ],
-      ),
-    );
-
-    final isInArchiveMailbox = controller.isInArchiveMailbox(presentationEmail);
-    final secondaryBackgroundWidget = !isInArchiveMailbox
-        ? Container(
-            color: AppColor.colorItemRecipientSelected,
-            padding: const EdgeInsetsDirectional.only(end: 16),
-            alignment: AlignmentDirectional.centerEnd,
-            child: Row(
-              children: [
-                const Spacer(),
-                CircleAvatar(
-                  backgroundColor: AppColor.colorSpamReportBannerBackground,
-                  radius: 24,
-                  child: SvgPicture.asset(
-                    controller.imagePaths.icMailboxArchived,
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                const SizedBox(width: 11),
-                Text(
-                  AppLocalizations.of(context).archiveMessage,
-                  style: ThemeUtils.defaultTextStyleInterFont.copyWith(
-                    fontSize: 15,
-                    color: AppColor.primaryColor,
-                  ),
-                ),
-              ],
-            ),
-          )
-        : null;
-
     final dashboardController = controller.mailboxDashBoardController;
 
     return Obx(() {
@@ -652,8 +588,10 @@ class ThreadView extends GetWidget<ThreadController>
             selectModeAll,
             presentationEmail
         ),
-        background: backgroundWidget,
-        secondaryBackground: secondaryBackgroundWidget,
+        background: _buildEmailSwipeBackground(context, presentationEmail),
+        secondaryBackground: controller.isInArchiveMailbox(presentationEmail)
+            ? null
+            : _buildEmailSwipeSecondaryBackground(context),
         confirmDismiss: (direction) => controller.swipeEmailAction(
           presentationEmail,
           direction,
@@ -701,6 +639,65 @@ class ThreadView extends GetWidget<ThreadController>
         ),
       );
     });
+  }
+
+  Widget _buildEmailSwipeBackground(BuildContext context, PresentationEmail presentationEmail) {
+    return Container(
+      color: AppColor.colorItemRecipientSelected,
+      padding: const EdgeInsetsDirectional.only(start: 16),
+      alignment: AlignmentDirectional.centerStart,
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: AppColor.colorSpamReportBannerBackground,
+            radius: 24,
+            child: !presentationEmail.hasRead
+                ? SvgPicture.asset(controller.imagePaths.icMarkAsRead, fit: BoxFit.fill)
+                : SvgPicture.asset(
+                    controller.imagePaths.icUnreadEmail,
+                    fit: BoxFit.fill,
+                    colorFilter: AppColor.primaryColor.asFilter(),
+                  ),
+          ),
+          const SizedBox(width: 11),
+          Text(
+            !presentationEmail.hasRead
+                ? AppLocalizations.of(context).mark_as_read
+                : AppLocalizations.of(context).mark_as_unread,
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+              fontSize: 15,
+              color: AppColor.primaryColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmailSwipeSecondaryBackground(BuildContext context) {
+    return Container(
+      color: AppColor.colorItemRecipientSelected,
+      padding: const EdgeInsetsDirectional.only(end: 16),
+      alignment: AlignmentDirectional.centerEnd,
+      child: Row(
+        children: [
+          const Spacer(),
+          CircleAvatar(
+            backgroundColor: AppColor.colorSpamReportBannerBackground,
+            radius: 24,
+            child: SvgPicture.asset(controller.imagePaths.icMailboxArchived, fit: BoxFit.fill),
+          ),
+          const SizedBox(width: 11),
+          Text(
+            AppLocalizations.of(context).archiveMessage,
+            style: ThemeUtils.defaultTextStyleInterFont.copyWith(
+              fontSize: 15,
+              color: AppColor.primaryColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _handleEmailActionClicked(

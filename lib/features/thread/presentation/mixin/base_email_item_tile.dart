@@ -10,7 +10,6 @@ import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
@@ -26,16 +25,16 @@ typedef OnMoreActionClick = Future<void> Function(PresentationEmail, RelativeRec
 
 mixin BaseEmailItemTile {
 
-  final responsiveUtils = Get.find<ResponsiveUtils>();
-  final imagePaths = Get.find<ImagePaths>();
+  ResponsiveUtils get responsiveUtils;
+
+  ImagePaths get imagePaths;
 
   Widget buildMailboxContain(
     BuildContext context,
-    bool isSearchEmailRunning,
-    bool isLabelMailboxOpened,
+    bool showMailboxLabel,
     PresentationEmail email
   ) {
-    if (hasMailboxLabel(isSearchEmailRunning, isLabelMailboxOpened, email)) {
+    if (hasMailboxLabel(showMailboxLabel, email)) {
       return Container(
           margin: const EdgeInsetsDirectional.only(start: 8),
           padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
@@ -69,17 +68,12 @@ mixin BaseEmailItemTile {
   Color buildTextColorForReadEmail(PresentationEmail email) =>
       email.hasRead ? AppColor.steelGray400 : Colors.black;
 
-  bool hasMailboxLabel(
-    bool isSearchEmailRunning,
-    bool isLabelMailboxOpened,
-    PresentationEmail email,
-  ) {
-    return (isSearchEmailRunning || isLabelMailboxOpened) &&
-        email.mailboxContain != null;
+  bool hasMailboxLabel(bool showMailboxLabel, PresentationEmail email) {
+    return showMailboxLabel && email.mailboxContain != null;
   }
 
   String informationSender(PresentationEmail email, PresentationMailbox? mailbox) {
-    if (mailbox?.isSent == true || mailbox?.isDrafts == true || mailbox?.isOutbox == true) {
+    if (mailbox?.isOutgoingMailbox == true) {
       return email.recipientsName();
     } else {
       return email.getSenderName();
