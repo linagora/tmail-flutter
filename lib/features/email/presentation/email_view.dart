@@ -40,8 +40,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loa
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
-import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
-import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
@@ -111,21 +109,16 @@ class EmailView extends GetWidget<SingleEmailController> {
                         openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
                         openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
                         onSelectLabelAction: (label, isSelected) =>
-                            controller.toggleLabelToEmail(
-                              presentationEmail.id!,
-                              label,
-                              isSelected,
+                            controller.onToggleLabelAction(
+                              emailId: presentationEmail.id,
+                              label: label,
+                              isSelected: isSelected,
                             ),
-                        onCreateANewLabelAction: () {
-                          controller
-                            .mailboxDashBoardController
-                            .labelController
-                            .handleLabelActionType(
-                              context: context,
-                              actionType: LabelActionType.create,
-                              accountId: controller.accountId,
-                            );
-                        },
+                        onCreateANewLabelAction: () =>
+                            controller.createNewLabelToEmail(
+                              context,
+                              presentationEmail.id,
+                            ),
                       );
                     },
                     supportBackAction: !isInsideThreadDetailView,
@@ -287,10 +280,10 @@ class EmailView extends GetWidget<SingleEmailController> {
               imagePaths: controller.imagePaths,
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,
-              onDeleteLabelAction: (label) => controller.toggleLabelToEmail(
-                presentationEmail.id!,
-                label,
-                false,
+              onDeleteLabelAction: (label) => controller.onToggleLabelAction(
+                emailId: presentationEmail.id,
+                label: label,
+                isSelected: false,
               ),
             );
           }),
@@ -332,21 +325,16 @@ class EmailView extends GetWidget<SingleEmailController> {
             openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
             onSelectLabelAction: (label, isSelected) =>
-                controller.toggleLabelToEmail(
-                  presentationEmail.id!,
-                  label,
-                  isSelected,
+                controller.onToggleLabelAction(
+                  emailId: presentationEmail.id,
+                  label: label,
+                  isSelected: isSelected,
                 ),
-            onCreateANewLabelAction: () {
-              controller
-                .mailboxDashBoardController
-                .labelController
-                .handleLabelActionType(
-                  context: context,
-                  actionType: LabelActionType.create,
-                  accountId: controller.accountId,
-                );
-            },
+            onCreateANewLabelAction: () =>
+                controller.createNewLabelToEmail(
+                  context,
+                  presentationEmail.id,
+                ),
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           mailboxContain: presentationEmail.findMailboxContain(

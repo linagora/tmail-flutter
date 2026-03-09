@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_sort_order_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/preferences_setting_manager.dart';
@@ -54,6 +55,7 @@ class LocalBindings extends Bindings {
     _bindingKeychainSharing();
     _bindingCaching();
     _bindingWorkerQueue();
+    _bindingVerifyLogicInteractor();
   }
 
   void _bindingCaching() {
@@ -128,5 +130,9 @@ class LocalBindings extends Bindings {
 
   void _bindingKeychainSharing() {
     Get.put(KeychainSharingManager(Get.find<FlutterSecureStorage>()));
+  }
+
+  void _bindingVerifyLogicInteractor() {
+    Get.put(VerifyNameInteractor());
   }
 }

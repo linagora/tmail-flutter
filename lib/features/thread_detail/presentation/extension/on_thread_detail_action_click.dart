@@ -126,7 +126,6 @@ extension OnThreadDetailActionClick on ThreadDetailController {
         _moveToMailbox(mailboxId, threadDetailActionType);
         break;
       case EmailActionType.labelAs:
-        if (!mailboxDashBoardController.isLabelAvailable) return;
         openAddLabelToEmailDialogModal();
         break;
       default:
@@ -206,6 +205,8 @@ extension OnThreadDetailActionClick on ThreadDetailController {
                 context: currentContext!,
                 actionType: LabelActionType.create,
                 accountId: accountId,
+                onLabelActionCallback: (label) =>
+                    toggleLabelToThread(label, isSelected: true),
               );
             }
           ),

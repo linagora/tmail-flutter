@@ -140,10 +140,7 @@ class _AddLabelToEmailModalState extends State<AddLabelToEmailModal> {
                   textStyle: ThemeUtils.textStyleM3LabelLarge(
                     color: AppColor.primaryMain,
                   ),
-                  onTapActionCallback: () {
-                    popBack();
-                    widget.onCreateANewLabelAction();
-                  },
+                  onTapActionCallback: widget.onCreateANewLabelAction,
                 ),
               ],
             ),

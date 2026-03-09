@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
+import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:flutter/material.dart';
 
 class ModalListActionButtonWidget extends StatelessWidget {
@@ -11,6 +12,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
   final VoidCallback onPositiveAction;
   final EdgeInsetsGeometry? padding;
   final bool isPositiveActionEnabled;
+  final bool isProgressing;
 
   const ModalListActionButtonWidget({
     super.key,
@@ -19,6 +21,7 @@ class ModalListActionButtonWidget extends StatelessWidget {
     required this.onPositiveAction,
     required this.onNegativeAction,
     this.isPositiveActionEnabled = true,
+    this.isProgressing = false,
     this.padding,
     this.positiveKey,
     this.negativeKey,
@@ -52,12 +55,25 @@ class ModalListActionButtonWidget extends StatelessWidget {
       ),
     );
 
+    Widget progressingButton = const SizedBox(
+      height: 48,
+      width: 153,
+      child: ConfirmDialogButton(
+        label: '',
+        padding: EdgeInsets.zero,
+        backgroundColor: AppColor.primaryMain,
+        child: CupertinoLoadingWidget(color: Colors.white),
+      ),
+    );
+
     Widget bodyWidget = Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Flexible(child: negativeButton),
         const SizedBox(width: 8),
-        Flexible(child: positiveButton),
+        Flexible(
+          child: isProgressing ? progressingButton : positiveButton,
+        ),
       ],
     );
 

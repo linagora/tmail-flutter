@@ -98,7 +98,7 @@ class DialogRouter {
     }
   }
 
-  Future<void> openDialogModal({
+  Future<dynamic> openDialogModal({
     required Widget child,
     required String dialogLabel,
   }) async {
@@ -107,7 +107,7 @@ class DialogRouter {
         _isMapDialogOpened[dialogLabel] = true;
       }
 
-      await Get.generalDialog(
+      return await Get.generalDialog(
         barrierDismissible: true,
         barrierLabel: dialogLabel,
         pageBuilder: (_, __, ___) => child,

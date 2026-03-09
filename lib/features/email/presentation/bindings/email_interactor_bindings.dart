@@ -16,7 +16,6 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_entire_message_as_document_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
@@ -24,7 +23,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/remove_a_label_from_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -119,12 +117,6 @@ class EmailInteractorBindings extends InteractorsBindings {
         Get.find<EmailRepository>(),
       ));
     }
-    Get.lazyPut<AddALabelToAnEmailInteractor>(
-      () => AddALabelToAnEmailInteractor(Get.find<EmailRepository>()),
-    );
-    Get.lazyPut<RemoveALabelFromAnEmailInteractor>(
-      () => RemoveALabelFromAnEmailInteractor(Get.find<EmailRepository>()),
-    );
   }
 
   @override

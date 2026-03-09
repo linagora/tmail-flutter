@@ -3,11 +3,14 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_item_context_menu.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnCreateANewLabelAction = void Function();
+typedef OnCreateANewLabelToEmailAction = void Function(EmailId emailId);
+typedef OnCreateANewLabelToThreadAction = void Function(List<EmailId> emailIds);
 
 class LabelListContextMenu extends StatelessWidget {
   final List<Label> labelList;

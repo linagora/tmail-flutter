@@ -8,6 +8,7 @@ class CupertinoLoadingWidget extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool isCenter;
   final String? semanticLabel;
+  final Color? color;
 
   const CupertinoLoadingWidget({
     super.key,
@@ -15,6 +16,7 @@ class CupertinoLoadingWidget extends StatelessWidget {
     this.padding,
     this.isCenter = true,
     this.semanticLabel,
+    this.color,
   });
 
   @override
@@ -24,8 +26,8 @@ class CupertinoLoadingWidget extends StatelessWidget {
           child: SizedBox(
             width: size ?? CupertinoLoadingWidgetStyles.size,
             height: size ?? CupertinoLoadingWidgetStyles.size,
-            child: const CupertinoActivityIndicator(
-              color: CupertinoLoadingWidgetStyles.progressColor
+            child: CupertinoActivityIndicator(
+              color: color ?? CupertinoLoadingWidgetStyles.progressColor
             )
           )
         )
@@ -34,8 +36,8 @@ class CupertinoLoadingWidget extends StatelessWidget {
           child: SizedBox(
             width: size ?? CupertinoLoadingWidgetStyles.size,
             height: size ?? CupertinoLoadingWidgetStyles.size,
-            child: const CupertinoActivityIndicator(
-              color: CupertinoLoadingWidgetStyles.progressColor
+            child: CupertinoActivityIndicator(
+              color: color ?? CupertinoLoadingWidgetStyles.progressColor
             )
           ),
         );

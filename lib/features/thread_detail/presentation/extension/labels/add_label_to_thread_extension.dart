@@ -34,7 +34,7 @@ extension AddLabelToThreadExtension on ThreadDetailController {
 
     final emailIds = emailsInThreadDetailInfo.emailIdsToDisplay(true);
 
-    await DialogRouter().openDialogModal(
+    final newLabel = await DialogRouter().openDialogModal(
       child: AddLabelToEmailModal(
         labels: labels,
         emailLabels: threadLabels,
@@ -55,11 +55,16 @@ extension AddLabelToThreadExtension on ThreadDetailController {
             context: currentContext!,
             actionType: LabelActionType.create,
             accountId: accountId,
+            shouldPop: true,
           );
         },
       ),
       dialogLabel: 'add-label-to-thread-modal',
     );
+
+    if (newLabel is Label) {
+      toggleLabelToThread(newLabel, isSelected: true);
+    }
   }
 
   void toggleLabelToThread(
