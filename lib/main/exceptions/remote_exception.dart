@@ -116,7 +116,8 @@ class RefreshTokenFailedException extends RemoteException {
     Object? message
   }) : super(
     code: code,
-    message: message ?? 'Refresh Token failed with 400 Bad Request. The session is invalid/revoked.',
+    message: message ?? 
+      'Refresh Token failed with status $code. The session is invalid/revoked.',
 );
 
   @override

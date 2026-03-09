@@ -14,6 +14,9 @@ abstract class CacheException with EquatableMixin implements Exception {
     }
     return exceptionName;
   }
+
+  @override
+  List<Object?> get props => [message];
 }
 
 class UnknownCacheError extends CacheException {
