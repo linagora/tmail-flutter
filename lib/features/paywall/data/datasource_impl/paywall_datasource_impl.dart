@@ -1,7 +1,7 @@
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/linagora_ecosystem_api.dart';
 import 'package:tmail_ui_user/features/paywall/data/datasource/paywall_datasource.dart';
 import 'package:tmail_ui_user/features/paywall/domain/model/paywall_url_pattern.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class PaywallDatasourceImpl extends PaywallDatasource {
   final LinagoraEcosystemApi _linagoraEcosystemApi;

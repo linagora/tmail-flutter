@@ -4,7 +4,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/contact/data/datasource/auto_complete_datasource.dart';
 import 'package:tmail_ui_user/features/contact/data/network/contact_api.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class TMailContactDataSourceImpl extends AutoCompleteDataSource {
 

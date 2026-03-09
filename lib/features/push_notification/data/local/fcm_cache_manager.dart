@@ -30,9 +30,9 @@ class FCMCacheManager extends CacheManagerInteraction {
       return jmap.State(stateValue);
     } else {
       if (typeName == TypeName.emailDelivery) {
-        throw NotFoundEmailDeliveryStateException();
+        throw const NotFoundEmailDeliveryStateException();
       } else {
-        throw NotFoundStateToRefreshException();
+        throw const NotFoundStateToRefreshException();
       }
     }
   }
@@ -56,7 +56,7 @@ class FCMCacheManager extends CacheManagerInteraction {
   Future<FirebaseRegistrationCache> getStoredFirebaseRegistration() async {
     final firebaseRegistration = await _firebaseRegistrationCacheClient.getItem(FirebaseRegistrationCache.keyCacheValue);
     if (firebaseRegistration == null) {
-      throw NotFoundFirebaseRegistrationCacheException();
+      throw const NotFoundFirebaseRegistrationCacheException();
     } else {
       return firebaseRegistration;
     }

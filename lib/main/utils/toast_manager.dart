@@ -51,7 +51,10 @@ import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_sta
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/exceptions/permission_exception.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -95,7 +98,7 @@ class ToastManager {
       return appLocalizations.badCredentials;
     } else if (exception is ConnectionError) {
       return appLocalizations.connectionError;
-    } else if (exception is UnknownError && exception.message != null) {
+    } else if (exception is UnknownRemoteException && exception.message != null) {
       return '[${exception.code ?? ''}] ${exception.message}';
     } else if (exception is NotFoundSessionException) {
       return appLocalizations.notFoundSession;

@@ -56,7 +56,9 @@ import 'package:tmail_ui_user/features/push_notification/presentation/services/f
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -372,7 +374,7 @@ abstract class BaseController extends GetxController
           await LocalNotificationManager.instance.setUp(groupId: session.username.value);
         }
       } else {
-        throw NotSupportFCMException();
+        throw const NotSupportFCMException();
       }
     } catch(e) {
       logWarning('$runtimeType::injectFCMBindings(): exception: $e');
@@ -612,7 +614,7 @@ abstract class BaseController extends GetxController
 
     final exception = failure.exception;
     final errorMessage = exception is MethodLevelErrors && exception.message != null
-      ? AppLocalizations.of(currentContext!).unexpectedError('${exception.message!}')
+      ? AppLocalizations.of(currentContext!).unexpectedError(exception.message!)
       : AppLocalizations.of(currentContext!).unknownError;
 
     appToast.showToastMessageWithMultipleActions(

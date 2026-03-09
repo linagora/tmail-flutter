@@ -1,5 +1,5 @@
 import 'package:core/utils/app_logger.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class CacheExceptionThrower extends ExceptionThrower {
 

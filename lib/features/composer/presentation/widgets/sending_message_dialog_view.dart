@@ -16,7 +16,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/generate_email_stat
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -79,7 +79,7 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
 
   void _handleErrorStream(Object error, StackTrace stackTrace) {
     logWarning('_SendingMessageDialogViewState::_handleErrorStream: Exception = $error');
-    if (error is UnknownError && error.message is List<SendingEmailCanceledException>) {
+    if (error is UnknownRemoteException && error.message is List<SendingEmailCanceledException>) {
       popBack(result: SendEmailFailure(exception: SendingEmailCanceledException()));
     } else {
       popBack(result: SendEmailFailure(exception: error));

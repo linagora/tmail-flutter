@@ -5,7 +5,7 @@ import 'package:model/email/attachment.dart';
 import 'package:model/email/email_content.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class HtmlDataSourceImpl extends HtmlDataSource {
 

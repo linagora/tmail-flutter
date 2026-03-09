@@ -3,7 +3,7 @@ import 'package:contacts_service/contacts_service.dart' as contact_service;
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class ContactDataSourceImpl extends ContactDataSource {
 

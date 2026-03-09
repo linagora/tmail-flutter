@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/login/domain/repository/company_server_lo
 import 'package:tmail_ui_user/features/login/domain/usecases/get_company_server_login_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/remove_company_server_login_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_company_server_login_info_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 
 class CompanyServerLoginInteractorBindings extends InteractorsBindings {
   @override

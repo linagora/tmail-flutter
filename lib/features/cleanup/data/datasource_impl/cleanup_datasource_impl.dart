@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_url_cle
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_login_username_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class CleanupDataSourceImpl extends CleanupDataSource {
 

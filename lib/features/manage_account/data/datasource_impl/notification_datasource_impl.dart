@@ -3,7 +3,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/notification_datasource.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:tmail_ui_user/main/permissions/notification_permission_service.dart';
 
 class NotificationDataSourceImpl implements NotificationDataSource {

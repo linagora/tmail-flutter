@@ -6,7 +6,7 @@ import 'package:jmap_dart_client/jmap/mail/extensions/public_asset/public_asset.
 import 'package:tmail_ui_user/features/public_asset/data/datasource/public_asset_datasource.dart';
 import 'package:tmail_ui_user/features/public_asset/data/network/public_asset_api.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/repository/public_asset_repository.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class RemotePublicAssetDatasourceImpl implements PublicAssetDatasource {
   const RemotePublicAssetDatasourceImpl(this._publicAssetApi, this._exceptionThrower);

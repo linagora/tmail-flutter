@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/paywall/data/datasource_impl/paywall_data
 import 'package:tmail_ui_user/features/paywall/data/repository/paywall_repository_impl.dart';
 import 'package:tmail_ui_user/features/paywall/domain/repository/paywall_repository.dart';
 import 'package:tmail_ui_user/features/paywall/domain/usecases/get_paywall_url_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 class PaywallBindings extends InteractorsBindings {
   @override

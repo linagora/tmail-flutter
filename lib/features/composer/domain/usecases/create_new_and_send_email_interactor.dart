@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/create_email_
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
 
 class CreateNewAndSendEmailInteractor {
   final EmailRepository _emailRepository;
@@ -66,7 +66,7 @@ class CreateNewAndSendEmailInteractor {
       }
     } catch (e) {
       logWarning('CreateNewAndSendEmailInteractor::execute: Exception: $e');
-      if (e is UnknownError && e.message is List<SendingEmailCanceledException>) {
+      if (e is UnknownRemoteException && e.message is List<SendingEmailCanceledException>) {
         yield dartz.Left<Failure, Success>(SendEmailFailure(
           exception: SendingEmailCanceledException(),
           session: sendingEmailArguments?.session,

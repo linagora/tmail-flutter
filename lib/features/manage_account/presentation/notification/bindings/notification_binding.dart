@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/repository/notifica
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_notification_setting_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/toggle_notification_setting_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/notification_controller.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/permissions/notification_permission_service.dart';
 
 class NotificationBinding extends BaseBindings {

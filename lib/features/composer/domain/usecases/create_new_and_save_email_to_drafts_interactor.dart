@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
 
 class CreateNewAndSaveEmailToDraftsInteractor {
   final EmailRepository _emailRepository;
@@ -69,7 +69,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
       }
     } catch (e) {
       logWarning('CreateNewAndSaveEmailToDraftsInteractor::execute: Exception: $e');
-      if (e is UnknownError && e.message is List<SavingEmailToDraftsCanceledException>) {
+      if (e is UnknownRemoteException && e.message is List<SavingEmailToDraftsCanceledException>) {
         if (createEmailRequest.draftsEmailId == null) {
           yield dartz.Left<Failure, Success>(SaveEmailAsDraftsFailure(SavingEmailToDraftsCanceledException()));
         } else {

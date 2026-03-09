@@ -9,8 +9,8 @@ import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/home/data/repository/session_repository_impl.dart';
 import 'package:tmail_ui_user/features/home/domain/repository/session_repository.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 class SessionBindings extends InteractorsBindings {
 

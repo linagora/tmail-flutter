@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomp
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/contact/data/datasource_impl/tmail_contact_datasource_impl.dart';
 import 'package:tmail_ui_user/features/contact/data/network/contact_api.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 class TMailAutoCompleteBindings extends InteractorsBindings {
 

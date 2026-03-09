@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_id
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identity_signature.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class IdentityDataSourceImpl extends IdentityDataSource {
 

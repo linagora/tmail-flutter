@@ -34,7 +34,7 @@ class TokenOIDC with EquatableMixin {
 
     final accessToken = queryParams['access_token'];
     if (accessToken == null || accessToken.isEmpty) {
-      throw AccessTokenIsNullException();
+      throw const AccessTokenIsNullException();
     }
 
     final refreshToken = queryParams['refresh_token'] ?? '';

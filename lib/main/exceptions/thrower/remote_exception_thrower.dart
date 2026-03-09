@@ -9,8 +9,12 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/server_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class RemoteExceptionThrower extends ExceptionThrower {
@@ -53,7 +57,7 @@ class RemoteExceptionThrower extends ExceptionThrower {
           case HttpStatus.unauthorized:
             throw const BadCredentialsException();
           default:
-            throw UnknownError(
+            throw UnknownRemoteException(
               code: statusCode,
               message: response.statusMessage,
             );
@@ -93,9 +97,9 @@ class RemoteExceptionThrower extends ExceptionThrower {
         } else if (underlyingError is OAuthAuthorizationError) {
           throw underlyingError;
         } else if (underlyingError != null) {
-          throw UnknownError(message: underlyingError);
+          throw UnknownRemoteException(message: underlyingError.toString());
         } else {
-          throw const UnknownError();
+          throw const UnknownRemoteException();
         }
     }
   }

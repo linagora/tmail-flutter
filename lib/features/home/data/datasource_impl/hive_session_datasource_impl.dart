@@ -3,7 +3,7 @@ import 'package:tmail_ui_user/features/caching/manager/session_cache_manger.dart
 import 'package:tmail_ui_user/features/home/data/datasource/session_datasource.dart';
 import 'package:tmail_ui_user/features/home/data/extensions/session_hive_obj_extension.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class HiveSessionDataSourceImpl extends SessionDataSource {
 

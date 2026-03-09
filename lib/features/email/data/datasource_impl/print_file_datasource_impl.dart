@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasour
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class PrintFileDataSourceImpl extends PrintFileDataSource {
 

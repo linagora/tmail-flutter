@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/public_asset/domain/usecase/clean_up_publ
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public_assets_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/remove_identity_from_public_assets_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:uuid/uuid.dart';
 
 class CleanUpPublicAssetsInteractorBindings extends InteractorsBindings {

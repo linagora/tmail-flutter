@@ -2,7 +2,7 @@
 import 'package:core/core.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class ComposerDataSourceImpl extends ComposerDataSource {
 

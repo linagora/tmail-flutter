@@ -43,7 +43,7 @@ class FcmApi {
     if (matchedFirebaseRegistration?.isNotEmpty == true) {
       return matchedFirebaseRegistration!.first;
     } else {
-      throw NotFoundFirebaseRegistrationForDeviceException();
+      throw const NotFoundFirebaseRegistrationForDeviceException();
     }
   }
 
@@ -70,7 +70,7 @@ class FcmApi {
     if (firebaseRegistration != null) {
       return firebaseRegistration;
     } else {
-      throw NotFoundFirebaseRegistrationCreatedException();
+      throw const NotFoundFirebaseRegistrationCreatedException();
     }
   }
 
@@ -92,7 +92,7 @@ class FcmApi {
     if (firebaseRegistrationSetResponse?.destroyed?.contains(registrationId.id) == true) {
       return;
     } else {
-      throw NotFoundFirebaseRegistrationDestroyedException();
+      throw const NotFoundFirebaseRegistrationDestroyedException();
     }
   }
 
@@ -119,7 +119,7 @@ class FcmApi {
     if (firebaseRegistrationSetResponse?.updated?.containsKey(expiredTimeRequest.firebaseRegistrationId.id) == true) {
       return;
     } else {
-      throw NotFoundFirebaseRegistrationUpdatedException();
+      throw const NotFoundFirebaseRegistrationUpdatedException();
     }
   }
 }

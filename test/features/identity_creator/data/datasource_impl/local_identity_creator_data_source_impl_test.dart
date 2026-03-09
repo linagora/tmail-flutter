@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/id
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_in_identity_arguments.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:universal_html/html.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
