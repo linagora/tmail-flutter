@@ -1,4 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -39,8 +40,6 @@ class DesktopListEmailActionHoverWidget extends StatefulWidget {
 
 class _DesktopListEmailActionHoverWidgetState
     extends State<DesktopListEmailActionHoverWidget> with BaseEmailItemTile {
-  final _imagePaths = Get.find<ImagePaths>();
-
   bool _popupMenuVisible = false;
 
   @override
@@ -48,7 +47,7 @@ class _DesktopListEmailActionHoverWidgetState
     final listActionWidget = [
       if (widget.isHovered) ...[
         TMailButtonWidget.fromIcon(
-          icon: _imagePaths.icOpenInNewTab,
+          icon: imagePaths.icOpenInNewTab,
           iconColor: ItemEmailTileStyles.actionIconHoverColor,
           iconSize: _getIconSize(),
           padding: _getPaddingIcon(),
@@ -62,8 +61,8 @@ class _DesktopListEmailActionHoverWidgetState
         if (!widget.presentationEmail.isDraft)
           TMailButtonWidget.fromIcon(
             icon: widget.presentationEmail.hasRead
-                ? _imagePaths.icUnread
-                : _imagePaths.icRead,
+                ? imagePaths.icUnread
+                : imagePaths.icRead,
             iconColor: ItemEmailTileStyles.actionIconHoverColor,
             iconSize: _getIconSize(),
             padding: _getPaddingIcon(),
@@ -82,7 +81,7 @@ class _DesktopListEmailActionHoverWidgetState
         if (widget.mailboxContain != null &&
             widget.mailboxContain?.isDrafts == false) ...[
           TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icMove,
+            icon: imagePaths.icMove,
             iconColor: ItemEmailTileStyles.actionIconHoverColor,
             iconSize: _getIconSize(),
             padding: _getPaddingIcon(),
@@ -96,7 +95,7 @@ class _DesktopListEmailActionHoverWidgetState
           ),
         ],
         TMailButtonWidget.fromIcon(
-          icon: _imagePaths.icDeleteComposer,
+          icon: imagePaths.icDeleteComposer,
           iconColor: ItemEmailTileStyles.actionIconHoverColor,
           iconSize: _getIconSize(),
           padding: _getPaddingIcon(),
@@ -115,7 +114,7 @@ class _DesktopListEmailActionHoverWidgetState
       ],
       if (_shouldShowPopupMenu) ...[
         TMailButtonWidget.fromIcon(
-          icon: _imagePaths.icMoreVertical,
+          icon: imagePaths.icMoreVertical,
           iconColor: ItemEmailTileStyles.actionIconHoverColor,
           iconSize: _getIconSize(),
           padding: _getPaddingIcon(),
@@ -176,4 +175,10 @@ class _DesktopListEmailActionHoverWidgetState
       });
     }
   }
+
+  @override
+  ImagePaths get imagePaths => Get.find<ImagePaths>();
+
+  @override
+  ResponsiveUtils get responsiveUtils => Get.find<ResponsiveUtils>();
 }
