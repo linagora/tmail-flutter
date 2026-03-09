@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 
 class IdentityCreatorBindings extends BaseBindings {
   @override

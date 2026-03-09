@@ -7,7 +7,7 @@ import 'package:mockito/annotations.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:tmail_ui_user/features/contact/data/datasource_impl/tmail_contact_datasource_impl.dart';
 import 'package:tmail_ui_user/features/contact/data/network/contact_api.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 import 'tmail_contact_datasource_impl_test.mocks.dart';
 

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 
 bool isNotBadCredentialsExceptionUseIsNotOperator(dynamic exception) {
   return exception is! BadCredentialsException;

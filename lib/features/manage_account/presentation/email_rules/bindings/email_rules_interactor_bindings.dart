@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_ema
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 class EmailRulesInteractorBindings extends InteractorsBindings {
 

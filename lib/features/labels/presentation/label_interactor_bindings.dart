@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/labels/domain/usecases/delete_a_label_int
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_label_changes_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:uuid/uuid.dart';
 
 class LabelInteractorBindings extends InteractorsBindings {

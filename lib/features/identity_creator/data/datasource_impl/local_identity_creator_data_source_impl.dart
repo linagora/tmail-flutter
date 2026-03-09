@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/identity_creator/data/datasource/identity_creator_data_source.dart';
 import 'package:tmail_ui_user/features/identity_creator/data/model/identity_cache_model.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/model/identity_cache.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:universal_html/html.dart';
 
 class LocalIdentityCreatorDataSourceImpl implements IdentityCreatorDataSource {

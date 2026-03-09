@@ -38,8 +38,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_inte
 import 'package:tmail_ui_user/features/login/domain/usecases/remove_auth_destination_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class CredentialBindings extends InteractorsBindings {

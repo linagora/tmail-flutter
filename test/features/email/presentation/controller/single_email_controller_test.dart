@@ -52,7 +52,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';

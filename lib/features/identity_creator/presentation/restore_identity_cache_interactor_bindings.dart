@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/identity_creator/domain/repository/identi
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/remove_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 
 class RestoreIdentityCacheInteractorBindings extends InteractorsBindings {
   static const _tag = BindingTag.restoreIdentityCacheInteractorBindingsTag;

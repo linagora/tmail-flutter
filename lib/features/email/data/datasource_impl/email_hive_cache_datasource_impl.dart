@@ -48,7 +48,7 @@ import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.
 import 'package:tmail_ui_user/features/thread/data/extensions/email_cache_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class EmailHiveCacheDataSourceImpl extends EmailDataSource {
 

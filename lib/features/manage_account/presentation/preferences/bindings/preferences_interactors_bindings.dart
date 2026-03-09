@@ -14,8 +14,8 @@ import 'package:tmail_ui_user/features/server_settings/data/repository/server_se
 import 'package:tmail_ui_user/features/server_settings/domain/repository/server_settings_repository.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/update_server_setting_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 class PreferencesInteractorsBindings extends InteractorsBindings {
 

@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/push_notification/data/network/web_socket
 import 'package:tmail_ui_user/features/push_notification/data/repository/web_socket_repository_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/web_socket_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/connect_web_socket_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 class WebSocketInteractorBindings extends InteractorsBindings {
   @override

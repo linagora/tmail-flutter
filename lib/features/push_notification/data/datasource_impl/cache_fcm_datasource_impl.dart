@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/push_notification/data/extensions/firebas
 import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class CacheFCMDatasourceImpl extends FCMDatasource {
 

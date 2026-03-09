@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_user_info_
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 abstract class ReloadableController extends BaseController {

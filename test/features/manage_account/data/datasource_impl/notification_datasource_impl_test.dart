@@ -5,7 +5,7 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/notification_datasource_impl.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:tmail_ui_user/main/permissions/notification_permission_service.dart';
 
 import 'notification_datasource_impl_test.mocks.dart';

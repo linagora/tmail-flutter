@@ -1,7 +1,7 @@
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/password.dart';
 import 'package:tmail_ui_user/features/login/data/datasource/authentication_datasource.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class AuthenticationDataSourceImpl extends AuthenticationDataSource {
 

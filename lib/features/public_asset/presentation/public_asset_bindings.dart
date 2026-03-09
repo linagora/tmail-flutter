@@ -23,8 +23,8 @@ import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_
 import 'package:tmail_ui_user/features/upload/data/datasource_impl/attachment_upload_datasource_impl.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:uuid/uuid.dart';
 
 class PublicAssetBindings extends BaseBindings {

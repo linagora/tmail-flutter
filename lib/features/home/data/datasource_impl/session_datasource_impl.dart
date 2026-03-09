@@ -2,7 +2,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/home/data/datasource/session_datasource.dart';
 import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class SessionDataSourceImpl extends SessionDataSource {
 

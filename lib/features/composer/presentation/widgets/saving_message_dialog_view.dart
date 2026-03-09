@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_draft
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -82,7 +82,7 @@ class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
 
   void _handleErrorStream(Object error, StackTrace stackTrace) {
     logWarning('_SavingMessageDialogViewState::_handleErrorStream: Exception = $error');
-    if (error is UnknownError && error.message is List<SavingEmailToDraftsCanceledException>) {
+    if (error is UnknownRemoteException && error.message is List<SavingEmailToDraftsCanceledException>) {
       popBack(result: SaveEmailAsDraftsFailure(SavingEmailToDraftsCanceledException()));
     } else {
       popBack(result: SaveEmailAsDraftsFailure(error));

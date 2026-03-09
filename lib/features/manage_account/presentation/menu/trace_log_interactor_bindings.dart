@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/trace
 import 'package:tmail_ui_user/features/manage_account/data/repository/trace_log_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/trace_log_repository_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/export_trace_log_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/permissions/permission_service.dart';
 
 class TraceLogInteractorBindings extends InteractorsBindings {

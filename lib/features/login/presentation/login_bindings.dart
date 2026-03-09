@@ -33,8 +33,8 @@ import 'package:tmail_ui_user/features/starting_page/data/datasource_impl/saas_a
 import 'package:tmail_ui_user/features/starting_page/data/repository/saas_authentication_repository_impl.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/repository/saas_authentication_repository.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 class LoginBindings extends BaseBindings {
 

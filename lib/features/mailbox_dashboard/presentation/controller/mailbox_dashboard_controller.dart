@@ -211,7 +211,7 @@ import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';

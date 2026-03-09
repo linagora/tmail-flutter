@@ -4,7 +4,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/app_gri
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/app_dashboard_configuration_parser.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_applications.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class LocalAppGridDatasourceImpl extends AppGridDatasource {
 

@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.da
 import 'package:tmail_ui_user/features/push_notification/domain/extensions/firebase_registration_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/register_new_token_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/model/update_token_expired_time_request.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class FcmDatasourceImpl extends FCMDatasource {
 

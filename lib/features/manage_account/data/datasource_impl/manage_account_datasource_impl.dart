@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/p
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/spam_report_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/text_formatting_menu_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/thread_detail_config.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class ManageAccountDataSourceImpl extends ManageAccountDataSource {
 

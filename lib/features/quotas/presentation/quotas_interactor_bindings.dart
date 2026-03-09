@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/quotas/data/repository/quotas_repository_impl.dart';
 import 'package:tmail_ui_user/features/quotas/domain/repository/quotas_repository.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 class QuotasInteractorBindings extends InteractorsBindings {
 

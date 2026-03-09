@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/labels/data/datasource/label_datasource.d
 import 'package:tmail_ui_user/features/labels/data/model/label_change_response.dart';
 import 'package:tmail_ui_user/features/labels/data/network/label_api.dart';
 import 'package:tmail_ui_user/features/labels/domain/model/edit_label_request.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class LabelDatasourceImpl extends LabelDatasource {
   final LabelApi _labelApi;

@@ -2,7 +2,7 @@ import 'package:tmail_ui_user/features/login/data/datasource/login_datasource.da
 import 'package:tmail_ui_user/features/login/data/network/dns_lookup/dns_lookup_manager.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class LoginDataSourceImpl implements LoginDataSource {
   

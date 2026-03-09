@@ -12,7 +12,7 @@ import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/download/data/datasource/download_datasource.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class DownloadDatasourceImpl extends DownloadDatasource {
   final EmailAPI _emailAPI;

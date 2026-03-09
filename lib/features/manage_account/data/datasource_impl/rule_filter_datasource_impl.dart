@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/features/manage_account/data/network/rule_filter_a
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/delete_email_rule_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 
 class RuleFilterDataSourceImpl extends RuleFilterDataSource {
 

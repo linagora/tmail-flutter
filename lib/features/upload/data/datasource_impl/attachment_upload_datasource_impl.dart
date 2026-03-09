@@ -5,7 +5,7 @@ import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_attachment.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:uuid/uuid.dart';
 
 class AttachmentUploadDataSourceImpl extends AttachmentUploadDataSource {

@@ -37,8 +37,8 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_
 import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
-import 'package:tmail_ui_user/main/exceptions/send_email_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/send_email_exception_thrower.dart';
 
 class EmailDataSourceImpl extends EmailDataSource {
 

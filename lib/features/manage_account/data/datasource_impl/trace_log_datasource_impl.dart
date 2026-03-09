@@ -6,7 +6,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/trace_log_datasource.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/permission_exception.dart';
 import 'package:tmail_ui_user/main/permissions/permission_service.dart';
 

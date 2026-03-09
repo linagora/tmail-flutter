@@ -35,7 +35,7 @@ class GetNewReceiveEmailFromNotificationInteractor {
         log('GetNewReceiveEmailFromNotificationInteractor::execute: listEmailIds = $listEmailIds');
         yield Right<Failure, Success>(GetNewReceiveEmailFromNotificationSuccess(accountId, session, listEmailIds));
       } else {
-        yield Left<Failure, Success>(GetNewReceiveEmailFromNotificationFailure(EmailStateNoChangeException()));
+        yield Left<Failure, Success>(GetNewReceiveEmailFromNotificationFailure(const EmailStateNoChangeException()));
       }
     } catch (e) {
       yield Left<Failure, Success>(GetNewReceiveEmailFromNotificationFailure(e));

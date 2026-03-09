@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/login/domain/state/dns_lookup_to_get_jmap
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';

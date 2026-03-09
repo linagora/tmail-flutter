@@ -207,7 +207,7 @@ class FCMRepositoryImpl extends FCMRepository {
     if (changesResponse.created?.isNotEmpty == true) {
       return _validateMaximumNewEmailsRetrieved(changesResponse.created!);
     } else {
-      throw NotFoundNewReceiveEmailException();
+      throw const NotFoundNewReceiveEmailException();
     }
   }
 

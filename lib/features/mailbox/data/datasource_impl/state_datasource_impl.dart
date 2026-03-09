@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
-import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class StateDataSourceImpl extends StateDataSource {

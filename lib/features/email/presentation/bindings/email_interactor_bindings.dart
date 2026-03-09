@@ -44,8 +44,8 @@ import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_m
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
-import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class EmailInteractorBindings extends InteractorsBindings {

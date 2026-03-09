@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/features/manage_account/data/repository/vacation_r
 import 'package:tmail_ui_user/features/manage_account/domain/repository/vacation_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 
 class VacationInteractorsBindings extends InteractorsBindings {
 
