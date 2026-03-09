@@ -20,7 +20,7 @@ mixin LabelModalMixin {
   }) async {
     return DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
-        key: const Key('create_label_modal'),
+        key: const Key('create_new_label_modal'),
         labels: labels,
         accountId: accountId,
         imagePaths: imagePaths,

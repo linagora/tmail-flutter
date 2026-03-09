@@ -52,8 +52,8 @@ class CreateANewTagFromAnEmailScenario extends BaseTestScenario
     const newLabelName = 'New Label 1';
     await createLabelModalRobot.enterNewLabelName(newLabelName);
     await createLabelModalRobot.tapPositiveActionButton(LabelActionType.create);
-    await _expectLabelWithNewNameCreated(
-      AppLocalizations().createLabelSuccessfullyMessage(newLabelName),
+    await _expectLabelAsToEmailToastMessageSuccessVisible(
+      AppLocalizations().addLabelToEmailSuccessfullyMessage(newLabelName),
     );
   }
 
@@ -62,14 +62,14 @@ class CreateANewTagFromAnEmailScenario extends BaseTestScenario
   }
 
   Future<void> _expectAddLabelModalVisible() async {
-    await expectViewVisible($(#add_label_modal));
+    await expectViewVisible($(#add_label_to_email_modal));
   }
 
   Future<void> _expectCreateNewLabelModalVisible() async {
     await expectViewVisible($(#create_new_label_modal));
   }
 
-  Future<void> _expectLabelWithNewNameCreated(String name) async {
+  Future<void> _expectLabelAsToEmailToastMessageSuccessVisible(String name) async {
     await expectViewVisible($(find.text(name)));
   }
 }
