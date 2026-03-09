@@ -1,29 +1,29 @@
 {
-  "initializing_data": "Memuat data...",
+  "initializing_data": "Menginisialisasi data...",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login_text_slogan": "Pesan Tim",
+  "login_text_slogan": "Twake Mail",
   "@login_text_slogan": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyListEmailForward": "Silakan masukkan penerima pesan",
+  "emptyListEmailForward": "Silakan masukkan setidaknya satu penerima",
   "@emptyListEmailForward": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "endTime": "",
+  "endTime": "Waktu akhir",
   "@endTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_upload_attachments_exceeds_maximum_size": "",
+  "message_dialog_upload_attachments_exceeds_maximum_size": "Anda telah mencapai ukuran berkas maksimum. Silakan unggah berkas dengan total ukuran kurang dari {maxSize}",
   "@message_dialog_upload_attachments_exceeds_maximum_size": {
     "type": "text",
     "placeholders_order": [
@@ -33,49 +33,49 @@
       "maxSize": {}
     }
   },
-  "thisHtmlAttachmentCannotBePreviewed": "",
+  "thisHtmlAttachmentCannotBePreviewed": "Lampiran html ini tidak dapat dipratinjau",
   "@thisHtmlAttachmentCannotBePreviewed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageCannotFoundIdentityWhenSendReceipt": "",
+  "toastMessageCannotFoundIdentityWhenSendReceipt": "ID identitas yang diberikan tidak dapat ditemukan",
   "@toastMessageCannotFoundIdentityWhenSendReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_subject": "",
+  "empty_subject": "Subjek kosong",
   "@empty_subject": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subTitleReadReceiptRequestNotificationMessage": "",
+  "subTitleReadReceiptRequestNotificationMessage": "Pengirim telah meminta tanda terima baca untuk email ini. Kirim tanda terima baca?",
   "@subTitleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createANewFolder": "",
+  "createANewFolder": "Buat Folder Baru",
   "@createANewFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "preview": "",
+  "preview": "Pratinjau",
   "@preview": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageRussian": "",
+  "languageRussian": "Rusia",
   "@languageRussian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showMoreAttachment": "",
+  "showMoreAttachment": "Tampilkan lebih banyak (+{count})",
   "@showMoreAttachment": {
     "type": "text",
     "placeholders_order": [
@@ -85,49 +85,49 @@
       "count": {}
     }
   },
-  "conditionValueHintTextInput": "",
+  "conditionValueHintTextInput": "Nilai",
   "@conditionValueHintTextInput": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardTo": "",
+  "forwardTo": "Teruskan ke",
   "@forwardTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ruleFilterAddressCcField": "",
+  "ruleFilterAddressCcField": "Cc",
   "@ruleFilterAddressCcField": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dismiss": "",
+  "dismiss": "Tutup",
   "@dismiss": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cc_email_address_prefix": "",
+  "cc_email_address_prefix": "Cc",
   "@cc_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notFoundSession": "",
+  "notFoundSession": "Sesi tidak ditemukan",
   "@notFoundSession": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "draftsMailboxDisplayName": "",
+  "draftsMailboxDisplayName": "Draf",
   "@draftsMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEmptyFolderDialog": "",
+  "messageEmptyFolderDialog": "Pesan di folder {folder} akan dihapus secara permanen dan Anda tidak akan dapat memulihkannya",
   "@messageEmptyFolderDialog": {
     "type": "text",
     "placeholders_order": [
@@ -137,91 +137,91 @@
       "folder": {}
     }
   },
-  "eventReplyWasSentUnsuccessfully": "",
+  "eventReplyWasSentUnsuccessfully": "Balasan acara gagal dikirim!",
   "@eventReplyWasSentUnsuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notContains": "",
+  "notContains": "Tidak mengandung",
   "@notContains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "archiveMessagesFailed": "",
+  "archiveMessagesFailed": "Gagal mengarsipkan pesan",
   "@archiveMessagesFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "repliedMessage": "",
+  "repliedMessage": "Pesan yang dibalas",
   "@repliedMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "close": "",
+  "close": "Tutup",
   "@close": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "progress": "",
+  "progress": "Kemajuan",
   "@progress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notSelectedMailboxToMoveMessage": "",
+  "notSelectedMailboxToMoveMessage": "Silakan pilih kotak surat untuk memindahkan pesan",
   "@notSelectedMailboxToMoveMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "confirmAllEmailHereAreSpam": "",
+  "confirmAllEmailHereAreSpam": "Konfirmasi bahwa semua email di sini adalah Spam",
   "@confirmAllEmailHereAreSpam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendMessageFailureWithSetErrorTypeOverQuota": "",
+  "sendMessageFailureWithSetErrorTypeOverQuota": "Gagal mengirim pesan Anda karena melebihi kuota.",
   "@sendMessageFailureWithSetErrorTypeOverQuota": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_attachments": "",
+  "with_attachments": "Dengan lampiran",
   "@with_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply": "",
+  "reply": "Balas",
   "@reply": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showNotifications": "",
+  "showNotifications": "Tampilkan Notifikasi",
   "@showNotifications": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknownError": "",
+  "unknownError": "Terjadi kesalahan yang tidak diketahui, silakan coba lagi",
   "@unknownError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toFolder": "",
+  "toFolder": "Ke folder:",
   "@toFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveConversation": "",
+  "moveConversation": "Pindahkan {numberOfConversation} percakapan",
   "@moveConversation": {
     "type": "text",
     "placeholders_order": [
@@ -231,103 +231,103 @@
       "numberOfConversation": {}
     }
   },
-  "folderNameCannotContainSpecialCharacters": "",
+  "folderNameCannotContainSpecialCharacters": "Nama folder tidak boleh mengandung karakter khusus",
   "@folderNameCannotContainSpecialCharacters": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bcc_to": "",
+  "bcc_to": "Bcc ke",
   "@bcc_to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fromMe": "",
+  "fromMe": "Dari saya",
   "@fromMe": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fullscreen": "",
+  "fullscreen": "Layar penuh",
   "@fullscreen": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "save": "",
+  "save": "Simpan",
   "@save": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "renameFolderFailure": "",
+  "renameFolderFailure": "Gagal mengubah nama folder",
   "@renameFolderFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subjectAscending": "",
+  "subjectAscending": "Subjek: A - Z",
   "@subjectAscending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "any": "",
+  "any": "Salah satu",
   "@any": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "senderImportantSettingExplanation": "",
+  "senderImportantSettingExplanation": "Mengaktifkan tampilan tanda email penting di kotak masuk Anda. Fitur ini dikendalikan oleh pengirim dan karena itu dapat menimbulkan penyalahgunaan.",
   "@senderImportantSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newSubfolder": "",
+  "newSubfolder": "Subfolder baru",
   "@newSubfolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mostRecent": "",
+  "mostRecent": "Terbaru",
   "@mostRecent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noSuitableBrowserForOIDC": "",
+  "noSuitableBrowserForOIDC": "Tidak ada browser yang sesuai untuk OIDC, silakan periksa dengan administrator sistem Anda",
   "@noSuitableBrowserForOIDC": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replyToAll": "",
+  "replyToAll": "Balas ke semua",
   "@replyToAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageSendReceiptSuccess": "",
+  "toastMessageSendReceiptSuccess": "Tanda terima baca telah dikirim.",
   "@toastMessageSendReceiptSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceiptsSettingExplanation": "",
+  "emailReadReceiptsSettingExplanation": "Tanda terima baca adalah notifikasi yang dapat dikirim ke dan dari pengguna Anda untuk memverifikasi bahwa email telah dibaca.",
   "@emailReadReceiptsSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disable_filter_message_toast": "",
+  "disable_filter_message_toast": "Anda telah menonaktifkan pesan yang difilter",
   "@disable_filter_message_toast": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_multiple_item_as_read": "",
+  "marked_multiple_item_as_read": "Menandai {count} item sebagai sudah dibaca",
   "@marked_multiple_item_as_read": {
     "type": "text",
     "placeholders_order": [
@@ -337,49 +337,49 @@
       "count": {}
     }
   },
-  "messageWarningDialogForForwardsToOtherDomains": "",
+  "messageWarningDialogForForwardsToOtherDomains": "Anda sedang mengalihkan email ke domain lain. Ini dapat menjadi ancaman keamanan atau dianggap sebagai ekstraksi data ilegal.",
   "@messageWarningDialogForForwardsToOtherDomains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose_email": "",
+  "compose_email": "Tulis email",
   "@compose_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "signIn": "",
+  "signIn": "Masuk",
   "@signIn": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailRules": "",
+  "emailRules": "Aturan Email",
   "@emailRules": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewFolderFailure": "",
+  "createNewFolderFailure": "Gagal membuat folder baru",
   "@createNewFolderFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailToAttendees": "",
+  "mailToAttendees": "Email ke peserta",
   "@mailToAttendees": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allTime": "",
+  "allTime": "Sepanjang waktu",
   "@allTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_unstar_multiple_item": "",
+  "marked_unstar_multiple_item": "Menghapus tanda bintang pada {count} item",
   "@marked_unstar_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -389,157 +389,157 @@
       "count": {}
     }
   },
-  "youAreInOfflineMode": "",
+  "youAreInOfflineMode": "Anda sedang dalam mode offline",
   "@youAreInOfflineMode": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageCannotFoundEmailIdWhenSendReceipt": "",
+  "toastMessageCannotFoundEmailIdWhenSendReceipt": "ID email yang diberikan tidak dapat ditemukan",
   "@toastMessageCannotFoundEmailIdWhenSendReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageErrorWhenSelectEndDateIsEmpty": "",
+  "toastMessageErrorWhenSelectEndDateIsEmpty": "Tanggal akhir tidak boleh kosong.",
   "@toastMessageErrorWhenSelectEndDateIsEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "goToSettings": "",
+  "goToSettings": "Buka Pengaturan",
   "@goToSettings": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "startToAddFavoritesEmails": "",
+  "startToAddFavoritesEmails": "Mulai tambahkan email favorit",
   "@startToAddFavoritesEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "wrongUrlMessage": "",
+  "wrongUrlMessage": "URL server tidak valid, silakan coba lagi",
   "@wrongUrlMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "externalDomain": "",
+  "externalDomain": "Domain eksternal",
   "@externalDomain": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "viewEntireMessage": "",
+  "viewEntireMessage": "Lihat seluruh pesan",
   "@viewEntireMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createRule": "",
+  "createRule": "Buat Aturan",
   "@createRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "activated": "",
+  "activated": "Diaktifkan",
   "@activated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deepRefresh": "",
+  "deepRefresh": "Segarkan mendalam",
   "@deepRefresh": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "flag": "",
+  "flag": "Tandai",
   "@flag": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thread": "",
+  "thread": "Utas",
   "@thread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveAsDraft": "",
+  "saveAsDraft": "Simpan sebagai draf",
   "@saveAsDraft": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMsgHideFolderSuccess": "",
+  "toastMsgHideFolderSuccess": "Folder ini telah disembunyikan dari folder utama Anda",
   "@toastMsgHideFolderSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerDeleteAllSpamEmailsMessage": "",
+  "bannerDeleteAllSpamEmailsMessage": "Semua pesan di Spam akan dihapus jika Anda mencapai batas penyimpanan.",
   "@bannerDeleteAllSpamEmailsMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newFilterWasCreated": "",
+  "newFilterWasCreated": "Filter baru telah dibuat",
   "@newFilterWasCreated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderVisibility": "",
+  "folderVisibility": "Visibilitas folder",
   "@folderVisibility": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredUrl": "",
+  "requiredUrl": "Alamat server wajib diisi",
   "@requiredUrl": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "previewEmailFromEMLFileFailed": "",
+  "previewEmailFromEMLFileFailed": "Tidak dapat melihat pratinjau berkas eml ini",
   "@previewEmailFromEMLFileFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "password": "",
+  "password": "kata sandi",
   "@password": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceiptsToggleDescription": "",
+  "emailReadReceiptsToggleDescription": "Selalu minta tanda terima baca pada pesan keluar",
   "@emailReadReceiptsToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "searchForFolders": "",
+  "searchForFolders": "Cari folder",
   "@searchForFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_trash": "",
+  "move_to_trash": "Pindahkan ke sampah",
   "@move_to_trash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageGerman": "",
+  "languageGerman": "Jerman",
   "@languageGerman": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "storageAvailableMessage": "",
+  "storageAvailableMessage": "Tersedia: {count}",
   "@storageAvailableMessage": {
     "type": "text",
     "placeholders_order": [
@@ -549,97 +549,97 @@
       "count": {}
     }
   },
-  "resend": "",
+  "resend": "Kirim ulang",
   "@resend": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "condition": "",
+  "condition": "Kondisi",
   "@condition": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_folder": "",
+  "search_folder": "Cari folder",
   "@search_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "byContinuingYouAreAgreeingToOur": "",
+  "byContinuingYouAreAgreeingToOur": "Dengan melanjutkan, Anda menyetujui",
   "@byContinuingYouAreAgreeingToOur": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "printingFailed": "",
+  "printingFailed": "Pencetakan gagal",
   "@printingFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clearFilter": "",
+  "clearFilter": "Hapus filter",
   "@clearFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "setDate": "",
+  "setDate": "Tetapkan tanggal",
   "@setDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addCondition": "",
+  "addCondition": "Tambahkan kondisi",
   "@addCondition": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsDisabledSuccessfully": "",
+  "yourVacationResponderIsDisabledSuccessfully": "Penjawab otomatis liburan Anda berhasil dinonaktifkan",
   "@yourVacationResponderIsDisabledSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "warningMessageWhenSendEmailFailure": "",
+  "warningMessageWhenSendEmailFailure": "Pengiriman pesan gagal.\nTerjadi kesalahan saat mengirim email.",
   "@warningMessageWhenSendEmailFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "navigation": "",
+  "navigation": "Navigasi",
   "@navigation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "zoomIn": "",
+  "zoomIn": "Perbesar",
   "@zoomIn": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwarding": "",
+  "forwarding": "Penerusan",
   "@forwarding": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_has_been_sent_successfully": "",
+  "message_has_been_sent_successfully": "Pesan berhasil dikirim",
   "@message_has_been_sent_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message": "",
+  "message": "Pesan",
   "@message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleRecipientSendingEmail": "",
+  "titleRecipientSendingEmail": "Kepada: {recipients}",
   "@titleRecipientSendingEmail": {
     "type": "text",
     "placeholders_order": [
@@ -649,187 +649,187 @@
       "recipients": {}
     }
   },
-  "saveMessageToTemplateCancelled": "",
+  "saveMessageToTemplateCancelled": "Penyimpanan pesan ke folder templat telah dibatalkan",
   "@saveMessageToTemplateCancelled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "turnOnRequestReadReceipt": "",
+  "turnOnRequestReadReceipt": "Aktifkan permintaan tanda terima baca",
   "@turnOnRequestReadReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "oldest": "",
+  "oldest": "Terlama",
   "@oldest": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "remove": "",
+  "remove": "Hapus",
   "@remove": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spamMailboxDisplayName": "",
+  "spamMailboxDisplayName": "Spam",
   "@spamMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_download_has_started": "",
+  "your_download_has_started": "Pengunduhan Anda telah dimulai",
   "@your_download_has_started": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pullHarderFor": "",
+  "pullHarderFor": "Tarik lebih kuat untuk",
   "@pullHarderFor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "minimize": "",
+  "minimize": "Minimalkan",
   "@minimize": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_as_not_spam": "",
+  "marked_as_not_spam": "Ditandai sebagai bukan spam",
   "@marked_as_not_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "backToSearchResults": "",
+  "backToSearchResults": "Kembali ke Hasil Pencarian",
   "@backToSearchResults": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move": "",
+  "move": "Pindahkan",
   "@move": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manageYourTwakeAccount": "",
+  "manageYourTwakeAccount": "Kelola akun Twake Anda",
   "@manageYourTwakeAccount": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageFrench": "",
+  "languageFrench": "Prancis",
   "@languageFrench": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addRecipientsFailed": "",
+  "addRecipientsFailed": "Gagal menambahkan penerima.",
   "@addRecipientsFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recipient": "",
+  "recipient": "Penerima",
   "@recipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailRuleSettingExplanation": "",
+  "emailRuleSettingExplanation": "Membuat aturan untuk menangani pesan masuk. Anda memilih kondisi yang memicu aturan dan tindakan yang akan dilakukan oleh aturan tersebut.",
   "@emailRuleSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueViewOnIOS": "",
+  "bannerMessageSendingQueueViewOnIOS": "Pesan Anda tidak terkirim karena masalah jaringan. Pesan tersebut tersimpan dengan aman. Saat Anda kembali online, Anda dapat mengirim ulang, mengedit, atau menghapusnya.",
   "@bannerMessageSendingQueueViewOnIOS": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertImageErrorFileEmpty": "",
+  "insertImageErrorFileEmpty": "Silakan pilih gambar atau masukkan URL gambar",
   "@insertImageErrorFileEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "",
+  "your_email_being_sent": "Email Anda sedang dikirim...",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "removeFocusFromSearch": "",
+  "removeFocusFromSearch": "Hapus fokus dari pencarian",
   "@removeFocusFromSearch": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageDisallowSubaddressingSuccess": "",
+  "toastMessageDisallowSubaddressingSuccess": "Anda telah berhasil menonaktifkan subaddressing untuk folder ini",
   "@toastMessageDisallowSubaddressingSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "tryAgain": "",
+  "tryAgain": "Coba lagi",
   "@tryAgain": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toast_message_empty_trash_folder_success": "",
+  "toast_message_empty_trash_folder_success": "Semua pesan telah dihapus secara permanen",
   "@toast_message_empty_trash_folder_success": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "send_anyway": "",
+  "send_anyway": "Tetap kirim",
   "@send_anyway": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replyToList": "",
+  "replyToList": "Balas ke milis",
   "@replyToList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_spam": "",
+  "move_to_spam": "Pindahkan ke spam",
   "@move_to_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterSubjectKeywords": "",
+  "enterSubjectKeywords": "Masukkan kata kunci subjek...",
   "@enterSubjectKeywords": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleQuickStyles": "",
+  "titleQuickStyles": "Gaya cepat",
   "@titleQuickStyles": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_is_not_in_the_correct_format": "",
+  "email_address_is_not_in_the_correct_format": "Format alamat email tidak benar",
   "@email_address_is_not_in_the_correct_format": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "there_is_already_folder_with_the_same_name": "",
+  "there_is_already_folder_with_the_same_name": "Sudah ada folder dengan nama yang sama",
   "@there_is_already_folder_with_the_same_name": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_star_multiple_item": "",
+  "marked_star_multiple_item": "Menandai {count} item dengan bintang",
   "@marked_star_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -839,319 +839,319 @@
       "count": {}
     }
   },
-  "formatBold": "",
+  "formatBold": "Tebal",
   "@formatBold": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "un_star": "",
+  "un_star": "Hapus bintang",
   "@un_star": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogDeleteSendingEmail": "",
+  "messageDialogDeleteSendingEmail": "Menghapus email offline akan menghapus isinya secara permanen. Anda tidak akan dapat membatalkan tindakan ini atau memulihkan email dari folder Sampah.",
   "@messageDialogDeleteSendingEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "storageIsAlmostFullMessage": "",
+  "storageIsAlmostFullMessage": "Penyimpanan hampir penuh. Anda dapat mengosongkan ruang dengan menghapus berkas yang tidak diperlukan atau berlangganan untuk mendapatkan ruang tambahan.",
   "@storageIsAlmostFullMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unread": "",
+  "unread": "Belum dibaca",
   "@unread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepACopyInInbox": "",
+  "keepACopyInInbox": "Simpan salinan di Kotak Masuk",
   "@keepACopyInInbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manage_account": "",
+  "manage_account": "Kelola akun",
   "@manage_account": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disallowSubaddressing": "",
+  "disallowSubaddressing": "Jangan izinkan subaddressing",
   "@disallowSubaddressing": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "canceling": "",
+  "canceling": "Membatalkan",
   "@canceling": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "canNotVerifySSOConfiguration": "",
+  "canNotVerifySSOConfiguration": "Tidak dapat memverifikasi konfigurasi SSO, silakan periksa dengan administrator sistem Anda",
   "@canNotVerifySSOConfiguration": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "chooseImage": "",
+  "chooseImage": "Pilih gambar",
   "@chooseImage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeDeclined": "",
+  "messageEventActionBannerAttendeeDeclined": " telah menolak undangan ini",
   "@messageEventActionBannerAttendeeDeclined": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectFolder": "",
+  "selectFolder": "Pilih Folder",
   "@selectFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachment_download_failed": "",
+  "attachment_download_failed": "Pengunduhan lampiran gagal",
   "@attachment_download_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectParentFolder": "",
+  "selectParentFolder": "Pilih folder induk",
   "@selectParentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsEnabled": "",
+  "yourVacationResponderIsEnabled": "Penjawab otomatis liburan Anda diaktifkan.",
   "@yourVacationResponderIsEnabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keyboardShortcuts": "",
+  "keyboardShortcuts": "Pintasan keyboard",
   "@keyboardShortcuts": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "preparing_to_save": "",
+  "preparing_to_save": "Mempersiapkan penyimpanan",
   "@preparing_to_save": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "link": "",
+  "link": "Tautan",
   "@link": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "seeAllAttendees": "",
+  "seeAllAttendees": "Lihat semua peserta",
   "@seeAllAttendees": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeCounterDeclined": "",
+  "messageEventActionBannerAttendeeCounterDeclined": "Usulan balasan Anda ditolak",
   "@messageEventActionBannerAttendeeCounterDeclined": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintInputCreateNewFolder": "",
+  "hintInputCreateNewFolder": "Masukkan nama folder",
   "@hintInputCreateNewFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last30Days": "",
+  "last30Days": "30 hari terakhir",
   "@last30Days": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "next": "",
+  "next": "Berikutnya",
   "@next": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fontFamily": "",
+  "fontFamily": "Jenis Huruf",
   "@fontFamily": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogOfflineModeOnIOS": "",
+  "messageDialogOfflineModeOnIOS": "Pesan akan berada di Antrean Pengiriman. Anda dapat mencoba lagi saat online.",
   "@messageDialogOfflineModeOnIOS": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "searchForIdentities": "",
+  "searchForIdentities": "Cari identitas",
   "@searchForIdentities": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerOrganizerCanceled": "",
+  "messageEventActionBannerOrganizerCanceled": " telah membatalkan sebuah rapat",
   "@messageEventActionBannerOrganizerCanceled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youDoNotHaveAnyFavoritesEmails": "",
+  "youDoNotHaveAnyFavoritesEmails": "Anda tidak memiliki email favorit apa pun.",
   "@youDoNotHaveAnyFavoritesEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pleaseAllowNotifications": "",
+  "pleaseAllowNotifications": "Silakan izinkan notifikasi dari Twake Mail di Pengaturan perangkat",
   "@pleaseAllowNotifications": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "page_name": "",
+  "page_name": "Twake Mail",
   "@page_name": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "removeLink": "",
+  "removeLink": "Hapus tautan",
   "@removeLink": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageLocalCopyDisable": "",
+  "toastMessageLocalCopyDisable": "Simpan salinan lokal dinonaktifkan.",
   "@toastMessageLocalCopyDisable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manageEmailAsATeam": "",
+  "manageEmailAsATeam": "Kelola email sebagai tim",
   "@manageEmailAsATeam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailComposer": "",
+  "mailComposer": "Penulis email",
   "@mailComposer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editRule": "",
+  "editRule": "Edit aturan",
   "@editRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameOfFolderIsRequired": "",
+  "nameOfFolderIsRequired": "Nama folder wajib diisi",
   "@nameOfFolderIsRequired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "canNotGetToken": "",
+  "canNotGetToken": "Tidak dapat memperoleh token, silakan periksa dengan administrator sistem Anda",
   "@canNotGetToken": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "create": "",
+  "create": "Buat",
   "@create": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hideFolder": "",
+  "hideFolder": "Sembunyikan folder",
   "@hideFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no": "",
+  "no": "Tidak",
   "@no": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "",
+  "toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": "Anda belum memilih folder penyimpanan untuk menyimpan",
   "@toastMessageErrorNotSelectedFolderWhenCreateNewMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sortBy": "",
+  "sortBy": "Urutkan berdasarkan",
   "@sortBy": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_need_to_grant_files_permission_to_download_attachments": "",
+  "you_need_to_grant_files_permission_to_download_attachments": "Anda perlu memberikan izin file untuk mengunduh lampiran",
   "@you_need_to_grant_files_permission_to_download_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "closeMailComposer": "",
+  "closeMailComposer": "Tutup penulis email",
   "@closeMailComposer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageClipped": "",
+  "messageClipped": "[Pesan dipotong]",
   "@messageClipped": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFilter": "",
+  "createFilter": "Buat filter",
   "@createFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "date": "",
+  "date": "Tanggal",
   "@date": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveEmailAsDraftFailure": "",
+  "saveEmailAsDraftFailure": "Gagal menyimpan pesan Anda sebagai draf.",
   "@saveEmailAsDraftFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "conditionTitleRulesFilter": "",
+  "conditionTitleRulesFilter": "Jika semua kondisi berikut terpenuhi:",
   "@conditionTitleRulesFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_all": "",
+  "reply_all": "Balas semua",
   "@reply_all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardEmailHintText": "",
+  "forwardEmailHintText": "Tambahkan alamat penerusan",
   "@forwardEmailHintText": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "movedToFolder": "",
+  "movedToFolder": "Dipindahkan ke {destinationMailboxPath}",
   "@movedToFolder": {
     "type": "text",
     "placeholders_order": [
@@ -1161,139 +1161,139 @@
       "destinationMailboxPath": {}
     }
   },
-  "cannotCompressInlineImage": "",
+  "cannotCompressInlineImage": "Tidak dapat mengompresi gambar",
   "@cannotCompressInlineImage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "markAsImportantIsDisabled": "",
+  "markAsImportantIsDisabled": "Tandai sebagai penting dinonaktifkan",
   "@markAsImportantIsDisabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "duplicatedActionError": "",
+  "duplicatedActionError": "Tindakan ini sudah ditambahkan",
   "@duplicatedActionError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachmentReminderModalTitle": "",
+  "attachmentReminderModalTitle": "Lupa melampirkan berkas?",
   "@attachmentReminderModalTitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "all": "",
+  "all": "Semua",
   "@all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "change": "",
+  "change": "Ubah",
   "@change": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sigInSaasFailed": "",
+  "sigInSaasFailed": "Login gagal. Silakan periksa kembali.",
   "@sigInSaasFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderName": "",
+  "folderName": "Nama Folder",
   "@folderName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "exchange": "",
+  "exchange": "Exchange",
   "@exchange": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "updateMessageToTemplateSuccess": "",
+  "updateMessageToTemplateSuccess": "Berhasil memperbarui pesan ke folder templat",
   "@updateMessageToTemplateSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "to_email_address_prefix": "",
+  "to_email_address_prefix": "Kepada",
   "@to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "startToComposeEmails": "",
+  "startToComposeEmails": "Mulai menulis email.",
   "@startToComposeEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profiles": "",
+  "profiles": "Profil",
   "@profiles": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cannotOpenNewWindow": "",
+  "cannotOpenNewWindow": "Tidak dapat membuka jendela baru",
   "@cannotOpenNewWindow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attach_file_prepare_text": "",
+  "attach_file_prepare_text": "Mempersiapkan lampiran berkas...",
   "@attach_file_prepare_text": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectDate": "",
+  "selectDate": "Pilih tanggal",
   "@selectDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "organizer": "",
+  "organizer": "Penyelenggara",
   "@organizer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hideAll": "",
+  "hideAll": "Sembunyikan semua",
   "@hideAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_message_forever": "",
+  "delete_message_forever": "Hapus pesan secara permanen",
   "@delete_message_forever": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribedFromThisMailingList": "",
+  "unsubscribedFromThisMailingList": "Berhasil berhenti berlangganan dari milis ini",
   "@unsubscribedFromThisMailingList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_starred": "",
+  "mark_as_starred": "Tandai dengan bintang",
   "@mark_as_starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noPreviewAvailable": "",
+  "noPreviewAvailable": "Pratinjau tidak tersedia",
   "@noPreviewAvailable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unexpectedError": "",
+  "unexpectedError": "Kesalahan tak terduga: {errorMessage}",
   "@unexpectedError": {
     "type": "text",
     "placeholders_order": [
@@ -1303,277 +1303,277 @@
       "errorMessage": {}
     }
   },
-  "youHaveNotAddedConditionToRule": "",
+  "youHaveNotAddedConditionToRule": "Anda belum menambahkan kondisi pada aturan.",
   "@youHaveNotAddedConditionToRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_folder": "",
+  "new_folder": "Folder baru",
   "@new_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "favoriteMailboxDisplayName": "",
+  "favoriteMailboxDisplayName": "Berbintang",
   "@favoriteMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "receptionDate": "",
+  "receptionDate": "Tanggal penerimaan",
   "@receptionDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addAnAction": "",
+  "addAnAction": "Tambahkan tindakan",
   "@addAnAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last6Months": "",
+  "last6Months": "6 bulan terakhir",
   "@last6Months": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noRulesConfigured": "",
+  "noRulesConfigured": "Tidak Ada Aturan yang Dikonfigurasi",
   "@noRulesConfigured": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sender": "",
+  "sender": "Pengirim",
   "@sender": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "discardChanges": "",
+  "discardChanges": "Buang perubahan",
   "@discardChanges": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveTo": "",
+  "moveTo": "Pindahkan ke",
   "@moveTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "archiveMailboxDisplayName": "",
+  "archiveMailboxDisplayName": "Arsip",
   "@archiveMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "rename": "",
+  "rename": "Ubah nama",
   "@rename": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_identity": "",
+  "message_confirmation_dialog_delete_identity": "Apakah Anda yakin ingin menghapus identitas ini?",
   "@message_confirmation_dialog_delete_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "goTo": "",
+  "goTo": "Pergi ke",
   "@goTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "where": "",
+  "where": "Di mana",
   "@where": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "printAll": "",
+  "printAll": "Cetak semua",
   "@printAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "logoutConfirmation": "",
+  "logoutConfirmation": "Konfirmasi Logout",
   "@logoutConfirmation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageAddRecipientsSuccessfully": "",
+  "toastMessageAddRecipientsSuccessfully": "Email telah ditambahkan ke daftar penerima.",
   "@toastMessageAddRecipientsSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "signature": "",
+  "signature": "Tanda tangan",
   "@signature": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spam": "",
+  "spam": "Spam",
   "@spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "outdent": "",
+  "outdent": "Kurangi inden",
   "@outdent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameToBeDisplayed": "",
+  "nameToBeDisplayed": "Nama yang akan ditampilkan kepada penerima",
   "@nameToBeDisplayed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "numberedList": "",
+  "numberedList": "Daftar bernomor",
   "@numberedList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteRule": "",
+  "deleteRule": "Hapus aturan",
   "@deleteRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "teamMailBoxes": "",
+  "teamMailBoxes": "Kotak surat tim",
   "@teamMailBoxes": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sending_failed": "",
+  "sending_failed": "Pengiriman gagal",
   "@sending_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insert": "",
+  "insert": "Sisipkan",
   "@insert": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageDeleteRecipientSuccessfully": "",
+  "toastMessageDeleteRecipientSuccessfully": "Email telah dihapus dari daftar penerima.",
   "@toastMessageDeleteRecipientSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email": "",
+  "email": "email",
   "@email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamFolder": "",
+  "emptySpamFolder": "Kosongkan folder Spam",
   "@emptySpamFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "edit": "",
+  "edit": "Edit",
   "@edit": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addARule": "",
+  "addARule": "Tambahkan aturan",
   "@addARule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createMyFirstRule": "",
+  "createMyFirstRule": "Buat Aturan Pertama Saya",
   "@createMyFirstRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loadMore": "",
+  "loadMore": "Muat lebih banyak",
   "@loadMore": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spamReports": "",
+  "spamReports": "Laporan spam",
   "@spamReports": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "apply": "",
+  "apply": "Terapkan",
   "@apply": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "restore": "",
+  "restore": "Pulihkan",
   "@restore": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "",
+  "youAreNotInvitedToThisEventPleaseContactTheOrganizer": "Anda tidak diundang ke acara ini. Silakan hubungi penyelenggara.",
   "@youAreNotInvitedToThisEventPleaseContactTheOrganizer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showingResultsFor": "",
+  "showingResultsFor": "Menampilkan hasil untuk:",
   "@showingResultsFor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loadingPleaseWait": "",
+  "loadingPleaseWait": "Memuat... Harap tunggu!",
   "@loadingPleaseWait": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteAllSpamEmails": "",
+  "deleteAllSpamEmails": "Hapus semua email spam",
   "@deleteAllSpamEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copy": "",
+  "copy": "Salin",
   "@copy": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "openNewMessage": "",
+  "openNewMessage": "Buka pesan baru",
   "@openNewMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSetting": "",
+  "vacationSetting": "Pengaturan liburan",
   "@vacationSetting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteEmailRule": "",
+  "deleteEmailRule": "Hapus aturan",
   "@deleteEmailRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachmentReminderModalMessage": "",
+  "attachmentReminderModalMessage": "Anda menulis {keyword} di pesan Anda tetapi tidak menambahkan lampiran apa pun. Apakah Anda tetap ingin mengirim?",
   "@attachmentReminderModalMessage": {
     "type": "text",
     "placeholders_order": [
@@ -1583,121 +1583,121 @@
       "keyword": {}
     }
   },
-  "forwarded_message": "",
+  "forwarded_message": "Pesan yang diteruskan",
   "@forwarded_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hasTheWords": "",
+  "hasTheWords": "Memiliki kata-kata",
   "@hasTheWords": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendMessage": "",
+  "sendMessage": "Kirim pesan",
   "@sendMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sMimeBadSignatureMessage": "",
+  "sMimeBadSignatureMessage": "Pesan ini gagal diverifikasi tanda tangan SMime-nya.",
   "@sMimeBadSignatureMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notification": "",
+  "notification": "Notifikasi",
   "@notification": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputSSOMessage": "",
+  "loginInputSSOMessage": "Masuk dengan akun SSO saya",
   "@loginInputSSOMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailHasBeenStarred": "",
+  "mailHasBeenStarred": "Email telah diberi bintang",
   "@mailHasBeenStarred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createANewRule": "",
+  "createANewRule": "Buat Aturan Baru",
   "@createANewRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messagesHaveBeenResent": "",
+  "messagesHaveBeenResent": "Pesan telah dikirim ulang",
   "@messagesHaveBeenResent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailboxListWithSelectedMail": "",
+  "mailboxListWithSelectedMail": "Daftar kotak surat (email dipilih)",
   "@mailboxListWithSelectedMail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertLink": "",
+  "insertLink": "Sisipkan tautan",
   "@insertLink": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "renameFolder": "",
+  "renameFolder": "Ubah nama folder",
   "@renameFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "descriptionWelcomeTo": "",
+  "descriptionWelcomeTo": "Standar Open Source baru untuk\n email profesional yang aman",
   "@descriptionWelcomeTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "filter_messages": "",
+  "filter_messages": "Filter pesan",
   "@filter_messages": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "findEmails": "",
+  "findEmails": "Temukan email",
   "@findEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourIdentities": "",
+  "yourIdentities": "Identitas Anda",
   "@yourIdentities": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "add_recipients": "",
+  "add_recipients": "Tambahkan penerima",
   "@add_recipients": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "anAttendee": "",
+  "anAttendee": "Seorang peserta",
   "@anAttendee": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageItalian": "",
+  "languageItalian": "Italia",
   "@languageItalian": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_exceeds_maximum_size": "",
+  "message_dialog_send_email_exceeds_maximum_size": "Pesan Anda tidak dapat dikirim karena melebihi ukuran maksimum {maxSize}",
   "@message_dialog_send_email_exceeds_maximum_size": {
     "type": "text",
     "placeholders_order": [
@@ -1707,31 +1707,31 @@
       "maxSize": {}
     }
   },
-  "showDetails": "",
+  "showDetails": "Tampilkan Detail",
   "@showDetails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "got_it": "",
+  "got_it": "Mengerti",
   "@got_it": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "encryptedMailbox": "",
+  "encryptedMailbox": "Kotak surat terenkripsi",
   "@encryptedMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "parseEmailByBlobIdFailed": "",
+  "parseEmailByBlobIdFailed": "Tidak dapat mem-parsing email berdasarkan ID blob",
   "@parseEmailByBlobIdFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textBodySendReceiptToSender": "",
+  "textBodySendReceiptToSender": "Pesan telah dibaca oleh {receiver} pada {time} \n\nSubjek: {subject} \n\nCatatan: Tanda terima baca balasan ini hanya mengakui bahwa pesan ditampilkan di komputer penerima. Tidak ada jaminan bahwa penerima telah membaca atau memahami isi pesan.",
   "@textBodySendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
@@ -1745,13 +1745,13 @@
       "time": {}
     }
   },
-  "folder": "",
+  "folder": "Folder",
   "@folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "totalNewMessagePushNotification": "",
+  "totalNewMessagePushNotification": "{count} email baru",
   "@totalNewMessagePushNotification": {
     "type": "text",
     "placeholders_order": [
@@ -1761,25 +1761,25 @@
       "count": {}
     }
   },
-  "warningMessageWhenClickCloseComposer": "",
+  "warningMessageWhenClickCloseComposer": "Simpan pesan ini ke folder draf Anda dan tutup penulis pesan?",
   "@warningMessageWhenClickCloseComposer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_recipient": "",
+  "message_dialog_send_email_without_recipient": "Email Anda harus memiliki setidaknya satu penerima",
   "@message_dialog_send_email_without_recipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "this_folder_name_is_already_taken": "",
+  "this_folder_name_is_already_taken": "Nama folder ini sudah digunakan",
   "@this_folder_name_is_already_taken": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloading_file": "",
+  "downloading_file": "Mengunduh {fileName}",
   "@downloading_file": {
     "type": "text",
     "placeholders_order": [
@@ -1789,85 +1789,85 @@
       "fileName": {}
     }
   },
-  "requiredPassword": "",
+  "requiredPassword": "Kata sandi wajib diisi",
   "@requiredPassword": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachmentList": "",
+  "attachmentList": "Daftar lampiran",
   "@attachmentList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_single_message_dialog": "",
+  "delete_single_message_dialog": "Anda akan menghapus pesan ini secara permanen. Apakah Anda ingin melanjutkan?",
   "@delete_single_message_dialog": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "name": "",
+  "name": "Nama",
   "@name": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bcc_email_address_prefix": "",
+  "bcc_email_address_prefix": "Bcc",
   "@bcc_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "contactSupport": "",
+  "contactSupport": "Hubungi dukungan",
   "@contactSupport": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "headerNameOfRules": "",
+  "headerNameOfRules": "Nama Aturan",
   "@headerNameOfRules": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageErrorWhenSelectStartDateIsEmpty": "",
+  "toastMessageErrorWhenSelectStartDateIsEmpty": "Tanggal mulai tidak boleh kosong.",
   "@toastMessageErrorWhenSelectStartDateIsEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "preferences": "",
+  "preferences": "Preferensi",
   "@preferences": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requestReadReceiptHasBeenEnabled": "",
+  "requestReadReceiptHasBeenEnabled": "Permintaan tanda terima baca telah diaktifkan",
   "@requestReadReceiptHasBeenEnabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "storageQuotas": "",
+  "storageQuotas": "Penyimpanan",
   "@storageQuotas": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yes": "",
+  "yes": "Ya",
   "@yes": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveFolder": "",
+  "moveFolder": "Pindahkan folder",
   "@moveFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "handshakeException": "",
+  "handshakeException": "Kesalahan handshake pada klien: {errorMessage}",
   "@handshakeException": {
     "type": "text",
     "placeholders_order": [
@@ -1877,67 +1877,67 @@
       "errorMessage": {}
     }
   },
-  "pullDownToRefresh": "",
+  "pullDownToRefresh": "Tarik ke bawah untuk menyegarkan",
   "@pullDownToRefresh": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisFileCannotBePicked": "",
+  "thisFileCannotBePicked": "Berkas ini tidak dapat dipilih.",
   "@thisFileCannotBePicked": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputCredentialMessage": "",
+  "loginInputCredentialMessage": "Masukkan kredensial Anda untuk masuk",
   "@loginInputCredentialMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textQuotasOutOfStorage": "",
+  "textQuotasOutOfStorage": "Penyimpanan habis",
   "@textQuotasOutOfStorage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showLess": "",
+  "showLess": "Tampilkan lebih sedikit",
   "@showLess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "trashMailboxDisplayName": "",
+  "trashMailboxDisplayName": "Sampah",
   "@trashMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profilesSettingExplanation": "",
+  "profilesSettingExplanation": "Informasi tentang Anda, dan opsi untuk mengelolanya.",
   "@profilesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "releaseTo": "",
+  "releaseTo": "Lepaskan untuk",
   "@releaseTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "rejectIt": "",
+  "rejectIt": "Tolak",
   "@rejectIt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showSignature": "",
+  "showSignature": "Tampilkan tanda tangan",
   "@showSignature": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "markedSingleMessageToast": "",
+  "markedSingleMessageToast": "Pesan telah ditandai sebagai {action}",
   "@markedSingleMessageToast": {
     "type": "text",
     "placeholders_order": [
@@ -1947,217 +1947,217 @@
       "action": {}
     }
   },
-  "addACondition": "",
+  "addACondition": "Tambahkan kondisi",
   "@addACondition": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments": "",
+  "attachments": "Lampiran",
   "@attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamFolderFailed": "",
+  "emptySpamFolderFailed": "Gagal mengosongkan folder spam",
   "@emptySpamFolderFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFoldersSuccessfully": "",
+  "deleteFoldersSuccessfully": "Folder berhasil dihapus",
   "@deleteFoldersSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "outboxMailboxDisplayName": "",
+  "outboxMailboxDisplayName": "Kotak Keluar",
   "@outboxMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ruleName": "",
+  "ruleName": "Nama Aturan",
   "@ruleName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "page404": "",
+  "page404": "Halaman 404",
   "@page404": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "endDate": "",
+  "endDate": "Tanggal akhir",
   "@endDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "markAsSpamFailed": "",
+  "markAsSpamFailed": "Gagal menandai sebagai spam",
   "@markAsSpamFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterName": "",
+  "enterName": "Masukkan nama",
   "@enterName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "back": "",
+  "back": "Kembali",
   "@back": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "older": "",
+  "older": "Lebih lama",
   "@older": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHaveBeenDeletedSuccessfully": "",
+  "messageHaveBeenDeletedSuccessfully": "Pesan telah berhasil dihapus",
   "@messageHaveBeenDeletedSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cannotSelectThisImage": "",
+  "cannotSelectThisImage": "Tidak dapat memilih gambar ini.",
   "@cannotSelectThisImage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingSaved": "",
+  "vacationSettingSaved": "Pengaturan liburan disimpan",
   "@vacationSettingSaved": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dialogWarningTitleForForwardsToOtherDomains": "",
+  "dialogWarningTitleForForwardsToOtherDomains": "Anda sedang mengalihkan email ke domain lain.",
   "@dialogWarningTitleForForwardsToOtherDomains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageArabic": "",
+  "languageArabic": "Arab",
   "@languageArabic": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete": "",
+  "delete": "Hapus",
   "@delete": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisImageCannotBeAdded": "",
+  "thisImageCannotBeAdded": "Gambar ini tidak dapat ditambahkan.",
   "@thisImageCannotBeAdded": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sentMailboxDisplayName": "",
+  "sentMailboxDisplayName": "Terkirim",
   "@sentMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "endNow": "",
+  "endNow": "Akhiri sekarang",
   "@endNow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatTextColor": "",
+  "formatTextColor": "Warna Teks",
   "@formatTextColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterSomeSuggestions": "",
+  "enterSomeSuggestions": "Masukkan beberapa saran",
   "@enterSomeSuggestions": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageNotSupportMdnWhenSendReceipt": "",
+  "toastMessageNotSupportMdnWhenSendReceipt": "Akun Anda tidak mendukung kapabilitas MDN",
   "@toastMessageNotSupportMdnWhenSendReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "getHelpOrReportABug": "",
+  "getHelpOrReportABug": "Dapatkan bantuan atau laporkan bug",
   "@getHelpOrReportABug": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "restoreDeletedMessageSuccess": "",
+  "restoreDeletedMessageSuccess": "Berhasil memulihkan pesan yang dihapus",
   "@restoreDeletedMessageSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleFormat": "",
+  "titleFormat": "Format",
   "@titleFormat": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dialogWarningMessageForForwardsToOtherDomains": "",
+  "dialogWarningMessageForForwardsToOtherDomains": "Ini dapat menjadi ancaman keamanan atau dianggap sebagai ekstraksi data ilegal. Apakah Anda ingin melanjutkan?",
   "@dialogWarningMessageForForwardsToOtherDomains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_starred": "",
+  "with_starred": "Dengan yang berbintang",
   "@with_starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendingQueue": "",
+  "sendingQueue": "Antrean pengiriman",
   "@sendingQueue": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorMessageWhenStartDateVacationIsEmpty": "",
+  "errorMessageWhenStartDateVacationIsEmpty": "Silakan masukkan tanggal mulai yang valid",
   "@errorMessageWhenStartDateVacationIsEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_spam": "",
+  "mark_as_spam": "Tandai sebagai spam",
   "@mark_as_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "multipleIntegrations": "",
+  "multipleIntegrations": "Berbagai integrasi",
   "@multipleIntegrations": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFilters": "",
+  "createFilters": "Buat filter",
   "@createFilters": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptySpamMessageDialog": "",
+  "emptySpamMessageDialog": "Anda akan menghapus secara permanen semua item di Spam. Apakah Anda ingin melanjutkan?",
   "@emptySpamMessageDialog": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteEmailRule": "",
+  "messageConfirmationDialogDeleteEmailRule": "Apakah Anda ingin menghapus aturan \"{ruleName}\"?",
   "@messageConfirmationDialogDeleteEmailRule": {
     "type": "text",
     "placeholders_order": [
@@ -2167,49 +2167,49 @@
       "ruleName": {}
     }
   },
-  "createNewIdentity": "",
+  "createNewIdentity": "Buat identitas baru",
   "@createNewIdentity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreOffline": "",
+  "youAreOffline": "Anda sedang offline. Tampaknya Anda tidak terhubung.",
   "@youAreOffline": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "support": "",
+  "support": "Dukungan",
   "@support": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_identity": "",
+  "delete_identity": "Hapus identitas",
   "@delete_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendMessageFailure": "",
+  "sendMessageFailure": "Gagal mengirim pesan Anda.",
   "@sendMessageFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "version": "",
+  "version": "Versi",
   "@version": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSentSuccessfully": "",
+  "messageHasBeenSentSuccessfully": "Pesan berhasil dikirim.",
   "@messageHasBeenSentSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "",
+  "titleHeaderAttachment": "{count} Lampiran ({totalSize})",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
@@ -2221,169 +2221,169 @@
       "totalSize": {}
     }
   },
-  "forwardedMessage": "",
+  "forwardedMessage": "Pesan yang diteruskan",
   "@forwardedMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "page": "",
+  "page": "Halaman",
   "@page": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doYouWantToLogOutAndSwitchTo": "",
+  "doYouWantToLogOutAndSwitchTo": "Apakah Anda ingin keluar dan beralih ke",
   "@doYouWantToLogOutAndSwitchTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selected": "",
+  "selected": "Dipilih",
   "@selected": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveAndClose": "",
+  "saveAndClose": "Simpan & tutup",
   "@saveAndClose": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertImageErrorDuplicate": "",
+  "insertImageErrorDuplicate": "Silakan masukkan gambar atau URL gambar, bukan keduanya",
   "@insertImageErrorDuplicate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sizeDescending": "",
+  "sizeDescending": "Ukuran menurun",
   "@sizeDescending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorWhileFetchingSubaddress": "",
+  "errorWhileFetchingSubaddress": "Kesalahan saat mengambil subalamat",
   "@errorWhileFetchingSubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "useCompanyServer": "",
+  "useCompanyServer": "Gunakan server perusahaan",
   "@useCompanyServer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewFolder": "",
+  "createNewFolder": "Buat folder baru",
   "@createNewFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ok": "",
+  "ok": "OK",
   "@ok": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteAllRecipientForward": "",
+  "messageConfirmationDialogDeleteAllRecipientForward": "Apakah Anda yakin ingin menghapus para penerima tersebut? Tindakan ini akan menghapus mereka dari rantai email.",
   "@messageConfirmationDialogDeleteAllRecipientForward": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacation": "",
+  "vacation": "Liburan",
   "@vacation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveMessageToTemplateFailed": "",
+  "saveMessageToTemplateFailed": "Gagal menyimpan pesan ke folder templat",
   "@saveMessageToTemplateFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionTitleRulesFilter": "",
+  "actionTitleRulesFilter": "Lakukan tindakan berikut:",
   "@actionTitleRulesFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "privacyPolicy": "",
+  "privacyPolicy": "Kebijakan privasi",
   "@privacyPolicy": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFolder": "",
+  "deleteFolder": "Hapus folder",
   "@deleteFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingToggleButtonAutoReply": "",
+  "vacationSettingToggleButtonAutoReply": "Balas pesan secara otomatis saat pesan diterima.",
   "@vacationSettingToggleButtonAutoReply": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "exactlyEquals": "",
+  "exactlyEquals": "Sama persis dengan",
   "@exactlyEquals": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "creatingAnArchiveForDownloading": "",
+  "creatingAnArchiveForDownloading": "Membuat arsip untuk diunduh",
   "@creatingAnArchiveForDownloading": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteRecipient": "",
+  "deleteRecipient": "Hapus penerima",
   "@deleteRecipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "send": "",
+  "send": "Kirim",
   "@send": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "the_feature_is_under_development": "",
+  "the_feature_is_under_development": "Fitur ini sedang dalam pengembangan.",
   "@the_feature_is_under_development": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "inboxMailboxDisplayName": "",
+  "inboxMailboxDisplayName": "Kotak Masuk",
   "@inboxMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showAll": "",
+  "showAll": "Tampilkan semua",
   "@showAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copySubaddress": "",
+  "copySubaddress": "Salin subalamat",
   "@copySubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisImageCannotBePastedIntoTheEditor": "",
+  "thisImageCannotBePastedIntoTheEditor": "Gambar ini tidak dapat ditempelkan ke editor.",
   "@thisImageCannotBePastedIntoTheEditor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_allow_subaddressing_mobile": "",
+  "message_confirmation_dialog_allow_subaddressing_mobile": "Anda akan mengizinkan siapa pun untuk mengirim email langsung ke folder \"{nameMailbox}\" Anda menggunakan alamat <{address}>",
   "@message_confirmation_dialog_allow_subaddressing_mobile": {
     "type": "text",
     "placeholders_order": [
@@ -2395,97 +2395,97 @@
       "address": {}
     }
   },
-  "retry": "",
+  "retry": "Coba lagi",
   "@retry": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachment": "",
+  "attachment": "Lampiran",
   "@attachment": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "discard": "",
+  "discard": "Buang",
   "@discard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folders": "",
+  "folders": "Folder",
   "@folders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMail": "",
+  "unsubscribeMail": "Berhenti berlangganan email",
   "@unsubscribeMail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceipts": "",
+  "emailReadReceipts": "Tanda terima baca email",
   "@emailReadReceipts": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaBannerWarningSubtitleWithoutPremium": "",
+  "quotaBannerWarningSubtitleWithoutPremium": "Agar tetap dapat mengirim pesan dan menikmati semua fitur Twake Mail, harap pertimbangkan untuk membersihkan.",
   "@quotaBannerWarningSubtitleWithoutPremium": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "alignRight": "",
+  "alignRight": "Rata kanan",
   "@alignRight": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "lastYears": "",
+  "lastYears": "Tahun-tahun terakhir",
   "@lastYears": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "orderList": "",
+  "orderList": "Daftar berurutan",
   "@orderList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recoverDeletedMessages": "",
+  "recoverDeletedMessages": "Pulihkan pesan yang dihapus",
   "@recoverDeletedMessages": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ssoNotAvailable": "",
+  "ssoNotAvailable": "Single sign-on (SSO) tidak tersedia",
   "@ssoNotAvailable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requestReadReceipt": "",
+  "requestReadReceipt": "Minta tanda terima baca",
   "@requestReadReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_as_spam": "",
+  "marked_as_spam": "Ditandai sebagai spam",
   "@marked_as_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "contact": "",
+  "contact": "Kontak",
   "@contact": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteRecipientForward": "",
+  "messageConfirmationDialogDeleteRecipientForward": "Apakah Anda ingin menghapus email {emailAddress}?",
   "@messageConfirmationDialogDeleteRecipientForward": {
     "type": "text",
     "placeholders_order": [
@@ -2495,103 +2495,103 @@
       "emailAddress": {}
     }
   },
-  "senderSetImportantFlag": "",
+  "senderSetImportantFlag": "Tanda penting yang ditetapkan pengirim",
   "@senderSetImportantFlag": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "user_cancel_download_file": "",
+  "user_cancel_download_file": "Pengguna membatalkan pengunduhan berkas",
   "@user_cancel_download_file": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youNeedToGrantFilesPermissionToExportFile": "",
+  "youNeedToGrantFilesPermissionToExportFile": "Anda perlu memberikan izin file untuk mengekspor berkas",
   "@youNeedToGrantFilesPermissionToExportFile": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dnsLookupLoginMessage": "",
+  "dnsLookupLoginMessage": "Untuk masuk dan mengakses pesan Anda, silakan masukkan email Anda",
   "@dnsLookupLoginMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "exportTraceLogFailed": "",
+  "exportTraceLogFailed": "Gagal mengekspor log pelacakan",
   "@exportTraceLogFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "star": "",
+  "star": "Beri bintang",
   "@star": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "savingTemplate": "",
+  "savingTemplate": "Menyimpan templat",
   "@savingTemplate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replyToEmailAddressPrefix": "",
+  "replyToEmailAddressPrefix": "Balas-Ke",
   "@replyToEmailAddressPrefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadMessageAsEML": "",
+  "downloadMessageAsEML": "Unduh pesan sebagai EML",
   "@downloadMessageAsEML": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveMessage": "",
+  "moveMessage": "Pindahkan pesan",
   "@moveMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderVisibilitySubtitle": "",
+  "folderVisibilitySubtitle": "Tampilkan/sembunyikan folder Anda, termasuk folder pribadi dan kotak surat tim Anda.",
   "@folderVisibilitySubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "alignCenter": "",
+  "alignCenter": "Rata tengah",
   "@alignCenter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "typeOrPasteLink": "",
+  "typeOrPasteLink": "Ketik atau tempel tautan",
   "@typeOrPasteLink": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "increaseYourSpace": "",
+  "increaseYourSpace": "Tambah ruang Anda",
   "@increaseYourSpace": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toast_message_delete_a_email_permanently_success": "",
+  "toast_message_delete_a_email_permanently_success": "Pesan telah dihapus secara permanen",
   "@toast_message_delete_a_email_permanently_success": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clearAll": "",
+  "clearAll": "Hapus semua",
   "@clearAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteMultipleFolder": "",
+  "messageConfirmationDialogDeleteMultipleFolder": "{numberOfMailbox} folder beserta semua subfolder dan pesan yang dikandungnya akan dihapus dan tidak dapat dipulihkan. Apakah Anda ingin melanjutkan penghapusan?",
   "@messageConfirmationDialogDeleteMultipleFolder": {
     "type": "text",
     "placeholders_order": [
@@ -2601,13 +2601,13 @@
       "numberOfMailbox": {}
     }
   },
-  "personalFolders": "",
+  "personalFolders": "Folder pribadi",
   "@personalFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_multiple_item_as_unread": "",
+  "marked_multiple_item_as_unread": "Menandai {count} item sebagai belum dibaca",
   "@marked_multiple_item_as_unread": {
     "type": "text",
     "placeholders_order": [
@@ -2617,295 +2617,295 @@
       "count": {}
     }
   },
-  "createTwakeIdFailed": "",
+  "createTwakeIdFailed": "Gagal membuat Twake ID. Silakan periksa kembali.",
   "@createTwakeIdFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "select_all": "",
+  "select_all": "Pilih semua",
   "@select_all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "skip": "",
+  "skip": "Lewati",
   "@skip": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hasAttachment": "",
+  "hasAttachment": "Memiliki lampiran",
   "@hasAttachment": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterSearchTerm": "",
+  "enterSearchTerm": "Masukkan istilah pencarian",
   "@enterSearchTerm": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sizeAscending": "",
+  "sizeAscending": "Ukuran menaik",
   "@sizeAscending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "starred": "",
+  "starred": "Berbintang",
   "@starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisFieldCannotContainOnlySpaces": "",
+  "thisFieldCannotContainOnlySpaces": "Kolom ini tidak boleh hanya berisi spasi",
   "@thisFieldCannotContainOnlySpaces": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doesNotHave": "",
+  "doesNotHave": "Tidak memiliki",
   "@doesNotHave": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "from_email_address_prefix": "",
+  "from_email_address_prefix": "Dari",
   "@from_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_text_email_address": "",
+  "hint_text_email_address": "Nama atau alamat email",
   "@hint_text_email_address": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addNewRule": "",
+  "addNewRule": "Tambahkan aturan",
   "@addNewRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "download": "",
+  "download": "Unduh",
   "@download": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterTheFolderName": "",
+  "enterTheFolderName": "Masukkan nama folder",
   "@enterTheFolderName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "location": "",
+  "location": "Lokasi",
   "@location": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "files": "",
+  "files": "berkas",
   "@files": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_reply_email": "",
+  "prefix_reply_email": "Re:",
   "@prefix_reply_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_failed": "",
+  "delete_failed": "Penghapusan Gagal",
   "@delete_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formattingOptions": "",
+  "formattingOptions": "Opsi pemformatan",
   "@formattingOptions": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFilterRuleFailed": "",
+  "createFilterRuleFailed": "Gagal membuat aturan filter",
   "@createFilterRuleFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadMessageAsEMLFailed": "",
+  "downloadMessageAsEMLFailed": "Gagal mengunduh pesan sebagai EML",
   "@downloadMessageAsEMLFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youMayAttendThisMeeting": "",
+  "youMayAttendThisMeeting": "Anda mungkin akan menghadiri rapat ini",
   "@youMayAttendThisMeeting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identity_has_been_deleted": "",
+  "identity_has_been_deleted": "Identitas telah dihapus",
   "@identity_has_been_deleted": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "resetToDefault": "",
+  "resetToDefault": "Atur ulang ke default",
   "@resetToDefault": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_suggestion_search": "",
+  "prefix_suggestion_search": "Cari",
   "@prefix_suggestion_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "contains": "",
+  "contains": "Mengandung",
   "@contains": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectFromFile": "",
+  "selectFromFile": "Pilih dari berkas",
   "@selectFromFile": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleReadReceiptRequestNotificationMessage": "",
+  "titleReadReceiptRequestNotificationMessage": "Permintaan tanda terima baca",
   "@titleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageExportTraceLogDialog": "",
+  "messageExportTraceLogDialog": "Log pesan kesalahan API seluler telah dilacak. Apakah Anda ingin mengekspornya?",
   "@messageExportTraceLogDialog": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "canNotUploadFileToSignature": "",
+  "canNotUploadFileToSignature": "Tidak dapat mengunggah berkas ini ke tanda tangan",
   "@canNotUploadFileToSignature": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerProgressingRecoveryMessage": "",
+  "bannerProgressingRecoveryMessage": "Pemulihan sedang berlangsung. Anda dapat terus menggunakan Twake Mail",
   "@bannerProgressingRecoveryMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "printingInProgress": "",
+  "printingInProgress": "Pencetakan sedang berlangsung",
   "@printingInProgress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "un_spam": "",
+  "un_spam": "Bukan spam",
   "@un_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editEmail": "",
+  "editEmail": "Edit email",
   "@editEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "collapse": "",
+  "collapse": "Ciutkan",
   "@collapse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bulletedList": "",
+  "bulletedList": "Daftar berpoin",
   "@bulletedList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeTentative": "",
+  "messageEventActionBannerAttendeeTentative": " telah menjawab \"Mungkin\" untuk undangan ini",
   "@messageEventActionBannerAttendeeTentative": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "browse": "",
+  "browse": "Telusuri",
   "@browse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spamReportToggleDescription": "",
+  "spamReportToggleDescription": "Aktifkan laporan spam",
   "@spamReportToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_delete_all_email_in_trash_button": "",
+  "message_delete_all_email_in_trash_button": "Semua pesan di Sampah akan dihapus jika Anda mencapai batas penyimpanan.",
   "@message_delete_all_email_in_trash_button": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youDoNotHaveAnyEmailInYourCurrentFolder": "",
+  "youDoNotHaveAnyEmailInYourCurrentFolder": "Anda tidak memiliki email apa pun\n di folder ini.",
   "@youDoNotHaveAnyEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectAllMessagesOfThisPage": "",
+  "selectAllMessagesOfThisPage": "Pilih semua pesan di halaman ini",
   "@selectAllMessagesOfThisPage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageErrorWhenSelectDateIsInValid": "",
+  "toastMessageErrorWhenSelectDateIsInValid": "Waktu akhir tidak boleh lebih kecil daripada waktu mulai.",
   "@toastMessageErrorWhenSelectDateIsInValid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "navigationAndClosing": "",
+  "navigationAndClosing": "Navigasi & Penutupan",
   "@navigationAndClosing": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageIsRequired": "",
+  "messageIsRequired": "Pesan wajib diisi",
   "@messageIsRequired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forward": "",
+  "forward": "Teruskan",
   "@forward": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_are_changed_your_identity_successfully": "",
+  "you_are_changed_your_identity_successfully": "Anda telah berhasil mengubah identitas Anda",
   "@you_are_changed_your_identity_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_internet_connection": "",
+  "no_internet_connection": "Tidak ada koneksi internet",
   "@no_internet_connection": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "storageUsedMessage": "",
+  "storageUsedMessage": "dari {limit} digunakan",
   "@storageUsedMessage": {
     "type": "text",
     "placeholders_order": [
@@ -2915,67 +2915,67 @@
       "limit": {}
     }
   },
-  "attendees": "",
+  "attendees": "Peserta",
   "@attendees": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "alignLeft": "",
+  "alignLeft": "Rata kiri",
   "@alignLeft": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "zoomOut": "",
+  "zoomOut": "Perkecil",
   "@zoomOut": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "invitationMessageCalendarInformation": "",
+  "invitationMessageCalendarInformation": " telah mengundang Anda ke sebuah rapat:",
   "@invitationMessageCalendarInformation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "who": "",
+  "who": "Siapa",
   "@who": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_messages_forever": "",
+  "delete_messages_forever": "Hapus pesan secara permanen",
   "@delete_messages_forever": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "regards": "",
+  "regards": "Salam",
   "@regards": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "view": "",
+  "view": "Lihat",
   "@view": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last1Year": "",
+  "last1Year": "1 tahun terakhir",
   "@last1Year": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "me": "",
+  "me": "Saya",
   "@me": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ruleFilterConditionPreviewMessage": "",
+  "ruleFilterConditionPreviewMessage": "{conditionCombinerName} dari kondisi: {conditionValue}",
   "@ruleFilterConditionPreviewMessage": {
     "type": "text",
     "placeholders_order": [
@@ -2987,43 +2987,43 @@
       "conditionValue": {}
     }
   },
-  "undo": "",
+  "undo": "Urungkan",
   "@undo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youWillNotAttendThisMeeting": "",
+  "youWillNotAttendThisMeeting": "Anda tidak akan menghadiri rapat ini",
   "@youWillNotAttendThisMeeting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "turnOffRequestReadReceipt": "",
+  "turnOffRequestReadReceipt": "Nonaktifkan permintaan tanda terima baca",
   "@turnOffRequestReadReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFolders": "",
+  "deleteFolders": "Hapus folder",
   "@deleteFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "continueAction": "",
+  "continueAction": "Lanjutkan",
   "@continueAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "headerRecipients": "",
+  "headerRecipients": "Penerima",
   "@headerRecipients": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "countMessageInSpam": "",
+  "countMessageInSpam": "{count} pesan di spam",
   "@countMessageInSpam": {
     "type": "text",
     "placeholders_order": [
@@ -3033,97 +3033,97 @@
       "count": {}
     }
   },
-  "jmapBasedMailSolution": "",
+  "jmapBasedMailSolution": "Solusi email tim kolaboratif\nberbasis JMAP",
   "@jmapBasedMailSolution": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "read": "",
+  "read": "Dibaca",
   "@read": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "maybe": "",
+  "maybe": "Mungkin",
   "@maybe": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_permanently": "",
+  "delete_permanently": "Hapus permanen",
   "@delete_permanently": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "indent": "",
+  "indent": "Tambah inden",
   "@indent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteAllSpamEmailsNow": "",
+  "deleteAllSpamEmailsNow": "Hapus semua email spam sekarang",
   "@deleteAllSpamEmailsNow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "required": "",
+  "required": "wajib",
   "@required": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "status": "",
+  "status": "Status",
   "@status": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageVietnamese": "",
+  "languageVietnamese": "Vietnam",
   "@languageVietnamese": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "edit_identity": "",
+  "edit_identity": "Edit identitas",
   "@edit_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notExactlyEquals": "",
+  "notExactlyEquals": "Tidak sama persis dengan",
   "@notExactlyEquals": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments_uploaded_successfully": "",
+  "attachments_uploaded_successfully": "Lampiran berhasil diunggah",
   "@attachments_uploaded_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_with_email_address_invalid": "",
+  "message_dialog_send_email_with_email_address_invalid": "Periksa kebenaran alamat email dan coba lagi",
   "@message_dialog_send_email_with_email_address_invalid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogSendEmailUploadingAttachment": "",
+  "messageDialogSendEmailUploadingAttachment": "Pesan Anda tidak dapat dikirim karena sedang mengunggah lampiran",
   "@messageDialogSendEmailUploadingAttachment": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "creatingMessage": "",
+  "creatingMessage": "Membuat pesan",
   "@creatingMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_allow_subaddressing": "",
+  "message_confirmation_dialog_allow_subaddressing": "Anda akan mengizinkan siapa pun untuk mengirim email langsung ke folder \"{nameMailbox}\" Anda menggunakan:",
   "@message_confirmation_dialog_allow_subaddressing": {
     "type": "text",
     "placeholders_order": [
@@ -3133,43 +3133,43 @@
       "nameMailbox": {}
     }
   },
-  "attach_file": "",
+  "attach_file": "Lampirkan berkas",
   "@attach_file": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clean": "",
+  "clean": "Bersihkan",
   "@clean": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "relevance": "",
+  "relevance": "Relevansi",
   "@relevance": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_folder": "",
+  "empty_trash_folder": "Kosongkan folder sampah",
   "@empty_trash_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moveFolderContentToastMessage": "",
+  "moveFolderContentToastMessage": "Gagal memindahkan semua email dari folder ini ke folder lain.",
   "@moveFolderContentToastMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reconnect": "",
+  "reconnect": "Sambungkan kembali",
   "@reconnect": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pleaseChooseAnImageSizeCorrectly": "",
+  "pleaseChooseAnImageSizeCorrectly": "Silakan pilih gambar dengan ukuran kurang dari {maxSize}KB",
   "@pleaseChooseAnImageSizeCorrectly": {
     "type": "text",
     "placeholders_order": [
@@ -3179,19 +3179,19 @@
       "maxSize": {}
     }
   },
-  "quotaErrorBannerTitle": "",
+  "quotaErrorBannerTitle": "Ruang penyimpanan Anda telah habis",
   "@quotaErrorBannerTitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "restoreDeletedMessageCanceled": "",
+  "restoreDeletedMessageCanceled": "Pemulihan pesan yang dihapus dibatalkan",
   "@restoreDeletedMessageCanceled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dateRangeAdvancedSearchFilter": "",
+  "dateRangeAdvancedSearchFilter": "Dari {startDate} hingga {endDate}",
   "@dateRangeAdvancedSearchFilter": {
     "type": "text",
     "placeholders_order": [
@@ -3203,37 +3203,37 @@
       "endDate": {}
     }
   },
-  "storageSettingExplanation": "",
+  "storageSettingExplanation": "Pantau ruang yang tersedia.",
   "@storageSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ruleFilterAddressFromField": "",
+  "ruleFilterAddressFromField": "Dari",
   "@ruleFilterAddressFromField": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputUrlMessage": "",
+  "loginInputUrlMessage": "Untuk masuk dan mengakses pesan Anda, silakan sambungkan ke server JMAP Anda",
   "@loginInputUrlMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "more": "",
+  "more": "Lainnya",
   "@more": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "startTime": "",
+  "startTime": "Waktu mulai",
   "@startTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDisableVacationResponderAutomatically": "",
+  "messageDisableVacationResponderAutomatically": "Penjawab otomatis liburan Anda berhenti pada {endDate}",
   "@messageDisableVacationResponderAutomatically": {
     "type": "text",
     "placeholders_order": [
@@ -3243,115 +3243,115 @@
       "endDate": {}
     }
   },
-  "messageDuplicateTagFilterMail": "",
+  "messageDuplicateTagFilterMail": "Anda sudah memasukkan itu",
   "@messageDuplicateTagFilterMail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "incorrectEmailFormat": "",
+  "incorrectEmailFormat": "Format email salah",
   "@incorrectEmailFormat": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "select": "",
+  "select": "Pilih",
   "@select": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "readingAndReplying": "",
+  "readingAndReplying": "Membaca & Membalas",
   "@readingAndReplying": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "appTitlePushNotification": "",
+  "appTitlePushNotification": "Twake Mail",
   "@appTitlePushNotification": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "senderAscending": "",
+  "senderAscending": "Nama pengirim: A - Z",
   "@senderAscending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameOrEmailAddress": "",
+  "nameOrEmailAddress": "Nama atau alamat email",
   "@nameOrEmailAddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actionsToPerform": "",
+  "actionsToPerform": "Tindakan yang Dilakukan",
   "@actionsToPerform": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAcceptedTheProposedTimeForThisMeeting": "",
+  "youAcceptedTheProposedTimeForThisMeeting": "Anda menerima waktu yang diusulkan untuk rapat ini",
   "@youAcceptedTheProposedTimeForThisMeeting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deletionDate": "",
+  "deletionDate": "Tanggal penghapusan",
   "@deletionDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingExplanation": "",
+  "vacationSettingExplanation": "Mengirim balasan otomatis untuk pesan masuk.",
   "@vacationSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSearchInputContact": "",
+  "hintSearchInputContact": "Masukkan nama atau email",
   "@hintSearchInputContact": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_emails": "",
+  "hint_search_emails": "Cari email dan berkas",
   "@hint_search_emails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youHaveAnotherEventAtThatSameTime": "",
+  "youHaveAnotherEventAtThatSameTime": "Anda memiliki acara lain pada waktu yang sama",
   "@youHaveAnotherEventAtThatSameTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "exitFullscreen": "",
+  "exitFullscreen": "Keluar dari layar penuh",
   "@exitFullscreen": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "background": "",
+  "background": "Latar belakang",
   "@background": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "canceled": "",
+  "canceled": "Dibatalkan",
   "@canceled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageLocalCopyEnable": "",
+  "toastMessageLocalCopyEnable": "Simpan salinan lokal diaktifkan.",
   "@toastMessageLocalCopyEnable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "invalidArguments": "",
+  "invalidArguments": "Argumen tidak valid: \"{description}\"",
   "@invalidArguments": {
     "type": "text",
     "placeholders_order": [
@@ -3361,19 +3361,19 @@
       "description": {}
     }
   },
-  "new_identity": "",
+  "new_identity": "Identitas Baru",
   "@new_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enableSpamReport": "",
+  "enableSpamReport": "Aktifkan laporan Spam",
   "@enableSpamReport": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_folder_is_created": "",
+  "new_folder_is_created": "{nameMailbox} telah dibuat",
   "@new_folder_is_created": {
     "type": "text",
     "placeholders_order": [
@@ -3383,31 +3383,31 @@
       "nameMailbox": {}
     }
   },
-  "formatTextBackgroundColor": "",
+  "formatTextBackgroundColor": "Warna Latar Belakang Teks",
   "@formatTextBackgroundColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hide": "",
+  "hide": "Sembunyikan",
   "@hide": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "savingMessage": "",
+  "savingMessage": "Menyimpan pesan",
   "@savingMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "archiveMessage": "",
+  "archiveMessage": "Arsipkan pesan",
   "@archiveMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "exportTraceLogSuccess": "",
+  "exportTraceLogSuccess": "Berhasil mengekspor log pelacakan ke \"{path}\"",
   "@exportTraceLogSuccess": {
     "type": "text",
     "placeholders_order": [
@@ -3417,19 +3417,19 @@
       "path": {}
     }
   },
-  "senderDescending": "",
+  "senderDescending": "Nama pengirim: Z - A",
   "@senderDescending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subject": "",
+  "subject": "Subjek",
   "@subject": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subjectSendReceiptToSender": "",
+  "subjectSendReceiptToSender": "Dibaca: {subject}",
   "@subjectSendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
@@ -3439,67 +3439,67 @@
       "subject": {}
     }
   },
-  "quickStyles": "",
+  "quickStyles": "Gaya cepat",
   "@quickStyles": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cancel": "",
+  "cancel": "Batal",
   "@cancel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashFolderFailed": "",
+  "emptyTrashFolderFailed": "Gagal mengosongkan folder sampah",
   "@emptyTrashFolderFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "foreground": "",
+  "foreground": "Latar depan",
   "@foreground": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deactivated": "",
+  "deactivated": "Dinonaktifkan",
   "@deactivated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noLogsHaveBeenRecordedYet": "",
+  "noLogsHaveBeenRecordedYet": "Belum ada log yang direkam.",
   "@noLogsHaveBeenRecordedYet": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "openedModal": "",
+  "openedModal": "Modal yang dibuka",
   "@openedModal": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moved_to_trash": "",
+  "moved_to_trash": "Dipindahkan ke Sampah",
   "@moved_to_trash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delivering": "",
+  "delivering": "Sedang dikirim",
   "@delivering": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeAccepted": "",
+  "messageEventActionBannerAttendeeAccepted": " telah menerima undangan ini",
   "@messageEventActionBannerAttendeeAccepted": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "daysAgo": "",
+  "daysAgo": "{days,plural, =0{}=1{ (1 hari yang lalu)}other{ ({days} hari yang lalu)}}",
   "@daysAgo": {
     "type": "text",
     "placeholders_order": [
@@ -3509,37 +3509,37 @@
       "days": {}
     }
   },
-  "advancedSearch": "",
+  "advancedSearch": "Pencarian lanjutan",
   "@advancedSearch": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreCurrentlyLoggedInWith": "",
+  "youAreCurrentlyLoggedInWith": "Anda saat ini masuk dengan",
   "@youAreCurrentlyLoggedInWith": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newFolder": "",
+  "newFolder": "Folder baru",
   "@newFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "focusOnSearch": "",
+  "focusOnSearch": "Fokus pada pencarian",
   "@focusOnSearch": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "warningMessageWhenSaveEmailToDraftsFailure": "",
+  "warningMessageWhenSaveEmailToDraftsFailure": "Penyimpanan pesan ke folder draf gagal.\nTerjadi kesalahan saat menyimpan email.",
   "@warningMessageWhenSaveEmailToDraftsFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subtitleDisplayTheFolderNameLocationInFolderCreationModal": "",
+  "subtitleDisplayTheFolderNameLocationInFolderCreationModal": "Folder baru akan dibuat di dalam {folderName}",
   "@subtitleDisplayTheFolderNameLocationInFolderCreationModal": {
     "type": "text",
     "placeholders_order": [
@@ -3549,61 +3549,61 @@
       "folderName": {}
     }
   },
-  "refresh": "",
+  "refresh": "Segarkan",
   "@refresh": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "open": "",
+  "open": "Buka",
   "@open": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "chooseAColor": "",
+  "chooseAColor": "Pilih warna",
   "@chooseAColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "markAsImportantIsEnabled": "",
+  "markAsImportantIsEnabled": "Tandai sebagai penting diaktifkan",
   "@markAsImportantIsEnabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youHaveNotAddedActionToRule": "",
+  "youHaveNotAddedActionToRule": "Anda belum menambahkan tindakan pada aturan.",
   "@youHaveNotAddedActionToRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "insertImage": "",
+  "insertImage": "Sisipkan gambar",
   "@insertImage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "maskAsSeen": "",
+  "maskAsSeen": "Tandai sebagai telah dilihat",
   "@maskAsSeen": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identitiesSettingExplanation": "",
+  "identitiesSettingExplanation": "Pilih identitas atau alamat email yang ingin Anda gunakan untuk mengirim email",
   "@identitiesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailSubaddressCopiedToClipboard": "",
+  "emailSubaddressCopiedToClipboard": "Subalamat email disalin ke papan klip",
   "@emailSubaddressCopiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaAvailableLabel": "",
+  "quotaAvailableLabel": "{count} tersedia",
   "@quotaAvailableLabel": {
     "type": "text",
     "placeholders_order": [
@@ -3613,25 +3613,25 @@
       "count": {}
     }
   },
-  "unread_email_notification": "",
+  "unread_email_notification": "baru",
   "@unread_email_notification": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "setDefaultIdentity": "",
+  "setDefaultIdentity": "Tetapkan sebagai identitas default",
   "@setDefaultIdentity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageDeleteEmailRuleSuccessfully": "",
+  "toastMessageDeleteEmailRuleSuccessfully": "Aturan telah dihapus.",
   "@toastMessageDeleteEmailRuleSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hideAttachmentButton": "",
+  "hideAttachmentButton": "Sembunyikan {count}",
   "@hideAttachmentButton": {
     "type": "text",
     "placeholders_order": [
@@ -3641,121 +3641,121 @@
       "count": {}
     }
   },
-  "vacationStopsAt": "",
+  "vacationStopsAt": "Liburan berakhir pada",
   "@vacationStopsAt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "openedMailView": "",
+  "openedMailView": "Tampilan email yang dibuka",
   "@openedMailView": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "keepACopyInInboxDescription": "",
+  "keepACopyInInboxDescription": "Simpan email yang diteruskan di kotak masuk Anda selain mengirimkannya ke penerima",
   "@keepACopyInInboxDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "print": "",
+  "print": "Cetak",
   "@print": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recent": "",
+  "recent": "Terbaru",
   "@recent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSearchFolders": "",
+  "hintSearchFolders": "Cari folder",
   "@hintSearchFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageAllowSubaddressingSuccess": "",
+  "toastMessageAllowSubaddressingSuccess": "Anda telah berhasil mengizinkan subaddressing untuk folder ini",
   "@toastMessageAllowSubaddressingSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaBannerWarningTitle": "",
+  "quotaBannerWarningTitle": "Ruang penyimpanan Anda hampir habis (90%)",
   "@quotaBannerWarningTitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourFilterHasBeenUpdated": "",
+  "yourFilterHasBeenUpdated": "Filter Anda telah diperbarui",
   "@yourFilterHasBeenUpdated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "preparing_to_export": "",
+  "preparing_to_export": "Mempersiapkan ekspor",
   "@preparing_to_export": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteRecipientsFailed": "",
+  "deleteRecipientsFailed": "Gagal menghapus penerima.",
   "@deleteRecipientsFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageManagementAndSelection": "",
+  "messageManagementAndSelection": "Pengelolaan & Pemilihan Pesan",
   "@messageManagementAndSelection": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requestReadReceiptHasBeenDisabled": "",
+  "requestReadReceiptHasBeenDisabled": "Permintaan tanda terima baca telah dinonaktifkan",
   "@requestReadReceiptHasBeenDisabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youWillAttendThisMeeting": "",
+  "youWillAttendThisMeeting": "Anda akan menghadiri rapat ini",
   "@youWillAttendThisMeeting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterYourPasswordToSignIn": "",
+  "enterYourPasswordToSignIn": "Masukkan kata sandi Anda untuk masuk",
   "@enterYourPasswordToSignIn": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "justifyFull": "",
+  "justifyFull": "Rata penuh",
   "@justifyFull": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fix_email_addresses": "",
+  "fix_email_addresses": "Perbaiki alamat email",
   "@fix_email_addresses": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addAction": "",
+  "addAction": "Tambahkan tindakan",
   "@addAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "warningMessageWhenExceedGenerallySizeInComposer": "",
+  "warningMessageWhenExceedGenerallySizeInComposer": "Pesan Anda lebih besar daripada ukuran yang umumnya diterima oleh sistem email pihak ketiga. Jika Anda mengonfirmasi pengiriman email ini, ada risiko bahwa email tersebut ditolak oleh sistem penerima Anda.",
   "@warningMessageWhenExceedGenerallySizeInComposer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_folder": "",
+  "message_confirmation_dialog_delete_folder": "Folder \"{nameMailbox}\" beserta semua subfolder dan pesan yang dikandungnya akan dihapus dan tidak dapat dipulihkan. Apakah Anda ingin melanjutkan penghapusan?",
   "@message_confirmation_dialog_delete_folder": {
     "type": "text",
     "placeholders_order": [
@@ -3765,73 +3765,73 @@
       "nameMailbox": {}
     }
   },
-  "hideSignature": "",
+  "hideSignature": "Sembunyikan tanda tangan",
   "@hideSignature": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "proceed": "",
+  "proceed": "Lanjutkan",
   "@proceed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "turnOffMarkAsImportant": "",
+  "turnOffMarkAsImportant": "Nonaktifkan tandai sebagai penting",
   "@turnOffMarkAsImportant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleBackground": "",
+  "titleBackground": "Latar belakang",
   "@titleBackground": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you": "",
+  "you": "Anda",
   "@you": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribeMailDialogMessage": "",
+  "unsubscribeMailDialogMessage": "Apakah Anda yakin ingin berhenti menerima pesan serupa dari",
   "@unsubscribeMailDialogMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allFolders": "",
+  "allFolders": "Semua folder",
   "@allFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFoldersFailure": "",
+  "deleteFoldersFailure": "Gagal menghapus folder",
   "@deleteFoldersFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageEnglish": "",
+  "languageEnglish": "Inggris",
   "@languageEnglish": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveAsTemplate": "",
+  "saveAsTemplate": "Simpan sebagai templat",
   "@saveAsTemplate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "language": "",
+  "language": "Bahasa",
   "@language": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showMoreAttachmentButton": "",
+  "showMoreAttachmentButton": "Tampilkan +{count} lagi",
   "@showMoreAttachmentButton": {
     "type": "text",
     "placeholders_order": [
@@ -3841,37 +3841,37 @@
       "count": {}
     }
   },
-  "switchAccountConfirmation": "",
+  "switchAccountConfirmation": "Konfirmasi Ganti Akun",
   "@switchAccountConfirmation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "savingMessageToDraftFolder": "",
+  "savingMessageToDraftFolder": "Menyimpan pesan ke folder draf",
   "@savingMessageToDraftFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails_matching_your_search": "",
+  "no_emails_matching_your_search": "Tidak ada email yang cocok dengan pencarian Anda",
   "@no_emails_matching_your_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "connectionError": "",
+  "connectionError": "Kesalahan koneksi",
   "@connectionError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search": "",
+  "search": "Cari",
   "@search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dialogRecoverDeletedMessagesDescription": "",
+  "dialogRecoverDeletedMessagesDescription": "Anda dapat memulihkan pesan yang dihapus dalam {period} hari terakhir. Email yang dipulihkan akan dikembalikan ke folder pemulihan Anda.",
   "@dialogRecoverDeletedMessagesDescription": {
     "type": "text",
     "placeholders_order": [
@@ -3881,25 +3881,25 @@
       "period": {}
     }
   },
-  "restoreDeletedMessageFailed": "",
+  "restoreDeletedMessageFailed": "Gagal memulihkan pesan yang dihapus",
   "@restoreDeletedMessageFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageShowFolderSuccess": "",
+  "toastMessageShowFolderSuccess": "Folder ini sudah ditampilkan di folder utama Anda",
   "@toastMessageShowFolderSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageSubtitle": "",
+  "languageSubtitle": "Atur bahasa yang Anda gunakan di Twake Mail.",
   "@languageSubtitle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailUnsubscribedMessage": "",
+  "mailUnsubscribedMessage": "Anda berhenti berlangganan dari {senderName}",
   "@mailUnsubscribedMessage": {
     "type": "text",
     "placeholders_order": [
@@ -3909,133 +3909,133 @@
       "senderName": {}
     }
   },
-  "you_have_created_a_new_default_identity": "",
+  "you_have_created_a_new_default_identity": "Anda telah membuat identitas default baru",
   "@you_have_created_a_new_default_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "error": "",
+  "error": "Kesalahan",
   "@error": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "can_not_upload_this_file_as_attachments": "",
+  "can_not_upload_this_file_as_attachments": "Tidak dapat mengunggah berkas ini sebagai lampiran",
   "@can_not_upload_this_file_as_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveMessageToTemplateSuccess": "",
+  "saveMessageToTemplateSuccess": "Berhasil menyimpan pesan ke folder templat",
   "@saveMessageToTemplateSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "upgradeStorage": "",
+  "upgradeStorage": "Tingkatkan penyimpanan",
   "@upgradeStorage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterEmailAddress": "",
+  "enterEmailAddress": "Masukkan alamat email",
   "@enterEmailAddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "markAsImportant": "",
+  "markAsImportant": "Tandai sebagai penting",
   "@markAsImportant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatUnderline": "",
+  "formatUnderline": "Garis bawah",
   "@formatUnderline": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationLogout": "",
+  "messageConfirmationLogout": "Apakah Anda ingin keluar dari",
   "@messageConfirmationLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerOrganizerInvited": "",
+  "messageEventActionBannerOrganizerInvited": " telah mengundang Anda ke sebuah rapat",
   "@messageEventActionBannerOrganizerInvited": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "generalSignatureImageUploadError": "",
+  "generalSignatureImageUploadError": "Terjadi kesalahan saat mengunggah gambar. Silakan coba lagi.",
   "@generalSignatureImageUploadError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youHaveNotSelectedAnyActionForRule": "",
+  "youHaveNotSelectedAnyActionForRule": "Anda belum memilih tindakan apa pun untuk aturan tersebut.",
   "@youHaveNotSelectedAnyActionForRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addRecipients": "",
+  "addRecipients": "Tambahkan Penerima",
   "@addRecipients": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subjectDescending": "",
+  "subjectDescending": "Subjek: Z - A",
   "@subjectDescending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewRule": "",
+  "createNewRule": "Buat aturan baru",
   "@createNewRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailFirst": "",
+  "messageDialogWhenStoreSendingEmailFirst": "Untungnya, Anda masih bisa",
   "@messageDialogWhenStoreSendingEmailFirst": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatStrikethrough": "",
+  "formatStrikethrough": "Coret",
   "@formatStrikethrough": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sending": "",
+  "sending": "Mengirim",
   "@sending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredEmail": "",
+  "requiredEmail": "Email wajib diisi",
   "@requiredEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "actions": "",
+  "actions": "Tindakan",
   "@actions": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "languageAndRegion": "",
+  "languageAndRegion": "Bahasa & Wilayah",
   "@languageAndRegion": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toast_message_delete_multiple_email_permanently_success": "",
+  "toast_message_delete_multiple_email_permanently_success": "{count} pesan telah dihapus secara permanen",
   "@toast_message_delete_multiple_email_permanently_success": {
     "type": "text",
     "placeholders_order": [
@@ -4045,43 +4045,43 @@
       "count": {}
     }
   },
-  "results": "",
+  "results": "Hasil",
   "@results": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_dialog_message": "",
+  "empty_trash_dialog_message": "Anda akan menghapus secara permanen semua item di Sampah. Apakah Anda ingin melanjutkan?",
   "@empty_trash_dialog_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "threadSettingExplanation": "",
+  "threadSettingExplanation": "Lihat beberapa email terkait seperti sebuah percakapan",
   "@threadSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "openInNewTab": "",
+  "openInNewTab": "Buka di tab baru",
   "@openInNewTab": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveMessage": "",
+  "saveMessage": "Simpan pesan",
   "@saveMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_forward_email": "",
+  "prefix_forward_email": "Fwd:",
   "@prefix_forward_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_multiple_messages_dialog": "",
+  "delete_multiple_messages_dialog": "Anda akan menghapus secara permanen {count} item di {mailboxName}. Apakah Anda ingin melanjutkan?",
   "@delete_multiple_messages_dialog": {
     "type": "text",
     "placeholders_order": [
@@ -4093,91 +4093,91 @@
       "mailboxName": {}
     }
   },
-  "message_dialog_send_email_without_a_subject": "",
+  "message_dialog_send_email_without_a_subject": "Apakah Anda yakin ingin mengirim pesan tanpa subjek?",
   "@message_dialog_send_email_without_a_subject": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_mail_selected": "",
+  "no_mail_selected": "Tidak ada email yang dipilih",
   "@no_mail_selected": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "expand": "",
+  "expand": "Perluas",
   "@expand": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageSubaddressingFailure": "",
+  "toastMessageSubaddressingFailure": "Terjadi kesalahan saat memproses permintaan",
   "@toastMessageSubaddressingFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose": "",
+  "compose": "Tulis",
   "@compose": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_all": "",
+  "delete_all": "Hapus semua",
   "@delete_all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login": "",
+  "login": "Masuk",
   "@login": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveChanges": "",
+  "saveChanges": "Simpan perubahan",
   "@saveChanges": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "turnOnMarkAsImportant": "",
+  "turnOnMarkAsImportant": "Aktifkan tandai sebagai penting",
   "@turnOnMarkAsImportant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "you_have_created_a_new_identity": "",
+  "you_have_created_a_new_identity": "Anda telah membuat identitas baru",
   "@you_have_created_a_new_identity": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "not_starred": "",
+  "not_starred": "Tidak berbintang",
   "@not_starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_emails": "",
+  "search_emails": "Cari email",
   "@search_emails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addRecipientButton": "",
+  "addRecipientButton": "Tambahkan penerima",
   "@addRecipientButton": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_mail": "",
+  "search_mail": "Cari email",
   "@search_mail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_message_toast": "",
+  "marked_message_toast": "Anda telah menandai pesan sebagai \"{action}\"",
   "@marked_message_toast": {
     "type": "text",
     "placeholders_order": [
@@ -4187,97 +4187,97 @@
       "action": {}
     }
   },
-  "allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone": "",
+  "allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone": "Memungkinkan Twake Mail memberi tahu Anda saat pesan baru tiba di ponsel Anda",
   "@allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dropFileHereToAttachThem": "",
+  "dropFileHereToAttachThem": "Letakkan berkas di sini untuk melampirkannya",
   "@dropFileHereToAttachThem": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectAction": "",
+  "selectAction": "Pilih tindakan",
   "@selectAction": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "singleSignOn": "",
+  "singleSignOn": "Single Sign-On",
   "@singleSignOn": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "",
+  "forwardingSettingExplanation": "Alamat email yang tercantum di bawah ini akan menerima email Anda.",
   "@forwardingSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allow": "",
+  "allow": "Izinkan",
   "@allow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "headerStyle": "",
+  "headerStyle": "Gaya",
   "@headerStyle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "repliedAndForwardedMessage": "",
+  "repliedAndForwardedMessage": "Pesan yang dibalas dan diteruskan",
   "@repliedAndForwardedMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "defaultIdentitySetupSuccessful": "",
+  "defaultIdentitySetupSuccessful": "Pengaturan identitas default berhasil",
   "@defaultIdentitySetupSuccessful": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createARule": "",
+  "createARule": "Buat aturan",
   "@createARule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerOrganizerUpdated": "",
+  "messageEventActionBannerOrganizerUpdated": " telah memperbarui sebuah rapat",
   "@messageEventActionBannerOrganizerUpdated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintInputAutocompleteContact": "",
+  "hintInputAutocompleteContact": "Masukkan nama atau alamat email",
   "@hintInputAutocompleteContact": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "an_error_occurred": "",
+  "an_error_occurred": "Kesalahan! Terjadi kesalahan. Silakan coba lagi nanti.",
   "@an_error_occurred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteMessage": "",
+  "deleteMessage": "Hapus pesan",
   "@deleteMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subTitlePageNotFound": "",
+  "subTitlePageNotFound": "Mungkin halaman tujuan Anda telah hilang atau milik akun lain.",
   "@subTitlePageNotFound": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageMarkAsReadFolderAllFailure": "",
+  "toastMessageMarkAsReadFolderAllFailure": "Folder \"{folderName}\" tidak dapat ditandai sebagai sudah dibaca",
   "@toastMessageMarkAsReadFolderAllFailure": {
     "type": "text",
     "placeholders_order": [
@@ -4287,85 +4287,85 @@
       "folderName": {}
     }
   },
-  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "",
+  "saveEmailAsDraftFailureWithSetErrorTypeOverQuota": "Gagal menyimpan pesan Anda sebagai draf karena melebihi kuota.",
   "@saveEmailAsDraftFailureWithSetErrorTypeOverQuota": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadAttachmentHasBeenCancelled": "",
+  "downloadAttachmentHasBeenCancelled": "Pengunduhan lampiran telah dibatalkan",
   "@downloadAttachmentHasBeenCancelled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "settings": "",
+  "settings": "Pengaturan",
   "@settings": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "html": "",
+  "html": "HTML",
   "@html": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendMessageFailureWithSetErrorTypeTooLarge": "",
+  "sendMessageFailureWithSetErrorTypeTooLarge": "Gagal mengirim pesan Anda karena ukurannya terlalu besar.",
   "@sendMessageFailureWithSetErrorTypeTooLarge": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "text": "",
+  "text": "Teks",
   "@text": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allowSubaddressing": "",
+  "allowSubaddressing": "Izinkan subaddressing",
   "@allowSubaddressing": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_copied_to_clipboard": "",
+  "email_address_copied_to_clipboard": "Alamat email disalin ke papan klip",
   "@email_address_copied_to_clipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spamReportsSettingExplanation": "",
+  "spamReportsSettingExplanation": "Mengingatkan Anda bahwa Anda perlu memoderasi email spam Anda secara berkala",
   "@spamReportsSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reading": "",
+  "reading": "Membaca",
   "@reading": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textSize": "",
+  "textSize": "Ukuran Teks",
   "@textSize": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "templatesMailboxDisplayName": "",
+  "templatesMailboxDisplayName": "Templat",
   "@templatesMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pending": "",
+  "pending": "Menunggu",
   "@pending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "countNewSpamEmails": "",
+  "countNewSpamEmails": "Anda memiliki {count} email spam baru!",
   "@countNewSpamEmails": {
     "type": "text",
     "placeholders_order": [
@@ -4375,19 +4375,19 @@
       "count": {}
     }
   },
-  "keyboardShortcutsSettingExplanation": "",
+  "keyboardShortcutsSettingExplanation": "Tindakan kotak surat & email",
   "@keyboardShortcutsSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "customRange": "",
+  "customRange": "Rentang khusus",
   "@customRange": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "header_email_quoted": "",
+  "header_email_quoted": "Pada {sentDate}, dari {emailAddress}",
   "@header_email_quoted": {
     "type": "text",
     "placeholders_order": [
@@ -4399,19 +4399,19 @@
       "emailAddress": {}
     }
   },
-  "maximum_files_size": "",
+  "maximum_files_size": "Ukuran berkas maksimum",
   "@maximum_files_size": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addAnEmailAddress": "",
+  "addAnEmailAddress": "Tambahkan alamat email",
   "@addAnEmailAddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaStateLabel": "",
+  "quotaStateLabel": "{used} dari {limit} digunakan",
   "@quotaStateLabel": {
     "type": "text",
     "placeholders_order": [
@@ -4423,25 +4423,25 @@
       "limit": {}
     }
   },
-  "reply_to_email_address_prefix": "",
+  "reply_to_email_address_prefix": "Balas ke",
   "@reply_to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showFolder": "",
+  "showFolder": "Tampilkan folder",
   "@showFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createTwakeId": "",
+  "createTwakeId": "Buat Twake ID",
   "@createTwakeId": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "count_email_selected": "",
+  "count_email_selected": "{count} dipilih",
   "@count_email_selected": {
     "type": "text",
     "placeholders_order": [
@@ -4451,49 +4451,49 @@
       "count": {}
     }
   },
-  "mailHasBeenUnstarred": "",
+  "mailHasBeenUnstarred": "Bintang pada email telah dihapus",
   "@mailHasBeenUnstarred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintMessageBodyVacation": "",
+  "hintMessageBodyVacation": "Pesan liburan",
   "@hintMessageBodyVacation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorMessageWhenEndDateVacationIsInValid": "",
+  "errorMessageWhenEndDateVacationIsInValid": "Tanggal akhir harus lebih besar dari tanggal mulai",
   "@errorMessageWhenEndDateVacationIsInValid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_compose_email": "",
+  "hint_compose_email": "Mulai menulis surat...",
   "@hint_compose_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_https": "",
+  "prefix_https": "https://",
   "@prefix_https": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "show": "",
+  "show": "Tampilkan",
   "@show": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFolder": "",
+  "createFolder": "Buat folder",
   "@createFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageMarkAsMailboxReadSuccess": "",
+  "toastMessageMarkAsMailboxReadSuccess": "Anda telah menandai semua pesan di \"{mailboxName}\" sebagai sudah dibaca",
   "@toastMessageMarkAsMailboxReadSuccess": {
     "type": "text",
     "placeholders_order": [
@@ -4503,61 +4503,61 @@
       "mailboxName": {}
     }
   },
-  "reply_to": "",
+  "reply_to": "Balas ke",
   "@reply_to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailboxList": "",
+  "mailboxList": "Daftar kotak surat",
   "@mailboxList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sendingMessage": "",
+  "sendingMessage": "Mengirim pesan",
   "@sendingMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identities": "",
+  "identities": "Identitas",
   "@identities": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ruleFilterAddressToField": "",
+  "ruleFilterAddressToField": "Kepada",
   "@ruleFilterAddressToField": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "savingMessageToTemplateFolder": "",
+  "savingMessageToTemplateFolder": "Menyimpan pesan ke folder templat",
   "@savingMessageToTemplateFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_unread": "",
+  "with_unread": "Dengan yang belum dibaca",
   "@with_unread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pick_attachments": "",
+  "pick_attachments": "Pilih lampiran",
   "@pick_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleForeground": "",
+  "titleForeground": "Latar depan",
   "@titleForeground": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "totalEmailSelected": "",
+  "totalEmailSelected": "Batalkan semua pilihan ({count})",
   "@totalEmailSelected": {
     "type": "text",
     "placeholders_order": [
@@ -4567,49 +4567,49 @@
       "count": {}
     }
   },
-  "emptyTrash": "",
+  "emptyTrash": "Kosongkan Sampah",
   "@emptyTrash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_now": "",
+  "empty_trash_now": "Kosongkan sampah sekarang",
   "@empty_trash_now": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youHaveNewMessages": "",
+  "youHaveNewMessages": "Anda memiliki pesan baru",
   "@youHaveNewMessages": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disableSpamReport": "",
+  "disableSpamReport": "Nonaktifkan laporan Spam",
   "@disableSpamReport": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sMimeGoodSignatureMessage": "",
+  "sMimeGoodSignatureMessage": "Keaslian pesan ini telah diverifikasi dengan tanda tangan SMime.",
   "@sMimeGoodSignatureMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_internet_connection_try_again_later": "",
+  "no_internet_connection_try_again_later": "Tidak ada koneksi internet, coba lagi nanti.",
   "@no_internet_connection_try_again_later": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "paywallUrlNotAvailable": "",
+  "paywallUrlNotAvailable": "URL paywall tidak tersedia",
   "@paywallUrlNotAvailable": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recoverDeletedMessagesBannerContent": "",
+  "recoverDeletedMessagesBannerContent": "Anda dapat memulihkan pesan yang dihapus selama {period} terakhir",
   "@recoverDeletedMessagesBannerContent": {
     "type": "text",
     "placeholders_order": [
@@ -4619,19 +4619,19 @@
       "period": {}
     }
   },
-  "app_name": "",
+  "app_name": "Twake Mail",
   "@app_name": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageHasBeenSavedToTheSendingQueue": "",
+  "messageHasBeenSavedToTheSendingQueue": "Masalah jaringan sementara. Pesan dimasukkan ke antrean untuk dicoba lagi saat terhubung.",
   "@messageHasBeenSavedToTheSendingQueue": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEnableVacationResponderAutomatically": "",
+  "messageEnableVacationResponderAutomatically": "Penjawab otomatis liburan Anda akan diaktifkan pada {startDate}",
   "@messageEnableVacationResponderAutomatically": {
     "type": "text",
     "placeholders_order": [
@@ -4641,61 +4641,61 @@
       "startDate": {}
     }
   },
-  "notSelected": "",
+  "notSelected": "Tidak dipilih",
   "@notSelected": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisEmailAddressInvalid": "",
+  "thisEmailAddressInvalid": "Alamat email ini tidak valid",
   "@thisEmailAddressInvalid": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadAttachmentInEMLPreviewWarningMessage": "",
+  "downloadAttachmentInEMLPreviewWarningMessage": "Mengunduh lampiran. Anda hanya dapat mengunduh satu berkas dalam satu waktu.",
   "@downloadAttachmentInEMLPreviewWarningMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "closeModalWindow": "",
+  "closeModalWindow": "Tutup jendela modal",
   "@closeModalWindow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "formatItalic": "",
+  "formatItalic": "Miring",
   "@formatItalic": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "appGridTittle": "",
+  "appGridTittle": "Pergi ke aplikasi",
   "@appGridTittle": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "addSender": "",
+  "addSender": "Tambahkan pengirim",
   "@addSender": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "photos_and_videos": "",
+  "photos_and_videos": "Foto dan Video",
   "@photos_and_videos": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last15Days": "",
+  "last15Days": "15 hari terakhir",
   "@last15Days": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "singularAttachmentTitleHeader": "",
+  "singularAttachmentTitleHeader": "{count} Lampiran ({totalSize})",
   "@singularAttachmentTitleHeader": {
     "type": "text",
     "placeholders_order": [
@@ -4707,79 +4707,79 @@
       "totalSize": {}
     }
   },
-  "moveFolderContent": "",
+  "moveFolderContent": "Pindahkan isi folder",
   "@moveFolderContent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "markAsSpam": "",
+  "markAsSpam": "Tandai sebagai spam",
   "@markAsSpam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quickCreatingRule": "",
+  "quickCreatingRule": "Buat aturan dengan email ini",
   "@quickCreatingRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorMessageWhenMessageVacationIsEmpty": "",
+  "errorMessageWhenMessageVacationIsEmpty": "Isi pesan tidak boleh kosong",
   "@errorMessageWhenMessageVacationIsEmpty": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "starIt": "",
+  "starIt": "Beri bintang",
   "@starIt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "badCredentials": "",
+  "badCredentials": "Kredensial tidak valid",
   "@badCredentials": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "conditionTitleRulesFilterBeforeCombiner": "",
+  "conditionTitleRulesFilterBeforeCombiner": "Jika",
   "@conditionTitleRulesFilterBeforeCombiner": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spamFolderNotFound": "",
+  "spamFolderNotFound": "Folder spam tidak ditemukan",
   "@spamFolderNotFound": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_message": "",
+  "new_message": "Pesan baru",
   "@new_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titlePageNotFound": "",
+  "titlePageNotFound": "Ups, kami tidak dapat menemukan halaman itu",
   "@titlePageNotFound": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "all_identities": "",
+  "all_identities": "Semua identitas",
   "@all_identities": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSubjectInputVacationSetting": "",
+  "hintSubjectInputVacationSetting": "Masukkan subjek",
   "@hintSubjectInputVacationSetting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createFolderSuccessfullyMessage": "",
+  "createFolderSuccessfullyMessage": "Anda berhasil membuat folder {folderName}",
   "@createFolderSuccessfullyMessage": {
     "type": "text",
     "placeholders_order": [
@@ -4789,79 +4789,79 @@
       "folderName": {}
     }
   },
-  "paragraph": "",
+  "paragraph": "Paragraf",
   "@paragraph": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "openFolderMenu": "",
+  "openFolderMenu": "Buka menu Folder",
   "@openFolderMenu": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "drafts_saved": "",
+  "drafts_saved": "Draf disimpan",
   "@drafts_saved": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "conditionTitleRulesFilterAfterCombiner": "",
+  "conditionTitleRulesFilterAfterCombiner": "kondisi berikut terpenuhi:",
   "@conditionTitleRulesFilterAfterCombiner": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "startDate": "",
+  "startDate": "Tanggal mulai",
   "@startDate": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "embedCode": "",
+  "embedCode": "Sematkan kode",
   "@embedCode": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "save_to_drafts": "",
+  "save_to_drafts": "Simpan ke draf",
   "@save_to_drafts": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quotaBannerWarningSubtitleWithPremium": "",
+  "quotaBannerWarningSubtitleWithPremium": "Agar tetap dapat mengirim pesan dan menikmati semua fitur Twake Mail, harap pertimbangkan untuk membersihkan atau meningkatkan penyimpanan Anda.",
   "@quotaBannerWarningSubtitleWithPremium": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "time": "",
+  "time": "Waktu",
   "@time": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bannerMessageSendingQueueView": "",
+  "bannerMessageSendingQueueView": "Pesan di folder Antrean pengiriman akan dikirim atau dijadwalkan saat online.",
   "@bannerMessageSendingQueueView": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "this_field_cannot_be_blank": "",
+  "this_field_cannot_be_blank": "Kolom ini tidak boleh kosong",
   "@this_field_cannot_be_blank": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "format": "",
+  "format": "Format",
   "@format": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "",
+  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Anda telah menandai {count} pesan di \"{mailboxName}\" sebagai sudah dibaca",
   "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
     "type": "text",
     "placeholders_order": [
@@ -4873,31 +4873,31 @@
       "count": {}
     }
   },
-  "connectedToTheInternet": "",
+  "connectedToTheInternet": "Terhubung ke internet",
   "@connectedToTheInternet": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "remove_from_spam": "",
+  "remove_from_spam": "Hapus dari spam",
   "@remove_from_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "html_template": "",
+  "html_template": "Templat HTML",
   "@html_template": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "jmapStandard": "",
+  "jmapStandard": "Standar JMAP",
   "@jmapStandard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "filter_message_toast": "",
+  "filter_message_toast": "Anda telah memfilter pesan berdasarkan \"{filterOption}\"",
   "@filter_message_toast": {
     "type": "text",
     "placeholders_order": [
@@ -4907,224 +4907,548 @@
       "filterOption": {}
     }
   },
-  "rulesNameHintTextInput": "",
+  "rulesNameHintTextInput": "Masukkan nama aturan",
   "@rulesNameHintTextInput": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "when": "",
+  "when": "Kapan",
   "@when": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "urlLink": "",
+  "urlLink": "URL",
   "@urlLink": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_read": "",
+  "mark_as_read": "Tandai sebagai sudah dibaca",
   "@mark_as_read": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notificationsDisabled": "",
+  "notificationsDisabled": "Notifikasi dinonaktifkan",
   "@notificationsDisabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selectTheFolderLocation": "",
+  "selectTheFolderLocation": "Pilih lokasi folder",
   "@selectTheFolderLocation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recoveredMailboxDisplayName": "",
+  "recoveredMailboxDisplayName": "Dipulihkan",
   "@recoveredMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sign_out": "",
+  "sign_out": "Keluar",
   "@sign_out": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "threadToggleDescription": "",
+  "threadToggleDescription": "Aktifkan utas",
   "@threadToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "setColor": "",
+  "setColor": "Atur warna",
   "@setColor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadAll": "",
+  "downloadAll": "Unduh semua",
   "@downloadAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "",
+  "hint_content_email_composer": "Mulai tulis email Anda di sini",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "default_value": "",
+  "default_value": "Default",
   "@default_value": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unsubscribe": "",
+  "unsubscribe": "Berhenti berlangganan",
   "@unsubscribe": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveEmailAsDraftFailureWithSetErrorTypeTooLarge": "",
+  "saveEmailAsDraftFailureWithSetErrorTypeTooLarge": "Gagal menyimpan pesan Anda sebagai draf karena ukurannya terlalu besar.",
   "@saveEmailAsDraftFailureWithSetErrorTypeTooLarge": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last7Days": "",
+  "last7Days": "7 hari terakhir",
   "@last7Days": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "closeAnyway": "",
+  "closeAnyway": "Tetap tutup",
   "@closeAnyway": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editAsNewEmail": "",
+  "editAsNewEmail": "Edit sebagai email baru",
   "@editAsNewEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "enterASubject": "",
+  "enterASubject": "Masukkan subjek",
   "@enterASubject": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailTail": "",
+  "messageDialogWhenStoreSendingEmailTail": " folder.",
   "@messageDialogWhenStoreSendingEmailTail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "exportTraceLog": "",
+  "exportTraceLog": "Ekspor log pelacakan",
   "@exportTraceLog": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clearFolder": "",
+  "clearFolder": "Kosongkan folder",
   "@clearFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteOfflineEmail": "",
+  "deleteOfflineEmail": "Hapus email offline",
   "@deleteOfflineEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailSecond": "",
+  "messageDialogWhenStoreSendingEmailSecond": " mengirim, membalas, atau meneruskan ",
   "@messageDialogWhenStoreSendingEmailSecond": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_unread": "",
+  "mark_as_unread": "Tandai sebagai belum dibaca",
   "@mark_as_unread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subject_email": "",
+  "subject_email": "Subjek",
   "@subject_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newer": "",
+  "newer": "Lebih baru",
   "@newer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEventActionBannerAttendeeCounter": "",
+  "messageEventActionBannerAttendeeCounter": " telah mengusulkan perubahan pada acara ini",
   "@messageEventActionBannerAttendeeCounter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "done": "",
+  "done": "Selesai",
   "@done": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manageMyStorage": "",
+  "manageMyStorage": "Kelola penyimpanan saya",
   "@manageMyStorage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "senderImportantSettingToggleDescription": "",
+  "senderImportantSettingToggleDescription": "Tampilkan tanda penting yang ditetapkan pengirim",
   "@senderImportantSettingToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogWhenStoreSendingEmailThird": "",
+  "messageDialogWhenStoreSendingEmailThird": "email. Email tersebut akan dikirim saat Anda terhubung ke internet. Untuk mengedit email ini sebelum dikirim, buka folder ",
   "@messageDialogWhenStoreSendingEmailThird": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yesLogout": "",
+  "yesLogout": "Ya, Keluar",
   "@yesLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageExplanationNoRulesConfigured": "",
+  "messageExplanationNoRulesConfigured": "Mulailah dengan membuat aturan pertama Anda untuk mengotomatiskan\n pengelolaan email.",
   "@messageExplanationNoRulesConfigured": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailMatchYourCurrentFilter": "",
+  "noEmailMatchYourCurrentFilter": "Tidak ada email yang cocok dengan filter Anda saat ini.",
   "@noEmailMatchYourCurrentFilter": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noEmailInYourCurrentFolder": "",
+  "noEmailInYourCurrentFolder": "Tidak ada email di folder Anda saat ini",
   "@noEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editLocalCopyInForwardFailed": "",
+  "editLocalCopyInForwardFailed": "Gagal mengedit salinan lokal pada penerusan.",
   "@editLocalCopyInForwardFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribe": "AI Scribe",
+  "@aiScribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeSettingExplanation": "Gunakan AI untuk membantu menulis dan meningkatkan email Anda",
+  "@aiScribeSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiScribeToggleDescription": "Aktifkan AI Scribe",
+  "@aiScribeToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequired": "Tindakan Diperlukan",
+  "@actionRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionRequiredMailboxDisplayName": "Tindakan diperlukan",
+  "@actionRequiredMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyActionRequiredEmails": "Anda tidak memiliki email yang memerlukan tindakan.",
+  "@youDoNotHaveAnyActionRequiredEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsAction": "AI kebutuhan-tindakan",
+  "@aiNeedsAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionToggleDescription": "Aktifkan AI kebutuhan-tindakan",
+  "@aiNeedsActionToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "aiNeedsActionSettingExplanation": "Deteksi email yang memerlukan perhatian Anda menggunakan AI. Saat dinonaktifkan, AI tidak akan memproses email apa pun.",
+  "@aiNeedsActionSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labels": "Label",
+  "@labels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newLabel": "Label baru",
+  "@newLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelName": "Nama label",
+  "@labelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseEnterNameYourNewLabel": "Silakan masukkan nama label baru Anda",
+  "@pleaseEnterNameYourNewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseALabelColor": "Pilih warna label",
+  "@chooseALabelColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabel": "Buat label",
+  "@createLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createANewLabel": "Buat label baru",
+  "@createANewLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizeYourInboxWithACustomCategory": "Atur kotak masuk Anda dengan kategori khusus",
+  "@organizeYourInboxWithACustomCategory": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tagNameAlreadyExists": "Tag dengan nama ini sudah ada. Silakan pilih nama yang berbeda.",
+  "@tagNameAlreadyExists": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseCustomColour": "Pilih warna khusus",
+  "@chooseCustomColour": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColourForThisLabel": "Pilih warna untuk label ini",
+  "@chooseAColourForThisLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createLabelSuccessfullyMessage": "Anda berhasil membuat label {labelName}",
+  "@createLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "createNewLabelFailure": "Gagal membuat label baru",
+  "@createNewLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibility": "Visibilitas label",
+  "@labelVisibility": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilitySettingExplanation": "Tampilkan label yang ditetapkan ke email langsung di daftar pesan Anda untuk memudahkan kategorisasi.",
+  "@labelVisibilitySettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelVisibilityToggleDescription": "Tampilkan label",
+  "@labelVisibilityToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "theLabelFeatureIsNowAvailable": "Fitur label kini tersedia.",
+  "@theLabelFeatureIsNowAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelAs": "Labeli sebagai",
+  "@labelAs": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addLabelToEmailSuccessfullyMessage": "Email ditambahkan ke label \"{labelName}\"",
+  "@addLabelToEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToEmailFailureMessage": "Tidak dapat menambahkan email ke label \"{labelName}\"",
+  "@addLabelToEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabel": "Tambahkan label",
+  "@addLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addLabelToThreadSuccessfullyMessage": "Semua email dalam utas ditambahkan ke label \"{labelName}\"",
+  "@addLabelToThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "addLabelToThreadFailureMessage": "Tidak dapat menambahkan semua email dalam utas ke label \"{labelName}\"",
+  "@addLabelToThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "youDoNotHaveAnyEmailTaggedWithThis": "Anda tidak memiliki email yang diberi tag ini.",
+  "@youDoNotHaveAnyEmailTaggedWithThis": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allLabels": "Semua label",
+  "@allLabels": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLabel": "Edit label",
+  "@editLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateTheLabelName": "Perbarui nama label",
+  "@updateTheLabelName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLabelSuccessfullyMessage": "Anda berhasil mengedit label {labelName}",
+  "@editLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "editLabelFailure": "Gagal mengedit label",
+  "@editLabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "removeLabelFromEmailSuccessfullyMessage": "Email dihapus dari label \"{labelName}\"",
+  "@removeLabelFromEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromEmailFailureMessage": "Tidak dapat menghapus email dari label \"{labelName}\"",
+  "@removeLabelFromEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadSuccessfullyMessage": "Semua email dalam utas dihapus dari label \"{labelName}\"",
+  "@removeLabelFromThreadSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "removeLabelFromThreadFailureMessage": "Tidak dapat menghapus semua email dalam utas dari label \"{labelName}\"",
+  "@removeLabelFromThreadFailureMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteLabel": "Hapus label",
+  "@deleteLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "areYouSureYouWantToDeleteTheLabel": "Apakah Anda yakin ingin menghapus label \"{labelName}\"?",
+  "@areYouSureYouWantToDeleteTheLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteLabelSuccessfullyMessage": "Anda berhasil menghapus label {labelName}",
+  "@deleteLabelSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "labelName"
+    ],
+    "placeholders": {
+      "labelName": {}
+    }
+  },
+  "deleteALabelFailure": "Gagal menghapus label",
+  "@deleteALabelFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
