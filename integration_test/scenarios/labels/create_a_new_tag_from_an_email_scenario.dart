@@ -44,7 +44,7 @@ class CreateANewTagFromAnEmailScenario extends BaseTestScenario
     await _expectEmailDetailedLabelAsOptionVisible();
 
     await emailRobot.tapEmailDetailedLabelAsOptionInContextMenu();
-    await _expectAddVLabelModalVisible();
+    await _expectAddLabelModalVisible();
 
     await addLabelModalRobot.tapCreateANewLabel();
     await _expectCreateNewLabelModalVisible();
@@ -61,7 +61,7 @@ class CreateANewTagFromAnEmailScenario extends BaseTestScenario
     await expectViewVisible($(#labelAs_action));
   }
 
-  Future<void> _expectAddVLabelModalVisible() async {
+  Future<void> _expectAddLabelModalVisible() async {
     await expectViewVisible($(#add_label_modal));
   }
 

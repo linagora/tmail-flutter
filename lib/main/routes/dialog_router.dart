@@ -27,22 +27,27 @@ class DialogRouter {
     required String routeName,
     required Object? arguments
   }) async {
-    if (PlatformInfo.isWeb) {
-      _isMapDialogOpened[routeName] = true;
-    }
-    _bindingDI(routeName);
+    try {
+      if (PlatformInfo.isWeb) {
+        _isMapDialogOpened[routeName] = true;
+      }
+      _bindingDI(routeName);
 
-    final returnedValue = await Get.generalDialog(
-      barrierDismissible: true,
-      barrierLabel: routeName,
-      routeSettings: RouteSettings(arguments: arguments),
-      pageBuilder: (_, __, ___) => _generateView(routeName: routeName)
-    );
+      final returnedValue = await Get.generalDialog(
+        barrierDismissible: true,
+        barrierLabel: routeName,
+        routeSettings: RouteSettings(arguments: arguments),
+        pageBuilder: (_, __, ___) => _generateView(routeName: routeName),
+      );
 
-    if (PlatformInfo.isWeb) {
-      _isMapDialogOpened.remove(routeName);
+      return returnedValue;
+    } catch (e) {
+      logWarning('DialogRouter::pushGeneralDialog: Exception = $e');
+    } finally {
+      if (PlatformInfo.isWeb) {
+        _isMapDialogOpened.remove(routeName);
+      }
     }
-    return returnedValue;
   }
 
   final RxMap<String, bool> _isMapDialogOpened = RxMap<String, bool>();
@@ -97,16 +102,22 @@ class DialogRouter {
     required Widget child,
     required String dialogLabel,
   }) async {
-    if (PlatformInfo.isWeb) {
-      _isMapDialogOpened[dialogLabel] = true;
-    }
-    await Get.generalDialog(
-      barrierDismissible: true,
-      barrierLabel: dialogLabel,
-      pageBuilder: (_, __, ___) => child,
-    );
-    if (PlatformInfo.isWeb) {
-      _isMapDialogOpened.remove(dialogLabel);
+    try {
+      if (PlatformInfo.isWeb) {
+        _isMapDialogOpened[dialogLabel] = true;
+      }
+
+      await Get.generalDialog(
+        barrierDismissible: true,
+        barrierLabel: dialogLabel,
+        pageBuilder: (_, __, ___) => child,
+      );
+    } catch (e) {
+      logWarning('DialogRouter::openDialogModal: Exception = $e');
+    } finally {
+      if (PlatformInfo.isWeb) {
+        _isMapDialogOpened.remove(dialogLabel);
+      }
     }
   }
 }
