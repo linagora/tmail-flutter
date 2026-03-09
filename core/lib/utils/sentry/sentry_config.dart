@@ -71,7 +71,7 @@ class SentryConfig {
 
     const sentryDist = String.fromEnvironment('SENTRY_DIST');
     logTrace(
-      'SentryConfig::load: sentryDist is $sentryDist,'
+      'SentryConfig::load: sentryDist is $sentryDist, '
       'appVersion is $appVersion',
       webConsoleEnabled: true,
     );
