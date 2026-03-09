@@ -79,7 +79,7 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
 
   void _handleErrorStream(Object error, StackTrace stackTrace) {
     logWarning('_SendingMessageDialogViewState::_handleErrorStream: Exception = $error');
-    if (error is UnknownRemoteException && error.message is List<SendingEmailCanceledException>) {
+    if (error is UnknownRemoteException && error.error is List<SendingEmailCanceledException>) {
       popBack(result: SendEmailFailure(exception: SendingEmailCanceledException()));
     } else {
       popBack(result: SendEmailFailure(exception: error));

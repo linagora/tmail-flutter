@@ -69,7 +69,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
       }
     } catch (e) {
       logWarning('CreateNewAndSaveEmailToDraftsInteractor::execute: Exception: $e');
-      if (e is UnknownRemoteException && e.message is List<SavingEmailToDraftsCanceledException>) {
+      if (e is UnknownRemoteException && e.error is List<SavingEmailToDraftsCanceledException>) {
         if (createEmailRequest.draftsEmailId == null) {
           yield dartz.Left<Failure, Success>(SaveEmailAsDraftsFailure(SavingEmailToDraftsCanceledException()));
         } else {
