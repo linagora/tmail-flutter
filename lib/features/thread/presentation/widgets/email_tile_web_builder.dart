@@ -1,9 +1,12 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -31,6 +34,7 @@ class EmailTileBuilder extends StatefulWidget {
   final bool isSenderImportantFlagEnabled;
   final bool isAINeedsActionEnabled;
   final bool autoWrapTagsByMaxWidth;
+  final bool isLabelMailboxOpened;
   final List<Label>? labels;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
@@ -45,6 +49,7 @@ class EmailTileBuilder extends StatefulWidget {
     this.isSearchEmailRunning = false,
     this.isSenderImportantFlagEnabled = true,
     this.autoWrapTagsByMaxWidth = false,
+    this.isLabelMailboxOpened = false,
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
@@ -161,6 +166,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                           buildMailboxContain(
                             context,
                             widget.isSearchEmailRunning,
+                            widget.isLabelMailboxOpened,
                             widget.presentationEmail
                           ),
                           if (widget.presentationEmail.hasStarred)
@@ -185,6 +191,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
         selectAllMode: widget.selectAllMode,
         canDeletePermanently: canDeletePermanently,
         isSearchEmailRunning: widget.isSearchEmailRunning,
+        isLabelMailboxOpened: widget.isLabelMailboxOpened,
         isShowingEmailContent: widget.isShowingEmailContent,
         isDrag: widget.isDrag,
         isSenderImportantFlagEnabled: widget.isSenderImportantFlagEnabled,
@@ -324,6 +331,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                       isHovered: value,
                       canDeletePermanently: canDeletePermanently,
                       isSearchEmailRunning: widget.isSearchEmailRunning,
+                      isLabelMailboxOpened: widget.isLabelMailboxOpened,
                       mailboxContain: widget.mailboxContain,
                       emailActionClick: widget.emailActionClick,
                       onMoreActionClick: widget.onMoreActionClick,
@@ -621,4 +629,10 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
     _hoverNotifier.dispose();
     super.dispose();
   }
+
+  @override
+  ImagePaths get imagePaths => Get.find<ImagePaths>();
+
+  @override
+  ResponsiveUtils get responsiveUtils => Get.find<ResponsiveUtils>();
 }

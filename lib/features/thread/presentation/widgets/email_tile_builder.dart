@@ -1,5 +1,8 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -24,6 +27,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
   final bool isSenderImportantFlagEnabled;
   final bool isAINeedsActionEnabled;
   final bool autoWrapTagsByMaxWidth;
+  final bool isLabelMailboxOpened;
   final List<Label>? labels;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
@@ -39,6 +43,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
     this.isSenderImportantFlagEnabled = true,
     this.isAINeedsActionEnabled = true,
     this.autoWrapTagsByMaxWidth = false,
+    this.isLabelMailboxOpened = false,
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
@@ -121,6 +126,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
                     buildMailboxContain(
                       context,
                       isSearchEmailRunning,
+                      isLabelMailboxOpened,
                       presentationEmail),
                     if (presentationEmail.hasStarred)
                       Padding(
@@ -229,4 +235,10 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
 
   bool get _shouldShowAIAction =>
       isAINeedsActionEnabled && presentationEmail.hasNeedAction;
+
+  @override
+  ImagePaths get imagePaths => Get.find<ImagePaths>();
+
+  @override
+  ResponsiveUtils get responsiveUtils => Get.find<ResponsiveUtils>();
 }
