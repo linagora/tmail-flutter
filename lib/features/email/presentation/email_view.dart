@@ -109,10 +109,15 @@ class EmailView extends GetWidget<SingleEmailController> {
                         openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
                         openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
                         onSelectLabelAction: (label, isSelected) =>
-                            controller.toggleLabelToEmail(
-                              presentationEmail.id!,
-                              label,
-                              isSelected,
+                            controller.onToggleLabelAction(
+                              emailId: presentationEmail.id,
+                              label: label,
+                              isSelected: isSelected,
+                            ),
+                        onCreateANewLabelAction: () =>
+                            controller.createNewLabelToEmail(
+                              context,
+                              presentationEmail.id,
                             ),
                       );
                     },
@@ -275,10 +280,10 @@ class EmailView extends GetWidget<SingleEmailController> {
               imagePaths: controller.imagePaths,
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,
-              onDeleteLabelAction: (label) => controller.toggleLabelToEmail(
-                presentationEmail.id!,
-                label,
-                false,
+              onDeleteLabelAction: (label) => controller.onToggleLabelAction(
+                emailId: presentationEmail.id,
+                label: label,
+                isSelected: false,
               ),
             );
           }),
@@ -320,10 +325,15 @@ class EmailView extends GetWidget<SingleEmailController> {
             openBottomSheetContextMenu: controller.mailboxDashBoardController.openBottomSheetContextMenu,
             openPopupMenu: controller.mailboxDashBoardController.openPopupMenuActionGroup,
             onSelectLabelAction: (label, isSelected) =>
-                controller.toggleLabelToEmail(
-                  presentationEmail.id!,
-                  label,
-                  isSelected,
+                controller.onToggleLabelAction(
+                  emailId: presentationEmail.id,
+                  label: label,
+                  isSelected: isSelected,
+                ),
+            onCreateANewLabelAction: () =>
+                controller.createNewLabelToEmail(
+                  context,
+                  presentationEmail.id,
                 ),
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
@@ -601,7 +611,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                 MessageDialogActionManager().isDialogOpened ||
                 EmailActionReactor.isDialogOpened ||
                 ColorDialogPicker().isOpened.isTrue ||
-                dialogRouter.isRuleFilterDialogOpened.isTrue ||
                 dialogRouter.isDialogOpened;
 
             if (isOverlayEnabled) {

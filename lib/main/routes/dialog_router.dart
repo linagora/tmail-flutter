@@ -27,31 +27,33 @@ class DialogRouter {
     required String routeName,
     required Object? arguments
   }) async {
-    if (PlatformInfo.isWeb) {
-      _isDialogOpened.value = true;
-    }
-    _bindingDI(routeName);
+    try {
+      if (PlatformInfo.isWeb) {
+        _isMapDialogOpened[routeName] = true;
+      }
+      _bindingDI(routeName);
 
-    final returnedValue = await Get.generalDialog(
-      barrierDismissible: true,
-      barrierLabel: routeName,
-      routeSettings: RouteSettings(arguments: arguments),
-      pageBuilder: (_, __, ___) => _generateView(routeName: routeName)
-    );
+      final returnedValue = await Get.generalDialog(
+        barrierDismissible: true,
+        barrierLabel: routeName,
+        routeSettings: RouteSettings(arguments: arguments),
+        pageBuilder: (_, __, ___) => _generateView(routeName: routeName),
+      );
 
-    if (PlatformInfo.isWeb) {
-      _isDialogOpened.value = false;
-      if (routeName == AppRoutes.rulesFilterCreator) {
-        isRuleFilterDialogOpened.value = false;
+      return returnedValue;
+    } catch (e) {
+      logWarning('DialogRouter::pushGeneralDialog: Exception = $e');
+    } finally {
+      if (PlatformInfo.isWeb) {
+        _isMapDialogOpened.remove(routeName);
       }
     }
-    return returnedValue;
   }
 
-  final RxBool _isDialogOpened = false.obs;
-  final RxBool isRuleFilterDialogOpened = false.obs;
+  final RxMap<String, bool> _isMapDialogOpened = RxMap<String, bool>();
 
-  bool get isDialogOpened => _isDialogOpened.value;
+  bool get isDialogOpened =>
+      _isMapDialogOpened.values.any((isOpened) => isOpened == true);
 
   void _bindingDI(String routeName) {
     log('DialogRouter::_bindingDI():routeName: $routeName');
@@ -60,9 +62,6 @@ class DialogRouter {
         MailboxCreatorBindings().dependencies();
         break;
       case AppRoutes.rulesFilterCreator:
-        if (PlatformInfo.isWeb) {
-         isRuleFilterDialogOpened.value = true;
-        }
         RulesFilterCreatorBindings().dependencies();
         break;
       case AppRoutes.identityCreator:
@@ -99,22 +98,26 @@ class DialogRouter {
     }
   }
 
-  Future<void> openDialogModal({
+  Future<dynamic> openDialogModal({
     required Widget child,
-    String? dialogLabel,
+    required String dialogLabel,
   }) async {
-    if (PlatformInfo.isWeb) {
-      _isDialogOpened.value = true;
-    }
-
-    await Get.generalDialog(
-      barrierDismissible: true,
-      barrierLabel: dialogLabel ?? 'dialog-modal',
-      pageBuilder: (_, __, ___) => child,
-    ).whenComplete(() {
+    try {
       if (PlatformInfo.isWeb) {
-        _isDialogOpened.value = false;
+        _isMapDialogOpened[dialogLabel] = true;
       }
-    });
+
+      return await Get.generalDialog(
+        barrierDismissible: true,
+        barrierLabel: dialogLabel,
+        pageBuilder: (_, __, ___) => child,
+      );
+    } catch (e) {
+      logWarning('DialogRouter::openDialogModal: Exception = $e');
+    } finally {
+      if (PlatformInfo.isWeb) {
+        _isMapDialogOpened.remove(dialogLabel);
+      }
+    }
   }
 }

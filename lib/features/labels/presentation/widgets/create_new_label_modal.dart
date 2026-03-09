@@ -1,19 +1,30 @@
+import 'dart:async';
 import 'dart:math' as math;
-
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/hex_color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/default_close_button_widget.dart';
 import 'package:core/presentation/views/color/color_picker_modal.dart';
 import 'package:core/presentation/views/color/colors_map_widget.dart';
 import 'package:core/presentation/views/dialog/modal_list_action_button_widget.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
+import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/domain/model/edit_label_request.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
@@ -27,16 +38,30 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef OnLabelActionCallback = Function(Label label);
 
+enum LabelPositiveButtonState {
+  enabled,
+  disabled,
+  progressing;
+}
+
 class CreateNewLabelModal extends StatefulWidget {
   final List<Label> labels;
+  final AccountId accountId;
+  final ImagePaths imagePaths;
   final LabelActionType actionType;
-  final OnLabelActionCallback onLabelActionCallback;
+  final CreateNewLabelInteractor createNewLabelInteractor;
+  final EditLabelInteractor editLabelInteractor;
+  final VerifyNameInteractor verifyNameInteractor;
   final Label? selectedLabel;
 
   const CreateNewLabelModal({
     super.key,
     required this.labels,
-    required this.onLabelActionCallback,
+    required this.accountId,
+    required this.imagePaths,
+    required this.createNewLabelInteractor,
+    required this.editLabelInteractor,
+    required this.verifyNameInteractor,
     this.actionType = LabelActionType.create,
     this.selectedLabel,
   });
@@ -46,18 +71,17 @@ class CreateNewLabelModal extends StatefulWidget {
 }
 
 class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
-  final _imagePaths = Get.find<ImagePaths>();
-  final _verifyNameInteractor = Get.find<VerifyNameInteractor>();
-
   final ValueNotifier<String?> _labelNameErrorTextNotifier =
       ValueNotifier(null);
   final ValueNotifier<Color?> _labelSelectedColorNotifier = ValueNotifier(null);
-  final ValueNotifier<bool> _createLabelStateNotifier = ValueNotifier(false);
+  final ValueNotifier<LabelPositiveButtonState> _createLabelStateNotifier =
+      ValueNotifier(LabelPositiveButtonState.disabled);
   final TextEditingController _nameInputController = TextEditingController();
   final FocusNode _nameInputFocusNode = FocusNode();
 
   List<String> _labelDisplayNameList = <String>[];
   Color? _selectedColor;
+  StreamSubscription? _streamSubscription;
 
   @override
   void initState() {
@@ -66,8 +90,8 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
     final labels = widget.labels;
     if (selectedLabel != null) {
       _selectedColor = selectedLabel.color?.value.toColor();
-      _labelDisplayNameList = labels
-          .getDisplayNameListWithoutSelectedLabel(selectedLabel);
+      _labelDisplayNameList =
+          labels.getDisplayNameListWithoutSelectedLabel(selectedLabel);
     } else {
       _labelDisplayNameList = labels.displayNameNotNullList;
     }
@@ -75,7 +99,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       if (selectedLabel != null) {
         _nameInputController.text = selectedLabel.safeDisplayName;
         _nameInputFocusNode.requestFocus();
-        _createLabelStateNotifier.value = true;
+        _createLabelStateNotifier.value = LabelPositiveButtonState.enabled;
         _labelSelectedColorNotifier.value = _selectedColor;
       }
     });
@@ -160,7 +184,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                                 valueListenable: _labelSelectedColorNotifier,
                                 builder: (_, value, __) {
                                   return ColorsMapWidget(
-                                    imagePaths: _imagePaths,
+                                    imagePaths: widget.imagePaths,
                                     customColor: value,
                                     onOpenColorPicker: () =>
                                         _openColorPickerModal(appLocalizations),
@@ -172,17 +196,22 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                           ),
                           ValueListenableBuilder(
                             valueListenable: _createLabelStateNotifier,
-                            builder: (_, value, __) {
+                            builder: (_, state, __) {
                               return ModalListActionButtonWidget(
-                                positiveLabel: widget.actionType.getModalPositiveAction(appLocalizations),
+                                positiveLabel: widget.actionType
+                                    .getModalPositiveAction(appLocalizations),
                                 negativeLabel: appLocalizations.cancel,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 25,
                                 ),
-                                isPositiveActionEnabled: value,
+                                isPositiveActionEnabled:
+                                    state == LabelPositiveButtonState.enabled,
+                                isProgressing: state ==
+                                    LabelPositiveButtonState.progressing,
                                 onPositiveAction: _onCreateNewLabel,
                                 onNegativeAction: _onCloseModal,
-                                positiveKey: widget.actionType.getModalPositiveActionKey(),
+                                positiveKey: widget.actionType
+                                    .getModalPositiveActionKey(),
                               );
                             },
                           ),
@@ -194,7 +223,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
               ],
             ),
             DefaultCloseButtonWidget(
-              iconClose: _imagePaths.icCloseDialog,
+              iconClose: widget.imagePaths.icCloseDialog,
               onTapActionCallback: _onCloseModal,
             ),
           ],
@@ -272,26 +301,23 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       builder: (_, errorText, __) {
         return LabelInputFieldBuilder(
           label: appLocalizations.labelName,
-          hintText: appLocalizations
-              .pleaseEnterNameYourNewLabel,
+          hintText: appLocalizations.pleaseEnterNameYourNewLabel,
           textEditingController: _nameInputController,
           focusNode: _nameInputFocusNode,
           errorText: errorText,
           arrangeHorizontally: false,
           isLabelHasColon: false,
-          labelStyle:
-          ThemeUtils.textStyleInter600().copyWith(
+          labelStyle: ThemeUtils.textStyleInter600().copyWith(
             fontSize: 14,
             height: 18 / 14,
             color: Colors.black,
           ),
           runSpacing: 16,
           inputFieldMaxWidth: double.infinity,
-          onTextChange: (value) =>
-              _onLabelNameInputChanged(
-                appLocalizations,
-                value,
-              ),
+          onTextChange: (value) => _onLabelNameInputChanged(
+            appLocalizations,
+            value,
+          ),
         );
       },
     );
@@ -303,11 +329,13 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   ) {
     final errorText = _verifyLabelName(appLocalizations, value);
     _labelNameErrorTextNotifier.value = errorText;
-    _createLabelStateNotifier.value = errorText == null;
+    _createLabelStateNotifier.value = errorText == null
+        ? LabelPositiveButtonState.enabled
+        : LabelPositiveButtonState.disabled;
   }
 
   String? _verifyLabelName(AppLocalizations appLocalizations, String value) {
-    final result = _verifyNameInteractor.execute(
+    final result = widget.verifyNameInteractor.execute(
       value,
       _validators,
     );
@@ -333,15 +361,25 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   void _onCreateNewLabel() {
     _clearInputFocus();
 
+    _createLabelStateNotifier.value = LabelPositiveButtonState.progressing;
+
     final newLabel = Label(
       displayName: _nameInputController.text,
       color: _selectedColor != null
           ? HexColor(_selectedColor!.toHexTriplet())
           : null,
     );
-    widget.onLabelActionCallback(newLabel);
 
-    popBack();
+    switch (widget.actionType) {
+      case LabelActionType.create:
+        _performCreateLabel(newLabel);
+        break;
+      case LabelActionType.edit:
+        _performEditLabel(newLabel);
+        break;
+      case LabelActionType.delete:
+        break;
+    }
   }
 
   void _onCloseModal() {
@@ -363,13 +401,71 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       barrierDismissible: true,
       barrierLabel: 'color-picker-modal',
       pageBuilder: (_, __, ___) => ColorPickerModal(
-        imagePaths: _imagePaths,
+        imagePaths: widget.imagePaths,
         modalTitle: appLocalizations.chooseCustomColour,
         modalSubtitle: appLocalizations.chooseAColourForThisLabel,
         initialColor: _selectedColor,
         onSelectColorCallback: _onLabelColorChanged,
       ),
     );
+  }
+
+  void _performCreateLabel(Label newLabel) {
+    _streamSubscription = widget.createNewLabelInteractor
+        .execute(widget.accountId, newLabel)
+        .listen(_handleDataStream, onError: _handleErrorStream);
+  }
+
+  void _handleDataStream(dartz.Either<Failure, Success> newState) {
+    newState.fold((failure) {
+      if (failure is CreateNewLabelFailure || failure is EditLabelFailure) {
+        popBack(result: failure);
+      }
+    }, (success) {
+      if (success is CreateNewLabelSuccess || success is EditLabelSuccess) {
+        popBack(result: success);
+      }
+    });
+  }
+
+  void _handleErrorStream(Object error, StackTrace stackTrace) {
+    logWarning(
+        'CreateNewLabelModal::_handleErrorStream: Error: $error, StackTrace: $stackTrace');
+
+    switch (widget.actionType) {
+      case LabelActionType.create:
+        popBack(result: CreateNewLabelFailure(error));
+        break;
+      case LabelActionType.edit:
+        popBack(result: EditLabelFailure(error));
+        break;
+      case LabelActionType.delete:
+        break;
+    }
+  }
+
+  void _performEditLabel(Label newLabel) {
+    final currentLabelId = widget.selectedLabel?.id;
+    if (currentLabelId == null) {
+      popBack(result: EditLabelFailure(LabelIdIsNull()));
+      return;
+    }
+
+    final currentLabelKeyword = widget.selectedLabel?.keyword;
+    if (currentLabelKeyword == null) {
+      popBack(result: EditLabelFailure(LabelKeywordIsNull()));
+      return;
+    }
+
+    final labelRequest = EditLabelRequest(
+      labelId: currentLabelId,
+      labelKeyword: currentLabelKeyword,
+      newLabel: newLabel,
+    );
+
+    _streamSubscription = widget.editLabelInteractor
+        .execute(widget.accountId, labelRequest)
+        .listen(_handleDataStream, onError: _handleErrorStream);
   }
 
   @override
@@ -380,6 +476,8 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
     _labelSelectedColorNotifier.dispose();
     _createLabelStateNotifier.dispose();
     _labelDisplayNameList = [];
+    _streamSubscription?.cancel();
+    _streamSubscription = null;
     super.dispose();
   }
 }

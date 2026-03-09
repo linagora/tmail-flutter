@@ -1,4 +1,6 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -8,6 +10,8 @@ import 'package:tmail_ui_user/features/email/domain/state/add_a_label_to_a_threa
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_loaded_extension.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/add_label_to_email_modal.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
@@ -16,23 +20,24 @@ import 'package:tmail_ui_user/features/thread_detail/domain/extensions/list_emai
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/labels/remove_label_from_thread_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension AddLabelToThreadExtension on ThreadDetailController {
   Future<void> openAddLabelToEmailDialogModal() async {
-    if (!mailboxDashBoardController.isLabelAvailable) return;
-
-    final labels = mailboxDashBoardController.labelController.labels;
-    if (emailsInThreadDetailInfo.isEmpty || labels.isEmpty) {
+    if (!mailboxDashBoardController.isLabelAvailable ||
+        emailsInThreadDetailInfo.isEmpty) {
       return;
     }
-
+    final labelController = mailboxDashBoardController.labelController;
+    final labels = labelController.labels;
     final threadLabels =
         emailsInThreadDetailInfo.findCommonLabelsInThread(labels: labels);
 
     final emailIds = emailsInThreadDetailInfo.emailIdsToDisplay(true);
 
-    await DialogRouter().openDialogModal(
+    final newLabel = await DialogRouter().openDialogModal(
       child: AddLabelToEmailModal(
+        key: const Key('add_label_to_thread_modal'),
         labels: labels,
         emailLabels: threadLabels,
         emailIds: emailIds,
@@ -43,9 +48,25 @@ extension AddLabelToThreadExtension on ThreadDetailController {
             currentEmailIds: emailIds,
           );
         },
+        onCreateANewLabelAction: () {
+          if (currentContext == null) {
+            logWarning('AddLabelToThreadExtension::openAddLabelToEmailDialogModal:currentContext is null');
+            return;
+          }
+          labelController.handleLabelActionType(
+            context: currentContext!,
+            actionType: LabelActionType.create,
+            accountId: accountId,
+            shouldPop: true,
+          );
+        },
       ),
       dialogLabel: 'add-label-to-thread-modal',
     );
+
+    if (newLabel is Label) {
+      toggleLabelToThread(newLabel, isSelected: true);
+    }
   }
 
   void toggleLabelToThread(
