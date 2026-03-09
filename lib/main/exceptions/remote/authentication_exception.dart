@@ -1,7 +1,7 @@
 import 'package:tmail_ui_user/main/exceptions/remote/remote_exception.dart';
 
 class AuthenticationException extends RemoteException {
-  const AuthenticationException({super.message});
+  const AuthenticationException({super.code, super.message});
 
   @override
   String get exceptionName => 'AuthenticationException';
@@ -19,6 +19,7 @@ class RefreshTokenFailedException extends AuthenticationException {
     int code = 400,
     String? message,
   }) : super(
+          code: code,
           message: message ??
               'Refresh token failed with status $code. Session invalid or revoked.',
         );

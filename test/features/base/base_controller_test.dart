@@ -57,6 +57,8 @@ class MockBaseController extends BaseController {
 }
 
 class SomeOtherException extends RemoteException {
+  const SomeOtherException();
+
   @override
   String get exceptionName => 'SomeOtherException';
 }
@@ -145,7 +147,7 @@ void main() {
     });
 
     test('should return false when exception is SomeOtherException', () {
-      expect(mockBaseController.validateUrgentException(SomeOtherException()), isFalse);
+      expect(mockBaseController.validateUrgentException(const SomeOtherException()), isFalse);
     });
 
     test('should return false when exception is null', () {
@@ -204,7 +206,7 @@ void main() {
 
     test('handleErrorViewState should called when error is SomeOtherException', () {
       // arrange
-      final error = SomeOtherException();
+      const error = SomeOtherException();
       final stackTrace = StackTrace.current;
 
       // act
