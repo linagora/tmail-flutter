@@ -1,28 +1,28 @@
 import 'package:core/domain/exceptions/app_base_exception.dart';
 
 class AccessTokenIsNullException extends AppBaseException {
-  AccessTokenIsNullException([super.message]);
+  const AccessTokenIsNullException([super.message]);
 
   @override
   String get exceptionName => 'AccessTokenIsNullException';
 }
 
 class RefreshTokenIsNullException extends AppBaseException {
-  RefreshTokenIsNullException([super.message]);
+  const RefreshTokenIsNullException([super.message]);
 
   @override
   String get exceptionName => 'RefreshTokenIsNullException';
 }
 
 class TokenIdIsNullException extends AppBaseException {
-  TokenIdIsNullException([super.message]);
+  const TokenIdIsNullException([super.message]);
 
   @override
   String get exceptionName => 'TokenIdIsNullException';
 }
 
 class ExpiresTimeIsNullException extends AppBaseException {
-  ExpiresTimeIsNullException([super.message]);
+  const ExpiresTimeIsNullException([super.message]);
 
   @override
   String get exceptionName => 'ExpiresTimeIsNullException';

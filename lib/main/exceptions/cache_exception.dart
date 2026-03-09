@@ -9,7 +9,7 @@ abstract class CacheException with EquatableMixin implements Exception {
 
   @override
   String toString() {
-    if (message != null) {
+    if (message?.trim().isNotEmpty == true) {
       return '$exceptionName: $message';
     }
     return exceptionName;

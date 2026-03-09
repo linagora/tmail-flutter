@@ -112,10 +112,12 @@ class NoNetworkError extends RemoteException {
 class RefreshTokenFailedException extends RemoteException {
 
   RefreshTokenFailedException({
-    super.message =
-        'Refresh Token failed with 400 Bad Request. The session is invalid/revoked.',
-    super.code = 400,
-  });
+    int code = 400,
+    Object? message
+  }) : super(
+    code: code,
+    message: message ?? 'Refresh Token failed with 400 Bad Request. The session is invalid/revoked.',
+);
 
   @override
   String get exceptionName => 'RefreshTokenFailedException';
