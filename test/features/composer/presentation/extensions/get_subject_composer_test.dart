@@ -65,6 +65,19 @@ void main() {
 
         expect(result, subjectWithPrefix);
       });
+
+      test('Reply: does not dedupe legacy French NBSP prefix', () {
+        const original = 'Re\u00A0: Legacy subject';
+        final result = EmailActionType.reply.getSubjectComposer(null, original);
+        expect(result, 'Re: $original');
+      });
+
+      test('Forward: does not dedupe legacy French NBSP prefix', () {
+        const original = 'Tr\u00A0: Legacy subject';
+        final result =
+            EmailActionType.forward.getSubjectComposer(null, original);
+        expect(result, 'Fwd: $original');
+      });
     });
 
     group('forward actions', () {
