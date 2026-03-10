@@ -1,3 +1,7 @@
+## [0.26.1] - 2026-03-10
+### Fixed
+- Source code be totally minified by dart2js: concrete `toString` to every exception 
+
 ## [0.26.0] - 2026-03-05
 ### Added
 - TF-4303 Change order for label action
