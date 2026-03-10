@@ -17,9 +17,9 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/setting_robot.dart';
 import '../../robots/thread_robot.dart';
 
-class ReplyEmailWhenChangeLanguageScenario extends BaseTestScenario
+class ForwardEmailForwardedWhenChangeLanguageScenario extends BaseTestScenario
     with SettingScenarioMixin, GenerateEmailScenarioMixin, ScreenScenarioMixin {
-  const ReplyEmailWhenChangeLanguageScenario(super.$);
+  const ForwardEmailForwardedWhenChangeLanguageScenario(super.$);
 
   @override
   Future<void> runTestLogic() async {
@@ -34,9 +34,10 @@ class ReplyEmailWhenChangeLanguageScenario extends BaseTestScenario
     final imagePaths = ImagePaths();
 
     for (var locale in LocalizationService.supportedLocales) {
-      String subject = 'Reply email by locale ${locale.languageCode}';
-
       final appLocalizations = await AppLocalizations.load(locale);
+
+      String subject =
+          '${appLocalizations.prefix_forward_email} Email by locale ${locale.languageCode}';
 
       await goToSettingToChangeLanguage(
         threadRobot: threadRobot,
@@ -49,7 +50,7 @@ class ReplyEmailWhenChangeLanguageScenario extends BaseTestScenario
 
       await generateEmailWithSubject(emailUser: emailUser, subject: subject);
 
-      await _replyEmailBySubject(
+      await _forwardEmailBySubject(
         threadRobot: threadRobot,
         emailRobot: emailRobot,
         composerRobot: composerRobot,
@@ -68,7 +69,7 @@ class ReplyEmailWhenChangeLanguageScenario extends BaseTestScenario
     }
   }
 
-  Future<void> _replyEmailBySubject({
+  Future<void> _forwardEmailBySubject({
     required ThreadRobot threadRobot,
     required EmailRobot emailRobot,
     required ComposerRobot composerRobot,
@@ -77,15 +78,15 @@ class ReplyEmailWhenChangeLanguageScenario extends BaseTestScenario
   }) async {
     await threadRobot.openEmailWithSubject(subject);
     await _expectEmailViewVisible();
-    await _expectReplyEmailButtonVisible();
+    await _expectForwardEmailButtonVisible();
 
-    await emailRobot.onTapReplyEmail();
+    await emailRobot.onTapForwardEmail();
     await _expectComposerViewVisible();
 
     await composerRobot.grantContactPermission();
     await $.pumpAndTrySettle();
 
-    await _expectComposerSubjectDisplayedCorrectly(
+    await _expectComposerSubjectIsNotChanged(
       appLocalizations: appLocalizations,
       subject: subject,
     );
@@ -95,23 +96,22 @@ class ReplyEmailWhenChangeLanguageScenario extends BaseTestScenario
     await expectViewVisible($(EmailView));
   }
 
-  Future<void> _expectReplyEmailButtonVisible() async {
-    await expectViewVisible($(#reply_email_button));
+  Future<void> _expectForwardEmailButtonVisible() async {
+    await expectViewVisible($(#forward_email_button));
   }
 
   Future<void> _expectComposerViewVisible() async {
     await expectViewVisible($(ComposerView));
   }
 
-  Future<void> _expectComposerSubjectDisplayedCorrectly({
+  Future<void> _expectComposerSubjectIsNotChanged({
     required AppLocalizations appLocalizations,
     required String subject,
   }) async {
     expect(
       $(SubjectComposerWidget)
-          .which<SubjectComposerWidget>((widget) =>
-              widget.textController.text ==
-              '${appLocalizations.prefix_reply_email} $subject')
+          .which<SubjectComposerWidget>(
+              (widget) => widget.textController.text == subject)
           .visible,
       isTrue,
     );
