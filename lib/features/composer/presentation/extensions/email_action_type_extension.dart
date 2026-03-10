@@ -10,26 +10,27 @@ import 'package:model/extensions/utc_date_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension EmailActionTypeExtension on EmailActionType {
+  static const String _defaultReplyPrefix = 'Re:';
+  static const String _defaultForwardPrefix = 'Fwd:';
+
   String getSubjectComposer(BuildContext? context, String subject) {
-    switch(this) {
+    final l10n = context != null ? AppLocalizations.of(context) : null;
+
+    switch (this) {
       case EmailActionType.reply:
       case EmailActionType.replyToList:
       case EmailActionType.replyAll:
-        if (subject.toLowerCase().startsWith('re:')) {
-          return subject;
-        } else {
-          return context != null
-            ? '${AppLocalizations.of(context).prefix_reply_email} $subject'
-            : 'Re: $subject';
-        }
+        return _applyPrefix(
+          subject: subject,
+          defaultPrefix: _defaultReplyPrefix,
+          localizedPrefix: l10n?.prefix_reply_email,
+        );
       case EmailActionType.forward:
-        if (subject.toLowerCase().startsWith('fwd:')) {
-          return subject;
-        } else {
-          return context != null
-            ? '${AppLocalizations.of(context).prefix_forward_email} $subject'
-            : 'Fwd: $subject';
-        }
+        return _applyPrefix(
+          subject: subject,
+          defaultPrefix: _defaultForwardPrefix,
+          localizedPrefix: l10n?.prefix_forward_email,
+        );
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
       case EmailActionType.reopenComposerBrowser:
@@ -40,6 +41,29 @@ extension EmailActionTypeExtension on EmailActionType {
       default:
         return '';
     }
+  }
+
+  String _applyPrefix({
+    required String subject,
+    required String defaultPrefix,
+    String? localizedPrefix,
+  }) {
+    final trimmed = subject.trim();
+    final lowerSubject = trimmed.toLowerCase();
+
+    final prefixes = <String>[
+      defaultPrefix.toLowerCase(),
+      if (localizedPrefix != null) localizedPrefix.toLowerCase(),
+    ];
+
+    final hasPrefix = prefixes.any(lowerSubject.startsWith);
+
+    if (hasPrefix) {
+      return subject;
+    }
+
+    final prefix = localizedPrefix ?? defaultPrefix;
+    return '$prefix $subject';
   }
 
   String getToastMessageMoveToMailboxSuccess(BuildContext context, {String? destinationPath}) {
