@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../base/base_scenario.dart';
 import '../models/provisioning_email.dart';
-import '../robots/email_robot.dart';
 import 'scenario_utils_mixin.dart';
 
 mixin GenerateEmailScenarioMixin on BaseScenario, ScenarioUtilsMixin {
@@ -21,9 +20,5 @@ mixin GenerateEmailScenarioMixin on BaseScenario, ScenarioUtilsMixin {
       requestReadReceipt: false,
     );
     await $.pumpAndTrySettle();
-  }
-
-  Future<void> closeEmailDetailedView({required EmailRobot emailRobot}) async {
-    await emailRobot.onTapBackButton();
   }
 }

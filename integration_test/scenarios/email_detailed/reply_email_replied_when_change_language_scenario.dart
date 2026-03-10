@@ -86,10 +86,7 @@ class ReplyEmailRepliedWhenChangeLanguageScenario extends BaseTestScenario
     await composerRobot.grantContactPermission();
     await $.pumpAndTrySettle();
 
-    await _expectComposerSubjectIsNotChanged(
-      appLocalizations: appLocalizations,
-      subject: subject,
-    );
+    await _expectComposerSubjectIsNotChanged(subject: subject);
   }
 
   Future<void> _expectEmailViewVisible() async {
@@ -105,7 +102,6 @@ class ReplyEmailRepliedWhenChangeLanguageScenario extends BaseTestScenario
   }
 
   Future<void> _expectComposerSubjectIsNotChanged({
-    required AppLocalizations appLocalizations,
     required String subject,
   }) async {
     expect(
