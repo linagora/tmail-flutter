@@ -1,5 +1,4 @@
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
@@ -8,7 +7,9 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 import '../../base/base_test_scenario.dart';
-import '../../models/provisioning_email.dart';
+import '../../mixin/generate_email_scenario_mixin.dart';
+import '../../mixin/screen_scenario_mixin.dart';
+import '../../mixin/setting_scenario_mixin.dart';
 import '../../robots/composer_robot.dart';
 import '../../robots/email_robot.dart';
 import '../../robots/language_robot.dart';
@@ -16,7 +17,8 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/setting_robot.dart';
 import '../../robots/thread_robot.dart';
 
-class ReplyEmailRepliedWhenChangeLanguageScenario extends BaseTestScenario {
+class ReplyEmailRepliedWhenChangeLanguageScenario extends BaseTestScenario
+    with SettingScenarioMixin, GenerateEmailScenarioMixin, ScreenScenarioMixin {
   const ReplyEmailRepliedWhenChangeLanguageScenario(super.$);
 
   @override
@@ -37,7 +39,7 @@ class ReplyEmailRepliedWhenChangeLanguageScenario extends BaseTestScenario {
       String subject =
           '${appLocalizations.prefix_reply_email} Email by locale ${locale.languageCode}';
 
-      await _goToSettingToChangeLanguage(
+      await goToSettingToChangeLanguage(
         threadRobot: threadRobot,
         settingRobot: settingRobot,
         mailboxMenuRobot: mailboxMenuRobot,
@@ -46,7 +48,7 @@ class ReplyEmailRepliedWhenChangeLanguageScenario extends BaseTestScenario {
         locale: locale,
       );
 
-      await _generateEmail(emailUser, subject);
+      await generateEmailWithSubject(emailUser: emailUser, subject: subject);
 
       await _replyEmailBySubject(
         threadRobot: threadRobot,
@@ -56,50 +58,15 @@ class ReplyEmailRepliedWhenChangeLanguageScenario extends BaseTestScenario {
         appLocalizations: appLocalizations,
       );
 
-      await _closeComposer(
+      await closeComposer(
         composerRobot: composerRobot,
         imagePaths: imagePaths,
       );
 
-      await _closeEmailDetailedView(emailRobot: emailRobot);
+      await closeEmailDetailedView(emailRobot: emailRobot);
 
       await $.pumpAndTrySettle();
     }
-  }
-
-  Future<void> _goToSettingToChangeLanguage({
-    required ThreadRobot threadRobot,
-    required SettingRobot settingRobot,
-    required MailboxMenuRobot mailboxMenuRobot,
-    required LanguageRobot languageRobot,
-    required AppLocalizations appLocalizations,
-    required Locale locale,
-  }) async {
-    await threadRobot.openMailbox();
-    await mailboxMenuRobot.openSetting();
-    await _expectLanguageMenuItemVisible();
-
-    await settingRobot.openLanguageMenuItem();
-    await languageRobot.openLanguageContextMenu();
-    await languageRobot.selectLanguage(locale, appLocalizations);
-    await _expectLanguageViewByLocaleTitleVisible(appLocalizations);
-
-    await settingRobot.backToSettingsFromFirstLevel();
-    await settingRobot.closeSettings();
-  }
-
-  Future<void> _generateEmail(String emailUser, String subject) async {
-    await provisionEmail(
-      [
-        ProvisioningEmail(
-          toEmail: emailUser,
-          subject: subject,
-          content: subject,
-        ),
-      ],
-      requestReadReceipt: false,
-    );
-    await $.pumpAndTrySettle();
   }
 
   Future<void> _replyEmailBySubject({
@@ -123,31 +90,6 @@ class ReplyEmailRepliedWhenChangeLanguageScenario extends BaseTestScenario {
       appLocalizations: appLocalizations,
       subject: subject,
     );
-  }
-
-  Future<void> _closeComposer({
-    required ComposerRobot composerRobot,
-    required ImagePaths imagePaths,
-  }) async {
-    await composerRobot.tapCloseComposer(imagePaths);
-    await composerRobot.tapDiscardChanges();
-  }
-
-  Future<void> _closeEmailDetailedView({required EmailRobot emailRobot}) async {
-    await emailRobot.onTapBackButton();
-  }
-
-  Future<void> _expectLanguageMenuItemVisible() async {
-    await $(#setting_language_region).scrollTo(
-      scrollDirection: AxisDirection.down,
-    );
-    await expectViewVisible($(#setting_language_region));
-  }
-
-  Future<void> _expectLanguageViewByLocaleTitleVisible(
-    AppLocalizations appLocalizations,
-  ) async {
-    await expectViewVisible($(find.text(appLocalizations.language)));
   }
 
   Future<void> _expectEmailViewVisible() async {
