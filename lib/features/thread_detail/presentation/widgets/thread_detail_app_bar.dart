@@ -68,6 +68,7 @@ class ThreadDetailAppBar extends StatelessWidget {
         onTapActionCallback: (_) => onThreadActionClick?.call(EmailActionType.moveToMailbox),
       ),
       _ThreadDetailAppBarButton(
+        key: const Key('delete_thread_button'),
         icon: imagePaths.icDeleteComposer,
         iconColor: threadDetailCanPermanentlyDelete
             ? AppColor.redFF3347
@@ -183,6 +184,7 @@ class ThreadDetailAppBar extends StatelessWidget {
 
 class _ThreadDetailAppBarButton extends StatelessWidget {
   const _ThreadDetailAppBarButton({
+    super.key,
     required this.icon,
     required this.tooltipMessage,
     required this.onTapActionCallback,

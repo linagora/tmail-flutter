@@ -95,4 +95,8 @@ class EmailRobot extends CoreRobot {
         .$(InkWell)
         .tap();
   }
+
+  Future<void> tapDeleteThreadButton() async {
+    await $(#delete_thread_button).tap();
+  }
 }
