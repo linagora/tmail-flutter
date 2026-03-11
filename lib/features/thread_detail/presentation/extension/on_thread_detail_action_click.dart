@@ -247,9 +247,10 @@ extension OnThreadDetailActionClick on ThreadDetailController {
   }
 
   void _moveToMailbox(MailboxId mailboxId, EmailActionType emailActionType) {
+    final emailInfos = [...emailsInThreadDetailInfo];
     closeThreadDetailAction();
     mailboxDashBoardController.moveMultipleEmailInThreadDetail(
-      emailsInThreadDetailInfo,
+      emailInfos,
       destinationMailboxId: mailboxId,
       emailActionType: emailActionType,
     );
