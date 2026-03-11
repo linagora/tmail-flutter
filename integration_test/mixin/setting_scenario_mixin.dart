@@ -42,4 +42,17 @@ mixin SettingScenarioMixin on BaseScenario {
   ) async {
     await expectViewVisible($(find.text(appLocalizations.language)));
   }
+
+  Future<void> goToSettingToEnableThread({
+    required ThreadRobot threadRobot,
+    required SettingRobot settingRobot,
+    required MailboxMenuRobot mailboxMenuRobot,
+  }) async {
+    await threadRobot.openMailbox();
+    await mailboxMenuRobot.openSetting();
+    await settingRobot.openPreferencesMenuItem();
+    await settingRobot.switchOnThreadSetting();
+    await settingRobot.backToSettingsFromFirstLevel();
+    await settingRobot.closeSettings();
+  }
 }
