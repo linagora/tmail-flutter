@@ -1060,32 +1060,38 @@ void main() {
   });
 
   group('ThreadRepositoryImpl::refreshChanges', () {
-    late ThreadRepositoryImpl threadRepository;
+    late ThreadRepositoryImpl refreshChangesThreadRepository;
     late MockThreadDataSource networkDataSource;
     late MockThreadDataSource localDataSource;
-    late MockStateDataSource stateDataSource;
+    late MockStateDataSource refreshChangesStateDataSource;
 
     setUp(() {
       networkDataSource = MockThreadDataSource();
       localDataSource = MockThreadDataSource();
-      stateDataSource = MockStateDataSource();
+      refreshChangesStateDataSource = MockStateDataSource();
 
-      threadRepository = ThreadRepositoryImpl(
+      refreshChangesThreadRepository = ThreadRepositoryImpl(
         {
           DataSourceType.network: networkDataSource,
           DataSourceType.local: localDataSource,
         },
-        stateDataSource,
+        refreshChangesStateDataSource,
       );
     });
 
     test(
       'should call network when cache is empty',
       () async {
-        when(localDataSource.getAllEmailCache(any, any))
-            .thenAnswer((_) async => []);
+        when(localDataSource.getAllEmailCache(
+          any,
+          any,
+          filterOption: anyNamed('filterOption'),
+          inMailboxId: anyNamed('inMailboxId'),
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+        )).thenAnswer((_) async => []);
 
-        when(stateDataSource.getState(any, any, any))
+        when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
         when(networkDataSource.getChanges(
@@ -1111,7 +1117,7 @@ void main() {
               state: State('network_state'),
             ));
 
-        final result = await threadRepository
+        final result = await refreshChangesThreadRepository
             .refreshChanges(
               SessionFixtures.aliceSession,
               AccountFixtures.aliceAccountId,
@@ -1141,10 +1147,16 @@ void main() {
           (i) => Email(id: EmailId(Id('cache_$i'))),
         );
 
-        when(localDataSource.getAllEmailCache(any, any))
-            .thenAnswer((_) async => cacheEmails);
+        when(localDataSource.getAllEmailCache(
+          any,
+          any,
+          filterOption: anyNamed('filterOption'),
+          inMailboxId: anyNamed('inMailboxId'),
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+        )).thenAnswer((_) async => cacheEmails);
 
-        when(stateDataSource.getState(any, any, any))
+        when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
         when(networkDataSource.getChanges(
@@ -1170,7 +1182,7 @@ void main() {
               state: State('network_state'),
             ));
 
-        await threadRepository
+        await refreshChangesThreadRepository
             .refreshChanges(
               SessionFixtures.aliceSession,
               AccountFixtures.aliceAccountId,
@@ -1198,10 +1210,16 @@ void main() {
           (i) => Email(id: EmailId(Id('cache_$i'))),
         );
 
-        when(localDataSource.getAllEmailCache(any, any))
-            .thenAnswer((_) async => cacheEmails);
+        when(localDataSource.getAllEmailCache(
+          any,
+          any,
+          filterOption: anyNamed('filterOption'),
+          inMailboxId: anyNamed('inMailboxId'),
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+        )).thenAnswer((_) async => cacheEmails);
 
-        when(stateDataSource.getState(any, any, any))
+        when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
         when(networkDataSource.getChanges(
@@ -1214,7 +1232,7 @@ void main() {
               hasMoreChanges: false,
             ));
 
-        final result = await threadRepository
+        final result = await refreshChangesThreadRepository
             .refreshChanges(
               SessionFixtures.aliceSession,
               AccountFixtures.aliceAccountId,
@@ -1244,10 +1262,16 @@ void main() {
           (i) => Email(id: EmailId(Id('cache_$i'))),
         );
 
-        when(localDataSource.getAllEmailCache(any, any))
-            .thenAnswer((_) async => cacheEmails);
+        when(localDataSource.getAllEmailCache(
+          any,
+          any,
+          filterOption: anyNamed('filterOption'),
+          inMailboxId: anyNamed('inMailboxId'),
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+        )).thenAnswer((_) async => cacheEmails);
 
-        when(stateDataSource.getState(any, any, any))
+        when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
         int callCount = 0;
@@ -1276,7 +1300,7 @@ void main() {
           );
         });
 
-        final result = await threadRepository
+        final result = await refreshChangesThreadRepository
             .refreshChanges(
               SessionFixtures.aliceSession,
               AccountFixtures.aliceAccountId,
@@ -1293,6 +1317,11 @@ void main() {
         )).called(2);
 
         expect(result.emailChangeResponse, isNotNull);
+        expect(
+          result.emailChangeResponse?.created?.length,
+          equals(2),
+          reason: 'Should merge created emails from both pages',
+        );
       },
     );
 
@@ -1304,10 +1333,16 @@ void main() {
           (i) => Email(id: EmailId(Id('cache_$i'))),
         );
 
-        when(localDataSource.getAllEmailCache(any, any))
-            .thenAnswer((_) async => cacheEmails);
+        when(localDataSource.getAllEmailCache(
+          any,
+          any,
+          filterOption: anyNamed('filterOption'),
+          inMailboxId: anyNamed('inMailboxId'),
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+        )).thenAnswer((_) async => cacheEmails);
 
-        when(stateDataSource.getState(any, any, any))
+        when(refreshChangesStateDataSource.getState(any, any, any))
             .thenAnswer((_) async => State('cache_state'));
 
         when(networkDataSource.getChanges(
@@ -1320,7 +1355,7 @@ void main() {
               hasMoreChanges: false,
             ));
 
-        final result = await threadRepository
+        final result = await refreshChangesThreadRepository
             .refreshChanges(
               SessionFixtures.aliceSession,
               AccountFixtures.aliceAccountId,
