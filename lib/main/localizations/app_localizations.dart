@@ -5762,4 +5762,18 @@ class AppLocalizations {
       name: 'deleteALabelFailure',
     );
   }
+
+  String get labelDescription {
+    return Intl.message(
+      'Description (optional)',
+      name: 'labelDescription',
+    );
+  }
+
+  String get labelDescriptionHintText {
+    return Intl.message(
+      'Add a short description to explain what this label is for',
+      name: 'labelDescriptionHintText',
+    );
+  }
 }
