@@ -23,12 +23,14 @@ class Label with EquatableMixin {
   final KeyWordIdentifier? keyword;
   final String? displayName;
   final HexColor? color;
+  final String? description;
 
   Label({
     this.id,
     this.keyword,
     this.displayName,
     this.color,
+    this.description,
   });
 
   factory Label.fromJson(Map<String, dynamic> json) => _$LabelFromJson(json);
@@ -41,5 +43,6 @@ class Label with EquatableMixin {
         keyword,
         displayName,
         color,
+        description,
       ];
 }
