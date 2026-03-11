@@ -1058,4 +1058,278 @@ void main() {
       ));
     });
   });
+
+  group('ThreadRepositoryImpl::refreshChanges', () {
+    late ThreadRepositoryImpl threadRepository;
+    late MockThreadDataSource networkDataSource;
+    late MockThreadDataSource localDataSource;
+    late MockStateDataSource stateDataSource;
+
+    setUp(() {
+      networkDataSource = MockThreadDataSource();
+      localDataSource = MockThreadDataSource();
+      stateDataSource = MockStateDataSource();
+
+      threadRepository = ThreadRepositoryImpl(
+        {
+          DataSourceType.network: networkDataSource,
+          DataSourceType.local: localDataSource,
+        },
+        stateDataSource,
+      );
+    });
+
+    test(
+      'should call network when cache is empty',
+      () async {
+        when(localDataSource.getAllEmailCache(any, any))
+            .thenAnswer((_) async => []);
+
+        when(stateDataSource.getState(any, any, any))
+            .thenAnswer((_) async => State('cache_state'));
+
+        when(networkDataSource.getChanges(
+          any,
+          any,
+          any,
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+        )).thenAnswer((_) async => EmailChangeResponse(
+              hasMoreChanges: false,
+            ));
+
+        when(networkDataSource.getAllEmail(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+        )).thenAnswer((_) async => EmailsResponse(
+              emailList: [],
+              state: State('network_state'),
+            ));
+
+        final result = await threadRepository
+            .refreshChanges(
+              SessionFixtures.aliceSession,
+              AccountFixtures.aliceAccountId,
+              State('initial'),
+            )
+            .first;
+
+        verify(networkDataSource.getAllEmail(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+        ));
+
+        expect(result, isA<EmailsResponse>());
+      },
+    );
+
+    test(
+      'should call network when cache smaller than defaultLimit',
+      () async {
+        final cacheEmails = List.generate(
+          5,
+          (i) => Email(id: EmailId(Id('cache_$i'))),
+        );
+
+        when(localDataSource.getAllEmailCache(any, any))
+            .thenAnswer((_) async => cacheEmails);
+
+        when(stateDataSource.getState(any, any, any))
+            .thenAnswer((_) async => State('cache_state'));
+
+        when(networkDataSource.getChanges(
+          any,
+          any,
+          any,
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+        )).thenAnswer((_) async => EmailChangeResponse(
+              hasMoreChanges: false,
+            ));
+
+        when(networkDataSource.getAllEmail(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+        )).thenAnswer((_) async => EmailsResponse(
+              emailList: cacheEmails,
+              state: State('network_state'),
+            ));
+
+        await threadRepository
+            .refreshChanges(
+              SessionFixtures.aliceSession,
+              AccountFixtures.aliceAccountId,
+              State('initial'),
+            )
+            .first;
+
+        verify(networkDataSource.getAllEmail(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+        ));
+      },
+    );
+
+    test(
+      'should use cache when cache size >= defaultLimit',
+      () async {
+        final cacheEmails = List.generate(
+          ThreadConstants.defaultLimit.value.toInt(),
+          (i) => Email(id: EmailId(Id('cache_$i'))),
+        );
+
+        when(localDataSource.getAllEmailCache(any, any))
+            .thenAnswer((_) async => cacheEmails);
+
+        when(stateDataSource.getState(any, any, any))
+            .thenAnswer((_) async => State('cache_state'));
+
+        when(networkDataSource.getChanges(
+          any,
+          any,
+          any,
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+        )).thenAnswer((_) async => EmailChangeResponse(
+              hasMoreChanges: false,
+            ));
+
+        final result = await threadRepository
+            .refreshChanges(
+              SessionFixtures.aliceSession,
+              AccountFixtures.aliceAccountId,
+              State('initial'),
+            )
+            .first;
+
+        verifyNever(networkDataSource.getAllEmail(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+        ));
+
+        expect(result.emailList?.length, cacheEmails.length);
+      },
+    );
+
+    test(
+      'should merge changes when getChanges has multiple pages',
+      () async {
+        final cacheEmails = List.generate(
+          ThreadConstants.defaultLimit.value.toInt(),
+          (i) => Email(id: EmailId(Id('cache_$i'))),
+        );
+
+        when(localDataSource.getAllEmailCache(any, any))
+            .thenAnswer((_) async => cacheEmails);
+
+        when(stateDataSource.getState(any, any, any))
+            .thenAnswer((_) async => State('cache_state'));
+
+        int callCount = 0;
+
+        when(networkDataSource.getChanges(
+          any,
+          any,
+          any,
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+        )).thenAnswer((_) async {
+          callCount++;
+
+          if (callCount == 1) {
+            return EmailChangeResponse(
+              hasMoreChanges: true,
+              created: [Email(id: EmailId(Id('created1')))],
+              newStateChanges: State('mid'),
+            );
+          }
+
+          return EmailChangeResponse(
+            hasMoreChanges: false,
+            created: [Email(id: EmailId(Id('created2')))],
+            newStateChanges: State('final'),
+          );
+        });
+
+        final result = await threadRepository
+            .refreshChanges(
+              SessionFixtures.aliceSession,
+              AccountFixtures.aliceAccountId,
+              State('initial'),
+            )
+            .first;
+
+        verify(networkDataSource.getChanges(
+          any,
+          any,
+          any,
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+        )).called(2);
+
+        expect(result.emailChangeResponse, isNotNull);
+      },
+    );
+
+    test(
+      'should handle when getChanges returns no changes',
+      () async {
+        final cacheEmails = List.generate(
+          ThreadConstants.defaultLimit.value.toInt(),
+          (i) => Email(id: EmailId(Id('cache_$i'))),
+        );
+
+        when(localDataSource.getAllEmailCache(any, any))
+            .thenAnswer((_) async => cacheEmails);
+
+        when(stateDataSource.getState(any, any, any))
+            .thenAnswer((_) async => State('cache_state'));
+
+        when(networkDataSource.getChanges(
+          any,
+          any,
+          any,
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+        )).thenAnswer((_) async => EmailChangeResponse(
+              hasMoreChanges: false,
+            ));
+
+        final result = await threadRepository
+            .refreshChanges(
+              SessionFixtures.aliceSession,
+              AccountFixtures.aliceAccountId,
+              State('initial'),
+            )
+            .first;
+
+        expect(result.emailList, isNotNull);
+      },
+    );
+  });
 }
