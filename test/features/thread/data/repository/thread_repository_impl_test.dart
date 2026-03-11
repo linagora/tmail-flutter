@@ -1331,5 +1331,11 @@ void main() {
         expect(result.emailList, isNotNull);
       },
     );
+
+    tearDown(() {
+      reset(networkDataSource);
+      reset(localDataSource);
+      reset(stateDataSource);
+    });
   });
 }
