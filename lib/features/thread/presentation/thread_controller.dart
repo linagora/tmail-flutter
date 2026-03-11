@@ -216,7 +216,6 @@ class ThreadController extends BaseController with EmailActionController {
       popAndPush(AppRoutes.unknownRoutePage);
     } else if (failure is GetAllEmailFailure || failure is CleanAndGetAllEmailFailure) {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
-      canLoadMore = true;
     }
   }
 
@@ -540,6 +539,7 @@ class ThreadController extends BaseController with EmailActionController {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
     canLoadMore = newListEmail.length >= ThreadConstants.maxCountEmails;
+    loadingMoreStatus.value = LoadingMoreStatus.completed;
 
     if (listEmailController.hasClients) {
       listEmailController.jumpTo(0);
@@ -557,6 +557,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _handleOnDoneGetAllEmailFailure() {
+    canLoadMore = false;
     if (PlatformInfo.isWeb && mailboxDashBoardController.isEmailListDisplayed) {
       refocusMailShortcutFocus();
     }
@@ -586,7 +587,6 @@ class ThreadController extends BaseController with EmailActionController {
     if (mailboxDashBoardController.isSelectionEnabled()) {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
-    canLoadMore = emailListSynced.length >= ThreadConstants.maxCountEmails;
 
     if (PlatformInfo.isWeb) {
       _validateBrowserHeight();
@@ -814,7 +814,9 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _loadMoreEmails() {
     log('ThreadController::_loadMoreEmails()::canLoadMore = $canLoadMore');
-    if (canLoadMore && _session != null && _accountId != null) {
+    if (!canLoadMore) return;
+
+    if (_session != null && _accountId != null) {
       final oldestEmail = mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
         ? mailboxDashBoardController.emailsInCurrentMailbox.last
         : null;
@@ -832,6 +834,10 @@ class ThreadController extends BaseController with EmailActionController {
           useCache: selectedMailbox?.isCacheable ?? false,
         )
       ));
+    } else {
+      consumeState(
+        Stream.value(Left(LoadMoreEmailsFailure(NotFoundSessionException()))),
+      );
     }
   }
 
@@ -1095,6 +1101,7 @@ class ThreadController extends BaseController with EmailActionController {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
     }
     canSearchMore = newEmailListSynced.length >= ThreadConstants.maxCountEmails;
+    loadingMoreStatus.value = LoadingMoreStatus.completed;
 
     if (PlatformInfo.isWeb) {
       _validateBrowserHeight();
@@ -1106,7 +1113,9 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _searchMoreEmails() {
     log('ThreadController::_searchMoreEmails:');
-    if (canSearchMore && _session != null && _accountId != null) {
+    if (!canSearchMore) return;
+
+    if (_session != null && _accountId != null) {
       final lastEmail = mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
         ? mailboxDashBoardController.emailsInCurrentMailbox.last
         : null;
@@ -1133,6 +1142,10 @@ class ThreadController extends BaseController with EmailActionController {
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         lastEmailId: lastEmail?.id
       ));
+    } else {
+      consumeState(
+        Stream.value(Left(SearchMoreEmailFailure(NotFoundSessionException()))),
+      );
     }
   }
 

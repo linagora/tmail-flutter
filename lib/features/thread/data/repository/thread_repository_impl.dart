@@ -364,13 +364,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
-    final currentLimitEmails =
-        limit?.value ?? ThreadConstants.defaultLimit.value;
-
-    log('ThreadRepositoryImpl::refreshChanges: Current limit emails is $currentLimitEmails');
-
     if (!newEmailResponse.hasEmails()
-        || (newEmailResponse.emailList?.length ?? 0) < currentLimitEmails) {
+        || (newEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value) {
       final networkEmailResponse = await _getFirstPage(
         session,
         accountId,
