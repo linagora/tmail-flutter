@@ -1367,10 +1367,89 @@ void main() {
       },
     );
 
+    test(
+      'should fetch first page with defaultLimit after changes shrink current list',
+      () async {
+        final cacheEmails = List.generate(
+          ThreadConstants.defaultLimit.value.toInt(),
+          (i) => Email(id: EmailId(Id('cache_$i'))),
+        );
+
+        final cacheAfterDestroyed = cacheEmails.skip(5).toList();
+
+        final destroyedIds = List.generate(
+          5,
+          (i) => EmailId(Id('cache_$i')),
+        );
+
+        int cacheCall = 0;
+
+        when(localDataSource.getAllEmailCache(
+          any,
+          any,
+          filterOption: anyNamed('filterOption'),
+          inMailboxId: anyNamed('inMailboxId'),
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+        )).thenAnswer((_) async {
+          cacheCall++;
+          return cacheCall == 1 ? cacheEmails : cacheAfterDestroyed;
+        });
+
+        when(refreshChangesStateDataSource.getState(any, any, any))
+            .thenAnswer((_) async => State('cache_state'));
+
+        when(networkDataSource.getChanges(
+          any,
+          any,
+          any,
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+        )).thenAnswer((_) async => EmailChangeResponse(
+              hasMoreChanges: false,
+              destroyed: destroyedIds,
+              newStateEmail: State('new_state'),
+            ));
+
+        when(networkDataSource.getAllEmail(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+        )).thenAnswer((_) async => EmailsResponse(
+              emailList: [],
+              state: State('network_state'),
+            ));
+
+        await refreshChangesThreadRepository
+            .refreshChanges(
+              SessionFixtures.aliceSession,
+              AccountFixtures.aliceAccountId,
+              State('initial'),
+            )
+            .first;
+
+        final capturedLimit = verify(networkDataSource.getAllEmail(
+          any,
+          any,
+          limit: captureAnyNamed('limit'),
+          position: anyNamed('position'),
+          sort: anyNamed('sort'),
+          filter: anyNamed('filter'),
+          properties: anyNamed('properties'),
+        )).captured.single;
+
+        expect(capturedLimit, ThreadConstants.defaultLimit);
+      },
+    );
+
     tearDown(() {
       reset(networkDataSource);
       reset(localDataSource);
-      reset(stateDataSource);
+      reset(refreshChangesStateDataSource);
     });
   });
 }
