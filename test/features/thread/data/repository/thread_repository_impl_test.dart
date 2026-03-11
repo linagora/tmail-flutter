@@ -1322,6 +1322,14 @@ void main() {
           equals(2),
           reason: 'Should merge created emails from both pages',
         );
+        final createdIds = result.emailChangeResponse?.created
+            ?.map((e) => e.id?.id.value)
+            .toSet();
+        expect(
+          createdIds,
+          containsAll(['created1', 'created2']),
+          reason: 'Should contain both created emails from different pages',
+        );
       },
     );
 
