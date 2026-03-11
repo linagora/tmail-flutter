@@ -63,6 +63,7 @@ class LabelApi
       final newLabelCreated = labelCreated!.copyWith(
         displayName: labelData.displayName,
         color: labelData.color,
+        description: labelData.description,
       );
       return newLabelCreated;
     } else {

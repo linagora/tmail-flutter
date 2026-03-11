@@ -78,6 +78,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       if (selectedLabel != null) {
         _nameInputController.text = selectedLabel.safeDisplayName;
         _nameInputFocusNode.requestFocus();
+        _descriptionInputController.text = selectedLabel.safeDescription;
         _createLabelStateNotifier.value = true;
         _labelSelectedColorNotifier.value = _selectedColor;
       }
@@ -370,6 +371,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       color: _selectedColor != null
           ? HexColor(_selectedColor!.toHexTriplet())
           : null,
+      description: _descriptionInputController.text,
     );
     widget.onLabelActionCallback(newLabel);
 
