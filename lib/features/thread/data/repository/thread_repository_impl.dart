@@ -364,13 +364,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
-    final currentLimitEmails =
-        limit?.value ?? ThreadConstants.defaultLimit.value;
-
-    log('ThreadRepositoryImpl::refreshChanges: Current limit emails is $currentLimitEmails');
-
     if (!newEmailResponse.hasEmails()
-        || (newEmailResponse.emailList?.length ?? 0) < currentLimitEmails) {
+        || (newEmailResponse.emailList?.length ?? 0) < ThreadConstants.defaultLimit.value) {
       final networkEmailResponse = await _getFirstPage(
         session,
         accountId,
@@ -380,9 +375,26 @@ class ThreadRepositoryImpl extends ThreadRepository {
         mailboxId: emailFilter?.mailboxId,
         propertiesCreated: propertiesCreated,
       );
-
+      logTrace(
+        'ThreadRepositoryImpl::refreshChanges():'
+        'CountEmailCached = ${newEmailResponse.emailList?.length}, '
+        'EmailStateCache = ${newEmailResponse.state?.value}, '
+        'InMailboxId = ${emailFilter?.mailboxId?.asString}, '
+        'Limit = ${limit?.value.toInt()}, '
+        'DefaultLimit = ${ThreadConstants.defaultLimit.value.toInt()}, '
+        'CountEmailNetwork = ${networkEmailResponse.emailList?.length}, '
+        'EmailStateNetwork = ${networkEmailResponse.state?.value}, ',
+      );
       yield networkEmailResponse.copyWith(emailChangeResponse: emailChangeResponse);
     } else {
+      logTrace(
+        'ThreadRepositoryImpl::refreshChanges():'
+        'CountEmailCached = ${newEmailResponse.emailList?.length}, '
+        'EmailStateCache = ${newEmailResponse.state?.value}, '
+        'InMailboxId = ${emailFilter?.mailboxId?.asString}, '
+        'Limit = ${limit?.value.toInt()}, '
+        'DefaultLimit = ${ThreadConstants.defaultLimit.value.toInt()}, ',
+      );
       yield newEmailResponse.copyWith(emailChangeResponse: emailChangeResponse);
     }
   }
