@@ -281,6 +281,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       valueListenable: _labelNameErrorTextNotifier,
       builder: (_, errorText, __) {
         return LabelInputFieldBuilder(
+          key: const Key('label_name_input_field'),
           label: appLocalizations.labelName,
           hintText: appLocalizations
               .pleaseEnterNameYourNewLabel,
@@ -309,6 +310,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
 
   Widget _buildLabelDescriptionInputField(AppLocalizations appLocalizations) {
     return LabelInputFieldBuilder(
+      key: const Key('label_description_input_field'),
       label: appLocalizations.labelDescription,
       hintText: appLocalizations.labelDescriptionHintText,
       textEditingController: _descriptionInputController,
