@@ -375,9 +375,26 @@ class ThreadRepositoryImpl extends ThreadRepository {
         mailboxId: emailFilter?.mailboxId,
         propertiesCreated: propertiesCreated,
       );
-
+      logTrace(
+        'ThreadRepositoryImpl::refreshChanges():'
+        'CountEmailCached = ${newEmailResponse.emailList?.length}, '
+        'EmailStateCache = ${newEmailResponse.state?.value}, '
+        'InMailboxId = ${emailFilter?.mailboxId?.asString}, '
+        'Limit = ${limit?.value.toInt()}, '
+        'DefaultLimit = ${ThreadConstants.defaultLimit.value.toInt()}, '
+        'CountEmailNetwork = ${networkEmailResponse.emailList?.length}, '
+        'EmailStateNetwork = ${networkEmailResponse.state?.value}, ',
+      );
       yield networkEmailResponse.copyWith(emailChangeResponse: emailChangeResponse);
     } else {
+      logTrace(
+        'ThreadRepositoryImpl::refreshChanges():'
+        'CountEmailCached = ${newEmailResponse.emailList?.length}, '
+        'EmailStateCache = ${newEmailResponse.state?.value}, '
+        'InMailboxId = ${emailFilter?.mailboxId?.asString}, '
+        'Limit = ${limit?.value.toInt()}, '
+        'DefaultLimit = ${ThreadConstants.defaultLimit.value.toInt()}, ',
+      );
       yield newEmailResponse.copyWith(emailChangeResponse: emailChangeResponse);
     }
   }

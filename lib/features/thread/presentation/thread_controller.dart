@@ -477,8 +477,20 @@ class ThreadController extends BaseController with EmailActionController {
     final totalHeightListEmails = currentListEmails.isEmpty
       ? 0
       : currentListEmails.length * ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
-    if (browserInnerHeight >= ThreadConstants.defaultMaxHeightBrowser &&
-        totalHeightListEmails <= browserInnerHeight) {
+    final isAutoLoadMore =
+        browserInnerHeight >= ThreadConstants.defaultMaxHeightBrowser &&
+            totalHeightListEmails <= browserInnerHeight;
+    logTrace(
+      'ThreadController::_validateBrowserHeight():'
+      'BrowserInnerHeight = $browserInnerHeight, '
+      'TotalHeightListEmails = $totalHeightListEmails, '
+      'ThreadConstants.defaultMaxHeightBrowser = ${ThreadConstants.defaultMaxHeightBrowser}, '
+      'ThreadConstants.defaultMaxHeightEmailItemOnBrowser = ${ThreadConstants.defaultMaxHeightEmailItemOnBrowser}, '
+      'CanLoadMore = $canLoadMore, '
+      'isAutoLoadMore = $isAutoLoadMore, '
+      'CountCurrentListEmails = ${currentListEmails.length}',
+    );
+    if (isAutoLoadMore) {
       _performAutomaticallyLoadMoreEmails();
     }
   }
@@ -557,7 +569,9 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _handleOnDoneGetAllEmailFailure() {
-    canLoadMore = false;
+    if (PlatformInfo.isWeb) {
+      _validateBrowserHeight();
+    }
     if (PlatformInfo.isWeb && mailboxDashBoardController.isEmailListDisplayed) {
       refocusMailShortcutFocus();
     }
@@ -630,7 +644,7 @@ class ThreadController extends BaseController with EmailActionController {
       consumeState(Stream.value(Right(GetAllEmailLoading())));
     }
 
-    canLoadMore = false;
+    canLoadMore = true;
     loadingMoreStatus.value = LoadingMoreStatus.idle;
     cancelSelectEmail();
 
