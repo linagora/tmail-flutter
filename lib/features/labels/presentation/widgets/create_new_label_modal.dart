@@ -55,6 +55,9 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   final ValueNotifier<bool> _createLabelStateNotifier = ValueNotifier(false);
   final TextEditingController _nameInputController = TextEditingController();
   final FocusNode _nameInputFocusNode = FocusNode();
+  final TextEditingController _descriptionInputController =
+      TextEditingController();
+  final FocusNode _descriptionInputFocusNode = FocusNode();
 
   List<String> _labelDisplayNameList = <String>[];
   Color? _selectedColor;
@@ -75,6 +78,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       if (selectedLabel != null) {
         _nameInputController.text = selectedLabel.safeDisplayName;
         _nameInputFocusNode.requestFocus();
+        _descriptionInputController.text = selectedLabel.safeDescription;
         _createLabelStateNotifier.value = true;
         _labelSelectedColorNotifier.value = _selectedColor;
       }
@@ -135,6 +139,12 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildLabelNameInputField(appLocalizations),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: _buildLabelDescriptionInputField(
+                              appLocalizations,
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.only(top: 26, bottom: 16),
                             child: Text(
@@ -271,6 +281,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       valueListenable: _labelNameErrorTextNotifier,
       builder: (_, errorText, __) {
         return LabelInputFieldBuilder(
+          key: const Key('label_name_input_field'),
           label: appLocalizations.labelName,
           hintText: appLocalizations
               .pleaseEnterNameYourNewLabel,
@@ -294,6 +305,30 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
               ),
         );
       },
+    );
+  }
+
+  Widget _buildLabelDescriptionInputField(AppLocalizations appLocalizations) {
+    return LabelInputFieldBuilder(
+      key: const Key('label_description_input_field'),
+      label: appLocalizations.labelDescription,
+      hintText: appLocalizations.labelDescriptionHintText,
+      textEditingController: _descriptionInputController,
+      focusNode: _descriptionInputFocusNode,
+      arrangeHorizontally: false,
+      isLabelHasColon: false,
+      hasMaxLines: false,
+      isFillContainer: true,
+      labelStyle: ThemeUtils.textStyleInter600().copyWith(
+        fontSize: 14,
+        height: 18 / 14,
+        color: Colors.black,
+      ),
+      runSpacing: 16,
+      inputFieldMaxWidth: double.infinity,
+      inputFieldHeight: 84,
+      textAlignVertical: TextAlignVertical.top,
+      inputAction: TextInputAction.newline,
     );
   }
 
@@ -338,6 +373,7 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       color: _selectedColor != null
           ? HexColor(_selectedColor!.toHexTriplet())
           : null,
+      description: _descriptionInputController.text,
     );
     widget.onLabelActionCallback(newLabel);
 
@@ -376,6 +412,8 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   void dispose() {
     _nameInputFocusNode.dispose();
     _nameInputController.dispose();
+    _descriptionInputFocusNode.dispose();
+    _descriptionInputController.dispose();
     _labelNameErrorTextNotifier.dispose();
     _labelSelectedColorNotifier.dispose();
     _createLabelStateNotifier.dispose();

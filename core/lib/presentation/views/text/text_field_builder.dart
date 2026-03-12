@@ -26,6 +26,8 @@ class TextFieldBuilder extends StatefulWidget {
   final bool autocorrect;
   final TextDirection textDirection;
   final bool readOnly;
+  final bool isFillContainer;
+  final TextAlignVertical? textAlignVertical;
   final MouseCursor? mouseCursor;
   final String? semanticLabel;
 
@@ -36,6 +38,8 @@ class TextFieldBuilder extends StatefulWidget {
     this.obscureText = false,
     this.autoFocus = false,
     this.readOnly = false,
+    this.isFillContainer = false,
+    this.textAlignVertical,
     this.textStyle,
     this.textDirection = TextDirection.ltr,
     this.textInputAction,
@@ -89,6 +93,8 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
       decoration: widget.decoration,
       maxLines: widget.maxLines,
       minLines: widget.minLines,
+      textAlignVertical: widget.textAlignVertical,
+      expands: widget.isFillContainer,
       keyboardAppearance: widget.keyboardAppearance,
       style: widget.textStyle ?? ThemeUtils.defaultTextStyleInterFont.copyWith(
         color: AppColor.textFieldTextColor,

@@ -11,4 +11,8 @@ class LabelRobot extends CoreRobot {
     await $.scrollUntilVisible(finder: item);
     await item.longPress();
   }
+
+  Future<void> tapCreateNewLabelButton() async {
+    await $(#labels_bar_widget_add_new_label_button).tap();
+  }
 }

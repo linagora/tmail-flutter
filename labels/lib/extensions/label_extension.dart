@@ -11,6 +11,8 @@ extension LabelExtension on Label {
 
   String get safeDisplayName => displayName ?? '';
 
+  String get safeDescription => description ?? '';
+
   Color? get backgroundColor {
     if (id?.value == moreLabelId) {
       return AppColor.grayBackgroundColor;
@@ -32,12 +34,14 @@ extension LabelExtension on Label {
     KeyWordIdentifier? keyword,
     String? displayName,
     HexColor? color,
+    String? description,
   }) {
     return Label(
       id: id ?? this.id,
       displayName: displayName ?? this.displayName,
       keyword: keyword ?? this.keyword,
       color: color ?? this.color,
+      description: description ?? this.description,
     );
   }
 

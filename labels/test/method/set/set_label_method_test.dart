@@ -176,5 +176,67 @@ void main() {
       // Assert
       expect(call, throwsA(isA<DioException>()));
     });
+
+    test('should include description when creating label', () async {
+      // Arrange
+      final dio = createDio();
+      final adapter = DioAdapter(dio: dio);
+
+      adapter.onPost(
+        '',
+        (server) => server.reply(200, {
+          "sessionState": "session-state",
+          "methodResponses": [
+            [
+              "Label/set",
+              {
+                "accountId": accountId.id.value,
+                "newState": "new",
+                "created": {
+                  "A": {"id": "123", "keyword": "descTag"}
+                }
+              },
+              "c0"
+            ]
+          ]
+        }),
+        data: buildPayload({
+          "A": {
+            "displayName": "Tag with description",
+            "color": "#123456",
+            "description": "This is a test label"
+          }
+        }),
+        headers: createJMAPHeader(),
+      );
+
+      final builder = createBuilder(dio);
+
+      final method = SetLabelMethod(accountId)
+        ..addCreate(
+          Id('A'),
+          Label(
+            displayName: "Tag with description",
+            color: HexColor("#123456"),
+            description: "This is a test label",
+          ),
+        );
+
+      final invocation = builder.invocation(method);
+
+      // Act
+      final response = await (builder..usings(method.requiredCapabilities))
+          .build()
+          .execute();
+
+      final parsed = response.parse<SetLabelResponse>(
+        invocation.methodCallId,
+        SetLabelResponse.deserialize,
+      );
+
+      // Assert
+      expect(parsed, isNotNull);
+      expect(parsed!.created![Id('A')]!.keyword?.value, equals('descTag'));
+    });
   });
 }

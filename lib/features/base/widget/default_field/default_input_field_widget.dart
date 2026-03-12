@@ -11,7 +11,12 @@ class DefaultInputFieldWidget extends StatelessWidget {
   final String? hintText;
   final String? errorText;
   final Color? inputColor;
+  final bool hasMaxLines;
+  final bool isFillContainer;
+  final TextAlignVertical? textAlignVertical;
+  final double? maxHeight;
   final FocusNode? focusNode;
+  final TextInputAction? inputAction;
   final OnTextChange? onTextChange;
   final OnTextSubmitted? onTextSubmitted;
 
@@ -22,6 +27,11 @@ class DefaultInputFieldWidget extends StatelessWidget {
     this.errorText,
     this.focusNode,
     this.inputColor,
+    this.hasMaxLines = true,
+    this.isFillContainer = false,
+    this.textAlignVertical,
+    this.maxHeight,
+    this.inputAction,
     this.onTextChange,
     this.onTextSubmitted,
   });
@@ -30,17 +40,19 @@ class DefaultInputFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFieldBuilder(
       controller: textEditingController,
-      maxLines: 1,
-      textInputAction: TextInputAction.next,
+      maxLines: hasMaxLines ? 1 : null,
+      textInputAction: inputAction ?? TextInputAction.next,
       textStyle: ThemeUtils.textStyleBodyBody3(
         color: inputColor ?? AppColor.m3SurfaceBackground,
       ),
+      isFillContainer: isFillContainer,
+      textAlignVertical: textAlignVertical,
       focusNode: focusNode,
       onTextSubmitted: onTextSubmitted,
       onTextChange: onTextChange,
       decoration: InputDecoration(
         constraints: BoxConstraints(
-          maxHeight: errorText?.isNotEmpty == true ? 60 : 40,
+          maxHeight: maxHeight ?? (errorText?.isNotEmpty == true ? 60 : 40),
         ),
         filled: true,
         fillColor: errorText?.isNotEmpty == true

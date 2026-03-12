@@ -35,6 +35,7 @@ class LabelsBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget addNewLabelIcon = TMailButtonWidget.fromIcon(
+      key: const Key('labels_bar_widget_add_new_label_button'),
       icon: imagePaths.icAddNewFolder,
       backgroundColor: Colors.transparent,
       iconColor: AppColor.steelGrayA540,

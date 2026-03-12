@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-03-04T11:35:04.572137",
+  "@@last_modified": "2026-03-11T14:39:59.601630",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -5444,6 +5444,18 @@
   },
   "deleteALabelFailure": "Delete a label failure",
   "@deleteALabelFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelDescription": "Description (optional)",
+  "@labelDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "labelDescriptionHintText": "Add a short description to explain what this label is for",
+  "@labelDescriptionHintText": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -11,8 +11,13 @@ class LabelInputFieldBuilder extends StatelessWidget {
   final FocusNode? focusNode;
   final double? runSpacing;
   final double? inputFieldMaxWidth;
+  final double? inputFieldHeight;
   final bool arrangeHorizontally;
   final bool isLabelHasColon;
+  final bool hasMaxLines;
+  final bool isFillContainer;
+  final TextAlignVertical? textAlignVertical;
+  final TextInputAction? inputAction;
   final OnTextChange? onTextChange;
 
   const LabelInputFieldBuilder({
@@ -21,12 +26,17 @@ class LabelInputFieldBuilder extends StatelessWidget {
     required this.textEditingController,
     this.arrangeHorizontally = true,
     this.isLabelHasColon = true,
+    this.hasMaxLines = true,
+    this.isFillContainer = false,
+    this.textAlignVertical,
     this.hintText,
     this.errorText,
     this.focusNode,
     this.labelStyle,
     this.runSpacing,
     this.inputFieldMaxWidth,
+    this.inputFieldHeight,
+    this.inputAction,
     this.onTextChange,
   });
 
@@ -39,6 +49,11 @@ class LabelInputFieldBuilder extends StatelessWidget {
         hintText: hintText,
         errorText: errorText,
         focusNode: focusNode,
+        hasMaxLines: hasMaxLines,
+        textAlignVertical: textAlignVertical,
+        isFillContainer: isFillContainer,
+        inputAction: inputAction,
+        maxHeight: inputFieldHeight,
         onTextChange: onTextChange,
       ),
     );
