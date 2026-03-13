@@ -14,7 +14,7 @@ When the device reconnects to the network, the server may send a large number of
 
 Example scenario:
 
-```
+```text
 100 push events at T0
 100 push events at T0 + 31 seconds
 ```
@@ -25,15 +25,13 @@ This results in:
 * Android notification service overload
 * Device freezing for several minutes
 
-
-
 # Root Causes
 
 ## 1. Each FCM event triggers the full notification pipeline
 
 Current flow:
 
-```
+```text
 FCM message
    ↓
 handleFirebaseBackgroundMessage
@@ -49,15 +47,11 @@ Each email generates **one notification**.
 
 When many pushes arrive simultaneously, the application generates **hundreds of notifications**.
 
-
-
 ## 2. Notification grouping happens too late
 
 `groupPushNotificationOnAndroid()` is executed **after notifications are already created**.
 
 Grouping therefore does **not reduce the number of notifications generated**, it only affects how they are displayed.
-
-
 
 ## 3. Push bursts during device reconnection
 
@@ -65,13 +59,11 @@ When the device reconnects to the network, the push system may deliver many push
 
 Without protection, every push event is processed independently, which repeatedly triggers the notification pipeline.
 
-
-
 ## 4. Local notification removal occasionally fails
 
 Sentry reports the following error:
 
-```
+```text
 PlatformException: Missing type parameter
 FlutterLocalNotificationsPlugin.removeNotificationFromCache
 ```
@@ -84,17 +76,13 @@ When notification removal fails:
 * notification grouping becomes inconsistent
 * the total number of active notifications increases
 
-
-
 # Decision
 
 To prevent notification storms, we introduce **four defensive mechanisms**.
 
-
-
 # 1. Push debounce in background handler (30s window)
 
-The background push handler introduces a **30 second debounce window**.
+The background push handler introduces a **30-second debounce window**.
 
 If multiple push events arrive within this window, only the first push will be processed.
 
@@ -123,7 +111,8 @@ Usage:
 
 ```dart
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
-
+  WidgetsFlutterBinding.ensureInitialized();
+  
   if (!await shouldProcessPush()) {
     return;
   }
@@ -134,7 +123,17 @@ Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
 
 This mechanism prevents repeated push bursts from triggering the notification pipeline multiple times.
 
+### Background execution constraints
 
+The FCM background handler runs inside a short-lived Flutter isolate.
+
+Background handlers are designed to execute quickly and may be terminated by the Android system at any time after the push event is delivered.
+
+Because of this limitation, long-running operations such as delaying processing for an aggregation window (for example waiting 1 minute before generating notifications) are not reliable.
+
+If the isolate is terminated before the delay completes, notifications may never be generated.
+
+For this reason, the system uses a lightweight debounce mechanism that immediately processes the first push event and ignores subsequent push events during a short time window.
 
 # 2. Notification limiter
 
@@ -144,23 +143,22 @@ Rules:
 
 * maximum **20 notifications**
 * prioritize emails requiring user action
+* regular emails generate notifications **only if they belong to the Inbox mailbox**
 * remaining emails sorted by newest first
 
 Example scenario:
 
-```
+```text
 200 emails arrive in a burst
 ```
 
 Result:
 
-```
+```text
 Only 20 notifications are generated
 ```
 
 This ensures the system always has a **strict upper bound** on notification count.
-
-
 
 # Action-required Email Detection
 
@@ -191,7 +189,17 @@ bool isActionRequiredEmail(PresentationEmail email) {
 }
 ```
 
+# Inbox Email Detection
 
+Regular emails will only generate notifications if they belong to the **Inbox mailbox**.
+
+Helper function:
+
+```dart
+bool isInboxEmail(PresentationEmail email) {
+  return email.mailboxIds?.contains("inbox-id") ?? false;
+}
+```
 
 # Optimized Notification Selection Algorithm
 
@@ -200,7 +208,9 @@ To efficiently select notifications from large bursts of emails, the system keep
 Selection priority:
 
 1. actionable emails (`needs-action`)
-2. newest emails
+2. newest **Inbox emails**
+
+Emails outside the Inbox mailbox will not generate notifications unless they are actionable.
 
 Example implementation:
 
@@ -222,6 +232,7 @@ List<PresentationEmail> selectEmailsForNotification(
   for (final email in emails) {
 
     if (isActionRequiredEmail(email)) continue;
+    if (!isInboxEmail(email)) continue;
 
     heap.add(email);
 
@@ -230,10 +241,10 @@ List<PresentationEmail> selectEmailsForNotification(
     }
   }
 
-  final newestEmails = heap.toList()
+  final newestInboxEmails = heap.toList()
     ..sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
 
-  return [...actionEmails, ...newestEmails]
+  return [...actionEmails, ...newestInboxEmails]
       .take(maxNotifications)
       .toList();
 }
@@ -241,13 +252,11 @@ List<PresentationEmail> selectEmailsForNotification(
 
 Time complexity:
 
-```
+```text
 O(n log 20) ≈ O(n)
 ```
 
 This avoids sorting the entire email list when bursts contain many emails.
-
-
 
 # 3. Update delivery state during foreground synchronization
 
@@ -274,8 +283,6 @@ await FCMCacheManager.storeStateToRefresh(
 
 This ensures the latest delivery state is always persisted, even when updates originate from foreground synchronization.
 
-
-
 # 4. Fix local notification removal error
 
 The notification removal logic will be updated to handle failures safely.
@@ -300,11 +307,9 @@ Future<void> removeNotification(String id) async {
 
 This ensures notification removal failures do not interrupt the notification pipeline.
 
-
-
 # Architecture Flow (after fix)
 
-```
+```text
 FCM message
    ↓
 handleFirebaseBackgroundMessage
@@ -322,8 +327,6 @@ LocalNotificationManager
 Safe notification removal
 ```
 
-
-
 # Code Changes
 
 ## 1. handleFirebaseBackgroundMessage
@@ -335,8 +338,6 @@ if (!await shouldProcessPush()) {
   return;
 }
 ```
-
-
 
 ## 2. EmailChangeListener
 
@@ -355,8 +356,6 @@ for (final email in selectedEmails) {
 }
 ```
 
-
-
 ## 3. Foreground email synchronization
 
 Update delivery state when saving email state cache.
@@ -369,8 +368,6 @@ FCMCacheManager.storeStateToRefresh(
   newState,
 );
 ```
-
-
 
 ## 4. LocalNotificationManager
 
@@ -386,8 +383,6 @@ Future<void> removeNotification(String id) async {
 }
 ```
 
-
-
 # Consequences
 
 ## Positive
@@ -395,9 +390,7 @@ Future<void> removeNotification(String id) async {
 * Prevents Android notification storms
 * Guarantees maximum **20 notifications per burst**
 * Reduces device overload
-* Improves notification reliability
-
-
+* Improves notification relevance by prioritizing Inbox emails
 
 ## Negative
 
@@ -405,8 +398,6 @@ Future<void> removeNotification(String id) async {
 * Notifications may be delayed due to push debounce
 
 However this trade-off significantly improves system stability.
-
-
 
 # Future Improvements
 
@@ -416,7 +407,7 @@ Possible enhancements:
 
 Instead of multiple notifications:
 
-```
+```text
 You have 120 new emails
 ```
 
