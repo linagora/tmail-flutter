@@ -51,7 +51,7 @@ Already server-only. Just pass `collapseThreads: true` in the query.
 ## Implementation Steps
 
 1. Add `collapseThreads` to `QueryEmailMethod` in `MailAPIMixin.fetchAllEmail()` and `ThreadAPI.searchEmails()`
-2. Pass thread-enabled status from `Session` to query builder
+2. Pass thread-enabled status from Settings to query builder
 3. Clear email cache in thread setting toggle handler
 4. Update `GetEmailsInMailboxInteractor` and related interactors to propagate thread status
 
