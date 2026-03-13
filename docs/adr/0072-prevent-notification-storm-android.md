@@ -123,7 +123,7 @@ Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
 
 This mechanism prevents repeated push bursts from triggering the notification pipeline multiple times.
 
-### Background execution constraints
+## Background execution constraints
 
 The FCM background handler runs inside a short-lived Flutter isolate.
 
@@ -223,7 +223,11 @@ List<PresentationEmail> selectEmailsForNotification(
   const maxNotifications = 20;
 
   final actionEmails =
-      emails.where((e) => isActionRequiredEmail(e)).toList();
+      emails.where((e) => isActionRequiredEmail(e))
+          .take(maxNotifications)
+          .toList();
+
+  final remainingSlots = maxNotifications - actionEmails.length;
 
   final heap = HeapPriorityQueue<PresentationEmail>(
     (a, b) => a.receivedAt.compareTo(b.receivedAt),
@@ -236,7 +240,7 @@ List<PresentationEmail> selectEmailsForNotification(
 
     heap.add(email);
 
-    if (heap.length > maxNotifications) {
+    if (heap.length > remainingSlots) {
       heap.removeFirst();
     }
   }
@@ -244,9 +248,7 @@ List<PresentationEmail> selectEmailsForNotification(
   final newestInboxEmails = heap.toList()
     ..sort((a, b) => b.receivedAt.compareTo(a.receivedAt));
 
-  return [...actionEmails, ...newestInboxEmails]
-      .take(maxNotifications)
-      .toList();
+  return [...actionEmails, ...newestInboxEmails];
 }
 ```
 
