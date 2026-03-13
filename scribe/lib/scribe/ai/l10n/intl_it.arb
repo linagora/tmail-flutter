@@ -102,6 +102,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "improve": "Migliora",
+  "@improve": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "generatingResponse": "Generazione della risposta",
   "@generatingResponse": {
     "type": "text",
@@ -122,6 +128,24 @@
   },
   "aiAssistant": "Assistente IA",
   "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy": "Copia",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "Riprova",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copiedToClipboard": "Risultato copiato negli appunti",
+  "@copiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

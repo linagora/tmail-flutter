@@ -9,8 +9,8 @@ class AIApi {
 
   AIApi(this._dioClient, this.aiEndpoint);
 
-  Future<AIApiResponse> generateMessage(String prompt) async {
-    final aiRequest = _generateRequest(prompt);
+  Future<AIApiResponse> generateMessage(List<AIMessage> messages) async {
+    final aiRequest = AIAPIRequest(messages: messages);
 
     final response = await _dioClient.post(
       aiEndpoint,
@@ -19,9 +19,5 @@ class AIApi {
     );
 
     return AIApiResponse.fromJson(response);
-  }
-
-  AIAPIRequest _generateRequest(String prompt) {
-    return AIAPIRequest(messages: [AIMessage.ofUser(prompt)]);
   }
 }

@@ -29,8 +29,12 @@ class ComposerAiScribeSelectionOverlay extends StatelessWidget {
     });
   }
 
-  void _clearComposerInputFocus() {
+  Future<void> _clearComposerInputFocus() async {
     controller.clearFocusRecipients();
     controller.clearFocusSubject();
+
+    if (controller.isScribeMobile) {
+      await controller.saveAndUnfocusForModal();
+    }
   }
 }

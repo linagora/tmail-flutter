@@ -102,6 +102,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "improve": "Améliorer",
+  "@improve": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "generatingResponse": "Génération de la réponse",
   "@generatingResponse": {
     "type": "text",
@@ -122,6 +128,24 @@
   },
   "aiAssistant": "Assistant IA",
   "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy": "Copier",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "Réessayer",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copiedToClipboard": "Résultat copié dans le presse-papiers",
+  "@copiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

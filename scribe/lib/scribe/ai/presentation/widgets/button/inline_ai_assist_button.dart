@@ -1,5 +1,7 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe.dart';
 
@@ -7,7 +9,7 @@ class InlineAiAssistButton extends StatelessWidget {
   final ImagePaths imagePaths;
   final String? selectedText;
   final OnSelectAiScribeSuggestionAction onSelectAiScribeSuggestionAction;
-  final VoidCallback? onTapFallback;
+  final AsyncCallback? onTapFallback;
 
   const InlineAiAssistButton({
     super.key,
@@ -19,11 +21,13 @@ class InlineAiAssistButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = PlatformInfo.isWeb ? AIScribeSizes.scribeIcon : AIScribeSizes.scribeMobileIcon;
+
     return TMailButtonWidget.fromIcon(
       icon: imagePaths.icSparkle,
       padding: AIScribeSizes.scribeButtonPadding,
       backgroundColor: AIScribeColors.background,
-      iconSize: AIScribeSizes.scribeIcon,
+      iconSize: iconSize,
       iconColor: AIScribeColors.scribeIcon,
       borderRadius: AIScribeSizes.scribeButtonRadius,
       boxShadow: AIScribeShadows.sparkleIcon,
@@ -42,9 +46,12 @@ class InlineAiAssistButton extends StatelessWidget {
       size = renderBox.size;
     }
 
-    onTapFallback?.call();
+    final isScribeMobile = AiScribeMobileUtils.isScribeInMobileMode(context);
 
-    await AiScribeModalManager.showAIScribeMenuModal(
+    await onTapFallback?.call();
+
+    await AiScribeModalManager.showAIScribeModal(
+      isScribeMobile: isScribeMobile,
       imagePaths: imagePaths,
       availableCategories: AIScribeMenuCategory.values,
       buttonPosition: position,

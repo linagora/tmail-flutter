@@ -102,6 +102,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "improve": "Cải thiện",
+  "@improve": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "generatingResponse": "Tạo phản hồi",
   "@generatingResponse": {
     "type": "text",
@@ -122,6 +128,24 @@
   },
   "aiAssistant": "Trợ lý AI",
   "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy": "Sao chép",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "Thử lại",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copiedToClipboard": "Kết quả đã được sao chép vào clipboard",
+  "@copiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

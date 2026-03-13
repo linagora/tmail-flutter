@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/text_selection_mixin.dart';
@@ -104,7 +105,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
     _editorController = widget.editorController;
 
     final registerSelectionChange =
-      HtmlUtils.registerSelectionChangeListener(_createdViewId);
+      HtmlUtils.registerSelectionChangeListener(_createdViewId, isWebPlatform: PlatformInfo.isWeb);
     _selectionChangeScript = WebScript(
       name: registerSelectionChange.name,
       script: registerSelectionChange.script,
@@ -205,6 +206,22 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
             script: HtmlUtils.deleteSelectionContent.script,
           ),
           WebScript(
+            name: HtmlUtils.saveSelection.name,
+            script: HtmlUtils.saveSelection.script,
+          ),
+          WebScript(
+            name: HtmlUtils.restoreSelection.name,
+            script: HtmlUtils.restoreSelection.script,
+          ),
+          WebScript(
+            name: HtmlUtils.getSavedSelection.name,
+            script: HtmlUtils.getSavedSelection.script,
+          ),
+          WebScript(
+            name: HtmlUtils.clearSavedSelection.name,
+            script: HtmlUtils.clearSavedSelection.script,
+          ),
+          WebScript(
             name: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).name,
             script: HtmlUtils.recalculateEditorHeight(maxHeight: maxHeight).script,
           ),
@@ -224,7 +241,7 @@ class _WebEditorState extends State<WebEditorWidget> with TextSelectionMixin {
             _editorController.evaluateJavascriptWeb(
               HtmlUtils.registerDropListener.name);
             _editorController.evaluateJavascriptWeb(
-              HtmlUtils.registerSelectionChangeListener(_createdViewId).name);
+              _selectionChangeScript.name);
             _editorListenerRegistered = true;
           }
         },

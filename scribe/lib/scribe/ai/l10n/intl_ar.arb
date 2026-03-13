@@ -102,6 +102,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "improve": "تحسين",
+  "@improve": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "generatingResponse": "إنشاء الاستجابة",
   "@generatingResponse": {
     "type": "text",
@@ -122,6 +128,24 @@
   },
   "aiAssistant": "مساعد الذكاء الاصطناعي",
   "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy": "نسخ",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "إعادة المحاولة",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copiedToClipboard": "تم نسخ النتيجة إلى الحافظة",
+  "@copiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

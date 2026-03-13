@@ -66,7 +66,7 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
     _editorController = editorApi.webViewController;
 
     registerSelectionChange =
-        HtmlUtils.registerSelectionChangeListener(_createdViewId);
+        HtmlUtils.registerSelectionChangeListener(_createdViewId, isWebPlatform: PlatformInfo.isWeb);
 
     _editorController?.addJavaScriptHandler(
       handlerName: registerSelectionChange!.name,
@@ -89,12 +89,17 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
 
   Future<void> _onWebViewCreated(HtmlEditorApi editorApi) async {
     widget.onCreatedEditorAction.call(context, editorApi, widget.content);
+  }
+
+  Future<void> _onWebViewCompleted(HtmlEditorApi editorApi, WebUri? webUri) async {
+    widget.onLoadCompletedEditorAction(editorApi, webUri);
     try {
       await _setupSelectionListener(editorApi);
     } catch (e) {
       logWarning('Error onWebViewCreated: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +114,7 @@ class _MobileEditorState extends State<MobileEditorWidget> with TextSelectionMix
         useDefaultFontStyle: true,
       ),
       onCreated: _onWebViewCreated,
-      onCompleted: widget.onLoadCompletedEditorAction,
+      onCompleted: _onWebViewCompleted,
       onContentHeightChanged: PlatformInfo.isIOS ? widget.onEditorContentHeightChanged : null,
     );
   }

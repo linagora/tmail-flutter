@@ -251,16 +251,14 @@ class StringConvert {
     }
   }
 
-  static String convertTextContentToHtmlContent(String textContent) {
-    // Escape HTML entities first to prevent interpretation as HTML
-    final escapedContent = textContent
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
+  static String escapeTextContent(String textContent) {
+    const HtmlEscape htmlEscape = HtmlEscape();
 
-    final htmlContent = escapedContent.replaceAll('\n', '<br>');
+    return htmlEscape.convert(textContent);
+  }
+
+  static String convertTextContentToHtmlContent(String textContent) {
+    final htmlContent = textContent.replaceAll('\n', '<br>');
 
     return '<div>$htmlContent</div>';
   }

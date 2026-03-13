@@ -102,6 +102,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "improve": "Verbessern",
+  "@improve": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "generatingResponse": "Antwort wird generiert",
   "@generatingResponse": {
     "type": "text",
@@ -122,6 +128,24 @@
   },
   "aiAssistant": "KI-Assistent",
   "@aiAssistant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy": "Kopieren",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "Erneut versuchen",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copiedToClipboard": "Ergebnis in die Zwischenablage kopiert",
+  "@copiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

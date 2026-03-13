@@ -2,11 +2,16 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'ai_message.g.dart';
 
+enum AIRole {
+  @JsonValue('user')
+  user,
+  @JsonValue('system')
+  system,
+}
+
 @JsonSerializable()
 class AIMessage {
-  static const String aiUserRole = 'user';
-
-  final String role;
+  final AIRole role;
   final String content;
 
   const AIMessage({
@@ -20,7 +25,12 @@ class AIMessage {
   Map<String, dynamic> toJson() => _$AIMessageToJson(this);
 
   factory AIMessage.ofUser(String content) => AIMessage(
-        role: aiUserRole,
+        role: AIRole.user,
+        content: content,
+      );
+
+  factory AIMessage.ofSystem(String content) => AIMessage(
+        role: AIRole.system,
         content: content,
       );
 }

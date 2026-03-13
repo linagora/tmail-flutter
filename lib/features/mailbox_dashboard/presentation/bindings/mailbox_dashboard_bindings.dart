@@ -4,7 +4,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
@@ -85,16 +84,19 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_sort_o
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/linagora_ecosystem_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/app_grid_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/linagora_ecosystem_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/search_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/spam_report_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/app_grid_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/linagora_ecosystem_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/search_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_report_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app_dashboard_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app_grid_linagra_ecosystem_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_linagora_system_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_mailbox_cached_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
@@ -382,6 +384,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => EmptySpamFolderInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => GetAppDashboardConfigurationInteractor(Get.find<AppGridRepository>()));
     Get.lazyPut(() => GetAppGridLinagraEcosystemInteractor(Get.find<AppGridRepository>()));
+    Get.lazyPut(() => GetLinagoraEcosystemInteractor(Get.find<LinagoraEcosystemRepository>()));
     Get.lazyPut(() => GetEmailByIdInteractor(
       Get.find<ThreadRepository>(),
       Get.find<EmailRepository>()));
@@ -426,11 +429,9 @@ class MailboxDashBoardBindings extends BaseBindings {
         Get.find<ManageAccountRepository>(),
       ),
     );
-    if (!PlatformInfo.isMobile) {
-      Get.lazyPut(
-        () => GetAIScribeConfigInteractor(Get.find<ManageAccountRepository>()),
-      );
-    }
+    Get.lazyPut(
+      () => GetAIScribeConfigInteractor(Get.find<ManageAccountRepository>()),
+    );
   }
 
   @override
@@ -446,6 +447,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<ServerSettingsRepository>(() => Get.find<ServerSettingsRepositoryImpl>());
     Get.lazyPut<IdentityCreatorRepository>(() => Get.find<IdentityCreatorRepositoryImpl>());
     Get.lazyPut<AppGridRepository>(() => Get.find<AppGridRepositoryImpl>());
+    Get.lazyPut<LinagoraEcosystemRepository>(() => Get.find<LinagoraEcosystemRepositoryImpl>());
   }
 
   @override
@@ -498,5 +500,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       DataSourceType.network: Get.find<AppGridDatasource>(),
       DataSourceType.local: Get.find<LocalAppGridDatasourceImpl>()
     },));
+    Get.lazyPut(() => LinagoraEcosystemRepositoryImpl(Get.find<LinagoraEcosystemApi>()));
   }
 }

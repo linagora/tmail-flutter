@@ -150,6 +150,13 @@ class ScribeLocalizations {
     );
   }
 
+  String get improve {
+    return Intl.message(
+      'Improve',
+      name: 'improve',
+    );
+  }
+
   String get aiAssistant {
     return Intl.message(
       'AI assistant',
@@ -175,6 +182,28 @@ class ScribeLocalizations {
     return Intl.message(
       'Insert',
       name: 'insert',
+    );
+  }
+
+  // Suggestion Success Toolbar
+  String get copy {
+    return Intl.message(
+      'Copy',
+      name: 'copy',
+    );
+  }
+
+  String get retry {
+    return Intl.message(
+      'Retry',
+      name: 'retry',
+    );
+  }
+
+  String get copiedToClipboard {
+    return Intl.message(
+      'Result copied to clipboard',
+      name: 'copiedToClipboard',
     );
   }
 }
