@@ -76,7 +76,6 @@ class ThreadConstants {
   });
 
   static const int defaultMaxHeightEmailItemOnBrowser = 40;
-  static const int defaultMaxHeightBrowser = 1200;
 
   static final propertiesParseEmailByBlobId = Properties({
     EmailProperty.id,
