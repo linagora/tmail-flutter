@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_spam_mailbox_cached_state.dart';
 
 class GetSpamMailboxCachedInteractor {
-  static const int spamReportBannerDisplayIntervalInHour = 12;
+  static const int spamReportBannerDisplayIntervalInHour = 24;
 
   final SpamReportRepository _spamReportRepository;
 
@@ -22,6 +22,7 @@ class GetSpamMailboxCachedInteractor {
         final spamMailbox =  await _spamReportRepository.getSpamMailboxCached(accountId, userName);
         final countUnreadSpamMailbox = spamMailbox.unreadEmails?.value.value.toInt() ?? 0;
         if (countUnreadSpamMailbox > 0) {
+          await _spamReportRepository.storeLastTimeDismissedSpamReported(DateTime.now());
           yield Right<Failure, Success>(GetSpamMailboxCachedSuccess(spamMailbox));
         } else {
           yield Left<Failure, Success>(InvalidSpamReportCondition());
