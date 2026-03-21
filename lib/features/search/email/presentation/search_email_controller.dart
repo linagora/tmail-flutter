@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_recent_search_latest_state.dart';
@@ -1015,13 +1016,14 @@ class SearchEmailController extends BaseController
     mailboxDashBoardController.searchController.disableAllSearchEmail();
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     if (PlatformInfo.isWeb) {
+      final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
       RouteUtils.replaceBrowserHistory(
-        title:
-            'Mailbox-${mailboxDashBoardController.selectedMailbox.value?.id.id.value}',
+        title: currentMailbox?.browserRouteTitle ?? '',
         url: RouteUtils.createUrlWebLocationBar(
           AppRoutes.dashboard,
           router: NavigationRouter(
-            mailboxId: mailboxDashBoardController.selectedMailbox.value?.id,
+            mailboxId: currentMailbox?.browserRouteMailboxId,
+            labelId: currentMailbox?.labelId,
             dashboardType: DashboardType.normal,
           ),
         ),

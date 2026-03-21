@@ -20,6 +20,7 @@ abstract class RouteUtils {
   static const String paramID = 'id';
   static const String paramType = 'type';
   static const String paramContext = 'context';
+  static const String paramLabelId = 'labelId';
   static const String paramQuery = 'q';
   static const String paramRouteName = 'routeName';
   static const String paramMailtoAddress = 'mailtoAddress';
@@ -61,7 +62,9 @@ abstract class RouteUtils {
       }
       servicePath = servicePath.withQueryParameters([
         StringQueryParameter(paramType, router.dashboardType.name),
-        if (router.mailboxId != null)
+        if (router.labelId != null)
+          StringQueryParameter(paramLabelId, router.labelId!.value)
+        else if (router.mailboxId != null)
           StringQueryParameter(paramContext, router.mailboxId!.id.value),
         if (router.searchQuery != null)
           StringQueryParameter(paramQuery, router.searchQuery!.value),
@@ -125,6 +128,7 @@ abstract class RouteUtils {
     final idParam = parameters[paramID];
     final typeParam = parameters[paramType];
     final contextPram = parameters[paramContext];
+    final labelIdPram = parameters[paramLabelId];
     final queryParam = parameters[paramQuery];
     final routeName = parameters[paramRouteName];
     final mailtoAddress = parameters[paramMailtoAddress];
@@ -135,7 +139,10 @@ abstract class RouteUtils {
     final popupParam = parameters[paramPopup];
 
     final emailId = idParam != null ? EmailId(Id(idParam)) : null;
-    final mailboxId = contextPram != null ? MailboxId(Id(contextPram)) : null;
+    final labelId = labelIdPram != null ? Id(labelIdPram) : null;
+    final mailboxId = labelId == null && contextPram != null
+        ? MailboxId(Id(contextPram))
+        : null;
     final searchQuery = queryParam != null ? SearchQuery(queryParam) : null;
     final dashboardType = DashboardType.values.firstWhereOrNull((type) => type.name == typeParam) ?? DashboardType.normal;
     final settingType = AccountMenuItem.values.firstWhereOrNull((type) => type.getAliasBrowser() == typeParam) ?? AccountMenuItem.none;
@@ -150,6 +157,7 @@ abstract class RouteUtils {
     return NavigationRouter(
       emailId: emailId,
       mailboxId: mailboxId,
+      labelId: labelId,
       searchQuery: searchQuery,
       dashboardType: dashboardType,
       routeName: routeName,

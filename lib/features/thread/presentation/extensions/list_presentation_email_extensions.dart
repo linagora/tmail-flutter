@@ -5,6 +5,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_detail_info.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -48,7 +49,10 @@ extension ListPresentationEmailExtensions on List<PresentationEmail> {
         AppRoutes.dashboard,
         router: NavigationRouter(
           emailId: currentEmail.id,
-          mailboxId: isSearchEmailRunning ? null : selectedMailbox?.id,
+          mailboxId: isSearchEmailRunning
+              ? null
+              : selectedMailbox?.browserRouteMailboxId,
+          labelId: selectedMailbox?.labelId,
           searchQuery: isSearchEmailRunning ? searchQuery : null,
           dashboardType: isSearchEmailRunning ? DashboardType.search : DashboardType.normal
         )

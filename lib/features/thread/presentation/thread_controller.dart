@@ -1502,7 +1502,8 @@ class ThreadController extends BaseController with EmailActionController {
       AppRoutes.dashboard,
       router: NavigationRouter(
         emailId: email.id,
-        mailboxId: mailboxContain.mailboxId,
+        mailboxId: mailboxContain.browserRouteMailboxId,
+        labelId: mailboxContain.labelId,
         dashboardType: DashboardType.normal
       )
     ));

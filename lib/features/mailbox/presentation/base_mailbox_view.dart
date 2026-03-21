@@ -461,6 +461,7 @@ abstract class BaseMailboxView extends GetWidget<MailboxController>
         final countLabels = labelController.labels.length;
 
         return LabelsBarWidget(
+          key: labelController.labelAppBarKey,
           imagePaths: controller.imagePaths,
           isDesktop: isDesktop,
           height: isDesktop ? 48 : 40,

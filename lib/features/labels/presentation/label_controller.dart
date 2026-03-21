@@ -1,7 +1,8 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart' hide State;
+import 'package:flutter/material.dart' hide State;
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -34,6 +35,8 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   final labels = <Label>[].obs;
   final labelListExpandMode = Rx(ExpandMode.EXPAND);
   final isLabelSettingEnabled = RxBool(false);
+  final isLabelsLoaded = RxBool(false);
+  final GlobalKey labelAppBarKey = GlobalKey();
 
   GetAllLabelInteractor? _getAllLabelInteractor;
   CreateNewLabelInteractor? _createNewLabelInteractor;
@@ -53,11 +56,17 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     } else {
       isLabelSettingEnabled.value = false;
       _clearLabelData();
+      setLabelLoaded();
     }
+  }
+
+  void setLabelLoaded() {
+    isLabelsLoaded.value = true;
   }
 
   void _clearLabelData() {
     labels.clear();
+    isLabelsLoaded.value = false;
   }
 
   void injectLabelsBindings() {
@@ -73,7 +82,11 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   DeleteALabelInteractor? get deleteALabelInteractor => _deleteALabelInteractor;
 
   void getAllLabels(AccountId accountId) {
-    if (_getAllLabelInteractor == null) return;
+    if (_getAllLabelInteractor == null) {
+      labels.value = [];
+      setLabelLoaded();
+      return;
+    }
 
     consumeState(_getAllLabelInteractor!.execute(accountId));
   }
@@ -132,6 +145,9 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     if (isEnabled) {
       injectLabelsBindings();
       getAllLabels(accountId);
+    } else {
+      _clearLabelData();
+      setLabelLoaded();
     }
   }
 
@@ -139,6 +155,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void handleSuccessViewState(Success success) {
     if (success is GetAllLabelSuccess) {
       labels.value = success.labels..sortByAlphabetically();
+      setLabelLoaded();
     } else if (success is CreateNewLabelSuccess) {
       _handleCreateNewLabelSuccess(success);
     } else if (success is GetLabelSettingStateSuccess) {
@@ -156,11 +173,13 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   void handleFailureViewState(Failure failure) {
     if (failure is GetAllLabelFailure) {
       labels.value = [];
+      setLabelLoaded();
     } else if (failure is CreateNewLabelFailure) {
       _handleCreateNewLabelFailure(failure);
     } else if (failure is GetLabelSettingStateFailure) {
       isLabelSettingEnabled.value = false;
       _clearLabelData();
+      setLabelLoaded();
     } else if (failure is EditLabelFailure) {
       handleEditLabelFailure(failure);
     } else if (failure is DeleteALabelFailure) {

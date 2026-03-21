@@ -70,6 +70,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_action_required_tab_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/handle_navigation_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -132,6 +133,7 @@ class MailboxController extends BaseMailboxController
   MailboxId? _newFolderId;
   NavigationRouter? _navigationRouter;
   WebSocketQueueHandler? _webSocketQueueHandler;
+  Worker? isLabelsLoadedWorker;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   StreamSubscription? _openMailboxEventStreamSubscription;
@@ -198,6 +200,8 @@ class MailboxController extends BaseMailboxController
     _openMailboxEventController.close();
     mailboxListScrollController.dispose();
     _webSocketQueueHandler?.dispose();
+    isLabelsLoadedWorker?.dispose();
+    isLabelsLoadedWorker = null;
     super.onClose();
   }
 
@@ -868,7 +872,9 @@ class MailboxController extends BaseMailboxController
         }
         break;
       case DashboardType.normal:
-        if (_navigationRouter!.mailboxId != null) {
+        if (_navigationRouter!.labelId != null) {
+          handleLabelNavigation(_navigationRouter!, _navigationRouter!.labelId!);
+        } else if (_navigationRouter!.mailboxId != null) {
           final matchedMailboxNode = findMailboxNodeById(
             _navigationRouter!.mailboxId!,
           );
@@ -896,6 +902,11 @@ class MailboxController extends BaseMailboxController
     }
   }
 
+  void openEmailInsideMailboxFromLocationBar(
+    PresentationMailbox presentationMailbox,
+    EmailId emailId
+  ) => _openEmailInsideMailboxFromLocationBar(presentationMailbox, emailId);
+
   void _openEmailInsideMailboxFromLocationBar(
     PresentationMailbox presentationMailbox,
     EmailId emailId,
@@ -907,15 +918,19 @@ class MailboxController extends BaseMailboxController
     _clearNavigationRouter();
   }
 
+  void openMailboxFromLocationBar(PresentationMailbox presentationMailbox) =>
+      _openMailboxFromLocationBar(presentationMailbox);
+
   void _openMailboxFromLocationBar(PresentationMailbox presentationMailbox) {
     mailboxDashBoardController.setSelectedMailbox(presentationMailbox);
     if (PlatformInfo.isWeb) {
       RouteUtils.replaceBrowserHistory(
-        title: 'Mailbox-${presentationMailbox.mailboxId?.id.value}',
+        title: presentationMailbox.browserRouteTitle,
         url: RouteUtils.createUrlWebLocationBar(
           AppRoutes.dashboard,
           router: NavigationRouter(
-            mailboxId: presentationMailbox.mailboxId,
+            mailboxId: presentationMailbox.browserRouteMailboxId,
+            labelId: presentationMailbox.labelId,
             dashboardType: DashboardType.normal,
           ),
         ),
@@ -947,6 +962,8 @@ class MailboxController extends BaseMailboxController
     );
     _clearNavigationRouter();
   }
+
+  void clearNavigationRouter() => _clearNavigationRouter();
 
   void _clearNavigationRouter() {
     _navigationRouter = null;
@@ -1422,28 +1439,24 @@ class MailboxController extends BaseMailboxController
   }
 
   void _replaceBrowserHistory() {
-    log(
-      'MailboxController::_replaceBrowserHistory:selectedMailbox: ${selectedMailbox?.id}',
-    );
-    if (PlatformInfo.isWeb &&
-        Get.currentRoute.startsWith(AppRoutes.dashboard)) {
-      final selectedMailboxId = selectedMailbox?.id;
+    final currentMailbox = selectedMailbox;
+    log('MailboxController::_replaceBrowserHistory:selectedMailbox: ${currentMailbox?.id.asString}');
+    if (PlatformInfo.isWeb && Get.currentRoute.startsWith(AppRoutes.dashboard)) {
       final route = RouteUtils.createUrlWebLocationBar(
         AppRoutes.dashboard,
         router: NavigationRouter(
-          mailboxId: selectedMailboxId,
-          searchQuery:
-              mailboxDashBoardController.searchController.isSearchEmailRunning
-              ? mailboxDashBoardController.searchController.searchQuery
-              : null,
-          dashboardType:
-              mailboxDashBoardController.searchController.isSearchEmailRunning
-              ? DashboardType.search
-              : DashboardType.normal,
-        ),
+          mailboxId: currentMailbox?.browserRouteMailboxId,
+          labelId: currentMailbox?.labelId,
+          searchQuery: mailboxDashBoardController.searchController.isSearchEmailRunning
+            ? mailboxDashBoardController.searchController.searchQuery
+            : null,
+          dashboardType: mailboxDashBoardController.searchController.isSearchEmailRunning
+            ? DashboardType.search
+            : DashboardType.normal
+        )
       );
       RouteUtils.replaceBrowserHistory(
-        title: 'Mailbox-${selectedMailboxId?.id.value}',
+        title: currentMailbox?.browserRouteTitle ?? '',
         url: route,
       );
     }
