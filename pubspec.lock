@@ -2334,11 +2334,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "update/flutter-3.32.8"
-      resolved-ref: a67d478c6d73582e37f49f78c2d83ca7c240db73
+      ref: main
+      resolved-ref: "9e65dce2bb6c3cd43dce962fc7f546434fce6b55"
       url: "https://github.com/linagora/twake-previewer-flutter.git"
     source: git
-    version: "0.0.15"
+    version: "0.1.0"
   typed_data:
     dependency: transitive
     description:
