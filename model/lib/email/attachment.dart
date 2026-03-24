@@ -29,6 +29,7 @@ class Attachment with EquatableMixin {
   static const String eventICSSubtype = 'ics';
   static const String eventCalendarSubtype = 'calendar';
   static const String applicationRTFType = 'application/rtf';
+  static const String _defaultName = 'unknown-attachment';
 
   final PartId? partId;
   final Id? blobId;
@@ -72,11 +73,17 @@ class Attachment with EquatableMixin {
   }
 
   String generateFileName() {
-    if (name?.isNotEmpty == true) {
-      return name!;
-    } else {
-      return '${blobId?.value}.${type?.subtype}';
-    }
+    final rawName = (name?.trim().isNotEmpty == true)
+        ? name!.trim()
+        : (blobId != null
+            ? (type?.subtype != null
+                ? '${blobId!.value}.${type!.subtype}'
+                : blobId!.value)
+            : _defaultName);
+
+    final sanitized = rawName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_').trim();
+    // Fall back if sanitized name has no meaningful content (e.g. '???' → '___')
+    return sanitized.contains(RegExp(r'[^_\s]')) ? sanitized : _defaultName;
   }
 
   factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);
