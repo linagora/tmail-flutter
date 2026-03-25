@@ -184,6 +184,19 @@ void main() {
           equals('  Re: Hello'),
         );
       });
+
+      test(
+        'should add a standardized prefix for a legacy NBSP variant',
+        () {
+          expect(
+            EmailUtils.applyPrefix(
+              subject: 'Re\u00A0: Hello',
+              defaultPrefix: EmailUtils.defaultReplyPrefix,
+            ),
+            equals('Re: Re\u00A0: Hello'),
+          );
+        },
+      );
     });
   });
 }
