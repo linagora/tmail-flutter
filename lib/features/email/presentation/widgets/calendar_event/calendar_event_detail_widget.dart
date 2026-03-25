@@ -10,7 +10,11 @@ import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_body_content_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
 
-typedef OnMailtoAttendeesAction = Function(CalendarOrganizer? organizer, List<CalendarAttendee>? participants);
+typedef OnMailtoAttendeesAction = Function(
+  CalendarOrganizer? organizer,
+  List<CalendarAttendee>? participants,
+  String? eventTitle,
+);
 
 class CalendarEventDetailWidget extends StatelessWidget {
 

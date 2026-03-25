@@ -185,6 +185,9 @@ class CalendarEventInformationWidget extends StatelessWidget {
               onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
                 calendarEvent.organizer,
                 calendarEvent.participants,
+                calendarEvent.getMailToAttendeesEventTitle(
+                  AppLocalizations.of(context),
+                ),
               ),
             ),
         ],

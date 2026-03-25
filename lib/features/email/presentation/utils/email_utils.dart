@@ -29,8 +29,33 @@ class EmailUtils {
   static const double attachmentItemHeight = 36;
   static const double attachmentIcon = 20;
   static const int maxMobileVisibleAttachments = 3;
+  static const String defaultReplyPrefix = 'Re:';
+  static const String defaultForwardPrefix = 'Fwd:';
 
   EmailUtils._();
+
+  static String applyPrefix({
+    required String subject,
+    required String defaultPrefix,
+    String? localizedPrefix,
+  }) {
+    final trimmed = subject.trim();
+    final lowerSubject = trimmed.toLowerCase();
+
+    final prefixes = <String>[
+      defaultPrefix.toLowerCase(),
+      if (localizedPrefix != null) localizedPrefix.toLowerCase(),
+    ];
+
+    final hasPrefix = prefixes.any(lowerSubject.startsWith);
+
+    if (hasPrefix) {
+      return subject;
+    }
+
+    final prefix = localizedPrefix ?? defaultPrefix;
+    return '$prefix $subject';
+  }
 
   static Properties getPropertiesForEmailGetMethod(Session session, AccountId accountId) {
     if (CapabilityIdentifier.jamesCalendarEvent.isSupported(session, accountId)) {

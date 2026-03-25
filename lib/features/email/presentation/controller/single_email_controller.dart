@@ -1502,7 +1502,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void handleMailToAttendees(CalendarOrganizer? organizer, List<CalendarAttendee>? attendees) {
+  void handleMailToAttendees(
+    CalendarOrganizer? organizer,
+    List<CalendarAttendee>? attendees,
+    String? eventTitle,
+  ) {
     List<EmailAddress> listEmailAddressAttendees = [];
 
     if (organizer != null) {
@@ -1519,7 +1523,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         listEmailAddressAttendees.removeInvalidEmails(ownEmailAddress);
     log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
     emailContext.openComposer(
-      ComposerArguments.fromMailtoUri(listEmailAddress: listEmailAddressMailTo)
+      ComposerArguments.fromMailtoUri(
+        listEmailAddress: listEmailAddressMailTo,
+        subject: eventTitle,
+      )
     );
   }
 
