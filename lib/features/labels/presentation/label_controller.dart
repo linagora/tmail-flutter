@@ -6,19 +6,18 @@ import 'package:flutter/material.dart' hide State;
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:labels/extensions/list_label_extension.dart';
-import 'package:labels/model/label.dart';
-import 'package:labels/utils/labels_constants.dart';
+import 'package:labels/labels.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
-import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
-import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/delete_a_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
@@ -43,12 +42,21 @@ class LabelController extends BaseController with LabelContextMenuMixin {
   GetLabelSettingStateInteractor? _getLabelSettingStateInteractor;
   EditLabelInteractor? _editLabelInteractor;
   DeleteALabelInteractor? _deleteALabelInteractor;
+  LabelsCapability? _labelsCapability;
 
   bool isLabelCapabilitySupported(Session session, AccountId accountId) {
     return LabelsConstants.labelsCapability.isSupported(session, accountId);
   }
 
-  void checkLabelSettingState(AccountId accountId) {
+  LabelsCapability? get labelsCapability => _labelsCapability;
+
+  bool get shouldAskReadOnly {
+    final labelVersion = labelsCapability?.version;
+    return labelVersion != null && labelVersion >= 1;
+  }
+
+  void checkLabelSettingState(Session session, AccountId accountId) {
+    _labelsCapability = session.getLabelsCapability(accountId);
     _getLabelSettingStateInteractor =
         getBinding<GetLabelSettingStateInteractor>();
     if (_getLabelSettingStateInteractor != null) {
@@ -196,6 +204,7 @@ class LabelController extends BaseController with LabelContextMenuMixin {
     _editLabelInteractor = null;
     _deleteALabelInteractor = null;
     _getLabelSettingStateInteractor = null;
+    _labelsCapability = null;
     super.onClose();
   }
 }

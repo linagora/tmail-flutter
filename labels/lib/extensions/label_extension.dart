@@ -27,17 +27,23 @@ extension LabelExtension on Label {
     }
   }
 
+  bool get isReadOnly => readOnly == true;
+
   Label copyWith({
     Id? id,
     KeyWordIdentifier? keyword,
     String? displayName,
     HexColor? color,
+    String? description,
+    bool? readOnly,
   }) {
     return Label(
       id: id ?? this.id,
       displayName: displayName ?? this.displayName,
       keyword: keyword ?? this.keyword,
       color: color ?? this.color,
+      description: description ?? this.description,
+      readOnly: readOnly ?? this.readOnly,
     );
   }
 

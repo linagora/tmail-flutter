@@ -1004,7 +1004,7 @@ class MailboxDashBoardController extends ReloadableController
     );
 
     if (isLabelCapabilitySupported) {
-      labelController.checkLabelSettingState(currentAccountId);
+      labelController.checkLabelSettingState(session, currentAccountId);
     }
   }
 
@@ -2358,8 +2358,10 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
-    if (isLabelCapabilitySupported && accountId.value != null) {
-      labelController.checkLabelSettingState(accountId.value!);
+    if (isLabelCapabilitySupported &&
+        sessionCurrent != null &&
+        accountId.value != null) {
+      labelController.checkLabelSettingState(sessionCurrent!, accountId.value!);
     }
   }
 
@@ -2448,8 +2450,10 @@ class MailboxDashBoardController extends ReloadableController
     getServerSetting();
     spamReportController.getSpamReportStateAction();
     loadAIScribeConfig();
-    if (isLabelCapabilitySupported && accountId.value != null) {
-      labelController.checkLabelSettingState(accountId.value!);
+    if (isLabelCapabilitySupported &&
+        sessionCurrent != null &&
+        accountId.value != null) {
+      labelController.checkLabelSettingState(sessionCurrent!, accountId.value!);
     }
   }
 
