@@ -105,7 +105,6 @@ class HomeController extends ReloadableController {
   static void downloadCallback(String id, int status, int progress) {}
 
   Future<void> _handleNavigateToScreen() async {
-    await Future.delayed(2.seconds);
     final arguments = Get.arguments;
     if (arguments is LoginNavigateArguments) {
       _handleLoginNavigateArguments(arguments);
@@ -117,11 +116,15 @@ class HomeController extends ReloadableController {
   Future<void> _cleanupCache() async {
     await HiveCacheConfig.instance.onUpgradeDatabase(cachingManager);
 
-    await Future.wait([
+    // Start auth immediately — don't block on cache cleanup
+    getAuthenticatedAccountAction();
+
+    // Run cache cleanup in background (non-blocking)
+    Future.wait([
       _cleanupEmailCacheInteractor.execute(EmailCleanupRule(Duration.defaultCacheInternal)),
       _cleanupRecentLoginUrlCacheInteractor.execute(RecentLoginUrlCleanupRule()),
       _cleanupRecentLoginUsernameCacheInteractor.execute(RecentLoginUsernameCleanupRule()),
-    ], eagerError: true).then((_) => getAuthenticatedAccountAction());
+    ], eagerError: true);
   }
 
   void _handleLoginNavigateArguments(LoginNavigateArguments arguments) {

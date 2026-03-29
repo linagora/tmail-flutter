@@ -1224,6 +1224,12 @@ class MailboxDashBoardController extends ReloadableController
     MailboxId? mailboxId,
   ) {
     if (accountId.value != null && sessionCurrent != null) {
+      // Optimistic UI update — show read/unread state immediately
+      updateEmailFlagByEmailIds(
+        [emailId],
+        readActions: readActions,
+      );
+
       consumeState(_markAsEmailReadInteractor.execute(
         sessionCurrent!,
         accountId.value!,
@@ -1237,6 +1243,12 @@ class MailboxDashBoardController extends ReloadableController
 
   void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction action) {
     if (accountId.value != null && sessionCurrent != null) {
+      // Optimistic UI update — show result immediately before server confirms
+      updateEmailFlagByEmailIds(
+        [presentationEmail.id!],
+        markStarAction: action,
+      );
+
       consumeState(_markAsStarEmailInteractor.execute(
         sessionCurrent!,
         accountId.value!,
