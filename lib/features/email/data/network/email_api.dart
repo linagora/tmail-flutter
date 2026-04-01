@@ -970,4 +970,24 @@ class EmailAPI
       ),
     );
   }
+
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addListLabelToListEmail(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    List<KeyWordIdentifier> labelKeywords,
+  ) async {
+    return executeBatchSetEmail(
+      session: session,
+      accountId: accountId,
+      emailIds: emailIds,
+      httpClient: _httpClient,
+      debugLabel: 'addListLabelToListEmail',
+      onGenerateUpdates: (batchIds) =>
+          batchIds.generateMapUpdateObjectListLabel(labelKeywords),
+    );
+  }
 }

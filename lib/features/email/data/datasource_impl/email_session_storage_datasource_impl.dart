@@ -291,4 +291,17 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
   })> removeLabelFromThread(Session session, AccountId accountId, List<EmailId> emailIds, KeyWordIdentifier labelKeyword) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> addListLabelToListEmail(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    List<KeyWordIdentifier> labelKeywords,
+  ) {
+    throw UnimplementedError();
+  }
 }
