@@ -83,6 +83,9 @@ class ThreadView extends GetWidget<ThreadController>
                     if (!controller.responsiveUtils.isWebDesktop(context))
                       ... [
                         Obx(() {
+                          final isLabelAvailable =
+                              controller.mailboxDashBoardController.isLabelAvailable;
+
                           return MobileAppBarThreadWidget(
                             responsiveUtils: controller.responsiveUtils,
                             imagePaths: controller.imagePaths,
@@ -104,6 +107,7 @@ class ThreadView extends GetWidget<ThreadController>
                                   type,
                                   emails,
                                   controller.selectedMailbox,
+                                  isLabelAvailable,
                                 ),
                             );
                         }),

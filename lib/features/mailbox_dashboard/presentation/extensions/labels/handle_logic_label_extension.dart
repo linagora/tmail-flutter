@@ -75,11 +75,32 @@ extension HandleLogicLabelExtension on MailboxDashBoardController  {
     updateEmailFlagByEmailIds(
       [emailId],
       isLabelAdded: !shouldRemove,
-      labelKeyword: labelKeyword,
+      labelKeywords: [labelKeyword],
     );
   }
 
   void _refreshLabelSettingEnabled() {
     labelController.isLabelSettingEnabled.refresh();
+  }
+
+  void syncListLabelForListEmail(
+    List<EmailId> emailIds,
+    List<KeyWordIdentifier> labelKeywords,
+    {bool shouldRemove = false}
+  ) {
+    _syncLabelsForEmailList(emailIds, labelKeywords, shouldRemove);
+    _refreshLabelSettingEnabled();
+  }
+
+  void _syncLabelsForEmailList(
+    List<EmailId> emailIds,
+    List<KeyWordIdentifier> labelKeywords,
+    bool shouldRemove,
+  ) {
+    updateEmailFlagByEmailIds(
+      emailIds,
+      labelKeywords: labelKeywords,
+      isLabelAdded: !shouldRemove,
+    );
   }
 }

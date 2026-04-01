@@ -41,6 +41,8 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/delegates/add_list_label_to_list_emails_delegate.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_sub_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
@@ -1060,6 +1062,14 @@ class SearchEmailController extends BaseController
       case EmailActionType.unSpam:
         cancelSelectionMode();
         unSpamSelectedMultipleEmail(listEmails);
+        break;
+      case EmailActionType.labelAs:
+        Get.find<AddListLabelToListEmailsDelegate>().openChooseLabelModal(
+          selectedEmails: listEmails,
+          imagePaths: imagePaths,
+          onCancel: cancelSelectionMode,
+          onSync: mailboxDashBoardController.syncListLabelForListEmail,
+        );
         break;
       default:
         break;

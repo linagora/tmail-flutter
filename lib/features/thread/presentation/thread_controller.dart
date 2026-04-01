@@ -39,6 +39,8 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
+import 'package:tmail_ui_user/features/labels/presentation/delegates/add_list_label_to_list_emails_delegate.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -1275,61 +1277,75 @@ class ThreadController extends BaseController with EmailActionController {
     EmailActionType actionType,
     List<PresentationEmail> selectionEmail
   ) {
-    switch(actionType) {
-      case EmailActionType.markAsRead:
+    final handlers = <EmailActionType, void Function(List<PresentationEmail>)>{
+      EmailActionType.markAsRead: (emails) {
         cancelSelectEmail();
-        markAsReadSelectedMultipleEmail(selectionEmail, ReadActions.markAsRead);
-        break;
-      case EmailActionType.markAsUnread:
+        markAsReadSelectedMultipleEmail(emails, ReadActions.markAsRead);
+      },
+      EmailActionType.markAsUnread: (emails) {
         cancelSelectEmail();
-        markAsReadSelectedMultipleEmail(selectionEmail, ReadActions.markAsUnread);
-        break;
-      case EmailActionType.markAsStarred:
+        markAsReadSelectedMultipleEmail(emails, ReadActions.markAsUnread);
+      },
+      EmailActionType.markAsStarred: (emails) {
         cancelSelectEmail();
-        markAsStarSelectedMultipleEmail(selectionEmail, MarkStarAction.markStar);
-        break;
-      case EmailActionType.unMarkAsStarred:
+        markAsStarSelectedMultipleEmail(emails, MarkStarAction.markStar);
+      },
+      EmailActionType.unMarkAsStarred: (emails) {
         cancelSelectEmail();
-        markAsStarSelectedMultipleEmail(selectionEmail, MarkStarAction.unMarkStar);
-        break;
-      case EmailActionType.moveToMailbox:
-        moveEmailsToMailbox(selectionEmail, onCallbackAction: cancelSelectEmail);
-        break;
-      case EmailActionType.moveToTrash:
+        markAsStarSelectedMultipleEmail(emails, MarkStarAction.unMarkStar);
+      },
+      EmailActionType.moveToMailbox: (emails) =>
+          moveEmailsToMailbox(emails, onCallbackAction: cancelSelectEmail),
+      EmailActionType.moveToTrash: (emails) {
         cancelSelectEmail();
-        moveEmailsToTrash(selectionEmail);
-        break;
-      case EmailActionType.deletePermanently:
-        final mailboxContainCurrent = isSearchActive
-            ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
-            : selectedMailbox;
-        if (mailboxContainCurrent != null && currentContext != null) {
-          deleteSelectionEmailsPermanently(
-            currentContext!,
-            DeleteActionType.multiple,
-            listEmails: selectionEmail,
-            mailboxCurrent: mailboxContainCurrent,
-            onCancelSelectionEmail: () => cancelSelectEmail());
-        }
-        break;
-      case EmailActionType.moveToSpam:
+        moveEmailsToTrash(emails);
+      },
+      EmailActionType.deletePermanently:
+          _handleDeletePermanentlySelectionEmails,
+      EmailActionType.moveToSpam: (emails) {
         cancelSelectEmail();
-        moveEmailsToSpam(selectionEmail);
-        break;
-      case EmailActionType.unSpam:
+        moveEmailsToSpam(emails);
+      },
+      EmailActionType.unSpam: (emails) {
         cancelSelectEmail();
-        unSpamSelectedMultipleEmail(selectionEmail);
-        break;
-      case EmailActionType.archiveMessage:
+        unSpamSelectedMultipleEmail(emails);
+      },
+      EmailActionType.archiveMessage: (emails) {
         cancelSelectEmail();
-        moveEmailsToArchive(selectionEmail);
-        break;
-      case EmailActionType.compose:
-        mailboxDashBoardController.openComposer(ComposerArguments());
-        break;
-      default:
-        break;
+        moveEmailsToArchive(emails);
+      },
+      EmailActionType.compose: (_) =>
+          mailboxDashBoardController.openComposer(ComposerArguments()),
+      EmailActionType.labelAs: (emails) {
+        cancelSelectEmail();
+        openChooseLabelModal(emails);
+      },
+    };
+    handlers[actionType]?.call(selectionEmail);
+  }
+
+  void _handleDeletePermanentlySelectionEmails(List<PresentationEmail> selectionEmail) {
+    final mailboxContainCurrent = isSearchActive
+        ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
+        : selectedMailbox;
+    if (mailboxContainCurrent != null && currentContext != null) {
+      deleteSelectionEmailsPermanently(
+        currentContext!,
+        DeleteActionType.multiple,
+        listEmails: selectionEmail,
+        mailboxCurrent: mailboxContainCurrent,
+        onCancelSelectionEmail: cancelSelectEmail,
+      );
     }
+  }
+
+  void openChooseLabelModal(List<PresentationEmail> selectionEmail) {
+    Get.find<AddListLabelToListEmailsDelegate>().openChooseLabelModal(
+      selectedEmails: selectionEmail,
+      imagePaths: imagePaths,
+      onCancel: cancelSelectEmail,
+      onSync: mailboxDashBoardController.syncListLabelForListEmail,
+    );
   }
 
   void handleEmailActionType(

@@ -17,12 +17,18 @@ extension HandlePressEmailSelectionActionExtension on SearchEmailController {
     EmailSelectionActionType type,
     List<PresentationEmail> emails,
     Map<MailboxId, PresentationMailbox> mapMailboxById,
+    bool isLabelAvailable,
   ) {
     final emailActionType = type.toEmailActionType();
     if (emailActionType != null) {
       handleSelectionEmailAction(emailActionType, emails);
     } else if (type == EmailSelectionActionType.moreAction) {
-      _showMoreActionMenu(context, emails, mapMailboxById);
+      _showMoreActionMenu(
+        context,
+        emails,
+        mapMailboxById,
+        isLabelAvailable,
+      );
     } else if (type == EmailSelectionActionType.selectAll) {
       _showSelectAllEmails();
     }
@@ -31,6 +37,7 @@ extension HandlePressEmailSelectionActionExtension on SearchEmailController {
   List<EmailSelectionActionType> _createEmailSelectionActionTypes(
     List<PresentationEmail> emails,
     Map<MailboxId, PresentationMailbox> mapMailboxById,
+    bool isLabelAvailable,
   ) {
     return <EmailSelectionActionType>[
       if (emails.isAllEmailRead)
@@ -42,6 +49,8 @@ extension HandlePressEmailSelectionActionExtension on SearchEmailController {
       else
         EmailSelectionActionType.markAsStarred,
       EmailSelectionActionType.moveToFolder,
+      if (isLabelAvailable)
+        EmailSelectionActionType.labelAs,
       if (emails.isDeletePermanentlyDisabled(mapMailboxById))
         EmailSelectionActionType.moveToTrash,
       if (emails.isMarkAsSpamEnabled(mapMailboxById))
@@ -59,10 +68,12 @@ extension HandlePressEmailSelectionActionExtension on SearchEmailController {
     BuildContext context,
     List<PresentationEmail> emails,
     Map<MailboxId, PresentationMailbox> mapMailboxById,
+    bool isLabelAvailable,
   ) async {
     final emailActions = _createEmailSelectionActionTypes(
       emails,
       mapMailboxById,
+      isLabelAvailable,
     ).emailActionTypes;
 
     final contextMenuActions = emailActions

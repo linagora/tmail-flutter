@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/add_a_label_to_an_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/remove_a_label_from_an_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/labels/add_list_label_to_list_emails_interactor.dart';
 
 class EmailActionInteractorBindings extends Bindings {
 
@@ -13,5 +14,6 @@ class EmailActionInteractorBindings extends Bindings {
   void dependencies() {
     Get.lazyPut(() => AddALabelToAnEmailInteractor(_emailRepository));
     Get.lazyPut(() => RemoveALabelFromAnEmailInteractor(_emailRepository));
+    Get.put(AddListLabelToListEmailsInteractor(_emailRepository));
   }
 }

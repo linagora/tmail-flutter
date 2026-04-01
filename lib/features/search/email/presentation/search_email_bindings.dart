@@ -1,6 +1,9 @@
 
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/labels/add_list_label_to_list_emails_interactor.dart';
+import 'package:tmail_ui_user/features/labels/presentation/delegates/add_list_label_to_list_emails_delegate.dart';
+import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
@@ -20,6 +23,10 @@ class SearchEmailBindings extends BaseBindings {
       Get.find<SearchEmailInteractor>(),
       Get.find<SearchMoreEmailInteractor>(),
       Get.find<RefreshChangesSearchEmailInteractor>(),
+    ));
+    Get.put(AddListLabelToListEmailsDelegate(
+      Get.find<LabelController>(),
+      Get.find<AddListLabelToListEmailsInteractor>(),
     ));
   }
 

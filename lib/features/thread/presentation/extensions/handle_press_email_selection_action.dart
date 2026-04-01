@@ -17,12 +17,13 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
     EmailSelectionActionType type,
     List<PresentationEmail> emails,
     PresentationMailbox? selectedMailbox,
+    bool isLabelAvailable,
   ) {
     final emailActionType = type.toEmailActionType();
     if (emailActionType != null) {
       pressEmailSelectionAction(emailActionType, emails);
     } else if (type == EmailSelectionActionType.moreAction) {
-      _showMoreActionMenu(context, emails, selectedMailbox);
+      _showMoreActionMenu(context, emails, selectedMailbox, isLabelAvailable);
     } else if (type == EmailSelectionActionType.selectAll) {
       _showSelectAllEmails();
     }
@@ -31,6 +32,7 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
   List<EmailSelectionActionType> _createEmailSelectionActionTypes(
     List<PresentationEmail> emails,
     PresentationMailbox? selectedMailbox,
+    bool isLabelAvailable,
   ) {
     return <EmailSelectionActionType>[
       if (emails.isAllEmailRead)
@@ -42,6 +44,8 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
       else
         EmailSelectionActionType.markAsStarred,
       EmailSelectionActionType.moveToFolder,
+      if (isLabelAvailable)
+        EmailSelectionActionType.labelAs,
       if (selectedMailbox?.isDeletePermanentlyEnabled != true)
         EmailSelectionActionType.moveToTrash,
       if (selectedMailbox?.isSpam == true)
@@ -61,10 +65,12 @@ extension HandlePressEmailSelectionActionExtension on ThreadController {
     BuildContext context,
     List<PresentationEmail> emails,
     PresentationMailbox? selectedMailbox,
+    bool isLabelAvailable,
   ) async {
     final emailActions = _createEmailSelectionActionTypes(
       emails,
       selectedMailbox,
+      isLabelAvailable,
     ).emailActionTypes;
 
     final contextMenuActions = emailActions
