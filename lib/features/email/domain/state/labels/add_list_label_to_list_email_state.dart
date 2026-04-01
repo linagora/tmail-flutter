@@ -3,21 +3,29 @@ import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 
+typedef OnSyncListLabelForListEmail = void Function(
+  List<EmailId> emailIds,
+  List<KeyWordIdentifier> labelKeywords,
+  {bool shouldRemove}
+);
+
 class AddingListLabelsToListEmails extends LoadingState {}
 
 class AddListLabelsToListEmailsSuccess extends UIState {
   final List<EmailId> emailIds;
   final List<KeyWordIdentifier> labelKeywords;
   final List<String> labelDisplays;
+  final OnSyncListLabelForListEmail? onSync;
 
   AddListLabelsToListEmailsSuccess(
     this.emailIds,
     this.labelKeywords,
-    this.labelDisplays,
-  );
+    this.labelDisplays, {
+    this.onSync,
+  });
 
   @override
-  List<Object> get props => [emailIds, labelKeywords, labelDisplays];
+  List<Object?> get props => [emailIds, labelKeywords, labelDisplays, onSync];
 }
 
 class AddListLabelsToListEmailsHasSomeFailure
@@ -25,11 +33,12 @@ class AddListLabelsToListEmailsHasSomeFailure
   AddListLabelsToListEmailsHasSomeFailure(
     super.emailIds,
     super.labelKeywords,
-    super.labelDisplays,
-  );
+    super.labelDisplays, {
+    super.onSync,
+  });
 
   @override
-  List<Object> get props => [...super.props, 'hasSomeFailure'];
+  List<Object?> get props => [...super.props, 'hasSomeFailure'];
 }
 
 class AddListLabelsToListEmailsFailure extends FeatureFailure {
