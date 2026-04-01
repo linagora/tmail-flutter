@@ -27,6 +27,8 @@ extension EmailSelectionActionTypeExtension on EmailSelectionActionType {
       case EmailSelectionActionType.selectAll:
       case EmailSelectionActionType.moreAction:
         return null;
+      case EmailSelectionActionType.labelAs:
+        return EmailActionType.labelAs;
     }
   }
 }

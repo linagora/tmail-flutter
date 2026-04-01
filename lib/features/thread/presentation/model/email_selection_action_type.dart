@@ -10,6 +10,7 @@ enum EmailSelectionActionType {
   markAsStarred,
   unMarkAsStarred,
   moveToFolder,
+  labelAs,
   moveToTrash,
   markAsSpam,
   markAsNotSpam,
@@ -43,6 +44,8 @@ enum EmailSelectionActionType {
         return appLocalizations.delete_permanently;
       case EmailSelectionActionType.moreAction:
         return appLocalizations.more;
+      case EmailSelectionActionType.labelAs:
+        return appLocalizations.labelAs;
     }
   }
 
@@ -71,6 +74,8 @@ enum EmailSelectionActionType {
         return imagePaths.icMailboxArchived;
       case EmailSelectionActionType.moreAction:
         return imagePaths.icMoreVertical;
+      case EmailSelectionActionType.labelAs:
+        return imagePaths.icTag;
     }
   }
 

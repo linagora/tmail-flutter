@@ -5483,5 +5483,35 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "chooseLabel": "Choose label",
+  "@chooseLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectLabel": "Select label",
+  "@selectLabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailSuccessfullyMessage": "Labels have been successfully added to these emails.",
+  "@addListLabelToListEmailSuccessfullyMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailHasSomeFailureMessage": "Labels have been successfully added to some emails.",
+  "@addListLabelToListEmailHasSomeFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addListLabelToListEmailFailureMessage": "Adding labels to these emails failed",
+  "@addListLabelToListEmailFailureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

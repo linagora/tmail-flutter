@@ -62,4 +62,17 @@ extension ListEmailIdExtension on List<EmailId> {
         emailId.id: labelKeyword.generateLabelActionPath(remove: remove)
     };
   }
+
+  Map<Id, PatchObject> generateMapUpdateObjectListLabel(
+    List<KeyWordIdentifier> labelKeywords, {
+    bool remove = false,
+  }) {
+    return {
+      for (var emailId in this)
+        emailId.id: PatchObject({
+          for (var key in labelKeywords)
+            key.generatePath(): remove ? null : true,
+        }),
+    };
+  }
 }
