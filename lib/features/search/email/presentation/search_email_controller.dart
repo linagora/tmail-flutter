@@ -1141,7 +1141,6 @@ class SearchEmailController extends BaseController
   }
 
   void _deleteStarredSearchFilter() {
-    _updateSimpleSearchFilter(hasKeywordOption: const None());
     final keywords = {...listHasKeywordFiltered}
       ..remove(KeyWordIdentifier.emailFlagged.value);
     _updateSimpleSearchFilter(

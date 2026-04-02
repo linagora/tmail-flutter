@@ -26,6 +26,7 @@ extension UpdateSearchFilterExtension on SearchEmailController {
         updateSimpleSearchFilter(
           hasKeywordOption: keywords.isEmpty ? const None() : Some(keywords),
         );
+        break;
       case QuickSearchFilter.unread:
         updateSimpleSearchFilter(unreadOption: const None());
         break;
