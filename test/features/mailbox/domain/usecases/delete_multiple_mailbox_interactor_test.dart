@@ -110,11 +110,12 @@ void main() {
       setUp(() {
         _stubGetMailboxState(mailboxRepository, state);
         _stubGetAllMailboxWithHiddenMailboxes(mailboxRepository, state);
+        // second batch defaults to success; override per-test when needed
+        _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder2);
       });
 
       test('Should execute to delete selected mailbox an all its children included hidden mailbox', () {
         _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder);
-        _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder2);
 
         expect(
           _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsToDelete),
@@ -149,7 +150,6 @@ void main() {
           MailboxFixtures.listDescendantMailboxForSelectedFolder,
           {Id('folderToDelete'): SetError(ErrorType('error'))},
         );
-        _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder2);
 
         expect(
           _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsToDelete),
