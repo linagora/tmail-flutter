@@ -17,6 +17,59 @@ import 'delete_multiple_mailbox_interactor_test.mocks.dart';
 
 @GenerateMocks([MailboxRepository])
 
+void _stubGetMailboxState(
+  MailboxRepository mailboxRepository,
+  jmap.State state,
+) {
+  when(
+    mailboxRepository.getMailboxState(
+      SessionFixtures.aliceSession,
+      AccountFixtures.aliceAccountId,
+    ),
+  ).thenAnswer((_) => Future.value(state));
+}
+
+void _stubGetAllMailboxWithHiddenMailboxes(
+  MailboxRepository mailboxRepository,
+  jmap.State state,
+) {
+  when(
+    mailboxRepository.getAllMailbox(
+      SessionFixtures.aliceSession,
+      AccountFixtures.aliceAccountId,
+    ),
+  ).thenAnswer((_) => Stream.fromIterable({
+    JmapMailboxResponse(
+      mailboxes: [
+        MailboxFixtures.inboxMailbox,
+        MailboxFixtures.sentMailbox,
+        MailboxFixtures.selectedFolderToDelete,
+        MailboxFixtures.selectedFolderToDelete_1,
+        MailboxFixtures.selectedFolderToDelete_2,
+      ],
+      state: state,
+    ),
+    JmapMailboxResponse(
+      mailboxes: [
+        MailboxFixtures.inboxMailbox,
+        MailboxFixtures.sentMailbox,
+        MailboxFixtures.selectedFolderToDelete,
+        MailboxFixtures.selectedFolderToDelete_1,
+        MailboxFixtures.selectedFolderToDelete_2,
+        MailboxFixtures.selectedFolderToDelete_3,
+        MailboxFixtures.selectedFolderToDelete_4,
+        MailboxFixtures.selectedFolderToDelete_5,
+        MailboxFixtures.selectedFolderToDelete_6,
+        MailboxFixtures.selectedFolderToDelete_7,
+        MailboxFixtures.selectedFolderToDelete_8,
+        MailboxFixtures.selectedFolderToDelete_9,
+        MailboxFixtures.selectedFolderToDelete_10,
+      ],
+      state: state,
+    ),
+  }));
+}
+
 void main() {
   late MailboxRepository mailboxRepository;
   late DeleteMultipleMailboxInteractor deleteMultipleMailboxInteractor;
@@ -29,49 +82,8 @@ void main() {
 
     test('Should execute to delete selected mailbox an all its children included hidden mailbox', () {
       final state = jmap.State('s1');
-      
-      when(
-        mailboxRepository.getMailboxState(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId
-        )
-      ).thenAnswer((_) => Future.value(state));
-
-      when(
-        mailboxRepository.getAllMailbox(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId
-        )
-      ).thenAnswer((_) => Stream.fromIterable({
-        JmapMailboxResponse(
-          mailboxes: [
-            MailboxFixtures.inboxMailbox,
-            MailboxFixtures.sentMailbox,
-            MailboxFixtures.selectedFolderToDelete,
-            MailboxFixtures.selectedFolderToDelete_1,
-            MailboxFixtures.selectedFolderToDelete_2,
-          ],
-          state: state,
-        ),
-        JmapMailboxResponse(
-          mailboxes: [
-            MailboxFixtures.inboxMailbox,
-            MailboxFixtures.sentMailbox,
-            MailboxFixtures.selectedFolderToDelete,
-            MailboxFixtures.selectedFolderToDelete_1,
-            MailboxFixtures.selectedFolderToDelete_2,
-            MailboxFixtures.selectedFolderToDelete_3,
-            MailboxFixtures.selectedFolderToDelete_4,
-            MailboxFixtures.selectedFolderToDelete_5,
-            MailboxFixtures.selectedFolderToDelete_6,
-            MailboxFixtures.selectedFolderToDelete_7,
-            MailboxFixtures.selectedFolderToDelete_8,
-            MailboxFixtures.selectedFolderToDelete_9,
-            MailboxFixtures.selectedFolderToDelete_10,
-          ],
-          state: state,
-        ),
-      }));
+      _stubGetMailboxState(mailboxRepository, state);
+      _stubGetAllMailboxWithHiddenMailboxes(mailboxRepository, state);
 
       when(
         mailboxRepository.deleteMultipleMailbox(
@@ -106,49 +118,8 @@ void main() {
 
     test('Should execute and yield DeleteMultipleMailboxAllFailure when delete selected mailbox all fail', () {
       final state = jmap.State('s1');
-      
-      when(
-        mailboxRepository.getMailboxState(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId
-        )
-      ).thenAnswer((_) => Future.value(state));
-
-      when(
-        mailboxRepository.getAllMailbox(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId
-        )
-      ).thenAnswer((_) => Stream.fromIterable({
-        JmapMailboxResponse(
-          mailboxes: [
-            MailboxFixtures.inboxMailbox,
-            MailboxFixtures.sentMailbox,
-            MailboxFixtures.selectedFolderToDelete,
-            MailboxFixtures.selectedFolderToDelete_1,
-            MailboxFixtures.selectedFolderToDelete_2,
-          ],
-          state: state,
-        ),
-        JmapMailboxResponse(
-          mailboxes: [
-            MailboxFixtures.inboxMailbox,
-            MailboxFixtures.sentMailbox,
-            MailboxFixtures.selectedFolderToDelete,
-            MailboxFixtures.selectedFolderToDelete_1,
-            MailboxFixtures.selectedFolderToDelete_2,
-            MailboxFixtures.selectedFolderToDelete_3,
-            MailboxFixtures.selectedFolderToDelete_4,
-            MailboxFixtures.selectedFolderToDelete_5,
-            MailboxFixtures.selectedFolderToDelete_6,
-            MailboxFixtures.selectedFolderToDelete_7,
-            MailboxFixtures.selectedFolderToDelete_8,
-            MailboxFixtures.selectedFolderToDelete_9,
-            MailboxFixtures.selectedFolderToDelete_10,
-          ],
-          state: state,
-        ),
-      }));
+      _stubGetMailboxState(mailboxRepository, state);
+      _stubGetAllMailboxWithHiddenMailboxes(mailboxRepository, state);
 
       when(
         mailboxRepository.deleteMultipleMailbox(
@@ -184,49 +155,8 @@ void main() {
 
     test('Should execute and yield DeleteMultipleMailboxHasSomeSuccess when delete selected mailbox has some fail', () {
       final state = jmap.State('s1');
-      
-      when(
-        mailboxRepository.getMailboxState(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId
-        )
-      ).thenAnswer((_) => Future.value(state));
-
-      when(
-        mailboxRepository.getAllMailbox(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId
-        )
-      ).thenAnswer((_) => Stream.fromIterable({
-        JmapMailboxResponse(
-          mailboxes: [
-            MailboxFixtures.inboxMailbox,
-            MailboxFixtures.sentMailbox,
-            MailboxFixtures.selectedFolderToDelete,
-            MailboxFixtures.selectedFolderToDelete_1,
-            MailboxFixtures.selectedFolderToDelete_2,
-          ],
-          state: state,
-        ),
-        JmapMailboxResponse(
-          mailboxes: [
-            MailboxFixtures.inboxMailbox,
-            MailboxFixtures.sentMailbox,
-            MailboxFixtures.selectedFolderToDelete,
-            MailboxFixtures.selectedFolderToDelete_1,
-            MailboxFixtures.selectedFolderToDelete_2,
-            MailboxFixtures.selectedFolderToDelete_3,
-            MailboxFixtures.selectedFolderToDelete_4,
-            MailboxFixtures.selectedFolderToDelete_5,
-            MailboxFixtures.selectedFolderToDelete_6,
-            MailboxFixtures.selectedFolderToDelete_7,
-            MailboxFixtures.selectedFolderToDelete_8,
-            MailboxFixtures.selectedFolderToDelete_9,
-            MailboxFixtures.selectedFolderToDelete_10,
-          ],
-          state: state,
-        ),
-      }));
+      _stubGetMailboxState(mailboxRepository, state);
+      _stubGetAllMailboxWithHiddenMailboxes(mailboxRepository, state);
 
       when(
         mailboxRepository.deleteMultipleMailbox(
@@ -263,13 +193,7 @@ void main() {
 
     test('Should execute and yield DeleteMultipleMailboxFailure when getAllMailbox fail', () {
       final state = jmap.State('s1');
-
-      when(
-        mailboxRepository.getMailboxState(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId
-        )
-      ).thenAnswer((_) => Future.value(state));
+      _stubGetMailboxState(mailboxRepository, state);
 
       when(
         mailboxRepository.getAllMailbox(
@@ -292,13 +216,7 @@ void main() {
 
     test('Should delete subscribed child before parent when no hidden subfolders exist', () {
       final state = jmap.State('s1');
-
-      when(
-        mailboxRepository.getMailboxState(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-      ).thenAnswer((_) => Future.value(state));
+      _stubGetMailboxState(mailboxRepository, state);
 
       when(
         mailboxRepository.getAllMailbox(
@@ -340,13 +258,7 @@ void main() {
 
     test('Should delete 3-level unsubscribed nesting in deepest-first order', () {
       final state = jmap.State('s1');
-
-      when(
-        mailboxRepository.getMailboxState(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-      ).thenAnswer((_) => Future.value(state));
+      _stubGetMailboxState(mailboxRepository, state);
 
       when(
         mailboxRepository.getAllMailbox(
@@ -390,13 +302,7 @@ void main() {
 
     test('Should skip already-processed descendant when it also appears in selectedMailboxIds', () {
       final state = jmap.State('s1');
-
-      when(
-        mailboxRepository.getMailboxState(
-          SessionFixtures.aliceSession,
-          AccountFixtures.aliceAccountId,
-        ),
-      ).thenAnswer((_) => Future.value(state));
+      _stubGetMailboxState(mailboxRepository, state);
 
       when(
         mailboxRepository.getAllMailbox(
