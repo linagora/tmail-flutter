@@ -104,61 +104,61 @@ void main() {
       deleteMultipleMailboxInteractor = DeleteMultipleMailboxInteractor(mailboxRepository);
     });
 
-    test('Should execute to delete selected mailbox an all its children included hidden mailbox', () {
+    group('with hidden mailbox responses', () {
       final state = jmap.State('s1');
-      _stubGetMailboxState(mailboxRepository, state);
-      _stubGetAllMailboxWithHiddenMailboxes(mailboxRepository, state);
-      _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder);
-      _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder2);
 
-      expect(
-        _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsToDelete),
-        _emitsLoadingThen(Right(DeleteMultipleMailboxAllSuccess(
-          MailboxFixtures.listMailboxIdToDelete,
-          currentMailboxState: state,
-        ))),
-      );
-    });
+      setUp(() {
+        _stubGetMailboxState(mailboxRepository, state);
+        _stubGetAllMailboxWithHiddenMailboxes(mailboxRepository, state);
+      });
 
-    test('Should execute and yield DeleteMultipleMailboxAllFailure when delete selected mailbox all fail', () {
-      final state = jmap.State('s1');
-      _stubGetMailboxState(mailboxRepository, state);
-      _stubGetAllMailboxWithHiddenMailboxes(mailboxRepository, state);
-      _stubDeleteMailboxFailure(
-        mailboxRepository,
-        MailboxFixtures.listDescendantMailboxForSelectedFolder,
-        {Id('folderToDelete'): SetError(ErrorType('error'))},
-      );
-      _stubDeleteMailboxFailure(
-        mailboxRepository,
-        MailboxFixtures.listDescendantMailboxForSelectedFolder2,
-        {Id('folderToDelete_8'): SetError(ErrorType('error'))},
-      );
+      test('Should execute to delete selected mailbox an all its children included hidden mailbox', () {
+        _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder);
+        _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder2);
 
-      expect(
-        _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsToDelete),
-        _emitsLoadingThen(Left(DeleteMultipleMailboxAllFailure())),
-      );
-    });
+        expect(
+          _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsToDelete),
+          _emitsLoadingThen(Right(DeleteMultipleMailboxAllSuccess(
+            MailboxFixtures.listMailboxIdToDelete,
+            currentMailboxState: state,
+          ))),
+        );
+      });
 
-    test('Should execute and yield DeleteMultipleMailboxHasSomeSuccess when delete selected mailbox has some fail', () {
-      final state = jmap.State('s1');
-      _stubGetMailboxState(mailboxRepository, state);
-      _stubGetAllMailboxWithHiddenMailboxes(mailboxRepository, state);
-      _stubDeleteMailboxFailure(
-        mailboxRepository,
-        MailboxFixtures.listDescendantMailboxForSelectedFolder,
-        {Id('folderToDelete'): SetError(ErrorType('error'))},
-      );
-      _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder2);
+      test('Should execute and yield DeleteMultipleMailboxAllFailure when delete selected mailbox all fail', () {
+        _stubDeleteMailboxFailure(
+          mailboxRepository,
+          MailboxFixtures.listDescendantMailboxForSelectedFolder,
+          {Id('folderToDelete'): SetError(ErrorType('error'))},
+        );
+        _stubDeleteMailboxFailure(
+          mailboxRepository,
+          MailboxFixtures.listDescendantMailboxForSelectedFolder2,
+          {Id('folderToDelete_8'): SetError(ErrorType('error'))},
+        );
 
-      expect(
-        _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsToDelete),
-        _emitsLoadingThen(Right(DeleteMultipleMailboxHasSomeSuccess(
-          MailboxFixtures.listMailboxIdToDelete,
-          currentMailboxState: state,
-        ))),
-      );
+        expect(
+          _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsToDelete),
+          _emitsLoadingThen(Left(DeleteMultipleMailboxAllFailure())),
+        );
+      });
+
+      test('Should execute and yield DeleteMultipleMailboxHasSomeSuccess when delete selected mailbox has some fail', () {
+        _stubDeleteMailboxFailure(
+          mailboxRepository,
+          MailboxFixtures.listDescendantMailboxForSelectedFolder,
+          {Id('folderToDelete'): SetError(ErrorType('error'))},
+        );
+        _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.listDescendantMailboxForSelectedFolder2);
+
+        expect(
+          _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsToDelete),
+          _emitsLoadingThen(Right(DeleteMultipleMailboxHasSomeSuccess(
+            MailboxFixtures.listMailboxIdToDelete,
+            currentMailboxState: state,
+          ))),
+        );
+      });
     });
 
     test('Should execute and yield DeleteMultipleMailboxFailure when getAllMailbox fail', () {
@@ -174,19 +174,39 @@ void main() {
       );
     });
 
-    test('Should delete subscribed child before parent when no hidden subfolders exist', () {
+    group('with subscribed folders', () {
       final state = jmap.State('s1');
-      _stubGetMailboxState(mailboxRepository, state);
-      _stubGetAllMailboxWithSubscribedFolders(mailboxRepository, state);
-      _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.expectedDeleteListSubscribedOnly);
 
-      expect(
-        _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsForSubscribedOnly),
-        _emitsLoadingThen(Right(DeleteMultipleMailboxAllSuccess(
-          MailboxFixtures.expectedDeleteListSubscribedOnly,
-          currentMailboxState: state,
-        ))),
-      );
+      setUp(() {
+        _stubGetMailboxState(mailboxRepository, state);
+        _stubGetAllMailboxWithSubscribedFolders(mailboxRepository, state);
+        _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.expectedDeleteListSubscribedOnly);
+      });
+
+      test('Should delete subscribed child before parent when no hidden subfolders exist', () {
+        expect(
+          _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsForSubscribedOnly),
+          _emitsLoadingThen(Right(DeleteMultipleMailboxAllSuccess(
+            MailboxFixtures.expectedDeleteListSubscribedOnly,
+            currentMailboxState: state,
+          ))),
+        );
+      });
+
+      test('Should skip already-processed descendant when it also appears in selectedMailboxIds', () {
+        // subscribedChild is a descendant of subscribedFolder — it must be skipped
+        // as a root and subsumed into the parent's batch instead.
+        expect(
+          _executeDelete(deleteMultipleMailboxInteractor, [
+            MailboxFixtures.subscribedFolder.id!,
+            MailboxFixtures.subscribedChild.id!,
+          ]),
+          _emitsLoadingThen(Right(DeleteMultipleMailboxAllSuccess(
+            MailboxFixtures.expectedDeleteListSubscribedOnly,
+            currentMailboxState: state,
+          ))),
+        );
+      });
     });
 
     test('Should delete 3-level unsubscribed nesting in deepest-first order', () {
@@ -209,26 +229,6 @@ void main() {
         _executeDelete(deleteMultipleMailboxInteractor, [MailboxFixtures.parentFolder.id!]),
         _emitsLoadingThen(Right(DeleteMultipleMailboxAllSuccess(
           MailboxFixtures.expectedDeleteListThreeLevelNesting,
-          currentMailboxState: state,
-        ))),
-      );
-    });
-
-    test('Should skip already-processed descendant when it also appears in selectedMailboxIds', () {
-      final state = jmap.State('s1');
-      _stubGetMailboxState(mailboxRepository, state);
-      _stubGetAllMailboxWithSubscribedFolders(mailboxRepository, state);
-      _stubDeleteMailboxSuccess(mailboxRepository, MailboxFixtures.expectedDeleteListSubscribedOnly);
-
-      // subscribedChild is a descendant of subscribedFolder — it must be skipped
-      // as a root and subsumed into the parent's batch instead.
-      expect(
-        _executeDelete(deleteMultipleMailboxInteractor, [
-          MailboxFixtures.subscribedFolder.id!,
-          MailboxFixtures.subscribedChild.id!,
-        ]),
-        _emitsLoadingThen(Right(DeleteMultipleMailboxAllSuccess(
-          MailboxFixtures.expectedDeleteListSubscribedOnly,
           currentMailboxState: state,
         ))),
       );
