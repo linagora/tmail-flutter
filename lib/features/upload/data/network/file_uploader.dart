@@ -31,12 +31,10 @@ class FileUploader {
   static const String filePathExtraKey = 'path';
 
   final DioClient _dioClient;
-  final worker.Executor _isolateExecutor;
   final FileUtils _fileUtils;
 
   FileUploader(
     this._dioClient,
-    this._isolateExecutor,
     this._fileUtils,
   );
 
@@ -63,22 +61,20 @@ class FileUploader {
         throw const CanNotGetRootIsolateToken();
       }
 
-      return await _isolateExecutor.execute(
-        arg1: UploadFileArguments(
-          _dioClient,
-          _fileUtils,
-          uploadId,
-          fileInfo,
-          uploadUri,
-          rootIsolateToken,
-        ),
-        fun1: _handleUploadAttachmentAction,
-        notification: (value) {
-          if (value is Success) {
-            log('FileUploader::uploadAttachment(): onUpdateProgress: $value');
-            onSendController?.add(Right(value));
-          }
-        }
+      final args = UploadFileArguments(
+        _dioClient,
+        _fileUtils,
+        uploadId,
+        fileInfo,
+        uploadUri,
+        rootIsolateToken,
+      );
+      return await worker.workerManager.executeWithPort<Attachment, Success>(
+        (sendPort) => _handleUploadAttachmentAction(args, sendPort),
+        onMessage: (value) {
+          log('FileUploader::uploadAttachment(): onUpdateProgress: $value');
+          onSendController?.add(Right(value));
+        },
       )
       .then((value) => value)
       .catchError((error) => throw error);
@@ -86,8 +82,8 @@ class FileUploader {
   }
 
   static Future<Attachment> _handleUploadAttachmentAction(
-      UploadFileArguments argsUpload,
-      worker.TypeSendPort sendPort
+    UploadFileArguments argsUpload,
+    worker.SendPort sendPort,
   ) async {
     try {
       final rootIsolateToken = argsUpload.isolateToken;

@@ -177,7 +177,11 @@ dependencies:
 
   percent_indicator: 4.2.2
 
-  worker_manager: 5.0.3
+  # TODO: Replace with upstream when https://github.com/dsrenesanse/worker_manager/pull/123 is merged
+  worker_manager:
+    git:
+      url: https://github.com/linagora/worker_manager.git
+      ref: hotfix/worker-init-memory-leak
 
   async: 2.13.0
 

@@ -52,7 +52,6 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
-import 'package:worker_manager/worker_manager.dart';
 
 import 'identity_creator_controller_test.mocks.dart';
 
@@ -76,7 +75,6 @@ import 'identity_creator_controller_test.mocks.dart';
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<IdentityUtils>(),
   MockSpec<DioClient>(),
-  MockSpec<Executor>(),
   MockSpec<FileUtils>(),
   MockSpec<FileUploader>(),
   MockSpec<RemoteExceptionThrower>(),
@@ -159,7 +157,6 @@ void main() {
     mockSaveIdentityCacheOnWebInteractor = MockSaveIdentityCacheOnWebInteractor();
 
     Get.put<DioClient>(MockDioClient(), tag: BindingTag.isolateTag);
-    Get.put<Executor>(MockExecutor());
     Get.put<FileUtils>(MockFileUtils());
     Get.put<FileUploader>(MockFileUploader());
     Get.put<RemoteExceptionThrower>(MockRemoteExceptionThrower());
