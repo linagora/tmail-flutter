@@ -21,15 +21,15 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/destination_picker_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_screen_type.dart';
+import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/destination_picker_folder_item.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/destination_picker_search_mailbox_item_builder.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/top_bar_destination_picker_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_icon_widget_styles.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
@@ -272,16 +272,28 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 actions,
                 mailboxIdSelected)
             : const SizedBox.shrink()),
+          if (actions == MailboxActions.select)
+            ...[
+              const Padding(
+                padding: EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 8),
+                child: Divider(color: AppColor.colorDividerMailbox, height: 1),
+              ),
+              _buildAllEmailTrashAndSpamFolderWidget(context, mailboxIdSelected),
+              const Padding(
+                padding: EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 8),
+                child: Divider(color: AppColor.colorDividerMailbox, height: 1),
+              ),
+            ],
           Obx(() {
             if (controller.personalMailboxIsNotEmpty) {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Divider(
-                    color: AppColor.colorDividerMailbox,
-                    height: 1,
-                  ),
-                  const SizedBox(height: 8),
+                  if (actions != MailboxActions.select)
+                    const Padding(
+                      padding: EdgeInsetsDirectional.only(bottom: 8),
+                      child: Divider(color: AppColor.colorDividerMailbox, height: 1),
+                    ),
                   _buildMailboxCategory(
                     context,
                     MailboxCategories.personalFolders,
@@ -494,81 +506,56 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       MailboxActions? actions,
       MailboxId? mailboxIdSelected
   ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            if (mailboxIdSelected != null
-                && mailboxIdSelected != PresentationMailbox.unifiedMailbox.id
-            ) {
-              controller.selectMailboxAction(PresentationMailbox.unifiedMailbox);
-              controller.dispatchSelectMailboxDestination(context);
-            }
-          },
-          customBorder: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(
-              PlatformInfo.isWeb
-                  ? MailboxItemWidgetStyles.borderRadius
-                  : MailboxItemWidgetStyles.mobileBorderRadius,
-            )),
-          ),
-          hoverColor: AppColor.colorMailboxHovered,
-          child: Obx(() => Container(
-            padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: MailboxItemWidgetStyles.itemPadding,
-            ),
-            color: controller.mailboxDestination.value == PresentationMailbox.unifiedMailbox
-              ? AppColor.colorItemSelected
-              : Colors.transparent,
-            height: PlatformInfo.isWeb
-                ? MailboxItemWidgetStyles.height
-                : MailboxItemWidgetStyles.mobileHeight,
-            child: Row(children: [
-              SvgPicture.asset(
-                controller.imagePaths.icFolderMailbox,
-                width: MailboxIconWidgetStyles.iconSize,
-                height: MailboxIconWidgetStyles.iconSize,
-                fit: BoxFit.fill
-              ),
-              const SizedBox(
-                width: MailboxItemWidgetStyles.labelIconSpace,
-              ),
-              Expanded(child: Text(
-                AppLocalizations.of(context).allFolders,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: ThemeUtils.textStyleInter500(),
-              )),
-              const SizedBox(
-                width: MailboxItemWidgetStyles.labelIconSpace,
-              ),
-              if (_validateDisplaySelectedIcon(
-                actions: actions,
-                mailboxIdSelected: mailboxIdSelected
-              ))
-                SvgPicture.asset(
-                  actions == MailboxActions.create
-                    ? controller.imagePaths.icSelectedSB
-                    : controller.imagePaths.icFilterSelected,
-                  width: MailboxIconWidgetStyles.iconSize,
-                  height: MailboxIconWidgetStyles.iconSize,
-                  fit: BoxFit.fill
-                )
-            ])
-          )),
-        ),
-      ),
-    );
+    final appLocalizations = AppLocalizations.of(context);
+    final folderName = actions == MailboxActions.select
+        ? appLocalizations.allEmail
+        : appLocalizations.allFolders;
+    final folderIcon = actions == MailboxActions.select
+        ? controller.imagePaths.icAllEmail
+        : controller.imagePaths.icFolderMailbox;
+    final isAllEmailIdSelected = mailboxIdSelected == null ||
+        mailboxIdSelected == PresentationMailbox.unifiedMailbox.id;
+    final isDesktop = controller.responsiveUtils.isDesktop(context);
+    return Obx(() {
+      final isSelected = controller.mailboxDestination.value?.isAllEmail == true || isAllEmailIdSelected;
+      return DestinationPickerFolderItem(
+        text: folderName,
+        folderIcon: folderIcon,
+        selectedIcon: controller.imagePaths.icSelectedSB,
+        isDesktop: isDesktop,
+        isSelected: isSelected,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        onTap: () {
+          if (!isSelected) {
+            controller.selectMailboxAction(PresentationMailbox.unifiedMailbox);
+            controller.dispatchSelectMailboxDestination(context);
+          }
+        },
+      );
+    });
   }
 
-  bool _validateDisplaySelectedIcon({
-    MailboxActions? actions,
-    MailboxId? mailboxIdSelected
-  }) {
-    return (actions == MailboxActions.select || actions == MailboxActions.create)
-      && (mailboxIdSelected == null || mailboxIdSelected == PresentationMailbox.unifiedMailbox.id);
+  Widget _buildAllEmailTrashAndSpamFolderWidget(BuildContext context, MailboxId? mailboxIdSelected) {
+    final isMailboxIdSelected = mailboxIdSelected == PresentationMailbox.allEmailTrashAndSpamFolder.id;
+    final isDesktop = controller.responsiveUtils.isDesktop(context);
+    final folderName = AppLocalizations.of(context).allEmailTrashAndSpam;
+    return Obx(() {
+      final isSelected = controller.mailboxDestination.value?.isAllEmailTrashAndSpamFolder == true || isMailboxIdSelected;
+      return DestinationPickerFolderItem(
+        text: folderName,
+        folderIcon: controller.imagePaths.icMoveFolderContent,
+        selectedIcon: controller.imagePaths.icSelectedSB,
+        isSelected: isSelected,
+        isDesktop: isDesktop,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        onTap: () {
+          if (!isSelected) {
+            controller.selectMailboxAction(PresentationMailbox.allEmailTrashAndSpamFolder);
+            controller.dispatchSelectMailboxDestination(context);
+          }
+        },
+      );
+    });
   }
 
   void _handleOpenMailboxNodeClick(MailboxNode mailboxNode) {

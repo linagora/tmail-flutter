@@ -172,4 +172,20 @@ extension PresentationMailboxExtension on PresentationMailbox {
       isLabelMailbox ? (this as PresentationLabelMailbox).label.id : null;
 
   MailboxId? get browserRouteMailboxId => isLabelMailbox ? null : mailboxId;
+
+  bool get isAllEmailTrashAndSpamFolder => id == PresentationMailbox.allEmailTrashAndSpamFolder.id;
+
+  bool get isAllEmail => id == PresentationMailbox.unifiedMailbox.id;
+
+  bool get isUnifiedMailbox => isAllEmail || isAllEmailTrashAndSpamFolder;
+
+  String getFolderNameForQuickSearch(AppLocalizations appLocalizations) {
+    if (isAllEmailTrashAndSpamFolder) {
+      return appLocalizations.allEmailTrashAndSpam;
+    } else if (isAllEmail) {
+      return appLocalizations.allEmail;
+    } else {
+      return getDisplayNameWithoutContext(appLocalizations);
+    }
+  }
 }

@@ -5790,4 +5790,18 @@ class AppLocalizations {
       name: 'closeMailDetailView',
     );
   }
+
+  String get allEmail {
+    return Intl.message(
+      'All email',
+      name: 'allEmail',
+    );
+  }
+
+  String get allEmailTrashAndSpam {
+    return Intl.message(
+      'All Email, trash & spam',
+      name: 'allEmailTrashAndSpam',
+    );
+  }
 }

@@ -976,6 +976,13 @@ class MailboxDashBoardController extends ReloadableController
       ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleSpam];
   }
 
+  Set<MailboxId>? get trashSpamMailboxIds {
+    final spamId = spamMailboxId;
+    final trashId = mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
+    if (spamId == null && trashId == null) return null;
+    return {if (spamId != null) spamId, if (trashId != null) trashId};
+  }
+
   void setMapDefaultMailboxIdByRole(Map<Role, MailboxId> newMapMailboxId) {
     mapDefaultMailboxIdByRole = newMapMailboxId;
   }
@@ -2300,12 +2307,7 @@ class MailboxDashBoardController extends ReloadableController
 
     if (destinationMailbox is! PresentationMailbox) return;
 
-    searchController.updateFilterEmail(
-      mailboxOption: destinationMailbox.id == PresentationMailbox.unifiedMailbox.id
-        ? const None()
-        : Some(destinationMailbox)
-    );
-
+    searchController.updateFilterEmail(mailboxOption: Some(destinationMailbox));
     dispatchAction(StartSearchEmailAction());
   }
 

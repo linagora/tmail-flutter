@@ -332,7 +332,8 @@ class DestinationPickerController extends BaseMailboxController {
     }
     mailboxDestination.value = presentationMailbox;
     if (presentationMailbox == null ||
-        presentationMailbox.id == PresentationMailbox.unifiedMailbox.id) {
+        presentationMailbox.id == PresentationMailbox.unifiedMailbox.id ||
+        presentationMailbox.id == PresentationMailbox.allEmailTrashAndSpamFolder.id) {
       unAllSelectedMailboxNode();
     } else {
       if (mailboxNode != null) {
