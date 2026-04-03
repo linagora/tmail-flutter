@@ -70,7 +70,7 @@ class FileUploader {
         rootIsolateToken,
       );
       return await worker.workerManager.executeWithPort<Attachment, Success>(
-        (sendPort) => _handleUploadAttachmentAction(args, sendPort),
+        _buildUploadClosure(args),
         onMessage: (value) {
           log('FileUploader::uploadAttachment(): onUpdateProgress: $value');
           onSendController?.add(Right(value));
@@ -80,6 +80,10 @@ class FileUploader {
       .catchError((error) => throw error);
     }
   }
+
+  static Future<Attachment> Function(worker.SendPort) _buildUploadClosure(
+    UploadFileArguments args,
+  ) => (sendPort) => _handleUploadAttachmentAction(args, sendPort);
 
   static Future<Attachment> _handleUploadAttachmentAction(
     UploadFileArguments argsUpload,

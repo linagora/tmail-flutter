@@ -56,12 +56,12 @@ class ThreadIsolateWorker {
         mailboxId,
         rootIsolateToken,
       );
-      final result = await workerManager.executeWithPort<List<EmailId>, List<EmailId>>(
-        (sendPort) => _emptyMailboxFolderAction(args, sendPort),
-        onMessage: (value) {
-          log('ThreadIsolateWorker::emptyMailboxFolder(): processed ${value.length} - totalEmails $totalEmails');
+      final result = await workerManager.executeWithPort<List<EmailId>, int>(
+        _buildEmptyMailboxClosure(args),
+        onMessage: (processedCount) {
+          log('ThreadIsolateWorker::emptyMailboxFolder(): processed $processedCount - totalEmails $totalEmails');
           onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
-            mailboxId, value.length, totalEmails
+            mailboxId, processedCount, totalEmails
           )));
         },
       );
@@ -73,6 +73,10 @@ class ThreadIsolateWorker {
       }
     }
   }
+
+  static Future<List<EmailId>> Function(SendPort) _buildEmptyMailboxClosure(
+    EmptyMailboxFolderArguments args,
+  ) => (sendPort) => _emptyMailboxFolderAction(args, sendPort);
 
   static Future<List<EmailId>> _emptyMailboxFolderAction(
     EmptyMailboxFolderArguments args,
@@ -116,7 +120,7 @@ class ThreadIsolateWorker {
           args.accountId,
           newEmailList.listEmailIds);
         emailListCompleted.addAll(listEmailIdDeleted.emailIdsSuccess);
-        sendPort.send(emailListCompleted);
+        sendPort.send(emailListCompleted.length);
       } else {
         hasEmails = false;
       }

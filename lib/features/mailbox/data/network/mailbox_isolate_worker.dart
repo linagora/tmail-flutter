@@ -70,14 +70,14 @@ class MailboxIsolateWorker {
         mailboxId,
         rootIsolateToken,
       );
-      return await workerManager.executeWithPort<List<EmailId>, List<EmailId>>(
-        (sendPort) => _handleMarkAsMailboxReadAction(args, sendPort),
-        onMessage: (value) {
-          log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: PERCENT ${value.length / totalEmailUnread}');
+      return await workerManager.executeWithPort<List<EmailId>, int>(
+        _buildMarkAsReadClosure(args),
+        onMessage: (countRead) {
+          log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: PERCENT ${countRead / totalEmailUnread}');
           onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
             mailboxId: mailboxId,
             totalUnread: totalEmailUnread,
-            countRead: value.length)));
+            countRead: countRead)));
         },
       );
     }
@@ -141,7 +141,7 @@ class MailboxIsolateWorker {
 
         log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): MARK_READ: ${result.emailIdsSuccess.length}');
         emailIdsCompleted.addAll(result.emailIdsSuccess);
-        sendPort.send(emailIdsCompleted);
+        sendPort.send(emailIdsCompleted.length);
       }
     }
     log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): TOTAL_READ: ${emailIdsCompleted.length}');
@@ -238,7 +238,7 @@ class MailboxIsolateWorker {
       markAsRead: request.markAsRead,
     );
     final countEmailsCompleted = await workerManager.executeWithPort<int, int>(
-      (sendPort) => _moveFolderContentIsolateMethod(args, sendPort),
+      _buildMoveFolderClosure(args),
       onMessage: (value) {
         log('$runtimeType::moveFolderContent(): Progress percent is ${value / request.totalEmails}');
         onProgressController?.add(
@@ -257,6 +257,14 @@ class MailboxIsolateWorker {
       throw CannotMoveAllEmailException();
     }
   }
+
+  static Future<List<EmailId>> Function(SendPort) _buildMarkAsReadClosure(
+    MailboxMarkAsReadArguments args,
+  ) => (sendPort) => _handleMarkAsMailboxReadAction(args, sendPort);
+
+  static Future<int> Function(SendPort) _buildMoveFolderClosure(
+    MoveFolderContentIsolateArguments args,
+  ) => (sendPort) => _moveFolderContentIsolateMethod(args, sendPort);
 
   static Future<int> _moveFolderContentIsolateMethod(
     MoveFolderContentIsolateArguments args,
