@@ -91,15 +91,15 @@ void main() {
           )
       );
 
-      final selectedMailboxList = [
-        PresentationMailbox(MailboxId(Id("A")), parentId: null),
-        PresentationMailbox(MailboxId(Id('A_1')), parentId: MailboxId(Id('A'))),
-        PresentationMailbox(MailboxId(Id('A_2_1')), parentId: MailboxId(Id('A_2'))),
-        PresentationMailbox(MailboxId(Id("B_1")), parentId: MailboxId(Id('B')))
+      final selectedMailboxIdList = [
+        MailboxId(Id("A")),
+        MailboxId(Id('A_1')),
+        MailboxId(Id('A_2_1')),
+        MailboxId(Id("B_1")),
       ];
 
       final tupleResult = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
-          selectedMailboxList,
+          selectedMailboxIdList,
           defaultMailboxTree,
           folderMailboxTree);
 
@@ -146,15 +146,15 @@ void main() {
           )
       );
 
-      final selectedMailboxList = [
-        PresentationMailbox(MailboxId(Id("A")), parentId: null),
-        PresentationMailbox(MailboxId(Id('A_1')), parentId: MailboxId(Id('A'))),
-        PresentationMailbox(MailboxId(Id('A_2_1')), parentId: MailboxId(Id('A_2'))),
-        PresentationMailbox(MailboxId(Id("B_1")), parentId: MailboxId(Id('B')))
+      final selectedMailboxIdList = [
+        MailboxId(Id("A")),
+        MailboxId(Id('A_1')),
+        MailboxId(Id('A_2_1')),
+        MailboxId(Id("B_1")),
       ];
 
       final tupleResult = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
-          selectedMailboxList,
+          selectedMailboxIdList,
           defaultMailboxTree,
           folderMailboxTree);
 
@@ -201,12 +201,10 @@ void main() {
           )
       );
 
-      final selectedMailboxList = [
-        PresentationMailbox(MailboxId(Id("A")), parentId: null),
-      ];
+      final selectedMailboxIdList = [MailboxId(Id("A"))];
 
       final tupleResult = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
-          selectedMailboxList,
+          selectedMailboxIdList,
           defaultMailboxTree,
           folderMailboxTree);
 
@@ -265,14 +263,14 @@ void main() {
           )
       );
 
-      final selectedMailboxList = [
-        PresentationMailbox(MailboxId(Id("A")), parentId: null),
-        PresentationMailbox(MailboxId(Id("B_1")), parentId: MailboxId(Id('B'))),
-        PresentationMailbox(MailboxId(Id("C_1")), parentId: MailboxId(Id('C')))
+      final selectedMailboxIdList = [
+        MailboxId(Id("A")),
+        MailboxId(Id("B_1")),
+        MailboxId(Id("C_1")),
       ];
 
       final tupleResult = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
-          selectedMailboxList,
+          selectedMailboxIdList,
           defaultMailboxTree,
           folderMailboxTree);
 

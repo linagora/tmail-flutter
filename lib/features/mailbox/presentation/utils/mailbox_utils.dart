@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -14,16 +13,14 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 class MailboxUtils {
 
   static Tuple2<Map<MailboxId, List<MailboxId>>, List<MailboxId>> generateMapDescendantIdsAndMailboxIdList(
-      List<PresentationMailbox> selectedMailboxList,
+      List<MailboxId> selectedMailboxIds,
       MailboxTree defaultMailboxTree,
       MailboxTree folderMailboxTree,
   ) {
     Map<MailboxId, List<MailboxId>> mapDescendantIds = {};
     List<MailboxId> allMailboxIds = [];
 
-    for (var mailbox in selectedMailboxList) {
-      final currentMailboxId = mailbox.id;
-
+    for (var currentMailboxId in selectedMailboxIds) {
       if (allMailboxIds.contains(currentMailboxId)) {
         continue;
       } else {
