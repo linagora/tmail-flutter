@@ -235,6 +235,7 @@ class ComposerController extends BaseController
 
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
+  String? _savedEditorContentBeforePicker;
   double? maxWithEditor;
   EmailId? emailIdEditing;
   bool isAttachmentCollapsed = false;
@@ -1159,17 +1160,38 @@ class ComposerController extends BaseController
       .build();
   }
 
-  void openFilePickerByType(BuildContext context, FileType fileType) {
+  Future<void> _saveEditorContentBeforePicker() async {
+    _savedEditorContentBeforePicker = await getContentInEditor();
+  }
+
+  Future<void> _restoreEditorContentIfBlank() async {
+    final saved = _savedEditorContentBeforePicker;
+    _savedEditorContentBeforePicker = null;
+    if (saved == null || saved.isEmpty) return;
+    try {
+      final current = await getContentInEditor();
+      if (current.isEmpty) {
+        await htmlEditorApi?.setText(saved);
+        log('ComposerController::_restoreEditorContentIfBlank: restored editor content after WebView renderer recovery');
+      }
+    } catch (e) {
+      logWarning('ComposerController::_restoreEditorContentIfBlank:Exception = $e');
+    }
+  }
+
+  Future<void> openFilePickerByType(BuildContext context, FileType fileType) async {
     if (PlatformInfo.isMobile) {
       popBack();
-      richTextMobileTabletController?.webViewLifecycleManager?.pause();
+      await _saveEditorContentBeforePicker();
+      await richTextMobileTabletController?.webViewLifecycleManager?.pause();
     }
     consumeState(_localFilePickerInteractor.execute(fileType: fileType));
   }
 
-  void _handlePickFileFailure(LocalFilePickerFailure failure) {
+  Future<void> _handlePickFileFailure(LocalFilePickerFailure failure) async {
     if (PlatformInfo.isMobile) {
-      richTextMobileTabletController?.webViewLifecycleManager?.resume();
+      await richTextMobileTabletController?.webViewLifecycleManager?.resume();
+      await _restoreEditorContentIfBlank();
     }
     if (currentOverlayContext != null && currentContext != null && failure.exception is! PickFileCanceledException) {
       appToast.showToastErrorMessage(
@@ -1178,9 +1200,10 @@ class ComposerController extends BaseController
     }
   }
 
-  void _handlePickImageFailure(LocalImagePickerFailure failure) {
+  Future<void> _handlePickImageFailure(LocalImagePickerFailure failure) async {
     if (PlatformInfo.isMobile) {
-      richTextMobileTabletController?.webViewLifecycleManager?.resume();
+      await richTextMobileTabletController?.webViewLifecycleManager?.resume();
+      await _restoreEditorContentIfBlank();
     }
     if (currentOverlayContext != null && currentContext != null && failure.exception is! PickFileCanceledException) {
       appToast.showToastErrorMessage(
@@ -1189,9 +1212,10 @@ class ComposerController extends BaseController
     }
   }
 
-  void _handlePickFileSuccess(LocalFilePickerSuccess success) {
+  Future<void> _handlePickFileSuccess(LocalFilePickerSuccess success) async {
     if (PlatformInfo.isMobile) {
-      richTextMobileTabletController?.webViewLifecycleManager?.resume();
+      await richTextMobileTabletController?.webViewLifecycleManager?.resume();
+      await _restoreEditorContentIfBlank();
     }
     uploadController.validateTotalSizeAttachmentsBeforeUpload(
       totalSizePreparedFiles: success.pickedFiles.totalSize,
@@ -1199,9 +1223,10 @@ class ComposerController extends BaseController
     );
   }
 
-  void _handlePickImageSuccess(LocalImagePickerSuccess success) {
+  Future<void> _handlePickImageSuccess(LocalImagePickerSuccess success) async {
     if (PlatformInfo.isMobile) {
-      richTextMobileTabletController?.webViewLifecycleManager?.resume();
+      await richTextMobileTabletController?.webViewLifecycleManager?.resume();
+      await _restoreEditorContentIfBlank();
     }
     uploadController.validateTotalSizeInlineAttachmentsBeforeUpload(
       totalSizePreparedFiles: success.fileInfo.fileSize,
@@ -1686,7 +1711,7 @@ class ComposerController extends BaseController
     }
   }
 
-  void insertImage(BuildContext context, double maxWith) {
+  Future<void> insertImage(BuildContext context, double maxWith) async {
     clearFocus();
 
     if (responsiveUtils.isMobile(context)) {
@@ -1696,7 +1721,8 @@ class ComposerController extends BaseController
     }
 
     if (PlatformInfo.isMobile) {
-      richTextMobileTabletController?.webViewLifecycleManager?.pause();
+      await _saveEditorContentBeforePicker();
+      await richTextMobileTabletController?.webViewLifecycleManager?.pause();
     }
     consumeState(_localImagePickerInteractor.execute());
   }
