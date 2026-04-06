@@ -412,7 +412,7 @@ const RESOURCES = {"main.dart.js_11.part.js": "1d9dc8ed2c4055d6cfe11cce2902b579"
 "worker_service/img/tmail-4x.png": "4ef7579b5e45c9cd9cf93eca17c6a598",
 "worker_service/img/tmail-1x.png": "80fc770a0e2555e00a811c4c2882b722",
 "main.dart.js_8.part.js": "81f263f56939f93e5d8c16ad733bc6f3",
-"flutter_bootstrap.js": "2f82e4456be5ef647ab3f8c2a1490665",
+"flutter_bootstrap.js": "54998bf9084f91249222800d5025004b",
 "favicon.svg": "1734d2c8d930abd57ebba9c158506714",
 "main.dart.js_1.part.js": "3e4c1be1f20b57597768e69dde1ef99e",
 "main.dart.js": "d481eec745108a1eb32f927aa5e7b463",
