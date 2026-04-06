@@ -22,7 +22,7 @@ class WebTokenOidcCacheManager extends TokenOidcCacheManager {
     final tokenHiveCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
     final tokenSessionStorageCache = window.sessionStorage[_sessionStorageTokenKey];
     log('WebTokenOidcCacheManager::getTokenOidc(): tokenSessionStorageCache: ${tokenSessionStorageCache != null ? "[present]" : "[missing]"}');
-    if (tokenHiveCache == null || tokenSessionStorageCache == null) {
+    if (tokenHiveCache == null) {
       throw NotFoundStoredTokenException();
     } else {
       return TokenOidcCache(
