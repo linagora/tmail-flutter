@@ -21,18 +21,15 @@ class WebTokenOidcCacheManager extends TokenOidcCacheManager {
     log('WebTokenOidcCacheManager::getTokenOidc(): tokenIdHash: $tokenIdHash');
     final tokenHiveCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
     final tokenSessionStorageCache = window.sessionStorage[_sessionStorageTokenKey];
-    log('WebTokenOidcCacheManager::getTokenOidc(): tokenHiveCache: $tokenHiveCache');
     log('WebTokenOidcCacheManager::getTokenOidc(): tokenSessionStorageCache: ${tokenSessionStorageCache != null ? "[present]" : "[missing]"}');
-    if (tokenHiveCache == null) {
+    if (tokenHiveCache == null || tokenSessionStorageCache == null) {
       throw NotFoundStoredTokenException();
     } else {
       return TokenOidcCache(
-        tokenSessionStorageCache ?? 'dummy_token',
+        tokenSessionStorageCache,
         tokenHiveCache.tokenId,
         tokenHiveCache.refreshToken,
-        expiredTime: tokenSessionStorageCache != null
-          ? tokenHiveCache.expiredTime
-          : DateTime.now().subtract(const Duration(hours: 1)),
+        expiredTime: tokenHiveCache.expiredTime,
       ).toTokenOidc();
     }
   }
@@ -41,9 +38,7 @@ class WebTokenOidcCacheManager extends TokenOidcCacheManager {
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
     log('TokenOidcCacheManager::persistOneTokenOidc(): tokenIdHash=${tokenOIDC.tokenIdHash}');
     await _tokenOidcCacheClient.clearAllData();
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): token: [redacted]');
+    log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid} - key\'s hash: ${tokenOIDC.tokenIdHash} - token: [redacted]');
     final tokenHiveCache = tokenOIDC.toTokenOidcCacheWithoutToken();
     await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenHiveCache);
     window.sessionStorage[_sessionStorageTokenKey] = tokenOIDC.token;
