@@ -26,6 +26,11 @@ void main() {
     Get.put<FileUtils>(MockFileUtils());
   });
 
+  tearDown(() async {
+    PlatformInfo.isTestingForWeb = false;
+    await Get.deleteAll();
+  });
+
   group('local bindings test:', () {
     test(
       'should inject WebTokenOidcCacheManager '
@@ -54,7 +59,8 @@ void main() {
       final cacheManager = Get.find<TokenOidcCacheManager>();
       
       // assert
-      expect(cacheManager, isInstanceOf<TokenOidcCacheManager>());
+      expect(cacheManager, isA<TokenOidcCacheManager>());
+      expect(cacheManager, isNot(isA<WebTokenOidcCacheManager>()));
     });
   });
 }

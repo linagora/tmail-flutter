@@ -22,7 +22,7 @@ class WebTokenOidcCacheManager extends TokenOidcCacheManager {
     final tokenHiveCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
     final tokenSessionStorageCache = window.sessionStorage[_sessionStorageTokenKey];
     log('WebTokenOidcCacheManager::getTokenOidc(): tokenHiveCache: $tokenHiveCache');
-    log('WebTokenOidcCacheManager::getTokenOidc(): tokenSessionStorageCache: $tokenSessionStorageCache');
+    log('WebTokenOidcCacheManager::getTokenOidc(): tokenSessionStorageCache: ${tokenSessionStorageCache != null ? "[present]" : "[missing]"}');
     if (tokenHiveCache == null) {
       throw NotFoundStoredTokenException();
     } else {
@@ -39,11 +39,11 @@ class WebTokenOidcCacheManager extends TokenOidcCacheManager {
 
   @override
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
-    log('TokenOidcCacheManager::persistOneTokenOidc(): $tokenOIDC');
+    log('TokenOidcCacheManager::persistOneTokenOidc(): tokenIdHash=${tokenOIDC.tokenIdHash}');
     await _tokenOidcCacheClient.clearAllData();
     log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');
     log('TokenOidcCacheManager::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): token: ${tokenOIDC.token}');
+    log('TokenOidcCacheManager::persistOneTokenOidc(): token: [redacted]');
     final tokenHiveCache = tokenOIDC.toTokenOidcCacheWithoutToken();
     await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenHiveCache);
     window.sessionStorage[_sessionStorageTokenKey] = tokenOIDC.token;
@@ -51,7 +51,7 @@ class WebTokenOidcCacheManager extends TokenOidcCacheManager {
   }
 
   @override
-  Future<void> deleteTokenOidc() async {
+  Future<void> clear() async {
     await _tokenOidcCacheClient.clearAllData();
     window.sessionStorage.remove(_sessionStorageTokenKey);
   }
