@@ -78,7 +78,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_action_reactor.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
@@ -1140,20 +1139,11 @@ class MailboxController extends BaseMailboxController
 
   void _deleteMailboxAction(PresentationMailbox presentationMailbox) {
     if (session != null && accountId != null) {
-      final tupleMap = MailboxUtils.generateMapDescendantIdsAndMailboxIdList(
-        [presentationMailbox],
-        defaultMailboxTree.value,
-        personalMailboxTree.value,
-      );
-      final mapDescendantIds = tupleMap.value1;
-      final listMailboxId = tupleMap.value2;
-
       consumeState(
         _deleteMultipleMailboxInteractor.execute(
           session!,
           accountId!,
-          mapDescendantIds,
-          listMailboxId,
+          [presentationMailbox.id],
         ),
       );
     } else {
