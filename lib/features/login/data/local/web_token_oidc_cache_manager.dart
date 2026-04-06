@@ -26,10 +26,12 @@ class WebTokenOidcCacheManager extends TokenOidcCacheManager {
       throw NotFoundStoredTokenException();
     } else {
       return TokenOidcCache(
-        tokenSessionStorageCache,
+        tokenSessionStorageCache ?? 'dummy_token',
         tokenHiveCache.tokenId,
         tokenHiveCache.refreshToken,
-        expiredTime: tokenHiveCache.expiredTime,
+        expiredTime: tokenSessionStorageCache != null
+          ? tokenHiveCache.expiredTime
+          : DateTime.now().subtract(const Duration(hours: 1)),
       ).toTokenOidc();
     }
   }
