@@ -7,9 +7,6 @@ extension ListPresentationMailboxExtension on List<PresentationMailbox> {
 
   List<PresentationMailbox> get listSubscribedMailboxesAndDefaultMailboxes =>
     where((mailbox) => mailbox.isSubscribedMailbox || mailbox.isDefault).toList();
-  
-  List<PresentationMailbox> get listUnsubscribedMailboxes =>
-    where((mailbox) => !mailbox.isSubscribedMailbox).toList();
 
   List<PresentationMailbox> get listPersonalMailboxes =>
     where((mailbox) => mailbox.isPersonal).toList();

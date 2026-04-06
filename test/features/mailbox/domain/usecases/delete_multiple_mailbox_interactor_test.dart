@@ -161,6 +161,25 @@ void main() {
       });
     });
 
+    test('Should yield AllSuccess with empty lists when selectedMailboxIds is empty', () {
+      final state = jmap.State('s1');
+      _stubGetMailboxState(mailboxRepository, state);
+      when(
+        mailboxRepository.getAllMailbox(SessionFixtures.aliceSession, AccountFixtures.aliceAccountId),
+      ).thenAnswer((_) => Stream.value(JmapMailboxResponse(
+        mailboxes: [MailboxFixtures.inboxMailbox, MailboxFixtures.sentMailbox],
+        state: state,
+      )));
+
+      expect(
+        _executeDelete(deleteMultipleMailboxInteractor, []),
+        _emitsLoadingThen(Right(DeleteMultipleMailboxAllSuccess(
+          [],
+          currentMailboxState: state,
+        ))),
+      );
+    });
+
     test('Should execute and yield DeleteMultipleMailboxFailure when getAllMailbox fail', () {
       final state = jmap.State('s1');
       _stubGetMailboxState(mailboxRepository, state);
@@ -171,6 +190,27 @@ void main() {
       expect(
         _executeDelete(deleteMultipleMailboxInteractor, MailboxFixtures.listMailboxIdsToDelete),
         _emitsLoadingThen(Left(DeleteMultipleMailboxFailure('error'))),
+      );
+    });
+
+    test('Should delete selected mailbox alone when it is absent from allMailboxes (no children found)', () {
+      final state = jmap.State('s1');
+      final ghostMailboxId = MailboxId(Id('ghostMailbox'));
+      _stubGetMailboxState(mailboxRepository, state);
+      when(
+        mailboxRepository.getAllMailbox(SessionFixtures.aliceSession, AccountFixtures.aliceAccountId),
+      ).thenAnswer((_) => Stream.value(JmapMailboxResponse(
+        mailboxes: [MailboxFixtures.inboxMailbox, MailboxFixtures.sentMailbox],
+        state: state,
+      )));
+      _stubDeleteMailboxSuccess(mailboxRepository, [ghostMailboxId]);
+
+      expect(
+        _executeDelete(deleteMultipleMailboxInteractor, [ghostMailboxId]),
+        _emitsLoadingThen(Right(DeleteMultipleMailboxAllSuccess(
+          [ghostMailboxId],
+          currentMailboxState: state,
+        ))),
       );
     });
 
