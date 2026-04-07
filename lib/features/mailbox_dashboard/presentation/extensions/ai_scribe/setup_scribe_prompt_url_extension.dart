@@ -10,6 +10,7 @@ extension SetupScribePromptUrlExtension on MailboxDashBoardController {
   void loadLinagoraEcosystem() {
     if (cachedLinagoraEcosystem != null) {
       _applyScribePromptUrl(cachedLinagoraEcosystem!.scribePromptUrl);
+      _setUpSentry(cachedLinagoraEcosystem!);
       return;
     }
 
@@ -30,6 +31,7 @@ extension SetupScribePromptUrlExtension on MailboxDashBoardController {
   void handleGetLinagoraEcosystemSuccess(GetLinagoraEcosystemSuccess success) {
     cachedLinagoraEcosystem = success.linagoraEcosystem;
     _applyScribePromptUrl(cachedLinagoraEcosystem!.scribePromptUrl);
+    _setUpSentry(cachedLinagoraEcosystem!);
   }
 
   void handleGetLinagoraEcosystemFailure(GetLinagoraEcosystemFailure failure) {
@@ -45,6 +47,17 @@ extension SetupScribePromptUrlExtension on MailboxDashBoardController {
       promptService.setPromptUrl(promptUrl);
     } else {
       logWarning('SetupScribePromptUrlExtension::_applyScribePromptUrl: PromptService not found');
+    }
+  }
+
+  void _setUpSentry(LinagoraEcosystem ecosystem) {
+    final sentryConfigEcosystem = ecosystem.sentryConfigEcosystem;
+    if (sentryConfigEcosystem != null) {
+      setUpSentry(sentryConfigEcosystem);
+    } else {
+      logWarning(
+        'LinagoraEcosystemController:_setUpSentry: Sentry config ecosystem is null',
+      );
     }
   }
 }

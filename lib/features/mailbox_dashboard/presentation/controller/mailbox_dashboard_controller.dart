@@ -109,6 +109,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_ac
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
@@ -153,6 +154,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_text_formatting_menu_state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/web_auth_redirect_processor_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/sentry_ecosystem_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -162,7 +164,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/ai_scribe_config.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_ai_scribe_config_state.dart';
@@ -241,7 +242,8 @@ class MailboxDashBoardController extends ReloadableController
         AiScribeMixin,
         SearchLabelFilterModalMixin,
         AddLabelToEmailMixin,
-        HandleTeamMailboxMixin {
+        HandleTeamMailboxMixin,
+        SentryEcosystemMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -873,8 +875,12 @@ class MailboxDashBoardController extends ReloadableController
       await super.injectFCMBindings(session, accountId);
       await LocalNotificationManager.instance.recreateStreamController();
       _registerLocalNotificationStreamListener();
-    } catch (e) {
-      logWarning('MailboxDashBoardController::injectFCMBindings(): $e');
+    } catch (e, st) {
+      logError(
+        'MailboxDashBoardController::injectFCMBindings():',
+        exception: e,
+        stackTrace: st,
+      );
     }
   }
 
@@ -900,14 +906,18 @@ class MailboxDashBoardController extends ReloadableController
     accountId.value = currentAccountId;
     synchronizeOwnEmailAddress(session.getOwnEmailAddressOrEmpty());
 
-    SentryManager.instance.setUser(
-      SentryUser(
-        id: currentAccountId.asString,
-        name: session.getUserDisplayName(),
-        username: session.username.value,
-        email: session.getOwnEmailAddressOrEmpty(),
-      )
+    final sentryUser = SentryUser(
+      id: currentAccountId.asString,
+      name: session.getUserDisplayName(),
+      username: session.username.value,
+      email: session.getOwnEmailAddressOrEmpty(),
     );
+
+    if (PlatformInfo.isWeb) {
+      SentryManager.instance.setUser(sentryUser);
+    } else {
+      initSentryUser(sentryUser);
+    }
 
     _setUpMinInputLengthAutocomplete();
     injectAutoCompleteBindings(session, currentAccountId);
@@ -3449,7 +3459,7 @@ class MailboxDashBoardController extends ReloadableController
     progressStateController.close();
     _refreshActionEventController.close();
     _notificationManager.closeStream();
-    _fcmService.closeStream();
+    unawaited(_fcmService.closeStream());
     ApplicationManager().releaseUserAgent();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     _identities = null;
