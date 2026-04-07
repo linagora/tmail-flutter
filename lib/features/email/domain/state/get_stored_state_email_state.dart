@@ -16,6 +16,5 @@ class GetStoredEmailStateSuccess extends UIState {
 class NotFoundEmailState extends FeatureFailure {}
 
 class GetStoredEmailStateFailure extends FeatureFailure {
-
-  GetStoredEmailStateFailure(dynamic exception) : super(exception: exception);
+  GetStoredEmailStateFailure({super.exception, super.stackTrace});
 }

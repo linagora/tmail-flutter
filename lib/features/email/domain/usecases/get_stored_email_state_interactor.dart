@@ -19,8 +19,11 @@ class GetStoredEmailStateInteractor {
       } else {
         yield Left<Failure, Success>(NotFoundEmailState());
       }
-    } catch (e) {
-      yield Left<Failure, Success>(GetStoredEmailStateFailure(e));
+    } catch (e, st) {
+      yield Left<Failure, Success>(GetStoredEmailStateFailure(
+        exception: e,
+        stackTrace: st,
+      ));
     }
   }
 }
