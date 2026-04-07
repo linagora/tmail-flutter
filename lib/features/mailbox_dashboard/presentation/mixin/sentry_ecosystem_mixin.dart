@@ -1,11 +1,8 @@
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin SentryEcosystemMixin {
   SentryUser? _sentryUser;
@@ -28,7 +25,6 @@ mixin SentryEcosystemMixin {
         'SentryEcosystemMixin::setUpSentry: config invalid '
         '(enabled=${ecosystemConfig.enabled}, dsn=${dsn?.isNotEmpty}, env=${env?.isNotEmpty})',
       );
-      await clearSentryConfiguration();
       return;
     }
 
@@ -37,43 +33,11 @@ mixin SentryEcosystemMixin {
     await SentryManager.instance.initializeWithSentryConfig(sentryConfig);
 
     _setupSentryUser();
-
-    await _saveSentryConfiguration(
-      sentryConfig: sentryConfig,
-      sentryUser: _sentryUser,
-    );
   }
 
   void _setupSentryUser() {
     if (_sentryUser == null) return;
 
     SentryManager.instance.setUser(_sentryUser!);
-  }
-
-  Future<void> _saveSentryConfiguration({
-    required SentryConfig sentryConfig,
-    SentryUser? sentryUser,
-  }) async {
-    final cachingManager = getBinding<CachingManager>();
-    if (cachingManager != null) {
-      await cachingManager.saveSentryConfiguration(sentryConfig);
-
-      if (sentryUser != null) {
-        await cachingManager.saveSentryUser(sentryUser);
-      }
-    } else {
-      logTrace(
-          'SentryEcosystemMixin::saveSentryConfiguration: CachingManager is null');
-    }
-  }
-
-  Future<void> clearSentryConfiguration() async {
-    final cachingManager = getBinding<CachingManager>();
-    if (cachingManager != null) {
-      await cachingManager.clearSentryConfiguration();
-    } else {
-      logTrace(
-          'SentryEcosystemMixin::clearSentryConfiguration: CachingManager is null');
-    }
   }
 }
