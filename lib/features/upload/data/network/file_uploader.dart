@@ -47,8 +47,8 @@ class FileUploader {
         StreamController<Either<Failure, Success>>? onSendController,
       }
   ) async {
-    if (PlatformInfo.isWeb) {
-      return _handleUploadAttachmentActionOnWeb(
+    if (PlatformInfo.isWeb || Platform.numberOfProcessors == 1) {
+      return _handleUploadAttachmentActionOnMainIsolate(
           uploadId,
           fileInfo,
           uploadUri,
@@ -159,7 +159,7 @@ class FileUploader {
     }
   }
 
-  Future<Attachment> _handleUploadAttachmentActionOnWeb(
+  Future<Attachment> _handleUploadAttachmentActionOnMainIsolate(
     UploadTaskId uploadId,
     FileInfo fileInfo,
     Uri uploadUri,
@@ -188,7 +188,7 @@ class FileUploader {
       data: BodyBytesStream.fromBytes(fileInfo.bytes!),
       cancelToken: cancelToken,
       onSendProgress: (count, total) {
-        log('FileUploader::_handleUploadAttachmentActionOnWeb():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
+        log('FileUploader::_handleUploadAttachmentActionOnMainIsolate():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
         onSendController?.add(
           Right(UploadingAttachmentUploadState(
             uploadId,
@@ -198,7 +198,7 @@ class FileUploader {
         );
       }
     );
-    log('FileUploader::_handleUploadAttachmentActionOnWeb(): RESULT_JSON = $resultJson');
+    log('FileUploader::_handleUploadAttachmentActionOnMainIsolate(): RESULT_JSON = $resultJson');
     if (fileInfo.mimeType == FileUtils.TEXT_PLAIN_MIME_TYPE) {
       final fileCharset = await _fileUtils.getCharsetFromBytes(fileInfo.bytes!);
       return _parsingResponse(

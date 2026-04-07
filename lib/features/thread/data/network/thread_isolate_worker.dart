@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -40,8 +41,8 @@ class ThreadIsolateWorker {
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController
   ) async {
-    if (PlatformInfo.isWeb) {
-      return _emptyMailboxFolderOnWeb(session, accountId, mailboxId, totalEmails, onProgressController);
+    if (PlatformInfo.isWeb || Platform.numberOfProcessors == 1) {
+      return _emptyMailboxFolderOnMainIsolate(session, accountId, mailboxId, totalEmails, onProgressController);
     } else {
       final rootIsolateToken = RootIsolateToken.instance;
       if (rootIsolateToken == null) {
@@ -129,7 +130,7 @@ class ThreadIsolateWorker {
     return emailListCompleted;
   }
 
-  Future<List<EmailId>> _emptyMailboxFolderOnWeb(
+  Future<List<EmailId>> _emptyMailboxFolderOnMainIsolate(
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
@@ -159,7 +160,7 @@ class ThreadIsolateWorker {
         newEmailList = newEmailList.where((email) => email.id != lastEmail!.id).toList();
       }
 
-      log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): ${newEmailList.length}');
+      log('ThreadIsolateWorker::_emptyMailboxFolderOnMainIsolate(): ${newEmailList.length}');
 
       if (newEmailList.isNotEmpty) {
         lastEmail = newEmailList.last;
@@ -177,7 +178,7 @@ class ThreadIsolateWorker {
         hasEmails = false;
       }
     }
-    log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): TOTAL_REMOVE: ${emailListCompleted.length}');
+    log('ThreadIsolateWorker::_emptyMailboxFolderOnMainIsolate(): TOTAL_REMOVE: ${emailListCompleted.length}');
     return emailListCompleted;
   }
 }
