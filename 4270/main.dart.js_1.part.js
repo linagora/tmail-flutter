@@ -225,7 +225,7 @@ t(d){var x,w=this,v=null,u=$.aa()
 A.w(w)
 u=A.t(w).h("U.S").a(u.a.get(w)).fx
 x=w.b9s(d)
-return A.lB(v,C.m,A.cX(A.f6(A.AD(w.bac(d),v,v,x,u,v,v),v,v,v,v,v,C.M),v,v),v,v,!0,v,v,v,v)},
+return A.lB(v,C.m,A.cX(A.f6(A.AE(w.bac(d),v,v,x,u,v,v),v,v,v,v,v,C.M),v,v),v,v,!0,v,v,v,v)},
 b9s(d){var x,w,v=this,u=null,t=F.bAx(u,u)
 A.z(d,C.e,y.J).toString
 x=y.p
@@ -442,12 +442,12 @@ switch(A.t(x).h("U.S").a(w.a.get(x)).fo.gi(0)){case C.l5:return x.aHp(this.b)
 default:return C.x}}},
 $S:69}
 B.cwg.prototype={
-$0(){return A.yQ("https://github.com/linagora/tmail-flutter/blob/master/privacy.md")},
+$0(){return A.yR("https://github.com/linagora/tmail-flutter/blob/master/privacy.md")},
 $S:0}
 B.cft.prototype={
 $1(d){var x=null,w="Unknown error occurred, please try again",v="unknownError",u=d instanceof A.b0
 if(u&&d.a instanceof A.IG)return A.u("You are offline. It looks like you are not connected.",x,"youAreOffline",x,x)
-if(d instanceof A.zF)return A.u("Can not verify SSO configuration, please check with your system administrator",x,"canNotVerifySSOConfiguration",x,x)
+if(d instanceof A.zG)return A.u("Can not verify SSO configuration, please check with your system administrator",x,"canNotVerifySSOConfiguration",x,x)
 else if(d instanceof A.r8&&d.a instanceof A.a2Q)return A.u("No suitable browser for OIDC, please check with your system administrator",x,"noSuitableBrowserForOIDC",x,x)
 else if(u){u=this.a.e
 u=u==null?x:u.a7i(this.b,d.a,!0)
@@ -485,20 +485,20 @@ u(B.bBx,A.Vb)
 v(A.ai,[B.ac5,B.akc])
 v(A.ag,[B.bcH,B.bjY])
 u(B.aF5,B.bcH)
-v(A.wv,[B.bBz,B.bC_,B.cfA,B.cfB,B.cfC,B.cfD,B.cfz,B.cwg,B.ddC,B.ddB])
+v(A.ww,[B.bBz,B.bC_,B.cfA,B.cfB,B.cfC,B.cfD,B.cfz,B.cwg,B.ddC,B.ddB])
 u(B.a7U,A.cr)
 u(B.buN,A.agO)
 u(B.cYW,B.buN)
 u(B.aFj,A.U)
-u(B.bC1,A.ww)
+u(B.bC1,A.wx)
 u(B.QH,B.aFj)
 u(B.aTv,A.aRu)
 x(B.bs3,F.aiH)
 x(B.bcH,B.bBA)
 w(B.buN,A.aLQ)})()
-A.FP(b.typeUniverse,JSON.parse('{"b5K":{"a0":[],"o":[],"p":[]},"bcI":{"vG":[]},"ac5":{"ai":[],"o":[],"p":[]},"aF5":{"ag":["ac5"]},"a7U":{"cr":[],"ce":[],"o":[],"p":[]},"Sl":{"a0":[],"o":[],"p":[]},"aFj":{"U":["tE"],"o":[],"p":[]},"QH":{"U":["tE"],"o":[],"p":[],"U.S":"tE"},"b_N":{"a0":[],"o":[],"p":[]},"a1V":{"a0":[],"o":[],"p":[]},"akc":{"ai":[],"o":[],"p":[]},"bjY":{"ag":["akc"]},"at5":{"a0":[],"o":[],"p":[]}}'))
+A.FQ(b.typeUniverse,JSON.parse('{"b5K":{"a0":[],"o":[],"p":[]},"bcI":{"vG":[]},"ac5":{"ai":[],"o":[],"p":[]},"aF5":{"ag":["ac5"]},"a7U":{"cr":[],"ce":[],"o":[],"p":[]},"Sl":{"a0":[],"o":[],"p":[]},"aFj":{"U":["tE"],"o":[],"p":[]},"QH":{"U":["tE"],"o":[],"p":[],"U.S":"tE"},"b_N":{"a0":[],"o":[],"p":[]},"a1V":{"a0":[],"o":[],"p":[]},"akc":{"ai":[],"o":[],"p":[]},"bjY":{"ag":["akc"]},"at5":{"a0":[],"o":[],"p":[]}}'))
 var y=(function rtii(){var x=A.aq
-return{J:x("pH"),e:x("BZ"),j:x("p3"),q:x("Dm"),s:x("O<h>"),p:x("O<o>"),P:x("ae<h,@>"),w:x("of"),Y:x("Sl<ip>"),t:x("ip"),N:x("h"),S:x("asL"),O:x("b3<h>"),C:x("avr"),H:x("~")}})();(function constants(){var x=a.makeConstList
+return{J:x("pH"),e:x("C_"),j:x("p3"),q:x("Dn"),s:x("O<h>"),p:x("O<o>"),P:x("ae<h,@>"),w:x("of"),Y:x("Sl<ip>"),t:x("ip"),N:x("h"),S:x("asL"),O:x("b3<h>"),C:x("avr"),H:x("~")}})();(function constants(){var x=a.makeConstList
 D.F1=new H.WG(I.jv,null,null,null)
 D.bbu=new B.bBx(0,"commit")
 D.a7P=new A.c4(C.I,0,C.T,-1)
@@ -535,4 +535,4 @@ D.b6N=new A.b3("loginSubmitForm",y.O)
 D.b6P=new A.b3("login_password_input",y.O)
 D.b6Q=new A.b3("login_username_input",y.O)})()};
 ((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"0ZNrq53fxvhqIT55rTx7/65zlQ0=");
+a.eventLog.push({p:"main.dart.js_1",e:"endPart",h:b})})($__dart_deferred_initializers__,"P8YVkzeHU8RsKq9hc1vZ/t58OJQ=");
