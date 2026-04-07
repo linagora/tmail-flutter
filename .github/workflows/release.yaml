@@ -89,3 +89,47 @@ jobs:
           APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
         run: ../scripts/build-release.sh
         working-directory: ${{ matrix.os }}
+
+      # --- UPLOAD SENTRY MAPPING AND SYMBOLS FOR ANDROID ---
+      - name: Upload Android ProGuard Mapping & Dart Debug Symbols to Sentry
+        if: matrix.os == 'android'
+        working-directory: .
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        run: |
+          # 1. Install Sentry CLI
+          curl -sL https://sentry.io/get-cli/ | bash
+
+          # 2. Get Version from pubspec.yaml
+          SENTRY_RELEASE=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          echo "Processing Sentry Release: $SENTRY_RELEASE"
+
+          # 3. Create Release
+          sentry-cli releases new "$SENTRY_RELEASE"
+
+          # 4. Upload ProGuard Mapping
+          MAPPING_FILE="build/app/outputs/mapping/release/mapping.txt"
+          
+          if [ -f "$MAPPING_FILE" ]; then
+            echo "Found mapping.txt, uploading ProGuard mapping..."
+            sentry-cli upload-proguard "$MAPPING_FILE"
+          else
+            echo "::error::Could not find mapping.txt at $MAPPING_FILE."
+            exit 1
+          fi
+
+          # 5. Upload Dart Debug Symbols (Native Dart Stacktrace)
+          SYMBOLS_DIR="build/app/outputs/symbols"
+          
+          if [ -d "$SYMBOLS_DIR" ]; then
+            echo "Uploading Dart debug symbols from $SYMBOLS_DIR..."
+            sentry-cli debug-files upload "$SYMBOLS_DIR"
+          else
+            echo "::error::Symbols directory not found at $SYMBOLS_DIR. Check your Fastfile build arguments."
+            exit 1
+          fi
+          
+          # 6. Finalize
+          sentry-cli releases finalize "$SENTRY_RELEASE"
