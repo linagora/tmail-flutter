@@ -107,7 +107,7 @@ The measures below complement the server-side `collapse_key` mechanism. Given th
 | Skip notifications when in foreground | **MUST** | |
 | Limit number of notifications | **MUST** | |
 | Fix local notification removal error | **SHOULD** | |
-| Heuristic for important push (`need-action` + INBOX) | **SHOULD** | Needs product validation |
+| Heuristic for important push (`needs-action` + INBOX) | **SHOULD** | Needs product validation |
 | Separate subscription for `resync` and `notifs` | **WON'T** | Correlated with app removal — tracked separately |
 | Debounce on app side | **WON'T** | Other steps make this an edge case not worth the team time to fix |
 
@@ -159,7 +159,7 @@ Only 20 notifications are generated
 
 This ensures the system always has a **strict upper bound** on notification count.
 
-## 3. Heuristic for important push (need-action + INBOX)
+## 3. Heuristic for important push (needs-action + INBOX)
 
 Emails requiring user action are detected using the `keywords` field.
 
@@ -177,7 +177,7 @@ Regular emails only generate notifications if they belong to the **Inbox mailbox
 
 ```dart
 bool isInboxEmail(PresentationEmail email, MailboxId inboxMailboxId) {
-  return email.mailboxIds?.contains(inboxMailboxId) ?? false;
+  return email.mailboxIds?.containsKey(inboxMailboxId) ?? false;
 }
 ```
 
@@ -201,6 +201,7 @@ import 'package:collection/collection.dart';
 
 List<PresentationEmail> selectEmailsForNotification(
   List<PresentationEmail> emails,
+  MailboxId inboxMailboxId,
 ) {
   const maxNotifications = 20;
 
@@ -217,7 +218,7 @@ List<PresentationEmail> selectEmailsForNotification(
 
   for (final email in emails) {
     if (isActionRequiredEmail(email)) continue;
-    if (!isInboxEmail(email)) continue;
+    if (!isInboxEmail(email, inboxMailboxId)) continue;
 
     heap.add(email);
 
@@ -359,7 +360,7 @@ This is deferred because it is correlated with a broader app-removal / subscript
 ## Negative
 
 * Some emails may not generate notifications during bursts
-* Requires product validation for the heuristic (`need-action` + INBOX priority)
+* Requires product validation for the heuristic (`needs-action` + INBOX priority)
 
 # References
 
