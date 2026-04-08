@@ -141,7 +141,7 @@ When a push burst is processed, the system limits the number of generated notifi
 Rules:
 
 * maximum **20 notifications**
-* prioritize emails requiring user action
+* prioritise emails requiring user action
 * regular emails generate notifications **only if they belong to the Inbox mailbox**
 * remaining emails sorted by newest first
 
@@ -176,10 +176,12 @@ bool isActionRequiredEmail(PresentationEmail email) {
 Regular emails only generate notifications if they belong to the **Inbox mailbox**.
 
 ```dart
-bool isInboxEmail(PresentationEmail email) {
-  return email.mailboxIds?.contains("inbox-id") ?? false;
+bool isInboxEmail(PresentationEmail email, MailboxId inboxMailboxId) {
+  return email.mailboxIds?.contains(inboxMailboxId) ?? false;
 }
 ```
+
+The inbox `MailboxId` must be resolved upstream from the mailbox list before calling this helper — `PresentationEmail` stores only `mailboxIds` and has no knowledge of which one is the Inbox.
 
 ### Optimized Notification Selection Algorithm
 
