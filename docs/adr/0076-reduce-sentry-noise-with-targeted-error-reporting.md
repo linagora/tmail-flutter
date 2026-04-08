@@ -48,7 +48,11 @@ options.addIgnoredExceptionType(SocketError);
 
 ### 4. Drop HTTP 4xx events in `beforeSend`
 
-Extend `_beforeSendHandler` to return `null` for any event where the HTTP status code is 4xx. Client errors are handled at the domain layer and do not require monitoring.
+Extend `_beforeSendHandler` to return `null` for HTTP 4xx events by default.
+
+**Exception:** authentication-critical 4xx events must be retained. Specifically, HTTP 400 responses from the refresh-token and retry-flow paths in `AuthorizationInterceptors` are genuine failure signals that require developer visibility. These call sites use `logError` explicitly, and the `beforeSend` handler must allow them through by checking for a known allowlist tag (e.g., a Sentry tag `auth_critical: true` set at the call site).
+
+This allowlist must be documented in code alongside the `beforeSend` implementation so future maintainers do not inadvertently suppress or re-add these events.
 
 ### 5. Reduce performance sampling rates
 

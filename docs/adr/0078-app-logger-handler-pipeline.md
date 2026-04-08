@@ -82,6 +82,12 @@ AppLoggerRegistry.instance
   ..registerHandler(SentryEventHandler(SentryManager.instance));
 ```
 
+**Idempotency and duplicate prevention:**
+
+`registerHandler` checks handler identity by runtimeType before adding. Registering the same handler type a second time (e.g., due to a hot restart or repeated bootstrap call) is a no-op — the existing registration is kept and no duplicate is added. This prevents double console output and duplicate Sentry captures without requiring callers to guard the registration site.
+
+For test isolation, `AppLoggerRegistry.resetForTesting()` clears all registered handlers. Tests that need a clean registry must call this in `setUp` / `tearDown`. Production code must never call `resetForTesting`.
+
 ## Implementation
 
 | Phase | Scope | Notes |

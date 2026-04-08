@@ -47,4 +47,4 @@ Only applies on web (`http`/`https`). On mobile/desktop, `Uri.base` returns a `f
 - `app.url` tag gives screen context for every error event on web without exposing sensitive URL parameters.
 
 **Trade-offs:**
-- Query parameters are unavailable in Sentry for debugging. This is acceptable because the parameters relevant to debugging (e.g., JMAP mailbox IDs) should be logged explicitly via `extras` on `logError` call sites, not inferred from raw request URLs.
+- Query parameters are retained in Sentry for request/app URL context; this carries a limited, accepted risk (notably short-lived OIDC `code`/`state` in a narrow flow), mitigated by header/body sanitization and the short lifetime of those tokens.
