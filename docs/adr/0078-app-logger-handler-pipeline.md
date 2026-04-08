@@ -110,3 +110,14 @@ For test isolation, `AppLoggerRegistry.resetForTesting()` clears all registered 
 **Trade-offs:**
 - Slightly more indirection for a straightforward log call. Acceptable given the extensibility gain.
 - `AppLoggerRegistry` uses a static singleton (not GetX) because the logger must be available before GetX initialises.
+
+**Behavior change: `logError` without an exception object**
+
+The current `app_logger.dart` always calls `captureException(exception ?? rawMessage, ...)` — passing the raw message string as the exception value when no exception object is present.
+
+`SentryEventHandler` will instead call `captureMessage` when the `LogRecord` contains no exception. This means:
+
+- **Before:** `logError('something went wrong')` → appears in Sentry as an *exception* with `rawMessage` as the exception value.
+- **After:** `logError('something went wrong')` → appears in Sentry as a *message* event.
+
+This is semantically correct — a string-only log is not an exception — but it is a visible change: Sentry dashboards, issue grouping, and alerts filtered by event type (exception vs. message) may need to be reviewed after rollout.
