@@ -26,19 +26,17 @@ Remove headers whose names match known sensitive patterns before the event is se
 
 Implemented in `SentryInitializer._sanitizeHeaders()`, called from `_sanitizeRequest()` inside `beforeSend`.
 
-### 2. Drop query string entirely
+### 2. Keep query string
 
-Rather than selectively redacting individual parameters — which is fragile as new OAuth parameters can be added — the `queryString` field is set to `null` on all Sentry request events.
-
-If a specific query parameter is needed for debugging, it should be added explicitly as a Sentry tag at the relevant call site.
+The `queryString` field is retained in Sentry request events. For JMAP API calls — which form the vast majority of requests — query parameters carry no sensitive credentials and provide useful context for triaging errors. OAuth callback parameters (`code`, `state`) are short-lived and appear only in the narrow OIDC login flow; the debugging benefit of retaining query context across all other requests outweighs this limited risk.
 
 ### 3. Drop request body
 
 `data: null` in `_sanitizeRequest`. The body is never sent regardless of `maxRequestBodySize`.
 
-### 4. Attach app URL (path only) as a tag
+### 4. Attach app URL as a tag
 
-The current page URL is useful context for triaging errors — it shows which screen the user was on. The URL is attached as an `app.url` tag using **path only** (no query string, no fragment), ensuring no OAuth parameters are included.
+The current page URL is useful context for triaging errors — it shows which screen the user was on and, where relevant, which query parameters were active. The URL is attached as an `app.url` tag using **path and query string** (no fragment), consistent with the decision to retain query parameters in section 2.
 
 Only applies on web (`http`/`https`). On mobile/desktop, `Uri.base` returns a `file://` path with no diagnostic value and is skipped.
 

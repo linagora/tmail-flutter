@@ -14,7 +14,17 @@ Proposed
 - **Invisible coupling:** Whether `logTrace` sends a Sentry event is not visible at call sites — it was added silently to `_shouldReportToSentry`, which is how ADR-0076 root cause #1 occurred.
 - **Untestable:** `_internalLog` depends on `SentryManager.instance` and `html.window.console` directly, with no injection point.
 
-ADR-0076 requires `logTrace` to add a Sentry Breadcrumb instead of a full event. This change cannot be made cleanly without an extension point in the logger.
+ADR-0076 requires `logTrace` to add a Sentry Breadcrumb instead of a full event.
+This change cannot be made cleanly without an extension point in the logger.
+
+The intended behaviour is: each `logTrace()` call stores a breadcrumb locally inside Sentry's buffer; when `logError()` is eventually called, Sentry automatically attaches all accumulated breadcrumbs to that error event, providing the full call trail leading up to the failure — without sending any quota-consuming events for the trace calls themselves.
+
+```
+logTrace("fetching mailbox list")   ──► [Breadcrumb #1 stored in Sentry buffer]
+logTrace("cache miss, going remote") ──► [Breadcrumb #2 stored in Sentry buffer]
+logError("JMAP request failed")     ──► [Sentry Event]
+                                            └─ breadcrumbs: [#1, #2]  ← attached automatically
+```
 
 ## Decision
 

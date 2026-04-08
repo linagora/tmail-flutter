@@ -4,7 +4,7 @@ Date: 2026-04-02
 
 ## Status
 
-Proposed
+Proposed — needs ADR-0078 to be implemented first
 
 ## Context
 
