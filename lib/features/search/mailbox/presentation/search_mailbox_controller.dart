@@ -165,13 +165,19 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
   void handleSuccessViewState(Success success) async {
     if (success is GetAllMailboxSuccess) {
       currentMailboxState = success.currentMailboxState;
-      await buildTree(success.mailboxList);
+      await buildTree(
+        success.mailboxList,
+        onUpdateMailboxCollectionCallback: updateMailboxCollection,
+      );
       if (currentContext != null) {
         syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is RefreshChangesAllMailboxSuccess) {
       currentMailboxState = success.currentMailboxState;
-      await refreshTree(success.mailboxList);
+      await refreshTree(
+        success.mailboxList,
+        onUpdateMailboxCollectionCallback: updateMailboxCollection,
+      );
       if (currentContext != null) {
         syncAllMailboxWithDisplayName(currentContext!);
       }
@@ -213,18 +219,16 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     super.onDone();
     viewState.value.fold((failure) {
       if (failure is GetAllMailboxFailure) {
-        autoCreateVirtualFolder(
-          dashboardController.isAINeedsActionEnabled,
+        updateMailboxTree(
+          mailboxCollection: updateMailboxCollection(currentMailboxCollection),
+          isRefreshTrigger: false,
         );
       }
-    }, (success) {
-      if (success is GetAllMailboxSuccess) {
-        autoCreateVirtualFolder(
-          dashboardController.isAINeedsActionEnabled,
-        );
-      }
-    });
+    }, (success) {});
   }
+
+  @override
+  bool get isAINeedsActionEnabled => dashboardController.isAINeedsActionEnabled;
 
   void _initializeDebounceTimeTextSearchChange() {
     _deBouncerTime = Debouncer<String>(

@@ -8,6 +8,7 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -256,9 +257,7 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: testCase,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       expect(
@@ -323,9 +322,7 @@ void main() {
         () async {
       final generatedTrees = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: filteredMailboxes,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       expectNoVirtualFoldersRecursively(
@@ -350,9 +347,7 @@ void main() {
       final generatedTrees =
           await TreeBuilder().generateMailboxTreeInUIAfterRefreshChanges(
         allMailboxes: filteredMailboxes,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       expectNoVirtualFoldersRecursively(
@@ -392,9 +387,7 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: filtered,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       final children = generatedTree.defaultTree.root.childrenItems ?? [];
@@ -437,9 +430,7 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: testCaseWithVirtualFolders,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       final children = generatedTree.defaultTree.root.childrenItems ?? [];
@@ -484,9 +475,7 @@ void main() {
       final result =
           await TreeBuilder().generateMailboxTreeInUIAfterRefreshChanges(
         allMailboxes: mailboxes,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       expect(result.defaultTree.root.childrenItems?.length, equals(1));
@@ -542,9 +531,12 @@ void main() {
       final result =
           await TreeBuilder().generateMailboxTreeInUIAfterRefreshChanges(
         allMailboxes: [mailbox],
-        currentDefaultTree: currentDefaultTree,
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection(
+          allMailboxes: const [],
+          defaultTree: currentDefaultTree,
+          personalTree: MailboxTree(MailboxNode.root()),
+          teamMailboxTree: MailboxTree(MailboxNode.root()),
+        ),
       );
 
       final newNode = result.defaultTree.root.childrenItems?.first;
@@ -589,9 +581,7 @@ void main() {
 
       final result = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: mailboxes,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
         mailboxIdSelected: parentId,
       );
 

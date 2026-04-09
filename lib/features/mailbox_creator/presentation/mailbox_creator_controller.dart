@@ -6,6 +6,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/expand_folder_trigger_scrollable_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -77,9 +78,12 @@ class MailboxCreatorController extends BaseController
   Future<void> _buildMailboxTree(MailboxCreatorArguments arguments) async {
     final recordTree = await _treeBuilder.generateMailboxTreeInUI(
       allMailboxes: arguments.listMailboxes,
-      currentDefaultTree: defaultMailboxTree.value,
-      currentPersonalTree: personalMailboxTree.value,
-      currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+      currentCollection: MailboxCollection(
+        allMailboxes: const [],
+        defaultTree: defaultMailboxTree.value,
+        personalTree: personalMailboxTree.value,
+        teamMailboxTree: MailboxTree(MailboxNode.root()),
+      ),
     );
     personalMailboxTree.value = recordTree.personalTree;
     defaultMailboxTree.value = recordTree.defaultTree;
