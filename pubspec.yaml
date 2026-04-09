@@ -143,8 +143,6 @@ dependencies:
 
   uuid: 3.0.7
 
-  flutter_downloader: 1.12.0
-
   external_path: 2.2.0
 
   path_provider: 2.1.5
@@ -214,8 +212,6 @@ dependencies:
   flutter_appauth_platform_interface: 9.0.0
 
   intl: 0.20.2
-
-  workmanager: 0.9.0+3
 
   flutter_typeahead: 5.0.2
 
