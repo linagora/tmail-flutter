@@ -1,4 +1,5 @@
 import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/config/env_loader.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
@@ -25,7 +26,10 @@ Future<void> runTmailPreload() async {
     if (PlatformInfo.isWeb) AssetPreloader.preloadHtmlEditorAssets(),
   ], eagerError: false);
 
-  await workerManager.init(dynamicSpawning: true);
+  if (PlatformInfo.isMobile) {
+    await workerManager.init(dynamicSpawning: true);
+    workerManager.log = BuildUtils.isDebugMode;
+  }
   await CozyIntegration.integrateCozy();
   await HiveCacheConfig.instance.initializeEncryptionKey();
 
