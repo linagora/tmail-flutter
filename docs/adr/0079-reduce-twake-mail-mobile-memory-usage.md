@@ -26,7 +26,7 @@ Twake Mail is allocating a lot of memory on mobile.
 - FirebaseMessaging.onBackgroundMessage() creates a forever-live isolate even when the app is in foreground.
 - Related: https://github.com/firebase/flutterfire/issues/17163
 ### Unused `flutter_downloader` library's worker (iOS)
-- The only usage was deleted in https://github.com/linagora/tmail-flutter/commit/be8eaf625818b17e60ca65846053cb8c26a71a15#diff-451741ba5146e6ad711c77e4c2fe34958a36595e4926cd43c2ddb97586ef6d88, but the library and initialization process remained.
+- The only usage was deleted in https://github.com/linagora/tmail-flutter/commit/be8eaf625818b17e60ca65846053cb8c26a71a15#diff-451741ba5146e6ad711c77e4c2fe34958a36595e4926cd43c2ddb97586ef6d88, but the library and initialization process remained, causing 1 forever-live isolate.
 
 ## Decision
 
