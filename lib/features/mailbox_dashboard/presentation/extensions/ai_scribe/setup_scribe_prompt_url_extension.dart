@@ -1,4 +1,5 @@
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:scribe/scribe/ai/data/service/prompt_service.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_linagora_ecosystem_state.dart';
@@ -51,6 +52,7 @@ extension SetupScribePromptUrlExtension on MailboxDashBoardController {
   }
 
   void _setUpSentry(LinagoraEcosystem ecosystem) {
+    if (PlatformInfo.isWeb) return;
     final sentryConfigEcosystem = ecosystem.sentryConfigEcosystem;
     if (sentryConfigEcosystem != null) {
       setUpSentry(sentryConfigEcosystem);

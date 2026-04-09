@@ -3,11 +3,36 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 
+Future<void>? _backgroundInitFuture;
+
+Future<void> _ensureBackgroundInitialized() {
+  return _backgroundInitFuture ??= (() async {
+    FcmService.instance.initialStreamController();
+    FcmMessageController.instance.initialize();
+    await FcmMessageController.instance
+        .initialAppConfig()
+        .timeout(const Duration(seconds: 10));
+    await FcmMessageController.instance
+        .setUpSentryConfiguration()
+        .timeout(const Duration(seconds: 10));
+  }()).catchError((Object error, StackTrace stackTrace) {
+    _backgroundInitFuture = null;
+    throw error;
+  });
+}
+
 @pragma('vm:entry-point')
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
-  FcmService.instance.initialStreamController();
-  FcmMessageController.instance.initialize();
-  FcmService.instance.handleFirebaseBackgroundMessage(message);
+  try {
+    await _ensureBackgroundInitialized();
+    FcmService.instance.handleFirebaseBackgroundMessage(message);
+  } catch (e, st) {
+    logError(
+      'FcmReceiver::handleFirebaseBackgroundMessage: throw exception',
+      exception: e,
+      stackTrace: st,
+    );
+  }
 }
 
 class FcmReceiver {
@@ -34,21 +59,34 @@ class FcmReceiver {
       final token = await FirebaseMessaging.instance.getToken();
       log('FcmReceiver::_getInitialToken:token: $token');
       return token;
-    } catch (e) {
-      logWarning('FcmReceiver::_getInitialToken: TYPE = ${e.runtimeType} | Exception = $e');
+    } catch (e, st) {
+      logError(
+        'FcmReceiver::_getInitialToken:',
+        exception: e,
+        stackTrace: st,
+      );
       return null;
     }
   }
 
   Future _onHandleFcmToken() async {
-    final token = await _getInitialToken();
-    FcmService.instance.handleToken(token);
+    var currentToken = await _getInitialToken();
+    FcmService.instance.handleToken(currentToken);
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-      log('FcmReceiver::_onHandleFcmToken:onTokenRefresh: $newToken');
-      if (newToken != token) {
-        FcmService.instance.handleToken(newToken);
+    FirebaseMessaging.instance.onTokenRefresh.listen(
+      (newToken) {
+        if (newToken != currentToken) {
+          currentToken = newToken;
+          FcmService.instance.handleToken(newToken);
+        }
+      },
+      onError: (e, st) {
+        logError(
+          'FcmReceiver::_onHandleFcmToken:onTokenRefresh:',
+          exception: e,
+          stackTrace: st,
+        );
       }
-    });
+    );
   }
 }

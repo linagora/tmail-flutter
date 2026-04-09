@@ -14,10 +14,12 @@ class SentryConfig {
   // Current app release version
   final String release;
 
-  // Performance monitoring: Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing
+  // Performance monitoring: Percentage of transactions captured for tracing.
+  // Keep low in production (e.g. 0.1 = 10%) to avoid quota exhaustion and latency overhead.
   final double tracesSampleRate;
 
-  // Optional profiling
+  // Optional profiling: percentage of sampled transactions that are also profiled.
+  // Keep low in production (e.g. 0.1 = 10%) — profiling adds significant CPU overhead.
   final double profilesSampleRate;
 
   // Enable logs to be sent to Sentry. To use Sentry.logger.fmt
@@ -50,8 +52,8 @@ class SentryConfig {
     required this.dsn,
     required this.environment,
     required this.release,
-    this.tracesSampleRate = 1.0,
-    this.profilesSampleRate = 1.0,
+    this.tracesSampleRate = 0.1,
+    this.profilesSampleRate = 0.1,
     this.sessionSampleRate = 1.0,
     this.onErrorSampleRate = 1.0,
     this.enableLogs = true,
@@ -71,11 +73,10 @@ class SentryConfig {
     final sentryDSN = dotenv.get('SENTRY_DSN', fallback: '');
     final sentryEnvironment = dotenv.get('SENTRY_ENVIRONMENT', fallback: '');
 
-    if (!isAvailable ||
-        sentryDSN.trim().isEmpty ||
-        sentryEnvironment.trim().isEmpty) {
-      return null;
-    }
+    final isConfigValid = isAvailable
+        && sentryDSN.trim().isNotEmpty
+        && sentryEnvironment.trim().isNotEmpty;
+    if (!isConfigValid) return null;
 
     final appVersion = await ApplicationManager().getAppVersion();
 
