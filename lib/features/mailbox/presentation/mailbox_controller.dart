@@ -305,48 +305,7 @@ class MailboxController extends BaseMailboxController
       _handleNavigationRouteParameters
     );
 
-    ever(mailboxDashBoardController.mailboxUIAction, (action) {
-      if (action is SelectMailboxDefaultAction) {
-        _switchBackToMailboxDefault();
-        mailboxDashBoardController.clearMailboxUIAction();
-      } else if (action is RefreshChangeMailboxAction) {
-        _refreshMailboxChanges(newState: action.newState);
-      } else if (action is OpenMailboxAction) {
-        if (currentContext != null) {
-          _handleOpenMailbox(currentContext!, action.presentationMailbox);
-          if (action.presentationMailbox.role == PresentationMailbox.roleInbox) {
-            _autoScrollToTopMailboxList();
-          }
-        }
-        mailboxDashBoardController.clearMailboxUIAction();
-      } else if (action is SystemBackToInboxAction) {
-        _disableAllSearchEmail();
-        _switchBackToMailboxDefault();
-        mailboxDashBoardController.clearMailboxUIAction();
-      } else if (action is RefreshAllMailboxAction) {
-        refreshAllMailbox();
-        mailboxDashBoardController.clearMailboxUIAction();
-      } else if (action is AutoCreateActionRequiredFolderMailboxAction) {
-        updateMailboxTree(
-          mailboxCollection: addActionRequiredFolder(
-            mailboxCollection: currentMailboxCollection,
-          ),
-          isRefreshTrigger: false,
-        );
-        mailboxDashBoardController.clearMailboxUIAction();
-      } else if (action is AutoRemoveActionRequiredFolderMailboxAction) {
-        updateMailboxTree(
-          mailboxCollection: removeActionRequiredFolder(
-            mailboxCollection: currentMailboxCollection,
-          ),
-          isRefreshTrigger: false,
-        );
-        mailboxDashBoardController.clearMailboxUIAction();
-        if (selectedMailbox?.isActionRequired == true) {
-          _switchBackToMailboxDefault();
-        }
-      }
-    });
+    ever(mailboxDashBoardController.mailboxUIAction, _handleMailboxUIAction);
 
     ever(mailboxDashBoardController.viewState, (viewState) {
       final reactionState = viewState.getOrElse(() => UIState.idle);
@@ -462,6 +421,57 @@ class MailboxController extends BaseMailboxController
         );
       }
     });
+  }
+
+  void _handleMailboxUIAction(MailboxUIAction? action) {
+    if (action is SelectMailboxDefaultAction) {
+      _switchBackToMailboxDefault();
+      mailboxDashBoardController.clearMailboxUIAction();
+    } else if (action is RefreshChangeMailboxAction) {
+      _refreshMailboxChanges(newState: action.newState);
+    } else if (action is OpenMailboxAction) {
+      _onOpenMailboxAction(action);
+    } else if (action is SystemBackToInboxAction) {
+      _disableAllSearchEmail();
+      _switchBackToMailboxDefault();
+      mailboxDashBoardController.clearMailboxUIAction();
+    } else if (action is RefreshAllMailboxAction) {
+      refreshAllMailbox();
+      mailboxDashBoardController.clearMailboxUIAction();
+    } else if (action is AutoCreateActionRequiredFolderMailboxAction) {
+      updateMailboxTree(
+        mailboxCollection: addActionRequiredFolder(
+          mailboxCollection: currentMailboxCollection,
+        ),
+        isRefreshTrigger: false,
+      );
+      mailboxDashBoardController.clearMailboxUIAction();
+    } else if (action is AutoRemoveActionRequiredFolderMailboxAction) {
+      _onAutoRemoveActionRequiredFolderMailboxAction();
+    }
+  }
+
+  void _onOpenMailboxAction(OpenMailboxAction action) {
+    if (currentContext != null) {
+      _handleOpenMailbox(currentContext!, action.presentationMailbox);
+      if (action.presentationMailbox.role == PresentationMailbox.roleInbox) {
+        _autoScrollToTopMailboxList();
+      }
+    }
+    mailboxDashBoardController.clearMailboxUIAction();
+  }
+
+  void _onAutoRemoveActionRequiredFolderMailboxAction() {
+    updateMailboxTree(
+      mailboxCollection: removeActionRequiredFolder(
+        mailboxCollection: currentMailboxCollection,
+      ),
+      isRefreshTrigger: false,
+    );
+    mailboxDashBoardController.clearMailboxUIAction();
+    if (selectedMailbox?.isActionRequired == true) {
+      _switchBackToMailboxDefault();
+    }
   }
 
   void _handleMarkEmailsAsReadOrUnread({
