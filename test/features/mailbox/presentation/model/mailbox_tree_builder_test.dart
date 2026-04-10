@@ -8,6 +8,7 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -256,9 +257,7 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: testCase,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       expect(
@@ -323,9 +322,7 @@ void main() {
         () async {
       final generatedTrees = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: filteredMailboxes,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       expectNoVirtualFoldersRecursively(
@@ -350,9 +347,7 @@ void main() {
       final generatedTrees =
           await TreeBuilder().generateMailboxTreeInUIAfterRefreshChanges(
         allMailboxes: filteredMailboxes,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       expectNoVirtualFoldersRecursively(
@@ -392,9 +387,7 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: filtered,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       final children = generatedTree.defaultTree.root.childrenItems ?? [];
@@ -437,9 +430,7 @@ void main() {
 
       final generatedTree = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: testCaseWithVirtualFolders,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       final children = generatedTree.defaultTree.root.childrenItems ?? [];
@@ -484,9 +475,7 @@ void main() {
       final result =
           await TreeBuilder().generateMailboxTreeInUIAfterRefreshChanges(
         allMailboxes: mailboxes,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
       );
 
       expect(result.defaultTree.root.childrenItems?.length, equals(1));
@@ -542,9 +531,12 @@ void main() {
       final result =
           await TreeBuilder().generateMailboxTreeInUIAfterRefreshChanges(
         allMailboxes: [mailbox],
-        currentDefaultTree: currentDefaultTree,
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection(
+          allMailboxes: const [],
+          defaultTree: currentDefaultTree,
+          personalTree: MailboxTree(MailboxNode.root()),
+          teamMailboxTree: MailboxTree(MailboxNode.root()),
+        ),
       );
 
       final newNode = result.defaultTree.root.childrenItems?.first;
@@ -559,6 +551,128 @@ void main() {
         reason: 'selectMode must be carried over',
       );
     });
+  });
+
+  group('MailboxCollection allMailboxes field', () {
+    final inbox = PresentationMailbox(
+      MailboxId(Id('inbox')),
+      name: MailboxName('Inbox'),
+      role: Role('inbox'),
+    );
+    final sent = PresentationMailbox(
+      MailboxId(Id('sent')),
+      name: MailboxName('Sent'),
+      role: Role('sent'),
+    );
+
+    test(
+      'generateMailboxTreeInUIAfterRefreshChanges: allMailboxes excludes virtual folders from previous collection',
+      () async {
+        final virtualFavorite = PresentationMailbox.favoriteFolder;
+        final previousDefaultTree = MailboxTree(MailboxNode.root())
+          ..root.addChildNode(MailboxNode(virtualFavorite));
+
+        final previousCollection = MailboxCollection(
+          allMailboxes: [inbox, virtualFavorite],
+          defaultTree: previousDefaultTree,
+          personalTree: MailboxTree(MailboxNode.root()),
+          teamMailboxTree: MailboxTree(MailboxNode.root()),
+        );
+
+        final result = await TreeBuilder().generateMailboxTreeInUIAfterRefreshChanges(
+          allMailboxes: [inbox, sent],
+          currentCollection: previousCollection,
+        );
+
+        expect(
+          result.allMailboxes.every((m) => !m.isVirtualFolder),
+          isTrue,
+          reason: 'Virtual folders from previousCollection must not bleed into result.allMailboxes',
+        );
+        expect(result.allMailboxes.length, equals(2));
+      },
+    );
+
+    test(
+      'generateMailboxTreeInUIAfterRefreshChanges: deleted server mailboxes are excluded from result',
+      () async {
+        final deleted = PresentationMailbox(
+          MailboxId(Id('deleted')),
+          name: MailboxName('Old Folder'),
+        );
+        final previousDefaultTree = MailboxTree(MailboxNode.root())
+          ..root.addChildNode(MailboxNode(deleted));
+
+        final previousCollection = MailboxCollection(
+          allMailboxes: [inbox, deleted],
+          defaultTree: previousDefaultTree,
+          personalTree: MailboxTree(MailboxNode.root()),
+          teamMailboxTree: MailboxTree(MailboxNode.root()),
+        );
+
+        final result = await TreeBuilder().generateMailboxTreeInUIAfterRefreshChanges(
+          allMailboxes: [inbox],
+          currentCollection: previousCollection,
+        );
+
+        expect(result.allMailboxes.length, equals(1));
+        expect(
+          result.allMailboxes.any((m) => m.id == deleted.id),
+          isFalse,
+          reason: 'Mailbox removed from server must not appear in result',
+        );
+      },
+    );
+
+    test(
+      'generateMailboxTreeInUI: deleted server mailboxes are excluded from result',
+      () async {
+        final deleted = PresentationMailbox(
+          MailboxId(Id('deleted')),
+          name: MailboxName('Old Folder'),
+        );
+        final previousDefaultTree = MailboxTree(MailboxNode.root())
+          ..root.addChildNode(MailboxNode(deleted));
+
+        final previousCollection = MailboxCollection(
+          allMailboxes: [inbox, deleted],
+          defaultTree: previousDefaultTree,
+          personalTree: MailboxTree(MailboxNode.root()),
+          teamMailboxTree: MailboxTree(MailboxNode.root()),
+        );
+
+        final result = await TreeBuilder().generateMailboxTreeInUI(
+          allMailboxes: [inbox],
+          currentCollection: previousCollection,
+        );
+
+        expect(result.allMailboxes.length, equals(1));
+        expect(
+          result.allMailboxes.any((m) => m.id == deleted.id),
+          isFalse,
+          reason: 'Mailbox removed from server must not appear in result',
+        );
+      },
+    );
+
+    test(
+      'generateMailboxTreeInUI: selected mailbox in allMailboxes has state deactivated',
+      () async {
+        final result = await TreeBuilder().generateMailboxTreeInUI(
+          allMailboxes: [inbox, sent],
+          currentCollection: MailboxCollection.empty(),
+          mailboxIdSelected: inbox.id,
+        );
+
+        final selectedInResult = result.allMailboxes.firstWhere((m) => m.id == inbox.id);
+        expect(
+          selectedInResult.state,
+          equals(MailboxState.deactivated),
+          reason: 'Selected mailbox must be deactivated in allMailboxes',
+        );
+        expect(result.allMailboxes.length, equals(2));
+      },
+    );
   });
 
   group('Cascading Deactivation (generateMailboxTreeInUI only)', () {
@@ -589,9 +703,7 @@ void main() {
 
       final result = await TreeBuilder().generateMailboxTreeInUI(
         allMailboxes: mailboxes,
-        currentDefaultTree: MailboxTree(MailboxNode.root()),
-        currentPersonalTree: MailboxTree(MailboxNode.root()),
-        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+        currentCollection: MailboxCollection.empty(),
         mailboxIdSelected: parentId,
       );
 
