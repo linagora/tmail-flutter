@@ -1,6 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_icon_widget_styles.dart';
@@ -50,12 +49,12 @@ class DestinationPickerFolderItem extends StatelessWidget {
       fit: BoxFit.fill,
     );
 
-    final itemHeight = PlatformInfo.isWeb
+    final itemHeight = isDesktop
         ? MailboxItemWidgetStyles.height
         : MailboxItemWidgetStyles.mobileHeight;
 
     final borderRadius = BorderRadius.all(Radius.circular(
-      PlatformInfo.isWeb
+      isDesktop
           ? MailboxItemWidgetStyles.borderRadius
           : MailboxItemWidgetStyles.mobileBorderRadius,
     ));
@@ -72,11 +71,14 @@ class DestinationPickerFolderItem extends StatelessWidget {
           ),
           height: itemHeight,
           child: Row(
-            spacing: MailboxItemWidgetStyles.labelIconSpace,
             children: [
               folderIconWidget,
+              const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
               Expanded(child: displayNameWidget),
-              if (isSelected) selectedIconWidget,
+              if (isSelected) ...[
+                const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
+                selectedIconWidget,
+              ],
             ],
           ),
         ),

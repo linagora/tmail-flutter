@@ -977,10 +977,11 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   Set<MailboxId>? get trashSpamMailboxIds {
-    final spamId = spamMailboxId;
-    final trashId = mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
-    if (spamId == null && trashId == null) return null;
-    return {if (spamId != null) spamId, if (trashId != null) trashId};
+    final ids = mapMailboxById.entries
+        .where((entry) => entry.value.isTrash || entry.value.isSpam)
+        .map((entry) => entry.key)
+        .toSet();
+    return ids.isEmpty ? null : ids;
   }
 
   void setMapDefaultMailboxIdByRole(Map<Role, MailboxId> newMapMailboxId) {
