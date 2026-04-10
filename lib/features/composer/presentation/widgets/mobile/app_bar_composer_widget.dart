@@ -15,6 +15,7 @@ class AppBarComposerWidget extends StatelessWidget {
   final VoidCallback onCloseViewAction;
   final VoidCallback sendMessageAction;
   final VoidCallback? attachFileAction;
+  final VoidCallback? remoteAttachFileAction;
   final VoidCallback? insertImageAction;
   final VoidCallback openRichToolbarAction;
   final OnOpenContextMenuAction openContextMenuAction;
@@ -30,6 +31,7 @@ class AppBarComposerWidget extends StatelessWidget {
     required this.openRichToolbarAction,
     this.isNetworkConnectionAvailable = false,
     this.attachFileAction,
+    this.remoteAttachFileAction,
     this.insertImageAction,
     this.onOpenAiAssistantModal,
   });
@@ -79,6 +81,15 @@ class AppBarComposerWidget extends StatelessWidget {
                 iconSize: MobileAppBarComposerWidgetStyle.iconSize,
                 tooltipMessage: AppLocalizations.of(context).attach_file,
                 onTapActionCallback: attachFileAction,
+              ),
+              const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
+              TMailButtonWidget.fromIcon(
+                icon: imagePaths.icCloud,
+                iconColor: MobileAppBarComposerWidgetStyle.iconColor,
+                backgroundColor: Colors.transparent,
+                iconSize: MobileAppBarComposerWidgetStyle.iconSize,
+                tooltipMessage: AppLocalizations.of(context).browse,
+                onTapActionCallback: remoteAttachFileAction,
               ),
               const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
               TMailButtonWidget.fromIcon(

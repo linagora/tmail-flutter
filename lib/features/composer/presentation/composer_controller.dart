@@ -1,5 +1,6 @@
-
 import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:core/core.dart';
@@ -14,7 +15,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:html_editor_enhanced/html_editor.dart' hide UserScript, UserScriptInjectionTime;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -26,6 +27,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:universal_html/html.dart' as html; // ignore: unused_import
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:scribe/scribe.dart';
 import 'package:super_tag_editor/tag_editor.dart';
@@ -111,7 +113,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
-  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+    if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
@@ -168,6 +170,8 @@ class ComposerController extends BaseController
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final UploadController uploadController;
   final RemoveComposerCacheByIdOnWebInteractor _removeComposerCacheByIdOnWebInteractor;
+  String? _activeIframeSessionId;
+  StreamSubscription<html.MessageEvent>? _iframeMessageSubscription;
   final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
@@ -862,6 +866,338 @@ class ComposerController extends BaseController
     } catch (e) {
       logWarning('ComposerController::getContentInEditor:Exception = $e');
       return '';
+    }
+  }
+
+  void openNewModal() {
+    debugPrint('🚀 openNewModal() called - Starting iframe modal setup');
+
+    if (PlatformInfo.isWeb) {
+      debugPrint('📱 Platform confirmed: Web environment detected');
+
+      // Generate a unique ID for this iframe session
+      final String sessionId =
+          'session-${DateTime.now().millisecondsSinceEpoch}';
+      debugPrint('🔑 Generated session ID: $sessionId');
+
+      // Store the ID so we can reference it later
+      _activeIframeSessionId = sessionId;
+      debugPrint('📝 Session ID stored in _activeIframeSessionId');
+
+      // Set up the postMessage listener before showing the dialog
+      _setupPostMessageListener(sessionId);
+
+      // Build the URL with query parameters
+      final String url = _buildIframeUrl(sessionId);
+      debugPrint('🔗 Generated iframe URL: $url');
+
+      debugPrint('🎯 Opening modal dialog with iframe...');
+
+      Get.dialog(
+        PointerInterceptor(
+          child: Dialog(
+            child: SizedBox(
+              width: 800,
+              height: 600,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Web View',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => _cleanupIframeSession(sessionId),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(),
+                  Expanded(
+                    child: _WebViewIframe(url: url, sessionId: sessionId),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      debugPrint('✅ Modal dialog opened successfully');
+    } else {
+      debugPrint(
+          '❌ Platform check failed: Not running on web - iframe functionality disabled');
+    }
+  }
+
+  String _buildIframeUrl(String sessionId) {
+    debugPrint('🌐 _buildIframeUrl() called with sessionId: $sessionId');
+
+    // Get the current URL (clientUrl)
+    final String clientUrl = html.window.location.href;
+    debugPrint('📍 Current client URL: $clientUrl');
+
+    // Build the URL with query parameters
+    debugPrint('🔧 Constructing iframe URL with query parameters...');
+    final String url =
+        'http://10.4.0.32:5000/browse?id="+$sessionId+"&clientUrl=${Uri.encodeComponent(clientUrl)}&type=payload&multiple=true';
+    debugPrint('🔗 Final iframe URL: $url');
+
+    return url;
+  }
+
+  void _cleanupIframeSession(String sessionId) {
+    debugPrint('🧹 _cleanupIframeSession() called with sessionId: $sessionId');
+
+    // Clean up any resources associated with this session
+    debugPrint('🗑️  Clearing active session ID...');
+    _activeIframeSessionId = null;
+    _iframeMessageSubscription?.cancel();
+    _iframeMessageSubscription = null;
+    debugPrint('🚪 Closing modal dialog...');
+    Get.back();
+    debugPrint('✅ Session cleanup completed');
+  }
+
+  void openNewModalMobile(BuildContext context) {
+    final sessionId = 'session-${DateTime.now().millisecondsSinceEpoch}';
+    _activeIframeSessionId = sessionId;
+
+    // clientUrl has no usage here
+    final url = 'http://10.4.0.32:5000/browse?id=$sessionId&clientUrl=abcd&type=payload&multiple=true';
+    
+    // Polyfill: bridge window.parent.postMessage → flutter_inappwebview JS handler
+    // Enable to embed a file picker as is
+    // We should catch only events that concern us
+    const polyfill = '''
+      window.parent = {
+        postMessage: function(data, targetOrigin) {
+          window.flutter_inappwebview.callHandler('postMessage', data);
+        }
+      };
+    ''';
+
+    Get.dialog(
+      Dialog(
+        child: SizedBox(
+          width: double.infinity,
+          height: 600,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Select File',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => _cleanupIframeSession(sessionId),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: InAppWebView(
+                  initialUrlRequest: URLRequest(url: WebUri(url)),
+                  initialSettings: InAppWebViewSettings(),
+                  initialUserScripts: UnmodifiableListView([
+                    UserScript(
+                      source: polyfill,
+                      injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+                    ),
+                  ]),
+                  onWebViewCreated: (controller) {
+                    controller.addJavaScriptHandler(
+                      handlerName: 'postMessage',
+                      callback: (args) {
+                        if (_activeIframeSessionId == sessionId && args.isNotEmpty) {
+                          _handlePostMessage(args[0], sessionId);
+                          _cleanupIframeSession(sessionId);
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Temporary widget for web view iframe
+  Widget _WebViewIframe({required String url, required String sessionId}) {
+    if (!PlatformInfo.isWeb) {
+      return const Center(
+          child: Text('Web view only available on web platform'));
+    }
+
+    // Use HtmlElementView.fromTagName so Flutter manages the DOM element directly.
+    // onElementCreated receives the real IFrameElement, avoiding any getElementById lookup.
+    return HtmlElementView.fromTagName(
+      key: ValueKey(sessionId),
+      tagName: 'iframe',
+      onElementCreated: (element) {
+        (element as html.IFrameElement)
+          ..src = url
+          ..style.border = 'none'
+          ..style.width = '100%'
+          ..style.height = '100%'
+          ..allowFullscreen = true;
+      },
+    );
+  }
+
+  void _setupPostMessageListener(String sessionId) {
+    debugPrint('📬 _setupPostMessageListener() called for session: $sessionId');
+
+    _iframeMessageSubscription?.cancel();
+    _iframeMessageSubscription = html.window.onMessage.listen((html.MessageEvent event) {
+      if (_activeIframeSessionId == sessionId) {
+        _handlePostMessage(event.data, sessionId);
+      }
+    });
+
+    debugPrint('🎧 PostMessage listener set up successfully');
+  }
+
+  void _handlePostMessage(dynamic messageData, String sessionId) {
+    debugPrint('📦 _handlePostMessage() called for session: $sessionId');
+    debugPrint('📦 Message data type: ${messageData.runtimeType}');
+
+    // Handle the postMessage data here
+    if (messageData is String) {
+      debugPrint('💬 String message received: $messageData');
+      // Try to parse JSON string
+      try {
+        final parsedData = json.decode(messageData);
+        _processPostMessageData(parsedData, sessionId);
+      } catch (e) {
+        debugPrint('📝 String message logged successfully');
+      }
+    } else if (messageData is Map) {
+      debugPrint(
+          '🗂️  Map message received with ${messageData.length} entries');
+      _processPostMessageData(messageData, sessionId);
+    } else if (messageData is List) {
+      debugPrint('📋 List message received with ${messageData.length} items');
+      debugPrint('🔢 List contents: $messageData');
+    } else {
+      // Try to handle as JSON string or convert from other types
+      debugPrint('🔄 Unknown message type received: ${messageData.runtimeType}, attempting conversion');
+      try {
+        // Try to convert to string first, then parse as JSON
+        final stringData = messageData.toString();
+        final parsedData = json.decode(stringData);
+        if (parsedData is Map) {
+          _processPostMessageData(parsedData, sessionId);
+        } else {
+          debugPrint('❓ Converted data is not a Map: ${parsedData.runtimeType}');
+        }
+      } catch (e) {
+        debugPrint('❌ Failed to convert unknown message type: $e');
+        debugPrint('📦 Raw data: $messageData');
+      }
+    }
+
+    debugPrint('✅ Message handling completed for session: $sessionId');
+  }
+
+  void _processPostMessageData(Map<dynamic, dynamic> messageData, String sessionId) {
+    debugPrint('🔍 Processing postMessage data: $messageData');
+
+    // Check for the new file selection format
+    if (messageData.containsKey('status') && 
+        messageData.containsKey('id') && 
+        messageData.containsKey('results')) {
+      
+      final status = messageData['status'];
+      final id = messageData['id'];
+      final results = messageData['results'];
+      
+      debugPrint('📁 File selection message detected - status: $status, id: $id');
+      
+      if (status == 'done' && results is List) {
+        debugPrint('🎉 Processing ${results.length} file(s) from iframe');
+        
+        final fileInfos = <FileInfo>[];
+        
+        for (final result in results) {
+          if (result is Map && result.containsKey('name') && result.containsKey('payload')) {
+            try {
+              final fileInfo = _createFileInfoFromResult(result);
+              if (fileInfo != null) {
+                fileInfos.add(fileInfo);
+              }
+            } catch (e) {
+              debugPrint('❌ Error processing file result: $e');
+            }
+          }
+        }
+        
+        if (fileInfos.isNotEmpty) {
+          debugPrint('📤 Uploading ${fileInfos.length} file(s) to composer');
+          uploadAttachmentsAction(pickedFiles: fileInfos);
+        } else {
+          debugPrint('⚠️ No valid files found in results');
+        }
+      }
+    } else {
+      // Handle other map messages
+      debugPrint('🔍 Map contents: $messageData');
+      messageData.forEach((key, value) {
+        debugPrint('   📋 $key: $value (${value.runtimeType})');
+      });
+    }
+  }
+
+  FileInfo? _createFileInfoFromResult(Map<dynamic, dynamic> result) {
+    debugPrint('📁 Creating FileInfo from result: $result');
+    
+    final name = result['name'] as String?;
+    final mimeType = result['mimeType'] as String?;
+    final size = result['size'] as int?;
+    final payload = result['payload'];
+    
+    if (name == null || payload == null) {
+      debugPrint('❌ Missing required fields: name or payload');
+      return null;
+    }
+    
+    try {
+      // Handle base64 payload
+      String base64String;
+      if (payload is String) {
+        base64String = payload;
+      } else if (payload is Map && payload.containsKey('base64')) {
+        base64String = payload['base64'] as String;
+      } else {
+        debugPrint('❌ Unsupported payload format: ${payload.runtimeType}');
+        return null;
+      }
+      
+      // Decode base64 to bytes
+      final bytes = base64.decode(base64String);
+      
+      debugPrint('📊 File decoded: $name, ${bytes.length} bytes, mimeType: $mimeType');
+      
+      return FileInfo.fromBytes(
+        bytes: bytes,
+        name: name,
+        size: size,
+        type: mimeType,
+      );
+    } catch (e) {
+      debugPrint('❌ Error decoding base64 or creating FileInfo: $e');
+      return null;
     }
   }
 

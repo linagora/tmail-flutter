@@ -32,6 +32,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleMarkAsImportantAction;
   final VoidCallback saveAsTemplateAction;
   final VoidCallback onOpenInsertLink;
+  final VoidCallback? onOpenNewModalAction;
   final OnMenuChanged? onPopupMenuChanged;
   final OnOpenAiAssistantModal? onOpenAiAssistantModal;
 
@@ -56,6 +57,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.toggleMarkAsImportantAction,
     required this.saveAsTemplateAction,
     required this.onOpenInsertLink,
+    this.onOpenNewModalAction,
     this.onPopupMenuChanged,
     this.onOpenAiAssistantModal,
   });
@@ -98,6 +100,23 @@ class BottomBarComposerWidget extends StatelessWidget {
             tooltipMessage: AppLocalizations.of(context).attach_file,
             onTapActionCallback: attachFileAction,
           ),
+          const SizedBox(width: BottomBarComposerWidgetStyle.space),
+          if (onOpenNewModalAction != null)
+            AbsorbPointer(
+              absorbing: isCodeViewEnabled,
+              child: TMailButtonWidget.fromIcon(
+                icon: imagePaths.icAttachFile, // Using same icon for now, can be changed later
+                iconColor: isCodeViewEnabled
+                  ? BottomBarComposerWidgetStyle.disabledIconColor
+                  : BottomBarComposerWidgetStyle.iconColor,
+                borderRadius: BottomBarComposerWidgetStyle.iconRadius,
+                backgroundColor: Colors.transparent,
+                padding: BottomBarComposerWidgetStyle.iconPadding,
+                iconSize: BottomBarComposerWidgetStyle.iconSize,
+                tooltipMessage: 'New Modal', // TODO: Add proper localization
+                onTapActionCallback: onOpenNewModalAction,
+              ),
+            ),
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           AbsorbPointer(
             absorbing: isCodeViewEnabled,
