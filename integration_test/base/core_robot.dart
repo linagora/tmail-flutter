@@ -6,4 +6,6 @@ abstract class CoreRobot {
   CoreRobot(this.$);
 
   dynamic ignoreException() => $.tester.takeException();
+
+  MobileAutomator get native => $.platformAutomator.mobile;
 }

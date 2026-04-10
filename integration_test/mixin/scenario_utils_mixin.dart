@@ -4,6 +4,7 @@ import 'dart:io' hide HttpClient;
 
 import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
@@ -17,6 +18,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/extensions/list_label_extension.dart';
 import 'package:model/model.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
@@ -286,5 +288,13 @@ mixin ScenarioUtilsMixin {
 
   void hideKeyboard() {
     FocusManager.instance.primaryFocus?.unfocus();
+  }
+
+  Future<void> mobileBack(PatrolIntegrationTester $) async {
+    if (PlatformInfo.isIOS) {
+      await $.platformAutomator.ios.swipeBack();
+    } else {
+      await $.platformAutomator.android.pressBack();
+    }
   }
 }

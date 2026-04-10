@@ -84,7 +84,7 @@ class MailboxMenuRobot extends CoreRobot {
   }
 
   Future<void> closeMenu() async {
-    await $.native.swipe(from: const Offset(0.9, 0.5), to: const Offset(0, 0.5));
+    await native.swipe(from: const Offset(0.9, 0.5), to: const Offset(0, 0.5));
   }
 
   int getCurrentInboxCount() {
@@ -130,8 +130,8 @@ class MailboxMenuRobot extends CoreRobot {
   }
 
   Future<void> tapConfirmRecoverDeletedMessages() async {
-    if (await $.native.isPermissionDialogVisible(timeout: const Duration(seconds: 2))) {
-      await $.native.grantPermissionWhenInUse();
+    if (await native.isPermissionDialogVisible(timeout: const Duration(seconds: 2))) {
+      await native.grantPermissionWhenInUse();
     }
     await $(AppLocalizations().restore).tap();
     await $.pumpAndSettle();
