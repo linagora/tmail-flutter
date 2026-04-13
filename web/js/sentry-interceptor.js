@@ -40,6 +40,8 @@
 
           if (shouldBlockSentryUrl(urlString)) {
             console.log('[Sentry Interceptor] 🛑 Blocked CDN request (Property):', urlString);
+            // Fire a synthetic 'load' event so the Sentry SDK's internal Promise resolves
+            // cleanly instead of hanging indefinitely waiting for a CDN script we blocked.
             setTimeout(() => this.dispatchEvent(new Event('load')), 10);
           } else {
             nativeSrcDescriptor?.set?.call(this, val);
@@ -56,6 +58,7 @@
 
           if (shouldBlockSentryUrl(urlString)) {
             console.log('[Sentry Interceptor] 🛑 Blocked CDN request (Attribute):', urlString);
+            // Same rationale as above: synthetic 'load' prevents the SDK from hanging.
             setTimeout(() => this.dispatchEvent(new Event('load')), 10);
             return;
           }

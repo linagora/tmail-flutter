@@ -41,8 +41,10 @@
   <script src="worker_service/worker_service.js"></script>
   <script src="i18n/translater.js"></script>
   <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-  <script src="js/sentry-tracing.min.js?v=1.0.0"></script>
-  <script src="js/sentry-interceptor.js?v=1.0.0"></script>
+  <!-- Load Sentry SDK first (self-hosted bundle), then interceptor to block any subsequent CDN injection.
+       Order matters: the interceptor must activate after the SDK is ready so it can patch document.createElement. -->
+  <script src="js/sentry-tracing.min.js?v=1.0.0" integrity="sha384-SFODEb3T2QkMjTr3S1it5zIK0cIW7jsComFUkmJ9nU9uaWs3AzA6cubt8xn0zW7A" crossorigin="anonymous"></script>
+  <script src="js/sentry-interceptor.js?v=1.0.0" integrity="sha384-IhW/6Ux4PfC93ycobW94s7i0/d2BlqWU8oUqd2aeAPyfPnCH4ZSunbIOYWDgPuie" crossorigin="anonymous"></script>
 </head>
 <body>
 
