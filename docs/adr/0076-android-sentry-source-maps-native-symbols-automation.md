@@ -21,7 +21,7 @@ Update the Android CI/CD pipeline to automatically upload de-obfuscation artifac
 
 ### Build (Fastlane)
 
-Add `--obfuscate --split-debug-info=../build/app/outputs/symbols` to the Flutter build command. This strips debug info from the binary into a separate `symbols/` directory.
+Add `--obfuscate --split-debug-info=build/app/outputs/symbols` to the Flutter build command (executed from repository root after `cd ..`). This strips debug info from the binary into a separate `symbols/` directory.
 
 ### CI Pipeline (GitHub Actions)
 
