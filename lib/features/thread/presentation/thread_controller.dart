@@ -774,6 +774,7 @@ class ThreadController extends BaseController with EmailActionController {
       sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
       filter: _searchEmailFilter.mappingToEmailFilterCondition(
         moreFilterCondition: getFilterCondition(),
+        trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
       ),
       properties: EmailUtils.getPropertiesForEmailGetMethod(
         _session!,
@@ -1145,7 +1146,8 @@ class ThreadController extends BaseController with EmailActionController {
         position: _searchEmailFilter.position,
         sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          moreFilterCondition: getFilterCondition()
+          moreFilterCondition: getFilterCondition(),
+          trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         needRefreshSearchState: needRefreshSearchState
@@ -1231,7 +1233,8 @@ class ThreadController extends BaseController with EmailActionController {
         sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         position: _searchEmailFilter.position,
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          moreFilterCondition: getFilterCondition()
+          moreFilterCondition: getFilterCondition(),
+          trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         lastEmailId: lastEmail?.id

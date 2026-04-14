@@ -40,7 +40,6 @@ import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.d
 import 'package:tmail_ui_user/main/exceptions/thrower/send_email_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
-import 'package:worker_manager/worker_manager.dart';
 
 class NetworkBindings extends Bindings {
 
@@ -85,7 +84,6 @@ class NetworkBindings extends Bindings {
       Get.find<OIDCHttpClient>(),
       Get.find<MailboxCacheManager>(),
     ));
-    Get.put(Executor());
   }
 
   void _bindingInterceptors() {

@@ -693,7 +693,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         onNotification: (ScrollNotification scrollInfo) {
           if (scrollInfo is ScrollEndNotification
               && controller.searchMoreState != SearchMoreState.waiting
-              && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent
+              && scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent
               && scrollInfo.metrics.axisDirection == AxisDirection.down) {
             controller.searchMoreEmailsAction();
           }
@@ -701,7 +701,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         },
         child: ListView.separated(
           controller: controller.resultSearchScrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: PlatformInfo.isIOS
+              ? const ClampingScrollPhysics()
+              : const AlwaysScrollableScrollPhysics(),
           key: const PageStorageKey('list_presentation_email_in_search_view'),
           itemCount: listPresentationEmail.length,
           itemBuilder: (context, index) => _buildEmailItem(

@@ -367,7 +367,9 @@ class SearchEmailController extends BaseController
         limit: limit,
         position: searchEmailFilter.value.position,
         sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+        filter: searchEmailFilter.value.mappingToEmailFilterCondition(
+          trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+        ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
       ).last;
 
@@ -439,7 +441,9 @@ class SearchEmailController extends BaseController
           accountId,
           limit: UnsignedInt(5),
           sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-          filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+          filter: searchEmailFilter.value.mappingToEmailFilterCondition(
+            trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+          ),
           properties: EmailUtils.getPropertiesForEmailGetMethod(session, accountId))
         .then((result) => result.fold(
             (failure) => <PresentationEmail>[],
@@ -505,7 +509,9 @@ class SearchEmailController extends BaseController
       limit: ThreadConstants.defaultLimit,
       position: searchEmailFilter.value.position,
       sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-      filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+      filter: searchEmailFilter.value.mappingToEmailFilterCondition(
+        trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+      ),
       properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
     ));
   }
@@ -563,7 +569,9 @@ class SearchEmailController extends BaseController
         limit: ThreadConstants.defaultLimit,
         sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
         position: searchEmailFilter.value.position,
-        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+        filter: searchEmailFilter.value.mappingToEmailFilterCondition(
+          trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
+        ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
         lastEmailId: lastEmail.id
       ));
@@ -721,11 +729,7 @@ class SearchEmailController extends BaseController
 
     if (destinationMailbox is! PresentationMailbox) return;
 
-    _updateSimpleSearchFilter(
-      mailboxOption: destinationMailbox.id == PresentationMailbox.unifiedMailbox.id
-        ? const None()
-        : Some(destinationMailbox)
-    );
+    _updateSimpleSearchFilter(mailboxOption: Some(destinationMailbox));
 
     _searchEmailAction();
   }

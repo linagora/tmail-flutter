@@ -13,6 +13,7 @@ class LinagoraEcosystemIdentifier with EquatableMixin {
   static final linShare = LinagoraEcosystemIdentifier('LinShare');
   static final paywallURL = LinagoraEcosystemIdentifier('paywallUrlTemplate');
   static final scribePromptUrl = LinagoraEcosystemIdentifier('scribePromptUrl');
+  static final sentryConfig = LinagoraEcosystemIdentifier('sentry');
 
   final String value;
 

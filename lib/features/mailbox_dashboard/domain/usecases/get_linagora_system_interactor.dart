@@ -10,6 +10,7 @@ class GetLinagoraEcosystemInteractor {
 
   Stream<Either<Failure, Success>> execute(String baseUrl) async* {
     try {
+      yield Right(GettingLinagoraEcosystem());
       final linagoraEcosystem = await _linagoraEcosystemRepository.getLinagoraEcosystem(baseUrl);
 
       yield Right(GetLinagoraEcosystemSuccess(linagoraEcosystem));

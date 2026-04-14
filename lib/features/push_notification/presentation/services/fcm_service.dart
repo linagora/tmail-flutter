@@ -33,11 +33,24 @@ class FcmService {
     fcmTokenStreamController = StreamController<String?>.broadcast();
   }
 
-  void closeStream() {
-    backgroundMessageStreamController?.close();
-    fcmTokenStreamController?.close();
-
-    backgroundMessageStreamController = null;
-    fcmTokenStreamController = null;
+  Future<void> closeStream() async {
+    try {
+      await backgroundMessageStreamController?.close();
+    } catch (e) {
+      logWarning(
+        'FcmService::closeStream: backgroundMessageStreamController throw exception: $e',
+      );
+    } finally {
+      backgroundMessageStreamController = null;
+    }
+    try {
+      await fcmTokenStreamController?.close();
+    } catch (e) {
+      logWarning(
+        'FcmService::closeStream: fcmTokenStreamController throw exception: $e',
+      );
+    } finally {
+      fcmTokenStreamController = null;
+    }
   }
 }

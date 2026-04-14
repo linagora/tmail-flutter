@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_identifier.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_properties.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/mobile_apps_linagora_ecosystem.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
 
 class LinagoraEcosystem with EquatableMixin {
   final Map<LinagoraEcosystemIdentifier, LinagoraEcosystemProperties?>? properties;
@@ -48,4 +49,8 @@ extension LinagoraEcosystemExtension on LinagoraEcosystem {
 
   String? get scribePromptUrl =>
       (properties?[LinagoraEcosystemIdentifier.scribePromptUrl] as ApiUrlLinagoraEcosystem?)?.value;
+
+  SentryConfigLinagoraEcosystem? get sentryConfigEcosystem =>
+      (properties?[LinagoraEcosystemIdentifier.sentryConfig]
+          as SentryConfigLinagoraEcosystem?);
 }

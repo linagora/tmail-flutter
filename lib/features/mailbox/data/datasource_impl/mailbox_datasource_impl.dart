@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -172,7 +173,7 @@ class MailboxDataSourceImpl extends MailboxDataSource {
     StreamController<dartz.Either<Failure, Success>>? onProgressController,
   }) {
     return Future.sync(() async {
-      if (PlatformInfo.isWeb) {
+      if (PlatformInfo.isWeb || Platform.numberOfProcessors == 1) {
         return await mailboxAPI.moveFolderContent(
           session: session,
           accountId: accountId,

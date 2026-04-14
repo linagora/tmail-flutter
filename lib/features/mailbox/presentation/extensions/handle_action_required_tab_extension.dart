@@ -3,15 +3,26 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_collection.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleActionRequiredTabExtension on BaseMailboxController {
-  void addActionRequiredFolder() {
+  MailboxCollection addActionRequiredFolder({
+    required MailboxCollection mailboxCollection,
+  }) {
     final folder = _buildActionRequiredFolder();
-    _addToDefaultMailboxTree(folder);
-    _addToAllMailboxes(folder);
+    return mailboxCollection.copyWith(
+      defaultTree: _addToDefaultMailboxTree(
+        folder: folder,
+        currentDefaultTree: mailboxCollection.defaultTree,
+      ),
+      allMailboxes: _addToAllMailboxes(
+        folder: folder,
+        currentAllMailboxes: mailboxCollection.allMailboxes,
+      ),
+    );
   }
 
   PresentationMailbox _buildActionRequiredFolder() {
@@ -23,43 +34,72 @@ extension HandleActionRequiredTabExtension on BaseMailboxController {
     );
   }
 
-  void _addToDefaultMailboxTree(PresentationMailbox folder) {
-    final root = defaultMailboxTree.value.root;
+  MailboxTree _addToDefaultMailboxTree({
+    required PresentationMailbox folder,
+    required MailboxTree currentDefaultTree,
+  }) {
+    final root = currentDefaultTree.root;
     final children = List<MailboxNode>.from(root.childrenItems ?? []);
+    if (children.any((node) => node.item.id == folder.id)) {
+      return currentDefaultTree;
+    }
 
     children.insertAfterStarredOrInbox(MailboxNode(folder));
 
-    defaultMailboxTree.value = MailboxTree(
-      root.copyWith(children: children),
+    return MailboxTree(root.copyWith(children: children));
+  }
+
+  List<PresentationMailbox> _addToAllMailboxes({
+    required PresentationMailbox folder,
+    required List<PresentationMailbox> currentAllMailboxes,
+  }) {
+    if (_allMailboxesContains(
+      id: folder.id,
+      currentAllMailboxes: currentAllMailboxes,
+    )) {
+      return currentAllMailboxes;
+    }
+    return [...currentAllMailboxes, folder];
+  }
+
+  bool _allMailboxesContains({
+    required MailboxId id,
+    required List<PresentationMailbox> currentAllMailboxes,
+  }) {
+    return currentAllMailboxes.any((mailbox) => mailbox.id == id);
+  }
+
+  MailboxCollection removeActionRequiredFolder({
+    required MailboxCollection mailboxCollection,
+  }) {
+    return mailboxCollection.copyWith(
+      defaultTree: _removeFromDefaultMailboxTree(
+        folderId: PresentationMailbox.actionRequiredFolder.id,
+        currentDefaultTree: mailboxCollection.defaultTree,
+      ),
+      allMailboxes: _removeFromAllMailboxes(
+        folderId: PresentationMailbox.actionRequiredFolder.id,
+        currentAllMailboxes: mailboxCollection.allMailboxes,
+      ),
     );
   }
 
-  void _addToAllMailboxes(PresentationMailbox folder) {
-    if (_allMailboxesContains(folder.id)) return;
-    allMailboxes.add(folder);
-  }
-
-  bool _allMailboxesContains(MailboxId id) {
-    return allMailboxes.any((mailbox) => mailbox.id == id);
-  }
-
-  void removeActionRequiredFolder() {
-    final folder = PresentationMailbox.actionRequiredFolder;
-    _removeFromDefaultMailboxTree(folder.id);
-    _removeFromAllMailboxes(folder.id);
-  }
-
-  void _removeFromDefaultMailboxTree(MailboxId folderId) {
-    final root = defaultMailboxTree.value.root;
+  MailboxTree _removeFromDefaultMailboxTree({
+    required MailboxId folderId,
+    required MailboxTree currentDefaultTree,
+  }) {
+    final root = currentDefaultTree.root;
     final children = List<MailboxNode>.from(root.childrenItems ?? [])
       ..removeWhere((node) => node.item.id == folderId);
-
-    defaultMailboxTree.value = MailboxTree(
-      root.copyWith(children: children),
-    );
+    return MailboxTree(root.copyWith(children: children));
   }
 
-  void _removeFromAllMailboxes(MailboxId folderId) {
-    allMailboxes.removeWhere((mailbox) => mailbox.id == folderId);
+  List<PresentationMailbox> _removeFromAllMailboxes({
+    required MailboxId folderId,
+    required List<PresentationMailbox> currentAllMailboxes,
+  }) {
+    return currentAllMailboxes
+        .where((mailbox) => mailbox.id != folderId)
+        .toList();
   }
 }

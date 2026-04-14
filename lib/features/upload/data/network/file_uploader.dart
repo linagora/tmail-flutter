@@ -31,12 +31,10 @@ class FileUploader {
   static const String filePathExtraKey = 'path';
 
   final DioClient _dioClient;
-  final worker.Executor _isolateExecutor;
   final FileUtils _fileUtils;
 
   FileUploader(
     this._dioClient,
-    this._isolateExecutor,
     this._fileUtils,
   );
 
@@ -49,8 +47,8 @@ class FileUploader {
         StreamController<Either<Failure, Success>>? onSendController,
       }
   ) async {
-    if (PlatformInfo.isWeb) {
-      return _handleUploadAttachmentActionOnWeb(
+    if (PlatformInfo.isWeb || Platform.numberOfProcessors == 1) {
+      return _handleUploadAttachmentActionOnMainIsolate(
           uploadId,
           fileInfo,
           uploadUri,
@@ -63,31 +61,33 @@ class FileUploader {
         throw const CanNotGetRootIsolateToken();
       }
 
-      return await _isolateExecutor.execute(
-        arg1: UploadFileArguments(
-          _dioClient,
-          _fileUtils,
-          uploadId,
-          fileInfo,
-          uploadUri,
-          rootIsolateToken,
-        ),
-        fun1: _handleUploadAttachmentAction,
-        notification: (value) {
-          if (value is Success) {
-            log('FileUploader::uploadAttachment(): onUpdateProgress: $value');
-            onSendController?.add(Right(value));
-          }
-        }
+      final args = UploadFileArguments(
+        _dioClient,
+        _fileUtils,
+        uploadId,
+        fileInfo,
+        uploadUri,
+        rootIsolateToken,
+      );
+      return await worker.workerManager.executeWithPort<Attachment, Success>(
+        _buildUploadClosure(args),
+        onMessage: (value) {
+          log('FileUploader::uploadAttachment(): onUpdateProgress: $value');
+          onSendController?.add(Right(value));
+        },
       )
       .then((value) => value)
       .catchError((error) => throw error);
     }
   }
 
+  static Future<Attachment> Function(worker.SendPort) _buildUploadClosure(
+    UploadFileArguments args,
+  ) => (sendPort) => _handleUploadAttachmentAction(args, sendPort);
+
   static Future<Attachment> _handleUploadAttachmentAction(
-      UploadFileArguments argsUpload,
-      worker.TypeSendPort sendPort
+    UploadFileArguments argsUpload,
+    worker.SendPort sendPort,
   ) async {
     try {
       final rootIsolateToken = argsUpload.isolateToken;
@@ -159,7 +159,7 @@ class FileUploader {
     }
   }
 
-  Future<Attachment> _handleUploadAttachmentActionOnWeb(
+  Future<Attachment> _handleUploadAttachmentActionOnMainIsolate(
     UploadTaskId uploadId,
     FileInfo fileInfo,
     Uri uploadUri,
@@ -188,7 +188,7 @@ class FileUploader {
       data: BodyBytesStream.fromBytes(fileInfo.bytes!),
       cancelToken: cancelToken,
       onSendProgress: (count, total) {
-        log('FileUploader::_handleUploadAttachmentActionOnWeb():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
+        log('FileUploader::_handleUploadAttachmentActionOnMainIsolate():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
         onSendController?.add(
           Right(UploadingAttachmentUploadState(
             uploadId,
@@ -198,7 +198,7 @@ class FileUploader {
         );
       }
     );
-    log('FileUploader::_handleUploadAttachmentActionOnWeb(): RESULT_JSON = $resultJson');
+    log('FileUploader::_handleUploadAttachmentActionOnMainIsolate(): RESULT_JSON = $resultJson');
     if (fileInfo.mimeType == FileUtils.TEXT_PLAIN_MIME_TYPE) {
       final fileCharset = await _fileUtils.getCharsetFromBytes(fileInfo.bytes!);
       return _parsingResponse(

@@ -366,7 +366,9 @@ class ThreadView extends GetWidget<ThreadController>
     Widget listView = ListView.separated(
       key: const PageStorageKey('list_presentation_email_in_threads'),
       controller: controller.listEmailController,
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: PlatformInfo.isIOS
+          ? const ClampingScrollPhysics()
+          : const AlwaysScrollableScrollPhysics(),
       itemCount: listPresentationEmail.length + 2,
       itemBuilder: (context, index) => Obx(() {
         if (index == listPresentationEmail.length) {
@@ -440,7 +442,7 @@ class ThreadView extends GetWidget<ThreadController>
 
   bool _handleScrollNotificationListener(ScrollNotification scrollInfo) {
     if (scrollInfo is ScrollEndNotification &&
-        scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+        scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent &&
         !controller.loadingMoreStatus.value.isRunning &&
         scrollInfo.metrics.axisDirection == AxisDirection.down
     ) {

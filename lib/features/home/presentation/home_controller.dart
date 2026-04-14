@@ -4,8 +4,6 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/account/personal_account.dart';
@@ -68,7 +66,6 @@ class HomeController extends ReloadableController {
   @override
   void onInit() {
     if (PlatformInfo.isMobile) {
-      _initFlutterDownloader();
       _registerReceivingFileSharing();
       _registerDeepLinks();
     }
@@ -95,14 +92,6 @@ class HomeController extends ReloadableController {
   void onCancelReconnectWhenSessionExpired() {
     clearDataAndGoToLoginPage();
   }
-
-  void _initFlutterDownloader() {
-    FlutterDownloader
-      .initialize(debug: kDebugMode)
-      .then((_) => FlutterDownloader.registerCallback(downloadCallback));
-  }
-
-  static void downloadCallback(String id, int status, int progress) {}
 
   Future<void> _handleNavigateToScreen() async {
     await Future.delayed(2.seconds);

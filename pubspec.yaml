@@ -15,7 +15,8 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.28.1
+version: 0.28.2-rc01
+
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -143,8 +144,6 @@ dependencies:
 
   uuid: 3.0.7
 
-  flutter_downloader: 1.12.0
-
   external_path: 2.2.0
 
   path_provider: 2.1.5
@@ -177,7 +176,11 @@ dependencies:
 
   percent_indicator: 4.2.2
 
-  worker_manager: 5.0.3
+  # TODO: Replace with upstream when https://github.com/dsrenesanse/worker_manager/pull/123 is merged
+  worker_manager:
+    git:
+      url: https://github.com/linagora/worker_manager.git
+      ref: hotfix/worker-init-memory-leak
 
   async: 2.13.0
 
@@ -210,8 +213,6 @@ dependencies:
   flutter_appauth_platform_interface: 9.0.0
 
   intl: 0.20.2
-
-  workmanager: 0.9.0+3
 
   flutter_typeahead: 5.0.2
 

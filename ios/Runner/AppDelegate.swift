@@ -1,6 +1,5 @@
 import UIKit
 import Flutter
-import flutter_downloader
 import receive_sharing_intent
 import flutter_local_notifications
 
@@ -32,12 +31,6 @@ import flutter_local_notifications
         
         FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { registry in
             GeneratedPluginRegistrant.register(with: registry)
-        }
-        
-        FlutterDownloaderPlugin.setPluginRegistrantCallback { registry in
-            if (!registry.hasPlugin("FlutterDownloaderPlugin")) {
-                FlutterDownloaderPlugin.register(with: registry.registrar(forPlugin: "FlutterDownloaderPlugin")!)
-            }
         }
         
         let sharingIntent = SwiftReceiveSharingIntentPlugin.instance

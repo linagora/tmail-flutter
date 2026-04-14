@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -30,9 +31,8 @@ import 'package:worker_manager/worker_manager.dart';
 class ThreadIsolateWorker {
   final ThreadAPI _threadAPI;
   final EmailAPI _emailAPI;
-  final Executor _isolateExecutor;
 
-  ThreadIsolateWorker(this._threadAPI, this._emailAPI, this._isolateExecutor);
+  ThreadIsolateWorker(this._threadAPI, this._emailAPI);
 
   Future<List<EmailId>> emptyMailboxFolder(
     Session session,
@@ -41,31 +41,29 @@ class ThreadIsolateWorker {
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController
   ) async {
-    if (PlatformInfo.isWeb) {
-      return _emptyMailboxFolderOnWeb(session, accountId, mailboxId, totalEmails, onProgressController);
+    if (PlatformInfo.isWeb || Platform.numberOfProcessors == 1) {
+      return _emptyMailboxFolderOnMainIsolate(session, accountId, mailboxId, totalEmails, onProgressController);
     } else {
       final rootIsolateToken = RootIsolateToken.instance;
       if (rootIsolateToken == null) {
         throw const CanNotGetRootIsolateToken();
       }
 
-      final result = await _isolateExecutor.execute(
-        arg1: EmptyMailboxFolderArguments(
-          session,
-          _threadAPI,
-          _emailAPI,
-          accountId,
-          mailboxId,
-          rootIsolateToken
-        ),
-        fun1: _emptyMailboxFolderAction,
-        notification: (value) {
-          if (value is List<EmailId>) {
-            log('ThreadIsolateWorker::emptyMailboxFolder(): processed ${value.length} - totalEmails $totalEmails');
-            onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
-              mailboxId, value.length, totalEmails
-            )));
-          }
+      final args = EmptyMailboxFolderArguments(
+        session,
+        _threadAPI,
+        _emailAPI,
+        accountId,
+        mailboxId,
+        rootIsolateToken,
+      );
+      final result = await workerManager.executeWithPort<List<EmailId>, int>(
+        _buildEmptyMailboxClosure(args),
+        onMessage: (processedCount) {
+          log('ThreadIsolateWorker::emptyMailboxFolder(): processed $processedCount - totalEmails $totalEmails');
+          onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
+            mailboxId, processedCount, totalEmails
+          )));
         },
       );
 
@@ -77,9 +75,13 @@ class ThreadIsolateWorker {
     }
   }
 
+  static Future<List<EmailId>> Function(SendPort) _buildEmptyMailboxClosure(
+    EmptyMailboxFolderArguments args,
+  ) => (sendPort) => _emptyMailboxFolderAction(args, sendPort);
+
   static Future<List<EmailId>> _emptyMailboxFolderAction(
     EmptyMailboxFolderArguments args,
-    TypeSendPort sendPort
+    SendPort sendPort,
   ) async {
     final rootIsolateToken = args.isolateToken;
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
@@ -119,7 +121,7 @@ class ThreadIsolateWorker {
           args.accountId,
           newEmailList.listEmailIds);
         emailListCompleted.addAll(listEmailIdDeleted.emailIdsSuccess);
-        sendPort.send(emailListCompleted);
+        sendPort.send(emailListCompleted.length);
       } else {
         hasEmails = false;
       }
@@ -128,7 +130,7 @@ class ThreadIsolateWorker {
     return emailListCompleted;
   }
 
-  Future<List<EmailId>> _emptyMailboxFolderOnWeb(
+  Future<List<EmailId>> _emptyMailboxFolderOnMainIsolate(
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
@@ -158,7 +160,7 @@ class ThreadIsolateWorker {
         newEmailList = newEmailList.where((email) => email.id != lastEmail!.id).toList();
       }
 
-      log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): ${newEmailList.length}');
+      log('ThreadIsolateWorker::_emptyMailboxFolderOnMainIsolate(): ${newEmailList.length}');
 
       if (newEmailList.isNotEmpty) {
         lastEmail = newEmailList.last;
@@ -176,7 +178,7 @@ class ThreadIsolateWorker {
         hasEmails = false;
       }
     }
-    log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): TOTAL_REMOVE: ${emailListCompleted.length}');
+    log('ThreadIsolateWorker::_emptyMailboxFolderOnMainIsolate(): TOTAL_REMOVE: ${emailListCompleted.length}');
     return emailListCompleted;
   }
 }

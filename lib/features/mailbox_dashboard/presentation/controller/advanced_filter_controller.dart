@@ -13,7 +13,6 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_st
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
@@ -25,7 +24,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -41,7 +39,7 @@ class AdvancedFilterController extends BaseController {
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
   final sortOrderType = SearchEmailFilter.defaultSortOrder.obs;
-  final selectedFolderName = Rxn<String>();
+  final destinationMailboxSelected = Rxn<PresentationMailbox>();
   final selectedLabel = Rxn<Label>();
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
@@ -63,8 +61,6 @@ class AdvancedFilterController extends BaseController {
 
   final focusManager = InputFieldFocusManager.initial();
   late SearchEmailFilter _memorySearchFilter;
-
-  PresentationMailbox? _destinationMailboxSelected;
 
   late Worker _dashboardActionWorker;
 
@@ -103,7 +99,7 @@ class AdvancedFilterController extends BaseController {
 
   @visibleForTesting
   void setDestinationMailboxSelected(PresentationMailbox? presentationMailbox) {
-    _destinationMailboxSelected = presentationMailbox;
+    destinationMailboxSelected.value = presentationMailbox;
   }
 
   @visibleForTesting
@@ -173,7 +169,7 @@ class AdvancedFilterController extends BaseController {
 
     final sortOrderTypeOption = Some(sortOrderType.value);
 
-    final mailboxOption = optionOf(_destinationMailboxSelected);
+    final mailboxOption = optionOf(destinationMailboxSelected.value);
 
     final subjectOption = option(
       subjectFilterInputController.text.trim().isNotEmpty,
@@ -228,7 +224,7 @@ class AdvancedFilterController extends BaseController {
       accountId,
       MailboxActions.select,
       session,
-      mailboxIdSelected: _destinationMailboxSelected?.id
+      mailboxIdSelected: destinationMailboxSelected.value?.id
     );
 
     final destinationMailbox = PlatformInfo.isWeb
@@ -239,12 +235,8 @@ class AdvancedFilterController extends BaseController {
 
     if (destinationMailbox is! PresentationMailbox) return;
 
-    _destinationMailboxSelected = destinationMailbox;
-    final mailboxName = context.mounted
-      ? _destinationMailboxSelected?.getDisplayName(context)
-      : _destinationMailboxSelected?.name?.name;
-    selectedFolderName.value = StringConvert.writeNullToEmpty(mailboxName);
-    _updateMemorySearchFilter(mailboxOption: optionOf(_destinationMailboxSelected));
+    destinationMailboxSelected.value = destinationMailbox;
+    _updateMemorySearchFilter(mailboxOption: optionOf(destinationMailbox));
   }
 
   void applyAdvancedSearchFilter() {
@@ -290,7 +282,7 @@ class AdvancedFilterController extends BaseController {
 
     sortOrderType.value = _memorySearchFilter.sortOrderType;
 
-    _destinationMailboxSelected = _memorySearchFilter.mailbox;
+    destinationMailboxSelected.value = _memorySearchFilter.mailbox;
 
     hasAttachment.value = _memorySearchFilter.hasAttachment;
 
@@ -318,13 +310,6 @@ class AdvancedFilterController extends BaseController {
         .map((email) => EmailAddress(null, email));
       listToEmailAddress = List.from(listEmailAddress);
       toAddressExpandMode.value = ExpandMode.COLLAPSE;
-    }
-
-    if (context != null) {
-      selectedFolderName.value = _memorySearchFilter.mailbox == null
-        ? AppLocalizations.of(context).allFolders
-        : StringConvert.writeNullToEmpty(
-            _memorySearchFilter.mailbox?.getDisplayName(context));
     }
 
     selectedLabel.value = _memorySearchFilter.label;
@@ -493,10 +478,9 @@ class AdvancedFilterController extends BaseController {
     isUnread.value = false;
     isStarred.value = false;
     hasEvents.value = false;
-    selectedFolderName.value = null;
+    destinationMailboxSelected.value = null;
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
-    _destinationMailboxSelected = null;
     selectedLabel.value = null;
   }
 

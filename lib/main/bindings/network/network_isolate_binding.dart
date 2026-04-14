@@ -24,7 +24,6 @@ import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
-import 'package:worker_manager/worker_manager.dart';
 
 class NetworkIsolateBindings extends Bindings {
 
@@ -96,16 +95,13 @@ class NetworkIsolateBindings extends Bindings {
     Get.put(ThreadIsolateWorker(
       Get.find<ThreadAPI>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
       Get.find<EmailAPI>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
-      Get.find<Executor>(),
     ));
     Get.put(MailboxIsolateWorker(
       Get.find<ThreadAPI>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
       Get.find<EmailAPI>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
-      Get.find<Executor>(),
     ));
     Get.put(FileUploader(
       Get.find<DioClient>(tag: PlatformInfo.isMobile ? BindingTag.isolateTag : null),
-      Get.find<Executor>(),
       Get.find<FileUtils>(),
     ));
   }

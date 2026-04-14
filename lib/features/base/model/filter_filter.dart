@@ -35,7 +35,7 @@ enum FilterField {
       case FilterField.notKeyword:
         return appLocalizations.doesNotHave;
       case FilterField.mailBox:
-        return appLocalizations.folder;
+        return appLocalizations.search;
       case FilterField.date:
         return appLocalizations.date;
       case FilterField.sortBy:

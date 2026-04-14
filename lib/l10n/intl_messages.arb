@@ -5471,5 +5471,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "allEmail": "All email",
+  "@allEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allEmailTrashAndSpam": "All Email, trash & spam",
+  "@allEmailTrashAndSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

@@ -3,6 +3,7 @@ import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/caching/manager/session_cache_manger.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
@@ -42,6 +43,7 @@ class CachingManager {
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
   final EncryptionKeyCacheManager _encryptionKeyCacheManager;
   final AuthenticationInfoCacheManager _authenticationInfoCacheManager;
+  final SentryConfigurationCacheManager? _sentryConfigurationCacheManager;
 
   CachingManager(
     this._mailboxCacheManager,
@@ -62,8 +64,9 @@ class CachingManager {
     this._tokenOidcCacheManager,
     this._oidcConfigurationCacheManager,
     this._encryptionKeyCacheManager,
-    this._authenticationInfoCacheManager,
-  );
+    this._authenticationInfoCacheManager, {
+    SentryConfigurationCacheManager? sentryConfigurationCacheManager,
+  }) : _sentryConfigurationCacheManager = sentryConfigurationCacheManager;
 
   Future<void> clearAll() async {
     try {
@@ -104,6 +107,8 @@ class CachingManager {
         _oidcConfigurationCacheManager.clear(),
         _tokenOidcCacheManager.clear(),
         _authenticationInfoCacheManager.clear(),
+        if (PlatformInfo.isMobile && _sentryConfigurationCacheManager != null)
+          _sentryConfigurationCacheManager!.clearSentryConfiguration(),
       ], eagerError: true);
     } catch (e) {
       logWarning('CachingManager::clearAccountDataCached: Cannot clear account data cache: $e');
