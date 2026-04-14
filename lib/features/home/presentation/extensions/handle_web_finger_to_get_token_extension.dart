@@ -7,6 +7,7 @@ import 'package:model/oidc/response/oidc_response.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/model/base_url_oidc_response.dart';
+import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -64,6 +65,7 @@ extension HandleWebFingerToGetTokenExtension on HomeController {
   bool isGetTokenOIDCFailure(Failure? failure) {
     return failure is GetOIDCConfigurationFailure ||
         failure is GetOIDCConfigurationFromBaseUrlFailure ||
+        (failure is AuthenticateOidcOnBrowserFailure && PlatformInfo.isIntegrationTesting) ||
         failure is GetTokenOIDCFailure;
   }
 }

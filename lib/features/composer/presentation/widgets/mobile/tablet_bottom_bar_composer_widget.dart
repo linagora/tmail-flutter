@@ -3,6 +3,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile/tablet_bottom_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -97,6 +98,7 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
             ),
             const SizedBox(width: TabletBottomBarComposerWidgetStyle.sendButtonSpace),
             TMailButtonWidget(
+              key: const ValueKey(UiKeys.sendEmailButton),
               text: AppLocalizations.of(context).send,
               icon: imagePaths.icSend,
               iconAlignment: TextDirection.rtl,
