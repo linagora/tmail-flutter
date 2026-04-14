@@ -1,24 +1,18 @@
 #!/bin/bash
 
 ## Pre-requisites
-# Install ngrok
 # Install patrol CLI
-# Open android emulator
+echo "Installing patrol CLI..."
+dart pub global activate patrol_cli 4.3.1
 
-# Stoping previous environment if any
-killall ngrok || true
+# Stop previous environment if any
 cd backend-docker
 docker compose down || true
 cd ..
 
 # Forward traffic to tmail-backend
-ngrok http http://localhost:80 --log=stdout >/dev/null &
-until [[ $(curl localhost:4040/api/status | jq -r ".status") == "online" ]]; do
-    echo "Waiting for ngrok to connect..."
-    sleep 2
-done
-
-export BASIC_AUTH_URL=$(curl -s localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+export BASIC_AUTH_URL="http://localhost/"
+export WEBSOCKET_URL="ws://localhost/"
 
 cd backend-docker
 
@@ -27,10 +21,10 @@ echo "Generating keys for tmail-backend..."
 openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey
 openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
 
-# Replace content of jmap.properties with url.prefix=$BASIC_AUTH_URL
-# and websocket.url.prefix=ws${BASIC_AUTH_URL:4}
-sed -i '' "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties
-sed -i '' "s|websocket.url.prefix=.*|websocket.url.prefix=ws${BASIC_AUTH_URL:4}|" jmap.properties
+# Replace jmap.properties URLs so James reports the correct public base URL
+# in its JMAP session responses (the app uses these URLs for subsequent requests).
+sed -i "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties
+sed -i "s|websocket.url.prefix=.*|websocket.url.prefix=$WEBSOCKET_URL|" jmap.properties
 
 echo "Starting services and adding users..."
 docker compose up -d
@@ -47,19 +41,26 @@ docker exec tmail-backend ./root/conf/integration_test/provisioning.sh
 
 cd ..
 
+echo "Copying integration_test/integration_test_env.file to env.file..."
+cp integration_test/integration_test_env.file env.file
+
 echo "Building the app and running tests..."
-flutter build apk --config-only
 patrol test -v \
-    --exclude-tags=web \
+    --device=chrome \
+    --web-port=3000 \
+    --tags=web \
+    --web-headless=true \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
     --dart-define=BASIC_AUTH_EMAIL="$BOB@$DOMAIN" \
     --dart-define=BASIC_AUTH_URL="$BASIC_AUTH_URL"
+TEST_EXIT_CODE=$?
 
-# Clean up
+# Clean up (runs regardless of test result)
 echo "Cleaning up test environment..."
-killall ngrok
 cd backend-docker
 docker compose down
 cd ..
+
+exit $TEST_EXIT_CODE
