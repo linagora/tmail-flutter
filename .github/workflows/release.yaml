@@ -99,11 +99,12 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         run: |
           # 1. Install Sentry CLI
-          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.20.7" bash
+          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
 
           # 2. Validate tag version matches pubspec.yaml version
           TAG_VERSION="${GITHUB_REF_NAME#v}"
-          PUBSPEC_VERSION=$(awk '/^version:/{print $2; exit}' pubspec.yaml)
+          TAG_VERSION="${TAG_VERSION%%-rc*}"
+          PUBSPEC_VERSION=$(awk '/^version:/{split($2,a,"+"); print a[1]; exit}' pubspec.yaml)
           if [ "$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
             echo "::error::Tag version ($TAG_VERSION) does not match pubspec version ($PUBSPEC_VERSION)."
             exit 1
