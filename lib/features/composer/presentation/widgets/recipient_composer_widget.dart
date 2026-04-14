@@ -210,7 +210,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                         _currentListEmailAddress.isEmpty
                         : false,
                     focusNodeKeyboard: widget.focusNodeKeyboard,
-                    keyboardType: TextInputType.emailAddress,
+                      keyboardType: PlatformInfo.isMobile
+                          ? TextInputType.emailAddress
+                          : TextInputType.text,
                     textInputAction: TextInputAction.done,
                     debounceDuration:
                     RecipientComposerWidgetStyle.suggestionDebounceDuration,

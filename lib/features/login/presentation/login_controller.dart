@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dar
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
+import 'package:tmail_ui_user/features/login/domain/state/authenticate_oidc_on_browser_state.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
@@ -166,6 +167,7 @@ class LoginController extends ReloadableController {
       handleGetOIDCConfigurationFromBaseUrlFailure();
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
+        (failure is AuthenticateOidcOnBrowserFailure && PlatformInfo.isIntegrationTesting) ||
         failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
@@ -231,6 +233,7 @@ class LoginController extends ReloadableController {
       handleGetOIDCConfigurationFromBaseUrlFailure();
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
+        (failure is AuthenticateOidcOnBrowserFailure && PlatformInfo.isIntegrationTesting) ||
         failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
