@@ -1,5 +1,6 @@
 import '../base/base_scenario.dart';
-import '../scenarios/login_with_basic_auth_scenario.dart';
+import '../scenarios/login_with_basic_auth_scenario.dart'
+    if (dart.library.html) '../scenarios/web_login_with_basic_auth_scenario.dart';
 
 mixin RequiresLoginMixin on BaseScenario {
   Future<void> executeLoginScenario() async {

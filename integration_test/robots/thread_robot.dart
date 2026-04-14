@@ -2,7 +2,7 @@ import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:labels/extensions/label_extension.dart';
-import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
@@ -14,7 +14,7 @@ class ThreadRobot extends CoreRobot {
   ThreadRobot(super.$);
 
   Future<void> openComposer() async {
-    await $(ComposeFloatingButton).$(InkWell).tap();
+    await $(const ValueKey(UiKeys.composeEmailButton)).$(InkWell).tap();
   }
 
   Future<void> openSearchView() async {

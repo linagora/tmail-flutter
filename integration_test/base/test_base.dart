@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
 
+import '../models/test_tags.dart';
 import 'base_scenario.dart';
 
 class TestBase {
@@ -16,6 +17,7 @@ class TestBase {
   void runPatrolTest({
     required String description,
     required BaseScenario Function(PatrolIntegrationTester $) scenarioBuilder,
+    List<TestTags> tags = const [],
   }) {
     patrolSetUp(_setup);
 
@@ -32,6 +34,7 @@ class TestBase {
         findTimeout: const Duration(seconds: 10),
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
+      tags: tags.map((tag) => tag.name).toList(),
       ($) async {
         await setupTest();
         await scenarioBuilder($).execute();
