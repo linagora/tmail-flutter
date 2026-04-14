@@ -99,7 +99,7 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         run: |
           # 1. Install Sentry CLI
-          curl -sL https://sentry.io/get-cli/ | bash
+          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.20.7" bash
 
           # 2. Validate tag version matches pubspec.yaml version
           TAG_VERSION="${GITHUB_REF_NAME#v}"
