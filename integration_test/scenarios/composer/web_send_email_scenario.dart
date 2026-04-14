@@ -1,0 +1,52 @@
+import 'package:core/core.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:model/email/prefix_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+import '../../base/base_test_scenario.dart';
+import '../../robots/composer_robot.dart';
+import '../../robots/thread_robot.dart';
+
+class WebSendEmailScenario extends BaseTestScenario {
+  const WebSendEmailScenario(super.$, {this.customSubject});
+
+  final String? customSubject;
+
+  @override
+  Future<void> runTestLogic() async {
+    const additionalRecipient = String.fromEnvironment('ADDITIONAL_MAIL_RECIPIENT');
+    const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
+    const subject = 'Test subject';
+    const content = 'Test content';
+
+    final threadRobot = ThreadRobot($);
+    final composerRobot = ComposerRobot($);
+    final imagePaths = ImagePaths();
+
+    await threadRobot.openComposer();
+    await _expectComposerViewVisible();
+
+    await composerRobot.addRecipientIntoField(
+      prefixEmailAddress: PrefixEmailAddress.to,
+      email: email,
+    );
+    await composerRobot.addRecipientIntoField(
+      prefixEmailAddress: PrefixEmailAddress.to,
+      email: additionalRecipient,
+    );
+    await composerRobot.addSubject(customSubject ?? subject);
+    await composerRobot.addContentWeb(content);
+    await composerRobot.sendEmail(imagePaths);
+
+    await _expectSendEmailSuccessToast();
+  }
+  
+  Future<void> _expectComposerViewVisible() => expectViewVisible($(ComposerView));
+
+  Future<void> _expectSendEmailSuccessToast() async {
+    await expectViewVisible(
+      $(find.text(AppLocalizations().message_has_been_sent_successfully)),
+    );
+  }
+}
