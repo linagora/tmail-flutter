@@ -167,9 +167,10 @@ class LoginController extends ReloadableController {
       handleGetOIDCConfigurationFromBaseUrlFailure();
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
-        (failure is AuthenticateOidcOnBrowserFailure && PlatformInfo.isIntegrationTesting) ||
         failure is SignInTwakeWorkplaceFailure
     ) {
+      _handleCommonOIDCFailure();
+    } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
       _handleCommonOIDCFailure();
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
@@ -233,9 +234,10 @@ class LoginController extends ReloadableController {
       handleGetOIDCConfigurationFromBaseUrlFailure();
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
-        (failure is AuthenticateOidcOnBrowserFailure && PlatformInfo.isIntegrationTesting) ||
         failure is SignInTwakeWorkplaceFailure
     ) {
+      _handleCommonOIDCFailure();
+    } else if (failure is AuthenticateOidcOnBrowserFailure && featureFailure != null) {
       _handleCommonOIDCFailure();
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)

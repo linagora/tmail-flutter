@@ -65,7 +65,7 @@ extension HandleWebFingerToGetTokenExtension on HomeController {
   bool isGetTokenOIDCFailure(Failure? failure) {
     return failure is GetOIDCConfigurationFailure ||
         failure is GetOIDCConfigurationFromBaseUrlFailure ||
-        (failure is AuthenticateOidcOnBrowserFailure && PlatformInfo.isIntegrationTesting) ||
+        failure is AuthenticateOidcOnBrowserFailure ||
         failure is GetTokenOIDCFailure;
   }
 }
