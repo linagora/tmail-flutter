@@ -28,6 +28,7 @@ import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_g
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_response.dart';
 import 'package:tmail_ui_user/features/base/mixin/session_mixin.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/query_email_method_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
@@ -70,6 +71,7 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
       int? position,
       Set<Comparator>? sort,
       Filter? filter,
+      bool? collapseThreads,
       Properties? properties
     }
   ) async {
@@ -78,15 +80,12 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
     final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
 
     // Email/query
-    final queryEmailMethod = QueryEmailMethod(accountId);
-
-    if (limit != null) queryEmailMethod.addLimit(limit);
-
-    if (position != null && position > 0) queryEmailMethod.addPosition(position);
-
-    if (sort != null) queryEmailMethod.addSorts(sort);
-
-    if (filter != null) queryEmailMethod.addFilters(filter);
+    final queryEmailMethod = QueryEmailMethod(accountId)
+      ..addLimitIfNotNull(limit)
+      ..addPositionIfValid(position)
+      ..addSortsIfNotNull(sort)
+      ..addFiltersIfNotNull(filter)
+      ..addCollapseThreadsIfValid(collapseThreads);
 
     final queryEmailInvocation = jmapRequestBuilder.invocation(queryEmailMethod);
 
