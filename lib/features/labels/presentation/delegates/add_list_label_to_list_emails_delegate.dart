@@ -66,7 +66,6 @@ class AddListLabelToListEmailsDelegate extends BaseController {
       return;
     }
 
-    // Store callback before consumeState (stream-based async)
     consumeState(_interactor.execute(session!, accountId!, params));
   }
 
