@@ -29,7 +29,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_service.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -87,6 +89,7 @@ const fallbackGenerators = {
   MockSpec<SearchMoreEmailInteractor>(),
   MockSpec<GetEmailByIdInteractor>(),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
+  MockSpec<LocalSettingsService>(fallbackGenerators: fallbackGenerators),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -103,6 +106,7 @@ void main() {
   late MockSearchMoreEmailInteractor mockSearchMoreEmailInteractor;
   late MockGetEmailByIdInteractor mockGetEmailByIdInteractor;
   late MockCleanAndGetEmailsInMailboxInteractor mockCleanAndGetEmailsInMailboxInteractor;
+  late MockLocalSettingsService mockLocalSettingsService;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -153,6 +157,10 @@ void main() {
     Get.put<Uuid>(mockUuid);
     Get.put<ToastManager>(mockToastManager);
     Get.put<TwakeAppManager>(mockTwakeAppManager);
+
+    mockLocalSettingsService = MockLocalSettingsService();
+    when(mockLocalSettingsService.localSettings).thenReturn(PreferencesSetting.initial().obs);
+    Get.put<LocalSettingsService>(mockLocalSettingsService);
 
     // Mock thread controller
     mockNetworkConnectionController = MockNetworkConnectionController();
@@ -325,6 +333,7 @@ void main() {
           position: anyNamed('position'),
           sort:anyNamed('sort'),
           filter: anyNamed('filter'),
+          collapseThreads: anyNamed('collapseThreads'),
           properties: anyNamed('properties'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
@@ -357,6 +366,7 @@ void main() {
           position: anyNamed('position'),
           sort:anyNamed('sort'),
           filter: anyNamed('filter'),
+          collapseThreads: anyNamed('collapseThreads'),
           properties: anyNamed('properties'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         ));
@@ -369,6 +379,7 @@ void main() {
           position: null,
           sort: SearchEmailFilter.defaultSortOrder.getSortOrder().toNullable(),
           filter: SearchEmailFilter.initial().mappingToEmailFilterCondition(),
+          collapseThreads: false,
           properties: EmailUtils.getPropertiesForEmailGetMethod(
             SessionFixtures.aliceSession,
             AccountFixtures.aliceAccountId),
@@ -420,6 +431,7 @@ void main() {
           position: anyNamed('position'),
           sort:anyNamed('sort'),
           filter: anyNamed('filter'),
+          collapseThreads: anyNamed('collapseThreads'),
           properties: anyNamed('properties'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
@@ -435,6 +447,7 @@ void main() {
           position: anyNamed('position'),
           sort:anyNamed('sort'),
           filter: anyNamed('filter'),
+          collapseThreads: anyNamed('collapseThreads'),
           properties: anyNamed('properties'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         ));
@@ -447,6 +460,7 @@ void main() {
           position: null,
           sort: SearchEmailFilter.defaultSortOrder.getSortOrder().toNullable(),
           filter: SearchEmailFilter.initial().mappingToEmailFilterCondition(),
+          collapseThreads: false,
           properties: EmailUtils.getPropertiesForEmailGetMethod(
             SessionFixtures.aliceSession,
             AccountFixtures.aliceAccountId),

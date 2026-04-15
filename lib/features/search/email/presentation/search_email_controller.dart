@@ -53,6 +53,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_s
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_store_email_sort_order_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_service.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_emails_with_new_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -160,6 +161,13 @@ class SearchEmailController extends BaseController
   Set<String> get listAddressOfFromFiltered => searchEmailFilter.value.from;
 
   Set<String> get listHasKeywordFiltered => searchEmailFilter.value.hasKeyword;
+
+  late final LocalSettingsService _localSettingsService = Get.find<LocalSettingsService>();
+
+  bool get _isCollapseThreadsEnabled {
+    if (!Get.isRegistered<LocalSettingsService>()) return false;
+    return _localSettingsService.localSettings.value.threadConfig.isEnabled;
+  }
 
   SearchEmailController(
       this._quickSearchEmailInteractor,
@@ -373,6 +381,7 @@ class SearchEmailController extends BaseController
           trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
+        collapseThreads: _isCollapseThreadsEnabled,
       ).last;
 
       final searchState = searchViewState
@@ -446,7 +455,9 @@ class SearchEmailController extends BaseController
           filter: searchEmailFilter.value.mappingToEmailFilterCondition(
             trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
           ),
-          properties: EmailUtils.getPropertiesForEmailGetMethod(session, accountId))
+          properties: EmailUtils.getPropertiesForEmailGetMethod(session, accountId),
+          collapseThreads: _isCollapseThreadsEnabled,
+        )
         .then((result) => result.fold(
             (failure) => <PresentationEmail>[],
             (success) => success is QuickSearchEmailSuccess
@@ -515,6 +526,7 @@ class SearchEmailController extends BaseController
         trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
       ),
       properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
+      collapseThreads: _isCollapseThreadsEnabled,
     ));
   }
 
@@ -575,6 +587,7 @@ class SearchEmailController extends BaseController
           trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
+        collapseThreads: _isCollapseThreadsEnabled,
         lastEmailId: lastEmail.id
       ));
     }

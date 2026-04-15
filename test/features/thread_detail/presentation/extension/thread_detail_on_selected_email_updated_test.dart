@@ -37,6 +37,7 @@ void main() {
       .thenReturn(Properties.empty());
     when(threadDetailController.mailboxDashBoardController)
       .thenReturn(mailboxDashboardController);
+    when(mailboxDashboardController.isEmailOpened).thenReturn(true);
   });
   
   group('thread detail on selected email updated test:', () {

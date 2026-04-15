@@ -573,6 +573,7 @@ void main() {
       position: anyNamed('position'),
       sort: anyNamed('sort'),
       filter: anyNamed('filter'),
+      collapseThreads: anyNamed('collapseThreads'),
       properties: anyNamed('properties')));
 
     // assert

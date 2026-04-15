@@ -123,7 +123,9 @@ import 'package:tmail_ui_user/features/manage_account/domain/repository/identity
 import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_ai_scribe_config_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/bindings/setting_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_service.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
@@ -174,6 +176,10 @@ class MailboxDashBoardBindings extends BaseBindings {
   void dependencies() {
     CleanupBindings().dependencies();
     super.dependencies();
+    Get.put(LocalSettingsService(
+      Get.find<GetLocalSettingsInteractor>(),
+      Get.find<MailboxDashBoardController>().threadDetailUIAction,
+    ));
     SendingQueueBindings().dependencies();
     MailboxBindings().dependencies();
     ThreadBindings().dependencies();

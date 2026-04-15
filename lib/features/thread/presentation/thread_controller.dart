@@ -41,6 +41,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/labels/presentation/delegates/add_list_label_to_list_emails_delegate.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_service.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -125,6 +126,13 @@ class ThreadController extends BaseController with EmailActionController {
   search.SearchController get searchController => mailboxDashBoardController.searchController;
 
   SearchEmailFilter get _searchEmailFilter => searchController.searchEmailFilter.value;
+
+  late final LocalSettingsService _localSettingsService = Get.find<LocalSettingsService>();
+
+  bool get _isCollapseThreadsEnabled {
+    if (!Get.isRegistered<LocalSettingsService>()) return false;
+    return _localSettingsService.localSettings.value.threadConfig.isEnabled;
+  }
 
   SearchQuery? get searchQuery => _searchEmailFilter.text;
 
@@ -423,6 +431,17 @@ class ThreadController extends BaseController with EmailActionController {
         _peakEmailCount = 0;
       } else if (countEmails > _peakEmailCount) {
         _peakEmailCount = countEmails;
+      }
+    });
+
+    _registerLocalSettingsListener();
+  }
+
+  void _registerLocalSettingsListener() {
+    if (!Get.isRegistered<LocalSettingsService>()) return;
+    ever(_localSettingsService.localSettings, (_) {
+      if (searchController.isSearchEmailRunning) {
+        _refreshChangeSearchEmail();
       }
     });
   }
@@ -782,6 +801,7 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
       ),
+      collapseThreads: _isCollapseThreadsEnabled,
       needRefreshSearchState: true,
     ).last;
 
@@ -1152,6 +1172,7 @@ class ThreadController extends BaseController with EmailActionController {
           trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
+        collapseThreads: _isCollapseThreadsEnabled,
         needRefreshSearchState: needRefreshSearchState
       ));
     } else {
@@ -1239,6 +1260,7 @@ class ThreadController extends BaseController with EmailActionController {
           trashSpamMailboxIds: mailboxDashBoardController.trashSpamMailboxIds,
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
+        collapseThreads: _isCollapseThreadsEnabled,
         lastEmailId: lastEmail?.id
       ));
     } else {
