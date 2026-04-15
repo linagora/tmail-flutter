@@ -21,9 +21,6 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_i
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/labels/add_list_label_to_list_emails_interactor.dart';
-import 'package:tmail_ui_user/features/labels/presentation/delegates/add_list_label_to_list_emails_delegate.dart';
-import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
@@ -41,10 +38,6 @@ class ThreadBindings extends BaseBindings {
       Get.find<SearchMoreEmailInteractor>(),
       Get.find<GetEmailByIdInteractor>(),
       Get.find<CleanAndGetEmailsInMailboxInteractor>(),
-    ));
-    Get.put(AddListLabelToListEmailsDelegate(
-      Get.find<LabelController>(),
-      Get.find<AddListLabelToListEmailsInteractor>(),
     ));
   }
 

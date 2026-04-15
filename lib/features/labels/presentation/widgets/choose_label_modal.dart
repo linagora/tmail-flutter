@@ -169,7 +169,8 @@ class _ChooseLabelModalState extends State<ChooseLabelModal> {
   void _onToggleLabel(Label selectedLabel) {
     final currentLabels = _selectedLabelStateNotifier.value;
 
-    if (currentLabels.contains(selectedLabel)) {
+    final isAlreadySelected = currentLabels.any((label) => label.id == selectedLabel.id);
+    if (isAlreadySelected) {
       _selectedLabelStateNotifier.value =
           currentLabels.where((label) => label.id != selectedLabel.id).toList();
     } else {

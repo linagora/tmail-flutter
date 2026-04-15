@@ -25,7 +25,7 @@ class AddListLabelsToListEmailsSuccess extends UIState {
   });
 
   @override
-  List<Object?> get props => [emailIds, labelKeywords, labelDisplays, onSync];
+  List<Object?> get props => [emailIds, labelKeywords, labelDisplays];
 }
 
 class AddListLabelsToListEmailsHasSomeFailure

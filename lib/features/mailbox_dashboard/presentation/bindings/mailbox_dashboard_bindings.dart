@@ -58,6 +58,8 @@ import 'package:tmail_ui_user/features/identity_creator/data/datasource_impl/loc
 import 'package:tmail_ui_user/features/identity_creator/data/repository/identity_creator_repository_impl.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/repository/identity_creator_repository.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/labels/add_list_label_to_list_emails_interactor.dart';
+import 'package:tmail_ui_user/features/labels/presentation/delegates/add_list_label_to_list_emails_delegate.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -212,6 +214,10 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetSpamMailboxCachedInteractor>()));
 
     Get.put(LabelController());
+    Get.put(AddListLabelToListEmailsDelegate(
+      Get.find<LabelController>(),
+      Get.find<AddListLabelToListEmailsInteractor>(),
+    ));
 
     Get.lazyPut(() => ComposerManager());
 

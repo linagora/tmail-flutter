@@ -14,6 +14,6 @@ class EmailActionInteractorBindings extends Bindings {
   void dependencies() {
     Get.lazyPut(() => AddALabelToAnEmailInteractor(_emailRepository));
     Get.lazyPut(() => RemoveALabelFromAnEmailInteractor(_emailRepository));
-    Get.put(AddListLabelToListEmailsInteractor(_emailRepository));
+    Get.lazyPut(() => AddListLabelToListEmailsInteractor(_emailRepository));
   }
 }
