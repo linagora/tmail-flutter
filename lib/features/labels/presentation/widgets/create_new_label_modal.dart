@@ -114,7 +114,11 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
     final appLocalizations = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
-    return LayoutBuilder(builder: (_, constraints) {
+    return ValueListenableBuilder<LabelPositiveButtonState>(
+      valueListenable: _createLabelStateNotifier,
+      builder: (_, labelState, __) => PopScope(
+        canPop: labelState != LabelPositiveButtonState.progressing,
+        child: LayoutBuilder(builder: (_, constraints) {
       final currentScreenWidth = constraints.maxWidth;
       final currentScreenHeight = constraints.maxHeight;
       final isMobile = currentScreenWidth < ResponsiveUtils.minTabletWidth;
@@ -256,7 +260,9 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       }
 
       return bodyWidget;
-    });
+        }),
+      ),
+    );
   }
 
   Widget _buildTitle(
