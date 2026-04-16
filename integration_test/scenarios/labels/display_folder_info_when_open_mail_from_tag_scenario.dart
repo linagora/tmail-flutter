@@ -34,16 +34,7 @@ class DisplayFolderInfoWhenOpenMailFromTagScenario extends BaseTestScenario
       buildEmailsForLabel(
         label: newLabel,
         toEmail: emailUser,
-        count: 1,
-      ),
-      requestReadReceipt: false,
-      folderLocationRole: PresentationMailbox.roleTrash,
-    );
-    await provisionEmail(
-      buildEmailsForLabel(
-        label: newLabel,
-        toEmail: emailUser,
-        count: 1,
+        count: 2,
       ),
       requestReadReceipt: false,
       folderLocationRole: PresentationMailbox.roleTrash,
