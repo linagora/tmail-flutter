@@ -49,7 +49,7 @@ class CreateANewTagFromAnEmailScenario extends BaseTestScenario
     await addLabelModalRobot.tapCreateANewLabel();
     await _expectCreateNewLabelModalVisible();
 
-    const newLabelName = 'New Label 1';
+    final newLabelName = 'New Label ${DateTime.now().microsecondsSinceEpoch}';
     await createLabelModalRobot.enterNewLabelName(newLabelName);
     await createLabelModalRobot.tapPositiveActionButton(LabelActionType.create);
     await _expectLabelAsToEmailToastMessageSuccessVisible(

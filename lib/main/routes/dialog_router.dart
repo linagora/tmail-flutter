@@ -41,8 +41,9 @@ class DialogRouter {
       );
 
       return returnedValue;
-    } catch (e) {
-      logWarning('DialogRouter::pushGeneralDialog: Exception = $e');
+    } catch (e, stackTrace) {
+      logWarning('DialogRouter::pushGeneralDialog: Exception = $e\n$stackTrace');
+      rethrow;
     } finally {
       if (PlatformInfo.isWeb) {
         _isMapDialogOpened.remove(routeName);
@@ -112,8 +113,9 @@ class DialogRouter {
         barrierLabel: dialogLabel,
         pageBuilder: (_, __, ___) => child,
       );
-    } catch (e) {
-      logWarning('DialogRouter::openDialogModal: Exception = $e');
+    } catch (e, stackTrace) {
+      logWarning('DialogRouter::openDialogModal: Exception = $e\n$stackTrace');
+      rethrow;
     } finally {
       if (PlatformInfo.isWeb && dialogLabel != null) {
         _isMapDialogOpened.remove(dialogLabel);

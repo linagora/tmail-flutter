@@ -422,6 +422,9 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   }
 
   void _onCloseModal() {
+    if (_createLabelStateNotifier.value == LabelPositiveButtonState.progressing) {
+      return;
+    }
     _clearInputFocus();
     popBack();
   }

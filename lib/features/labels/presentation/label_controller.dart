@@ -107,10 +107,10 @@ class LabelController extends BaseController
   }
 
   @override
-  CreateNewLabelInteractor? get createNewLabelInteractor => _createNewLabelInteractor;
+  CreateNewLabelInteractor get createNewLabelInteractor => _createNewLabelInteractor!;
 
   @override
-  EditLabelInteractor? get editLabelInteractor => _editLabelInteractor;
+  EditLabelInteractor get editLabelInteractor => _editLabelInteractor!;
 
   DeleteALabelInteractor? get deleteALabelInteractor => _deleteALabelInteractor;
 
@@ -221,9 +221,6 @@ class LabelController extends BaseController
     bool shouldPop = false,
   }) {
     toastManager.showMessageFailure(failure);
-    if (shouldPop) {
-      popBack();
-    }
   }
 
   void _addLabelToList(Label newLabel) {

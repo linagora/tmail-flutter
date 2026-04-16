@@ -12,8 +12,8 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 mixin LabelModalMixin {
   List<Label> get labels;
   ImagePaths get imagePaths;
-  CreateNewLabelInteractor? get createNewLabelInteractor;
-  EditLabelInteractor? get editLabelInteractor;
+  CreateNewLabelInteractor get createNewLabelInteractor;
+  EditLabelInteractor get editLabelInteractor;
 
   Future<dynamic> openCreateNewLabelModal({
     required AccountId accountId,
@@ -26,8 +26,8 @@ mixin LabelModalMixin {
         accountId: accountId,
         imagePaths: imagePaths,
         verifyNameInteractor: verifyNameInteractor,
-        createNewLabelInteractor: createNewLabelInteractor!,
-        editLabelInteractor: editLabelInteractor!,
+        createNewLabelInteractor: createNewLabelInteractor,
+        editLabelInteractor: editLabelInteractor,
       ),
       dialogLabel: 'create-new-label-modal',
     );
@@ -47,8 +47,8 @@ mixin LabelModalMixin {
         selectedLabel: selectedLabel,
         actionType: LabelActionType.edit,
         verifyNameInteractor: verifyNameInteractor,
-        createNewLabelInteractor: createNewLabelInteractor!,
-        editLabelInteractor: editLabelInteractor!,
+        createNewLabelInteractor: createNewLabelInteractor,
+        editLabelInteractor: editLabelInteractor,
       ),
       dialogLabel: 'edit-label-modal',
     );

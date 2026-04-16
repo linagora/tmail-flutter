@@ -55,14 +55,17 @@ class ModalListActionButtonWidget extends StatelessWidget {
       ),
     );
 
-    Widget progressingButton = const SizedBox(
+    Widget progressingButton = SizedBox(
       height: 48,
       width: 153,
       child: ConfirmDialogButton(
-        label: '',
+        label: positiveLabel,
         padding: EdgeInsets.zero,
         backgroundColor: AppColor.primaryMain,
-        child: CupertinoLoadingWidget(color: Colors.white),
+        child: CupertinoLoadingWidget(
+          color: Colors.white,
+          semanticLabel: positiveLabel,
+        ),
       ),
     );
 

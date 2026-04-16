@@ -651,11 +651,16 @@ class ThreadView extends GetWidget<ThreadController>
           dashboardController.toggleLabelToEmail(emailId, label, isSelected);
         },
         onCreateANewLabelAction: () {
+          final emailId = email.id;
+          if (emailId == null) {
+            logWarning('ThreadView::onCreateANewLabelAction: Email id is null');
+            return;
+          }
           dashboardController.labelController.handleLabelActionType(
             actionType: LabelActionType.create,
             accountId: dashboardController.accountId.value,
             onLabelActionCallback: (label) =>
-                dashboardController.toggleLabelToEmail(email.id!, label, true),
+                dashboardController.toggleLabelToEmail(emailId, label, true),
           );
         },
       ),
