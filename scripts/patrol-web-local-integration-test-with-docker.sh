@@ -47,7 +47,7 @@ patrol test -v \
     --device=chrome \
     --web-port=3000 \
     --tags=web \
-    --web-browser-args='["--lang=en-US"]' \
+    --web-browser-args='["--lang=en-US","--accept-lang=en-US,en"]' \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \
