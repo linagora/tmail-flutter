@@ -4,7 +4,6 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:labels/model/label.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
@@ -22,7 +21,6 @@ class TopBarThreadSelection extends StatelessWidget{
   final VoidCallback? onCancelSelection;
   final ImagePaths imagePaths;
   final bool isLabelAvailable;
-  final List<Label> labels;
 
   const TopBarThreadSelection (
     this.listEmail,
@@ -31,7 +29,6 @@ class TopBarThreadSelection extends StatelessWidget{
     {
       super.key,
       required this.isLabelAvailable,
-      required this.labels,
       this.onEmailActionTypeAction,
       this.onCancelSelection,
     }
@@ -109,7 +106,7 @@ class TopBarThreadSelection extends StatelessWidget{
           EmailActionType.moveToMailbox,
         ),
       ),
-      if (isLabelAvailable && labels.isNotEmpty)
+      if (isLabelAvailable)
         TMailButtonWidget.fromIcon(
           icon: imagePaths.icTag,
           iconSize: TopBarThreadSelectionStyle.iconSize,

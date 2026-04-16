@@ -5513,5 +5513,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "noLabelsYet": "No Labels yet",
+  "@noLabelsYet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLabelsYetMessageDescriptions": "Create your first label to organize your emails more efficiently.",
+  "@noLabelsYetMessageDescriptions": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createALabel": "Create a label",
+  "@createALabel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

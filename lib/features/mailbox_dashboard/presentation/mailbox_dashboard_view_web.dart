@@ -396,7 +396,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   controller.mapMailboxById,
                   controller.imagePaths,
                   isLabelAvailable: controller.isLabelAvailable,
-                  labels: controller.labelController.labels,
                   onCancelSelection: () =>
                     controller.dispatchAction(CancelSelectionAllEmailAction()),
                   onEmailActionTypeAction: (listEmails, actionType) =>
