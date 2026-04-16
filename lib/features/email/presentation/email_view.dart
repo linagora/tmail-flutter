@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loa
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_ai_needs_action_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/labels/handle_logic_label_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
@@ -280,6 +281,20 @@ class EmailView extends GetWidget<SingleEmailController> {
               imagePaths: controller.imagePaths,
               isMobileResponsive: isMobileResponsive,
               labels: emailLabels,
+              showNeedsAction: controller
+                      .mailboxDashBoardController.isAINeedsActionEnabled &&
+                  presentationEmail.hasNeedAction,
+              onDeleteNeedsAction: () {
+                final context = Get.context;
+                final labelDisplay = context == null
+                    ? 'Action Required'
+                    : AppLocalizations.of(context).actionRequired;
+
+                controller.onRemoveNeedsActionKeyword(
+                  presentationEmail.id,
+                  labelDisplay: labelDisplay,
+                );
+              },
               onDeleteLabelAction: (label) => controller.onToggleLabelAction(
                 emailId: presentationEmail.id,
                 label: label,
