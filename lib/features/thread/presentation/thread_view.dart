@@ -611,44 +611,55 @@ class ThreadView extends GetWidget<ThreadController>
           isLabelMailboxOpened: isLabelMailboxOpened,
           labels: emailLabels,
           emailActionClick: _handleEmailActionClicked,
-          onMoreActionClick: (email, position) async {
-            await openMoreActionContextMenu(
-              EmailContextMenuParams(
-                context: context,
-                email: email,
-                imagePaths: controller.imagePaths,
-                isLabelAvailable: isLabelAvailable,
-                labels: listLabels,
-                position: position,
-                openBottomSheetContextMenu: dashboardController.openBottomSheetContextMenu,
-                openPopupMenu: dashboardController.openPopupMenuActionGroup,
-                onHandleEmailByActionType: controller.handleEmailActionType,
-                onSelectLabelAction: (label, isSelected) {
-                  final emailId = presentationEmail.id;
-                  if (emailId == null) {
-                    logWarning('ThreadView::onSelectLabelAction: Email id is null');
-                    return;
-                  }
-                  dashboardController.toggleLabelToEmail(
-                    emailId,
-                    label,
-                    isSelected,
-                  );
-                },
-                onCreateANewLabelAction: () {
-                  dashboardController.labelController.handleLabelActionType(
-                    actionType: LabelActionType.create,
-                    accountId: dashboardController.accountId.value,
-                    onLabelActionCallback: (label) => dashboardController
-                        .toggleLabelToEmail(email.id!, label, true),
-                  );
-                },
-              ),
-            );
-          }
+          onMoreActionClick: (email, position) => _openMoreActionForEmail(
+            context: context,
+            email: email,
+            position: position,
+            isLabelAvailable: isLabelAvailable,
+            listLabels: listLabels,
+          ),
         ),
       );
     });
+  }
+
+  Future<void> _openMoreActionForEmail({
+    required BuildContext context,
+    required PresentationEmail email,
+    required RelativeRect? position,
+    required bool isLabelAvailable,
+    required List<Label> listLabels,
+  }) async {
+    final dashboardController = controller.mailboxDashBoardController;
+    await openMoreActionContextMenu(
+      EmailContextMenuParams(
+        context: context,
+        email: email,
+        imagePaths: controller.imagePaths,
+        isLabelAvailable: isLabelAvailable,
+        labels: listLabels,
+        position: position,
+        openBottomSheetContextMenu: dashboardController.openBottomSheetContextMenu,
+        openPopupMenu: dashboardController.openPopupMenuActionGroup,
+        onHandleEmailByActionType: controller.handleEmailActionType,
+        onSelectLabelAction: (label, isSelected) {
+          final emailId = email.id;
+          if (emailId == null) {
+            logWarning('ThreadView::onSelectLabelAction: Email id is null');
+            return;
+          }
+          dashboardController.toggleLabelToEmail(emailId, label, isSelected);
+        },
+        onCreateANewLabelAction: () {
+          dashboardController.labelController.handleLabelActionType(
+            actionType: LabelActionType.create,
+            accountId: dashboardController.accountId.value,
+            onLabelActionCallback: (label) =>
+                dashboardController.toggleLabelToEmail(email.id!, label, true),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildEmailSwipeBackground(BuildContext context, PresentationEmail presentationEmail) {
