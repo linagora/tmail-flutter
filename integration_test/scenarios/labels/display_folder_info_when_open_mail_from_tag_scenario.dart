@@ -16,6 +16,9 @@ class DisplayFolderInfoWhenOpenMailFromTagScenario extends BaseTestScenario
   @override
   Future<void> runTestLogic() async {
     const emailUser = String.fromEnvironment('BASIC_AUTH_EMAIL');
+    if (emailUser.isEmpty) {
+      fail('Missing --dart-define=BASIC_AUTH_EMAIL for this integration scenario');
+    }
 
     final threadRobot = ThreadRobot($);
     final labelRobot = LabelRobot($);
@@ -24,6 +27,7 @@ class DisplayFolderInfoWhenOpenMailFromTagScenario extends BaseTestScenario
       ['Tag 1'],
     );
     await $.pumpAndSettle();
+    expect(labels, isNotEmpty, reason: 'Provisioning label "Tag 1" failed');
     final newLabel = labels.first;
 
     await provisionEmail(
