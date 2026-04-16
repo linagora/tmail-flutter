@@ -5,24 +5,29 @@ import 'package:flutter/material.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_subject_styles.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/label_widget.dart';
+import 'package:tmail_ui_user/features/labels/presentation/widgets/ai_action_widget.dart';
 
 typedef OnDeleteLabelAction = void Function(Label label);
+typedef OnDeleteNeedsAction = void Function();
 
 class EmailSubjectWidget extends StatefulWidget {
   final String emailSubject;
   final ImagePaths imagePaths;
   final bool isMobileResponsive;
   final List<Label>? labels;
+  final bool showNeedsAction;
   final OnDeleteLabelAction? onDeleteLabelAction;
+  final OnDeleteNeedsAction? onDeleteNeedsAction;
 
-  const EmailSubjectWidget({
-    super.key,
-    required this.emailSubject,
-    required this.imagePaths,
-    this.isMobileResponsive = false,
-    this.labels,
-    this.onDeleteLabelAction,
-  });
+  const EmailSubjectWidget(
+      {super.key,
+      required this.emailSubject,
+      required this.imagePaths,
+      this.isMobileResponsive = false,
+      this.labels,
+      this.showNeedsAction = false,
+      this.onDeleteLabelAction,
+      this.onDeleteNeedsAction});
 
   @override
   State<EmailSubjectWidget> createState() => _EmailSubjectWidgetState();
@@ -31,7 +36,8 @@ class EmailSubjectWidget extends StatefulWidget {
 class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
   String get _title => widget.emailSubject;
 
-  bool get _hasLabels => _currentLabels?.isNotEmpty == true;
+  bool get _hasLabels =>
+      (_currentLabels?.isNotEmpty == true) || widget.showNeedsAction;
 
   List<Label>? _currentLabels;
 
@@ -83,9 +89,37 @@ class _EmailSubjectWidgetState extends State<EmailSubjectWidget> {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         _buildTitle(),
+        if (widget.showNeedsAction) _buildNeedsActionWidget(context),
         ..._buildLabelWidgets(),
       ],
     );
+  }
+
+  Widget _buildNeedsActionWidget(BuildContext context) {
+    final canRemove = widget.onDeleteNeedsAction != null;
+
+    return AiActionWidget(
+      horizontalPadding: 6,
+      actionWidget: canRemove ? _buildRemoveNeedsActionWidget() : null,
+      padding:
+          canRemove ? const EdgeInsetsDirectional.only(start: 4, end: 2) : null,
+    );
+  }
+
+  Widget _buildRemoveNeedsActionWidget() {
+    return TMailButtonWidget.fromIcon(
+      icon: widget.imagePaths.icDeleteSelection,
+      iconSize: 8,
+      iconColor: Colors.white,
+      padding: const EdgeInsets.all(6),
+      backgroundColor: Colors.transparent,
+      onTapActionCallback: _onDeleteNeedsAction,
+    );
+  }
+
+  void _onDeleteNeedsAction() {
+    if (!mounted || widget.onDeleteNeedsAction == null) return;
+    widget.onDeleteNeedsAction!.call();
   }
 
   Widget _buildTitle() {
