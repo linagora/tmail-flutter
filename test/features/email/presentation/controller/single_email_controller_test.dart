@@ -441,23 +441,6 @@ void main() {
       when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
       when(mailboxDashboardController.downloadController).thenReturn(downloadController);
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
-      when(appToast.showToastMessageWithMultipleActions(
-        any, 
-        any,
-        actions: anyNamed('actions'),
-        textColor: anyNamed('textColor'),
-        backgroundColor: anyNamed('backgroundColor'),
-        infinityToast: anyNamed('infinityToast'),
-      )).thenAnswer((realInvocation) {
-        AppToast().showToastMessageWithMultipleActions(
-          realInvocation.positionalArguments[0], 
-          realInvocation.positionalArguments[1],
-          actions: realInvocation.namedArguments[const Symbol('actions')],
-          textColor: realInvocation.namedArguments[const Symbol('textColor')],
-          backgroundColor: realInvocation.namedArguments[const Symbol('backgroundColor')],
-          infinityToast: realInvocation.namedArguments[const Symbol('infinityToast')],
-        );
-      });
       when(imagePaths.icUndo).thenReturn(ImagePaths().icUndo);
       when(imagePaths.icClose).thenReturn(ImagePaths().icClose);
       Get.put(singleEmailController);
@@ -473,9 +456,18 @@ void main() {
       await tester.pump();
 
       // assert
-      expect(find.text(AppLocalizations().unknownError), findsOneWidget);
-      expect(find.text(AppLocalizations().retry), findsOneWidget);
-      expect(find.text(AppLocalizations().close), findsOneWidget);
+      final captured = verify(appToast.showToastMessageWithMultipleActions(
+        any,
+        captureAny,
+        actions: captureAnyNamed('actions'),
+        textColor: anyNamed('textColor'),
+        backgroundColor: anyNamed('backgroundColor'),
+        infinityToast: anyNamed('infinityToast'),
+      )).captured;
+      expect(captured[0], AppLocalizations().unknownError);
+      final actions = captured[1] as List<({String? actionName, Function? onActionClick, Widget? actionIcon})>;
+      expect(actions.any((a) => a.actionName == AppLocalizations().retry), isTrue);
+      expect(actions.any((a) => a.actionName == AppLocalizations().close), isTrue);
 
       // cleanup
       Get.delete<SingleEmailController>();
