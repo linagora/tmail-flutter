@@ -19,12 +19,13 @@ import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interac
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_label_changes_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
+import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_websocket_extension.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_context_menu_mixin.dart';
-import 'package:tmail_ui_user/features/labels/presentation/mixin/label_modal_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_setting_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
@@ -33,9 +34,7 @@ import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LabelController extends BaseController
-    with LabelContextMenuMixin,
-        LabelModalMixin {
-  @override
+    with LabelContextMenuMixin {
   final RxList<Label> labels = <Label>[].obs;
   final labelListExpandMode = Rx(ExpandMode.EXPAND);
   final isLabelSettingEnabled = RxBool(false);
@@ -106,12 +105,6 @@ class LabelController extends BaseController
     _getLabelChangesInteractor = getBinding<GetLabelChangesInteractor>();
   }
 
-  @override
-  CreateNewLabelInteractor get createNewLabelInteractor => _createNewLabelInteractor!;
-
-  @override
-  EditLabelInteractor get editLabelInteractor => _editLabelInteractor!;
-
   DeleteALabelInteractor? get deleteALabelInteractor => _deleteALabelInteractor;
 
   GetLabelChangesInteractor? get getLabelChangesInteractor =>
@@ -149,6 +142,45 @@ class LabelController extends BaseController
     labelListExpandMode.value = labelListExpandMode.value == ExpandMode.COLLAPSE
         ? ExpandMode.EXPAND
         : ExpandMode.COLLAPSE;
+  }
+
+  Future<dynamic> openCreateNewLabelModal({
+    required AccountId accountId,
+    required VerifyNameInteractor verifyNameInteractor,
+  }) async {
+    return DialogRouter().openDialogModal(
+      child: CreateNewLabelModal(
+        key: const Key('create_new_label_modal'),
+        labels: labels,
+        accountId: accountId,
+        imagePaths: imagePaths,
+        verifyNameInteractor: verifyNameInteractor,
+        createNewLabelInteractor: _createNewLabelInteractor!,
+        editLabelInteractor: _editLabelInteractor!,
+      ),
+      dialogLabel: 'create-new-label-modal',
+    );
+  }
+
+  Future<dynamic> openEditLabelModal({
+    required Label selectedLabel,
+    required AccountId accountId,
+    required VerifyNameInteractor verifyNameInteractor,
+  }) async {
+    return DialogRouter().openDialogModal(
+      child: CreateNewLabelModal(
+        key: const Key('edit_label_modal'),
+        labels: labels,
+        accountId: accountId,
+        imagePaths: imagePaths,
+        selectedLabel: selectedLabel,
+        actionType: LabelActionType.edit,
+        verifyNameInteractor: verifyNameInteractor,
+        createNewLabelInteractor: _createNewLabelInteractor!,
+        editLabelInteractor: _editLabelInteractor!,
+      ),
+      dialogLabel: 'edit-label-modal',
+    );
   }
 
   Future<void> onCreateALabelAction({

@@ -45,10 +45,6 @@ extension HandleLabelActionTypeExtension on LabelController {
     required AccountId? accountId,
     required Label label,
   }) async {
-    if (createNewLabelInteractor == null || editLabelInteractor == null) {
-      _handleEditLabelFailure(EditLabelFailure(const InteractorNotInitialized()));
-      return;
-    }
     final verifyNameInteractor = getBinding<VerifyNameInteractor>();
     if (verifyNameInteractor == null) {
       _handleEditLabelFailure(EditLabelFailure(const InteractorNotInitialized()));
