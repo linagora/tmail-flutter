@@ -28,13 +28,34 @@ Use Patrol with Chrome as the target device for web integration testing, sharing
 - `patrol` package **4.5.0** (and `patrol_finders 3.x`, `patrol_log 0.8.x`) — requires upgrading from the 3.x currently in `pubspec.yaml`
 - Docker Desktop (running)
 - `openssl` installed (used to generate JWT keys for the backend)
-- Google Chrome installed
 
 > Unlike mobile tests, web tests do **not** require `ngrok` or `jq`. The app runs at `localhost` and Chrome connects to it directly — no traffic forwarding needed.
 
 ### Environment Variables
 
-All tests receive configuration via `--dart-define`:
+All tests receive configuration via `--dart-define`. Store values in an env file and source it in the run scripts — this keeps credentials out of command-line history and git history (add the file to `.gitignore`):
+
+```bash
+# integration_test/test_config.env
+BASIC_AUTH_URL=http://localhost/
+USERNAME=test_user
+PASSWORD=test_password
+BASIC_AUTH_EMAIL=test@example.com
+ADDITIONAL_MAIL_RECIPIENT=recipient@example.com
+```
+
+The run scripts source this file and forward each value:
+
+```bash
+source integration_test/test_config.env
+patrol test \
+  --dart-define=BASIC_AUTH_URL=$BASIC_AUTH_URL \
+  --dart-define=USERNAME=$USERNAME \
+  --dart-define=PASSWORD=$PASSWORD \
+  --dart-define=BASIC_AUTH_EMAIL=$BASIC_AUTH_EMAIL \
+  --dart-define=ADDITIONAL_MAIL_RECIPIENT=$ADDITIONAL_MAIL_RECIPIENT \
+  ...
+```
 
 | Variable | Description |
 |----------|-------------|
@@ -43,6 +64,8 @@ All tests receive configuration via `--dart-define`:
 | `PASSWORD` | Test account password |
 | `BASIC_AUTH_EMAIL` | Test account email address |
 | `ADDITIONAL_MAIL_RECIPIENT` | Secondary email for multi-recipient tests |
+
+> `--dart-define-from-file` only accepts JSON, not `.env` format, so sourcing in the script is the correct approach.
 
 ### Running Locally (with visible browser)
 
@@ -68,14 +91,35 @@ patrol test -v -t integration_test/tests/composer/send_email_test.dart
 
 Adds `--web-headless=true` — no display required. The GitHub Actions workflow (`.github/workflows/patrol-web-integration-test.yaml`) runs this script on pull requests.
 
+### CI Orchestration — Running the Full Project
+
+Mobile and web test suites run as **separate parallel jobs** in CI. Each job targets its own platform and excludes tests that are not applicable:
+
+```
+PR opened / push
+│
+├── job: patrol-mobile-integration-test   (ubuntu-latest + Android emulator)
+│     patrol test --device=android \
+│       --exclude-tags=web-only
+│
+└── job: patrol-web-integration-test      (ubuntu-latest + Chrome via Patrol)
+      ./scripts/patrol-web-integration-test-with-docker.sh
+      # patrol test --device=chrome --web-headless=true \
+      #   --exclude-tags=mobile-only
+```
+
+The two jobs are independent — they share no state and can run concurrently. A PR is gated on **both** jobs passing.
+
+Platform filtering is handled automatically by `runPatrolTest()` via the `platforms` parameter (see [ADR-0082](./0082-patrol-web-test-migration-guide.md)). Tests that do not apply to the current platform skip themselves — no `--exclude-tags` flag needed in either job.
+
 ### Viewing Results
 
 - **Terminal:** Patrol prints pass/fail per test with full stack traces on failure.
-- **GitHub Actions:** Results appear in the workflow run summary under the "Test" step.
+- **GitHub Actions:** Results appear in the workflow run summary under the "Test" step. Each platform job has its own step, making it easy to identify which platform a failure comes from.
 
 ## Consequences
 
-- Web tests are isolated from mobile runs via `--tags=web` (web) and `--exclude-tags=web` (mobile).
+- Web and mobile tests share the same test files; platform-only tests skip themselves via the `platforms` parameter in `runPatrolTest()` — no manual tagging required.
 - The same Docker JMAP backend serves both platforms — no additional infrastructure needed.
 - Data isolation limitations from [ADR-0053](./0053-patrol-integration-test.md) still apply: backend state is shared across all tests in a single run.
-- Chrome must be available on CI runners (requires explicit installation on `ubuntu-latest`).
+- Patrol automatically installs and manages Chromium — no manual Chrome installation is needed on local machines or CI runners.
