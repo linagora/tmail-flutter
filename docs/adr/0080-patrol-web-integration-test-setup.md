@@ -93,19 +93,17 @@ Adds `--web-headless=true` — no display required. The GitHub Actions workflow 
 
 ### CI Orchestration — Running the Full Project
 
-Mobile and web test suites run as **separate parallel jobs** in CI. Each job targets its own platform and excludes tests that are not applicable:
+Mobile and web test suites run as **separate parallel jobs** in CI. Each job targets its own platform:
 
 ```
 PR opened / push
 │
 ├── job: patrol-mobile-integration-test   (ubuntu-latest + Android emulator)
-│     patrol test --device=android \
-│       --exclude-tags=web-only
+│     patrol test --device=android
 │
 └── job: patrol-web-integration-test      (ubuntu-latest + Chrome via Patrol)
       ./scripts/patrol-web-integration-test-with-docker.sh
-      # patrol test --device=chrome --web-headless=true \
-      #   --exclude-tags=mobile-only
+      # patrol test --device=chrome --web-headless=true
 ```
 
 The two jobs are independent — they share no state and can run concurrently. A PR is gated on **both** jobs passing.
