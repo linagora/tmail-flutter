@@ -81,10 +81,10 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   List<String> _labelDisplayNameList = <String>[];
   Color? _selectedColor;
   StreamSubscription? _streamSubscription;
-  late CreateNewLabelInteractor? _createNewLabelInteractor;
-  late EditLabelInteractor? _editLabelInteractor;
-  late VerifyNameInteractor? _verifyNameInteractor;
-  late AccountId? _accountId;
+  CreateNewLabelInteractor? _createNewLabelInteractor;
+  EditLabelInteractor? _editLabelInteractor;
+  VerifyNameInteractor? _verifyNameInteractor;
+  AccountId? _accountId;
 
   @override
   void initState() {

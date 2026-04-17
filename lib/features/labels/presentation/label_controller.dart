@@ -177,11 +177,12 @@ class LabelController extends BaseController
     );
 
     if (resultState is CreateNewLabelSuccess) {
+      _addLabelToList(resultState.newLabel);
       if (hasResult) {
         toastManager.showMessageSuccess(resultState);
         return resultState.newLabel;
       }
-      _handleCreateNewLabelSuccess(
+      _handleCreateNewLabelSuccessWithoutListUpdate(
         success: resultState,
         onLabelActionCallback: onLabelActionCallback,
         shouldPop: shouldPop,
@@ -193,7 +194,7 @@ class LabelController extends BaseController
     return null;
   }
 
-  void _handleCreateNewLabelSuccess({
+  void _handleCreateNewLabelSuccessWithoutListUpdate({
     required CreateNewLabelSuccess success,
     OnLabelActionCallback? onLabelActionCallback,
     bool shouldPop = false,
@@ -201,7 +202,6 @@ class LabelController extends BaseController
     if (onLabelActionCallback == null && !shouldPop) {
       toastManager.showMessageSuccess(success);
     }
-    _addLabelToList(success.newLabel);
     if (onLabelActionCallback != null) {
       onLabelActionCallback(success.newLabel);
     }

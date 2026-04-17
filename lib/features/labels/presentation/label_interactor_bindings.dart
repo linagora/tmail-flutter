@@ -34,8 +34,9 @@ class LabelInteractorBindings extends InteractorsBindings {
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => GetAllLabelInteractor(Get.find<LabelRepository>()));
-    Get.put(CreateNewLabelInteractor(Get.find<LabelRepository>()));
-    Get.put(EditLabelInteractor(Get.find<LabelRepository>()));
+    // Use `fenix: true` to avoid GetX dispose or SmartManagement cleanup when using it in dialogs.
+    Get.lazyPut(() => CreateNewLabelInteractor(Get.find<LabelRepository>()), fenix: true);
+    Get.lazyPut(() => EditLabelInteractor(Get.find<LabelRepository>()), fenix: true);
     Get.lazyPut(() => DeleteALabelInteractor(Get.find<LabelRepository>()));
     Get.lazyPut(() => GetLabelChangesInteractor(Get.find<LabelRepository>()));
   }
