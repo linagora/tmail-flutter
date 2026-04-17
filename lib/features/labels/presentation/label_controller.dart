@@ -249,6 +249,7 @@ class LabelController extends BaseController
   }
 
   void _addLabelToList(Label newLabel) {
+    labels.removeWhere((label) => label.id == newLabel.id);
     labels.add(newLabel);
     labels.sortByAlphabetically();
   }
