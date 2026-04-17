@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'The subject line of an email should not be changed when replying to an email that has already been replied to.',
-    scenarioBuilder: ($) => ReplyEmailRepliedWhenChangeLanguageScenario($),
+    scenarioBuilder: ($, robots) => ReplyEmailRepliedWhenChangeLanguageScenario($, robots),
   );
 }

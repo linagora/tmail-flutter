@@ -8,7 +8,7 @@ import '../../robots/thread_robot.dart';
 
 class PersistFilterWhenChangeSearchInputTextScenario
     extends BaseTestScenario {
-  const PersistFilterWhenChangeSearchInputTextScenario(super.$);
+  const PersistFilterWhenChangeSearchInputTextScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'The subject line of an email should not be changed when forwarding to an email that has already been forwarded to.',
-    scenarioBuilder: ($) => ForwardEmailForwardedWhenChangeLanguageScenario($),
+    scenarioBuilder: ($, robots) => ForwardEmailForwardedWhenChangeLanguageScenario($, robots),
   );
 }

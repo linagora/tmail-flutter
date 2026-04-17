@@ -14,7 +14,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class ChangeIdentityInDraftEmailScenario extends BaseTestScenario {
-  const ChangeIdentityInDraftEmailScenario(super.$);
+  const ChangeIdentityInDraftEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

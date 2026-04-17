@@ -7,7 +7,7 @@ import '../../robots/thread_robot.dart';
 
 class MarkAsStarEmailScenario extends BaseTestScenario {
 
-  const MarkAsStarEmailScenario(super.$);
+  const MarkAsStarEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

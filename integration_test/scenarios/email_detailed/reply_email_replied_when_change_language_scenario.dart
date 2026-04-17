@@ -19,7 +19,7 @@ import '../../robots/thread_robot.dart';
 
 class ReplyEmailRepliedWhenChangeLanguageScenario extends BaseTestScenario
     with SettingScenarioMixin, GenerateEmailScenarioMixin, ScreenScenarioMixin {
-  const ReplyEmailRepliedWhenChangeLanguageScenario(super.$);
+  const ReplyEmailRepliedWhenChangeLanguageScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

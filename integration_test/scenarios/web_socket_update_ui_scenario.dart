@@ -4,7 +4,7 @@ import '../base/base_test_scenario.dart';
 import '../models/provisioning_email.dart';
 
 class WebSocketUpdateUiScenario extends BaseTestScenario {
-  const WebSocketUpdateUiScenario(super.$);
+  const WebSocketUpdateUiScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

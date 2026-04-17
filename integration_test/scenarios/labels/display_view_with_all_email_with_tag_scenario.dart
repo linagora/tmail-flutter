@@ -10,7 +10,7 @@ import '../../robots/thread_robot.dart';
 
 class DisplayViewWithAllEmailWithTagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
-  const DisplayViewWithAllEmailWithTagScenario(super.$);
+  const DisplayViewWithAllEmailWithTagScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

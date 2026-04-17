@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class MoveEmailToFolderScenario extends BaseTestScenario {
 
-  const MoveEmailToFolderScenario(super.$);
+  const MoveEmailToFolderScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

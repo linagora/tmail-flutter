@@ -50,7 +50,6 @@ cd ..
 echo "Building the app and running tests..."
 flutter build apk --config-only
 patrol test -v \
-    --exclude-tags=web \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \
     --dart-define=ADDITIONAL_MAIL_RECIPIENT="$ALICE@$DOMAIN" \

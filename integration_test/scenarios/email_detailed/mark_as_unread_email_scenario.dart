@@ -10,7 +10,7 @@ import '../../robots/thread_robot.dart';
 
 class MarkAsUnreadEmailScenario extends BaseTestScenario {
 
-  const MarkAsUnreadEmailScenario(super.$);
+  const MarkAsUnreadEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

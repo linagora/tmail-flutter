@@ -10,7 +10,7 @@ import '../../../robots/setting_robot.dart';
 import '../../../robots/thread_robot.dart';
 
 class ChangeLanguageScenario extends BaseTestScenario {
-  const ChangeLanguageScenario(super.$);
+  const ChangeLanguageScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

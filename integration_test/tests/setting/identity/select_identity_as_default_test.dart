@@ -4,6 +4,6 @@ import '../../../scenarios/setting/identity/set_identity_as_default_scenario.dar
 void main() {
   TestBase().runPatrolTest(
     description: 'Should see identity as default when select identity as default',
-    scenarioBuilder: ($) => SetIdentityAsDefaultScenario($),
+    scenarioBuilder: ($, robots) => SetIdentityAsDefaultScenario($, robots),
   );
 }

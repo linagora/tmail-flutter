@@ -9,7 +9,7 @@ import '../../robots/thread_robot.dart';
 
 class LongPressCopyEmailAddressToClipboardScenario extends BaseTestScenario {
 
-  const LongPressCopyEmailAddressToClipboardScenario(super.$);
+  const LongPressCopyEmailAddressToClipboardScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

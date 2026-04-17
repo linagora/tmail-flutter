@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description: 'Should see back to top button when scroll list email in mailbox to bottom '
       'and not see back to top button when scroll list email to top',
-    scenarioBuilder: ($) => ScrollListEmailInMailboxAndBackToTopScenario($),
+    scenarioBuilder: ($, robots) => ScrollListEmailInMailboxAndBackToTopScenario($, robots),
   );
 }

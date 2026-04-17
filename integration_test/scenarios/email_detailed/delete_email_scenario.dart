@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class DeleteEmailScenario extends BaseTestScenario {
 
-  const DeleteEmailScenario(super.$);
+  const DeleteEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

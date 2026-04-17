@@ -8,7 +8,7 @@ import '../../robots/labels/label_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class CreateNewATagScenario extends BaseTestScenario {
-  const CreateNewATagScenario(super.$);
+  const CreateNewATagScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

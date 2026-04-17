@@ -10,7 +10,7 @@ import '../../robots/thread_robot.dart';
 
 class DisplayEmailAddressInfoDialogScenario extends BaseTestScenario {
 
-  const DisplayEmailAddressInfoDialogScenario(super.$);
+  const DisplayEmailAddressInfoDialogScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

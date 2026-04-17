@@ -10,7 +10,7 @@ import '../../robots/thread_robot.dart';
 
 class ArchiveEmailScenario extends BaseTestScenario {
 
-  const ArchiveEmailScenario(super.$);
+  const ArchiveEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

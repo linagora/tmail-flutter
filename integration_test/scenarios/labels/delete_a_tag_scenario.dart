@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class DeleteATagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
-  const DeleteATagScenario(super.$);
+  const DeleteATagScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

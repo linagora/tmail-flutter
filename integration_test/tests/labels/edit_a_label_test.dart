@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'Should update label display name when edit a label successfully',
-    scenarioBuilder: ($) => EditATagScenario($),
+    scenarioBuilder: ($, robots) => EditATagScenario($, robots),
   );
 }

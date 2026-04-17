@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class DisplayEmptyViewWhenOpenTagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
-  const DisplayEmptyViewWhenOpenTagScenario(super.$);
+  const DisplayEmptyViewWhenOpenTagScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

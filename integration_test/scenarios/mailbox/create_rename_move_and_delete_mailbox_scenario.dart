@@ -7,7 +7,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class CreateRenameMoveAndDeleteMailboxScenario extends BaseTestScenario {
-  const CreateRenameMoveAndDeleteMailboxScenario(super.$);
+  const CreateRenameMoveAndDeleteMailboxScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

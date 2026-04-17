@@ -4,6 +4,6 @@ import '../../../scenarios/email_detailed/long_press_copy_email_address_to_clipb
 void main() {
   TestBase().runPatrolTest(
     description: 'Should see Clipboard SnackBar when open detailed email and long press email address of sender or recipient',
-    scenarioBuilder: ($) => LongPressCopyEmailAddressToClipboardScenario($),
+    scenarioBuilder: ($, robots) => LongPressCopyEmailAddressToClipboardScenario($, robots),
   );
 }

@@ -13,7 +13,7 @@ import '../robots/thread_robot.dart';
 
 class SearchEmailByDatetimeAndSortOrderRelevanceScenario extends BaseTestScenario {
 
-  const SearchEmailByDatetimeAndSortOrderRelevanceScenario(super.$);
+  const SearchEmailByDatetimeAndSortOrderRelevanceScenario(super.$, super.robots);
 
   static const queryString = 'relevance';
   static const listUsername = ['Alice', 'Brian', 'Charlotte', 'David', 'Emma'];

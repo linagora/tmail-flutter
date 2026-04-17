@@ -11,7 +11,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class TeamMailboxReceiveEmailScenario extends BaseTestScenario {
-  const TeamMailboxReceiveEmailScenario(super.$);
+  const TeamMailboxReceiveEmailScenario(super.$, super.robots);
   
   @override
   Future<void> runTestLogic() async {

@@ -8,7 +8,7 @@ import '../robots/thread_robot.dart';
 
 class DownloadAllAttachmentsScenario extends BaseTestScenario {
 
-  const DownloadAllAttachmentsScenario(super.$);
+  const DownloadAllAttachmentsScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

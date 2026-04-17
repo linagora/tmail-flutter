@@ -10,7 +10,7 @@ import '../../robots/thread_robot.dart';
 
 class ExportAttachmentScenario extends BaseTestScenario {
 
-  const ExportAttachmentScenario(super.$);
+  const ExportAttachmentScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

@@ -11,7 +11,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class LongPressEmptyAndRecoverTrashScenario extends BaseTestScenario {
-  const LongPressEmptyAndRecoverTrashScenario(super.$);
+  const LongPressEmptyAndRecoverTrashScenario(super.$, super.robots);
   
   @override
   Future<void> runTestLogic() async {

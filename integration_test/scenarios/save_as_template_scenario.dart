@@ -8,7 +8,7 @@ import '../robots/mailbox_menu_robot.dart';
 import '../robots/thread_robot.dart';
 
 class SaveAsTemplateScenario extends BaseTestScenario {
-  const SaveAsTemplateScenario(super.$);
+  const SaveAsTemplateScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

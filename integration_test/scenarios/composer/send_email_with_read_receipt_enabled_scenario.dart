@@ -10,7 +10,7 @@ import '../../robots/composer_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class SendEmailWithReadReceiptEnabledScenario extends BaseTestScenario {
-  const SendEmailWithReadReceiptEnabledScenario(super.$);
+  const SendEmailWithReadReceiptEnabledScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

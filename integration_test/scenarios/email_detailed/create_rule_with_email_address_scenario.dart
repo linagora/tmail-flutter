@@ -12,7 +12,7 @@ import '../../robots/thread_robot.dart';
 
 class CreateRuleWithEmailAddressScenario extends BaseTestScenario {
 
-  const CreateRuleWithEmailAddressScenario(super.$);
+  const CreateRuleWithEmailAddressScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

@@ -11,7 +11,7 @@ import '../../robots/composer_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class ComposerUploadAttachmentAndInlineImageScenario extends BaseTestScenario {
-  const ComposerUploadAttachmentAndInlineImageScenario(super.$);
+  const ComposerUploadAttachmentAndInlineImageScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

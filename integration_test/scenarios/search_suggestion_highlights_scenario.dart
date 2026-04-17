@@ -7,7 +7,7 @@ import '../robots/search_robot.dart';
 import '../robots/thread_robot.dart';
 
 class SearchSuggestionHighlightsScenario extends BaseTestScenario {
-  SearchSuggestionHighlightsScenario(super.$);
+  SearchSuggestionHighlightsScenario(super.$, super.robots);
 
   static const keyword = 'Search snippet suggestions';
   static const List<String> longEmailContents = [

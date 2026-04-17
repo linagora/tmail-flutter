@@ -4,6 +4,6 @@ import '../../scenarios/email_detailed/display_email_with_xss_content_scenario.d
 void main() {
   TestBase().runPatrolTest(
     description: 'Should not display alert dialog when opening an email containing content xss',
-    scenarioBuilder: ($) => DisplayEmailWithXssContentScenario($),
+    scenarioBuilder: ($, robots) => DisplayEmailWithXssContentScenario($, robots),
   );
 }

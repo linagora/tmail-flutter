@@ -14,7 +14,7 @@ import '../../robots/thread_robot.dart';
 
 class RemoveALabelFromEmailScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
-  const RemoveALabelFromEmailScenario(super.$);
+  const RemoveALabelFromEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

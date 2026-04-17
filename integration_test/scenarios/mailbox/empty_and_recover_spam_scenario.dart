@@ -9,7 +9,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class EmptyAndRecoverSpamScenario extends BaseTestScenario {
-  const EmptyAndRecoverSpamScenario(super.$);
+  const EmptyAndRecoverSpamScenario(super.$, super.robots);
   
   @override
   Future<void> runTestLogic() async {

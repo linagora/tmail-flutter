@@ -4,6 +4,6 @@ import '../../../scenarios/email_detailed/display_email_address_info_dialog_scen
 void main() {
   TestBase().runPatrolTest(
     description: 'Should see email address info dialog when open detailed email and click email address if sender or recipient',
-    scenarioBuilder: ($) => DisplayEmailAddressInfoDialogScenario($),
+    scenarioBuilder: ($, robots) => DisplayEmailAddressInfoDialogScenario($, robots),
   );
 }
