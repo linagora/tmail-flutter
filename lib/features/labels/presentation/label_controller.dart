@@ -10,6 +10,7 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/labels/domain/model/open_edit_label_modal_params.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
@@ -42,9 +43,7 @@ class LabelController extends BaseController
   final GlobalKey labelAppBarKey = GlobalKey();
 
   GetAllLabelInteractor? _getAllLabelInteractor;
-  CreateNewLabelInteractor? _createNewLabelInteractor;
   GetLabelSettingStateInteractor? _getLabelSettingStateInteractor;
-  EditLabelInteractor? _editLabelInteractor;
   DeleteALabelInteractor? _deleteALabelInteractor;
   GetLabelChangesInteractor? _getLabelChangesInteractor;
 
@@ -99,8 +98,6 @@ class LabelController extends BaseController
   void injectLabelsBindings() {
     LabelInteractorBindings().dependencies();
     _getAllLabelInteractor = getBinding<GetAllLabelInteractor>();
-    _createNewLabelInteractor = getBinding<CreateNewLabelInteractor>();
-    _editLabelInteractor = getBinding<EditLabelInteractor>();
     _deleteALabelInteractor = getBinding<DeleteALabelInteractor>();
     _getLabelChangesInteractor = getBinding<GetLabelChangesInteractor>();
   }
@@ -147,6 +144,8 @@ class LabelController extends BaseController
   Future<dynamic> openCreateNewLabelModal({
     required AccountId accountId,
     required VerifyNameInteractor verifyNameInteractor,
+    required CreateNewLabelInteractor createNewLabelInteractor,
+    required EditLabelInteractor editLabelInteractor,
   }) async {
     return DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
@@ -155,29 +154,27 @@ class LabelController extends BaseController
         accountId: accountId,
         imagePaths: imagePaths,
         verifyNameInteractor: verifyNameInteractor,
-        createNewLabelInteractor: _createNewLabelInteractor!,
-        editLabelInteractor: _editLabelInteractor!,
+        createNewLabelInteractor: createNewLabelInteractor,
+        editLabelInteractor: editLabelInteractor,
       ),
       dialogLabel: 'create-new-label-modal',
     );
   }
 
   Future<dynamic> openEditLabelModal({
-    required Label selectedLabel,
-    required AccountId accountId,
-    required VerifyNameInteractor verifyNameInteractor,
+    required OpenEditLabelModalParams params,
   }) async {
     return DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
         key: const Key('edit_label_modal'),
         labels: labels,
-        accountId: accountId,
+        accountId: params.accountId,
         imagePaths: imagePaths,
-        selectedLabel: selectedLabel,
+        selectedLabel: params.selectedLabel,
         actionType: LabelActionType.edit,
-        verifyNameInteractor: verifyNameInteractor,
-        createNewLabelInteractor: _createNewLabelInteractor!,
-        editLabelInteractor: _editLabelInteractor!,
+        verifyNameInteractor: params.verifyNameInteractor,
+        createNewLabelInteractor: params.createNewLabelInteractor,
+        editLabelInteractor: params.editLabelInteractor,
       ),
       dialogLabel: 'edit-label-modal',
     );
@@ -188,18 +185,17 @@ class LabelController extends BaseController
     OnLabelActionCallback? onLabelActionCallback,
     bool shouldPop = false,
   }) async {
-    if (_createNewLabelInteractor == null || _editLabelInteractor == null) {
-      _handleCreateNewLabelFailure(
-        failure: CreateNewLabelFailure(const InteractorNotInitialized()),
-        shouldPop: shouldPop,
-      );
-      return;
-    }
+    final createNewLabelInteractor = getBinding<CreateNewLabelInteractor>();
+    final editLabelInteractor = getBinding<EditLabelInteractor>();
     final verifyNameInteractor = getBinding<VerifyNameInteractor>();
-    if (verifyNameInteractor == null) {
+
+    final isInteractorsInitialized = createNewLabelInteractor != null &&
+        editLabelInteractor != null &&
+        verifyNameInteractor != null;
+
+    if (!isInteractorsInitialized) {
       _handleCreateNewLabelFailure(
         failure: CreateNewLabelFailure(const InteractorNotInitialized()),
-        shouldPop: shouldPop,
       );
       return;
     }
@@ -207,7 +203,6 @@ class LabelController extends BaseController
     if (accountId == null) {
       _handleCreateNewLabelFailure(
         failure: CreateNewLabelFailure(NotFoundAccountIdException()),
-        shouldPop: shouldPop,
       );
       return;
     }
@@ -215,6 +210,8 @@ class LabelController extends BaseController
     final resultState = await openCreateNewLabelModal(
       accountId: accountId,
       verifyNameInteractor: verifyNameInteractor,
+      createNewLabelInteractor: createNewLabelInteractor,
+      editLabelInteractor: editLabelInteractor,
     );
 
     if (resultState is CreateNewLabelSuccess) {
@@ -224,10 +221,7 @@ class LabelController extends BaseController
         shouldPop: shouldPop,
       );
     } else if (resultState is CreateNewLabelFailure) {
-      _handleCreateNewLabelFailure(
-        failure: resultState,
-        shouldPop: shouldPop,
-      );
+      _handleCreateNewLabelFailure(failure: resultState);
     }
   }
 
@@ -250,7 +244,6 @@ class LabelController extends BaseController
 
   void _handleCreateNewLabelFailure({
     required CreateNewLabelFailure failure,
-    bool shouldPop = false,
   }) {
     toastManager.showMessageFailure(failure);
   }
@@ -309,8 +302,6 @@ class LabelController extends BaseController
   @override
   void onClose() {
     _getAllLabelInteractor = null;
-    _createNewLabelInteractor = null;
-    _editLabelInteractor = null;
     _deleteALabelInteractor = null;
     _getLabelSettingStateInteractor = null;
     _webSocketQueueHandler?.dispose();

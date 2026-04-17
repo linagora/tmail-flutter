@@ -6,8 +6,11 @@ import 'package:labels/extensions/list_label_extension.dart';
 import 'package:labels/model/label.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_manager.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/labels/domain/model/open_edit_label_modal_params.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
+import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
@@ -45,8 +48,15 @@ extension HandleLabelActionTypeExtension on LabelController {
     required AccountId? accountId,
     required Label label,
   }) async {
+    final createNewLabelInteractor = getBinding<CreateNewLabelInteractor>();
+    final editLabelInteractor = getBinding<EditLabelInteractor>();
     final verifyNameInteractor = getBinding<VerifyNameInteractor>();
-    if (verifyNameInteractor == null) {
+
+    final isInteractorsInitialized = createNewLabelInteractor != null &&
+        editLabelInteractor != null &&
+        verifyNameInteractor != null;
+
+    if (!isInteractorsInitialized) {
       _handleEditLabelFailure(EditLabelFailure(const InteractorNotInitialized()));
       return;
     }
@@ -57,9 +67,13 @@ extension HandleLabelActionTypeExtension on LabelController {
     }
 
     final resultState = await openEditLabelModal(
-      selectedLabel: label,
-      accountId: accountId,
-      verifyNameInteractor: verifyNameInteractor,
+      params: OpenEditLabelModalParams(
+        selectedLabel: label,
+        accountId: accountId,
+        verifyNameInteractor: verifyNameInteractor,
+        createNewLabelInteractor: createNewLabelInteractor,
+        editLabelInteractor: editLabelInteractor,
+      ),
     );
 
     if (resultState is EditLabelSuccess) {
