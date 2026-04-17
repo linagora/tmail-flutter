@@ -293,8 +293,10 @@ mixin ScenarioUtilsMixin {
   Future<void> mobileBack(PatrolIntegrationTester $) async {
     if (PlatformInfo.isIOS) {
       await $.platformAutomator.ios.swipeBack();
-    } else {
+    } else if (PlatformInfo.isAndroid) {
       await $.platformAutomator.android.pressBack();
+    } else {
+      throw UnsupportedError('mobileBack() is only supported on Android/iOS');
     }
   }
 }
