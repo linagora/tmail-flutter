@@ -11,7 +11,6 @@ import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interac
 import 'package:tmail_ui_user/features/labels/domain/usecases/delete_a_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_label_changes_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/thrower/remote_exception_thrower.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,11 +34,11 @@ class LabelInteractorBindings extends InteractorsBindings {
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => GetAllLabelInteractor(Get.find<LabelRepository>()));
-    Get.lazyPut(() => CreateNewLabelInteractor(Get.find<LabelRepository>()));
-    Get.lazyPut(() => EditLabelInteractor(Get.find<LabelRepository>()));
+    // Use `fenix: true` to avoid GetX dispose or SmartManagement cleanup when using it in dialogs.
+    Get.lazyPut(() => CreateNewLabelInteractor(Get.find<LabelRepository>()), fenix: true);
+    Get.lazyPut(() => EditLabelInteractor(Get.find<LabelRepository>()), fenix: true);
     Get.lazyPut(() => DeleteALabelInteractor(Get.find<LabelRepository>()));
     Get.lazyPut(() => GetLabelChangesInteractor(Get.find<LabelRepository>()));
-    Get.lazyPut(() => VerifyNameInteractor());
   }
 
   @override
