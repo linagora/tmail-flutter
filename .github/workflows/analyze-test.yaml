@@ -9,7 +9,7 @@ on:
 name: Analyze and test
 
 env:
-  FLUTTER_VERSION: 3.32.8
+  FLUTTER_VERSION: 3.38.9
 
 jobs:
   analyze-test:

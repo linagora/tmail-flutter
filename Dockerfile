@@ -1,4 +1,4 @@
-ARG FLUTTER_VERSION=3.32.8
+ARG FLUTTER_VERSION=3.38.9
 
 FROM --platform=amd64 ghcr.io/instrumentisto/flutter:${FLUTTER_VERSION} AS build-env
 

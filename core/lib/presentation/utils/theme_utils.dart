@@ -332,7 +332,7 @@ class ThemeUtils {
   }
 
   static final AppBarTheme _appBarTheme = AppBarTheme(
-    color: Colors.white,
+    backgroundColor: Colors.white,
     elevation: 0,
     systemOverlayStyle: SystemUiOverlayStyle.light,
     iconTheme: const IconThemeData(color: Colors.black),
