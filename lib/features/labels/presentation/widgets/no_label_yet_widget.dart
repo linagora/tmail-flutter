@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
@@ -8,7 +9,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class NoLabelYetWidget extends StatelessWidget {
   final ImagePaths imagePaths;
-  final VoidCallback? onCreateLabel;
+  final AsyncCallback? onCreateLabel;
 
   const NoLabelYetWidget({
     super.key,

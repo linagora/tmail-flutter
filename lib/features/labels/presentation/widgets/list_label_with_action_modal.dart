@@ -1,4 +1,5 @@
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
@@ -15,7 +16,7 @@ class ListLabelWithActionModal extends StatefulWidget {
   final ImagePaths imagePaths;
   final OnLabelAsToEmailsAction onLabelAsToEmailsAction;
   final VoidCallback onCloseModal;
-  final VoidCallback onCreateALabelAction;
+  final AsyncCallback onCreateALabelAction;
 
   const ListLabelWithActionModal({
     super.key,
