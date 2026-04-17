@@ -41,6 +41,8 @@ class AddListLabelToListEmailsDelegate extends BaseController {
           );
         },
         imagePaths: imagePaths,
+        onCreateALabelAction: () => _labelController.onCreateALabelAction(
+            accountId: _labelController.accountId, hasResult: true),
       ),
       dialogLabel: 'choose-label-modal',
     );

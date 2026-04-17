@@ -19,6 +19,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:labels/labels.dart';
 import 'package:tmail_ui_user/features/base/widget/label_input_field_builder.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/exceptions/label_exceptions.dart';
 import 'package:tmail_ui_user/features/labels/domain/model/edit_label_request.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
@@ -33,6 +34,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
+import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -46,12 +48,9 @@ enum LabelPositiveButtonState {
 
 class CreateNewLabelModal extends StatefulWidget {
   final List<Label> labels;
-  final AccountId accountId;
+  final AccountId? accountId;
   final ImagePaths imagePaths;
   final LabelActionType actionType;
-  final CreateNewLabelInteractor createNewLabelInteractor;
-  final EditLabelInteractor editLabelInteractor;
-  final VerifyNameInteractor verifyNameInteractor;
   final Label? selectedLabel;
 
   const CreateNewLabelModal({
@@ -59,9 +58,6 @@ class CreateNewLabelModal extends StatefulWidget {
     required this.labels,
     required this.accountId,
     required this.imagePaths,
-    required this.createNewLabelInteractor,
-    required this.editLabelInteractor,
-    required this.verifyNameInteractor,
     this.actionType = LabelActionType.create,
     this.selectedLabel,
   });
@@ -85,10 +81,16 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   List<String> _labelDisplayNameList = <String>[];
   Color? _selectedColor;
   StreamSubscription? _streamSubscription;
+  late CreateNewLabelInteractor? _createNewLabelInteractor;
+  late EditLabelInteractor? _editLabelInteractor;
+  late VerifyNameInteractor? _verifyNameInteractor;
+  late AccountId? _accountId;
 
   @override
   void initState() {
     super.initState();
+    _accountId = widget.accountId;
+    _initInteractors();
     final selectedLabel = widget.selectedLabel;
     final labels = widget.labels;
     if (selectedLabel != null) {
@@ -107,6 +109,18 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
         _labelSelectedColorNotifier.value = _selectedColor;
       }
     });
+  }
+
+  void _initInteractors() {
+    _createNewLabelInteractor = getBinding<CreateNewLabelInteractor>();
+    _editLabelInteractor = getBinding<EditLabelInteractor>();
+    _verifyNameInteractor = getBinding<VerifyNameInteractor>();
+  }
+
+  void _disposeInteractors() {
+    _createNewLabelInteractor = null;
+    _editLabelInteractor = null;
+    _verifyNameInteractor = null;
   }
 
   @override
@@ -376,7 +390,10 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   }
 
   String? _verifyLabelName(AppLocalizations appLocalizations, String value) {
-    final result = widget.verifyNameInteractor.execute(
+    if (_verifyNameInteractor == null) {
+      return null;
+    }
+    final result = _verifyNameInteractor!.execute(
       value,
       _validators,
     );
@@ -459,8 +476,18 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
   }
 
   void _performCreateLabel(Label newLabel) {
-    _streamSubscription = widget.createNewLabelInteractor
-        .execute(widget.accountId, newLabel)
+    if (_createNewLabelInteractor == null) {
+      popBack(result: CreateNewLabelFailure(const InteractorNotInitialized()));
+      return;
+    }
+
+    if (_accountId == null) {
+      popBack(result: CreateNewLabelFailure(NotFoundAccountIdException()));
+      return;
+    }
+
+    _streamSubscription = _createNewLabelInteractor!
+        .execute(_accountId!, newLabel)
         .listen(_handleDataStream, onError: _handleErrorStream);
   }
 
@@ -511,8 +538,16 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
       newLabel: newLabel,
     );
 
-    _streamSubscription = widget.editLabelInteractor
-        .execute(widget.accountId, labelRequest)
+    if (_editLabelInteractor == null) {
+      popBack(result: EditLabelFailure(const InteractorNotInitialized()));
+      return;
+    }
+    if (_accountId == null) {
+      popBack(result: EditLabelFailure(NotFoundAccountIdException()));
+      return;
+    }
+    _streamSubscription = _editLabelInteractor!
+        .execute(_accountId!, labelRequest)
         .listen(_handleDataStream, onError: _handleErrorStream);
   }
 
@@ -528,6 +563,8 @@ class _CreateNewLabelModalState extends State<CreateNewLabelModal> {
     _labelDisplayNameList = [];
     _streamSubscription?.cancel();
     _streamSubscription = null;
+    _accountId = null;
+    _disposeInteractors();
     super.dispose();
   }
 }

@@ -8,15 +8,12 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:labels/labels.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/labels/domain/model/open_edit_label_modal_params.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/create_new_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/get_all_label_state.dart';
-import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/delete_a_label_interactor.dart';
-import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_all_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/domain/usecases/get_label_changes_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_label_action_type_extension.dart';
@@ -25,13 +22,11 @@ import 'package:tmail_ui_user/features/labels/presentation/extensions/handle_lab
 import 'package:tmail_ui_user/features/labels/presentation/label_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/labels/presentation/mixin/label_context_menu_mixin.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_label_setting_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_label_setting_state_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
-import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LabelController extends BaseController
@@ -142,10 +137,7 @@ class LabelController extends BaseController
   }
 
   Future<dynamic> openCreateNewLabelModal({
-    required AccountId accountId,
-    required VerifyNameInteractor verifyNameInteractor,
-    required CreateNewLabelInteractor createNewLabelInteractor,
-    required EditLabelInteractor editLabelInteractor,
+    required AccountId? accountId,
   }) async {
     return DialogRouter().openDialogModal(
       child: CreateNewLabelModal(
@@ -153,9 +145,6 @@ class LabelController extends BaseController
         labels: labels,
         accountId: accountId,
         imagePaths: imagePaths,
-        verifyNameInteractor: verifyNameInteractor,
-        createNewLabelInteractor: createNewLabelInteractor,
-        editLabelInteractor: editLabelInteractor,
       ),
       dialogLabel: 'create-new-label-modal',
     );
@@ -172,49 +161,26 @@ class LabelController extends BaseController
         imagePaths: imagePaths,
         selectedLabel: params.selectedLabel,
         actionType: LabelActionType.edit,
-        verifyNameInteractor: params.verifyNameInteractor,
-        createNewLabelInteractor: params.createNewLabelInteractor,
-        editLabelInteractor: params.editLabelInteractor,
       ),
       dialogLabel: 'edit-label-modal',
     );
   }
 
-  Future<void> onCreateALabelAction({
+  Future<Label?> onCreateALabelAction({
     required AccountId? accountId,
     OnLabelActionCallback? onLabelActionCallback,
     bool shouldPop = false,
+    bool hasResult = false,
   }) async {
-    final createNewLabelInteractor = getBinding<CreateNewLabelInteractor>();
-    final editLabelInteractor = getBinding<EditLabelInteractor>();
-    final verifyNameInteractor = getBinding<VerifyNameInteractor>();
-
-    final isInteractorsInitialized = createNewLabelInteractor != null &&
-        editLabelInteractor != null &&
-        verifyNameInteractor != null;
-
-    if (!isInteractorsInitialized) {
-      _handleCreateNewLabelFailure(
-        failure: CreateNewLabelFailure(const InteractorNotInitialized()),
-      );
-      return;
-    }
-
-    if (accountId == null) {
-      _handleCreateNewLabelFailure(
-        failure: CreateNewLabelFailure(NotFoundAccountIdException()),
-      );
-      return;
-    }
-
     final resultState = await openCreateNewLabelModal(
       accountId: accountId,
-      verifyNameInteractor: verifyNameInteractor,
-      createNewLabelInteractor: createNewLabelInteractor,
-      editLabelInteractor: editLabelInteractor,
     );
 
     if (resultState is CreateNewLabelSuccess) {
+      if (hasResult) {
+        toastManager.showMessageSuccess(resultState);
+        return resultState.newLabel;
+      }
       _handleCreateNewLabelSuccess(
         success: resultState,
         onLabelActionCallback: onLabelActionCallback,
@@ -223,6 +189,8 @@ class LabelController extends BaseController
     } else if (resultState is CreateNewLabelFailure) {
       _handleCreateNewLabelFailure(failure: resultState);
     }
+
+    return null;
   }
 
   void _handleCreateNewLabelSuccess({

@@ -9,12 +9,9 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/labels/domain/model/open_edit_label_modal_params.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/delete_a_label_state.dart';
 import 'package:tmail_ui_user/features/labels/domain/state/edit_label_state.dart';
-import 'package:tmail_ui_user/features/labels/domain/usecases/create_new_label_interactor.dart';
-import 'package:tmail_ui_user/features/labels/domain/usecases/edit_label_interactor.dart';
 import 'package:tmail_ui_user/features/labels/presentation/label_controller.dart';
 import 'package:tmail_ui_user/features/labels/presentation/models/label_action_type.dart';
 import 'package:tmail_ui_user/features/labels/presentation/widgets/create_new_label_modal.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/logic_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -48,31 +45,10 @@ extension HandleLabelActionTypeExtension on LabelController {
     required AccountId? accountId,
     required Label label,
   }) async {
-    final createNewLabelInteractor = getBinding<CreateNewLabelInteractor>();
-    final editLabelInteractor = getBinding<EditLabelInteractor>();
-    final verifyNameInteractor = getBinding<VerifyNameInteractor>();
-
-    final isInteractorsInitialized = createNewLabelInteractor != null &&
-        editLabelInteractor != null &&
-        verifyNameInteractor != null;
-
-    if (!isInteractorsInitialized) {
-      _handleEditLabelFailure(EditLabelFailure(const InteractorNotInitialized()));
-      return;
-    }
-
-    if (accountId == null) {
-      _handleEditLabelFailure(EditLabelFailure(NotFoundAccountIdException()));
-      return;
-    }
-
     final resultState = await openEditLabelModal(
       params: OpenEditLabelModalParams(
         selectedLabel: label,
         accountId: accountId,
-        verifyNameInteractor: verifyNameInteractor,
-        createNewLabelInteractor: createNewLabelInteractor,
-        editLabelInteractor: editLabelInteractor,
       ),
     );
 
@@ -86,10 +62,12 @@ extension HandleLabelActionTypeExtension on LabelController {
   void _handleEditLabelSuccess(EditLabelSuccess success) {
     toastManager.showMessageSuccess(success);
     syncListLabels(success.newLabel);
+    popBack();
   }
 
   void _handleEditLabelFailure(EditLabelFailure failure) {
     toastManager.showMessageFailure(failure);
+    popBack();
   }
 
   void syncListLabels(Label newLabel) {

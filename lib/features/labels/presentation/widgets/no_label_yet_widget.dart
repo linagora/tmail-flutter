@@ -1,9 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class NoLabelYetWidget extends StatelessWidget {
@@ -20,22 +20,22 @@ class NoLabelYetWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final appLocalizations = AppLocalizations.of(context);
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      constraints: const BoxConstraints(maxWidth: 352),
+    return Center(
       child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _IconNoTag(icon: imagePaths.icNoTag),
-            _LabelNoTag(
-              text: appLocalizations.noLabelsYet,
-              textStyle: ThemeUtils.textStyleInter600(),
-              padding: const EdgeInsetsDirectional.only(top: 16),
-            ),
-            Flexible(
-              child: _LabelNoTag(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 352),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _IconNoTag(icon: imagePaths.icNoTag),
+              _LabelNoTag(
+                text: appLocalizations.noLabelsYet,
+                textStyle: ThemeUtils.textStyleInter600(),
+                padding: const EdgeInsetsDirectional.only(top: 16),
+              ),
+              _LabelNoTag(
                 text: appLocalizations.noLabelsYetMessageDescriptions,
                 textStyle: ThemeUtils.textStyleInter400.copyWith(
                   fontSize: 16,
@@ -45,22 +45,22 @@ class NoLabelYetWidget extends StatelessWidget {
                 ),
                 padding: const EdgeInsetsDirectional.only(top: 36),
               ),
-            ),
-            if (onCreateLabel != null)
-              Container(
-                constraints: const BoxConstraints(minWidth: 186),
-                height: 48,
-                margin: const EdgeInsetsDirectional.only(top: 16),
-                child: ConfirmDialogButton(
-                  label: appLocalizations.createALabel,
-                  backgroundColor: Colors.white,
-                  textColor: AppColor.primaryMain,
-                  borderColor: AppColor.primaryMain,
-                  icon: imagePaths.icAddIdentity,
-                  onTapAction: onCreateLabel!,
+              if (onCreateLabel != null)
+                Container(
+                  constraints: const BoxConstraints(minWidth: 186),
+                  height: 48,
+                  margin: const EdgeInsetsDirectional.only(top: 16),
+                  child: ConfirmDialogButton(
+                    label: appLocalizations.createALabel,
+                    backgroundColor: Colors.white,
+                    textColor: AppColor.primaryMain,
+                    borderColor: AppColor.primaryMain,
+                    icon: imagePaths.icAddIdentity,
+                    onTapAction: onCreateLabel!,
+                  ),
                 ),
-              ),
           ],
+          ),
         ),
       ),
     );
