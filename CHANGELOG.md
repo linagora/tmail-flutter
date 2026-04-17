@@ -1,3 +1,25 @@
+## [0.28.3] - 2026-04-17
+
+### Added
+- TF-4308: Create new label in Choose Label
+- TF-4301: Create new label in EmailView
+- TF-4268: Initialize Sentry from Linagora Ecosystem config
+- ADR-0072: Prevent notification storm on Android
+- TF-4265: Attachment reminder — exclude/include keyword lists, custom config, Main Thread regex caching, integration test on mobile
+- Add ESC keyboard shortcut and shortcuts dictionary to close email detail view in Settings
+- TF-4356: Add filter event mail in search
+
+### Fixed
+- TF-4343: Fix load Sentry from Sentry CDN
+- TF-4301: Block barrier dismissal while label creation is in progress, dedup before appending label to list
+- Fix issue #4292
+- TF-4343: Self-host Sentry JS via DOM interceptor to bypass CDN blockers
+- TF-4284: Fix refreshing causes "virtual mailboxes" to be hidden
+- TF-4358: Remove mail in trash by default in search result
+- TF-4425: Fix load more not triggered on iOS 18 when fast scrolling to bottom
+- Fix stale `worker_manager` git ref; reduce worker_manager memory allocation
+- TF-2316: Can not delete folder when its children are hidden
+
 ## [0.27.2] - 2026-04-02
 
 ### Added
