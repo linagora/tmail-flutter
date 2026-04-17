@@ -23,7 +23,7 @@ Use Patrol with Chrome as the target device for web integration testing, sharing
 
 ### Prerequisites
 
-- Flutter 3.32.8 (via FVM)
+- Flutter 3.38.9
 - Patrol CLI 4.3.1: `dart pub global activate patrol_cli 4.3.1`
 - `patrol` package **4.5.0** (and `patrol_finders 3.x`, `patrol_log 0.8.x`) — requires upgrading from the 3.x currently in `pubspec.yaml`
 - Docker Desktop (running)
@@ -95,7 +95,7 @@ Adds `--web-headless=true` — no display required. The GitHub Actions workflow 
 
 Mobile and web test suites run as **separate parallel jobs** in CI. Each job targets its own platform:
 
-```
+```text
 PR opened / push
 │
 ├── job: patrol-mobile-integration-test   (ubuntu-latest + Android emulator)
@@ -108,7 +108,7 @@ PR opened / push
 
 The two jobs are independent — they share no state and can run concurrently. A PR is gated on **both** jobs passing.
 
-Platform filtering is handled automatically by `runPatrolTest()` via the `platforms` parameter (see [ADR-0082](./0082-patrol-web-test-migration-guide.md)). Tests that do not apply to the current platform skip themselves — no `--exclude-tags` flag needed in either job.
+Platform filtering is handled automatically by `runPatrolTest()` (see [ADR-0082](./0082-patrol-web-test-migration-guide.md)). Tests that do not apply to the current platform skip themselves — no `--exclude-tags` flag needed in either job.
 
 ### Viewing Results
 
@@ -117,7 +117,7 @@ Platform filtering is handled automatically by `runPatrolTest()` via the `platfo
 
 ## Consequences
 
-- Web and mobile tests share the same test files; platform-only tests skip themselves via the `platforms` parameter in `runPatrolTest()` — no manual tagging required.
+- Web and mobile tests share the same test files; platform-only tests skip themselves in `runPatrolTest()` — no manual tagging required.
 - The same Docker JMAP backend serves both platforms — no additional infrastructure needed.
 - Data isolation limitations from [ADR-0053](./0053-patrol-integration-test.md) still apply: backend state is shared across all tests in a single run.
 - Patrol automatically installs and manages Chromium — no manual Chrome installation is needed on local machines or CI runners.

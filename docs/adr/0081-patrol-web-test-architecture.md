@@ -105,7 +105,6 @@ void runPatrolTest({
 }) {
   final resolvedTags = [
     ...tags.map((t) => t.name),
-    kIsWeb ? TestTags.web.name : TestTags.mobile.name,  // auto-applied
   ];
   patrolTest(description, tags: resolvedTags, ($) async {
     await setupTest();

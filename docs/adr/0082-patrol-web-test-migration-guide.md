@@ -205,66 +205,6 @@ Same file. Same scenario. Factory resolved automatically per platform via `kIsWe
 
 Some features exist only on web (e.g., a browser-specific upload flow) or only on mobile (e.g., deep links). Using `@Tags` annotations works but is error-prone — developers can easily forget to add them. Instead, platform constraints are encoded **inside `runPatrolTest()`** so the test skips itself automatically.
 
-### `TestPlatform` enum + `platforms` parameter
-
-```dart
-// base/test_platform.dart
-enum TestPlatform { mobile, web }
-```
-
-`runPatrolTest()` accepts an optional `platforms` parameter (defaults to both):
-
-```dart
-// base/test_base.dart
-void runPatrolTest({
-  required String description,
-  required ScenarioBuilder scenarioBuilder,
-  List<TestPlatform> platforms = const [TestPlatform.mobile, TestPlatform.web],
-}) {
-  final currentPlatform = kIsWeb ? TestPlatform.web : TestPlatform.mobile;
-  patrolTest(
-    description,
-    skip: !platforms.contains(currentPlatform),
-    ($) async {
-      final robots = kIsWeb ? WebRobotFactory($) : MobileRobotFactory($);
-      await scenarioBuilder($, robots).run();
-    },
-  );
-}
-```
-
-### Developer usage
-
-```dart
-// Web-only — skips automatically on mobile
-void main() {
-  TestBase().runPatrolTest(
-    description: 'Drag and drop upload',
-    platforms: [TestPlatform.web],
-    scenarioBuilder: ($, robots) => DragDropUploadScenario($, robots),
-  );
-}
-
-// Mobile-only — skips automatically on web
-void main() {
-  TestBase().runPatrolTest(
-    description: 'Deep link handling',
-    platforms: [TestPlatform.mobile],
-    scenarioBuilder: ($, robots) => DeepLinkScenario($, robots),
-  );
-}
-
-// Runs on both — omit platforms (default)
-void main() {
-  TestBase().runPatrolTest(
-    description: 'Send email',
-    scenarioBuilder: ($, robots) => SendEmailScenario($, robots),
-  );
-}
-```
-
-No `@Tags`, no `--exclude-tags` in CI — each test knows where it belongs.
-
 ### CI commands (simplified)
 
 ```bash
@@ -289,14 +229,6 @@ AbstractUploadRobot uploadRobot() =>
 @override
 AbstractUploadRobot uploadRobot() => WebUploadRobot($);
 ```
-
-### Summary
-
-| Test type | `platforms` param | Behaviour on mobile | Behaviour on web |
-|-----------|-------------------|---------------------|------------------|
-| Both platforms | _(omit)_ | runs | runs |
-| Web-only | `[TestPlatform.web]` | skipped | runs |
-| Mobile-only | `[TestPlatform.mobile]` | runs | skipped |
 
 ## Consequences
 
