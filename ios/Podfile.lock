@@ -395,7 +395,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
   FirebaseMessaging: ac9062bcc35ed56e15a0241d8fd317022499baf8
   fk_user_agent: 137145b086229251761678fe034da53753f4ce59
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_appauth: d4abcf54856e5d8ba82ed7646ffc83245d4aa448
   flutter_charset_detector_darwin: 14f055ebeed6896144cc96b046749df51127a0a3
   flutter_file_dialog: ca8d7fbd1772d4f0c2777b4ab20a7787ef4e7dd8
