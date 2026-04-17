@@ -27,8 +27,6 @@ class AddListLabelToListEmailsDelegate extends BaseController {
     required VoidCallback onCancel,
     required OnSyncListLabelForListEmail onSync,
   }) async {
-    if (_labelController.labels.isEmpty) return;
-
     await DialogRouter().openDialogModal(
       child: ChooseLabelModal(
         labels: _labelController.labels,

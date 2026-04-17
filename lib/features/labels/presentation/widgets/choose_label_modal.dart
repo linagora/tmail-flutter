@@ -37,8 +37,8 @@ class _ChooseLabelModalState extends State<ChooseLabelModal> {
     return LayoutBuilder(builder: (_, constraints) {
       final currentScreenWidth = constraints.maxWidth;
       final currentScreenHeight = constraints.maxHeight;
-      double height = math.min(currentScreenHeight - 100, 645);
-      double width = math.min(currentScreenWidth - 32, 536);
+      final height = math.max(0.0, math.min(currentScreenHeight - 100, 645.0));
+      final width = math.max(0.0, math.min(currentScreenWidth - 32, 536.0));
 
       Widget bodyWidget = Container(
         decoration: BoxDecoration(

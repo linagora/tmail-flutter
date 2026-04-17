@@ -46,19 +46,20 @@ class NoLabelYetWidget extends StatelessWidget {
                 padding: const EdgeInsetsDirectional.only(top: 36),
               ),
             ),
-            Container(
-              constraints: const BoxConstraints(minWidth: 186),
-              height: 48,
-              margin: const EdgeInsetsDirectional.only(top: 16),
-              child: ConfirmDialogButton(
-                label: appLocalizations.createALabel,
-                backgroundColor: Colors.white,
-                textColor: AppColor.primaryMain,
-                borderColor: AppColor.primaryMain,
-                icon: imagePaths.icAddIdentity,
-                onTapAction: onCreateLabel ?? () {},
+            if (onCreateLabel != null)
+              Container(
+                constraints: const BoxConstraints(minWidth: 186),
+                height: 48,
+                margin: const EdgeInsetsDirectional.only(top: 16),
+                child: ConfirmDialogButton(
+                  label: appLocalizations.createALabel,
+                  backgroundColor: Colors.white,
+                  textColor: AppColor.primaryMain,
+                  borderColor: AppColor.primaryMain,
+                  icon: imagePaths.icAddIdentity,
+                  onTapAction: onCreateLabel!,
+                ),
               ),
-            ),
           ],
         ),
       ),
