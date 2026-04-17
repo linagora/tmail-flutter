@@ -14,7 +14,7 @@ import '../../robots/identities_list_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class AttachmentReminderScenario extends BaseTestScenario {
-  const AttachmentReminderScenario(super.$);
+  const AttachmentReminderScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

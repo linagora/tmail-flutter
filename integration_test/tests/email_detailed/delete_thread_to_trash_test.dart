@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'Should see toast message success when open detailed email and delete thread successfully',
-    scenarioBuilder: ($) => DeleteThreadToTrashScenario($),
+    scenarioBuilder: ($, robots) => DeleteThreadToTrashScenario($, robots),
   );
 }

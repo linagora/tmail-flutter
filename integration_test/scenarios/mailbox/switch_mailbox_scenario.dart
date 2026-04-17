@@ -7,7 +7,7 @@ import '../../models/provisioning_email.dart';
 import '../../robots/thread_robot.dart';
 
 class SwitchMailboxScenario extends BaseTestScenario {
-  const SwitchMailboxScenario(super.$);
+  const SwitchMailboxScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

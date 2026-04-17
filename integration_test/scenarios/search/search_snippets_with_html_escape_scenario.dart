@@ -6,7 +6,7 @@ import '../../robots/search_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class SearchSnippetsWithHtmlEscapeScenario extends BaseTestScenario {
-  SearchSnippetsWithHtmlEscapeScenario(super.$);
+  SearchSnippetsWithHtmlEscapeScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

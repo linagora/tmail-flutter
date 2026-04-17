@@ -6,7 +6,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class MailboxMoveEmailScenario extends BaseTestScenario {
-  const MailboxMoveEmailScenario(super.$);
+  const MailboxMoveEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

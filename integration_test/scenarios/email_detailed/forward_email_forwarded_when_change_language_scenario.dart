@@ -19,7 +19,7 @@ import '../../robots/thread_robot.dart';
 
 class ForwardEmailForwardedWhenChangeLanguageScenario extends BaseTestScenario
     with SettingScenarioMixin, GenerateEmailScenarioMixin, ScreenScenarioMixin {
-  const ForwardEmailForwardedWhenChangeLanguageScenario(super.$);
+  const ForwardEmailForwardedWhenChangeLanguageScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

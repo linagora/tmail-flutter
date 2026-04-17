@@ -16,7 +16,7 @@ import '../../robots/thread_robot.dart';
 
 class ReplyEmailWithReplyToScenario extends BaseTestScenario {
 
-  const ReplyEmailWithReplyToScenario(super.$);
+  const ReplyEmailWithReplyToScenario(super.$, super.robots);
 
   static const String queryString = 'Reply email with Reply-To';
 

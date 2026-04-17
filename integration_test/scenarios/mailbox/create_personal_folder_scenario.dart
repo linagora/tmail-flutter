@@ -5,7 +5,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class CreatePersonalFolderScenario extends BaseTestScenario {
-  const CreatePersonalFolderScenario(super.$);
+  const CreatePersonalFolderScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

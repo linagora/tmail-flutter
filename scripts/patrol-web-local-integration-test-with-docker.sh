@@ -46,7 +46,6 @@ echo "Building the app and running tests..."
 patrol test -v \
     --device=chrome \
     --web-port=3000 \
-    --tags=web \
     --web-browser-args='["--lang=en-US","--accept-lang=en-US,en"]' \
     --dart-define=USERNAME="$BOB" \
     --dart-define=PASSWORD="$BOB" \

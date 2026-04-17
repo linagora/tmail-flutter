@@ -11,7 +11,7 @@ import '../../robots/setting_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class ThreadDetailReplyRealTimeUpdateScenario extends BaseTestScenario {
-  ThreadDetailReplyRealTimeUpdateScenario(super.$);
+  ThreadDetailReplyRealTimeUpdateScenario(super.$, super.robots);
   
   @override
   Future<void> runTestLogic() async {

@@ -16,7 +16,7 @@ import '../../robots/thread_robot.dart';
 
 class ReplyAllEmailScenario extends BaseTestScenario {
 
-  const ReplyAllEmailScenario(super.$);
+  const ReplyAllEmailScenario(super.$, super.robots);
 
   static const String queryString = 'Reply all email';
 

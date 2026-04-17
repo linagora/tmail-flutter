@@ -12,7 +12,7 @@ import '../../robots/thread_robot.dart';
 
 class DisplayAndScrollEmailWithLongContentScenario extends BaseTestScenario {
 
-  const DisplayAndScrollEmailWithLongContentScenario(super.$);
+  const DisplayAndScrollEmailWithLongContentScenario(super.$, super.robots);
 
   static const String subject = 'Email with long content';
   static const String longContent = '''

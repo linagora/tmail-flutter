@@ -12,7 +12,7 @@ import '../../robots/thread_robot.dart';
 
 class ForwardingEmailLostAttachmentsScenario extends BaseTestScenario {
 
-  const ForwardingEmailLostAttachmentsScenario(super.$);
+  const ForwardingEmailLostAttachmentsScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

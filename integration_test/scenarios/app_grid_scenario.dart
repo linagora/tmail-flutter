@@ -12,7 +12,7 @@ import '../robots/thread_robot.dart';
 
 class AppGridScenario extends BaseTestScenario {
 
-  const AppGridScenario(super.$);
+  const AppGridScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

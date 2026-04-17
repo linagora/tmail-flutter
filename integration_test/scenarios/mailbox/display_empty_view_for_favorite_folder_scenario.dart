@@ -8,7 +8,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class DisplayEmptyViewForFavoriteFolderScenario extends BaseTestScenario {
-  const DisplayEmptyViewForFavoriteFolderScenario(super.$);
+  const DisplayEmptyViewForFavoriteFolderScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

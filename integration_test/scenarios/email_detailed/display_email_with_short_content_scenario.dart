@@ -9,7 +9,7 @@ import '../../robots/thread_robot.dart';
 
 class DisplayEmailWithShortContentScenario extends BaseTestScenario {
 
-  const DisplayEmailWithShortContentScenario(super.$);
+  const DisplayEmailWithShortContentScenario(super.$, super.robots);
 
   static const String subject = 'Email with short content';
   static const String shortContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';

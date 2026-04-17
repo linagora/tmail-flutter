@@ -9,7 +9,7 @@ import '../../robots/thread_robot.dart';
 
 class DisplayEmailWithXssContentScenario extends BaseTestScenario {
 
-  const DisplayEmailWithXssContentScenario(super.$);
+  const DisplayEmailWithXssContentScenario(super.$, super.robots);
 
   static const String subject = 'Email with xss content';
   static const String xssContent = '<script>alert("XSSRobot")</script>';

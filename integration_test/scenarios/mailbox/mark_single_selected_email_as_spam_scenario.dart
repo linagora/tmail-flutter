@@ -7,7 +7,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class MarkSingleSelectedEmailAsSpamScenario extends BaseTestScenario {
-  const MarkSingleSelectedEmailAsSpamScenario(super.$);
+  const MarkSingleSelectedEmailAsSpamScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

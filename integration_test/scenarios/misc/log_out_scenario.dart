@@ -5,7 +5,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class LogOutScenario extends BaseTestScenario {
-  const LogOutScenario(super.$);
+  const LogOutScenario(super.$, super.robots);
   
   @override
   Future<void> runTestLogic() async {

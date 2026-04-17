@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class MarkAsSpamEmailScenario extends BaseTestScenario {
 
-  const MarkAsSpamEmailScenario(super.$);
+  const MarkAsSpamEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

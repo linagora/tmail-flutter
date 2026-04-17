@@ -7,7 +7,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class CreateAndHideSubFolderScenario extends BaseTestScenario {
-  const CreateAndHideSubFolderScenario(super.$);
+  const CreateAndHideSubFolderScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

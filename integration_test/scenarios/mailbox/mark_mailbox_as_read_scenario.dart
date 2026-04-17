@@ -10,7 +10,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class MarkMailboxAsReadScenario extends BaseTestScenario {
-  const MarkMailboxAsReadScenario(super.$);
+  const MarkMailboxAsReadScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

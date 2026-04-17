@@ -7,6 +7,8 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 
 import '../models/test_tags.dart';
 import 'base_scenario.dart';
+import '../factories/robot_factory.dart';
+import '../factories/robot_factory_provider.dart';
 
 class TestBase {
   static final TestBase _instance = TestBase._internal();
@@ -16,7 +18,7 @@ class TestBase {
 
   void runPatrolTest({
     required String description,
-    required BaseScenario Function(PatrolIntegrationTester $) scenarioBuilder,
+    required BaseScenario Function(PatrolIntegrationTester $, RobotFactory robots) scenarioBuilder,
     List<TestTags> tags = const [],
   }) {
     patrolSetUp(_setup);
@@ -30,14 +32,14 @@ class TestBase {
         visibleTimeout: Duration(seconds: 30),
         printLogs: true,
       ),
+      tags: tags.map((t) => t.name).toList(),
       platformAutomatorConfig: PlatformAutomatorConfig.fromOptions(
         findTimeout: const Duration(seconds: 10),
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
-      tags: tags.map((tag) => tag.name).toList(),
       ($) async {
         await setupTest();
-        await scenarioBuilder($).execute();
+        await scenarioBuilder($, createRobotFactory($)).execute();
       },
     );
   }

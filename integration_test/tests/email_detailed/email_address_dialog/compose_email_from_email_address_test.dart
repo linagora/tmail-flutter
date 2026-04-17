@@ -4,6 +4,6 @@ import '../../../scenarios/email_detailed/compose_email_from_email_address_scena
 void main() {
   TestBase().runPatrolTest(
     description: 'Should open new composer with To field has email address when open detailed email and tap `Compose email` button in email address info dialog',
-    scenarioBuilder: ($) => ComposeEmailFromEmailAddressScenario($),
+    scenarioBuilder: ($, robots) => ComposeEmailFromEmailAddressScenario($, robots),
   );
 }

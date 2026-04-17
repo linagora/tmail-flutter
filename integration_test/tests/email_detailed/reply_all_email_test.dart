@@ -6,6 +6,6 @@ void main() {
     description:
       'SHOULD see the Subject contain the prefix `Re:`\n'
       'AND the To, Cc, Bcc field should display correctly',
-    scenarioBuilder: ($) => ReplyAllEmailScenario($),
+    scenarioBuilder: ($, robots) => ReplyAllEmailScenario($, robots),
   );
 }

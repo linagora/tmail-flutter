@@ -1,3 +1,3 @@
 enum TestTags {
-  web,
+  sample,
 }
