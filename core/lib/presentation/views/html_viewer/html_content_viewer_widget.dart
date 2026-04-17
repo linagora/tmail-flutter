@@ -85,7 +85,6 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
 
   String? _htmlData;
 
-  @visibleForTesting
   InAppWebViewController get webViewController => _webViewController;
 
   @override

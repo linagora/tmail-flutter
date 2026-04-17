@@ -35,19 +35,20 @@ class AppGridScenario extends BaseTestScenario {
     await Future.delayed(const Duration(seconds: 2));
 
     if (PlatformInfo.isAndroid) {
-      await $.native.pressHome();
-      await $.native.openApp();
+      final native = $.platformAutomator.android;
+      await native.pressHome();
+      await native.openApp();
 
       await appGridRobot.openAppInAppGridByAppName('Twake Sync');
       await Future.delayed(const Duration(seconds: 2));
 
-      await $.native.pressBack();
+      await native.pressBack();
 
       await appGridRobot.openAppInAppGridByAppName('Twake Chat');
       await Future.delayed(const Duration(seconds: 2));
 
-      await $.native.pressBack();
-      await $.native.pressBack();
+      await native.pressBack();
+      await native.pressBack();
 
       await _expectMailboxViewVisible();
     } else if (PlatformInfo.isIOS) {

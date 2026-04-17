@@ -86,9 +86,9 @@ class ComposerRobot extends CoreRobot {
   }
 
   Future<void> grantContactPermission() async {
-    if (await $.native
+    if (await native
         .isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
-      await $.native.grantPermissionWhenInUse();
+      await native.grantPermissionWhenInUse();
     }
   }
 

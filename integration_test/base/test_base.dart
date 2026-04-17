@@ -28,8 +28,8 @@ class TestBase {
         visibleTimeout: Duration(seconds: 30),
         printLogs: true,
       ),
-      nativeAutomatorConfig: const NativeAutomatorConfig(
-        findTimeout: Duration(seconds: 10),
+      platformAutomatorConfig: PlatformAutomatorConfig.fromOptions(
+        findTimeout: const Duration(seconds: 10),
       ),
       framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
       ($) async {

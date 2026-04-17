@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -10,9 +9,9 @@ class LoginRobot extends CoreRobot {
 
   LoginRobot(super.$);
 
-  Future<void> grantNotificationPermission(NativeAutomator nativeAutomator) async {
-    if (await nativeAutomator.isPermissionDialogVisible(timeout: const Duration(seconds: 1))) {
-      await nativeAutomator.grantPermissionWhenInUse();
+  Future<void> grantNotificationPermission() async {
+    if (await native.isPermissionDialogVisible(timeout: const Duration(seconds: 1))) {
+      await native.grantPermissionWhenInUse();
     }
   }
 
