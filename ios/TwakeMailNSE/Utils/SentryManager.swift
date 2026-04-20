@@ -29,6 +29,7 @@ class SentryManager {
             options.dsn = config.dsn
             options.environment = config.environment
             options.releaseName = config.release
+            options.dist = config.dist
             options.debug = config.isDebug
             // Map enableLogs to diagnostic level if needed
             options.diagnosticLevel = config.isDebug ? .debug : .none
@@ -51,15 +52,27 @@ class SentryManager {
     }
     
     /// Safely captures an error if Sentry is initialized.
-    func capture(error: Error) {
+    /// - Parameter flushTimeout: If provided, blocks until events are sent or the timeout elapses.
+    ///   Use in critical paths (e.g. serviceExtensionTimeWillExpire) where the process may be
+    ///   suspended before Sentry flushes its queue.
+    func capture(error: Error, flushTimeout: TimeInterval? = nil) {
         guard isInitialized else { return }
         SentrySDK.capture(error: error)
+        if let flushTimeout {
+            SentrySDK.flush(timeout: flushTimeout)
+        }
     }
-    
+
     /// Safely captures a message if Sentry is initialized.
-    func capture(message: String) {
+    /// - Parameter flushTimeout: If provided, blocks until events are sent or the timeout elapses.
+    ///   Use in critical paths (e.g. serviceExtensionTimeWillExpire) where the process may be
+    ///   suspended before Sentry flushes its queue.
+    func capture(message: String, flushTimeout: TimeInterval? = nil) {
         guard isInitialized else { return }
         SentrySDK.capture(message: message)
+        if let flushTimeout {
+            SentrySDK.flush(timeout: flushTimeout)
+        }
     }
     
     /// Set user context cho Sentry

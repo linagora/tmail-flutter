@@ -45,7 +45,7 @@ class SentryEcosystem {
     await _cacheData(sentryConfig, _sentryUser);
 
     if (PlatformInfo.isIOS) {
-      _saveSentryConfigToKeychain(sentryConfig);
+      await _saveSentryConfigToKeychain(sentryConfig);
     }
   }
 
@@ -72,7 +72,7 @@ class SentryEcosystem {
     }
   }
 
-  void _saveSentryConfigToKeychain(SentryConfig sentryConfig) {
-    _iosSharingManager?.saveSentryConfigToKeychain(sentryConfig);
+  Future<void> _saveSentryConfigToKeychain(SentryConfig sentryConfig) async {
+    await _iosSharingManager?.saveSentryConfigToKeychain(sentryConfig);
   }
 }

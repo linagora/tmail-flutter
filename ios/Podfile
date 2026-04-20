@@ -43,6 +43,10 @@ target 'TwakeMailNSE' do
   # Must use HybridSDK subspec at the same version as sentry_flutter requires.
   # sentry_flutter 9.8.0 depends on Sentry/HybridSDK (= 8.56.2).
   # Using plain `pod 'Sentry'` (Core) causes a version conflict and missing PrivateSentrySDKOnly errors.
+  #
+  # UPGRADE NOTE: When bumping sentry_flutter, update this version to match the new
+  # Sentry/HybridSDK constraint declared in Podfile.lock under DEPENDENCIES.
+  # Verify with: grep 'Sentry/HybridSDK' ios/Podfile.lock
   pod 'Sentry/HybridSDK', '8.56.2'
 end
 

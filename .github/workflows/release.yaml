@@ -115,8 +115,8 @@ jobs:
           SENTRY_RELEASE="$PUBSPEC_VERSION"
           echo "Processing Sentry Release: $SENTRY_RELEASE for platform: $PLATFORM"
 
-          # 3. Create Release
-          sentry-cli releases new "$SENTRY_RELEASE"
+          # 3. Create Release (idempotent: skip if already exists from the parallel matrix leg)
+          sentry-cli releases info "$SENTRY_RELEASE" -q || sentry-cli releases new "$SENTRY_RELEASE"
 
           # 4. Upload platform-specific debug symbols
           if [ "$PLATFORM" = "ios" ]; then

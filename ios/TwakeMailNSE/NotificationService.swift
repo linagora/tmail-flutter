@@ -16,7 +16,8 @@ class NotificationService: UNNotificationServiceExtension {
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         
         SentryManager.shared.configure(with: keychainController)
-        
+        SentryManager.shared.clearUser()
+
         handler = contentHandler
         modifiedContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
@@ -48,7 +49,7 @@ class NotificationService: UNNotificationServiceExtension {
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        SentryManager.shared.capture(message: "NSE: Service Extension Time Expired (Timeout)")
+        SentryManager.shared.capture(message: "NSE: Service Extension Time Expired (Timeout)", flushTimeout: 0.3)
         self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
         self.notify()
     }
@@ -231,6 +232,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     private func cleanUp() {
+        SentryManager.shared.clearUser()
         handler = nil
         modifiedContent = nil
     }

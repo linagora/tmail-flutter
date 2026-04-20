@@ -103,6 +103,7 @@ class SentryConfig {
       'dsn': dsn,
       'environment': environment,
       'release': release,
+      if (dist != null) 'dist': dist,
       'tracesSampleRate': tracesSampleRate,
       'profilesSampleRate': profilesSampleRate,
       'sessionSampleRate': sessionSampleRate,

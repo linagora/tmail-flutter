@@ -9,6 +9,10 @@ struct SentryConfig: Codable {
     
     /// Current app release version
     let release: String
+
+    /// Distribution (e.g. Git SHA). Must match --dist used when uploading symbols to Sentry.
+    /// Optional: only set when the main app passes it via --dart-define=SENTRY_DIST.
+    let dist: String?
     
     /// Performance monitoring: Set to 1.0 to capture 100% of transactions for tracing.
     /// High values in NSE might impact extension memory limit (24MB).
