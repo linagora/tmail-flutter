@@ -1,3 +1,3 @@
 enum TestTags {
-  sample,
+  sample, // Add more tags here
 }
