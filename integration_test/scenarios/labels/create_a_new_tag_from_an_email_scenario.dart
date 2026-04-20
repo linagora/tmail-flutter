@@ -12,7 +12,7 @@ import '../../robots/thread_robot.dart';
 
 class CreateANewTagFromAnEmailScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
-  const CreateANewTagFromAnEmailScenario(super.$);
+  const CreateANewTagFromAnEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

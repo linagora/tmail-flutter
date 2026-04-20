@@ -13,7 +13,7 @@ import '../../robots/thread_robot.dart';
 
 class CreateLabelFromChooseLabelModalWithExistingLabelsScenario
     extends BaseTestScenario with ProvisioningLabelScenarioMixin {
-  const CreateLabelFromChooseLabelModalWithExistingLabelsScenario(super.$);
+  const CreateLabelFromChooseLabelModalWithExistingLabelsScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {
@@ -42,7 +42,7 @@ class CreateLabelFromChooseLabelModalWithExistingLabelsScenario
 
     await threadRobot.openMailbox();
     await expectViewVisible($(LabelListView));
-    await $.native.pressBack();
+    await mobileBack($);
 
     await threadRobot.longPressEmailWithSubject(
       'Email 1 subject ${existingLabel.safeDisplayName}',
