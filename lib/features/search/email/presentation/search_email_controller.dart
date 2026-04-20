@@ -1113,7 +1113,7 @@ class SearchEmailController extends BaseController
       case QuickSearchFilter.unread:
         _deleteUnreadSearchFilter();
         break;
-      case QuickSearchFilter.notIncludeEvents:
+      case QuickSearchFilter.events:
         _deleteNotIncludeEventsSearchFilter();
         break;
       case QuickSearchFilter.labels:

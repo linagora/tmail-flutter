@@ -307,7 +307,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     SearchEmailViewStyle.searchFilterSizeBoxMargin,
                     _buildSearchFilterButton(context, QuickSearchFilter.unread),
                     SearchEmailViewStyle.searchFilterSizeBoxMargin,
-                    _buildSearchFilterButton(context, QuickSearchFilter.notIncludeEvents),
+                    _buildSearchFilterButton(context, QuickSearchFilter.events),
                     SearchEmailViewStyle.searchFilterSizeBoxMargin,
                     _buildSearchFilterButton(context, QuickSearchFilter.sortBy),
                   ],
@@ -424,7 +424,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       case QuickSearchFilter.unread:
         controller.selectUnreadSearchFilter();
         break;
-      case QuickSearchFilter.notIncludeEvents:
+      case QuickSearchFilter.events:
         controller.selectNotIncludeEventsSearchFilter();
         break;
       case QuickSearchFilter.labels:

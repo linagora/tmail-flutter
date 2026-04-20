@@ -52,7 +52,7 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
       case QuickSearchFilter.unread:
         deleteUnreadSearchFilter();
         break;
-      case QuickSearchFilter.notIncludeEvents:
+      case QuickSearchFilter.events:
         deleteNotIncludeEventsSearchFilter();
         break;
       default:

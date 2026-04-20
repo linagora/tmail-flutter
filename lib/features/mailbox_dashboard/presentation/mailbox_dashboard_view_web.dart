@@ -702,7 +702,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                         _buildQuickSearchFilterButton(
                           context,
-                          QuickSearchFilter.notIncludeEvents,
+                          QuickSearchFilter.events,
                         ),
                       ],
                     ),
@@ -844,7 +844,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       case QuickSearchFilter.unread:
         controller.selectUnreadSearchFilter();
         break;
-      case QuickSearchFilter.notIncludeEvents:
+      case QuickSearchFilter.events:
         controller.selectNotIncludeEventsSearchFilter();
         break;
       case QuickSearchFilter.labels:
