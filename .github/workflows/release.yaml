@@ -104,10 +104,11 @@ jobs:
           # 1. Install Sentry CLI
           curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
 
-          # 2. Validate tag version matches pubspec.yaml version
+          # 2. Validate tag version matches pubspec.yaml version (base version only, ignoring -rc* suffix)
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           TAG_VERSION="${TAG_VERSION%%-rc*}"
           PUBSPEC_VERSION=$(awk '/^version:/{split($2,a,"+"); print a[1]; exit}' pubspec.yaml)
+          PUBSPEC_VERSION="${PUBSPEC_VERSION%%-rc*}"
           if [ "$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
             echo "::warning::Tag version ($TAG_VERSION) does not match pubspec version ($PUBSPEC_VERSION). Skipping Sentry upload."
             exit 0
