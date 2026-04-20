@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/upload/file_info.dart';
-import 'package:patrol/patrol.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
@@ -22,7 +21,6 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_widget.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_image_picker_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -78,15 +76,6 @@ class ComposerRobot extends CoreRobot {
     await composerController?.htmlEditorApi?.requestFocusLastChild();
 
     await composerController!.htmlEditorApi!.insertHtml('$content <br><br>');
-  }
-
-  Future<void> addContentWeb(String content) async {
-    await $(WebEditorWidget).tap();
-    await $.platformAutomator.web.enterText(
-      WebSelector(cssOrXpath: 'div.note-editable'),
-      iframeSelector: WebSelector(cssOrXpath: 'iframe'),
-      text: content,
-    );
   }
 
   Future<void> sendEmail(ImagePaths imagePaths) async {

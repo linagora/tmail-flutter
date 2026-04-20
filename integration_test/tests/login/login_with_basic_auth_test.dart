@@ -1,5 +1,7 @@
 import '../../base/test_base.dart';
-import '../../scenarios/login_with_basic_auth_scenario.dart';
+import '../../models/test_tags.dart';
+import '../../scenarios/login_with_basic_auth_scenario.dart'
+    if (dart.library.html) '../../scenarios/web_login_with_basic_auth_scenario.dart';
 
 void main() {
   TestBase().runPatrolTest(
@@ -11,5 +13,6 @@ void main() {
       email: const String.fromEnvironment('BASIC_AUTH_EMAIL'),
       password: const String.fromEnvironment('PASSWORD'),
     ),
+    tags: [TestTags.android, TestTags.ios, TestTags.web],
   );
 }

@@ -1,3 +1,5 @@
 enum TestTags {
-  sample, // Add more tags here
+  android,
+  ios,
+  web,
 }

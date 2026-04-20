@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/base_test_scenario.dart';
@@ -18,7 +17,7 @@ class SendEmailScenario extends BaseTestScenario {
     const content = 'Test content';
 
     await robots.threadRobot().openComposer();
-    await _expectComposerViewVisible();
+    await robots.composerRobot().expectComposerViewVisible();
 
     await robots.composerRobot().grantContactPermission();
 
@@ -30,8 +29,6 @@ class SendEmailScenario extends BaseTestScenario {
 
     await _expectSendEmailSuccessToast();
   }
-
-  Future<void> _expectComposerViewVisible() => expectViewVisible($(ComposerView));
 
   Future<void> _expectSendEmailSuccessToast() async {
     await expectViewVisible(

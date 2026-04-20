@@ -44,6 +44,7 @@ cp integration_test/integration_test_env.file env.file
 
 echo "Building the app and running tests..."
 patrol test -v \
+    --tags=web \
     --device=chrome \
     --web-port=3000 \
     --web-browser-args='["--lang=en-US","--accept-lang=en-US,en"]' \
