@@ -54,6 +54,8 @@ platform :ios do
     # DART_OBFUSCATION and SPLIT_DEBUG_INFO are passed as xcodebuild build settings,
     # which Flutter's xcode_backend.sh picks up to obfuscate Dart code and write
     # debug symbols to the given path (required for Sentry Dart crash symbolication).
+    # archive_path pins the xcarchive location so the CI Sentry upload step can
+    # find dSYMs at a known path: build/ios/archive/Runner.xcarchive/dSYMs/
     symbols_path = File.expand_path("../build/ios/outputs/symbols")
     build_app(
       scheme: "Runner",
@@ -65,7 +67,7 @@ platform :ios do
         compileBitcode: false
       },
       xcargs: "DART_OBFUSCATION=true SPLIT_DEBUG_INFO=#{symbols_path}",
-      dsym_output_path: "../build/ios/outputs/dsym"
+      archive_path: "../build/ios/archive/Runner.xcarchive"
     )
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
