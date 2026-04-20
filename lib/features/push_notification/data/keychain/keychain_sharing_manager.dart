@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/extensions/account_id_extensions.dart';
@@ -11,9 +12,14 @@ class KeychainSharingManager {
 
   KeychainSharingManager(this._secureStorage);
 
-  Future<void> save(KeychainSharingSession keychainSharingSession) => _secureStorage.write(
+  Future<void> saveSharingSession(KeychainSharingSession keychainSharingSession) => _secureStorage.write(
     key: keychainSharingSession.accountId.asString,
     value: jsonEncode(keychainSharingSession.toJson()),
+  );
+
+  Future<void> saveSentryConfig(SentryConfig sentryConfig) => _secureStorage.write(
+    key: SentryConfig.sentryConfigKeyChain,
+    value: jsonEncode(sentryConfig.toJson()),
   );
 
   Future<bool> isSessionExist(AccountId accountId) =>

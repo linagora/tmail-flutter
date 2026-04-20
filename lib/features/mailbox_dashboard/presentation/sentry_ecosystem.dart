@@ -1,18 +1,21 @@
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/features/caching/extensions/sentry_cache_extensions.dart';
 import 'package:tmail_ui_user/features/caching/manager/sentry_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/sentry_config_linagora_ecosystem.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class SentryEcosystem {
   final SentryConfigurationCacheManager? _cacheManager;
+  final IOSSharingManager? _iosSharingManager;
 
   SentryUser? _sentryUser;
 
-  SentryEcosystem(this._cacheManager);
+  SentryEcosystem(this._cacheManager, this._iosSharingManager);
 
   void initUser(SentryUser? user) {
     _sentryUser = user;
@@ -40,6 +43,10 @@ class SentryEcosystem {
     _applyUser();
 
     await _cacheData(sentryConfig, _sentryUser);
+
+    if (PlatformInfo.isIOS) {
+      _saveSentryConfigToKeychain(sentryConfig);
+    }
   }
 
   void _applyUser() {
@@ -63,5 +70,9 @@ class SentryEcosystem {
       // Clear both caches to avoid stale/inconsistent state (e.g. new config + old user PII)
       await _cacheManager!.clearSentryConfiguration().catchError((_) {});
     }
+  }
+
+  void _saveSentryConfigToKeychain(SentryConfig sentryConfig) {
+    _iosSharingManager?.saveSentryConfigToKeychain(sentryConfig);
   }
 }
