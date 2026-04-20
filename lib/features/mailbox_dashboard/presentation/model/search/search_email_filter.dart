@@ -12,6 +12,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:labels/model/label.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -33,6 +34,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final EmailReceiveTimeType emailReceiveTimeType;
   final bool hasAttachment;
   final bool unread;
+  final bool notIncludeEvents;
   final UTCDate? before;
   final UTCDate? startDate;
   final UTCDate? endDate;
@@ -59,6 +61,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
     bool? unread,
+    bool? notIncludeEvents,
     Set<String>? notKeyword,
     Set<String>? hasKeyword,
     EmailSortOrderType? sortOrderType,
@@ -68,6 +71,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         hasKeyword = hasKeyword ?? <String>{},
         hasAttachment = hasAttachment ?? false,
         unread = unread ?? false,
+        notIncludeEvents = notIncludeEvents ?? false,
         emailReceiveTimeType =
           emailReceiveTimeType ?? EmailReceiveTimeType.allTime,
         sortOrderType = sortOrderType ?? defaultSortOrder;
@@ -83,6 +87,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
     Option<bool>? hasAttachmentOption,
     Option<bool>? unreadOption,
+    Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
@@ -101,6 +106,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       emailReceiveTimeType: getOptionParam(emailReceiveTimeTypeOption, emailReceiveTimeType),
       hasAttachment: getOptionParam(hasAttachmentOption, hasAttachment),
       unread: getOptionParam(unreadOption, unread),
+      notIncludeEvents: getOptionParam(notIncludeEventsOption, notIncludeEvents),
       before: getOptionParam(beforeOption, before),
       startDate: getOptionParam(startDateOption, startDate),
       endDate: getOptionParam(endDateOption, endDate),
@@ -157,6 +163,10 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         ),
       if (label?.keyword?.value != null)
         EmailFilterCondition(hasKeyword: label!.keyword!.value),
+      if (notIncludeEvents)
+        EmailFilterCondition(
+          notKeyword: KeyWordIdentifierExtension.eventsMail.value,
+        ),
       if (moreFilterCondition != null && moreFilterCondition.hasCondition)
         moreFilterCondition
     };
@@ -216,7 +226,8 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     (mailbox != null && mailbox?.isUnifiedMailbox != true) ||
     label != null ||
     hasAttachment ||
-    unread;
+    unread || 
+    notIncludeEvents;
 
   bool get isContainFlagged => hasKeyword.contains(KeyWordIdentifier.emailFlagged.value);
 
@@ -231,7 +242,8 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     (mailbox == null || mailbox?.isUnifiedMailbox == true) &&
     label == null &&
     !hasAttachment &&
-    !unread;
+    !unread &&
+    !notIncludeEvents;
 
   String getMailboxName(AppLocalizations appLocalizations) {
     if (mailbox == null) return appLocalizations.allEmail;
@@ -264,6 +276,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     emailReceiveTimeType,
     hasAttachment,
     unread,
+    notIncludeEvents,
     before,
     startDate,
     endDate,

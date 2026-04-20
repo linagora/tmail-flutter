@@ -24,7 +24,6 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_address_extension.dart';
-import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -665,6 +664,11 @@ class SearchEmailController extends BaseController
     _searchEmailAction();
   }
 
+  void selectNotIncludeEventsSearchFilter() {
+    _updateSimpleSearchFilter(notIncludeEventsOption: const Some(true));
+    _searchEmailAction();
+  }
+
   bool checkQuickSearchFilterSelected(QuickSearchFilter filter) {
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
@@ -802,6 +806,7 @@ class SearchEmailController extends BaseController
     Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
     Option<bool>? hasAttachmentOption,
     Option<bool>? unreadOption,
+    Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
@@ -817,6 +822,7 @@ class SearchEmailController extends BaseController
     emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
     hasAttachmentOption: hasAttachmentOption,
     unreadOption: unreadOption,
+    notIncludeEventsOption: notIncludeEventsOption,
     beforeOption: beforeOption,
     startDateOption: startDateOption,
     endDateOption: endDateOption,
@@ -834,6 +840,7 @@ class SearchEmailController extends BaseController
     Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
     Option<bool>? hasAttachmentOption,
     Option<bool>? unreadOption,
+    Option<bool>? notIncludeEventsOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
@@ -850,6 +857,7 @@ class SearchEmailController extends BaseController
       emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
       hasAttachmentOption: hasAttachmentOption,
       unreadOption: unreadOption,
+      notIncludeEventsOption: notIncludeEventsOption,
       beforeOption: beforeOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
@@ -1105,7 +1113,7 @@ class SearchEmailController extends BaseController
       case QuickSearchFilter.unread:
         _deleteUnreadSearchFilter();
         break;
-      case QuickSearchFilter.events:
+      case QuickSearchFilter.notIncludeEvents:
         _deleteEventsSearchFilter();
         break;
       case QuickSearchFilter.labels:
@@ -1172,11 +1180,7 @@ class SearchEmailController extends BaseController
   }
 
   void _deleteEventsSearchFilter() {
-    final keywords = {...listHasKeywordFiltered}
-      ..remove(KeyWordIdentifierExtension.eventsMail.value);
-    _updateSimpleSearchFilter(
-      hasKeywordOption: keywords.isEmpty ? const None() : Some(keywords),
-    );
+    _updateSimpleSearchFilter(notIncludeEventsOption: const None());
     _searchEmailAction();
   }
 

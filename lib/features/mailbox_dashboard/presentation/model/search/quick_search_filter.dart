@@ -7,7 +7,6 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:labels/extensions/label_extension.dart';
 import 'package:labels/model/label.dart';
-import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -21,7 +20,7 @@ enum QuickSearchFilter {
   fromMe,
   starred,
   unread,
-  events,
+  notIncludeEvents,
   sortBy,
   dateTime,
   from,
@@ -69,8 +68,8 @@ enum QuickSearchFilter {
         return AppLocalizations.of(context).unread;
       case QuickSearchFilter.labels:
         return label?.safeDisplayName ?? AppLocalizations.of(context).allLabels;
-      case QuickSearchFilter.events:
-        return AppLocalizations.of(context).events;
+      case QuickSearchFilter.notIncludeEvents:
+        return AppLocalizations.of(context).notIncludeEvents;
     }
   }
 
@@ -98,7 +97,7 @@ enum QuickSearchFilter {
         return isSelected ? imagePaths.icSelectedSB : imagePaths.icUnread;
       case QuickSearchFilter.labels:
         return imagePaths.icTag;
-      case QuickSearchFilter.events:
+      case QuickSearchFilter.notIncludeEvents:
         return imagePaths.icCalendarEvent;
     }
   }
@@ -168,10 +167,8 @@ enum QuickSearchFilter {
         return searchFilter.unread;
       case QuickSearchFilter.labels:
         return searchFilter.label != null;
-      case QuickSearchFilter.events:
-        return searchFilter
-          .hasKeyword
-          .contains(KeyWordIdentifierExtension.eventsMail.value) == true;
+      case QuickSearchFilter.notIncludeEvents:
+        return searchFilter.notIncludeEvents;
     }
   }
 

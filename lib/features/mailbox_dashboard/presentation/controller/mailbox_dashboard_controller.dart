@@ -2416,7 +2416,7 @@ class MailboxDashBoardController extends ReloadableController
       case QuickSearchFilter.starred:
       case QuickSearchFilter.unread:
       case QuickSearchFilter.labels:
-      case QuickSearchFilter.events:
+      case QuickSearchFilter.notIncludeEvents:
         deleteQuickSearchFilter(filter: searchFilter);
         break;
       default:

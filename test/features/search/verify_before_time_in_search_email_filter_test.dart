@@ -8,6 +8,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
@@ -174,6 +175,18 @@ const fallbackGenerators = {
   MockSpec<StoreEmailSortOrderInteractor>(),
   MockSpec<GetStoredEmailSortOrderInteractor>(),
 ])
+UTCDate? _extractBeforeFromFilter(Object? filter) {
+  if (filter is LogicFilterOperator) {
+    return filter.conditions
+        .whereType<EmailFilterCondition>()
+        .firstWhere((c) => c.before != null)
+        .before;
+  } else if (filter is EmailFilterCondition) {
+    return filter.before;
+  }
+  return null;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -587,9 +600,7 @@ void main() {
         equals(emailList.last.receivedAt),
       );
 
-      expect(filterInJMapRequest, isA<EmailFilterCondition>());
-      final emailFilter = filterInJMapRequest as EmailFilterCondition;
-      expect(emailFilter.before, equals(emailList.last.receivedAt));
+      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(emailList.last.receivedAt));
     });
 
     test(
@@ -730,9 +741,7 @@ void main() {
         isNull,
       );
 
-      expect(filterInJMapRequest, isA<EmailFilterCondition>());
-      final emailFilter = filterInJMapRequest as EmailFilterCondition;
-      expect(emailFilter.before, equals(UTCDate(endDate)));
+      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(endDate)));
     });
 
     test(
@@ -891,9 +900,7 @@ void main() {
         isNull,
       );
 
-      expect(filterInJMapRequest, isA<EmailFilterCondition>());
-      final emailFilter = filterInJMapRequest as EmailFilterCondition;
-      expect(emailFilter.before, equals(UTCDate(endDate)));
+      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(endDate)));
     });
 
     test(
@@ -1061,9 +1068,7 @@ void main() {
         isNull,
       );
 
-      expect(filterInJMapRequest, isA<EmailFilterCondition>());
-      final emailFilter = filterInJMapRequest as EmailFilterCondition;
-      expect(emailFilter.before, equals(UTCDate(endDate)));
+      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(endDate)));
     });
 
     test(
@@ -1172,9 +1177,7 @@ void main() {
         UTCDate(loadMoreDate),
       );
 
-      expect(filterInJMapRequest, isA<EmailFilterCondition>());
-      final emailFilter = filterInJMapRequest as EmailFilterCondition;
-      expect(emailFilter.before, equals(UTCDate(loadMoreDate)));
+      expect(_extractBeforeFromFilter(filterInJMapRequest), equals(UTCDate(loadMoreDate)));
     });
   });
 }

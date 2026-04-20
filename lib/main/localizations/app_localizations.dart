@@ -5777,10 +5777,10 @@ class AppLocalizations {
     );
   }
 
-  String get events {
+  String get notIncludeEvents {
     return Intl.message(
-      'Events',
-      name: 'events',
+      'Don\'t include events',
+      name: 'notIncludeEvents',
     );
   }
 
