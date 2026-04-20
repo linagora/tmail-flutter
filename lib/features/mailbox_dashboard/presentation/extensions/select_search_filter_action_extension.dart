@@ -37,7 +37,7 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
     searchController.updateFilterEmail(unreadOption: const None());
   }
 
-  void deleteEventsSearchFilter() {
+  void deleteNotIncludeEventsSearchFilter() {
     searchController.updateFilterEmail(notIncludeEventsOption: const None());
   }
 
@@ -53,7 +53,7 @@ extension SelectSearchFilterActionExtension on MailboxDashBoardController {
         deleteUnreadSearchFilter();
         break;
       case QuickSearchFilter.notIncludeEvents:
-        deleteEventsSearchFilter();
+        deleteNotIncludeEventsSearchFilter();
         break;
       default:
         break;

@@ -1114,10 +1114,10 @@ class SearchEmailController extends BaseController
         _deleteUnreadSearchFilter();
         break;
       case QuickSearchFilter.notIncludeEvents:
-        _deleteEventsSearchFilter();
+        _deleteNotIncludeEventsSearchFilter();
         break;
       case QuickSearchFilter.labels:
-        deleteQuickSearchFilter(filter: QuickSearchFilter.labels);
+        deleteQuickSearchLabelFilter();
         break;
       default:
         break;
@@ -1179,7 +1179,7 @@ class SearchEmailController extends BaseController
     _searchEmailAction();
   }
 
-  void _deleteEventsSearchFilter() {
+  void _deleteNotIncludeEventsSearchFilter() {
     _updateSimpleSearchFilter(notIncludeEventsOption: const None());
     _searchEmailAction();
   }

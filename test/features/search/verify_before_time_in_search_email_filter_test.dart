@@ -176,13 +176,15 @@ const fallbackGenerators = {
   MockSpec<GetStoredEmailSortOrderInteractor>(),
 ])
 UTCDate? _extractBeforeFromFilter(Object? filter) {
-  if (filter is LogicFilterOperator) {
-    return filter.conditions
-        .whereType<EmailFilterCondition>()
-        .firstWhere((c) => c.before != null)
-        .before;
-  } else if (filter is EmailFilterCondition) {
+  if (filter is EmailFilterCondition) {
     return filter.before;
+  } else if (filter is LogicFilterOperator) {
+    for (final condition in filter.conditions) {
+      final before = _extractBeforeFromFilter(condition);
+      if (before != null) {
+        return before;
+      }
+    }
   }
   return null;
 }

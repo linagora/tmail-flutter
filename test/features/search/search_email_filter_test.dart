@@ -25,7 +25,9 @@ LogicFilterOperator _assertAndOperator(dynamic result, int conditionsCount) {
 void _assertEventsExclusionInAnd(LogicFilterOperator andFilter) {
   final eventsExclusion = andFilter.conditions
       .whereType<EmailFilterCondition>()
-      .firstWhere((c) => c.notKeyword != null);
+      .firstWhere(
+        (c) => c.notKeyword == KeyWordIdentifierExtension.eventsMail.value,
+      );
   expect(eventsExclusion.notKeyword, KeyWordIdentifierExtension.eventsMail.value);
 }
 
