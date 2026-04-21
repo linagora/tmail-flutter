@@ -33,7 +33,7 @@ extension KeychainSharingSession {
             isTWP: self.isTWP
         )
     }
-    
+
     func updateTokenOidc(newTokenOidc: TokenOidc) -> KeychainSharingSession {
         return KeychainSharingSession(
             accountId: self.accountId,

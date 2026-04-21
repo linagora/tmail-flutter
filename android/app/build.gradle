@@ -100,4 +100,3 @@ dependencies {
     implementation 'androidx.window:window:1.0.0'
     androidTestUtil "androidx.test:orchestrator:1.5.1"
 }
-
