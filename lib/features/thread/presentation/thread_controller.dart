@@ -114,6 +114,7 @@ class ThreadController extends BaseController with EmailActionController {
   StreamSubscription<MailListShortcutActionViewEvent>? shortcutActionEventSubscription;
 
   StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
+  Worker? _localSettingsWorker;
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
 
@@ -172,6 +173,7 @@ class ThreadController extends BaseController with EmailActionController {
       onKeyboardShortcutDispose();
     }
     _webSocketQueueHandler?.dispose();
+    _localSettingsWorker?.dispose();
     super.onClose();
   }
 
@@ -439,7 +441,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _registerLocalSettingsListener() {
     if (!Get.isRegistered<LocalSettingsService>()) return;
-    ever(_localSettingsService.localSettings, (_) {
+    _localSettingsWorker = ever(_localSettingsService.localSettings, (_) {
       if (searchController.isSearchEmailRunning) {
         _refreshChangeSearchEmail();
       }

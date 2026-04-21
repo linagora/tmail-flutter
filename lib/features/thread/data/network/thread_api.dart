@@ -82,10 +82,10 @@ class ThreadAPI with HandleSetErrorMixin, SessionMixin, MailAPIMixin {
     // Email/query
     final queryEmailMethod = QueryEmailMethod(accountId)
       ..addLimitIfNotNull(limit)
-      ..addPositionIfValid(position)
+      ..addPositionIfAvailable(position)
       ..addSortsIfNotNull(sort)
       ..addFiltersIfNotNull(filter)
-      ..addCollapseThreadsIfValid(collapseThreads);
+      ..addCollapseThreadsIfAvailable(collapseThreads);
 
     final queryEmailInvocation = jmapRequestBuilder.invocation(queryEmailMethod);
 

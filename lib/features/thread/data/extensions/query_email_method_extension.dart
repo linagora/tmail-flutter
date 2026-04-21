@@ -8,7 +8,7 @@ extension QueryEmailMethodExtension on QueryEmailMethod {
     if (limit != null) addLimit(limit);
   }
 
-  void addPositionIfValid(int? position) {
+  void addPositionIfAvailable(int? position) {
     if (position != null && position > 0) addPosition(position);
   }
 
@@ -20,7 +20,7 @@ extension QueryEmailMethodExtension on QueryEmailMethod {
     if (filter != null) addFilters(filter);
   }
 
-  void addCollapseThreadsIfValid(bool? collapseThreads) {
+  void addCollapseThreadsIfAvailable(bool? collapseThreads) {
     if (collapseThreads != null && collapseThreads) {
       addCollapseThreads(collapseThreads);
     }

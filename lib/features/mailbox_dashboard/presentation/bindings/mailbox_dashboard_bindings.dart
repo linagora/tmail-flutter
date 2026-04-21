@@ -178,7 +178,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     super.dependencies();
     Get.put(LocalSettingsService(
       Get.find<GetLocalSettingsInteractor>(),
-      Get.find<MailboxDashBoardController>().threadDetailUIAction,
     ));
     SendingQueueBindings().dependencies();
     MailboxBindings().dependencies();
