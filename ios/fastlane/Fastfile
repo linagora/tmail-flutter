@@ -50,11 +50,15 @@ platform :ios do
     increment_version_number(
       version_number: last_git_tag.gsub("v", "").split("-").first
     )
+    # archive_path pins the xcarchive location so the CI Sentry upload step can
+    # find dSYMs at a known path: build/ios/archive/Runner.xcarchive/dSYMs/
+    # File.expand_path with __dir__ resolves relative to this Fastfile's directory (ios/fastlane/).
     build_app(
       scheme: "Runner",
       configuration: "Release",
       workspace: "Runner.xcworkspace",
-      export_method: "app-store"
+      export_method: "app-store",
+      archive_path: File.expand_path("../../build/ios/archive/Runner.xcarchive", __dir__)
     )
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
