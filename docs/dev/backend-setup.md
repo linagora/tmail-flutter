@@ -20,7 +20,7 @@ docker compose up -d
 
 The container will start and expose the JMAP HTTP endpoint on port 80.
 
-> **Note:** The backend uses an in-memory store — all data is lost when the container stops.
+> **Note:** The backend uses an in-memory store — all data is lost when the container stops. OIDC is not supported; use basic authentication only.
 
 ### 2. Provision test users
 
@@ -31,10 +31,12 @@ docker exec tmail-backend bash /root/conf/integration_test/provisioning.sh
 ```
 
 Sample credentials:
+
 | Email | Password |
 |-------|----------|
 | `alice@example.com` | `alice` |
 | `bob@example.com` | `bob` |
+
 
 ### 3. Configure `env.file`
 
