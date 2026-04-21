@@ -78,22 +78,38 @@ class SentryConfig {
         && sentryEnvironment.trim().isNotEmpty;
     if (!isConfigValid) return null;
 
-    final appVersion = await ApplicationManager().getAppVersion();
+    final release = await _resolveRelease();
 
     const sentryDist = String.fromEnvironment('SENTRY_DIST');
     logTrace(
       'SentryConfig::load: sentryDist is $sentryDist, '
-      'appVersion is $appVersion',
+      'release is $release',
       webConsoleEnabled: true,
     );
 
     return SentryConfig(
       dsn: sentryDSN,
       environment: sentryEnvironment,
-      release: appVersion,
+      release: release,
       isAvailable: isAvailable,
       dist: sentryDist.isNotEmpty ? sentryDist : null,
     );
+  }
+
+  /// Resolves the Sentry release string.
+  ///
+  /// Priority:
+  /// 1. `--dart-define=SENTRY_RELEASE=<version>` injected at build time by
+  ///    Fastlane/CI — guarantees the same string the CI uses to upload symbols.
+  /// 2. `PackageInfo.version` as fallback (local dev / non-release builds).
+  ///
+  /// Why dart-define takes priority: iOS CFBundleShortVersionString strips
+  /// pre-release suffixes (e.g. "0.28.3-rc09" → "0.28.3"), so PackageInfo
+  /// returns a different value than what CI tags the symbols with.
+  static Future<String> _resolveRelease() async {
+    const dartDefineRelease = String.fromEnvironment('SENTRY_RELEASE');
+    if (dartDefineRelease.isNotEmpty) return dartDefineRelease;
+    return ApplicationManager().getAppVersion();
   }
 
   static const String sentryConfigKeyChain = 'sentry_config_data';

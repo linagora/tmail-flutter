@@ -41,12 +41,15 @@ class SentryConfigLinagoraEcosystem extends LinagoraEcosystemProperties {
 
 extension SentryConfigLinagoraEcosystemExtension on SentryConfigLinagoraEcosystem {
   Future<SentryConfig> toSentryConfig() async {
-    final appVersion = await ApplicationManager().getAppVersion();
+    const dartDefineRelease = String.fromEnvironment('SENTRY_RELEASE');
+    final release = dartDefineRelease.isNotEmpty
+        ? dartDefineRelease
+        : await ApplicationManager().getAppVersion();
 
     return SentryConfig(
       dsn: dsn ?? '',
       environment: environment ?? '',
-      release: appVersion,
+      release: release,
       isAvailable: enabled ?? false,
     );
   }
