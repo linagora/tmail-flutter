@@ -162,13 +162,22 @@ jobs:
             exit 1
           fi
 
-          # 3. Upload dSYMs (Native code: Swift, Objective-C, C++)
-          # Located in xcarchive created by build_app with archive_path in Fastfile.
-          DSYM_DIR="build/ios/archive/Runner.xcarchive/dSYMs"
+          # 3. Find the xcarchive created by Fastlane build_app.
+          # Xcode places archives in ~/Library/Developer/Xcode/Archives/<date>/<Name>.xcarchive.
+          # We take the most recently modified Runner xcarchive to match this build.
+          XCARCHIVE=$(find "$HOME/Library/Developer/Xcode/Archives" -name "Runner*.xcarchive" 2>/dev/null | sort -r | head -1)
+          if [ -z "$XCARCHIVE" ]; then
+            echo "::error::No Runner.xcarchive found in Xcode Archives. Build may have failed."
+            exit 1
+          fi
+          echo "Found xcarchive: $XCARCHIVE"
+
+          # 4. Upload dSYMs (Native code: Swift, Objective-C, C++)
+          DSYM_DIR="$XCARCHIVE/dSYMs"
           if [ -d "$DSYM_DIR" ]; then
             echo "Uploading dSYMs from $DSYM_DIR..."
             sentry-cli debug-files upload --include-sources "$DSYM_DIR"
           else
-            echo "::error::dSYM directory not found at $DSYM_DIR."
+            echo "::error::dSYMs directory not found inside xcarchive."
             exit 1
           fi
