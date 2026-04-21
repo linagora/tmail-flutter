@@ -101,13 +101,14 @@ jobs:
           # 1. Install Sentry CLI
           curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
 
-          # 2. Validate tag version matches pubspec.yaml version (base version only, ignoring -rc* suffix)
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          TAG_VERSION="${TAG_VERSION%%-rc*}"
+          # 2. Validate tag base version matches pubspec.yaml base version (ignoring -rc* suffix).
+          # SENTRY_RELEASE uses the full pubspec version (including -rc* suffix) to match what the app reports.
+          TAG_BASE="${GITHUB_REF_NAME#v}"
+          TAG_BASE="${TAG_BASE%%-rc*}"
           PUBSPEC_VERSION=$(awk '/^version:/{split($2,a,"+"); print a[1]; exit}' pubspec.yaml)
-          PUBSPEC_VERSION="${PUBSPEC_VERSION%%-rc*}"
-          if [ "$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
-            echo "::error::Tag version ($TAG_VERSION) does not match pubspec version ($PUBSPEC_VERSION)."
+          PUBSPEC_BASE="${PUBSPEC_VERSION%%-rc*}"
+          if [ "$PUBSPEC_BASE" != "$TAG_BASE" ]; then
+            echo "::error::Tag version ($TAG_BASE) does not match pubspec version ($PUBSPEC_BASE)."
             exit 1
           fi
           SENTRY_RELEASE="$PUBSPEC_VERSION"
@@ -152,15 +153,18 @@ jobs:
           # 1. Install Sentry CLI
           curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
 
-          # 2. Validate tag version matches pubspec.yaml version (base version only, ignoring -rc* suffix)
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          TAG_VERSION="${TAG_VERSION%%-rc*}"
+          # 2. Validate tag base version matches pubspec.yaml base version (ignoring -rc* suffix).
+          # SENTRY_RELEASE uses the full pubspec version (including -rc* suffix) to match what the app reports.
+          TAG_BASE="${GITHUB_REF_NAME#v}"
+          TAG_BASE="${TAG_BASE%%-rc*}"
           PUBSPEC_VERSION=$(awk '/^version:/{split($2,a,"+"); print a[1]; exit}' pubspec.yaml)
-          PUBSPEC_VERSION="${PUBSPEC_VERSION%%-rc*}"
-          if [ "$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
-            echo "::error::Tag version ($TAG_VERSION) does not match pubspec version ($PUBSPEC_VERSION)."
+          PUBSPEC_BASE="${PUBSPEC_VERSION%%-rc*}"
+          if [ "$PUBSPEC_BASE" != "$TAG_BASE" ]; then
+            echo "::error::Tag version ($TAG_BASE) does not match pubspec version ($PUBSPEC_BASE)."
             exit 1
           fi
+          SENTRY_RELEASE="$PUBSPEC_VERSION"
+          echo "Processing Sentry Release: $SENTRY_RELEASE"
 
           # 3. Find the xcarchive built by Fastlane.
           # Xcode always archives to ~/Library/Developer/Xcode/Archives — pick the most recent one.
