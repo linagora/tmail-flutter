@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -12,6 +13,59 @@ import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_
 void main() {
   late KeychainSharingManager keychainSharingManager;
   late FlutterSecureStorage flutterSecureStorage;
+
+  group('KeychainSharingManager:saveSentryConfig', () {
+    setUp(() {
+      flutterSecureStorage = const FlutterSecureStorage();
+      keychainSharingManager = KeychainSharingManager(flutterSecureStorage);
+      FlutterSecureStorage.setMockInitialValues({});
+    });
+
+    test('WHEN saveSentryConfig called \n'
+        'THEN stores JSON under sentryConfigKeyChain key', () async {
+      final config = SentryConfig(
+        dsn: 'https://test@sentry.io/123',
+        environment: 'production',
+        release: '1.0.0',
+      );
+
+      await keychainSharingManager.saveSentryConfig(config);
+
+      final stored = await flutterSecureStorage.read(
+        key: SentryConfig.sentryConfigKeyChain,
+      );
+      expect(stored, isNotNull);
+      final decoded = jsonDecode(stored!) as Map<String, dynamic>;
+      expect(decoded['dsn'], equals('https://test@sentry.io/123'));
+      expect(decoded['environment'], equals('production'));
+      expect(decoded['release'], equals('1.0.0'));
+    });
+
+    test('WHEN SentryConfig has no dist \n'
+        'THEN toJson does not include dist key', () {
+      final config = SentryConfig(
+        dsn: 'https://test@sentry.io/123',
+        environment: 'staging',
+        release: '1.0.0',
+      );
+
+      final json = config.toJson();
+      expect(json.containsKey('dist'), isFalse);
+    });
+
+    test('WHEN SentryConfig has dist \n'
+        'THEN toJson includes dist key', () {
+      final config = SentryConfig(
+        dsn: 'https://test@sentry.io/123',
+        environment: 'staging',
+        release: '1.0.0',
+        dist: 'abc123',
+      );
+
+      final json = config.toJson();
+      expect(json['dist'], equals('abc123'));
+    });
+  });
 
   group('KeychainSharingManager:save for the same accountId', () {
     setUp(() {

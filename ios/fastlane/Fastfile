@@ -56,7 +56,11 @@ platform :ios do
     # debug symbols to the given path (required for Sentry Dart crash symbolication).
     # archive_path pins the xcarchive location so the CI Sentry upload step can
     # find dSYMs at a known path: build/ios/archive/Runner.xcarchive/dSYMs/
-    symbols_path = File.expand_path("../build/ios/outputs/symbols")
+    #
+    # File.expand_path with __dir__ resolves relative to this Fastfile's directory
+    # (ios/fastlane/), so we go up 2 levels to reach the project root's build/ dir.
+    symbols_path = File.expand_path("../../build/ios/outputs/symbols", __dir__)
+    archive_path = File.expand_path("../../build/ios/archive/Runner.xcarchive", __dir__)
     build_app(
       scheme: "Runner",
       configuration: "Release",
@@ -67,7 +71,7 @@ platform :ios do
         compileBitcode: false
       },
       xcargs: "DART_OBFUSCATION=true SPLIT_DEBUG_INFO=#{symbols_path}",
-      archive_path: "../build/ios/archive/Runner.xcarchive"
+      archive_path: archive_path
     )
     upload_to_testflight(
       skip_waiting_for_build_processing: true,

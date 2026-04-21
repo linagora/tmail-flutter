@@ -103,7 +103,6 @@ class NotificationService: UNNotificationServiceExtension {
                 onComplete: { (emails, errors) in
                     do {
                         if emails.isEmpty {
-                            SentryManager.shared.capture(message: "NSE: GetNewEmails returned empty list despite state change")
                             self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                             return self.notify()
                         } else {

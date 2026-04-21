@@ -10,9 +10,42 @@ env:
   XCODE_VERSION: 16.0
 
 jobs:
+  # --- SENTRY: Create release before parallel builds to avoid check-then-create race ---
+  sentry-create-release:
+    name: Create Sentry Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: prod
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Sentry Release
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        run: |
+          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
+
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          TAG_VERSION="${TAG_VERSION%%-rc*}"
+          PUBSPEC_VERSION=$(awk '/^version:/{split($2,a,"+"); print a[1]; exit}' pubspec.yaml)
+          PUBSPEC_VERSION="${PUBSPEC_VERSION%%-rc*}"
+          if [ "$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
+            echo "::warning::Tag version ($TAG_VERSION) does not match pubspec version ($PUBSPEC_VERSION). Skipping Sentry release creation."
+            exit 0
+          fi
+
+          echo "Creating Sentry release: $PUBSPEC_VERSION"
+          sentry-cli releases new "$PUBSPEC_VERSION"
+
   release:
     name: Release
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Run even if sentry-create-release fails — Sentry upload is optional
+    if: always() && startsWith(github.ref, 'refs/tags/v')
+    needs: [sentry-create-release]
     runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
@@ -92,6 +125,8 @@ jobs:
 
       # --- UPLOAD DEBUG SYMBOLS TO SENTRY (optional) ---
       # Runs on both iOS and Android matrix jobs independently.
+      # Release lifecycle (new/finalize) is handled by sentry-create-release and
+      # sentry-finalize-release jobs to avoid race conditions in this parallel matrix.
       # continue-on-error: true ensures a Sentry upload failure never blocks the release.
       - name: Upload Debug Symbols to Sentry
         continue-on-error: true
@@ -114,12 +149,9 @@ jobs:
             exit 0
           fi
           SENTRY_RELEASE="$PUBSPEC_VERSION"
-          echo "Processing Sentry Release: $SENTRY_RELEASE for platform: $PLATFORM"
+          echo "Uploading debug symbols for Sentry release: $SENTRY_RELEASE (platform: $PLATFORM)"
 
-          # 3. Create Release (idempotent: skip if already exists from the parallel matrix leg)
-          sentry-cli releases info "$SENTRY_RELEASE" -q || sentry-cli releases new "$SENTRY_RELEASE"
-
-          # 4. Upload platform-specific debug symbols
+          # 3. Upload platform-specific debug symbols
           if [ "$PLATFORM" = "ios" ]; then
             # Upload dSYM files (Native code: Swift, Objective-C, C++)
             # Located in xcarchive created by build_app with archive_path in Fastfile.
@@ -141,11 +173,22 @@ jobs:
               echo "::warning::Dart symbols directory not found at $SYMBOLS_DIR. Skipping Dart symbols upload."
             fi
           else
-            # Upload ProGuard Mapping (Android native de-obfuscation)
+            # Upload ProGuard Mapping (Android native de-obfuscation).
+            # The Sentry Android Gradle plugin injects a UUID into the app binary at build time
+            # and writes it to sentry-debug-meta.properties. We read it here to link the mapping
+            # to the correct build, so Sentry can deobfuscate Android stack traces accurately.
             MAPPING_FILE="build/app/outputs/mapping/release/mapping.txt"
             if [ -f "$MAPPING_FILE" ]; then
               echo "Uploading ProGuard mapping from $MAPPING_FILE..."
-              sentry-cli upload-proguard "$MAPPING_FILE"
+              SENTRY_META="build/app/intermediates/assets/release/mergeReleaseAssets/sentry-debug-meta.properties"
+              if [ -f "$SENTRY_META" ]; then
+                PROGUARD_UUID=$(grep "io.sentry.ProguardUuids" "$SENTRY_META" | cut -d= -f2 | tr -d '[:space:]')
+                echo "Found ProGuard UUID: $PROGUARD_UUID"
+                sentry-cli upload-proguard --uuid "$PROGUARD_UUID" "$MAPPING_FILE"
+              else
+                echo "::warning::sentry-debug-meta.properties not found. Uploading ProGuard mapping without UUID."
+                sentry-cli upload-proguard "$MAPPING_FILE"
+              fi
             else
               echo "::warning::mapping.txt not found at $MAPPING_FILE. Skipping ProGuard upload."
             fi
@@ -161,5 +204,35 @@ jobs:
             fi
           fi
 
-          # 5. Finalize
-          sentry-cli releases finalize "$SENTRY_RELEASE"
+  # --- SENTRY: Finalize release after all platform uploads complete ---
+  sentry-finalize-release:
+    name: Finalize Sentry Release
+    # Run even if some release matrix legs failed — Sentry finalize is optional
+    if: always() && startsWith(github.ref, 'refs/tags/v')
+    needs: [release]
+    runs-on: ubuntu-latest
+    environment: prod
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Finalize Sentry Release
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        run: |
+          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
+
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          TAG_VERSION="${TAG_VERSION%%-rc*}"
+          PUBSPEC_VERSION=$(awk '/^version:/{split($2,a,"+"); print a[1]; exit}' pubspec.yaml)
+          PUBSPEC_VERSION="${PUBSPEC_VERSION%%-rc*}"
+          if [ "$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
+            echo "::warning::Skipping Sentry finalize — version mismatch."
+            exit 0
+          fi
+
+          echo "Finalizing Sentry release: $PUBSPEC_VERSION"
+          sentry-cli releases finalize "$PUBSPEC_VERSION"
