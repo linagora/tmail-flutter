@@ -58,3 +58,21 @@ class KeychainController: KeychainControllerDelegate {
         } catch {}
     }
 }
+
+extension KeychainController {
+    /// The key used in Dart to store the Sentry configuration JSON
+    private var sentryConfigKey: String { "sentry_config_data" }
+    
+    /// Retrieves and decodes the SentryConfig from Keychain
+    func retrieveSentryConfig() -> SentryConfig? {
+        do {
+            guard let configData = try keychain.getData(sentryConfigKey) else {
+                return nil
+            }
+            return try JSONDecoder().decode(SentryConfig.self, from: configData)
+        } catch {
+            TwakeLogger.shared.log(message: "SentryConfig could not be decoded from Keychain")
+            return nil
+        }
+    }
+}

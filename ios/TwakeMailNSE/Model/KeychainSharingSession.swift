@@ -1,4 +1,5 @@
 import Foundation
+import Sentry
 
 struct KeychainSharingSession: Codable {
     let accountId: String
@@ -60,5 +61,13 @@ extension KeychainSharingSession {
             return encodedData
         }
         return nil
+    }
+    
+    var sentryUser: User {
+        let user = User()
+        user.userId = self.accountId
+        user.email = self.userName
+        user.username = self.userName
+        return user
     }
 }
