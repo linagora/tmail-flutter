@@ -1,10 +1,7 @@
-((a,b,c)=>{a[b]=a[b]||{}
-a[b][c]=a[b][c]||[]
-a[b][c].push({p:"main.dart.js_11",e:"beginPart"})})(self,"$__dart_deferred_initializers__","eventLog")
+((a,b)=>{a[b]=a[b]||{}})(self,"$__dart_deferred_initializers__")
 $__dart_deferred_initializers__.current=function(a,b,c,$){var A,B={
-e8_(){return new A.MO(null)}}
+ef3(){return new A.Nz(null)}}
 A=c[0]
 B=a.updateHolder(c[7],B)
 var z=a.updateTypes([])};
-((a,b)=>{a[b]=a.current
-a.eventLog.push({p:"main.dart.js_11",e:"endPart",h:b})})($__dart_deferred_initializers__,"Em5o+U7b4wrpaeR3Ufu1qTrCNxQ=");
+(a=>{a["KzA6uX2Rtkx8uCrBNfPYqYMka2U="]=a.current})($__dart_deferred_initializers__);
