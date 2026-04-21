@@ -162,11 +162,11 @@ jobs:
             exit 1
           fi
 
-          # 3. Read the xcarchive path written by Fastlane after build_app.
-          # Fastlane writes lane_context[XCODEBUILD_ARCHIVE] to ios/gym_archive_path.txt.
-          XCARCHIVE=$(cat ios/gym_archive_path.txt 2>/dev/null)
+          # 3. Find the xcarchive built by Fastlane.
+          # Xcode always archives to ~/Library/Developer/Xcode/Archives — pick the most recent one.
+          XCARCHIVE=$(find "$HOME/Library/Developer/Xcode/Archives" -name "Runner*.xcarchive" -maxdepth 3 2>/dev/null | sort -r | head -1)
           if [ -z "$XCARCHIVE" ] || [ ! -d "$XCARCHIVE" ]; then
-            echo "::error::xcarchive not found. Check that Fastlane wrote gym_archive_path.txt correctly."
+            echo "::error::Runner xcarchive not found in ~/Library/Developer/Xcode/Archives"
             exit 1
           fi
           echo "Found xcarchive: $XCARCHIVE"
