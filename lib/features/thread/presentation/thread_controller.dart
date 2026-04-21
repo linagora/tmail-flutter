@@ -441,7 +441,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _registerLocalSettingsListener() {
-    if (!Get.isRegistered<LocalSettingsService>()) return;
+    if (!forceEmailQuery || !Get.isRegistered<LocalSettingsService>()) return;
     _lastCollapseThreadsEnabled = _isCollapseThreadsEnabled;
     _localSettingsWorker = ever(_localSettingsService.localSettings, (_) {
       final collapseThreadsEnabled = _isCollapseThreadsEnabled;
