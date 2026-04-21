@@ -1,12 +1,8 @@
-import 'package:patrol/patrol.dart';
-
 import '../abstract/abstract_login_robot.dart';
-import '../../scenarios/login_with_basic_auth_scenario.dart';
+import '../login_robot.dart';
 
-class MobileLoginRobot implements AbstractLoginRobot {
-  final PatrolIntegrationTester $;
-
-  MobileLoginRobot(this.$);
+class MobileLoginRobot extends LoginRobot implements AbstractLoginRobot {
+  MobileLoginRobot(super.$);
 
   @override
   Future<void> loginWithBasicAuth({
@@ -15,12 +11,14 @@ class MobileLoginRobot implements AbstractLoginRobot {
     required String email,
     required String password,
   }) async {
-    await LoginWithBasicAuthScenario(
-      $,
-      username: username,
-      hostUrl: hostUrl,
-      email: email,
-      password: password,
-    ).execute();
+    await tapOnUseCompanyServer();
+    await enterEmail(username);
+    await tapOnNextButton();
+    await enterHostUrl(hostUrl);
+    await tapOnNextButton();
+    await enterBasicAuthEmail(email);
+    await enterBasicAuthPassword(password);
+    await loginBasicAuth();
+    await grantNotificationPermission();
   }
 }
