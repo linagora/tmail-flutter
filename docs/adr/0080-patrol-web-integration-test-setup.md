@@ -99,16 +99,26 @@ Mobile and web test suites run as **separate parallel jobs** in CI. Each job tar
 PR opened / push
 │
 ├── job: patrol-mobile-integration-test   (ubuntu-latest + Android emulator)
-│     patrol test --device=android
+│     patrol test --device=android --tags=android
 │
 └── job: patrol-web-integration-test      (ubuntu-latest + Chrome via Patrol)
       ./scripts/patrol-web-integration-test-with-docker.sh
-      # patrol test --device=chrome --web-headless=true
+      # patrol test --device=chrome --web-headless=true --tags=web
 ```
 
 The two jobs are independent — they share no state and can run concurrently. A PR is gated on **both** jobs passing.
 
-Platform filtering is handled automatically by `runPatrolTest()` (see [ADR-0082](./0082-patrol-web-test-migration-guide.md)). Tests that do not apply to the current platform skip themselves — no `--exclude-tags` flag needed in either job.
+Platform filtering uses **`TestTags`**. Each test file declares the platforms it supports by passing `tags:` to `runPatrolTest()`:
+
+```dart
+TestBase().runPatrolTest(
+  description: '...',
+  scenarioBuilder: ($, robots) => MyScenario($, robots),
+  tags: [TestTags.android, TestTags.ios, TestTags.web], // web-capable test
+);
+```
+
+The default (when `tags:` is omitted) is `[TestTags.android, TestTags.ios]` — mobile only. The web CI job passes `--tags=web` so only web-tagged tests run; the mobile CI job passes `--tags=android` or `--tags=ios`. Tests not tagged for the current platform are automatically skipped by Patrol.
 
 ### Viewing Results
 
@@ -117,7 +127,7 @@ Platform filtering is handled automatically by `runPatrolTest()` (see [ADR-0082]
 
 ## Consequences
 
-- Web and mobile tests share the same test files; platform-only tests skip themselves in `runPatrolTest()` — no manual tagging required.
+- Web and mobile tests share the same test files. Each test file declares supported platforms via `tags:` in `runPatrolTest()`; CI jobs pass `--tags=<platform>` to select only relevant tests.
 - The same Docker JMAP backend serves both platforms — no additional infrastructure needed.
 - Data isolation limitations from [ADR-0053](./0053-patrol-integration-test.md) still apply: backend state is shared across all tests in a single run.
 - Patrol automatically installs and manages Chromium — no manual Chrome installation is needed on local machines or CI runners.
