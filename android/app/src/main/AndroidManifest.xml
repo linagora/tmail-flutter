@@ -36,7 +36,9 @@
    <application
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
 
        <meta-data
            android:name="com.google.firebase.messaging.default_notification_icon"
