@@ -162,12 +162,11 @@ jobs:
             exit 1
           fi
 
-          # 3. Find the xcarchive created by Fastlane build_app.
-          # Xcode places archives in ~/Library/Developer/Xcode/Archives/<date>/<Name>.xcarchive.
-          # We take the most recently modified Runner xcarchive to match this build.
-          XCARCHIVE=$(find "$HOME/Library/Developer/Xcode/Archives" -name "Runner*.xcarchive" 2>/dev/null | sort -r | head -1)
-          if [ -z "$XCARCHIVE" ]; then
-            echo "::error::No Runner.xcarchive found in Xcode Archives. Build may have failed."
+          # 3. Read the xcarchive path written by Fastlane after build_app.
+          # Fastlane writes lane_context[XCODEBUILD_ARCHIVE] to ios/gym_archive_path.txt.
+          XCARCHIVE=$(cat ios/gym_archive_path.txt 2>/dev/null)
+          if [ -z "$XCARCHIVE" ] || [ ! -d "$XCARCHIVE" ]; then
+            echo "::error::xcarchive not found. Check that Fastlane wrote gym_archive_path.txt correctly."
             exit 1
           fi
           echo "Found xcarchive: $XCARCHIVE"
@@ -178,6 +177,6 @@ jobs:
             echo "Uploading dSYMs from $DSYM_DIR..."
             sentry-cli debug-files upload --include-sources "$DSYM_DIR"
           else
-            echo "::error::dSYMs directory not found inside xcarchive."
+            echo "::error::dSYMs directory not found inside xcarchive at $DSYM_DIR."
             exit 1
           fi
