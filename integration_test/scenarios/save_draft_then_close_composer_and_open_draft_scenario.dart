@@ -16,7 +16,7 @@ import '../robots/thread_robot.dart';
 
 class SaveDraftThenCloseComposerAndOpenDraftScenario extends BaseTestScenario {
 
-  const SaveDraftThenCloseComposerAndOpenDraftScenario(super.$);
+  const SaveDraftThenCloseComposerAndOpenDraftScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

@@ -5,7 +5,7 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'Should show "Create a label" button in Choose Label modal when labels exist, and create a new label successfully',
-    scenarioBuilder: ($) =>
-        CreateLabelFromChooseLabelModalWithExistingLabelsScenario($),
+    scenarioBuilder: ($, robots) =>
+        CreateLabelFromChooseLabelModalWithExistingLabelsScenario($, robots),
   );
 }

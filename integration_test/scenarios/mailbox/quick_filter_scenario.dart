@@ -5,7 +5,7 @@ import '../../models/provisioning_email.dart';
 import '../../robots/thread_robot.dart';
 
 class QuickFilterScenario extends BaseTestScenario {
-  const QuickFilterScenario(super.$);
+  const QuickFilterScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

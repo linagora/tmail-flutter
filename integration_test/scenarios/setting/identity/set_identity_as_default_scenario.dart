@@ -8,7 +8,7 @@ import '../../../robots/profiles_robot.dart';
 import 'create_new_identity_scenario.dart';
 
 class SetIdentityAsDefaultScenario extends BaseTestScenario {
-  const SetIdentityAsDefaultScenario(super.$);
+  const SetIdentityAsDefaultScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {
@@ -16,6 +16,7 @@ class SetIdentityAsDefaultScenario extends BaseTestScenario {
     final imagePaths = ImagePaths();
     final createNewIdentityScenario = CreateNewIdentityScenario(
       $,
+      robots,
       identityNames: ['Default Identity 1', 'Default Identity 2'],
     );
     await createNewIdentityScenario.runTestLogic();

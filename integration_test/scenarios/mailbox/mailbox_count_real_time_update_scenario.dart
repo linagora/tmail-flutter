@@ -4,7 +4,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class MailboxCountRealTimeUpdateScenario extends BaseTestScenario {
-  const MailboxCountRealTimeUpdateScenario(super.$);
+  const MailboxCountRealTimeUpdateScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

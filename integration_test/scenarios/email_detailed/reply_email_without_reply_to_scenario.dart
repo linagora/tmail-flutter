@@ -16,7 +16,7 @@ import '../../robots/thread_robot.dart';
 
 class ReplyEmailWithoutReplyToScenario extends BaseTestScenario {
 
-  const ReplyEmailWithoutReplyToScenario(super.$);
+  const ReplyEmailWithoutReplyToScenario(super.$, super.robots);
 
   static const String queryString = 'Reply email without Reply-To';
 

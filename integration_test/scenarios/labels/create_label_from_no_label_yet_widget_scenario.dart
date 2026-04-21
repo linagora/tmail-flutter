@@ -10,7 +10,7 @@ import '../../robots/labels/create_label_modal_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class CreateLabelFromNoLabelYetWidgetScenario extends BaseTestScenario {
-  const CreateLabelFromNoLabelYetWidgetScenario(super.$);
+  const CreateLabelFromNoLabelYetWidgetScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

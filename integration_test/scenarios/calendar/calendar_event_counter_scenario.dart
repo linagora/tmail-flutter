@@ -9,7 +9,7 @@ import '../../robots/thread_robot.dart';
 
 class CalendarEventCounterScenario extends BaseTestScenario
     with OpenCalendarEventScenarioMixin {
-  const CalendarEventCounterScenario(super.$);
+  const CalendarEventCounterScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

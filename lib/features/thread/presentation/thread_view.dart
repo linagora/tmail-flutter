@@ -9,6 +9,7 @@ import 'package:labels/model/label.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/base/widget/keyboard/keyboard_handler_wrapper.dart';
@@ -352,6 +353,7 @@ class ThreadView extends GetWidget<ThreadController>
             ? EdgeInsets.only(bottom: controller.responsiveUtils.isTabletLarge(context) ? 85 : 70)
             : EdgeInsets.zero,
           child: ComposeFloatingButton(
+            key: const ValueKey(UiKeys.composeEmailButton),
             scrollController: controller.listEmailController,
             onTap: () => controller.mailboxDashBoardController.openComposer(ComposerArguments())
           ),

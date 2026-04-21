@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'Should create a new label and add to email when select "Create a new Label" button in add label modal of detailed email view',
-    scenarioBuilder: ($) => CreateANewTagFromAnEmailScenario($),
+    scenarioBuilder: ($, robots) => CreateANewTagFromAnEmailScenario($, robots),
   );
 }

@@ -7,7 +7,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class MoveFolderContentScenario extends BaseTestScenario {
-  const MoveFolderContentScenario(super.$);
+  const MoveFolderContentScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

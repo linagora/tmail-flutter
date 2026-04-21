@@ -14,7 +14,7 @@ import '../../robots/thread_robot.dart';
 
 class ViewInlineImageScenario extends BaseTestScenario {
 
-  const ViewInlineImageScenario(super.$);
+  const ViewInlineImageScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

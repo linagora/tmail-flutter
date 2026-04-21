@@ -12,7 +12,7 @@ import '../../../robots/thread_robot.dart';
 class CreateNewIdentityScenario extends BaseTestScenario {
   final List<String>? identityNames;
 
-  const CreateNewIdentityScenario(super.$, {this.identityNames});
+  const CreateNewIdentityScenario(super.$, super.robots, {this.identityNames});
 
   @override
   Future<void> runTestLogic() async {

@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class SearchEmailWithTagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
-  const SearchEmailWithTagScenario(super.$);
+  const SearchEmailWithTagScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

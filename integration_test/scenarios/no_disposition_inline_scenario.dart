@@ -9,7 +9,7 @@ import '../robots/search_robot.dart';
 import '../robots/thread_robot.dart';
 
 class NoDispositionInlineScenario extends BaseTestScenario {
-  const NoDispositionInlineScenario(super.$);
+  const NoDispositionInlineScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

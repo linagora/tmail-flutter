@@ -4,6 +4,6 @@ import '../../scenarios/search/persist_filter_when_change_search_input_text_scen
 void main() {
   TestBase().runPatrolTest(
     description: 'Should see the same email when selecting filter and changing search input text',
-    scenarioBuilder: ($) => PersistFilterWhenChangeSearchInputTextScenario($),
+    scenarioBuilder: ($, robots) => PersistFilterWhenChangeSearchInputTextScenario($, robots),
   );
 }

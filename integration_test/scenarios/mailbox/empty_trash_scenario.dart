@@ -13,7 +13,7 @@ import '../../robots/thread_robot.dart';
 
 class EmptyTrashScenario extends BaseTestScenario {
 
-  const EmptyTrashScenario(super.$);
+  const EmptyTrashScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

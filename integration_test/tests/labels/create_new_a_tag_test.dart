@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'Should show toast success when create new a label successfully',
-    scenarioBuilder: ($) => CreateNewATagScenario($),
+    scenarioBuilder: ($, robots) => CreateNewATagScenario($, robots),
   );
 }

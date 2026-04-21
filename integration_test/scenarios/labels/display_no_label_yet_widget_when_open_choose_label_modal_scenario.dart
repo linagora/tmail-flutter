@@ -9,7 +9,7 @@ import '../../robots/thread_robot.dart';
 
 class DisplayNoLabelYetWidgetWhenOpenChooseLabelModalScenario
     extends BaseTestScenario {
-  const DisplayNoLabelYetWidgetWhenOpenChooseLabelModalScenario(super.$);
+  const DisplayNoLabelYetWidgetWhenOpenChooseLabelModalScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

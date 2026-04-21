@@ -5,7 +5,7 @@ import '../../models/provisioning_email.dart';
 import '../../robots/thread_robot.dart';
 
 class MarkSingleSelectedEmailAsStarScenario extends BaseTestScenario {
-  const MarkSingleSelectedEmailAsStarScenario(super.$);
+  const MarkSingleSelectedEmailAsStarScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

@@ -1,15 +1,11 @@
-import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/base_test_scenario.dart';
-import '../robots/composer_robot.dart';
-import '../robots/thread_robot.dart';
 
 class SendEmailScenario extends BaseTestScenario {
-  const SendEmailScenario(super.$, {this.customSubject});
+  const SendEmailScenario(super.$, super.robots, {this.customSubject});
 
   final String? customSubject;
 
@@ -20,31 +16,19 @@ class SendEmailScenario extends BaseTestScenario {
     const subject = 'Test subject';
     const content = 'Test content';
 
-    final threadRobot = ThreadRobot($);
-    final composerRobot = ComposerRobot($);
-    final imagePaths = ImagePaths();
+    await robots.threadRobot().openComposer();
+    await robots.composerRobot().expectComposerViewVisible();
 
-    await threadRobot.openComposer();
-    await _expectComposerViewVisible();
+    await robots.composerRobot().grantContactPermission();
 
-    await composerRobot.grantContactPermission();
-
-    await composerRobot.addRecipientIntoField(
-      prefixEmailAddress: PrefixEmailAddress.to,
-      email: email,
-    );
-    await composerRobot.addRecipientIntoField(
-      prefixEmailAddress: PrefixEmailAddress.to,
-      email: additionalRecipient,
-    );
-    await composerRobot.addSubject(customSubject ?? subject);
-    await composerRobot.addContent(content);
-    await composerRobot.sendEmail(imagePaths);
+    await robots.composerRobot().addRecipient(PrefixEmailAddress.to, email);
+    await robots.composerRobot().addRecipient(PrefixEmailAddress.to, additionalRecipient);
+    await robots.composerRobot().addSubject(customSubject ?? subject);
+    await robots.composerRobot().addContent(content);
+    await robots.composerRobot().send();
 
     await _expectSendEmailSuccessToast();
   }
-  
-  Future<void> _expectComposerViewVisible() => expectViewVisible($(ComposerView));
 
   Future<void> _expectSendEmailSuccessToast() async {
     await expectViewVisible(

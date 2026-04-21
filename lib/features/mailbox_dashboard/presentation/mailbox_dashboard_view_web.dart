@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/report_message_banner.dart';
@@ -120,6 +121,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         Column(
                           children: [
                             ComposeButtonWidget(
+                              key: const ValueKey(UiKeys.composeEmailButton),
                               imagePaths: controller.imagePaths,
                               onTapAction: () =>
                                 controller.openComposer(ComposerArguments()),

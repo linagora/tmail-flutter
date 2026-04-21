@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class UpdateDraftEmailWithMessageSuccessToastScenario extends BaseTestScenario {
 
-  const UpdateDraftEmailWithMessageSuccessToastScenario(super.$);
+  const UpdateDraftEmailWithMessageSuccessToastScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

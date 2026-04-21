@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class DeleteThreadToTrashScenario extends BaseTestScenario
     with GenerateEmailScenarioMixin, SettingScenarioMixin {
-  const DeleteThreadToTrashScenario(super.$);
+  const DeleteThreadToTrashScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

@@ -6,7 +6,7 @@ import '../../models/provisioning_email.dart';
 import '../../robots/thread_robot.dart';
 
 class ScrollListEmailInMailboxAndBackToTopScenario extends BaseTestScenario {
-  const ScrollListEmailInMailboxAndBackToTopScenario(super.$);
+  const ScrollListEmailInMailboxAndBackToTopScenario(super.$, super.robots);
 
   String _getSubjectWithIndex(int emailIndex) => 'scroll email subject $emailIndex';
 

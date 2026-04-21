@@ -7,7 +7,7 @@ import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class SearchMailboxInboxScenario extends BaseTestScenario {
-  const SearchMailboxInboxScenario(super.$);
+  const SearchMailboxInboxScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

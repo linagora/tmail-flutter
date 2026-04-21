@@ -4,6 +4,6 @@ import '../../scenarios/mailbox/create_rename_move_and_delete_mailbox_scenario.d
 void main() {
   TestBase().runPatrolTest(
     description: 'Should create, rename, move and delete mailbox successfully',
-    scenarioBuilder: ($) => CreateRenameMoveAndDeleteMailboxScenario($),
+    scenarioBuilder: ($, robots) => CreateRenameMoveAndDeleteMailboxScenario($, robots),
   );
 }

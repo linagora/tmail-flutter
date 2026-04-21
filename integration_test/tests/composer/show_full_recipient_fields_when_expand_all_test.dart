@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'Should see all recipient fields when expand all recipients in composer',
-    scenarioBuilder: ($) => ShowFullRecipientFieldsWhenExpandAllScenario($),
+    scenarioBuilder: ($, robots) => ShowFullRecipientFieldsWhenExpandAllScenario($, robots),
   );
 }

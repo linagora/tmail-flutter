@@ -16,7 +16,7 @@ class ForwardEmailScenario extends BaseTestScenario {
 
   static const String queryString = 'Forward email';
 
-  const ForwardEmailScenario(super.$);
+  const ForwardEmailScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

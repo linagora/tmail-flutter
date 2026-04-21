@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'Should delete label in label list when delete a label successfully',
-    scenarioBuilder: ($) => DeleteATagScenario($),
+    scenarioBuilder: ($, robots) => DeleteATagScenario($, robots),
   );
 }

@@ -12,7 +12,7 @@ import '../../robots/thread_robot.dart';
 import '../send_email_scenario.dart';
 
 class ReplyToOwnSentEmailScenario extends BaseTestScenario {
-  const ReplyToOwnSentEmailScenario(super.$);
+  const ReplyToOwnSentEmailScenario(super.$, super.robots);
   
   @override
   Future<void> runTestLogic() async {
@@ -22,7 +22,7 @@ class ReplyToOwnSentEmailScenario extends BaseTestScenario {
     final mailboxMenuRobot = MailboxMenuRobot($);
     final emailRobot = EmailRobot($);
     final composerRobot = ComposerRobot($);
-    final sendEmailScenario = SendEmailScenario($, customSubject: subject);
+    final sendEmailScenario = SendEmailScenario($, robots, customSubject: subject);
     final appLocalizations = AppLocalizations();
 
     await sendEmailScenario.runTestLogic();

@@ -9,6 +9,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/upload/file_info.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -78,11 +79,7 @@ class ComposerRobot extends CoreRobot {
   }
 
   Future<void> sendEmail(ImagePaths imagePaths) async {
-    await $(AppBarComposerWidget)
-        .$(TMailButtonWidget)
-        .which<TMailButtonWidget>(
-            (widget) => widget.icon == imagePaths.icSendMobile)
-        .tap();
+    await $(const ValueKey(UiKeys.sendEmailButton)).tap();
   }
 
   Future<void> grantContactPermission() async {

@@ -15,7 +15,7 @@ import '../../robots/thread_robot.dart';
 
 class MailToAttendeesEventEmailScenario extends BaseTestScenario
     with OpenCalendarEventScenarioMixin {
-  const MailToAttendeesEventEmailScenario(super.$);
+  const MailToAttendeesEventEmailScenario(super.$, super.robots);
 
   static const _expectedEventTitle = 'Come for a chat';
 

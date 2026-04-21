@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description: 'Should see attachment and inline image '
       'when upload success in composer',
-    scenarioBuilder: ($) => ComposerUploadAttachmentAndInlineImageScenario($),
+    scenarioBuilder: ($, robots) => ComposerUploadAttachmentAndInlineImageScenario($, robots),
   );
 }

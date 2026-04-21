@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class DisplayFolderInfoWhenOpenMailFromTagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
-  const DisplayFolderInfoWhenOpenMailFromTagScenario(super.$);
+  const DisplayFolderInfoWhenOpenMailFromTagScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

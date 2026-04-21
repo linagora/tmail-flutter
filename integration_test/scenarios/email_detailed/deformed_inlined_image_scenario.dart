@@ -10,7 +10,7 @@ import '../../models/provisioning_email.dart';
 import '../../robots/thread_robot.dart';
 
 class DeformedInlinedImageScenario extends BaseTestScenario {
-  const DeformedInlinedImageScenario(super.$);
+  const DeformedInlinedImageScenario(super.$, super.robots);
 
   static const String subject = 'Deformed inlined image';
   static const String content = '''

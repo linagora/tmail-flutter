@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'Should display view with all email with tag correctly when open label',
-    scenarioBuilder: ($) => DisplayViewWithAllEmailWithTagScenario($),
+    scenarioBuilder: ($, robots) => DisplayViewWithAllEmailWithTagScenario($, robots),
   );
 }

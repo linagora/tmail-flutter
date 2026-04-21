@@ -16,7 +16,7 @@ import '../robots/search_robot.dart';
 import '../robots/thread_robot.dart';
 
 class ReplyEmailWithContentContainImageBase64DataScenario extends BaseTestScenario {
-  const ReplyEmailWithContentContainImageBase64DataScenario(super.$);
+  const ReplyEmailWithContentContainImageBase64DataScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

@@ -10,7 +10,7 @@ import '../../robots/thread_robot.dart';
 
 class CopyEmailAddressToClipboardScenario extends BaseTestScenario {
 
-  const CopyEmailAddressToClipboardScenario(super.$);
+  const CopyEmailAddressToClipboardScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

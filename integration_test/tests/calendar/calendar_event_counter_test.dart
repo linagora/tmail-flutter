@@ -6,6 +6,6 @@ void main() {
     description: 'Should see yes and mail to attendees buttons '
       'and should not see no and maybe buttons '
       'when user view calendar event counter email',
-    scenarioBuilder: ($) => CalendarEventCounterScenario($),
+    scenarioBuilder: ($, robots) => CalendarEventCounterScenario($, robots),
   );
 }

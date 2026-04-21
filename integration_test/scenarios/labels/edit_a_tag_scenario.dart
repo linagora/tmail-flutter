@@ -11,7 +11,7 @@ import '../../robots/thread_robot.dart';
 
 class EditATagScenario extends BaseTestScenario
     with ProvisioningLabelScenarioMixin {
-  const EditATagScenario(super.$);
+  const EditATagScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

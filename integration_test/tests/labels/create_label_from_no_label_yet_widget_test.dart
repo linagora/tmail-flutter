@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description:
         'Should create a label from NoLabelYetWidget and show it in the Choose Label modal list',
-    scenarioBuilder: ($) => CreateLabelFromNoLabelYetWidgetScenario($),
+    scenarioBuilder: ($, robots) => CreateLabelFromNoLabelYetWidgetScenario($, robots),
   );
 }

@@ -5,7 +5,7 @@ import '../../models/provisioning_email.dart';
 import '../../robots/thread_robot.dart';
 
 class PullToRefreshScenario extends BaseTestScenario {
-  const PullToRefreshScenario(super.$);
+  const PullToRefreshScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

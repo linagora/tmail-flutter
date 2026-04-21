@@ -7,7 +7,7 @@ import '../../robots/composer_robot.dart';
 import '../../robots/thread_robot.dart';
 
 class ShowFullRecipientFieldsWhenExpandAllScenario extends BaseTestScenario {
-  const ShowFullRecipientFieldsWhenExpandAllScenario(super.$);
+  const ShowFullRecipientFieldsWhenExpandAllScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

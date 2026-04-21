@@ -14,7 +14,7 @@ import '../../robots/thread_robot.dart';
 
 class ComposeEmailFromEmailAddressScenario extends BaseTestScenario {
 
-  const ComposeEmailFromEmailAddressScenario(super.$);
+  const ComposeEmailFromEmailAddressScenario(super.$, super.robots);
 
   @override
   Future<void> runTestLogic() async {

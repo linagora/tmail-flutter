@@ -5,6 +5,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:scribe/scribe/ai/presentation/widgets/button/ai_assistant_button.dart';
+import 'package:tmail_ui_user/features/base/model/ui_keys.dart';
 import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
@@ -245,6 +246,7 @@ class BottomBarComposerWidget extends StatelessWidget {
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.sendButtonSpace),
           TMailButtonWidget(
+            key: const ValueKey(UiKeys.sendEmailButton),
             text: AppLocalizations.of(context).send,
             icon: imagePaths.icSend,
             iconAlignment: TextDirection.rtl,

@@ -5,6 +5,6 @@ void main() {
   TestBase().runPatrolTest(
     description: 'Should see email with expected condition '
       'when quick filter email changed',
-    scenarioBuilder: ($) => QuickFilterScenario($),
+    scenarioBuilder: ($, robots) => QuickFilterScenario($, robots),
   );
 }
