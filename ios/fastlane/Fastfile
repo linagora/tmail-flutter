@@ -56,10 +56,6 @@ platform :ios do
       workspace: "Runner.xcworkspace",
       export_method: "app-store"
     )
-    # Write the xcarchive path to a file so CI can locate dSYMs for Sentry upload.
-    # lane_context[XCODEBUILD_ARCHIVE] is set by build_app and contains the exact path.
-    archive_path = Actions.lane_context[SharedValues::XCODEBUILD_ARCHIVE]
-    File.write("gym_archive_path.txt", archive_path.to_s) if archive_path
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
       ipa: "Runner.ipa"
