@@ -11,13 +11,16 @@ class LocalSettingsService extends GetxService {
 
   final localSettings = PreferencesSetting.initial().obs;
 
+  Future<void>? _pendingLoad;
+
   @override
   void onInit() {
     super.onInit();
-    _loadLocalSettings();
+    reload();
   }
 
-  Future<void> refresh() => _loadLocalSettings();
+  Future<void> reload() => _pendingLoad ??= _loadLocalSettings()
+      .whenComplete(() => _pendingLoad = null);
 
   Future<void> _loadLocalSettings() {
     return _getLocalSettingsInteractor.execute().last.then(
