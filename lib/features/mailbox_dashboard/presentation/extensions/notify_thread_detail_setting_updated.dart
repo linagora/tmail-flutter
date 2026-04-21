@@ -4,9 +4,9 @@ import 'package:tmail_ui_user/features/manage_account/presentation/services/loca
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 
 extension NotifyThreadDetailSettingUpdated on MailboxDashBoardController {
-  void notifyThreadDetailSettingUpdated() {
+  Future<void> notifyThreadDetailSettingUpdated() async {
     if (Get.isRegistered<LocalSettingsService>()) {
-      Get.find<LocalSettingsService>().refresh();
+      await Get.find<LocalSettingsService>().refresh();
     }
     dispatchThreadDetailUIAction(UpdatedThreadDetailSettingAction());
   }

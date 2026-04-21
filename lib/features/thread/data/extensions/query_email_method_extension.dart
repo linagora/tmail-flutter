@@ -21,8 +21,8 @@ extension QueryEmailMethodExtension on QueryEmailMethod {
   }
 
   void addCollapseThreadsIfAvailable(bool? collapseThreads) {
-    if (collapseThreads != null && collapseThreads) {
-      addCollapseThreads(collapseThreads);
+    if (collapseThreads == true) {
+      addCollapseThreads(true);
     }
   }
 }

@@ -17,10 +17,10 @@ class LocalSettingsService extends GetxService {
     _loadLocalSettings();
   }
 
-  void refresh() => _loadLocalSettings();
+  Future<void> refresh() => _loadLocalSettings();
 
-  void _loadLocalSettings() {
-    _getLocalSettingsInteractor.execute().last.then(
+  Future<void> _loadLocalSettings() {
+    return _getLocalSettingsInteractor.execute().last.then(
       (result) => result.fold(
         (failure) => logWarning(
           'LocalSettingsService::_loadLocalSettings:failure: $failure',
@@ -31,6 +31,10 @@ class LocalSettingsService extends GetxService {
           }
         },
       ),
-    );
+    ).catchError((error, stackTrace) {
+      logWarning(
+        'LocalSettingsService::_loadLocalSettings:error: $error | stackTrace: $stackTrace',
+      );
+    });
   }
 }

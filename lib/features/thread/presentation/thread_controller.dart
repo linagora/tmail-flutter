@@ -115,6 +115,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
   Worker? _localSettingsWorker;
+  bool _lastCollapseThreadsEnabled = false;
 
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
 
@@ -131,7 +132,7 @@ class ThreadController extends BaseController with EmailActionController {
   late final LocalSettingsService _localSettingsService = Get.find<LocalSettingsService>();
 
   bool get _isCollapseThreadsEnabled {
-    if (!Get.isRegistered<LocalSettingsService>()) return false;
+    if (!forceEmailQuery || !Get.isRegistered<LocalSettingsService>()) return false;
     return _localSettingsService.localSettings.value.threadConfig.isEnabled;
   }
 
@@ -442,8 +443,11 @@ class ThreadController extends BaseController with EmailActionController {
   void _registerLocalSettingsListener() {
     if (!Get.isRegistered<LocalSettingsService>()) return;
     _localSettingsWorker = ever(_localSettingsService.localSettings, (_) {
+      final collapseThreadsEnabled = _isCollapseThreadsEnabled;
+      if (_lastCollapseThreadsEnabled == collapseThreadsEnabled) return;
+      _lastCollapseThreadsEnabled = collapseThreadsEnabled;
       if (searchController.isSearchEmailRunning) {
-        _refreshChangeSearchEmail();
+        _searchEmail(limit: limitEmailFetched);
       }
     });
   }
@@ -553,8 +557,14 @@ class ThreadController extends BaseController with EmailActionController {
     handleLoadMoreEmailsRequest();
   }
 
-  bool get forceEmailQuery =>
-      PlatformInfo.isWeb && AppConfig.isForceEmailQueryEnabled;
+  bool get forceEmailQuery {
+    if (!PlatformInfo.isWeb) return false;
+    try {
+      return AppConfig.isForceEmailQueryEnabled;
+    } catch (_) {
+      return false;
+    }
+  }
 
   void _handleErrorGetAllOrRefreshChangesEmail(Object error, StackTrace stackTrace) async {
     logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
