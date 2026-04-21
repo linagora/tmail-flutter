@@ -101,10 +101,11 @@ jobs:
           # 1. Install Sentry CLI
           curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
 
-          # 2. Validate tag version matches pubspec.yaml version
+          # 2. Validate tag version matches pubspec.yaml version (base version only, ignoring -rc* suffix)
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           TAG_VERSION="${TAG_VERSION%%-rc*}"
           PUBSPEC_VERSION=$(awk '/^version:/{split($2,a,"+"); print a[1]; exit}' pubspec.yaml)
+          PUBSPEC_VERSION="${PUBSPEC_VERSION%%-rc*}"
           if [ "$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
             echo "::error::Tag version ($TAG_VERSION) does not match pubspec version ($PUBSPEC_VERSION)."
             exit 1
@@ -117,7 +118,6 @@ jobs:
 
           # 4. Upload ProGuard Mapping
           MAPPING_FILE="build/app/outputs/mapping/release/mapping.txt"
-          
           if [ -f "$MAPPING_FILE" ]; then
             echo "Found mapping.txt, uploading ProGuard mapping..."
             sentry-cli upload-proguard "$MAPPING_FILE"
@@ -128,7 +128,6 @@ jobs:
 
           # 5. Upload Dart Debug Symbols (Native Dart Stacktrace)
           SYMBOLS_DIR="build/app/outputs/symbols"
-          
           if [ -d "$SYMBOLS_DIR" ]; then
             echo "Uploading Dart debug symbols from $SYMBOLS_DIR..."
             sentry-cli debug-files upload "$SYMBOLS_DIR"
@@ -136,6 +135,48 @@ jobs:
             echo "::error::Symbols directory not found at $SYMBOLS_DIR. Check your Fastfile build arguments."
             exit 1
           fi
-          
+
           # 6. Finalize
           sentry-cli releases finalize "$SENTRY_RELEASE"
+
+      # --- UPLOAD DSYM TO SENTRY FOR IOS ---
+      # sentry-cli debug-files upload works independently of the release lifecycle,
+      # so no releases new/finalize needed here — avoids race condition with Android leg.
+      - name: Upload iOS dSYMs to Sentry
+        if: matrix.os == 'ios'
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        run: |
+          # 1. Install Sentry CLI
+          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.42.2" bash
+
+          # 2. Validate tag version matches pubspec.yaml version (base version only, ignoring -rc* suffix)
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          TAG_VERSION="${TAG_VERSION%%-rc*}"
+          PUBSPEC_VERSION=$(awk '/^version:/{split($2,a,"+"); print a[1]; exit}' pubspec.yaml)
+          PUBSPEC_VERSION="${PUBSPEC_VERSION%%-rc*}"
+          if [ "$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match pubspec version ($PUBSPEC_VERSION)."
+            exit 1
+          fi
+
+          # 3. Read the xcarchive path written by Fastlane after build_app.
+          # Fastlane writes lane_context[XCODEBUILD_ARCHIVE] to ios/gym_archive_path.txt.
+          XCARCHIVE=$(cat ios/gym_archive_path.txt 2>/dev/null)
+          if [ -z "$XCARCHIVE" ] || [ ! -d "$XCARCHIVE" ]; then
+            echo "::error::xcarchive not found. Check that Fastlane wrote gym_archive_path.txt correctly."
+            exit 1
+          fi
+          echo "Found xcarchive: $XCARCHIVE"
+
+          # 4. Upload dSYMs (Native code: Swift, Objective-C, C++)
+          DSYM_DIR="$XCARCHIVE/dSYMs"
+          if [ -d "$DSYM_DIR" ]; then
+            echo "Uploading dSYMs from $DSYM_DIR..."
+            sentry-cli debug-files upload --include-sources "$DSYM_DIR"
+          else
+            echo "::error::dSYMs directory not found inside xcarchive at $DSYM_DIR."
+            exit 1
+          fi
