@@ -89,7 +89,6 @@ Optional fields:
 
 ```dotenv
 APP_GRID_AVAILABLE=supported          # shows app grid sidebar
-FCM_AVAILABLE=supported               # enables push notifications
 SENTRY_ENABLED=false
 SENTRY_DSN=
 ```
