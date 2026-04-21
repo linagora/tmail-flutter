@@ -2,7 +2,6 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id "io.sentry.android.gradle"
 }
 
 def localProperties = new Properties()
@@ -102,17 +101,3 @@ dependencies {
     androidTestUtil "androidx.test:orchestrator:1.5.1"
 }
 
-sentry {
-    // Disable automatic ProGuard mapping upload — handled in CI via sentry-cli with explicit UUID.
-    // The plugin still injects the UUID into the app binary and writes it to:
-    // build/app/intermediates/assets/release/mergeReleaseAssets/sentry-debug-meta.properties
-    // CI reads this UUID and passes it to `sentry-cli upload-proguard --uuid <UUID>`.
-    autoUploadProguardMapping = false
-    autoUploadNativeSymbols = false
-    // Disable auto-installation of the Sentry Android SDK — sentry_flutter already bundles it.
-    autoInstallation {
-        enabled = false
-    }
-    org = System.getenv("SENTRY_ORG") ?: ""
-    projectName = System.getenv("SENTRY_PROJECT") ?: ""
-}

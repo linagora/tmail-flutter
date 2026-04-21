@@ -21,10 +21,6 @@ plugins {
     id "com.android.application" version '8.5.2' apply false
     id "org.jetbrains.kotlin.android" version "1.9.21" apply false
     id "com.google.gms.google-services" version "4.3.10" apply false
-    // Sentry Android Gradle plugin: injects a ProGuard UUID into the app binary at build time.
-    // autoUploadProguardMapping is disabled — CI handles upload with explicit UUID via sentry-cli.
-    // UPGRADE NOTE: when bumping sentry_flutter, verify this version remains compatible.
-    id "io.sentry.android.gradle" version "4.14.0" apply false
 }
 
 include ":app"
