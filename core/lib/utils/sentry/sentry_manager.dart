@@ -133,6 +133,28 @@ class SentryManager {
     }
   }
 
+  /// Adds a breadcrumb to Sentry's local buffer.
+  ///
+  /// Breadcrumbs are attached automatically to the next error event —
+  /// they consume zero quota on their own.
+  void addBreadcrumb(
+    String message, {
+    Map<String, dynamic>? extras,
+  }) {
+    if (!_isSentryAvailable) return;
+
+    try {
+      Sentry.addBreadcrumb(
+        Breadcrumb(
+          message: message,
+          data: extras,
+        ),
+      );
+    } catch (e) {
+      logWarning('[SentryManager] Add breadcrumb failed: $e');
+    }
+  }
+
   /// Sets the user context.
   void setUser(SentryUser user) {
     if (!_isSentryAvailable) return;
