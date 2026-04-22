@@ -22,7 +22,7 @@ The challenge: RC builds use a `-rcXX` suffix in the tag (e.g. `v0.28.5-rc01`), 
 
 ## Decision
 
-**Rule: pubspec version = git tag base version (no `-rc` suffix). The full tag is used as `SENTRY_RELEASE`.**
+**Rule: pubspec version = git tag base version (no `-rc` suffix). The pubspec version is used as `SENTRY_RELEASE` in both the app and CI.**
 
 | Source | RC build example | Final release example |
 |---|---|---|
