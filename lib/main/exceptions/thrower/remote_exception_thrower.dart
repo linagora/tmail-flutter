@@ -21,11 +21,6 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
   @override
   throwException(dynamic error, dynamic stackTrace) {
-    logError(
-      'RemoteExceptionThrower::throwException():error: $error | stackTrace: $stackTrace',
-      exception: error,
-      stackTrace: stackTrace,
-    );
     final networkConnectionController = getBinding<NetworkConnectionController>();
     if (networkConnectionController?.isNetworkConnectionAvailable() == false) {
       logWarning('RemoteExceptionThrower::throwException():isNetworkConnectionAvailable');
@@ -37,68 +32,110 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
   void handleDioError(dynamic error) {
     if (error is DioException) {
-      logWarning(
-        'RemoteExceptionThrower::throwException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
-      );
-
-      if (error.error is RefreshTokenFailedException) {
-        throw RefreshTokenFailedException();
-      }
-
-      final response = error.response;
-      final statusCode = response?.statusCode;
-
-      if (response != null) {
-        switch (statusCode) {
-          case HttpStatus.internalServerError:
-            throw const InternalServerError();
-          case HttpStatus.badGateway:
-            throw BadGateway();
-          case HttpStatus.unauthorized:
-            throw const BadCredentialsException();
-          default:
-            throw UnknownRemoteException(
-              code: statusCode,
-              message: response.statusMessage,
-            );
-        }
-      }
-
-      return _handleDioErrorWithoutResponse(error);
+      _handleDioException(error);
+      return;
     }
 
     if (error is ErrorMethodResponseException) {
-      final errorResponse = error.errorResponse as ErrorMethodResponse;
-      if (errorResponse is CannotCalculateChangesMethodResponse) {
-        throw CannotCalculateChangesMethodResponseException();
-      } else {
-        throw MethodLevelErrors(
-          errorResponse.type,
-          message: errorResponse.description,
-        );
-      }
+      _handleMethodResponseException(error);
+      return;
     }
 
+    logError(
+      'RemoteExceptionThrower::handleDioError(): unrecognised error',
+      exception: error,
+    );
     throw error;
+  }
+
+  void _handleDioException(DioException error) {
+    logWarning(
+      'RemoteExceptionThrower::_handleDioException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
+    );
+
+    if (error.error is RefreshTokenFailedException) {
+      throw RefreshTokenFailedException();
+    }
+
+    final response = error.response;
+    final statusCode = response?.statusCode;
+
+    if (response != null) {
+      return _handleDioResponseError(statusCode, response);
+    }
+
+    return _handleDioErrorWithoutResponse(error);
+  }
+
+  void _handleDioResponseError(int? statusCode, Response response) {
+    switch (statusCode) {
+      case HttpStatus.unauthorized:
+        // 401 is handled by auth retry flow — no log needed
+        throw const BadCredentialsException();
+      case HttpStatus.internalServerError:
+        logWarning('RemoteExceptionThrower: HTTP 500');
+        throw const InternalServerError();
+      case HttpStatus.badGateway:
+        logWarning('RemoteExceptionThrower: HTTP 502');
+        throw BadGateway();
+      default:
+        if (statusCode != null && statusCode >= 400 && statusCode < 500) {
+          logWarning('RemoteExceptionThrower: HTTP 4xx ($statusCode)');
+        } else if (statusCode != null && statusCode >= 500) {
+          logWarning('RemoteExceptionThrower: HTTP 5xx ($statusCode)');
+        } else {
+          logError(
+            'RemoteExceptionThrower: unknown HTTP status $statusCode',
+            exception: UnknownRemoteException(
+              code: statusCode,
+              message: response.statusMessage,
+            ),
+          );
+        }
+        throw UnknownRemoteException(
+          code: statusCode,
+          message: response.statusMessage,
+        );
+    }
+  }
+
+  void _handleMethodResponseException(ErrorMethodResponseException error) {
+    final errorResponse = error.errorResponse as ErrorMethodResponse;
+    if (errorResponse is CannotCalculateChangesMethodResponse) {
+      throw CannotCalculateChangesMethodResponseException();
+    } else {
+      throw MethodLevelErrors(
+        errorResponse.type,
+        message: errorResponse.description,
+      );
+    }
   }
 
   void _handleDioErrorWithoutResponse(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
+        logWarning('RemoteExceptionThrower: connection timeout');
         throw ConnectionTimeout(message: error.message);
       case DioExceptionType.connectionError:
+        logWarning('RemoteExceptionThrower: connection error');
         throw ConnectionError(message: error.message);
       case DioExceptionType.badResponse:
         throw const BadCredentialsException();
       default:
         final underlyingError = error.error;
         if (underlyingError is SocketException) {
+          logWarning('RemoteExceptionThrower: socket error');
           throw const SocketError();
         } else if (underlyingError is OAuthAuthorizationError) {
           throw underlyingError;
         } else if (underlyingError != null) {
+          logError(
+            'RemoteExceptionThrower: unrecognised underlying error',
+            exception: underlyingError,
+          );
           throw UnknownRemoteException(error: underlyingError);
         } else {
+          logError('RemoteExceptionThrower: unrecognised DioException with no response or underlying error');
           throw const UnknownRemoteException();
         }
     }
