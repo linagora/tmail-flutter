@@ -50,12 +50,14 @@ platform :ios do
     increment_version_number(
       version_number: last_git_tag.gsub("v", "").split("-").first
     )
-    # Pass the full release tag (e.g. "0.28.3-rc09") to the Dart layer so the
+    # Pass the full release version (e.g. "0.28.3-rc09") to the Dart layer so the
     # app reports the same string to Sentry as CI uses when uploading dSYMs.
+    # Read from pubspec.yaml (same source as CI release.yaml) to guarantee consistency.
     # This is separate from increment_version_number (which stays numeric for
     # App Store compatibility). Each dart-define must be base64-encoded.
     require 'base64'
-    sentry_release = last_git_tag.gsub("v", "")
+    pubspec = File.read("../pubspec.yaml")
+    sentry_release = pubspec.match(/^version:\s+(\S+)/)[1].split("+").first
     sentry_release_define = Base64.strict_encode64("SENTRY_RELEASE=#{sentry_release}")
     build_app(
       scheme: "Runner",
