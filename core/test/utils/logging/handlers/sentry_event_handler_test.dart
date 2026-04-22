@@ -9,7 +9,7 @@ class _FakeSentryReporter implements SentryReporter {
   final List<({dynamic exception, StackTrace? stackTrace, String? message, Map<String, dynamic>? extras, SentryLevel level})>
       capturedExceptions = [];
   final List<({String message, Map<String, dynamic>? extras, SentryLevel level})> capturedMessages = [];
-  final List<({String message, Map<String, dynamic>? extras})> capturedBreadcrumbs = [];
+  final List<({String message, Map<String, dynamic>? extras, SentryLevel level, String? category})> capturedBreadcrumbs = [];
 
   @override
   void captureException(
@@ -38,8 +38,13 @@ class _FakeSentryReporter implements SentryReporter {
   }
 
   @override
-  void addBreadcrumb(String message, {Map<String, dynamic>? extras}) {
-    capturedBreadcrumbs.add((message: message, extras: extras));
+  void addBreadcrumb(
+    String message, {
+    Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.debug,
+    String? category,
+  }) {
+    capturedBreadcrumbs.add((message: message, extras: extras, level: level, category: category));
   }
 }
 
