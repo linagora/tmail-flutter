@@ -18,4 +18,5 @@ void _registerLogHandlers() {
   AppLoggerRegistry.instance.registerHandler(
     const ConsoleLogHandler(formatter: MobileConsoleFormatter()),
   );
+  registerSentryLogHandlers();
 }

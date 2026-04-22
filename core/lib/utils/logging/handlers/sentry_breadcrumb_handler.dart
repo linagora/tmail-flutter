@@ -1,7 +1,7 @@
 import 'package:core/utils/logging/log_handler.dart';
 import 'package:core/utils/logging/log_level.dart';
 import 'package:core/utils/logging/log_record.dart';
-import 'package:core/utils/sentry/sentry_manager.dart';
+import 'package:core/utils/sentry/sentry_reporter.dart';
 
 /// Stores log records as Sentry breadcrumbs (zero quota cost).
 ///
@@ -9,9 +9,9 @@ import 'package:core/utils/sentry/sentry_manager.dart';
 /// Sentry and attached automatically to the next error event, providing
 /// the full call trail leading up to a failure.
 ///
-/// [SentryManager] is injected via constructor for testability.
+/// [SentryReporter] is injected via constructor for testability.
 class SentryBreadcrumbHandler implements LogHandler {
-  final SentryManager _sentry;
+  final SentryReporter _sentry;
 
   const SentryBreadcrumbHandler(this._sentry);
 
