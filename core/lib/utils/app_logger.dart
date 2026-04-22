@@ -7,12 +7,18 @@ export 'package:core/utils/logging/log_level.dart' show Level;
 ///
 /// Call sites are unchanged — the public function signatures are stable
 /// across all 188+ existing usages.
+///
+/// Note: [webConsoleEnabled] on every function is deprecated. Web console
+/// output is now controlled globally by [ConsoleLogHandler] registered at
+/// startup — per-call overrides are no longer supported. The parameter is
+/// kept for source compatibility and will be removed in a future release.
 
 void logError(
   String? message, {
   Object? exception,
   StackTrace? stackTrace,
   Map<String, dynamic>? extras,
+  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
   _dispatch(
@@ -29,6 +35,7 @@ void logCritical(
   Object? exception,
   StackTrace? stackTrace,
   Map<String, dynamic>? extras,
+  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
   _dispatch(
@@ -42,6 +49,7 @@ void logCritical(
 
 void logWarning(
   String? message, {
+  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
   _dispatch(message, level: Level.warning);
@@ -49,6 +57,7 @@ void logWarning(
 
 void logInfo(
   String? message, {
+  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
   _dispatch(message, level: Level.info);
@@ -56,6 +65,7 @@ void logInfo(
 
 void logDebug(
   String? message, {
+  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
   _dispatch(message, level: Level.debug);
@@ -63,6 +73,7 @@ void logDebug(
 
 void logTrace(
   String? message, {
+  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
   Map<String, dynamic>? extras,
 }) {
@@ -71,9 +82,10 @@ void logTrace(
 
 void log(
   String? message, {
+  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) =>
-    logInfo(message, webConsoleEnabled: webConsoleEnabled);
+    logInfo(message);
 
 void _dispatch(
   String? message, {
