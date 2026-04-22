@@ -4,13 +4,14 @@ import 'dart:io';
 
 import 'package:core/domain/exceptions/download_file_exception.dart';
 import 'package:core/domain/exceptions/file_exception.dart';
+import 'package:core/utils/logging/handlers/file_log_handler.dart';
 import 'package:core/utils/logger/trace_log.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
-class LogTracking {
+class LogTracking implements FileLogger {
   static const String logFolder = 'TraceLogs';
   static const String logFileNameDatePattern = 'yyyy-MM-dd';
   static const String logMessageDatePattern = 'yyyy-MM-dd, HH:mm:ss';
@@ -23,8 +24,10 @@ class LogTracking {
 
   final Queue<String> _messagesQueue = Queue();
   bool _isScheduled = false;
+  @override
   bool isEnabled = false;
 
+  @override
   Future<void> addLog({required String message}) async {
     try {
       _messagesQueue.add(message);
