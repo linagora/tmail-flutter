@@ -31,10 +31,19 @@ class AppLoggerRegistry {
   }
 
   /// Dispatches [record] to all handlers that accept its level.
+  ///
+  /// Handler exceptions are swallowed so that a broken destination cannot
+  /// crash callers or prevent other handlers from receiving the record.
+  /// Avoid logging inside the catch block to prevent recursive dispatch loops.
   void dispatch(LogRecord record) {
     for (final handler in _handlers) {
       if (handler.handles(record.level)) {
-        handler.handle(record);
+        try {
+          handler.handle(record);
+        } catch (_) {
+          // Logging must not break the application flow.
+          // Avoid logging here to prevent recursive dispatch loops.
+        }
       }
     }
   }
