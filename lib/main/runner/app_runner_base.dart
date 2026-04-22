@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:core/utils/logging/app_logger_registry.dart';
+import 'package:core/utils/logging/formatters/log_formatter.dart';
+import 'package:core/utils/logging/handlers/console_log_handler.dart';
 import 'package:core/utils/logging/handlers/sentry_breadcrumb_handler.dart';
 import 'package:core/utils/logging/handlers/sentry_event_handler.dart';
 import 'package:core/utils/sentry/sentry_manager.dart';
@@ -15,14 +17,23 @@ Future<void> runAppGuarded(Future<void> Function() runner) async {
   await runner();
 }
 
-/// Registers Sentry log handlers shared across all platforms.
+/// Registers all log handlers for the given platform.
 ///
-/// Safe to call before Sentry initialises — [SentryManager] guards
-/// each call with [SentryManager.isSentryAvailable], so early calls
-/// are no-ops until Sentry is ready.
-void registerSentryLogHandlers() {
+/// Must be called once at app startup, before any log call is made.
+/// Sentry handlers are registered early — they check [SentryManager.isSentryAvailable]
+/// internally, so calls before Sentry initialises are safe no-ops.
+void registerLogHandlers({
+  required LogFormatter formatter,
+  bool webConsoleEnabled = false,
+}) {
   final sentry = SentryManager.instance;
   AppLoggerRegistry.instance
+    ..registerHandler(
+      ConsoleLogHandler(
+        formatter: formatter,
+        webConsoleEnabled: webConsoleEnabled,
+      ),
+    )
     ..registerHandler(SentryBreadcrumbHandler(sentry))
     ..registerHandler(SentryEventHandler(sentry));
 }
