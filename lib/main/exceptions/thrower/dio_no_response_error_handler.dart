@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
-import 'package:tmail_ui_user/main/exceptions/remote/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/oauth_authorization_error.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote/unknown_remote_exception.dart';
@@ -11,13 +10,13 @@ class DioNoResponseErrorHandler {
   void handle(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
         logWarning('RemoteExceptionThrower: connection timeout');
         throw ConnectionTimeout(message: error.message);
       case DioExceptionType.connectionError:
         logWarning('RemoteExceptionThrower: connection error');
         throw ConnectionError(message: error.message);
-      case DioExceptionType.badResponse:
-        throw const BadCredentialsException();
       default:
         _handleUnknownUnderlying(error.error);
     }
