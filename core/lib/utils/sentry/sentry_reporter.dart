@@ -1,3 +1,5 @@
+import 'package:sentry_flutter/sentry_flutter.dart';
+
 /// Abstraction over Sentry operations used by log handlers.
 ///
 /// Decouples [LogHandler] implementations from [SentryManager]'s
@@ -8,11 +10,13 @@ abstract interface class SentryReporter {
     StackTrace? stackTrace,
     String? message,
     Map<String, dynamic>? extras,
+    SentryLevel level,
   });
 
   void captureMessage(
     String message, {
     Map<String, dynamic>? extras,
+    SentryLevel level,
   });
 
   void addBreadcrumb(
