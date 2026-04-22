@@ -227,7 +227,7 @@ return A.lW(v,C.m,A.cT(A.f0(A.B_(w.bcn(d),v,v,x,u,v,v),v,v,v,v,v,C.L),v,v),v,v,!
 bbE(d){var x,w,v=this,u=null,t=F.bCE(u,u)
 A.z(d,C.e,y.J).toString
 x=y.p
-t=A.aC(A.c([new A.Y(D.zP,t,u),new A.Y(D.zP,A.ai(A.u("Sign In",u,"signIn",u,u),u,u,u,u,u,$.aO().be(C.n,32,C.pP),u,u,u),u),new A.au(new B.chS(v),u),new A.au(new B.chT(v,d),u),v.atV(d),D.Z2,D.FB],x),C.o,C.l,C.p,0,C.u)
+t=A.aC(A.c([new A.Y(D.zP,t,u),new A.Y(D.zP,A.ai(A.u("Sign In",u,"signIn",u,u),u,u,u,u,u,$.aO().be(C.n,32,C.pP),u,u,u),u),new A.au(new B.chS(v),u),new A.au(new B.chT(v,d),u),v.atV(d),D.Z1,D.FB],x),C.o,C.l,C.p,0,C.u)
 w=$.aa()
 A.w(v)
 A.t(v).h("V.S").a(w.a.get(v)).toString
@@ -260,7 +260,7 @@ q=y.p
 r=A.aC(A.c([x,new A.Y(D.aqv,u,o),new A.Y(C.hu,t,o),new A.Y(C.hu,s,o),new A.Y(C.hu,r,o),new A.Y(D.aqC,A.bg("assets/images/ic_login_graphic.svg",C.v,o,C.P,o,o,o,o),o)],q),C.E,C.aT,C.p,0,C.u)
 s=F.bCE(o,o)
 A.z(d,C.e,n).toString
-s=A.a7(o,A.aC(A.c([new A.Y(D.aqN,s,o),new A.Y(D.zP,A.ai(A.u("Sign In",o,"signIn",o,o),o,o,o,o,o,$.aO().be(C.n,32,C.pP),o,o,o),o),new A.au(new B.chU(p),o),new A.au(new B.chV(p,d),o),p.atV(d),D.Z2,D.FB],q),C.o,C.l,C.p,0,C.u),C.ai,o,o,D.aWW,o,684,o,o,D.arc,o,o,458)
+s=A.a7(o,A.aC(A.c([new A.Y(D.aqN,s,o),new A.Y(D.zP,A.ai(A.u("Sign In",o,"signIn",o,o),o,o,o,o,o,$.aO().be(C.n,32,C.pP),o,o,o),o),new A.au(new B.chU(p),o),new A.au(new B.chV(p,d),o),p.atV(d),D.Z1,D.FB],q),C.o,C.l,C.p,0,C.u),C.ai,o,o,D.aWW,o,684,o,o,D.arc,o,o,458)
 A.w(p)
 v.a(w.get(p)).toString
 return new A.Y(D.aqM,A.ao(A.c([new A.Y(D.aqo,r,o),A.aC(A.c([s,new A.Y(D.aqD,A.bg("assets/images/power_by_linagora.svg",C.v,o,C.P,44,o,o,97),o)],q),C.o,C.l,C.p,0,C.u)],q),C.E,o,C.aT,C.p,0,o),o)},
@@ -277,12 +277,12 @@ v.N=new B.cyF(this)
 return A.aC(A.c([x,A.K5(u,u,u,C.c5,u,u,!0,u,A.cd(u,u,u,v,w,t),C.a6,u,u,C.aR,C.aB)],y.p),C.o,C.l,C.z,0,C.u)}}
 B.aUC.prototype={
 cu(){var x,w,v,u,t,s,r,q=this,p=null,o=q.w
-if(o==null)o=D.YY
+if(o==null)o=D.YX
 x=q.y
 if(x==null)x=D.aPL
 w=q.a
 v=q.c
-u=$.aO().eM(C.HI,16)
+u=$.aO().eM(C.HH,16)
 t=q.e
 s=q.f
 if(s==null)s=$.aO().eM(C.i1,16)
@@ -322,7 +322,7 @@ s.f=$.aO().be(C.a_,16,C.C)
 $.aO().be(C.a_,16,C.C)
 s.Q=$.aO().be(C.dL,13,C.C)
 s.y=C.wb
-s.w=D.YY
+s.w=D.YX
 s.x=C.nG
 v=A.c([A.dX1(!1,p,w,s.cu(),t,q,m,n,o,x,v)],y.p)
 r.a.toString
@@ -454,9 +454,9 @@ $S:2213}
 B.chM.prototype={
 $1(d){var x=null,w=this.a.c
 if(w===C.Ce)return A.u("Enter your credentials to sign in",x,"loginInputCredentialMessage",x,x)
-else if(w===C.Xh)return A.u("To login and access your message please enter your email",x,"dnsLookupLoginMessage",x,x)
-else if(w===C.Xg)return A.u("Enter your password to sign in",x,"enterYourPasswordToSignIn",x,x)
-else if(w===C.Xf)return A.u("To login and access your message please connect to your JMAP server",x,"loginInputUrlMessage",x,x)
+else if(w===C.Xg)return A.u("To login and access your message please enter your email",x,"dnsLookupLoginMessage",x,x)
+else if(w===C.Xf)return A.u("Enter your password to sign in",x,"enterYourPasswordToSignIn",x,x)
+else if(w===C.Xe)return A.u("To login and access your message please connect to your JMAP server",x,"loginInputUrlMessage",x,x)
 else return""},
 $S:2214}
 B.chN.prototype={
@@ -515,21 +515,21 @@ D.arc=new A.aG(31,0,31,0)
 D.aDI=x(["email"],y.s)
 D.aGa=x(["password"],y.s)
 D.a8q=new A.c0(C.fN,1,C.S,-1)
-D.YY=new A.fV(4,C.aI,D.a8q)
+D.YX=new A.fV(4,C.aI,D.a8q)
 D.a8n=new A.c0(C.I,2,C.S,-1)
 D.aPL=new A.fV(4,C.aI,D.a8n)
 D.aTw=new B.b13(null)
-D.Z2=new A.Y(C.hu,D.aTw,null)
+D.Z1=new A.Y(C.hu,D.aTw,null)
 D.aj8=new A.E(0.23921568627450981,0.7372549019607844,0.7372549019607844,0.7372549019607844,C.j)
 D.aae=new A.c6(2,C.U,D.aj8,C.eh,40)
 D.axF=x([D.aae],A.aq("N<c6>"))
 D.aUO=new A.eb(C.kn,C.M)
 D.aWW=new A.iG(C.m,null,null,D.axF,D.aUO)
 D.b8b=new A.b1("login_loading_icon",y.O)
-D.aYC=new A.b3(40,40,C.H6,D.b8b)
+D.aYC=new A.b3(40,40,C.H5,D.b8b)
 D.aYI=new A.b3(null,40,null,null)
 D.b7y=new A.b1("credential_input_form",y.O)
 D.b8a=new A.b1("loginSubmitForm",y.O)
 D.b8c=new A.b1("login_password_input",y.O)
 D.b8d=new A.b1("login_username_input",y.O)})()};
-(a=>{a["d0dEo8yWjkHevYGBROgbDZRmHMA="]=a.current})($__dart_deferred_initializers__);
+(a=>{a["ahJjokEfBl0ymMP6cv5EJAaTB+w="]=a.current})($__dart_deferred_initializers__);
