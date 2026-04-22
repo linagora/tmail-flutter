@@ -5,9 +5,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_
 
 extension NotifyThreadDetailSettingUpdated on MailboxDashBoardController {
   Future<void> notifyThreadDetailSettingUpdated() async {
-    if (Get.isRegistered<LocalSettingsService>()) {
-      await Get.find<LocalSettingsService>().reload();
-    }
+    await Get.find<LocalSettingsService>().reload();
     dispatchThreadDetailUIAction(UpdatedThreadDetailSettingAction());
   }
 }

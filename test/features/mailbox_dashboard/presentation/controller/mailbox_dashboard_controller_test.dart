@@ -80,8 +80,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_service.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
     if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
@@ -201,6 +203,7 @@ const fallbackGenerators = {
   MockSpec<GetAuthenticationInfoInteractor>(),
   MockSpec<GetStoredOidcConfigurationInteractor>(),
   MockSpec<GetTokenOIDCInteractor>(),
+  MockSpec<LocalSettingsService>(fallbackGenerators: fallbackGenerators),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
@@ -308,6 +311,7 @@ void main() {
   final searchEmailInteractor = MockSearchEmailInteractor();
   final searchMoreEmailInteractor = MockSearchMoreEmailInteractor();
   late ThreadController threadController;
+  late MockLocalSettingsService mockLocalSettingsService;
 
   late AdvancedFilterController advancedFilterController;
 
@@ -362,6 +366,10 @@ void main() {
       saveRecentSearchInteractor,
       getAllRecentSearchLatestInteractor);
     Get.put(searchController);
+
+    mockLocalSettingsService = MockLocalSettingsService();
+    when(mockLocalSettingsService.localSettings).thenReturn(PreferencesSetting.initial().obs);
+    Get.put<LocalSettingsService>(mockLocalSettingsService);
 
     Get.testMode = true;
 

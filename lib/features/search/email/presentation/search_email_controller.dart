@@ -164,10 +164,8 @@ class SearchEmailController extends BaseController
 
   late final LocalSettingsService _localSettingsService = Get.find<LocalSettingsService>();
 
-  bool get _isCollapseThreadsEnabled {
-    if (!Get.isRegistered<LocalSettingsService>()) return false;
-    return _localSettingsService.localSettings.value.threadConfig.isEnabled;
-  }
+  bool get _isCollapseThreadsEnabled =>
+      _localSettingsService.localSettings.value.threadConfig.isEnabled;
 
   SearchEmailController(
       this._quickSearchEmailInteractor,
