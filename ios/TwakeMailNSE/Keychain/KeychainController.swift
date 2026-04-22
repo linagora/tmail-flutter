@@ -71,7 +71,7 @@ extension KeychainController {
             }
             return try JSONDecoder().decode(SentryConfig.self, from: configData)
         } catch {
-            TwakeLogger.shared.log(message: "SentryConfig could not be decoded from Keychain")
+            TwakeLogger.shared.log(message: "SentryConfig could not be decoded from Keychain: \(error)")
             return nil
         }
     }
