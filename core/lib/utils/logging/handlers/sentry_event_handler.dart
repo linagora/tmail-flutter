@@ -1,19 +1,19 @@
 import 'package:core/utils/logging/log_handler.dart';
 import 'package:core/utils/logging/log_level.dart';
 import 'package:core/utils/logging/log_record.dart';
-import 'package:core/utils/sentry/sentry_manager.dart';
+import 'package:core/utils/sentry/sentry_reporter.dart';
 
 /// Sends log records to Sentry as events.
 ///
 /// Handles [Level.error] and [Level.critical] only.
 ///
-/// - If the record contains an exception object → [SentryManager.captureException]
-/// - If not → [SentryManager.captureMessage] (semantically correct: a string
+/// - If the record contains an exception object → [SentryReporter.captureException]
+/// - If not → [SentryReporter.captureMessage] (semantically correct: a string
 ///   is not an exception)
 ///
-/// [SentryManager] is injected via constructor for testability.
+/// [SentryReporter] is injected via constructor for testability.
 class SentryEventHandler implements LogHandler {
-  final SentryManager _sentry;
+  final SentryReporter _sentry;
 
   const SentryEventHandler(this._sentry);
 

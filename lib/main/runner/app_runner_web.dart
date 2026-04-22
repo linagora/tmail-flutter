@@ -32,4 +32,5 @@ void _registerLogHandlers() {
       webConsoleEnabled: true,
     ),
   );
+  registerSentryLogHandlers();
 }
