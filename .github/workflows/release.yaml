@@ -178,8 +178,10 @@ jobs:
           # 4. Upload dSYMs (Native code: Swift, Objective-C, C++)
           DSYM_DIR="$XCARCHIVE/dSYMs"
           if [ -d "$DSYM_DIR" ]; then
+            echo "dSYM contents:"
+            ls -la "$DSYM_DIR"
             echo "Uploading dSYMs from $DSYM_DIR..."
-            sentry-cli debug-files upload --include-sources "$DSYM_DIR"
+            sentry-cli debug-files upload --include-sources --log-level info "$DSYM_DIR"
           else
             echo "::error::dSYMs directory not found inside xcarchive at $DSYM_DIR."
             exit 1

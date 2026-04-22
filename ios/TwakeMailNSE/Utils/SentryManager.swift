@@ -75,7 +75,20 @@ class SentryManager {
         }
     }
     
-    /// Set user context cho Sentry
+    /// Adds a breadcrumb to the current Sentry scope.
+    /// Breadcrumbs are accumulated in-memory and automatically attached to the next
+    /// captured error event. Use this for diagnostic checkpoints that provide context
+    /// for real errors — they are NOT sent as standalone events.
+    func addBreadcrumb(message: String, category: String = "nse", level: SentryLevel = .info) {
+        guard isInitialized else { return }
+        let crumb = Breadcrumb()
+        crumb.message = message
+        crumb.category = category
+        crumb.level = level
+        SentrySDK.addBreadcrumb(crumb)
+    }
+
+    /// Set user context for Sentry
     func setSentryUser(_ user: User) {
         guard isInitialized else { return }
         SentrySDK.setUser(user)

@@ -32,7 +32,7 @@ class NotificationService: UNNotificationServiceExtension {
         
         guard let payloadData = request.content.userInfo as? [String: Any],
               !keychainController.retrieveSharingSessions().isEmpty else {
-            SentryManager.shared.capture(message: "NSE: Payload invalid or No Session found in Keychain")
+            SentryManager.shared.addBreadcrumb(message: "NSE: Payload invalid or No Session found in Keychain", level: .warning)
             self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
             return self.notify()
         }
@@ -63,29 +63,34 @@ class NotificationService: UNNotificationServiceExtension {
         let mapStateChanges: [String: [TypeName: String]] = PayloadParser.shared.parsingPayloadNotification(payloadData: payloadData)
         
         if (mapStateChanges.isEmpty) {
-            SentryManager.shared.capture(message: "NSE: Payload parsing returned empty state changes")
+            SentryManager.shared.addBreadcrumb(message: "NSE: Payload parsing returned empty state changes", level: .warning)
             self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
             return self.notify()
         } else {
             guard let currentAccountId = mapStateChanges.keys.first,
                   let keychainSharingSession = keychainController.retrieveSharingSessionFromKeychain(accountId: currentAccountId),
                   keychainSharingSession.tokenOIDC != nil || keychainSharingSession.basicAuth != nil else {
-                SentryManager.shared.capture(message: "NSE: Session missing or invalid credential for account: \(mapStateChanges.keys.first ?? "unknown")")
+                SentryManager.shared.addBreadcrumb(message: "NSE: Session missing or invalid credential for account: \(mapStateChanges.keys.first ?? "unknown")", level: .warning)
                 self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
                 return self.notify()
             }
 
             SentryManager.shared.setSentryUser(keychainSharingSession.sentryUser)
-            
+
             guard let listStateOfAccount = mapStateChanges[currentAccountId],
                   let newEmailDeliveryState = listStateOfAccount[TypeName.emailDelivery] else {
-                SentryManager.shared.capture(message: "NSE: Missing emailDelivery state in payload")
+                SentryManager.shared.addBreadcrumb(message: "NSE: Missing emailDelivery state in payload", level: .warning)
                 self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
                 return self.notify()
             }
-            
-            guard let oldEmailDeliveryState = keychainSharingSession.emailDeliveryState ?? keychainSharingSession.emailState,
-                  newEmailDeliveryState != oldEmailDeliveryState else {
+
+            guard let oldEmailDeliveryState = keychainSharingSession.emailDeliveryState ?? keychainSharingSession.emailState else {
+                SentryManager.shared.addBreadcrumb(message: "NSE: No stored email state for account: \(currentAccountId)", level: .warning)
+                self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
+                return self.notify()
+            }
+
+            guard newEmailDeliveryState != oldEmailDeliveryState else {
                 self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                 return self.notify()
             }
@@ -101,32 +106,27 @@ class NotificationService: UNNotificationServiceExtension {
                 oidcScopes: keychainSharingSession.oidcScopes,
                 isTWP: keychainSharingSession.isTWP,
                 onComplete: { (emails, errors) in
-                    do {
-                        if emails.isEmpty {
-                            self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
-                            return self.notify()
-                        } else {
-                            self.keychainController.updateEmailDeliveryStateToKeychain(
-                                accountId: keychainSharingSession.accountId,
-                                newEmailDeliveryState: newEmailDeliveryState
-                            )
+                    errors.forEach { SentryManager.shared.capture(error: $0) }
 
-                            let mailboxIdsBlockNotification = keychainSharingSession.mailboxIdsBlockNotification ?? []
-
-                            if (mailboxIdsBlockNotification.isEmpty) {
-                                return self.showListNotification(emails: emails)
-                            } else {
-                                let emailFiltered = self.filterEmailsToPushNotification(
-                                    emails: emails,
-                                    mailboxIdsBlockNotification: mailboxIdsBlockNotification)
-                                return self.showListNotification(emails: emailFiltered)
-                            }
-                        }
-                    } catch {
-                        TwakeLogger.shared.log(message: "Error processing emails: \(error)")
-                        SentryManager.shared.capture(error: error)
+                    if emails.isEmpty {
                         self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                         return self.notify()
+                    }
+
+                    self.keychainController.updateEmailDeliveryStateToKeychain(
+                        accountId: keychainSharingSession.accountId,
+                        newEmailDeliveryState: newEmailDeliveryState
+                    )
+
+                    let mailboxIdsBlockNotification = keychainSharingSession.mailboxIdsBlockNotification ?? []
+
+                    if mailboxIdsBlockNotification.isEmpty {
+                        return self.showListNotification(emails: emails)
+                    } else {
+                        let emailFiltered = self.filterEmailsToPushNotification(
+                            emails: emails,
+                            mailboxIdsBlockNotification: mailboxIdsBlockNotification)
+                        return self.showListNotification(emails: emailFiltered)
                     }
                 }
             )
