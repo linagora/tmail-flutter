@@ -112,8 +112,8 @@ class SentryManager implements SentryReporter {
   @override
   void captureMessage(
     String message, {
-    SentryLevel level = SentryLevel.info,
     Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.info,
   }) {
     if (!_isSentryAvailable) return;
 
@@ -148,6 +148,8 @@ class SentryManager implements SentryReporter {
   void addBreadcrumb(
     String message, {
     Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.debug,
+    String? category,
   }) {
     if (!_isSentryAvailable) return;
 
@@ -156,6 +158,8 @@ class SentryManager implements SentryReporter {
         Breadcrumb(
           message: message,
           data: extras,
+          level: level,
+          category: category,
         ),
       );
     } catch (e) {

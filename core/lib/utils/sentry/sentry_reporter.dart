@@ -22,5 +22,7 @@ abstract interface class SentryReporter {
   void addBreadcrumb(
     String message, {
     Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.debug,
+    String? category,
   });
 }
