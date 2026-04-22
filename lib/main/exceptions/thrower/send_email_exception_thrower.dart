@@ -10,15 +10,11 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class SendEmailExceptionThrower extends RemoteExceptionThrower {
   @override
   FutureOr<void> throwException(error, stackTrace) async {
-    logError(
-      'SendEmailExceptionThrower::throwException():error: $error | stackTrace: $stackTrace',
-      exception: error,
-      stackTrace: stackTrace,
-    );
     final networkConnectionController = getBinding<NetworkConnectionController>();
     final realtimeNetworkConnectionStatus = await networkConnectionController?.hasInternetConnection();
     if (realtimeNetworkConnectionStatus == false) {
-      logError('SendEmailExceptionThrower::throwException(): No realtime network connection');
+      // Network loss is a normal user-facing condition, not an application bug.
+      logWarning('SendEmailExceptionThrower::throwException(): No realtime network connection');
       throw const NoNetworkError();
     } else {
       handleDioError(error);
