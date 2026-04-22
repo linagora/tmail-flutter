@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/sentry/sentry_reporter.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
 import 'package:core/utils/sentry/sentry_initializer.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 /// Controls Sentry initialization and error reporting.
-class SentryManager {
+class SentryManager implements SentryReporter {
   SentryManager._();
 
   static final SentryManager instance = SentryManager._();
@@ -57,6 +58,7 @@ class SentryManager {
   }
 
   /// Capture an exception.
+  @override
   void captureException(
     dynamic exception, {
     StackTrace? stackTrace,
@@ -103,6 +105,7 @@ class SentryManager {
   }
 
   /// Capture a text message.
+  @override
   void captureMessage(
     String message, {
     SentryLevel level = SentryLevel.info,
@@ -137,6 +140,7 @@ class SentryManager {
   ///
   /// Breadcrumbs are attached automatically to the next error event —
   /// they consume zero quota on their own.
+  @override
   void addBreadcrumb(
     String message, {
     Map<String, dynamic>? extras,
