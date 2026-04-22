@@ -84,14 +84,7 @@ class SentryInitializer {
   /// Handler executed before sending an event to Sentry.
   ///
   /// - Sanitizes request headers to remove sensitive data.
-  /// - Drops events unless tagged as auth-critical (allowlist).
-  ///   Auth-critical events (e.g. refresh-token failure) must always reach
-  ///   Sentry regardless of error type.
-  ///
-  /// To allowlist an event, add `auth_critical: true` to extras at the call site:
-  /// ```dart
-  /// logError('Refresh token failed', exception: e, extras: {'auth_critical': true});
-  /// ```
+  /// - Deminifies exception stack traces for readability.
   static Future<SentryEvent?> _beforeSendHandler(
     SentryEvent event,
     Hint? hint,

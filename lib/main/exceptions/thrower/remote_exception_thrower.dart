@@ -50,7 +50,9 @@ class RemoteExceptionThrower extends ExceptionThrower {
 
   void _handleDioException(DioException error) {
     logWarning(
-      'RemoteExceptionThrower::_handleDioException():type: ${error.type} | response: ${error.response} | error: ${error.error}',
+      'RemoteExceptionThrower::_handleDioException(): type=${error.type}'
+      ' status=${error.response?.statusCode}'
+      ' underlying=${error.error?.runtimeType}',
     );
 
     if (error.error is RefreshTokenFailedException) {
@@ -61,13 +63,14 @@ class RemoteExceptionThrower extends ExceptionThrower {
     final statusCode = response?.statusCode;
 
     if (response != null) {
-      return _handleDioResponseError(statusCode, response);
+      return _handleDioResponseError(response);
     }
 
     return _handleDioErrorWithoutResponse(error);
   }
 
-  void _handleDioResponseError(int? statusCode, Response response) {
+  void _handleDioResponseError(Response response) {
+    final statusCode = response.statusCode;
     switch (statusCode) {
       case HttpStatus.unauthorized:
         // 401 is handled by auth retry flow — no log needed
@@ -79,6 +82,10 @@ class RemoteExceptionThrower extends ExceptionThrower {
         logWarning('RemoteExceptionThrower: HTTP 502');
         throw BadGateway();
       default:
+        final exception = UnknownRemoteException(
+          code: statusCode,
+          message: response.statusMessage,
+        );
         if (statusCode != null && statusCode >= 400 && statusCode < 500) {
           logWarning('RemoteExceptionThrower: HTTP 4xx ($statusCode)');
         } else if (statusCode != null && statusCode >= 500) {
@@ -86,16 +93,10 @@ class RemoteExceptionThrower extends ExceptionThrower {
         } else {
           logError(
             'RemoteExceptionThrower: unknown HTTP status $statusCode',
-            exception: UnknownRemoteException(
-              code: statusCode,
-              message: response.statusMessage,
-            ),
+            exception: exception,
           );
         }
-        throw UnknownRemoteException(
-          code: statusCode,
-          message: response.statusMessage,
-        );
+        throw exception;
     }
   }
 
