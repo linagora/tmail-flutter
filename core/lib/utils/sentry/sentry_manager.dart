@@ -163,6 +163,8 @@ class SentryManager implements SentryReporter {
         ),
       );
     } catch (e) {
+      // NOTE: Must not route through a log level that the breadcrumb/event
+      // handlers subscribe to, otherwise a throwing Sentry SDK could recurse.
       logWarning('[SentryManager] Add breadcrumb failed: $e');
     }
   }

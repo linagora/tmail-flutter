@@ -20,13 +20,19 @@ class AppLoggerRegistry {
 
   final List<LogHandler> _handlers = [];
 
-  /// Registers [handler] if no handler of the same [runtimeType] exists.
+  /// Registers [handler], replacing any existing handler of the same [runtimeType].
+  ///
+  /// This ensures that re-registering with a new configuration (e.g. a different
+  /// [LogFormatter]) takes effect rather than silently keeping the stale instance.
   void registerHandler(LogHandler handler) {
-    final alreadyRegistered = _handlers.any(
+    final existingIndex = _handlers.indexWhere(
       (h) => h.runtimeType == handler.runtimeType,
     );
-    if (!alreadyRegistered) {
+
+    if (existingIndex == -1) {
       _handlers.add(handler);
+    } else {
+      _handlers[existingIndex] = handler;
     }
   }
 
@@ -37,13 +43,13 @@ class AppLoggerRegistry {
   /// Avoid logging inside the catch block to prevent recursive dispatch loops.
   void dispatch(LogRecord record) {
     for (final handler in _handlers) {
-      if (handler.handles(record.level)) {
-        try {
+      try {
+        if (handler.handles(record.level)) {
           handler.handle(record);
-        } catch (_) {
-          // Logging must not break the application flow.
-          // Avoid logging here to prevent recursive dispatch loops.
         }
+      } catch (_) {
+        // Logging must not break the application flow.
+        // Avoid logging here to prevent recursive dispatch loops.
       }
     }
   }
