@@ -29,7 +29,9 @@ class NotificationService: UNNotificationServiceExtension {
             contentHandler(self.modifiedContent ?? request.content)
             return
         }
-        
+
+        SentryManager.shared.addBreadcrumb(message: "NSE: Received push notification", level: .info)
+
         guard let payloadData = request.content.userInfo as? [String: Any],
               !keychainController.retrieveSharingSessions().isEmpty else {
             SentryManager.shared.capture(message: "NSE: Payload invalid or No Session found in Keychain")
