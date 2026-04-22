@@ -22,18 +22,10 @@ Future<void> runAppGuarded(Future<void> Function() runner) async {
 /// Must be called once at app startup, before any log call is made.
 /// Sentry handlers are registered early — they check [SentryManager.isSentryAvailable]
 /// internally, so calls before Sentry initialises are safe no-ops.
-void registerLogHandlers({
-  required LogFormatter formatter,
-  bool webConsoleEnabled = false,
-}) {
+void registerLogHandlers({required LogFormatter formatter}) {
   final sentry = SentryManager.instance;
   AppLoggerRegistry.instance
-    ..registerHandler(
-      ConsoleLogHandler(
-        formatter: formatter,
-        webConsoleEnabled: webConsoleEnabled,
-      ),
-    )
+    ..registerHandler(ConsoleLogHandler(formatter: formatter))
     ..registerHandler(SentryBreadcrumbHandler(sentry))
     ..registerHandler(SentryEventHandler(sentry));
 }

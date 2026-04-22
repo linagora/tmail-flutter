@@ -15,7 +15,7 @@ void main() {
   group('WebConsoleFormatter.format', () {
     test('critical wraps with red+bold and CRITICAL prefix', () {
       final result = formatter.format(Level.critical, 'msg');
-      expect(result, '$ansiRed${ansiBold}!!!CRITICAL!!! msg$ansiReset');
+      expect(result, '$ansiRed$ansiBold!!!CRITICAL!!! msg$ansiReset');
     });
 
     test('error wraps with red ANSI', () {

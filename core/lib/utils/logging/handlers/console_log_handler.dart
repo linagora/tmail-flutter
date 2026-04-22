@@ -10,24 +10,24 @@ const _appLogName = '[TwakeMail]';
 
 /// Writes log records to the console.
 ///
-/// On web with [webConsoleEnabled], delegates to the browser console API
-/// so that log levels map to the correct console method (error/warn/info/debug).
+/// On web, delegates to the browser console API when either:
+/// - the record was logged with [LogRecord.webConsoleEnabled] = true (per-call opt-in), or
+/// - the app is running in debug mode.
+///
 /// On other platforms, uses [print] — visible only in debug mode.
 ///
 /// The [formatter] is injected via constructor (Dependency Inversion Principle),
 /// allowing platform-specific formatting without branching inside this class.
 class ConsoleLogHandler implements LogHandler {
   final LogFormatter formatter;
-  final bool webConsoleEnabled;
 
-  const ConsoleLogHandler({
-    required this.formatter,
-    this.webConsoleEnabled = false,
-  });
+  const ConsoleLogHandler({required this.formatter});
 
   @override
   bool handles(Level level) {
-    if (webConsoleEnabled && PlatformInfo.isWeb) return true;
+    // Always accept on web — final filtering happens in handle() because
+    // per-record webConsoleEnabled may override the debug-mode gate.
+    if (PlatformInfo.isWeb) return true;
     return BuildUtils.isDebugMode;
   }
 
@@ -35,8 +35,10 @@ class ConsoleLogHandler implements LogHandler {
   void handle(LogRecord record) {
     final formatted = formatter.format(record.level, record.rawMessage);
 
-    if (webConsoleEnabled && PlatformInfo.isWeb) {
-      _printToWebConsole(record.level, formatted);
+    if (PlatformInfo.isWeb) {
+      if (record.webConsoleEnabled || BuildUtils.isDebugMode) {
+        _printToWebConsole(record.level, formatted);
+      }
     } else {
       // ignore: avoid_print
       print('$_appLogName $formatted');

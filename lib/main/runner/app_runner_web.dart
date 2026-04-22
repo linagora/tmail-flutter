@@ -8,10 +8,7 @@ import 'package:tmail_ui_user/main/main_entry.dart';
 import 'package:tmail_ui_user/main/runner/app_runner_base.dart';
 
 Future<void> runAppWithMonitoring(Future<void> Function() runTmail) async {
-  registerLogHandlers(
-    formatter: const WebConsoleFormatter(),
-    webConsoleEnabled: true,
-  );
+  registerLogHandlers(formatter: const WebConsoleFormatter());
 
   await runAppGuarded(() async {
     await EnvLoader.loadEnvFile();
