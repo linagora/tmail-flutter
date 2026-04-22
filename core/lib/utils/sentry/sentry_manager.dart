@@ -64,13 +64,14 @@ class SentryManager implements SentryReporter {
     StackTrace? stackTrace,
     String? message,
     Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.error,
   }) {
     if (!_isSentryAvailable) return;
 
     // Use unawaited to prevent linter warnings about unawaited futures.
     // We do not want the UI to pause while Sentry writes the crash report.
     unawaited(
-      _captureExceptionInternal(exception, stackTrace, message, extras),
+      _captureExceptionInternal(exception, stackTrace, message, extras, level),
     );
   }
 
@@ -79,6 +80,7 @@ class SentryManager implements SentryReporter {
     StackTrace? stackTrace,
     String? message,
     Map<String, dynamic>? extras,
+    SentryLevel level,
   ) async {
     try {
       final hasExtras = extras != null && extras.isNotEmpty;
@@ -91,12 +93,14 @@ class SentryManager implements SentryReporter {
           withScope: (scope) {
             if (hasExtras) scope.setContexts('extras', extras);
             if (hasMessage) scope.setTag('message', message);
+            scope.level = level;
           },
         );
       } else {
         await Sentry.captureException(
           exception,
           stackTrace: stackTrace,
+          withScope: (scope) => scope.level = level,
         );
       }
     } catch (e) {
