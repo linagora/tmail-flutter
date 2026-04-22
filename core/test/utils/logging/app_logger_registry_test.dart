@@ -18,6 +18,10 @@ class _FakeHandler implements LogHandler {
   void handle(LogRecord record) => received.add(record);
 }
 
+class _OtherFakeHandler extends _FakeHandler {
+  _OtherFakeHandler({super.handles});
+}
+
 void main() {
   late AppLoggerRegistry registry;
 
@@ -43,11 +47,9 @@ void main() {
     });
 
     test('registers distinct handler types separately', () {
-      registry.registerHandler(_FakeHandler(handles: (_) => true));
-
-      // Different type via anonymous class is impossible in Dart; use named subclass
-      // This test verifies two instances of the same type count as one.
-      expect(registry.handlerCount, 1);
+      registry.registerHandler(_FakeHandler());
+      registry.registerHandler(_OtherFakeHandler());
+      expect(registry.handlerCount, 2);
     });
   });
 
@@ -56,7 +58,7 @@ void main() {
       final handler = _FakeHandler(handles: (l) => l == Level.error);
       registry.registerHandler(handler);
 
-      final record = const LogRecord(level: Level.error, rawMessage: 'oops');
+      const record = LogRecord(level: Level.error, rawMessage: 'oops');
       registry.dispatch(record);
 
       expect(handler.received, hasLength(1));
@@ -67,7 +69,7 @@ void main() {
       final handler = _FakeHandler(handles: (l) => l == Level.error);
       registry.registerHandler(handler);
 
-      final record = const LogRecord(level: Level.trace, rawMessage: 'verbose');
+      const record = LogRecord(level: Level.trace, rawMessage: 'verbose');
       registry.dispatch(record);
 
       expect(handler.received, isEmpty);
@@ -75,15 +77,15 @@ void main() {
 
     test('dispatches to multiple handlers when both accept the level', () {
       final h1 = _FakeHandler();
-      // Need two distinct types — wrap in subclass approach not possible inline;
-      // use two separate instances of the same type counted as one.
-      // Workaround: verify single handler receives records correctly.
+      final h2 = _OtherFakeHandler();
       registry.registerHandler(h1);
+      registry.registerHandler(h2);
 
-      final record = const LogRecord(level: Level.info, rawMessage: 'hello');
+      const record = LogRecord(level: Level.info, rawMessage: 'hello');
       registry.dispatch(record);
 
       expect(h1.received, hasLength(1));
+      expect(h2.received, hasLength(1));
     });
 
     test('no-op when no handlers registered', () {
