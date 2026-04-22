@@ -3,11 +3,12 @@ import 'package:core/utils/logging/log_level.dart';
 import 'package:core/utils/logging/log_record.dart';
 import 'package:core/utils/sentry/sentry_reporter.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class _FakeSentryReporter implements SentryReporter {
-  final List<({dynamic exception, StackTrace? stackTrace, String? message, Map<String, dynamic>? extras})>
+  final List<({dynamic exception, StackTrace? stackTrace, String? message, Map<String, dynamic>? extras, SentryLevel level})>
       capturedExceptions = [];
-  final List<({String message, Map<String, dynamic>? extras})> capturedMessages = [];
+  final List<({String message, Map<String, dynamic>? extras, SentryLevel level})> capturedMessages = [];
   final List<({String message, Map<String, dynamic>? extras})> capturedBreadcrumbs = [];
 
   @override
@@ -16,18 +17,24 @@ class _FakeSentryReporter implements SentryReporter {
     StackTrace? stackTrace,
     String? message,
     Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.error,
   }) {
     capturedExceptions.add((
       exception: exception,
       stackTrace: stackTrace,
       message: message,
       extras: extras,
+      level: level,
     ));
   }
 
   @override
-  void captureMessage(String message, {Map<String, dynamic>? extras}) {
-    capturedMessages.add((message: message, extras: extras));
+  void captureMessage(
+    String message, {
+    Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.info,
+  }) {
+    capturedMessages.add((message: message, extras: extras, level: level));
   }
 
   @override
@@ -90,6 +97,7 @@ void main() {
       expect(reporter.capturedExceptions.first.stackTrace, st);
       expect(reporter.capturedExceptions.first.message, 'something failed');
       expect(reporter.capturedExceptions.first.extras, {'key': 'val'});
+      expect(reporter.capturedExceptions.first.level, SentryLevel.error);
       expect(reporter.capturedMessages, isEmpty);
     });
   });
@@ -105,6 +113,7 @@ void main() {
 
       expect(reporter.capturedMessages, hasLength(1));
       expect(reporter.capturedMessages.first.message, 'something went wrong');
+      expect(reporter.capturedMessages.first.level, SentryLevel.error);
       expect(reporter.capturedExceptions, isEmpty);
     });
 

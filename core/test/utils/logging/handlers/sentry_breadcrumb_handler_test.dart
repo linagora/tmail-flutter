@@ -3,15 +3,32 @@ import 'package:core/utils/logging/log_level.dart';
 import 'package:core/utils/logging/log_record.dart';
 import 'package:core/utils/sentry/sentry_reporter.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class _FakeSentryReporter implements SentryReporter {
+  final List<dynamic> capturedExceptions = [];
+  final List<String> capturedMessages = [];
   final List<({String message, Map<String, dynamic>? extras})> capturedBreadcrumbs = [];
 
   @override
-  void captureException(dynamic exception, {StackTrace? stackTrace, String? message, Map<String, dynamic>? extras}) {}
+  void captureException(
+    dynamic exception, {
+    StackTrace? stackTrace,
+    String? message,
+    Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.error,
+  }) {
+    capturedExceptions.add(exception);
+  }
 
   @override
-  void captureMessage(String message, {Map<String, dynamic>? extras}) {}
+  void captureMessage(
+    String message, {
+    Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.info,
+  }) {
+    capturedMessages.add(message);
+  }
 
   @override
   void addBreadcrumb(String message, {Map<String, dynamic>? extras}) {
@@ -80,7 +97,6 @@ void main() {
     });
 
     test('does not call captureException or captureMessage', () {
-      // Verified by _FakeSentryReporter having empty lists for those
       const record = LogRecord(
         level: Level.trace,
         rawMessage: 'trace message',
@@ -88,7 +104,8 @@ void main() {
 
       handler.handle(record);
 
-      // Only breadcrumbs should be populated
+      expect(reporter.capturedExceptions, isEmpty);
+      expect(reporter.capturedMessages, isEmpty);
       expect(reporter.capturedBreadcrumbs, hasLength(1));
     });
   });
