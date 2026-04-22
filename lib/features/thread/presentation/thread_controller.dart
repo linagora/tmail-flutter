@@ -446,6 +446,11 @@ class ThreadController extends BaseController with EmailActionController {
         if (previous?.threadConfig == next.threadConfig) return;
         if (searchController.isSearchEmailRunning) {
           _searchEmail(limit: limitEmailFetched);
+        } else if (forceEmailQuery) {
+          getAllEmailAction(
+            forceEmailQuery: forceEmailQuery,
+            limit: limitEmailFetched,
+          );
         }
       },
       fireImmediately: false,
@@ -570,7 +575,7 @@ class ThreadController extends BaseController with EmailActionController {
     logWarning('ThreadController::_handleErrorGetAllOrRefreshChangesEmail():Error: $error');
     if (error is CannotCalculateChangesMethodResponseException) {
       await cachingManager.clearAllEmailAndStateCache();
-      getAllEmailAction();
+      getAllEmailAction(forceEmailQuery: forceEmailQuery);
     } else if (error is MethodLevelErrors) {
       if (currentOverlayContext != null && error.message != null) {
         appToast.showToastErrorMessage(
@@ -698,13 +703,14 @@ class ThreadController extends BaseController with EmailActionController {
   void getAllEmailAction({
     bool getLatestChanges = true,
     bool forceEmailQuery = false,
+    UnsignedInt? limit,
   }) {
     log('ThreadController::_getAllEmailAction:getLatestChanges = $getLatestChanges');
     if (_session != null &&_accountId != null) {
       consumeState(_getEmailsInMailboxInteractor.execute(
         _session!,
         _accountId!,
-        limit: ThreadConstants.defaultLimit,
+        limit: limit ?? ThreadConstants.defaultLimit,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
         emailFilter: getEmailFilterForLoadMailbox(),
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
@@ -715,6 +721,7 @@ class ThreadController extends BaseController with EmailActionController {
         getLatestChanges: getLatestChanges,
         useCache: selectedMailbox?.isCacheable ?? false,
         forceEmailQuery: forceEmailQuery,
+        collapseThreads: _isCollapseThreadsEnabled,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -739,7 +746,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched);
     } else {
-      getAllEmailAction();
+      getAllEmailAction(forceEmailQuery: forceEmailQuery);
     }
   }
 
@@ -852,6 +859,7 @@ class ThreadController extends BaseController with EmailActionController {
         _accountId!,
       ),
       emailFilter: getEmailFilterForLoadMailbox(),
+      collapseThreads: _isCollapseThreadsEnabled,
     ).last;
 
     refreshState.fold(
@@ -903,6 +911,7 @@ class ThreadController extends BaseController with EmailActionController {
             _accountId!,
           ),
           useCache: false,
+          collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
         )
         .last;
 
@@ -948,6 +957,7 @@ class ThreadController extends BaseController with EmailActionController {
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id,
           useCache: useCache,
+          collapseThreads: forceEmailQuery && _isCollapseThreadsEnabled,
         )
       ));
     } else {

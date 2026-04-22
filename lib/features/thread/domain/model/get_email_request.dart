@@ -19,6 +19,7 @@ class GetEmailRequest with EquatableMixin {
   final Properties? properties;
   final EmailId? lastEmailId;
   final bool useCache;
+  final bool? collapseThreads;
 
   GetEmailRequest(
     this.session,
@@ -32,6 +33,7 @@ class GetEmailRequest with EquatableMixin {
       this.properties,
       this.lastEmailId,
       this.useCache = true,
+      this.collapseThreads,
     }
   );
 
@@ -47,5 +49,6 @@ class GetEmailRequest with EquatableMixin {
     lastEmailId,
     filterOption,
     useCache,
+    collapseThreads,
   ];
 }

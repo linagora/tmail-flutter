@@ -853,6 +853,7 @@ void main() {
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated'),
         emailFilter: anyNamed('emailFilter'),
+        collapseThreads: anyNamed('collapseThreads'),
       )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(emailList: emailList))));
 
       when(mockSearchEmailInteractor.execute(
@@ -887,6 +888,7 @@ void main() {
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: threadController.getEmailFilterForLoadMailbox(),
+        collapseThreads: false,
       )).called(1);
 
       verify(mockSearchEmailInteractor.execute(
@@ -1022,6 +1024,7 @@ void main() {
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated'),
         emailFilter: anyNamed('emailFilter'),
+        collapseThreads: anyNamed('collapseThreads'),
       )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(emailList: emailList))));
 
       when(mockSearchEmailInteractor.execute(
@@ -1056,6 +1059,7 @@ void main() {
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: threadController.getEmailFilterForLoadMailbox(),
+        collapseThreads: false,
       )).called(1);
 
       verify(mockSearchEmailInteractor.execute(
@@ -1133,6 +1137,7 @@ void main() {
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated'),
         emailFilter: anyNamed('emailFilter'),
+        collapseThreads: anyNamed('collapseThreads'),
       )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(emailList: emailList))));
 
       when(mockSearchEmailInteractor.execute(
@@ -1167,6 +1172,7 @@ void main() {
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: threadController.getEmailFilterForLoadMailbox(),
+        collapseThreads: false,
       )).called(1);
 
       verify(mockSearchEmailInteractor.execute(

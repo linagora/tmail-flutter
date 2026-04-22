@@ -165,6 +165,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     int? position,
     Set<Comparator>? sort,
     EmailFilter? emailFilter,
+    bool? collapseThreads,
     Properties? propertiesCreated,
   }) async* {
     jmap.State? cachedState;
@@ -196,6 +197,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       position: position,
       sort: sort,
       filter: emailFilter?.filter,
+      collapseThreads: collapseThreads,
       properties: propertiesCreated,
     );
 
@@ -205,6 +207,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
     logTrace(
       'ThreadRepositoryImpl::forceQueryAllEmailsForWeb(): '
+      'collapseThreads = $collapseThreads, '
       'ServerEmailCount = $serverCount, '
       'ServerNotFoundEmailIds = ${notFoundEmailIds.length}, '
       'StateResponse = ${stateResponse?.value}',
@@ -240,6 +243,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       MailboxId? mailboxId,
       Properties? propertiesCreated,
       Filter? filter,
+      bool? collapseThreads,
     }
   ) async {
       final networkEmailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
@@ -250,6 +254,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         sort: sort,
         filter: filter ?? EmailFilterCondition(inMailbox: mailboxId),
         properties: propertiesCreated,
+        collapseThreads: collapseThreads,
       );
       await _updateEmailCache(
         accountId,
@@ -360,6 +365,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
+      bool? collapseThreads,
     }
   ) async* {
     log('ThreadRepositoryImpl::refreshChanges(): $currentState');
@@ -395,9 +401,11 @@ class ThreadRepositoryImpl extends ThreadRepository {
         filter: emailFilter?.filter,
         mailboxId: emailFilter?.mailboxId,
         propertiesCreated: propertiesCreated,
+        collapseThreads: collapseThreads,
       );
       logTrace(
         'ThreadRepositoryImpl::refreshChanges():'
+        'collapseThreads = $collapseThreads, '
         'CountEmailCached = ${newEmailResponse.emailList?.length}, '
         'EmailStateCache = ${newEmailResponse.state?.value}, '
         'InMailboxId = ${emailFilter?.mailboxId?.asString}, '
@@ -410,6 +418,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
     } else {
       logTrace(
         'ThreadRepositoryImpl::refreshChanges():'
+        'collapseThreads = $collapseThreads, '
         'CountEmailCached = ${newEmailResponse.emailList?.length}, '
         'EmailStateCache = ${newEmailResponse.state?.value}, '
         'InMailboxId = ${emailFilter?.mailboxId?.asString}, '
@@ -432,7 +441,9 @@ class ThreadRepositoryImpl extends ThreadRepository {
       );
     }
     logTrace(
-      'ThreadRepositoryImpl::loadMoreEmails(): emailList = ${response.emailList?.length},'
+      'ThreadRepositoryImpl::loadMoreEmails(): '
+      'collapseThreads = ${emailRequest.collapseThreads},'
+      'emailList = ${response.emailList?.length},'
       'notFoundEmailIds = ${response.notFoundEmailIds?.length}, '
       'existNotFoundEmails = ${response.existNotFoundEmails}, '
       'state = ${response.state?.value}',
@@ -449,6 +460,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           position: emailRequest.position,
           sort: emailRequest.sort,
           filter: emailRequest.filter,
+          collapseThreads: emailRequest.collapseThreads,
           properties: emailRequest.properties)
         .then((response) {
           final listEmails = response.emailList;

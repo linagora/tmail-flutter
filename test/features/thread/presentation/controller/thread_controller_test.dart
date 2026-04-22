@@ -339,6 +339,7 @@ void main() {
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
           emailFilter: anyNamed('emailFilter'),
+          collapseThreads: anyNamed('collapseThreads'),
         )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(
           emailList: emailList,
           currentEmailState: State('old-state'))))
@@ -514,6 +515,9 @@ void main() {
           emailFilter: anyNamed('emailFilter'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
+          useCache: anyNamed('useCache'),
+          forceEmailQuery: anyNamed('forceEmailQuery'),
+          collapseThreads: anyNamed('collapseThreads'),
           getLatestChanges: false,
         ));
         
@@ -526,6 +530,9 @@ void main() {
           emailFilter: anyNamed('emailFilter'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
+          useCache: anyNamed('useCache'),
+          forceEmailQuery: anyNamed('forceEmailQuery'),
+          collapseThreads: anyNamed('collapseThreads'),
           getLatestChanges: false,
         ));
       });

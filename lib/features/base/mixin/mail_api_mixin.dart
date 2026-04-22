@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_excepti
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_folder_content_state.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_extension.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/query_email_method_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
@@ -109,6 +110,7 @@ mixin MailAPIMixin on HandleSetErrorMixin, SessionMixin {
     int? position,
     Set<Comparator>? sort,
     Filter? filter,
+    bool? collapseThreads,
     Properties? properties,
   }) async {
     final processingInvocation = ProcessingInvocation();
@@ -118,15 +120,12 @@ mixin MailAPIMixin on HandleSetErrorMixin, SessionMixin {
       processingInvocation,
     );
 
-    final queryEmailMethod = QueryEmailMethod(accountId);
-
-    if (limit != null) queryEmailMethod.addLimit(limit);
-
-    if (position != null && position > 0) queryEmailMethod.addPosition(position);
-
-    if (sort != null) queryEmailMethod.addSorts(sort);
-
-    if (filter != null) queryEmailMethod.addFilters(filter);
+    final queryEmailMethod = QueryEmailMethod(accountId)
+      ..addLimitIfNotNull(limit)
+      ..addPositionIfAvailable(position)
+      ..addSortsIfNotNull(sort)
+      ..addFiltersIfNotNull(filter)
+      ..addCollapseThreadsIfAvailable(collapseThreads);
 
     final queryEmailInvocation =
         jmapRequestBuilder.invocation(queryEmailMethod);

@@ -27,6 +27,7 @@ class GetEmailsInMailboxInteractor {
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
+      bool? collapseThreads,
       bool getLatestChanges = true,
       bool useCache = true,
       bool forceEmailQuery = false,
@@ -44,6 +45,7 @@ class GetEmailsInMailboxInteractor {
           limit: limit,
           sort: sort,
           emailFilter: emailFilter,
+          collapseThreads: collapseThreads,
           propertiesCreated: propertiesCreated,
         );
       } else if (useCache) {

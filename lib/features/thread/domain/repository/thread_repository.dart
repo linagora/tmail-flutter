@@ -50,6 +50,7 @@ abstract class ThreadRepository {
     int? position,
     Set<Comparator>? sort,
     EmailFilter? emailFilter,
+    bool? collapseThreads,
     Properties? propertiesCreated,
   });
 
@@ -63,6 +64,7 @@ abstract class ThreadRepository {
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
+      bool? collapseThreads,
     }
   );
 
