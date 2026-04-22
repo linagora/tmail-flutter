@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/sentry/sentry_config.dart';
@@ -71,11 +72,26 @@ class SentryInitializer {
     // Automatically enable breadcrumbs that are appropriate for the current platform
     options.enableBreadcrumbTrackingForCurrentPlatform();
 
+    // Second line of defence: drop expected network exception types at the SDK
+    // level, even if a call site accidentally reports them as logError.
+    // Primary defence is call-site routing to logWarning (see ADR-0076).
+    options.ignoredExceptionsForType.add(SocketException);
+
     // Assign the callback to process events before sending them to Sentry
     options.beforeSend = _beforeSendHandler;
   }
 
-  /// Handler executed before sending an event to Sentry
+  /// Handler executed before sending an event to Sentry.
+  ///
+  /// - Sanitizes request headers to remove sensitive data.
+  /// - Drops events unless tagged as auth-critical (allowlist).
+  ///   Auth-critical events (e.g. refresh-token failure) must always reach
+  ///   Sentry regardless of error type.
+  ///
+  /// To allowlist an event, add `auth_critical: true` to extras at the call site:
+  /// ```dart
+  /// logError('Refresh token failed', exception: e, extras: {'auth_critical': true});
+  /// ```
   static Future<SentryEvent?> _beforeSendHandler(
     SentryEvent event,
     Hint? hint,
