@@ -8,7 +8,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 class _FakeSentryReporter implements SentryReporter {
   final List<dynamic> capturedExceptions = [];
   final List<String> capturedMessages = [];
-  final List<({String message, Map<String, dynamic>? extras})> capturedBreadcrumbs = [];
+  final List<({String message, Map<String, dynamic>? extras, SentryLevel level, String? category})> capturedBreadcrumbs = [];
 
   @override
   void captureException(
@@ -31,8 +31,18 @@ class _FakeSentryReporter implements SentryReporter {
   }
 
   @override
-  void addBreadcrumb(String message, {Map<String, dynamic>? extras}) {
-    capturedBreadcrumbs.add((message: message, extras: extras));
+  void addBreadcrumb(
+    String message, {
+    Map<String, dynamic>? extras,
+    SentryLevel level = SentryLevel.debug,
+    String? category,
+  }) {
+    capturedBreadcrumbs.add((
+      message: message,
+      extras: extras,
+      level: level,
+      category: category,
+    ));
   }
 }
 
@@ -85,7 +95,7 @@ void main() {
     });
 
     test('passes extras to addBreadcrumb', () {
-      final record = LogRecord(
+      const record = LogRecord(
         level: Level.trace,
         rawMessage: 'cache miss',
         extras: {'source': 'remote'},
@@ -94,6 +104,15 @@ void main() {
       handler.handle(record);
 
       expect(reporter.capturedBreadcrumbs.first.extras, {'source': 'remote'});
+    });
+
+    test('passes SentryLevel.debug and category log to addBreadcrumb', () {
+      const record = LogRecord(level: Level.trace, rawMessage: 'trace event');
+
+      handler.handle(record);
+
+      expect(reporter.capturedBreadcrumbs.first.level, SentryLevel.debug);
+      expect(reporter.capturedBreadcrumbs.first.category, 'log');
     });
 
     test('does not call captureException or captureMessage', () {
