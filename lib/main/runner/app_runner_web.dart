@@ -1,12 +1,17 @@
 import 'package:core/utils/config/env_loader.dart';
+import 'package:core/utils/logging/app_logger_registry.dart';
+import 'package:core/utils/logging/formatters/web_console_formatter.dart';
+import 'package:core/utils/logging/handlers/console_log_handler.dart';
+import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:tmail_ui_user/main.dart';
 import 'package:tmail_ui_user/main/main_entry.dart';
-import 'package:core/utils/sentry/sentry_manager.dart';
 import 'package:tmail_ui_user/main/runner/app_runner_base.dart';
 
 Future<void> runAppWithMonitoring(Future<void> Function() runTmail) async {
+  _registerLogHandlers();
+
   await runAppGuarded(() async {
     await EnvLoader.loadEnvFile();
 
@@ -18,4 +23,13 @@ Future<void> runAppWithMonitoring(Future<void> Function() runTmail) async {
       fallBackRunner: runTmail,
     );
   });
+}
+
+void _registerLogHandlers() {
+  AppLoggerRegistry.instance.registerHandler(
+    const ConsoleLogHandler(
+      formatter: WebConsoleFormatter(),
+      webConsoleEnabled: true,
+    ),
+  );
 }
