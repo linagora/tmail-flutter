@@ -59,6 +59,7 @@ LogRecord buildLogRecord({
   Object? exception,
   StackTrace? stackTrace,
   Map<String, dynamic>? extras,
+  bool webConsoleEnabled = false,
 }) {
   final rawMessage = _buildRawMessage(message, exception, extras, stackTrace);
   return LogRecord(
@@ -67,6 +68,7 @@ LogRecord buildLogRecord({
     exception: exception,
     stackTrace: stackTrace,
     extras: extras,
+    webConsoleEnabled: webConsoleEnabled,
   );
 }
 

@@ -19,7 +19,7 @@ class _FakeHandler implements LogHandler {
 }
 
 class _OtherFakeHandler extends _FakeHandler {
-  _OtherFakeHandler({super.handles});
+  _OtherFakeHandler() : super(handles: (_) => true);
 }
 
 void main() {

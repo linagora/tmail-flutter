@@ -5,20 +5,15 @@ export 'package:core/utils/logging/log_level.dart' show Level;
 
 /// Public logging API. All log calls delegate to [AppLoggerRegistry].
 ///
-/// Call sites are unchanged — the public function signatures are stable
-/// across all 188+ existing usages.
-///
-/// Note: [webConsoleEnabled] on every function is deprecated. Web console
-/// output is now controlled globally by [ConsoleLogHandler] registered at
-/// startup — per-call overrides are no longer supported. The parameter is
-/// kept for source compatibility and will be removed in a future release.
+/// [webConsoleEnabled] forces output to the browser console regardless of
+/// build mode — useful for diagnostics that must be visible in release/profile
+/// builds on web. Defaults to false (web console output follows debug mode).
 
 void logError(
   String? message, {
   Object? exception,
   StackTrace? stackTrace,
   Map<String, dynamic>? extras,
-  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
   _dispatch(
@@ -27,6 +22,7 @@ void logError(
     exception: exception,
     stackTrace: stackTrace,
     extras: extras,
+    webConsoleEnabled: webConsoleEnabled,
   );
 }
 
@@ -35,7 +31,6 @@ void logCritical(
   Object? exception,
   StackTrace? stackTrace,
   Map<String, dynamic>? extras,
-  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
   _dispatch(
@@ -44,48 +39,49 @@ void logCritical(
     exception: exception,
     stackTrace: stackTrace,
     extras: extras,
+    webConsoleEnabled: webConsoleEnabled,
   );
 }
 
 void logWarning(
   String? message, {
-  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
-  _dispatch(message, level: Level.warning);
+  _dispatch(message, level: Level.warning, webConsoleEnabled: webConsoleEnabled);
 }
 
 void logInfo(
   String? message, {
-  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
-  _dispatch(message, level: Level.info);
+  _dispatch(message, level: Level.info, webConsoleEnabled: webConsoleEnabled);
 }
 
 void logDebug(
   String? message, {
-  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) {
-  _dispatch(message, level: Level.debug);
+  _dispatch(message, level: Level.debug, webConsoleEnabled: webConsoleEnabled);
 }
 
 void logTrace(
   String? message, {
-  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
   Map<String, dynamic>? extras,
 }) {
-  _dispatch(message, level: Level.trace, extras: extras);
+  _dispatch(
+    message,
+    level: Level.trace,
+    extras: extras,
+    webConsoleEnabled: webConsoleEnabled,
+  );
 }
 
 void log(
   String? message, {
-  @Deprecated('Web console output is now controlled by ConsoleLogHandler at startup')
   bool webConsoleEnabled = false,
 }) =>
-    logInfo(message);
+    logInfo(message, webConsoleEnabled: webConsoleEnabled);
 
 void _dispatch(
   String? message, {
@@ -93,6 +89,7 @@ void _dispatch(
   Object? exception,
   StackTrace? stackTrace,
   Map<String, dynamic>? extras,
+  bool webConsoleEnabled = false,
 }) {
   final record = buildLogRecord(
     level: level,
@@ -100,6 +97,7 @@ void _dispatch(
     exception: exception,
     stackTrace: stackTrace,
     extras: extras,
+    webConsoleEnabled: webConsoleEnabled,
   );
   AppLoggerRegistry.instance.dispatch(record);
 }
