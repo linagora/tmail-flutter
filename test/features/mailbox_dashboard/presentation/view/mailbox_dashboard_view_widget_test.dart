@@ -83,10 +83,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_dashboard_view_web.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/services/local_settings_service.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
@@ -215,7 +213,6 @@ const fallbackGenerators = {
   MockSpec<GetAuthenticationInfoInteractor>(),
   MockSpec<GetStoredOidcConfigurationInteractor>(),
   MockSpec<GetTokenOIDCInteractor>(),
-  MockSpec<LocalSettingsService>(fallbackGenerators: fallbackGenerators),
 ])
 void main() {
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
@@ -311,7 +308,6 @@ void main() {
   late MailboxController mailboxController;
   late ThreadController threadController;
   late QuotasController quotasController;
-  late MockLocalSettingsService mockLocalSettingsService;
 
   Widget makeTestableWidget({required Widget child}) {
     return GetMaterialApp(
@@ -372,10 +368,6 @@ void main() {
       when(downloadController.downloadUIAction).thenAnswer((_) => Rxn(DownloadUIAction.idle));
       final isLabelSettingEnabled = RxBool(false);
       when(labelController.isLabelSettingEnabled).thenReturn(isLabelSettingEnabled);
-
-      mockLocalSettingsService = MockLocalSettingsService();
-      when(mockLocalSettingsService.localSettings).thenReturn(PreferencesSetting.initial().obs);
-      Get.put<LocalSettingsService>(mockLocalSettingsService);
 
       searchController = SearchController(
         quickSearchEmailInteractor,

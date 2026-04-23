@@ -1,42 +1,41 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_settings_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
+import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 
+/// Responsible for loading local settings from cache on startup and pushing
+/// the result into [localSettingsNotifierProvider] so all Riverpod consumers
+/// receive the initial value automatically.
 class LocalSettingsService extends GetxService {
   final GetLocalSettingsInteractor _getLocalSettingsInteractor;
 
   LocalSettingsService(this._getLocalSettingsInteractor);
 
-  final localSettings = PreferencesSetting.initial().obs;
-
-  Future<void>? _pendingLoad;
-
   @override
   void onInit() {
     super.onInit();
-    reload();
+    _loadInitialSettings();
   }
 
-  Future<void> reload() => _pendingLoad ??= _loadLocalSettings()
-      .whenComplete(() => _pendingLoad = null);
-
-  Future<void> _loadLocalSettings() {
+  Future<void> _loadInitialSettings() {
     return _getLocalSettingsInteractor.execute().last.then(
       (result) => result.fold(
         (failure) => logWarning(
-          'LocalSettingsService::_loadLocalSettings:failure: $failure',
+          'LocalSettingsService::_loadInitialSettings:failure: $failure',
         ),
         (success) {
           if (success is GetLocalSettingsSuccess) {
-            localSettings.value = success.preferencesSetting;
+            appProviderContainer
+                .read(localSettingsNotifierProvider.notifier)
+                .update(success.preferencesSetting);
           }
         },
       ),
     ).catchError((error, stackTrace) {
       logWarning(
-        'LocalSettingsService::_loadLocalSettings:error: $error | stackTrace: $stackTrace',
+        'LocalSettingsService::_loadInitialSettings:error: $error | stackTrace: $stackTrace',
       );
     });
   }

@@ -176,9 +176,6 @@ class MailboxDashBoardBindings extends BaseBindings {
   void dependencies() {
     CleanupBindings().dependencies();
     super.dependencies();
-    Get.put(LocalSettingsService(
-      Get.find<GetLocalSettingsInteractor>(),
-    ));
     SendingQueueBindings().dependencies();
     MailboxBindings().dependencies();
     ThreadBindings().dependencies();
@@ -190,6 +187,10 @@ class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsController() {
+    // Must be registered first so [localSettingsNotifierProvider] is populated
+    // before any controller reads local settings.
+    Get.put(LocalSettingsService(Get.find<GetLocalSettingsInteractor>()));
+
     Get.put(AppGridDashboardController(
       Get.find<GetAppDashboardConfigurationInteractor>(),
       Get.find<GetAppGridLinagraEcosystemInteractor>(),

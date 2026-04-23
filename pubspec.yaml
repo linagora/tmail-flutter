@@ -272,6 +272,8 @@ dependencies:
 
   sentry_dio: 9.8.0
 
+  flutter_riverpod: ^2.6.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
