@@ -1,6 +1,7 @@
 /// IO-specific FCM receiver (non-web platforms).
 /// Checks at runtime whether to use Firebase (mobile) or stub (desktop).
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:core/utils/app_logger.dart';
@@ -25,10 +26,14 @@ class FcmReceiver {
   static const int MAX_COUNT_RETRY_TO_GET_FCM_TOKEN = 3;
 
   static bool get _isMobile => Platform.isIOS || Platform.isAndroid;
+  StreamSubscription<String>? _tokenRefreshSubscription;
+  String? _lastToken;
 
   Future onInitialFcmListener() async {
     if (!_isMobile) {
-      log('FcmReceiver::onInitialFcmListener: FCM not supported on desktop, using WebSocket instead');
+      log(
+        'FcmReceiver::onInitialFcmListener: FCM not supported on desktop, using WebSocket instead',
+      );
       return;
     }
 
@@ -43,23 +48,35 @@ class FcmReceiver {
   Future<String?> _getInitialToken() async {
     try {
       final token = await FirebaseMessaging.instance.getToken();
-      log('FcmReceiver::_getInitialToken:token: $token');
+      log('FcmReceiver::_getInitialToken:hasToken: ${token != null}');
       return token;
     } catch (e) {
-      logWarning('FcmReceiver::_getInitialToken: TYPE = ${e.runtimeType} | Exception = $e');
+      logWarning(
+        'FcmReceiver::_getInitialToken: TYPE = ${e.runtimeType} | Exception = $e',
+      );
       return null;
     }
   }
 
   Future _onHandleFcmToken() async {
     final token = await _getInitialToken();
+    _lastToken = token;
     FcmService.instance.handleToken(token);
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-      log('FcmReceiver::_onHandleFcmToken:onTokenRefresh: $newToken');
-      if (newToken != token) {
-        FcmService.instance.handleToken(newToken);
-      }
-    });
+    await _tokenRefreshSubscription?.cancel();
+    _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh
+        .listen((newToken) {
+          log('FcmReceiver::_onHandleFcmToken:onTokenRefresh: token changed');
+          if (newToken != _lastToken) {
+            _lastToken = newToken;
+            FcmService.instance.handleToken(newToken);
+          }
+        });
+  }
+
+  Future<void> dispose() async {
+    await _tokenRefreshSubscription?.cancel();
+    _tokenRefreshSubscription = null;
+    _lastToken = null;
   }
 }

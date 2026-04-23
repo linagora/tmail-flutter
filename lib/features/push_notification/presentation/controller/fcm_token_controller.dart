@@ -1,4 +1,3 @@
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -26,7 +25,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
 class FcmTokenController extends PushBaseController {
-
   FcmTokenController._internal();
 
   static final FcmTokenController _instance = FcmTokenController._internal();
@@ -37,27 +35,42 @@ class FcmTokenController extends PushBaseController {
   static const int extensionTimeExpire = 7;
 
   StoreFirebaseRegistrationInteractor? _storeFirebaseRegistrationInteractor;
-  GetFirebaseRegistrationByDeviceIdInteractor? _getFirebaseRegistrationByDeviceIdInteractor;
-  RegisterNewFirebaseRegistrationTokenInteractor? _registerNewFirebaseRegistrationTokenInteractor;
-  GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
-  UpdateFirebaseRegistrationTokenInteractor? _updateFirebaseRegistrationTokenInteractor;
-  DeleteFirebaseRegistrationCacheInteractor? _deleteFirebaseRegistrationCacheInteractor;
+  GetFirebaseRegistrationByDeviceIdInteractor?
+  _getFirebaseRegistrationByDeviceIdInteractor;
+  RegisterNewFirebaseRegistrationTokenInteractor?
+  _registerNewFirebaseRegistrationTokenInteractor;
+  GetStoredFirebaseRegistrationInteractor?
+  _getStoredFirebaseRegistrationInteractor;
+  UpdateFirebaseRegistrationTokenInteractor?
+  _updateFirebaseRegistrationTokenInteractor;
+  DeleteFirebaseRegistrationCacheInteractor?
+  _deleteFirebaseRegistrationCacheInteractor;
 
   void initialBindingInteractor() {
-    _storeFirebaseRegistrationInteractor = getBinding<StoreFirebaseRegistrationInteractor>();
-    _getFirebaseRegistrationByDeviceIdInteractor = getBinding<GetFirebaseRegistrationByDeviceIdInteractor>();
-    _registerNewFirebaseRegistrationTokenInteractor = getBinding<RegisterNewFirebaseRegistrationTokenInteractor>();
-    _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
-    _updateFirebaseRegistrationTokenInteractor = getBinding<UpdateFirebaseRegistrationTokenInteractor>();
-    _deleteFirebaseRegistrationCacheInteractor = getBinding<DeleteFirebaseRegistrationCacheInteractor>();
+    _storeFirebaseRegistrationInteractor =
+        getBinding<StoreFirebaseRegistrationInteractor>();
+    _getFirebaseRegistrationByDeviceIdInteractor =
+        getBinding<GetFirebaseRegistrationByDeviceIdInteractor>();
+    _registerNewFirebaseRegistrationTokenInteractor =
+        getBinding<RegisterNewFirebaseRegistrationTokenInteractor>();
+    _getStoredFirebaseRegistrationInteractor =
+        getBinding<GetStoredFirebaseRegistrationInteractor>();
+    _updateFirebaseRegistrationTokenInteractor =
+        getBinding<UpdateFirebaseRegistrationTokenInteractor>();
+    _deleteFirebaseRegistrationCacheInteractor =
+        getBinding<DeleteFirebaseRegistrationCacheInteractor>();
   }
 
   void onFcmTokenChanged(String? newToken) {
-    log('FcmTokenController::onFcmTokenChanged():newToken: $newToken');
+    log(
+      'FcmTokenController::onFcmTokenChanged():hasToken: ${newToken != null}',
+    );
     if (newToken != null) {
       _getFirebaseRegistrationFromServer(
         newFcmToken: FcmToken(newToken),
-        deviceClientId: DeviceClientId(FcmUtils.instance.hashTokenToDeviceId(newToken))
+        deviceClientId: DeviceClientId(
+          FcmUtils.instance.hashTokenToDeviceId(newToken),
+        ),
       );
     } else {
       _getStoredFirebaseRegistrationFromCache();
@@ -66,14 +79,14 @@ class FcmTokenController extends PushBaseController {
 
   void _getFirebaseRegistrationFromServer({
     required DeviceClientId deviceClientId,
-    FcmToken? newFcmToken
+    FcmToken? newFcmToken,
   }) {
     if (_getFirebaseRegistrationByDeviceIdInteractor != null) {
       consumeState(
         _getFirebaseRegistrationByDeviceIdInteractor!.execute(
           deviceClientId: deviceClientId,
-          newFcmToken: newFcmToken
-        )
+          newFcmToken: newFcmToken,
+        ),
       );
     } else if (newFcmToken != null) {
       _registerNewFirebaseRegistrationToken(newFcmToken);
@@ -86,42 +99,60 @@ class FcmTokenController extends PushBaseController {
     }
   }
 
-  void _storeFirebaseRegistrationToCache(FirebaseRegistration firebaseRegistration){
+  void _storeFirebaseRegistrationToCache(
+    FirebaseRegistration firebaseRegistration,
+  ) {
     if (_storeFirebaseRegistrationInteractor != null) {
-      consumeState(_storeFirebaseRegistrationInteractor!.execute(firebaseRegistration));
+      consumeState(
+        _storeFirebaseRegistrationInteractor!.execute(firebaseRegistration),
+      );
     }
   }
 
-  bool _isFirebaseRegistrationTokenExpired(FirebaseRegistration firebaseRegistration) {
-    log('FcmTokenController::_isFirebaseRegistrationTokenExpired():firebaseRegistration: $firebaseRegistration');
+  bool _isFirebaseRegistrationTokenExpired(
+    FirebaseRegistration firebaseRegistration,
+  ) {
+    log(
+      'FcmTokenController::_isFirebaseRegistrationTokenExpired():registrationId: ${firebaseRegistration.id}',
+    );
     if (firebaseRegistration.expires != null) {
-      final expireTimeLocal = firebaseRegistration.expires!.value.value.toLocal();
+      final expireTimeLocal = firebaseRegistration.expires!.value.value
+          .toLocal();
       final currentTime = DateTime.now();
-      log('FcmTokenController::_validateFirebaseRegistrationTokenExpired():expireTimeLocal: $expireTimeLocal | currentTime: $currentTime');
+      log(
+        'FcmTokenController::_validateFirebaseRegistrationTokenExpired():expireTimeLocal: $expireTimeLocal | currentTime: $currentTime',
+      );
       return FcmUtils.instance.checkExpirationTimeWithinGivenPeriod(
         expiredTime: expireTimeLocal,
         currentTime: currentTime,
         limitOffsetTime: limitedTimeToExpire,
         offsetTimeUnit: BuildUtils.isDebugMode
-          ? OffsetTimeUnit.minute
-          : OffsetTimeUnit.day
+            ? OffsetTimeUnit.minute
+            : OffsetTimeUnit.day,
       );
     } else {
       return true;
     }
   }
 
-  void _updateNewExpiredTimeForFirebaseRegistration(FirebaseRegistration firebaseRegistration) {
-    log('FcmTokenController::_updateNewExpiredTimeForFirebaseRegistration():firebaseRegistration: $firebaseRegistration');
-    if (_updateFirebaseRegistrationTokenInteractor != null && firebaseRegistration.id != null) {
-      final newExpiredTime = DateTime.now().add(const Duration(days: extensionTimeExpire));
+  void _updateNewExpiredTimeForFirebaseRegistration(
+    FirebaseRegistration firebaseRegistration,
+  ) {
+    log(
+      'FcmTokenController::_updateNewExpiredTimeForFirebaseRegistration():registrationId: ${firebaseRegistration.id}',
+    );
+    if (_updateFirebaseRegistrationTokenInteractor != null &&
+        firebaseRegistration.id != null) {
+      final newExpiredTime = DateTime.now().add(
+        const Duration(days: extensionTimeExpire),
+      );
       consumeState(
         _updateFirebaseRegistrationTokenInteractor!.execute(
           UpdateTokenExpiredTimeRequest(
             firebaseRegistration.id!,
             FirebaseRegistrationExpiredTime(UTCDate(newExpiredTime)),
-          )
-        )
+          ),
+        ),
       );
     }
   }
@@ -130,22 +161,23 @@ class FcmTokenController extends PushBaseController {
     final generateCreationId = Id(const Uuid().v4());
     final firebaseRegistration = FirebaseRegistration(
       token: fcmToken,
-      deviceClientId: DeviceClientId(FcmUtils.instance.hashTokenToDeviceId(fcmToken.value)),
-      types: FcmUtils.defaultFirebaseRegistrationTypes
+      deviceClientId: DeviceClientId(
+        FcmUtils.instance.hashTokenToDeviceId(fcmToken.value),
+      ),
+      types: FcmUtils.defaultFirebaseRegistrationTypes,
     );
-    log('FcmTokenController::_registerNewFirebaseRegistrationToken():generateCreationId: $generateCreationId | firebaseRegistration: $firebaseRegistration');
+    log(
+      'FcmTokenController::_registerNewFirebaseRegistrationToken():generateCreationId: $generateCreationId',
+    );
     if (_registerNewFirebaseRegistrationTokenInteractor != null) {
       consumeState(
         _registerNewFirebaseRegistrationTokenInteractor!.execute(
-          RegisterNewTokenRequest(
-            generateCreationId,
-            firebaseRegistration
-          )
-        )
+          RegisterNewTokenRequest(generateCreationId, firebaseRegistration),
+        ),
       );
     }
   }
-  
+
   void _deleteFirebaseRegistrationInCache() {
     if (_deleteFirebaseRegistrationCacheInteractor != null) {
       consumeState(_deleteFirebaseRegistrationCacheInteractor!.execute());
@@ -155,7 +187,8 @@ class FcmTokenController extends PushBaseController {
   @override
   void handleFailureViewState(Failure failure) {
     log('FcmTokenController::_handleFailureViewState(): $failure');
-    if (failure is GetFirebaseRegistrationByDeviceIdFailure && failure.newFcmToken != null) {
+    if (failure is GetFirebaseRegistrationByDeviceIdFailure &&
+        failure.newFcmToken != null) {
       _registerNewFirebaseRegistrationToken(failure.newFcmToken!);
     } else if (failure is RegisterNewFirebaseRegistrationTokenFailure) {
       _deleteFirebaseRegistrationInCache();
@@ -167,9 +200,13 @@ class FcmTokenController extends PushBaseController {
     log('FcmTokenController::_handleSuccessViewState(): $success');
     if (success is GetFirebaseRegistrationByDeviceIdSuccess &&
         _isFirebaseRegistrationTokenExpired(success.firebaseRegistration)) {
-      _updateNewExpiredTimeForFirebaseRegistration(success.firebaseRegistration);
+      _updateNewExpiredTimeForFirebaseRegistration(
+        success.firebaseRegistration,
+      );
     } else if (success is GetStoredFirebaseRegistrationSuccess) {
-      _getFirebaseRegistrationFromServer(deviceClientId: success.firebaseRegistration.deviceClientId!);
+      _getFirebaseRegistrationFromServer(
+        deviceClientId: success.firebaseRegistration.deviceClientId!,
+      );
     } else if (success is RegisterNewFirebaseRegistrationTokenSuccess) {
       _storeFirebaseRegistrationToCache(success.firebaseRegistration);
     }

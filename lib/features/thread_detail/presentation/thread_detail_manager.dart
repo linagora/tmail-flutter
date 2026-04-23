@@ -22,7 +22,7 @@ class ThreadDetailManager extends ReloadableController {
 
   final GetThreadDetailStatusInteractor _getThreadDetailStatusInteractor;
 
-  ThreadDetailManager(this._getThreadDetailStatusInteractor);  
+  ThreadDetailManager(this._getThreadDetailStatusInteractor);
 
   final availableThreadIds = RxList<ThreadId>();
   final currentMobilePageViewIndex = 0.obs;
@@ -54,25 +54,27 @@ class ThreadDetailManager extends ReloadableController {
     consumeState(_getThreadDetailStatusInteractor.execute());
     appLifecycleListener = AppLifecycleListener(
       onResume: () {
-        if (threadDetailSettingStatus.value == ThreadDetailSettingStatus.loading) {
+        if (threadDetailSettingStatus.value ==
+            ThreadDetailSettingStatus.loading) {
           return;
         }
 
         consumeState(_getThreadDetailStatusInteractor.execute());
       },
     );
-    ever(mailboxDashBoardController.threadDetailUIAction, (action) {
-      if (action is UpdatedThreadDetailSettingAction) {
-        consumeState(_getThreadDetailStatusInteractor.execute());
-      }
-      // Reset [threadDetailUIAction] to original value
-      mailboxDashBoardController.dispatchThreadDetailUIAction(
-        ThreadDetailUIAction(),
-      );
-    });
-    ever(
-      mailboxDashBoardController.dashboardRoute,
-      (route) {
+    trackWorker(
+      ever(mailboxDashBoardController.threadDetailUIAction, (action) {
+        if (action is UpdatedThreadDetailSettingAction) {
+          consumeState(_getThreadDetailStatusInteractor.execute());
+        }
+        // Reset [threadDetailUIAction] to original value
+        mailboxDashBoardController.dispatchThreadDetailUIAction(
+          ThreadDetailUIAction(),
+        );
+      }),
+    );
+    trackWorker(
+      ever(mailboxDashBoardController.dashboardRoute, (route) {
         final selectedEmail = mailboxDashBoardController.selectedEmail.value;
         if (route != DashboardRoutes.threadDetailed || selectedEmail == null) {
           currentMobilePageViewIndex.value = -1;
@@ -82,12 +84,18 @@ class ThreadDetailManager extends ReloadableController {
           return;
         }
 
-        initializeThreadDetailManager(
-          currentDisplayedEmails,
-          selectedEmail,
-        );
-      },
+        initializeThreadDetailManager(currentDisplayedEmails, selectedEmail);
+      }),
     );
+  }
+
+  @override
+  void onClose() {
+    appLifecycleListener?.dispose();
+    appLifecycleListener = null;
+    pageController?.dispose();
+    pageController = null;
+    super.onClose();
   }
 
   @override

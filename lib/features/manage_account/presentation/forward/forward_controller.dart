@@ -37,27 +37,29 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ForwardController extends BaseController {
-
   GetForwardInteractor? _getForwardInteractor;
   DeleteRecipientInForwardingInteractor? _deleteRecipientInForwardingInteractor;
   AddRecipientsInForwardingInteractor? _addRecipientsInForwardingInteractor;
   EditLocalCopyInForwardingInteractor? _editLocalCopyInForwardingInteractor;
 
-  final accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final accountDashBoardController =
+      Get.find<ManageAccountDashBoardController>();
 
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final listRecipientForward = RxList<RecipientForward>();
   final currentForward = Rxn<TMailForward>();
   final forwardWarningBannerState = Rxn<BannerState>();
 
-  bool get currentForwardLocalCopyState => currentForward.value?.localCopy ?? false;
+  bool get currentForwardLocalCopyState =>
+      currentForward.value?.localCopy ?? false;
 
   late ForwardRecipientController recipientController;
 
   ForwardController() {
     recipientController = ForwardRecipientController(
       accountId: accountDashBoardController.accountId.value,
-      session: accountDashBoardController.sessionCurrent);
+      session: accountDashBoardController.sessionCurrent,
+    );
   }
 
   @override
@@ -66,9 +68,12 @@ class ForwardController extends BaseController {
     registerListenerWorker();
     try {
       _getForwardInteractor = Get.find<GetForwardInteractor>();
-      _deleteRecipientInForwardingInteractor = Get.find<DeleteRecipientInForwardingInteractor>();
-      _addRecipientsInForwardingInteractor = Get.find<AddRecipientsInForwardingInteractor>();
-      _editLocalCopyInForwardingInteractor = Get.find<EditLocalCopyInForwardingInteractor>();
+      _deleteRecipientInForwardingInteractor =
+          Get.find<DeleteRecipientInForwardingInteractor>();
+      _addRecipientsInForwardingInteractor =
+          Get.find<AddRecipientsInForwardingInteractor>();
+      _editLocalCopyInForwardingInteractor =
+          Get.find<EditLocalCopyInForwardingInteractor>();
     } catch (e) {
       logWarning('ForwardController::onInit(): ${e.toString()}');
     }
@@ -116,7 +121,11 @@ class ForwardController extends BaseController {
 
   void _getForward() {
     if (_getForwardInteractor != null) {
-      consumeState(_getForwardInteractor!.execute(accountDashBoardController.accountId.value!));
+      consumeState(
+        _getForwardInteractor!.execute(
+          accountDashBoardController.accountId.value!,
+        ),
+      );
     }
   }
 
@@ -132,13 +141,17 @@ class ForwardController extends BaseController {
     MessageDialogActionManager().showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).deleteRecipient,
-      AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
+      AppLocalizations.of(
+        context,
+      ).messageConfirmationDialogDeleteRecipientForward(emailAddress),
       AppLocalizations.of(context).remove,
       cancelTitle: AppLocalizations.of(context).cancel,
       onCloseButtonAction: popBack,
       onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
       alignCenter: true,
-      dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
+      dialogMargin: MediaQuery.paddingOf(
+        context,
+      ).add(const EdgeInsets.only(bottom: 12)),
     );
   }
 
@@ -147,44 +160,56 @@ class ForwardController extends BaseController {
     if (accountId != null &&
         currentForward.value != null &&
         _deleteRecipientInForwardingInteractor != null) {
-      consumeState(_deleteRecipientInForwardingInteractor!.execute(
+      consumeState(
+        _deleteRecipientInForwardingInteractor!.execute(
           accountId,
           DeleteRecipientInForwardingRequest(
-              currentForward: currentForward.value!,
-              listRecipientDeleted: listRecipients)));
+            currentForward: currentForward.value!,
+            listRecipientDeleted: listRecipients,
+          ),
+        ),
+      );
     }
   }
 
-  void _handleDeleteRecipientSuccess(DeleteRecipientInForwardingSuccess success) {
+  void _handleDeleteRecipientSuccess(
+    DeleteRecipientInForwardingSuccess success,
+  ) {
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageDeleteRecipientSuccessfully);
+        AppLocalizations.of(
+          currentContext!,
+        ).toastMessageDeleteRecipientSuccessfully,
+      );
     }
     selectionMode.value = SelectMode.INACTIVE;
     updateTMailForward(success.forward);
   }
 
   List<RecipientForward> get listRecipientForwardSelected =>
-    listRecipientForward
-      .where((recipient) => recipient.selectMode == SelectMode.ACTIVE)
-      .toList();
+      listRecipientForward
+          .where((recipient) => recipient.selectMode == SelectMode.ACTIVE)
+          .toList();
 
-  bool get isAllUnSelected =>
-    listRecipientForward.every((recipient) => recipient.selectMode == SelectMode.INACTIVE);
+  bool get isAllUnSelected => listRecipientForward.every(
+    (recipient) => recipient.selectMode == SelectMode.INACTIVE,
+  );
 
-  bool get isAllSelected =>
-    listRecipientForward.every((recipient) => recipient.selectMode == SelectMode.ACTIVE);
+  bool get isAllSelected => listRecipientForward.every(
+    (recipient) => recipient.selectMode == SelectMode.ACTIVE,
+  );
 
   bool get _isExistRecipientSameServerDomain =>
-    listRecipientForward.any((recipient) {
-      final internalDomain = accountDashBoardController.sessionCurrent?.internalDomain ?? '';
-      final isSameDomain = EmailUtils.isSameDomain(
-        emailAddress: recipient.emailAddress.emailAddress,
-        internalDomain: internalDomain
-      );
-      return !isSameDomain;
-    });
+      listRecipientForward.any((recipient) {
+        final internalDomain =
+            accountDashBoardController.sessionCurrent?.internalDomain ?? '';
+        final isSameDomain = EmailUtils.isSameDomain(
+          emailAddress: recipient.emailAddress.emailAddress,
+          internalDomain: internalDomain,
+        );
+        return !isSameDomain;
+      });
 
   void selectRecipientForward(RecipientForward recipientForward) {
     clearInputFocus();
@@ -193,7 +218,9 @@ class ForwardController extends BaseController {
       selectionMode.value = SelectMode.ACTIVE;
     }
 
-    final matchedRecipientForward = listRecipientForward.indexOf(recipientForward);
+    final matchedRecipientForward = listRecipientForward.indexOf(
+      recipientForward,
+    );
     if (matchedRecipientForward >= 0) {
       final newRecipientForward = recipientForward.toggleSelection();
       listRecipientForward[matchedRecipientForward] = newRecipientForward;
@@ -208,23 +235,30 @@ class ForwardController extends BaseController {
   void cancelSelectionMode() {
     selectionMode.value = SelectMode.INACTIVE;
     listRecipientForward.value = listRecipientForward
-      .map((recipient) => recipient.cancelSelection())
-      .toList();
+        .map((recipient) => recipient.cancelSelection())
+        .toList();
   }
 
-  void deleteMultipleRecipients(BuildContext context, Set<String> listEmailAddress) {
+  void deleteMultipleRecipients(
+    BuildContext context,
+    Set<String> listEmailAddress,
+  ) {
     clearInputFocus();
 
     MessageDialogActionManager().showConfirmDialogAction(
       context,
       title: AppLocalizations.of(context).deleteRecipient,
-      AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward,
+      AppLocalizations.of(
+        context,
+      ).messageConfirmationDialogDeleteAllRecipientForward,
       AppLocalizations.of(context).remove,
       cancelTitle: AppLocalizations.of(context).cancel,
       onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
       onCloseButtonAction: popBack,
       alignCenter: true,
-      dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
+      dialogMargin: MediaQuery.paddingOf(
+        context,
+      ).add(const EdgeInsets.only(bottom: 12)),
     );
   }
 
@@ -238,7 +272,10 @@ class ForwardController extends BaseController {
         .toList();
   }
 
-  void addRecipientAction(BuildContext context, List<EmailAddress> listRecipientsSelected) {
+  void addRecipientAction(
+    BuildContext context,
+    List<EmailAddress> listRecipientsSelected,
+  ) {
     clearInputFocus();
 
     final accountId = accountDashBoardController.accountId.value;
@@ -247,14 +284,22 @@ class ForwardController extends BaseController {
     }
   }
 
-  void _handleAddRecipients(AccountId accountId, List<EmailAddress> listEmailAddress) {
+  void _handleAddRecipients(
+    AccountId accountId,
+    List<EmailAddress> listEmailAddress,
+  ) {
     final listRecipients = listEmailAddress.map((e) => e.emailAddress).toSet();
-    if (currentForward.value != null && _addRecipientsInForwardingInteractor != null) {
-      consumeState(_addRecipientsInForwardingInteractor!.execute(
+    if (currentForward.value != null &&
+        _addRecipientsInForwardingInteractor != null) {
+      consumeState(
+        _addRecipientsInForwardingInteractor!.execute(
           accountId,
           AddRecipientInForwardingRequest(
-              currentForward: currentForward.value!,
-              listRecipientAdded: listRecipients)));
+            currentForward: currentForward.value!,
+            listRecipientAdded: listRecipients,
+          ),
+        ),
+      );
     }
   }
 
@@ -262,7 +307,10 @@ class ForwardController extends BaseController {
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageAddRecipientsSuccessfully);
+        AppLocalizations.of(
+          currentContext!,
+        ).toastMessageAddRecipientsSuccessfully,
+      );
     }
     recipientController.clearAll();
     updateTMailForward(success.forward);
@@ -275,11 +323,15 @@ class ForwardController extends BaseController {
     if (accountId != null &&
         currentForward.value != null &&
         _editLocalCopyInForwardingInteractor != null) {
-      consumeState(_editLocalCopyInForwardingInteractor!.execute(
+      consumeState(
+        _editLocalCopyInForwardingInteractor!.execute(
           accountId,
           EditLocalCopyInForwardingRequest(
-              currentForward: currentForward.value!,
-              keepLocalCopy: currentForward.value!.localCopy != true)));
+            currentForward: currentForward.value!,
+            keepLocalCopy: currentForward.value!.localCopy != true,
+          ),
+        ),
+      );
     }
   }
 
@@ -288,21 +340,21 @@ class ForwardController extends BaseController {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
         success.forward.localCopy == true
-          ? AppLocalizations.of(currentContext!).toastMessageLocalCopyEnable
-          : AppLocalizations.of(currentContext!).toastMessageLocalCopyDisable);
+            ? AppLocalizations.of(currentContext!).toastMessageLocalCopyEnable
+            : AppLocalizations.of(currentContext!).toastMessageLocalCopyDisable,
+      );
     }
     updateTMailForward(success.forward);
   }
 
   void registerListenerWorker() {
-    ever(
-      accountDashBoardController.dashboardSettingAction,
-      (action) {
+    trackWorker(
+      ever(accountDashBoardController.dashboardSettingAction, (action) {
         if (action is ClearAllInputForwarding) {
           cancelSelectionMode();
           recipientController.clearAll();
         }
-      }
+      }),
     );
   }
 
@@ -310,19 +362,23 @@ class ForwardController extends BaseController {
     if (exception is RecipientListIsEmptyException) {
       appToast.showToastErrorMessage(
         context,
-        AppLocalizations.of(context).emptyListEmailForward);
+        AppLocalizations.of(context).emptyListEmailForward,
+      );
     } else if (exception is RecipientListWithInvalidEmailsException) {
       appToast.showToastErrorMessage(
         context,
-        AppLocalizations.of(context).incorrectEmailFormat);
+        AppLocalizations.of(context).incorrectEmailFormat,
+      );
     }
   }
 
   void _updateForwardWarningBannerState() {
     forwardWarningBannerState.value = _isExistRecipientSameServerDomain
-      ? BannerState.enabled
-      : BannerState.disabled;
-    log('ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${forwardWarningBannerState.value}');
+        ? BannerState.enabled
+        : BannerState.disabled;
+    log(
+      'ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${forwardWarningBannerState.value}',
+    );
   }
 
   void clearInputFocus() {

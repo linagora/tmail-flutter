@@ -7,10 +7,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 
 class MockWebSocketMessage extends WebSocketMessage {
-  MockWebSocketMessage(String message)
-      : super(
-          newState: State(message),
-        );
+  MockWebSocketMessage(String message) : super(newState: State(message));
 }
 
 void main() {
@@ -39,10 +36,6 @@ void main() {
         processedMessages = [];
       });
 
-      tearDown(() {
-        handler.dispose();
-      });
-
       setUp(() {
         handler = createHandler(
           processMessageCallback: (message) async {
@@ -54,7 +47,10 @@ void main() {
       tearDown(() => handler.dispose());
 
       test('Should process messages in correct order', () async {
-        final messages = List.generate(5, (index) => MockWebSocketMessage('$index'));
+        final messages = List.generate(
+          5,
+          (index) => MockWebSocketMessage('$index'),
+        );
 
         for (var message in messages) {
           handler.enqueue(message);
@@ -62,7 +58,10 @@ void main() {
 
         await handler.waitForEmpty();
 
-        expect(processedMessages, containsAllInOrder(['0', '1', '2', '3', '4']));
+        expect(
+          processedMessages,
+          containsAllInOrder(['0', '1', '2', '3', '4']),
+        );
       });
 
       test('Duplicate messages should be skipped', () async {
@@ -80,7 +79,10 @@ void main() {
 
       test('Queue size should not exceed maximum size', () async {
         // Enqueue more messages than the max queue size
-        final messages = List.generate(130, (i) => MockWebSocketMessage('msg_$i'));
+        final messages = List.generate(
+          130,
+          (i) => MockWebSocketMessage('msg_$i'),
+        );
 
         for (var message in messages) {
           handler.enqueue(message);
@@ -90,7 +92,10 @@ void main() {
       });
 
       test('Should correctly remove messages up to specified ID', () async {
-        final messages = List.generate(5, (index) => MockWebSocketMessage('$index'));
+        final messages = List.generate(
+          5,
+          (index) => MockWebSocketMessage('$index'),
+        );
 
         for (var message in messages) {
           handler.enqueue(message);
@@ -113,7 +118,9 @@ void main() {
 
         final handler = WebSocketQueueHandler(
           processMessageCallback: (message) async {
-            await Future.delayed(const Duration(milliseconds: 10)); // Simulate processing time
+            await Future.delayed(
+              const Duration(milliseconds: 10),
+            ); // Simulate processing time
             processedMessages.add(message.id);
           },
           onErrorCallback: (error, stackTrace) {
@@ -171,15 +178,22 @@ void main() {
           handler.enqueue(MockWebSocketMessage('msg_$i'));
         }
 
-        expect(handler.queueSize, lessThanOrEqualTo(128),
-            reason: 'Queue size should not exceed maximum after removal and refill');
+        expect(
+          handler.queueSize,
+          lessThanOrEqualTo(128),
+          reason:
+              'Queue size should not exceed maximum after removal and refill',
+        );
 
         await handler.waitForEmpty();
 
         // Verify that earlier messages were properly removed
         for (var i = 0; i <= 64; i++) {
-          expect(processedMessages.contains('msg_$i'), isFalse,
-              reason: 'Message msg_$i should have been removed');
+          expect(
+            processedMessages.contains('msg_$i'),
+            isFalse,
+            reason: 'Message msg_$i should have been removed',
+          );
         }
       });
     });
@@ -199,17 +213,28 @@ void main() {
       tearDown(() => handler.dispose());
 
       test('Should handle concurrent message enqueueing', () async {
-        final messages = List.generate(5, (index) => MockWebSocketMessage('$index'));
+        final messages = List.generate(
+          5,
+          (index) => MockWebSocketMessage('$index'),
+        );
 
-        await Future.wait(messages.map((message) => Future(() => handler.enqueue(message))));
+        await Future.wait(
+          messages.map((message) => Future(() => handler.enqueue(message))),
+        );
 
         await handler.waitForEmpty();
 
-        expect(processedMessages, containsAllInOrder(['0', '1', '2', '3', '4']));
+        expect(
+          processedMessages,
+          containsAllInOrder(['0', '1', '2', '3', '4']),
+        );
       });
 
       test('Should maintain order under high concurrency', () async {
-        final messages = List.generate(10, (index) => MockWebSocketMessage('$index'));
+        final messages = List.generate(
+          10,
+          (index) => MockWebSocketMessage('$index'),
+        );
 
         for (var message in messages) {
           handler.enqueue(message);
@@ -217,54 +242,74 @@ void main() {
 
         await handler.waitForEmpty();
 
-        expect(processedMessages, containsAllInOrder(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']));
+        expect(
+          processedMessages,
+          containsAllInOrder([
+            '0',
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+          ]),
+        );
       });
 
-      test('Should handle concurrent enqueueing while processing is blocked', () async {
-        final processingCompleter = Completer<void>();
-        final processedIds = <String>[];
-        errors = [];
-        var processingStarted = Completer<void>();
+      test(
+        'Should handle concurrent enqueueing while processing is blocked',
+        () async {
+          final processingCompleter = Completer<void>();
+          final processedIds = <String>[];
+          errors = [];
+          var processingStarted = Completer<void>();
 
-        // Create handler with a processing delay to simulate long-running task
-        handler = WebSocketQueueHandler(
-          processMessageCallback: (message) async {
-            if (!processingStarted.isCompleted) {
-              processingStarted.complete();
-            }
-            await processingCompleter.future; // Block processing
-            processedIds.add(message.id);
-          },
-          onErrorCallback: (error, stackTrace) {
-            errors.add(error);
-          },
-        );
+          // Create handler with a processing delay to simulate long-running task
+          handler = WebSocketQueueHandler(
+            processMessageCallback: (message) async {
+              if (!processingStarted.isCompleted) {
+                processingStarted.complete();
+              }
+              await processingCompleter.future; // Block processing
+              processedIds.add(message.id);
+            },
+            onErrorCallback: (error, stackTrace) {
+              errors.add(error);
+            },
+          );
 
-        // Enqueue first message to start processing
-        handler.enqueue(MockWebSocketMessage('initial_msg'));
+          // Enqueue first message to start processing
+          handler.enqueue(MockWebSocketMessage('initial_msg'));
 
-        // Wait for processing to start
-        await processingStarted.future;
+          // Wait for processing to start
+          await processingStarted.future;
 
-        // Concurrently enqueue messages while first message is still processing
-        await Future.wait(
-            List.generate(150, (i) => Future(() {
-              handler.enqueue(MockWebSocketMessage('concurrent_$i'));
-            }))
-        );
+          // Concurrently enqueue messages while first message is still processing
+          await Future.wait(
+            List.generate(
+              150,
+              (i) => Future(() {
+                handler.enqueue(MockWebSocketMessage('concurrent_$i'));
+              }),
+            ),
+          );
 
-        // Verify queue size is capped at max while processing is blocked
-        expect(handler.queueSize, lessThanOrEqualTo(128));
+          // Verify queue size is capped at max while processing is blocked
+          expect(handler.queueSize, lessThanOrEqualTo(128));
 
-        // Allow processing to continue
-        processingCompleter.complete();
+          // Allow processing to continue
+          processingCompleter.complete();
 
-        await handler.waitForEmpty();
-        // Verify process order and dropped messages
-        expect(processedIds[0], equals('initial_msg'));
-        expect(processedIds.length, lessThanOrEqualTo(129));
-        expect(handler.isMessageProcessed('concurrent_149'), isTrue);
-      });
+          await handler.waitForEmpty();
+          // Verify process order and dropped messages
+          expect(processedIds[0], equals('initial_msg'));
+          expect(processedIds.length, lessThanOrEqualTo(129));
+          expect(handler.isMessageProcessed('concurrent_149'), isTrue);
+        },
+      );
 
       test('Should handle rapid enqueueing during active processing', () async {
         final processedIds = <String>[];
@@ -311,77 +356,96 @@ void main() {
         await handler.waitForEmpty();
 
         // Verify results
-        expect(processedIds.length, lessThanOrEqualTo(129),
-            reason: 'Total processed messages should not exceed queue capacity');
+        expect(
+          processedIds.length,
+          lessThanOrEqualTo(129),
+          reason: 'Total processed messages should not exceed queue capacity',
+        );
 
         // Check if we have messages from the latest batch
         final lastBatchCount = processedIds
             .where((id) => id.startsWith('batch3_'))
             .length;
-        expect(lastBatchCount, greaterThan(0),
-            reason: 'Should have processed some messages from the latest batch');
+        expect(
+          lastBatchCount,
+          greaterThan(0),
+          reason: 'Should have processed some messages from the latest batch',
+        );
 
         // Verify that some early messages were dropped
         final firstBatchCount = processedIds
             .where((id) => id.startsWith('batch1_'))
             .length;
-        expect(firstBatchCount, lessThan(50),
-            reason: 'Some messages from first batch should have been dropped');
-      });
-
-      test('Should handle concurrent removeMessagesUpToCurrent during processing', () async {
-        final processedIds = <String>[];
-        final processingDelay = Completer<void>();
-        errors = [];
-
-        handler = WebSocketQueueHandler(
-          processMessageCallback: (message) async {
-            await processingDelay.future;
-            processedIds.add(message.id);
-          },
-          onErrorCallback: (error, stackTrace) {
-            errors.add(error);
-          },
+        expect(
+          firstBatchCount,
+          lessThan(50),
+          reason: 'Some messages from first batch should have been dropped',
         );
-
-        // Fill queue
-        for (var i = 0; i < 128; i++) {
-          handler.enqueue(MockWebSocketMessage('msg_$i'));
-        }
-
-        // Start concurrent operations
-        final futures = <Future>[];
-
-        // Add new messages
-        futures.add(Future(() async {
-          for (var i = 128; i < 256; i++) {
-            handler.enqueue(MockWebSocketMessage('msg_$i'));
-            await Future.delayed(const Duration(microseconds: 100));
-          }
-        }));
-
-        // Concurrently remove messages
-        futures.add(Future(() async {
-          await Future.delayed(const Duration(milliseconds: 10));
-          handler.removeMessagesUpToCurrent('msg_64');
-        }));
-
-        // Allow processing to continue after concurrent operations
-        await Future.delayed(const Duration(milliseconds: 50));
-        processingDelay.complete();
-
-        await Future.wait(futures);
-        await handler.waitForEmpty();
-
-        expect(processedIds.length, lessThanOrEqualTo(192));
-
-        // Verify that messages after removal point were processed
-        for (var id in processedIds.skip(1)) {
-          final messageNumber = int.parse(id.split('_')[1]);
-          expect(messageNumber, greaterThan(64),
-              reason: 'Only messages after msg_64 should be processed');
-        }
       });
+
+      test(
+        'Should handle concurrent removeMessagesUpToCurrent during processing',
+        () async {
+          final processedIds = <String>[];
+          final processingDelay = Completer<void>();
+          errors = [];
+
+          handler = WebSocketQueueHandler(
+            processMessageCallback: (message) async {
+              await processingDelay.future;
+              processedIds.add(message.id);
+            },
+            onErrorCallback: (error, stackTrace) {
+              errors.add(error);
+            },
+          );
+
+          // Fill queue
+          for (var i = 0; i < 128; i++) {
+            handler.enqueue(MockWebSocketMessage('msg_$i'));
+          }
+
+          // Start concurrent operations
+          final futures = <Future>[];
+
+          // Add new messages
+          futures.add(
+            Future(() async {
+              for (var i = 128; i < 256; i++) {
+                handler.enqueue(MockWebSocketMessage('msg_$i'));
+                await Future.delayed(const Duration(microseconds: 100));
+              }
+            }),
+          );
+
+          // Concurrently remove messages
+          futures.add(
+            Future(() async {
+              await Future.delayed(const Duration(milliseconds: 10));
+              handler.removeMessagesUpToCurrent('msg_64');
+            }),
+          );
+
+          // Allow processing to continue after concurrent operations
+          await Future.delayed(const Duration(milliseconds: 50));
+          processingDelay.complete();
+
+          await Future.wait(futures);
+          await handler.waitForEmpty();
+
+          expect(processedIds.length, lessThanOrEqualTo(192));
+
+          // Verify that messages after removal point were processed
+          for (var id in processedIds.skip(1)) {
+            final messageNumber = int.parse(id.split('_')[1]);
+            expect(
+              messageNumber,
+              greaterThan(64),
+              reason: 'Only messages after msg_64 should be processed',
+            );
+          }
+        },
+      );
     });
 
     group('Error Handling', () {
@@ -421,6 +485,24 @@ void main() {
 
         expect(processedMessages, ['2']);
         handler.dispose();
+      });
+    });
+
+    group('Dispose lifecycle', () {
+      test('Should ignore messages enqueued after dispose', () async {
+        final processedIds = <String>[];
+        final handler = createHandler(
+          processMessageCallback: (message) async {
+            processedIds.add(message.id);
+          },
+        );
+
+        await handler.dispose();
+        handler.enqueue(MockWebSocketMessage('after_dispose'));
+        await Future<void>.delayed(Duration.zero);
+
+        expect(handler.queueSize, 0);
+        expect(processedIds, isEmpty);
       });
     });
 

@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
@@ -6,8 +5,7 @@ import 'dart:ui';
 import 'package:core/utils/app_logger.dart';
 
 abstract class IsolateManager {
-
-  final _eventReceivePort = ReceivePort();
+  ReceivePort? _eventReceivePort;
   StreamSubscription? _streamSubscription;
 
   String get isolateIdentityName;
@@ -18,8 +16,25 @@ abstract class IsolateManager {
     Function()? onDone,
   }) {
     try {
-      IsolateNameServer.registerPortWithName(_eventReceivePort.sendPort, isolateIdentityName);
-      _streamSubscription = _eventReceivePort.listen(onData, onError: onError, onDone: onDone);
+      release();
+      final receivePort = ReceivePort();
+      final registered = IsolateNameServer.registerPortWithName(
+        receivePort.sendPort,
+        isolateIdentityName,
+      );
+      if (!registered) {
+        receivePort.close();
+        logWarning(
+          'IsolateManager::initial(): cannot register $isolateIdentityName',
+        );
+        return;
+      }
+      _eventReceivePort = receivePort;
+      _streamSubscription = receivePort.listen(
+        onData,
+        onError: onError,
+        onDone: onDone,
+      );
     } catch (e) {
       logWarning('IsolateManager::initial():EXCEPTION: $e');
     }
@@ -40,7 +55,10 @@ abstract class IsolateManager {
   }
 
   void release() {
-    _eventReceivePort.close();
     _streamSubscription?.cancel();
+    _streamSubscription = null;
+    _eventReceivePort?.close();
+    _eventReceivePort = null;
+    IsolateNameServer.removePortNameMapping(isolateIdentityName);
   }
 }

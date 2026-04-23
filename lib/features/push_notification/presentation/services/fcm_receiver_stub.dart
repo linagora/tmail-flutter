@@ -11,6 +11,10 @@ class FcmReceiver {
   static FcmReceiver get instance => _instance;
 
   Future onInitialFcmListener() async {
-    log('FcmReceiver::onInitialFcmListener: FCM not supported on this platform, using WebSocket instead');
+    log(
+      'FcmReceiver::onInitialFcmListener: FCM not supported on this platform, using WebSocket instead',
+    );
   }
+
+  Future<void> dispose() async {}
 }

@@ -1,4 +1,3 @@
-
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
 import 'package:get/get.dart';
@@ -13,9 +12,9 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 
-class AuthenticationClientWeb with AuthenticationClientInteractionMixin 
+class AuthenticationClientWeb
+    with AuthenticationClientInteractionMixin
     implements AuthenticationClientBase {
-
   final AppAuthWebPlugin _appAuthWeb;
 
   AuthenticationClientWeb(this._appAuthWeb);
@@ -35,10 +34,9 @@ class AuthenticationClientWeb with AuthenticationClientInteractionMixin
       scopes,
       loginHint: loginHint,
     );
-    final authorizationTokenResponse = await _appAuthWeb.authorizeAndExchangeCode(
-      authorizationTokenRequest,
-    );
-    log('$runtimeType::getTokenOIDC():Token: ${authorizationTokenResponse.accessToken}');
+    final authorizationTokenResponse = await _appAuthWeb
+        .authorizeAndExchangeCode(authorizationTokenRequest);
+    log('$runtimeType::getTokenOIDC(): token received');
     final tokenOIDC = authorizationTokenResponse.toTokenOIDC();
     if (tokenOIDC.isTokenValid()) {
       return tokenOIDC;
@@ -62,8 +60,10 @@ class AuthenticationClientWeb with AuthenticationClientInteractionMixin
     // If end_session_endpoint is not available (optional per OIDC spec),
     // return true to indicate local-only logout should proceed
     if (endSessionRequest == null) {
-      log('$runtimeType::logoutOidc(): end_session_endpoint not configured, '
-          'performing local-only logout');
+      log(
+        '$runtimeType::logoutOidc(): end_session_endpoint not configured, '
+        'performing local-only logout',
+      );
       return true;
     }
 

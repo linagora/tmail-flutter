@@ -26,17 +26,33 @@ import 'package:uuid/uuid.dart';
 // Inline mocks (no build_runner required)
 // ---------------------------------------------------------------------------
 class _MockCachingManager extends Mock implements CachingManager {}
+
 class _MockLanguageCacheManager extends Mock implements LanguageCacheManager {}
-class _MockAuthorizationInterceptors extends Mock implements AuthorizationInterceptors {}
-class _MockDynamicUrlInterceptors extends Mock implements DynamicUrlInterceptors {}
-class _MockDeleteCredentialInteractor extends Mock implements DeleteCredentialInteractor {}
+
+class _MockAuthorizationInterceptors extends Mock
+    implements AuthorizationInterceptors {}
+
+class _MockDynamicUrlInterceptors extends Mock
+    implements DynamicUrlInterceptors {}
+
+class _MockDeleteCredentialInteractor extends Mock
+    implements DeleteCredentialInteractor {}
+
 class _MockLogoutOidcInteractor extends Mock implements LogoutOidcInteractor {}
-class _MockDeleteAuthorityOidcInteractor extends Mock implements DeleteAuthorityOidcInteractor {}
+
+class _MockDeleteAuthorityOidcInteractor extends Mock
+    implements DeleteAuthorityOidcInteractor {}
+
 class _MockAppToast extends Mock implements AppToast {}
+
 class _MockImagePaths extends Mock implements ImagePaths {}
+
 class _MockResponsiveUtils extends Mock implements ResponsiveUtils {}
+
 class _MockUuid extends Mock implements Uuid {}
+
 class _MockToastManager extends Mock implements ToastManager {}
+
 class _MockTwakeAppManager extends Mock implements TwakeAppManager {}
 
 class _FakeFailure extends FeatureFailure {
@@ -48,6 +64,8 @@ class _FakeFailure extends FeatureFailure {
 // from platform-specific success/failure side effects.
 class _SubscriptionAwareController extends BaseController {
   int onDataCallCount = 0;
+
+  Worker registerWorker(Worker worker) => trackWorker(worker);
 
   @override
   void onData(Either<Failure, Success> newState) {
@@ -94,66 +112,106 @@ void main() {
       'SHOULD untrack completed subscriptions\n'
       'WHEN a short-lived stream finishes\n'
       'SO THAT active-subscription tracking does not grow indefinitely',
-    () async {
-      // Arrange
-      final controller = _SubscriptionAwareController();
-      final streamCtrl = StreamController<Either<Failure, Success>>();
+      () async {
+        // Arrange
+        final controller = _SubscriptionAwareController();
+        final streamCtrl = StreamController<Either<Failure, Success>>();
 
-      // Act
-      controller.consumeState(streamCtrl.stream);
-      expect(controller.trackedStateSubscriptionCount, 1);
+        // Act
+        controller.consumeState(streamCtrl.stream);
+        expect(controller.trackedStateSubscriptionCount, 1);
 
-      streamCtrl.add(Left<Failure, Success>(_FakeFailure()));
-      await Future.microtask(() {});
-      await streamCtrl.close();
-      await Future.microtask(() {});
+        streamCtrl.add(Left<Failure, Success>(_FakeFailure()));
+        await Future.microtask(() {});
+        await streamCtrl.close();
+        await Future.microtask(() {});
 
-      // Assert
-      expect(
-        controller.trackedStateSubscriptionCount,
-        0,
-        reason: 'Completed one-shot stream is still tracked as active',
-      );
-    });
+        // Assert
+        expect(
+          controller.trackedStateSubscriptionCount,
+          0,
+          reason: 'Completed one-shot stream is still tracked as active',
+        );
+      },
+    );
 
     test(
       'SHOULD cancel the stream subscription\n'
       'WHEN onClose is called\n'
       'SO THAT events from long-lived streams are no longer delivered to onData',
-    () async {
-      // Arrange
-      final controller = _SubscriptionAwareController();
-      final streamCtrl = StreamController<Either<Failure, Success>>();
+      () async {
+        // Arrange
+        final controller = _SubscriptionAwareController();
+        final streamCtrl = StreamController<Either<Failure, Success>>();
 
-      controller.consumeState(streamCtrl.stream);
-      expect(controller.trackedStateSubscriptionCount, 1);
+        controller.consumeState(streamCtrl.stream);
+        expect(controller.trackedStateSubscriptionCount, 1);
 
-      // Verify subscription is live before close
-      streamCtrl.add(Left<Failure, Success>(_FakeFailure()));
-      await Future.microtask(() {});
+        // Verify subscription is live before close
+        streamCtrl.add(Left<Failure, Success>(_FakeFailure()));
+        await Future.microtask(() {});
 
-      expect(
-        controller.onDataCallCount,
-        1,
-        reason: 'Baseline: event must reach onData while subscription is active',
-      );
+        expect(
+          controller.onDataCallCount,
+          1,
+          reason:
+              'Baseline: event must reach onData while subscription is active',
+        );
 
-      // Act – close the controller
-      controller.onClose();
+        // Act – close the controller
+        controller.onClose();
 
-      // Attempt to push another event; a leaked subscription would forward it
-      streamCtrl.add(Left<Failure, Success>(_FakeFailure()));
-      await Future.microtask(() {});
-      await Future.microtask(() {}); // extra tick for any async propagation
+        // Attempt to push another event; a leaked subscription would forward it
+        streamCtrl.add(Left<Failure, Success>(_FakeFailure()));
+        await Future.microtask(() {});
+        await Future.microtask(() {}); // extra tick for any async propagation
 
-      // Assert – count must remain 1
-      expect(
-        controller.onDataCallCount,
-        1,
-        reason: 'Stream subscription was not cancelled on onClose — memory leak detected',
-      );
+        // Assert – count must remain 1
+        expect(
+          controller.onDataCallCount,
+          1,
+          reason:
+              'Stream subscription was not cancelled on onClose — memory leak detected',
+        );
 
-      await streamCtrl.close();
-    });
+        await streamCtrl.close();
+      },
+    );
+
+    test(
+      'SHOULD dispose tracked GetX workers\n'
+      'WHEN onClose is called\n'
+      'SO THAT reactive listeners do not survive the controller lifecycle',
+      () async {
+        // Arrange
+        final controller = _SubscriptionAwareController();
+        final count = 0.obs;
+        var workerCallCount = 0;
+
+        final worker = controller.registerWorker(
+          ever<int>(count, (_) => workerCallCount++),
+        );
+
+        count.value = 1;
+        await Future.microtask(() {});
+
+        expect(workerCallCount, 1);
+        expect(worker.disposed, isFalse);
+
+        // Act
+        controller.onClose();
+
+        count.value = 2;
+        await Future.microtask(() {});
+
+        // Assert
+        expect(worker.disposed, isTrue);
+        expect(
+          workerCallCount,
+          1,
+          reason: 'Tracked worker kept receiving events after controller close',
+        );
+      },
+    );
   });
 }

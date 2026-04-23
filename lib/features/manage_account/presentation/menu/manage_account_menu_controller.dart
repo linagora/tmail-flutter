@@ -16,6 +16,7 @@ class ManageAccountMenuController extends GetxController
   final imagePaths = Get.find<ImagePaths>();
 
   late final AccountMenuItemsBuilder _menuItemsBuilder;
+  late Worker _accountIdWorker;
   late Worker _quotaRxWorker;
 
   final listAccountMenuItem = RxList<AccountMenuItem>([
@@ -32,20 +33,17 @@ class ManageAccountMenuController extends GetxController
   }
 
   void _registerObxStreamListener() {
-    ever(dashBoardController.accountId, (accountId) {
+    _accountIdWorker = ever(dashBoardController.accountId, (accountId) {
       if (accountId != null) {
         _refreshMenuItems();
       }
     });
 
-    _quotaRxWorker = ever(
-      dashBoardController.octetsQuota,
-      (octetsQuota) {
-        if (_menuItemsBuilder.canAddStorage()) {
-          _addStorageToMenuList();
-        }
-      },
-    );
+    _quotaRxWorker = ever(dashBoardController.octetsQuota, (octetsQuota) {
+      if (_menuItemsBuilder.canAddStorage()) {
+        _addStorageToMenuList();
+      }
+    });
   }
 
   void _refreshMenuItems() {
@@ -89,6 +87,7 @@ class ManageAccountMenuController extends GetxController
 
   @override
   void onClose() {
+    _accountIdWorker.dispose();
     _quotaRxWorker.dispose();
     super.onClose();
   }

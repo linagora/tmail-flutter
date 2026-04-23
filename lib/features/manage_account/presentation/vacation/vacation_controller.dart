@@ -23,8 +23,8 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class VacationController extends BaseController {
-
-  final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final _accountDashBoardController =
+      Get.find<ManageAccountDashBoardController>();
   final _settingController = Get.find<SettingsController>();
 
   final UpdateVacationInteractor _updateVacationInteractor;
@@ -72,13 +72,18 @@ class VacationController extends BaseController {
   }
 
   void _initWorker() {
-    ever(_accountDashBoardController.vacationResponse, (vacation) {
-      if (vacation is VacationResponse) {
-        currentVacation = vacation;
-        final newVacationPresentation = currentVacation?.toVacationPresentation();
-        _initializeValueForVacation(newVacationPresentation ?? VacationPresentation.initialize());
-      }
-    });
+    trackWorker(
+      ever(_accountDashBoardController.vacationResponse, (vacation) {
+        if (vacation is VacationResponse) {
+          currentVacation = vacation;
+          final newVacationPresentation = currentVacation
+              ?.toVacationPresentation();
+          _initializeValueForVacation(
+            newVacationPresentation ?? VacationPresentation.initialize(),
+          );
+        }
+      }),
+    );
   }
 
   void _initFocusListener() {
@@ -96,15 +101,20 @@ class VacationController extends BaseController {
     subjectTextController.text = newVacation.subject ?? '';
     updateMessageHtmlText(newVacation.messageHtmlText ?? '');
     if (PlatformInfo.isWeb) {
-      richTextControllerForWeb?.editorController.setText(newVacation.messageHtmlText ?? '');
+      richTextControllerForWeb?.editorController.setText(
+        newVacation.messageHtmlText ?? '',
+      );
     } else {
-      richTextControllerForMobile?.htmlEditorApi?.setText(newVacation.messageHtmlText ?? '');
+      richTextControllerForMobile?.htmlEditorApi?.setText(
+        newVacation.messageHtmlText ?? '',
+      );
     }
   }
 
   bool get isVacationDeactivated => !vacationPresentation.value.isEnabled;
 
-  bool get isVacationStopEnabled => vacationPresentation.value.vacationStopEnabled;
+  bool get isVacationStopEnabled =>
+      vacationPresentation.value.vacationStopEnabled;
 
   bool get canChangeEndDate => !isVacationDeactivated && isVacationStopEnabled;
 
@@ -119,22 +129,29 @@ class VacationController extends BaseController {
     Option<String>? messageHtmlTextOption,
   }) {
     final currentVacation = vacationPresentation.value;
-    final stopEnabled = vacationStopEnabled ?? currentVacation.vacationStopEnabled;
+    final stopEnabled =
+        vacationStopEnabled ?? currentVacation.vacationStopEnabled;
     final newVacation = currentVacation.copyWith(
-        status: newStatus,
-        startDateOption: startDateOption,
-        startTimeOption: startTimeOption,
-        endDateOption: stopEnabled ? endDateOption : const None(),
-        endTimeOption: stopEnabled ? endTimeOption : const None(),
-        vacationStopEnabled: vacationStopEnabled,
-        messagePlainTextOption: messagePlainTextOption,
-        messageHtmlTextOption: messageHtmlTextOption
+      status: newStatus,
+      startDateOption: startDateOption,
+      startTimeOption: startTimeOption,
+      endDateOption: stopEnabled ? endDateOption : const None(),
+      endTimeOption: stopEnabled ? endTimeOption : const None(),
+      vacationStopEnabled: vacationStopEnabled,
+      messagePlainTextOption: messagePlainTextOption,
+      messageHtmlTextOption: messageHtmlTextOption,
     );
-    log('VacationController::updateVacationPresentation():newVacation: $newVacation');
+    log(
+      'VacationController::updateVacationPresentation():newVacation: $newVacation',
+    );
     vacationPresentation.value = newVacation;
   }
 
-  void selectDate(BuildContext context, DateType dateType, DateTime? currentDate) async {
+  void selectDate(
+    BuildContext context,
+    DateType dateType,
+    DateTime? currentDate,
+  ) async {
     if (PlatformInfo.isMobile) {
       richTextControllerForMobile?.htmlEditorApi?.unfocus();
     }
@@ -156,7 +173,11 @@ class VacationController extends BaseController {
     }
   }
 
-  void selectTime(BuildContext context, DateType dateType, TimeOfDay? currentTime) async {
+  void selectTime(
+    BuildContext context,
+    DateType dateType,
+    TimeOfDay? currentTime,
+  ) async {
     if (PlatformInfo.isMobile) {
       richTextControllerForMobile?.htmlEditorApi?.unfocus();
     }
@@ -187,28 +208,42 @@ class VacationController extends BaseController {
         if (currentOverlayContext != null && currentContext != null) {
           appToast.showToastErrorMessage(
             currentOverlayContext!,
-            AppLocalizations.of(currentContext!).errorMessageWhenStartDateVacationIsEmpty);
+            AppLocalizations.of(
+              currentContext!,
+            ).errorMessageWhenStartDateVacationIsEmpty,
+          );
         }
         return;
       }
 
-      final vacationStopEnabled = vacationPresentation.value.vacationStopEnabled;
+      final vacationStopEnabled =
+          vacationPresentation.value.vacationStopEnabled;
       final toDate = vacationPresentation.value.toDate;
       if (vacationStopEnabled && toDate != null && toDate.isBefore(fromDate)) {
         if (currentOverlayContext != null && currentContext != null) {
           appToast.showToastErrorMessage(
             currentOverlayContext!,
-            AppLocalizations.of(currentContext!).errorMessageWhenEndDateVacationIsInValid);
+            AppLocalizations.of(
+              currentContext!,
+            ).errorMessageWhenEndDateVacationIsInValid,
+          );
         }
         return;
       }
 
-      final messageHtmlText = (PlatformInfo.isWeb ? _vacationMessageHtmlText : await _getMessageHtmlText()) ?? '';
+      final messageHtmlText =
+          (PlatformInfo.isWeb
+              ? _vacationMessageHtmlText
+              : await _getMessageHtmlText()) ??
+          '';
       if (messageHtmlText.isEmpty && context.mounted) {
         if (currentOverlayContext != null && currentContext != null) {
           appToast.showToastErrorMessage(
             currentOverlayContext!,
-            AppLocalizations.of(currentContext!).errorMessageWhenMessageVacationIsEmpty);
+            AppLocalizations.of(
+              currentContext!,
+            ).errorMessageWhenMessageVacationIsEmpty,
+          );
         }
         return;
       }
@@ -217,17 +252,23 @@ class VacationController extends BaseController {
 
       final newVacationPresentation = vacationPresentation.value.copyWith(
         messageHtmlTextOption: Some(messageHtmlText),
-        subjectOption: Some(subjectVacation)
+        subjectOption: Some(subjectVacation),
       );
-      log('VacationController::saveVacation(): newVacationPresentation: $newVacationPresentation');
+      log(
+        'VacationController::saveVacation(): newVacationPresentation: $newVacationPresentation',
+      );
       final newVacationResponse = newVacationPresentation.toVacationResponse();
-      log('VacationController::saveVacation(): newVacationResponse: $newVacationResponse');
+      log(
+        'VacationController::saveVacation(): newVacationResponse: $newVacationResponse',
+      );
       _updateVacationAction(newVacationResponse);
     } else {
       final vacationDisabled = currentVacation != null
           ? currentVacation!.clearAllExceptHtmlBody()
           : VacationResponse(isEnabled: false);
-      log('VacationController::saveVacation(): vacationDisabled: $vacationDisabled');
+      log(
+        'VacationController::saveVacation(): vacationDisabled: $vacationDisabled',
+      );
       _updateVacationAction(vacationDisabled);
     }
   }
@@ -235,10 +276,14 @@ class VacationController extends BaseController {
   void _updateVacationAction(VacationResponse vacationResponse) {
     final accountId = _accountDashBoardController.accountId.value;
     if (accountId != null) {
-      consumeState(_updateVacationInteractor.execute(accountId, vacationResponse));
+      consumeState(
+        _updateVacationInteractor.execute(accountId, vacationResponse),
+      );
     } else {
       consumeState(
-        Stream.value(Left(UpdateVacationFailure(NullSessionOrAccountIdException()))),
+        Stream.value(
+          Left(UpdateVacationFailure(NullSessionOrAccountIdException())),
+        ),
       );
     }
   }
@@ -250,7 +295,8 @@ class VacationController extends BaseController {
         currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).vacationSettingSaved);
+        AppLocalizations.of(currentContext!).vacationSettingSaved,
+      );
     }
 
     currentVacation = success.listVacationResponse.firstOrNull;
@@ -296,7 +342,8 @@ class VacationController extends BaseController {
       FocusScope.of(context).unfocus();
       await Future.delayed(
         const Duration(milliseconds: 300),
-        richTextControllerForMobile?.showDeviceKeyboard);
+        richTextControllerForMobile?.showDeviceKeyboard,
+      );
     }
 
     subjectTextFocusNode.unfocus();
@@ -304,7 +351,9 @@ class VacationController extends BaseController {
     await Scrollable.ensureVisible(htmlKey.currentContext!);
     await Future.delayed(const Duration(milliseconds: 500), () {
       scrollController.animateTo(
-        scrollController.position.pixels + defaultKeyboardToolbarHeight + ConstantsUI.htmlContentMinHeight,
+        scrollController.position.pixels +
+            defaultKeyboardToolbarHeight +
+            ConstantsUI.htmlContentMinHeight,
         duration: const Duration(milliseconds: 1),
         curve: Curves.linear,
       );
@@ -312,7 +361,8 @@ class VacationController extends BaseController {
   }
 
   void onEnterKeyDown() {
-    if(scrollController.position.pixels < scrollController.position.maxScrollExtent) {
+    if (scrollController.position.pixels <
+        scrollController.position.maxScrollExtent) {
       scrollController.animateTo(
         scrollController.position.pixels + 20,
         duration: const Duration(milliseconds: 1),

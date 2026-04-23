@@ -69,15 +69,21 @@ import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
     with PopupContextMenuActionMixin, LogoutMixin, EmitStateMixin {
-
   final CachingManager cachingManager = Get.find<CachingManager>();
-  final LanguageCacheManager languageCacheManager = Get.find<LanguageCacheManager>();
-  final AuthorizationInterceptors authorizationInterceptors = Get.find<AuthorizationInterceptors>();
-  final AuthorizationInterceptors authorizationIsolateInterceptors = Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag);
-  final DynamicUrlInterceptors dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
-  final DeleteCredentialInteractor deleteCredentialInteractor = Get.find<DeleteCredentialInteractor>();
-  final LogoutOidcInteractor logoutOidcInteractor = Get.find<LogoutOidcInteractor>();
-  final DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor = Get.find<DeleteAuthorityOidcInteractor>();
+  final LanguageCacheManager languageCacheManager =
+      Get.find<LanguageCacheManager>();
+  final AuthorizationInterceptors authorizationInterceptors =
+      Get.find<AuthorizationInterceptors>();
+  final AuthorizationInterceptors authorizationIsolateInterceptors =
+      Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag);
+  final DynamicUrlInterceptors dynamicUrlInterceptors =
+      Get.find<DynamicUrlInterceptors>();
+  final DeleteCredentialInteractor deleteCredentialInteractor =
+      Get.find<DeleteCredentialInteractor>();
+  final LogoutOidcInteractor logoutOidcInteractor =
+      Get.find<LogoutOidcInteractor>();
+  final DeleteAuthorityOidcInteractor deleteAuthorityOidcInteractor =
+      Get.find<DeleteAuthorityOidcInteractor>();
   final AppToast appToast = Get.find<AppToast>();
   final ImagePaths imagePaths = Get.find<ImagePaths>();
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
@@ -87,7 +93,8 @@ abstract class BaseController extends GetxController
 
   bool _isFcmEnabled = false;
 
-  GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
+  GetStoredFirebaseRegistrationInteractor?
+  _getStoredFirebaseRegistrationInteractor;
   DestroyFirebaseRegistrationInteractor? _destroyFirebaseRegistrationInteractor;
   GetCompanyServerLoginInfoInteractor? getCompanyServerLoginInfoInteractor;
 
@@ -97,7 +104,9 @@ abstract class BaseController extends GetxController
   // Tracks active subscriptions created by consumeState() so they can all be
   // cancelled in onClose(). Entries are removed automatically when a stream
   // completes, avoiding accumulation for short-lived request streams.
-  final _stateSubscriptions = <Object, StreamSubscription<Either<Failure, Success>>>{};
+  final _stateSubscriptions =
+      <Object, StreamSubscription<Either<Failure, Success>>>{};
+  final _workers = <Worker>[];
 
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
@@ -111,10 +120,12 @@ abstract class BaseController extends GetxController
   }
 
   void _triggerBrowserReloadListener() {
-    _onBeforeUnloadBrowserSubscription =
-        html.window.onBeforeUnload.listen(onBeforeUnloadBrowserListener);
-    _onUnloadBrowserSubscription =
-        html.window.onUnload.listen(onUnloadBrowserListener);
+    _onBeforeUnloadBrowserSubscription = html.window.onBeforeUnload.listen(
+      onBeforeUnloadBrowserListener,
+    );
+    _onUnloadBrowserSubscription = html.window.onUnload.listen(
+      onUnloadBrowserListener,
+    );
   }
 
   Future<void> onBeforeUnloadBrowserListener(html.Event event) async {}
@@ -127,6 +138,10 @@ abstract class BaseController extends GetxController
       sub.cancel();
     }
     _stateSubscriptions.clear();
+    for (final worker in _workers.toList()) {
+      worker.dispose();
+    }
+    _workers.clear();
     if (PlatformInfo.isWeb) {
       _onBeforeUnloadBrowserSubscription?.cancel();
       _onUnloadBrowserSubscription?.cancel();
@@ -149,6 +164,12 @@ abstract class BaseController extends GetxController
     _stateSubscriptions[subscriptionKey] = subscription;
   }
 
+  @protected
+  Worker trackWorker(Worker worker) {
+    _workers.add(worker);
+    return worker;
+  }
+
   @visibleForTesting
   int get trackedStateSubscriptionCount => _stateSubscriptions.length;
 
@@ -166,7 +187,9 @@ abstract class BaseController extends GetxController
   }
 
   void onError(dynamic error, StackTrace stackTrace) {
-    logWarning('$runtimeType::onError():Error: $error | StackTrace: $stackTrace');
+    logWarning(
+      '$runtimeType::onError():Error: $error | StackTrace: $stackTrace',
+    );
     final isUrgentException = validateUrgentException(error);
     if (isUrgentException) {
       handleUrgentException(exception: error);
@@ -178,10 +201,10 @@ abstract class BaseController extends GetxController
   void onDone() {}
 
   bool validateUrgentException(dynamic exception) {
-    return exception is NoNetworkError
-      || exception is BadCredentialsException
-      || exception is ConnectionError
-      || exception is RefreshTokenFailedException;
+    return exception is NoNetworkError ||
+        exception is BadCredentialsException ||
+        exception is ConnectionError ||
+        exception is RefreshTokenFailedException;
   }
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
@@ -197,7 +220,9 @@ abstract class BaseController extends GetxController
   }
 
   void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
-    logWarning('$runtimeType::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception');
+    logWarning(
+      '$runtimeType::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception',
+    );
     if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
@@ -208,7 +233,9 @@ abstract class BaseController extends GetxController
   }
 
   void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
-    logWarning('$runtimeType::handleUrgentExceptionOnWeb():Failure: $failure | Exception: $exception');
+    logWarning(
+      '$runtimeType::handleUrgentExceptionOnWeb():Failure: $failure | Exception: $exception',
+    );
     if (exception is NoNetworkError) {
       _handleNotNetworkErrorException();
     } else if (exception is ConnectionError) {
@@ -232,7 +259,8 @@ abstract class BaseController extends GetxController
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).connectionError);
+        AppLocalizations.of(currentContext!).connectionError,
+      );
     }
   }
 
@@ -246,7 +274,8 @@ abstract class BaseController extends GetxController
         leadingSVGIcon: imagePaths.icNotConnection,
         backgroundColor: AppColor.textFieldErrorBorderColor,
         textColor: Colors.white,
-        infinityToast: true);
+        infinityToast: true,
+      );
     }
   }
 
@@ -281,7 +310,9 @@ abstract class BaseController extends GetxController
   }
 
   void onDataFailureViewState(Failure failure) {
-    log('$runtimeType::onDataFailureViewState:failure = ${failure.runtimeType}');
+    log(
+      '$runtimeType::onDataFailureViewState:failure = ${failure.runtimeType}',
+    );
     if (failure is FeatureFailure) {
       final isUrgentException = validateUrgentException(failure.exception);
       if (isUrgentException) {
@@ -322,7 +353,9 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future<void> _showOidcLogoutErrorDialog(OidcConfigurationException exception) async {
+  Future<void> _showOidcLogoutErrorDialog(
+    OidcConfigurationException exception,
+  ) async {
     final context = Get.context;
     if (context == null) {
       // If no context, fall back to force logout
@@ -335,7 +368,8 @@ abstract class BaseController extends GetxController
     // Add technical details if available
     final technicalDetails = exception.technicalDetails;
     if (technicalDetails != null) {
-      errorMessage += '\n\n${AppLocalizations.of(context).technicalDetails(technicalDetails)}';
+      errorMessage +=
+          '\n\n${AppLocalizations.of(context).technicalDetails(technicalDetails)}';
     }
 
     await MessageDialogActionManager().showConfirmDialogAction(
@@ -357,7 +391,9 @@ abstract class BaseController extends GetxController
   }
 
   void handleSuccessViewState(Success success) async {
-    log('$runtimeType::handleSuccessViewState():Success = ${success.runtimeType}');
+    log(
+      '$runtimeType::handleSuccessViewState():Success = ${success.runtimeType}',
+    );
     if (success is LogoutOidcSuccess) {
       if (_isFcmEnabled) {
         _getStoredFirebaseRegistrationFromCache();
@@ -393,7 +429,9 @@ abstract class BaseController extends GetxController
   void injectAutoCompleteBindings(Session? session, AccountId? accountId) {
     try {
       ContactAutoCompleteBindings().dependencies();
-      requireCapability(session!, accountId!, [tmailContactCapabilityIdentifier]);
+      requireCapability(session!, accountId!, [
+        tmailContactCapabilityIdentifier,
+      ]);
       TMailAutoCompleteBindings().dependencies();
     } catch (e) {
       logWarning('$runtimeType::injectAutoCompleteBindings(): exception: $e');
@@ -404,7 +442,7 @@ abstract class BaseController extends GetxController
     try {
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapMdn]);
       MdnInteractorBindings().dependencies();
-    } catch(e) {
+    } catch (e) {
       logWarning('$runtimeType::injectMdnBindings(): exception: $e');
     }
   }
@@ -413,7 +451,7 @@ abstract class BaseController extends GetxController
     try {
       requireCapability(session!, accountId!, [capabilityForward]);
       ForwardingInteractorsBindings().dependencies();
-    } catch(e) {
+    } catch (e) {
       logWarning('$runtimeType::injectForwardBindings(): exception: $e');
     }
   }
@@ -422,29 +460,38 @@ abstract class BaseController extends GetxController
     try {
       requireCapability(session!, accountId!, [capabilityRuleFilter]);
       EmailRulesInteractorBindings().dependencies();
-    } catch(e) {
+    } catch (e) {
       logWarning('$runtimeType::injectRuleFilterBindings(): exception: $e');
     }
   }
 
   Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
-      requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
-      log('$runtimeType::injectFCMBindings: fcmAvailable = ${AppConfig.fcmAvailable}');
+      requireCapability(session!, accountId!, [
+        FirebaseCapability.fcmIdentifier,
+      ]);
+      log(
+        '$runtimeType::injectFCMBindings: fcmAvailable = ${AppConfig.fcmAvailable}',
+      );
       if (AppConfig.fcmAvailable) {
         await FcmConfiguration.initialize();
         FcmInteractorBindings().dependencies();
         FcmService.instance.initialStreamController();
-        FcmMessageController.instance.initialize(accountId: accountId, session: session);
+        FcmMessageController.instance.initialize(
+          accountId: accountId,
+          session: session,
+        );
         FcmTokenController.instance.initialBindingInteractor();
         await FcmReceiver.instance.onInitialFcmListener();
         if (PlatformInfo.isMobile) {
-          await LocalNotificationManager.instance.setUp(groupId: session.username.value);
+          await LocalNotificationManager.instance.setUp(
+            groupId: session.username.value,
+          );
         }
       } else {
         throw NotSupportFCMException();
       }
-    } catch(e) {
+    } catch (e) {
       logWarning('$runtimeType::injectFCMBindings(): exception: $e');
     }
   }
@@ -454,51 +501,89 @@ abstract class BaseController extends GetxController
       log('$runtimeType::injectWebSocket:', webConsoleEnabled: true);
 
       if (session == null || accountId == null) {
-        log('$runtimeType::injectWebSocket: Session or accountId is null', webConsoleEnabled: true);
+        log(
+          '$runtimeType::injectWebSocket: Session or accountId is null',
+          webConsoleEnabled: true,
+        );
         WebSocketController.instance.markNotSupported();
         return;
       }
 
       // Log available session-level capabilities for debugging
-      final sessionCapabilities = session.capabilities.keys.map((c) => c.value.toString()).toList();
-      log('$runtimeType::injectWebSocket: Session capabilities: $sessionCapabilities', webConsoleEnabled: true);
+      final sessionCapabilities = session.capabilities.keys
+          .map((c) => c.value.toString())
+          .toList();
+      log(
+        '$runtimeType::injectWebSocket: Session capabilities: $sessionCapabilities',
+        webConsoleEnabled: true,
+      );
 
       // WebSocket is a session-level capability, not account-level
       // Check session.capabilities instead of account.accountCapabilities
-      final hasWebSocket = session.capabilities.containsKey(CapabilityIdentifier.jmapWebSocket);
-      final hasTicket = session.capabilities.containsKey(CapabilityIdentifier.jmapWebSocketTicket);
-      log('$runtimeType::injectWebSocket: WebSocket supported=$hasWebSocket, Ticket supported=$hasTicket', webConsoleEnabled: true);
+      final hasWebSocket = session.capabilities.containsKey(
+        CapabilityIdentifier.jmapWebSocket,
+      );
+      final hasTicket = session.capabilities.containsKey(
+        CapabilityIdentifier.jmapWebSocketTicket,
+      );
+      log(
+        '$runtimeType::injectWebSocket: WebSocket supported=$hasWebSocket, Ticket supported=$hasTicket',
+        webConsoleEnabled: true,
+      );
 
       // Only require WebSocket capability, not ticket (ticket is James-specific)
       if (!hasWebSocket) {
-        log('$runtimeType::injectWebSocket: WebSocket push not available - server does not support WebSocket capability', webConsoleEnabled: true);
+        log(
+          '$runtimeType::injectWebSocket: WebSocket push not available - server does not support WebSocket capability',
+          webConsoleEnabled: true,
+        );
         WebSocketController.instance.markNotSupported();
         return;
       }
 
       // Get WebSocket capability properties from session-level capabilities
-      final wsCapability = session.capabilities[CapabilityIdentifier.jmapWebSocket] as WebSocketCapability?;
-      log('$runtimeType::injectWebSocket: wsCapability=$wsCapability, supportsPush=${wsCapability?.supportsPush}, url=${wsCapability?.url}', webConsoleEnabled: true);
+      final wsCapability =
+          session.capabilities[CapabilityIdentifier.jmapWebSocket]
+              as WebSocketCapability?;
+      log(
+        '$runtimeType::injectWebSocket: wsCapability=$wsCapability, supportsPush=${wsCapability?.supportsPush}, url=${wsCapability?.url}',
+        webConsoleEnabled: true,
+      );
 
       if (wsCapability?.supportsPush != true) {
-        log('$runtimeType::injectWebSocket: WebSocket push not enabled on server', webConsoleEnabled: true);
+        log(
+          '$runtimeType::injectWebSocket: WebSocket push not enabled on server',
+          webConsoleEnabled: true,
+        );
         WebSocketController.instance.markNotSupported();
         return;
       }
       WebSocketInteractorBindings().dependencies();
-      WebSocketController.instance.initialize(accountId: accountId, session: session);
-      log('$runtimeType::injectWebSocket: WebSocket initialized successfully', webConsoleEnabled: true);
-    } catch(e) {
-      logWarning('$runtimeType::injectWebSocket(): exception: $e', webConsoleEnabled: true);
+      WebSocketController.instance.initialize(
+        accountId: accountId,
+        session: session,
+      );
+      log(
+        '$runtimeType::injectWebSocket: WebSocket initialized successfully',
+        webConsoleEnabled: true,
+      );
+    } catch (e) {
+      logWarning(
+        '$runtimeType::injectWebSocket(): exception: $e',
+        webConsoleEnabled: true,
+      );
     }
   }
 
-  AuthenticationType get authenticationType => authorizationInterceptors.authenticationType;
+  AuthenticationType get authenticationType =>
+      authorizationInterceptors.authenticationType;
 
-  bool get isAuthenticatedWithOidc => authenticationType == AuthenticationType.oidc;
+  bool get isAuthenticatedWithOidc =>
+      authenticationType == AuthenticationType.oidc;
 
   bool _isFcmActivated(Session session, AccountId accountId) =>
-    FirebaseCapability.fcmIdentifier.isSupported(session, accountId) && AppConfig.fcmAvailable;
+      FirebaseCapability.fcmIdentifier.isSupported(session, accountId) &&
+      AppConfig.fcmAvailable;
 
   void goToLogin() {
     if (PlatformInfo.isMobile) {
@@ -526,7 +611,8 @@ abstract class BaseController extends GetxController
     }
     pushAndPopAll(
       AppRoutes.login,
-      arguments: LoginArguments(LoginFormType.none));
+      arguments: LoginArguments(LoginFormType.none),
+    );
   }
 
   void logout(
@@ -546,7 +632,10 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future<void> _handleLogoutAction(Session? session, AccountId? accountId) async {
+  Future<void> _handleLogoutAction(
+    Session? session,
+    AccountId? accountId,
+  ) async {
     if (session == null || accountId == null) {
       await clearDataAndGoToLoginPage();
       return;
@@ -583,9 +672,12 @@ abstract class BaseController extends GetxController
             onSuccessCallback();
           },
           onFailure: (failure) async {
-            if (failure is LogoutOidcFailure && _validateUserCancelledLogoutOidcFlow(failure.exception))  {
+            if (failure is LogoutOidcFailure &&
+                _validateUserCancelledLogoutOidcFlow(failure.exception)) {
               await _handleDeleteFCMAndClearData();
-              onFailureCallback(exception: UserCancelledLogoutOIDCFlowException());
+              onFailureCallback(
+                exception: UserCancelledLogoutOIDCFlowException(),
+              );
             } else {
               onFailureCallback();
             }
@@ -602,8 +694,8 @@ abstract class BaseController extends GetxController
   }
 
   bool _validateUserCancelledLogoutOidcFlow(dynamic exception) {
-   return exception is services.PlatformException &&
-      exception.code == OIDCConstant.endSessionFailedCode;
+    return exception is services.PlatformException &&
+        exception.code == OIDCConstant.endSessionFailedCode;
   }
 
   Future<void> _handleDeleteFCMAndClearData() async {
@@ -619,12 +711,17 @@ abstract class BaseController extends GetxController
     if (_getStoredFirebaseRegistrationInteractor == null) return;
 
     try {
-      final fcmRegistration = await _getStoredFirebaseRegistrationInteractor?.execute().last;
+      final fcmRegistration = await _getStoredFirebaseRegistrationInteractor
+          ?.execute()
+          .last;
 
       fcmRegistration?.foldSuccess<GetStoredFirebaseRegistrationSuccess>(
         onSuccess: (success) async {
-          _destroyFirebaseRegistrationInteractor = getBinding<DestroyFirebaseRegistrationInteractor>();
-          await _destroyFirebaseRegistrationInteractor?.execute(success.firebaseRegistration.id!).last;
+          _destroyFirebaseRegistrationInteractor =
+              getBinding<DestroyFirebaseRegistrationInteractor>();
+          await _destroyFirebaseRegistrationInteractor
+              ?.execute(success.firebaseRegistration.id!)
+              .last;
         },
         onFailure: (failure) {},
       );
@@ -633,17 +730,23 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void _destroyFirebaseRegistration(FirebaseRegistrationId firebaseRegistrationId) async {
-    _destroyFirebaseRegistrationInteractor = getBinding<DestroyFirebaseRegistrationInteractor>();
+  void _destroyFirebaseRegistration(
+    FirebaseRegistrationId firebaseRegistrationId,
+  ) async {
+    _destroyFirebaseRegistrationInteractor =
+        getBinding<DestroyFirebaseRegistrationInteractor>();
     if (_destroyFirebaseRegistrationInteractor != null) {
-      consumeState(_destroyFirebaseRegistrationInteractor!.execute(firebaseRegistrationId));
+      consumeState(
+        _destroyFirebaseRegistrationInteractor!.execute(firebaseRegistrationId),
+      );
     } else {
       await clearDataAndGoToLoginPage();
     }
   }
 
   void _getStoredFirebaseRegistrationFromCache() async {
-    _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
+    _getStoredFirebaseRegistrationInteractor =
+        getBinding<GetStoredFirebaseRegistrationInteractor>();
     if (_getStoredFirebaseRegistrationInteractor != null) {
       consumeState(_getStoredFirebaseRegistrationInteractor!.execute());
     } else {
@@ -686,16 +789,20 @@ abstract class BaseController extends GetxController
     required AccountId accountId,
   }) {
     final minInputLength = session.getMinInputLengthAutocomplete(accountId);
-    return minInputLength?.value.toInt() ?? AppConfig.defaultMinInputLengthAutocomplete;
+    return minInputLength?.value.toInt() ??
+        AppConfig.defaultMinInputLengthAutocomplete;
   }
 
   void showRetryToast(FeatureFailure failure) {
     if (currentOverlayContext == null || currentContext == null) return;
 
     final exception = failure.exception;
-    final errorMessage = exception is MethodLevelErrors && exception.message != null
-      ? AppLocalizations.of(currentContext!).unexpectedError('${exception.message!}')
-      : AppLocalizations.of(currentContext!).unknownError;
+    final errorMessage =
+        exception is MethodLevelErrors && exception.message != null
+        ? AppLocalizations.of(
+            currentContext!,
+          ).unexpectedError('${exception.message!}')
+        : AppLocalizations.of(currentContext!).unknownError;
 
     appToast.showToastMessageWithMultipleActions(
       currentOverlayContext!,
@@ -714,7 +821,7 @@ abstract class BaseController extends GetxController
             imagePaths.icClose,
             colorFilter: Colors.white.asFilter(),
           ),
-        )
+        ),
       ],
       backgroundColor: AppColor.toastErrorBackgroundColor,
       textColor: Colors.white,

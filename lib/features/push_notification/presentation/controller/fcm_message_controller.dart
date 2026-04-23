@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
@@ -38,10 +37,13 @@ class FcmMessageController extends PushBaseController {
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
+  StreamSubscription<Map<String, dynamic>>? _backgroundMessageSubscription;
+  StreamSubscription<String?>? _fcmTokenSubscription;
 
   FcmMessageController._internal();
 
-  static final FcmMessageController _instance = FcmMessageController._internal();
+  static final FcmMessageController _instance =
+      FcmMessageController._internal();
 
   static FcmMessageController get instance => _instance;
 
@@ -54,23 +56,43 @@ class FcmMessageController extends PushBaseController {
   }
 
   void _listenBackgroundMessageStream() {
-    FcmService.instance.backgroundMessageStreamController?.stream
-        .debounceTime(const Duration(
-          milliseconds: FcmUtils.durationBackgroundMessageComing,
-        ))
+    _backgroundMessageSubscription?.cancel();
+    _backgroundMessageSubscription = FcmService
+        .instance
+        .backgroundMessageStreamController
+        ?.stream
+        .debounceTime(
+          const Duration(
+            milliseconds: FcmUtils.durationBackgroundMessageComing,
+          ),
+        )
         .listen(_handleBackgroundMessageAction);
   }
 
   void _listenTokenStream() {
-    FcmService.instance.fcmTokenStreamController
-      ?.stream
-      .debounceTime(const Duration(milliseconds: FcmUtils.durationRefreshToken))
-      .listen(FcmTokenController.instance.onFcmTokenChanged);
+    _fcmTokenSubscription?.cancel();
+    _fcmTokenSubscription = FcmService.instance.fcmTokenStreamController?.stream
+        .debounceTime(
+          const Duration(milliseconds: FcmUtils.durationRefreshToken),
+        )
+        .listen(FcmTokenController.instance.onFcmTokenChanged);
+  }
+
+  @override
+  void onClose() {
+    _backgroundMessageSubscription?.cancel();
+    _backgroundMessageSubscription = null;
+    _fcmTokenSubscription?.cancel();
+    _fcmTokenSubscription = null;
+    super.onClose();
   }
 
   void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
-    log('FcmMessageController::_handleBackgroundMessageAction():payloadData: $payloadData');
-    final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
+    log(
+      'FcmMessageController::_handleBackgroundMessageAction():payloadDataKeys: ${payloadData.keys.toList(growable: false)}',
+    );
+    final stateChange = FcmUtils.instance
+        .convertFirebaseDataMessageToStateChange(payloadData);
     await _initialAppConfig();
     _getAuthenticatedAccount(stateChange: stateChange);
   }
@@ -78,7 +100,7 @@ class FcmMessageController extends PushBaseController {
   Future<void> _initialAppConfig() async {
     await Future.wait([
       MainBindings().dependencies(),
-      HiveCacheConfig.instance.setUp()
+      HiveCacheConfig.instance.setUp(),
     ]);
 
     await Future.sync(() {
@@ -91,7 +113,8 @@ class FcmMessageController extends PushBaseController {
   }
 
   void _getInteractorBindings() {
-    _getAuthenticatedAccountInteractor = getBinding<GetAuthenticatedAccountInteractor>();
+    _getAuthenticatedAccountInteractor =
+        getBinding<GetAuthenticatedAccountInteractor>();
     _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
     _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
     _getSessionInteractor = getBinding<GetSessionInteractor>();
@@ -101,22 +124,32 @@ class FcmMessageController extends PushBaseController {
 
   void _getAuthenticatedAccount({StateChange? stateChange}) {
     if (_getAuthenticatedAccountInteractor != null) {
-      consumeState(_getAuthenticatedAccountInteractor!.execute(stateChange: stateChange));
+      consumeState(
+        _getAuthenticatedAccountInteractor!.execute(stateChange: stateChange),
+      );
     }
   }
 
-  void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
-    _dynamicUrlInterceptors?.setJmapUrl(storedTokenOidcSuccess.baseUrl.toString());
+  void _handleGetAccountByOidcSuccess(
+    GetStoredTokenOidcSuccess storedTokenOidcSuccess,
+  ) {
+    _dynamicUrlInterceptors?.setJmapUrl(
+      storedTokenOidcSuccess.baseUrl.toString(),
+    );
     _authorizationInterceptors?.setTokenAndAuthorityOidc(
       newToken: storedTokenOidcSuccess.tokenOidc,
-      newConfig: storedTokenOidcSuccess.oidcConfiguration
+      newConfig: storedTokenOidcSuccess.oidcConfiguration,
     );
 
     if (PlatformInfo.isAndroid) {
-      _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
+      _dynamicUrlInterceptors?.changeBaseUrl(
+        storedTokenOidcSuccess.baseUrl.toString(),
+      );
       _getSessionAction(stateChange: storedTokenOidcSuccess.stateChange);
     } else {
-      _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.personalAccount.apiUrl);
+      _dynamicUrlInterceptors?.changeBaseUrl(
+        storedTokenOidcSuccess.personalAccount.apiUrl,
+      );
 
       final accountId = storedTokenOidcSuccess.personalAccount.accountId;
       final username = storedTokenOidcSuccess.personalAccount.userName;
@@ -126,22 +159,29 @@ class FcmMessageController extends PushBaseController {
         _pushActionFromRemoteMessageBackground(
           accountId: accountId,
           userName: username,
-          stateChange: stateChange);
+          stateChange: stateChange,
+        );
       }
     }
   }
 
-  void _handleGetAccountByBasicAuthSuccess(GetCredentialViewState credentialViewState) {
+  void _handleGetAccountByBasicAuthSuccess(
+    GetCredentialViewState credentialViewState,
+  ) {
     _dynamicUrlInterceptors?.setJmapUrl(credentialViewState.baseUrl.toString());
     _authorizationInterceptors?.setBasicAuthorization(
       credentialViewState.userName,
       credentialViewState.password,
     );
     if (PlatformInfo.isAndroid) {
-      _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.baseUrl.toString());
+      _dynamicUrlInterceptors?.changeBaseUrl(
+        credentialViewState.baseUrl.toString(),
+      );
       _getSessionAction(stateChange: credentialViewState.stateChange);
     } else {
-      _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.personalAccount.apiUrl);
+      _dynamicUrlInterceptors?.changeBaseUrl(
+        credentialViewState.personalAccount.apiUrl,
+      );
 
       final accountId = credentialViewState.personalAccount.accountId;
       final username = credentialViewState.personalAccount.userName;
@@ -151,7 +191,8 @@ class FcmMessageController extends PushBaseController {
         _pushActionFromRemoteMessageBackground(
           accountId: accountId,
           userName: username,
-          stateChange: stateChange);
+          stateChange: stateChange,
+        );
       }
     }
   }
@@ -164,7 +205,9 @@ class FcmMessageController extends PushBaseController {
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
     try {
-      final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors?.jmapUrl);
+      final apiUrl = success.session.getQualifiedApiUrl(
+        baseUrl: _dynamicUrlInterceptors?.jmapUrl,
+      );
       final stateChange = success.stateChange;
 
       if (apiUrl.isNotEmpty && stateChange != null) {
@@ -174,10 +217,13 @@ class FcmMessageController extends PushBaseController {
           accountId: success.session.accountId,
           userName: success.session.username,
           stateChange: stateChange,
-          session: success.session);
+          session: success.session,
+        );
       }
     } catch (e) {
-      logWarning('FcmMessageController::_handleGetSessionSuccess: Exception $e');
+      logWarning(
+        'FcmMessageController::_handleGetSessionSuccess: Exception $e',
+      );
     }
   }
 
@@ -185,7 +231,7 @@ class FcmMessageController extends PushBaseController {
     required AccountId accountId,
     required UserName userName,
     required StateChange stateChange,
-    Session? session
+    Session? session,
   }) {
     final mapTypeState = stateChange.getMapTypeState(accountId);
 
@@ -196,7 +242,8 @@ class FcmMessageController extends PushBaseController {
       emailChangeListener: EmailChangeListener.instance,
       mailboxChangeListener: MailboxChangeListener.instance,
       isForeground: false,
-      session: session);
+      session: session,
+    );
   }
 
   @override

@@ -14,7 +14,9 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
   Future<TokenOIDC> getTokenOidc(String tokenIdHash) async {
     log('TokenOidcCacheManager::getTokenOidc(): tokenIdHash: $tokenIdHash');
     final tokenCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
-    log('TokenOidcCacheManager::getTokenOidc(): tokenCache: $tokenCache');
+    log(
+      'TokenOidcCacheManager::getTokenOidc(): tokenCacheFound: ${tokenCache != null}',
+    );
     if (tokenCache == null) {
       throw NotFoundStoredTokenException();
     } else {
@@ -23,12 +25,14 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
   }
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
-    log('TokenOidcCacheManager::persistOneTokenOidc(): $tokenOIDC');
+    log(
+      'TokenOidcCacheManager::persistOneTokenOidc(): tokenIdHash: ${tokenOIDC.tokenIdHash}',
+    );
     await clear();
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): token: ${tokenOIDC.token}');
-    await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
+    await _tokenOidcCacheClient.insertItem(
+      tokenOIDC.tokenIdHash,
+      tokenOIDC.toTokenOidcCache(),
+    );
     log('TokenOidcCacheManager::persistOneTokenOidc(): done');
   }
 
@@ -42,11 +46,17 @@ class TokenOidcCacheManager extends CacheManagerInteraction {
       final legacyMapItems = await _tokenOidcCacheClient.getMapItems(
         isolated: false,
       );
-      log('$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}');
+      log(
+        '$runtimeType::migrateHiveToIsolatedHive(): Length of legacyMapItems: ${legacyMapItems.length}',
+      );
       await _tokenOidcCacheClient.insertMultipleItem(legacyMapItems);
-      log('$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_tokenOidcCacheClient.tableName}" → IsolatedHive DONE');
+      log(
+        '$runtimeType::migrateHiveToIsolatedHive(): ✅ Migrate Hive box "${_tokenOidcCacheClient.tableName}" → IsolatedHive DONE',
+      );
     } catch (e) {
-      logWarning('$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_tokenOidcCacheClient.tableName}" → IsolatedHive FAILED, Error: $e');
+      logWarning(
+        '$runtimeType::migrateHiveToIsolatedHive(): ❌ Migrate Hive box "${_tokenOidcCacheClient.tableName}" → IsolatedHive FAILED, Error: $e',
+      );
     }
   }
 }

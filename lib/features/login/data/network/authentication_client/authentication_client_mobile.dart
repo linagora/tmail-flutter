@@ -1,4 +1,3 @@
-
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
@@ -15,9 +14,9 @@ import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.d
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 
-class AuthenticationClientMobile with AuthenticationClientInteractionMixin
-    implements AuthenticationClientBase  {
-
+class AuthenticationClientMobile
+    with AuthenticationClientInteractionMixin
+    implements AuthenticationClientBase {
   final FlutterAppAuth _appAuth;
 
   AuthenticationClientMobile(this._appAuth);
@@ -40,7 +39,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
     final authorizationTokenResponse = await _appAuth.authorizeAndExchangeCode(
       authorizationTokenRequest,
     );
-    log('$runtimeType::getTokenOIDC(): token: ${authorizationTokenResponse.accessToken}');
+    log('$runtimeType::getTokenOIDC(): token received');
     final tokenOIDC = authorizationTokenResponse.toTokenOIDC();
     if (tokenOIDC.isTokenValid()) {
       return tokenOIDC;
@@ -64,8 +63,10 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
     // If end_session_endpoint is not available (optional per OIDC spec),
     // return true to indicate local-only logout should proceed
     if (endSessionRequest == null) {
-      log('$runtimeType::logoutOidc(): end_session_endpoint not configured, '
-          'performing local-only logout');
+      log(
+        '$runtimeType::logoutOidc(): end_session_endpoint not configured, '
+        'performing local-only logout',
+      );
       return true;
     }
 
@@ -91,7 +92,7 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
         scopes,
       );
       final tokenResponse = await _appAuth.token(tokenRequest);
-      log('$runtimeType::refreshingTokensOIDC():Token: ${tokenResponse.accessToken}');
+      log('$runtimeType::refreshingTokensOIDC(): token refreshed');
       final tokenOIDC = tokenResponse.toTokenOIDC(
         maybeAvailableRefreshToken: refreshToken,
       );
@@ -107,32 +108,36 @@ class AuthenticationClientMobile with AuthenticationClientInteractionMixin
   }
 
   @override
-  Future<void> authenticateOidcOnBrowser(String clientId, String redirectUrl,
-      String discoveryUrl, List<String> scopes) {
+  Future<void> authenticateOidcOnBrowser(
+    String clientId,
+    String redirectUrl,
+    String discoveryUrl,
+    List<String> scopes,
+  ) {
     return Future.value(null);
   }
 
   @override
-  Future<TokenOIDC> signInTwakeWorkplace(OIDCConfiguration oidcConfiguration) async {
+  Future<TokenOIDC> signInTwakeWorkplace(
+    OIDCConfiguration oidcConfiguration,
+  ) async {
     final uri = await FlutterWebAuth2.authenticate(
       url: oidcConfiguration.signInTWPUrl,
       callbackUrlScheme: OIDCConstant.twakeWorkplaceUrlScheme,
-      options: const FlutterWebAuth2Options(
-        preferEphemeral: true,
-      ),
+      options: const FlutterWebAuth2Options(preferEphemeral: true),
     );
     log('$runtimeType::signInTwakeWorkplace():Uri = $uri');
     return TokenOIDC.fromUri(uri);
   }
 
   @override
-  Future<TokenOIDC> signUpTwakeWorkplace(OIDCConfiguration oidcConfiguration) async {
+  Future<TokenOIDC> signUpTwakeWorkplace(
+    OIDCConfiguration oidcConfiguration,
+  ) async {
     final uri = await FlutterWebAuth2.authenticate(
       url: oidcConfiguration.signUpTWPUrl,
       callbackUrlScheme: OIDCConstant.twakeWorkplaceUrlScheme,
-      options: const FlutterWebAuth2Options(
-        preferEphemeral: true,
-      ),
+      options: const FlutterWebAuth2Options(preferEphemeral: true),
     );
     log('$runtimeType::signUpTwakeWorkplace():Uri = $uri');
     return TokenOIDC.fromUri(uri);

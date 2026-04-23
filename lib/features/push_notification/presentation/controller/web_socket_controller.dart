@@ -56,6 +56,7 @@ class WebSocketController extends PushBaseController {
   StreamSubscription? _webSocketSubscription;
   AppLifecycleListener? _appLifecycleListener;
   Debouncer<StateChange?>? _stateChangeDebouncer;
+  StreamSubscription<StateChange?>? _stateChangeDebouncerSubscription;
 
   /// Observable connection state for UI binding
   final Rx<WebSocketConnectionState> connectionState =
@@ -171,10 +172,15 @@ class WebSocketController extends PushBaseController {
     log('WebSocketController::_cleanUpWebSocketResources:');
     _isConnecting = false;
     _webSocketSubscription?.cancel();
+    _webSocketSubscription = null;
     _webSocketChannel?.sink.close();
     _webSocketChannel = null;
     _webSocketPingTimer?.cancel();
+    _webSocketPingTimer = null;
+    _stateChangeDebouncerSubscription?.cancel();
+    _stateChangeDebouncerSubscription = null;
     _stateChangeDebouncer?.cancel();
+    _stateChangeDebouncer = null;
     // Only set to disconnected if not already in notSupported state
     if (connectionState.value != WebSocketConnectionState.notSupported) {
       connectionState.value = WebSocketConnectionState.disconnected;
@@ -278,7 +284,8 @@ class WebSocketController extends PushBaseController {
       initialValue: null,
     );
 
-    _stateChangeDebouncer?.values.listen(_handleStateChange);
+    _stateChangeDebouncerSubscription =
+        _stateChangeDebouncer?.values.listen(_handleStateChange);
   }
 
   void _handleStateChange(StateChange? stateChange) {
@@ -301,6 +308,7 @@ class WebSocketController extends PushBaseController {
   }
 
   void _monitorNetwork() {
+    _connectivitySubscription?.cancel();
     _networkConnectionController = getBinding<NetworkConnectionController>();
     _connectivitySubscription = _networkConnectionController
       ?.connectivity

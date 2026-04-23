@@ -48,7 +48,6 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class HiveCacheConfig {
-
   HiveCacheConfig._internal();
 
   static final HiveCacheConfig _instance = HiveCacheConfig._internal();
@@ -65,7 +64,8 @@ class HiveCacheConfig {
     bool isolated = true,
   }) async {
     if (databasePath == null && PlatformInfo.isMobile) {
-      Directory directory = await path_provider.getApplicationDocumentsDirectory();
+      Directory directory = await path_provider
+          .getApplicationDocumentsDirectory();
       databasePath = directory.path;
     }
 
@@ -84,21 +84,49 @@ class HiveCacheConfig {
   Future<void> onUpgradeDatabase(CachingManager cachingManager) async {
     final oldVersion = await cachingManager.getLatestVersion() ?? 0;
     const newVersion = CacheVersion.hiveDBVersion;
-    log('HiveCacheConfig::onUpgradeDatabase():oldVersion: $oldVersion | newVersion: $newVersion');
+    log(
+      'HiveCacheConfig::onUpgradeDatabase():oldVersion: $oldVersion | newVersion: $newVersion',
+    );
 
-    await UpgradeHiveDatabaseStepsV7(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV10(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV11(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV12(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV13(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV14(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV15(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV16(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV17(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV18(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV19(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV20(cachingManager).onUpgrade(oldVersion, newVersion);
-    await UpgradeHiveDatabaseStepsV21(cachingManager).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV7(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV10(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV11(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV12(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV13(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV14(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV15(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV16(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV17(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV18(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV19(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV20(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
+    await UpgradeHiveDatabaseStepsV21(
+      cachingManager,
+    ).onUpgrade(oldVersion, newVersion);
 
     if (oldVersion != newVersion) {
       await cachingManager.storeCacheVersion(newVersion);
@@ -106,31 +134,44 @@ class HiveCacheConfig {
   }
 
   Future<void> initializeEncryptionKey() async {
-    final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+    final encryptionKeyCacheManager =
+        getBinding<EncryptionKeyCacheManager>() ??
+        getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
     if (encryptionKeyCacheManager == null) {
-      log('HiveCacheConfig::_initializeEncryptionKey(): encryptionKeyCacheManager not found');
+      log(
+        'HiveCacheConfig::_initializeEncryptionKey(): encryptionKeyCacheManager not found',
+      );
       return;
     }
-    final encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
+    final encryptionKeyCache = await encryptionKeyCacheManager
+        .getEncryptionKeyStored();
     if (encryptionKeyCache == null) {
       final secureKey = Hive.generateSecureKey();
       final secureKeyEncode = base64Encode(secureKey);
-      log('HiveCacheConfig::_initializeEncryptionKey(): secureKeyEncode: $secureKeyEncode');
-      await encryptionKeyCacheManager.storeEncryptionKey(EncryptionKeyCache(secureKeyEncode));
+      log(
+        'HiveCacheConfig::_initializeEncryptionKey(): generated encryption key',
+      );
+      await encryptionKeyCacheManager.storeEncryptionKey(
+        EncryptionKeyCache(secureKeyEncode),
+      );
     }
   }
 
   Future<Uint8List?> getEncryptionKey() async {
-    final encryptionKeyCacheManager = getBinding<EncryptionKeyCacheManager>() ?? getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
+    final encryptionKeyCacheManager =
+        getBinding<EncryptionKeyCacheManager>() ??
+        getBinding<EncryptionKeyCacheManager>(tag: BindingTag.isolateTag);
     if (encryptionKeyCacheManager == null) {
-      log('HiveCacheConfig::getEncryptionKey(): encryptionKeyCacheManager not found');
+      log(
+        'HiveCacheConfig::getEncryptionKey(): encryptionKeyCacheManager not found',
+      );
       return null;
     }
-    var encryptionKeyCache = await encryptionKeyCacheManager.getEncryptionKeyStored();
+    var encryptionKeyCache = await encryptionKeyCacheManager
+        .getEncryptionKeyStored();
 
     if (encryptionKeyCache != null) {
-      final encryptionKey = encryptionKeyCache.value;
-      log('HiveCacheConfig::getEncryptionKey(): encryptionKey: $encryptionKey');
+      log('HiveCacheConfig::getEncryptionKey(): encryption key found');
       final encryptionKeyDecode = base64Decode(encryptionKeyCache.value);
       return encryptionKeyDecode;
     } else {

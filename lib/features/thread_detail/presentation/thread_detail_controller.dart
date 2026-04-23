@@ -33,7 +33,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
-  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+    if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
@@ -100,23 +100,26 @@ class ThreadDetailController extends BaseController {
     EmailProperty.messageId,
   });
   final cachedEmailLoaded = <EmailId, EmailLoaded>{};
-  late final _threadGetDebouncer = Debouncer<({ThreadId? threadId, bool isSentMailbox})?>(
-    const Duration(milliseconds: 500),
-    initialValue: null,
-    checkEquality: false,
-    onChanged: (value) {
-      if (_validateLoadThread(value?.threadId)) {
-        consumeState(_getEmailIdsByThreadIdInteractor.execute(
-          value!.threadId!,
-          session!,
-          accountId!,
-          sentMailboxId!,
-          ownEmailAddress,
-          isSentMailbox: value.isSentMailbox,
-        ));
-      }
-    },
-  );
+  late final _threadGetDebouncer =
+      Debouncer<({ThreadId? threadId, bool isSentMailbox})?>(
+        const Duration(milliseconds: 500),
+        initialValue: null,
+        checkEquality: false,
+        onChanged: (value) {
+          if (_validateLoadThread(value?.threadId)) {
+            consumeState(
+              _getEmailIdsByThreadIdInteractor.execute(
+                value!.threadId!,
+                session!,
+                accountId!,
+                sentMailboxId!,
+                ownEmailAddress,
+                isSentMailbox: value.isSentMailbox,
+              ),
+            );
+          }
+        },
+      );
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final searchEmailController = Get.find<SearchEmailController>();
@@ -129,8 +132,10 @@ class ThreadDetailController extends BaseController {
   bool loadThreadOnThreadChanged = false;
   bool isDisplayAllAttachments = false;
   FocusNode? keyboardShortcutFocusNode;
-  StreamController<MailViewShortcutActionViewEvent>? shortcutActionEventController;
-  StreamSubscription<MailViewShortcutActionViewEvent>? shortcutActionEventSubscription;
+  StreamController<MailViewShortcutActionViewEvent>?
+  shortcutActionEventController;
+  StreamSubscription<MailViewShortcutActionViewEvent>?
+  shortcutActionEventSubscription;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -142,86 +147,90 @@ class ThreadDetailController extends BaseController {
       mailboxDashBoardController.ownEmailAddress.value;
 
   bool get isSearchRunning {
-    final isWebSearchRunning = mailboxDashBoardController
-      .searchController
-      .isSearchEmailRunning;
-    final isMobileSearchRunning = searchEmailController
-      .searchIsRunning
-      .value == true;
+    final isWebSearchRunning =
+        mailboxDashBoardController.searchController.isSearchEmailRunning;
+    final isMobileSearchRunning =
+        searchEmailController.searchIsRunning.value == true;
     return isWebSearchRunning || isMobileSearchRunning;
   }
+
   bool get networkConnected =>
       networkConnectionController.isNetworkConnectionAvailable();
-  bool get isThreadDetailEnabled =>
-      threadDetailManager.isThreadDetailEnabled;
-  GlobalObjectKey? get expandedEmailHtmlViewKey => currentExpandedEmailId.value != null
+  bool get isThreadDetailEnabled => threadDetailManager.isThreadDetailEnabled;
+  GlobalObjectKey? get expandedEmailHtmlViewKey =>
+      currentExpandedEmailId.value != null
       ? GlobalObjectKey(currentExpandedEmailId.value!)
       : null;
 
   @override
   void onInit() {
     super.onInit();
-    ever(mailboxDashBoardController.accountId, (accountId) {
-      if (accountId == null) return;
+    trackWorker(
+      ever(mailboxDashBoardController.accountId, (accountId) {
+        if (accountId == null) return;
 
-      injectRuleFilterBindings(session, accountId);
-      _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
-      emailActionReactor = EmailActionReactor(
-        _markAsEmailReadInteractor,
-        _markAsStarEmailInteractor,
-        _createNewEmailRuleFilterInteractor,
-        _printEmailInteractor,
-        _getEmailContentInteractor,
-      );
-    });
-    ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {
-      onSelectedEmailUpdated(
-        presentationEmail,
-        currentContext,
-      );
-    });
-    ever(mailboxDashBoardController.threadDetailUIAction, (action) {
-      if (action is UpdatedEmailKeywordsAction) {
-        emailIdsPresentation
-          [action.emailId]
-          ?.keywords
-          ?[action.updatedKeyword] = action.value;
-        if (action.updatedKeyword == KeyWordIdentifierExtension.unsubscribeMail) {
-          emailIdsPresentation
-            [action.emailId]
-            ?..emailHeader?.removeWhere((element) {
-              return element.name == EmailProperty.headerUnsubscribeKey;
-            })
-            ..listUnsubscribeHeader?.clear();
+        injectRuleFilterBindings(session, accountId);
+        _createNewEmailRuleFilterInteractor =
+            getBinding<CreateNewEmailRuleFilterInteractor>();
+        emailActionReactor = EmailActionReactor(
+          _markAsEmailReadInteractor,
+          _markAsStarEmailInteractor,
+          _createNewEmailRuleFilterInteractor,
+          _printEmailInteractor,
+          _getEmailContentInteractor,
+        );
+      }),
+    );
+    trackWorker(
+      ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {
+        onSelectedEmailUpdated(presentationEmail, currentContext);
+      }),
+    );
+    trackWorker(
+      ever(mailboxDashBoardController.threadDetailUIAction, (action) {
+        if (action is UpdatedEmailKeywordsAction) {
+          emailIdsPresentation[action.emailId]?.keywords?[action
+                  .updatedKeyword] =
+              action.value;
+          if (action.updatedKeyword ==
+              KeyWordIdentifierExtension.unsubscribeMail) {
+            emailIdsPresentation[action.emailId]
+              ?..emailHeader?.removeWhere((element) {
+                return element.name == EmailProperty.headerUnsubscribeKey;
+              })
+              ..listUnsubscribeHeader?.clear();
+          }
+        } else if (action is EmailMovedAction) {
+          handleEmailMovedAction(action);
+        } else if (action is LoadThreadDetailAfterSelectedEmailAction) {
+          _threadGetDebouncer.value = (
+            threadId: action.threadId,
+            isSentMailbox: action.isSentMailbox,
+          );
+        } else if (action is ReclaimMailViewKeyboardShortcutFocusAction) {
+          refocusMailShortcutFocus();
+        } else if (action is ClearMailViewKeyboardShortcutFocusAction) {
+          clearMailShortcutFocus();
+        } else if (action is ResyncThreadDetailWhenSettingChangedAction) {
+          resyncThreadDetailWhenSettingChanged();
         }
-      } else if (action is EmailMovedAction) {
-        handleEmailMovedAction(action);
-      } else if (action is LoadThreadDetailAfterSelectedEmailAction) {
-        _threadGetDebouncer.value = (
-          threadId: action.threadId,
-          isSentMailbox: action.isSentMailbox,
+        // Reset [threadDetailUIAction] to original value
+        mailboxDashBoardController.dispatchThreadDetailUIAction(
+          ThreadDetailUIAction(),
         );
-      } else if (action is ReclaimMailViewKeyboardShortcutFocusAction) {
-        refocusMailShortcutFocus();
-      } else if (action is ClearMailViewKeyboardShortcutFocusAction) {
-        clearMailShortcutFocus();
-      } else if (action is ResyncThreadDetailWhenSettingChangedAction) {
-        resyncThreadDetailWhenSettingChanged();
-      }
-      // Reset [threadDetailUIAction] to original value
-      mailboxDashBoardController.dispatchThreadDetailUIAction(
-        ThreadDetailUIAction(),
-      );
-    });
-    ever(mailboxDashBoardController.emailUIAction, (action) {
-      if (action is RefreshThreadDetailAction) {
-        mailboxDashBoardController.dispatchEmailUIAction(EmailUIAction());
-        handleRefreshThreadDetailAction(
-          action,
-          _getEmailIdsByThreadIdInteractor,
-        );
-      }
-    });
+      }),
+    );
+    trackWorker(
+      ever(mailboxDashBoardController.emailUIAction, (action) {
+        if (action is RefreshThreadDetailAction) {
+          mailboxDashBoardController.dispatchEmailUIAction(EmailUIAction());
+          handleRefreshThreadDetailAction(
+            action,
+            _getEmailIdsByThreadIdInteractor,
+          );
+        }
+      }),
+    );
   }
 
   bool _validateLoadThread(ThreadId? threadId) {

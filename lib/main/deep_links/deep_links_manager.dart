@@ -9,10 +9,12 @@ import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_handler_mixin.dart';
 
 class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
+  BehaviorSubject<DeepLinkData?> _pendingDeepLinkData = BehaviorSubject.seeded(
+    null,
+  );
 
-  BehaviorSubject<DeepLinkData?> _pendingDeepLinkData = BehaviorSubject.seeded(null);
-
-  BehaviorSubject<DeepLinkData?> get pendingDeepLinkData => _pendingDeepLinkData;
+  BehaviorSubject<DeepLinkData?> get pendingDeepLinkData =>
+      _pendingDeepLinkData;
 
   StreamSubscription<Uri>? _deepLinkStreamSubscription;
 
@@ -26,8 +28,10 @@ class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
   }
 
   void registerDeepLinkStreamListener() {
-    _deepLinkStreamSubscription =
-        AppLinks().uriLinkStream.listen(_handleUriLinkStream);
+    _deepLinkStreamSubscription?.cancel();
+    _deepLinkStreamSubscription = AppLinks().uriLinkStream.listen(
+      _handleUriLinkStream,
+    );
   }
 
   void _handleUriLinkStream(Uri uri) {
@@ -42,7 +46,7 @@ class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
   }
 
   void clearPendingDeepLinkData() {
-    if(_pendingDeepLinkData.isClosed) {
+    if (_pendingDeepLinkData.isClosed) {
       _pendingDeepLinkData = BehaviorSubject.seeded(null);
     } else {
       _pendingDeepLinkData.add(null);
@@ -96,6 +100,9 @@ class DeepLinksManager with OpenAppDeepLinkHandlerMixin {
 
   void dispose() {
     _deepLinkStreamSubscription?.cancel();
-    _pendingDeepLinkData.close();
+    _deepLinkStreamSubscription = null;
+    if (!_pendingDeepLinkData.isClosed) {
+      _pendingDeepLinkData.close();
+    }
   }
 }
