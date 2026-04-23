@@ -62,9 +62,6 @@ import 'package:tmail_ui_user/main/exceptions/remote/method_level_exception.dart
 import 'package:tmail_ui_user/main/exceptions/remote/network_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/preferences/preferences_setting.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/providers/local_settings_notifier.dart';
-import 'package:tmail_ui_user/main/providers/app_provider_container.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
@@ -604,11 +601,6 @@ abstract class BaseController extends GetxController
       logWarning('BaseController::clearAllData: Cannot clear all data: $e');
     } finally {
       AttachmentKeywordConfigManager().clearCache();
-      // Reset local settings to the default value so that stale account data
-      // is not visible if another account logs in before the next reload completes.
-      appProviderContainer
-          .read(localSettingsNotifierProvider.notifier)
-          .update(PreferencesSetting.initial());
     }
   }
 

@@ -17,7 +17,7 @@ As part of implementing the collapsed thread feature in search email (TF-4363), 
 - `ThreadController` — must react when the setting changes to re-trigger search
 - `SearchEmailController` — must read the current value at query time
 
-The setting is written by `PreferencesController` via `UpdateLocalSettingsInteractor` when the user toggles it in `PreferencesView`, and must also be reset on logout to prevent stale cross-account data.
+The setting is written by `PreferencesController` via `UpdateLocalSettingsInteractor` when the user toggles it in `PreferencesView`.
 
 Rather than routing this through a GetX-based `LocalSettingsService` with a reactive `Rx` field and `ever(...)` listeners — which would require manual equality tracking and expose mutable state broadly — we chose to use Riverpod's `StateNotifier` as the single source of truth from the start.
 
@@ -30,17 +30,17 @@ Introduce `localSettingsNotifierProvider` (`StateNotifier<PreferencesSetting>`) 
 ### Architecture
 
 ```text
-┌─────────────────────────────────────────────────────┐
-│  appProviderContainer  (global ProviderContainer)   │
-│                                                     │
-│   localSettingsNotifierProvider                     │
-│   StateNotifier<PreferencesSetting>                 │
-│       ▲ write          ▲ write         read ▼       │
-│       │                │                   │        │
-│  LocalSettings    Preferences         Thread /      │
-│  Service          Controller          Search        │
-│  (initial load)   (on toggle)         Controllers   │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  appProviderContainer  (global ProviderContainer)        │
+│                                                          │
+│   localSettingsNotifierProvider                          │
+│   StateNotifier<PreferencesSetting>                      │
+│       ▲ write              ▲ write        read ▼         │
+│       │                    │                  │          │
+│  LocalSettingsService  PreferencesController  Thread /   │
+│  (app start /          (on toggle)            Search     │
+│   route reload)                               Controllers│
+└──────────────────────────────────────────────────────────┘
 ```
 
 ### Write paths
@@ -50,9 +50,6 @@ Introduce `localSettingsNotifierProvider` (`StateNotifier<PreferencesSetting>`) 
 
 **On user toggle in PreferencesView:**
 `PreferencesController.handleSuccessViewState(UpdateLocalSettingsSuccess)` → `localSettingsNotifierProvider.notifier.update()`
-
-**On logout:**
-`BaseController.clearAllData()` → `localSettingsNotifierProvider.notifier.update(PreferencesSetting.initial())`
 
 ### Read paths
 
