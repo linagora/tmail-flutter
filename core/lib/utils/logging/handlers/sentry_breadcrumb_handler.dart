@@ -15,7 +15,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 /// other Sentry data sources.
 ///
 /// [SentryReporter] is injected via constructor for testability.
-class SentryBreadcrumbHandler implements LogHandler {
+class SentryBreadcrumbHandler extends LogHandler {
   final SentryReporter _sentry;
 
   const SentryBreadcrumbHandler(this._sentry);
